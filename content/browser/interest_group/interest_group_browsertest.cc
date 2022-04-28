@@ -349,47 +349,38 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         SetBrowserClientForTesting(&content_browser_client_);
   }
 
-  [[nodiscard]] bool JoinInterestGroupInJS(
+  // Attempts to join the specified interest group. Returns kSuccess if the
+  // operation claims to have succeeded, and the exception message on failure.
+  //
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  [[nodiscard]] std::string JoinInterestGroup(
       url::Origin owner,
       std::string name,
       absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
-    return "done" == EvalJs(execution_target ? *execution_target : shell(),
-                            JsReplace(R"(
-    (async function() {
-      await navigator.joinAdInterestGroup(
-        {name: $1, owner: $2}, /*joinDurationSec=*/ 300);
-      return 'done';
-    })())",
-                                      name, owner));
-  }
-
-  // Attempts to join the specified interest group. Returns kSuccess if the
-  // operation claims to have succeeded, and the exception message on failure.
-  // Also verifies that the interest group was joined or not, depending on the
-  // return value.
-  //
-  // TODO(mmenke): Replace all calls of JoinInterestGroupAndWait(), as this
-  // forces to callers check the returned exception on failure, and checks both
-  // the success and failure case. Also make this wrap JoinInterestGroupInJS(),
-  // changing that method's return type.
-  [[nodiscard]] std::string JoinInterestGroupAndVerify(
-      const url::Origin& owner,
-      const std::string& name,
-      absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
-    int initial_count = GetJoinCount(owner, name);
-    std::string result = EvalJs(execution_target ? *execution_target : shell(),
-                                JsReplace(R"(
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  JsReplace(R"(
     (async function() {
       try {
         await navigator.joinAdInterestGroup(
-            {name: $1, owner: $2}, /*joinDurationSec=*/ 300);
+          {name: $1, owner: $2}, /*joinDurationSec=*/ 300);
         return 'success';
       } catch (e) {
         return e.toString();
       }
     })())",
-                                          name, owner))
-                             .ExtractString();
+                            name, owner))
+        .ExtractString();
+  }
+
+  // Just like JoinInterestGroup() above, but also verifies that the interest
+  // group was joined or not, depending on the return value.
+  [[nodiscard]] std::string JoinInterestGroupAndVerify(
+      const url::Origin& owner,
+      const std::string& name,
+      absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
+    int initial_count = GetJoinCount(owner, name);
+    std::string result = JoinInterestGroup(owner, name, execution_target);
     int final_count = GetJoinCount(owner, name);
     if (result == kSuccess) {
       // On success, the user should have joined the interest group.
@@ -480,36 +471,18 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 })())");
   }
 
-  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
-  // shell().
-  bool LeaveInterestGroupInJS(
-      url::Origin owner, std::string name,
-      const absl::optional<ToRenderFrameHost> execution_target =
-          absl::nullopt) {
-    return "done" == EvalJs(execution_target ? *execution_target : shell(),
-                            JsReplace(R"(
-    (async function() {
-      await navigator.leaveAdInterestGroup({name: $1, owner: $2});
-      return 'done';
-    })())",
-                                      name, owner));
-  }
-
   // Attempts to leave the specified interest group. Returns kSuccess if the
   // operation claims to have succeeded, and the exception message on failure.
-  // Also verifies that the interest group was left or not, depending on the
-  // return value.
   //
-  // TODO(mmenke): Make LeaveInterestGroupInJS(), return a std::string like this
-  // does and make this method use it internally.
-  [[nodiscard]] std::string LeaveInterestGroupAndVerify(
-      const url::Origin& owner,
-      const std::string& name,
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  [[nodiscard]] std::string LeaveInterestGroup(
+      url::Origin owner,
+      std::string name,
       const absl::optional<ToRenderFrameHost> execution_target =
           absl::nullopt) {
-    int initial_count = GetJoinCount(owner, name);
-    std::string result = EvalJs(execution_target ? *execution_target : shell(),
-                                JsReplace(R"(
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  JsReplace(R"(
     (async function() {
       try {
         await navigator.leaveAdInterestGroup({name: $1, owner: $2});
@@ -518,9 +491,19 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         return e.toString();
       }
     })())",
-                                          name, owner))
-                             .ExtractString();
+                            name, owner))
+        .ExtractString();
+  }
 
+  // Just like LeaveInterestGroupInJS(), but also verifies that the interest
+  // group was left or not, depending on the return value.
+  [[nodiscard]] std::string LeaveInterestGroupAndVerify(
+      const url::Origin& owner,
+      const std::string& name,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    int initial_count = GetJoinCount(owner, name);
+    std::string result = LeaveInterestGroup(owner, name, execution_target);
     int final_count = GetJoinCount(owner, name);
     if (result == kSuccess) {
       // On success, the user should no longer be in the interest group.
@@ -1358,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url_d = https_server_->GetURL("d.test", "/echo");
   url::Origin test_origin_d = url::Origin::Create(test_url_d);
   ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
-  EXPECT_TRUE(JoinInterestGroupInJS(test_origin_d, "toys"));
+  EXPECT_EQ(kSuccess, JoinInterestGroup(test_origin_d, "toys"));
 
   // Another successful join.
   GURL test_url_b = https_server_->GetURL("b.test", "/echo");
@@ -1400,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // This leave should do nothing because `origin_d` is not allowed by privacy
   // sandbox. Can't use LeaveInterestGroupAndVerify() because it returns "true"
   // but doesn't actually leave the interest group.
-  EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_d, "candy"));
+  EXPECT_EQ(kSuccess, LeaveInterestGroup(test_origin_d, "candy"));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
   // This leave should do nothing because there is not interest group of that
@@ -6620,7 +6603,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     // the same message has already been added and redundant messages will be
     // discarded.
     EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
-    EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+    EXPECT_EQ(kSuccess, LeaveInterestGroup(origin, "cars", execution_target));
 
     // It seems discard_duplicates of AddConsoleMessage works differently on
     // Android and other platforms. On Android, a message will be discarded if
@@ -6789,7 +6772,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                   execution_target));
 
     EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
-    EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+    EXPECT_EQ(kSuccess, LeaveInterestGroup(origin, "cars", execution_target));
     EXPECT_TRUE(console_observer.messages().empty());
   }
 }
@@ -6913,8 +6896,8 @@ IN_PROC_BROWSER_TEST_F(
                 iframe_ad_auction));
   ExpectNotAllowedToLeaveInterestGroup(other_origin, "cars", iframe_ad_auction);
 
-  EXPECT_TRUE(
-      LeaveInterestGroupInJS(other_origin, "cars", iframe_interest_group));
+  EXPECT_EQ(kSuccess,
+            LeaveInterestGroup(other_origin, "cars", iframe_interest_group));
 }
 
 // Features join-ad-interest-group and run-ad-auction can be disabled by HTTP
