@@ -154,12 +154,11 @@ void PageLoadMetricsForwardObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const mojom::CpuTiming& timing) {}
 
+// OnUserInput is always dispatched only to the primary page.
 void PageLoadMetricsForwardObserver::OnUserInput(
     const blink::WebInputEvent& event,
     const mojom::PageLoadTiming& timing) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnUserInput(event, timing);
+  NOTREACHED();
 }
 
 // Following events should be ignored as they are controlled at
