@@ -7,8 +7,6 @@ Inspector issue: {
                 affectedFrame : {
                     frameId : <string>
                 }
-                deprecationType : 
-                message : 
                 sourceCodeLocation : {
                     columnNumber : 24
                     lineNumber : 0

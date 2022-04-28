@@ -1536,7 +1536,7 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           break;
       }
       if (feature != WebFeature::kNumberOfFeatures) {
-        if (!Deprecation::DeprecationMessage(feature).IsEmpty()) {
+        if (Deprecation::IsDeprecated(feature)) {
           context_->CountDeprecation(feature);
         } else {
           context_->Count(feature);

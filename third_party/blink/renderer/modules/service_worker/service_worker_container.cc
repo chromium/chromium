@@ -573,7 +573,7 @@ void ServiceWorkerContainer::ReceiveMessage(WebServiceWorkerObjectInfo source,
 void ServiceWorkerContainer::CountFeature(mojom::WebFeature feature) {
   if (!GetExecutionContext())
     return;
-  if (Deprecation::DeprecationMessage(feature).IsEmpty())
+  if (!Deprecation::IsDeprecated(feature))
     UseCounter::Count(GetExecutionContext(), feature);
   else
     Deprecation::CountDeprecation(GetExecutionContext(), feature);

@@ -44,7 +44,7 @@ class CORE_EXPORT Deprecation final {
   // have script access into the top level window.
   static void CountDeprecationCrossOriginIframe(LocalDOMWindow*, WebFeature);
 
-  static String DeprecationMessage(WebFeature);
+  static bool IsDeprecated(WebFeature feature);
 
  private:
   void SetReported(WebFeature feature);

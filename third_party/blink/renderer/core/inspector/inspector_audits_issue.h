@@ -67,6 +67,7 @@ enum class DeprecationIssueType {
   kMediaSourceAbortRemove,
   kMediaSourceDurationTruncatingBuffered,
   kNoSysexWebMIDIWithoutPermission,
+  kNotDeprecated,
   kNotificationInsecureOrigin,
   kNotificationPermissionRequestedIframe,
   kObsoleteWebRtcCipherSuite,
@@ -94,7 +95,6 @@ enum class DeprecationIssueType {
   kSelectionAddRangeIntersect,
   kSharedArrayBufferConstructedWithoutIsolation,
   kTextToSpeech_DisallowedByAutoplay,
-  kUntranslated,
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation,
   kWebCodecsVideoFrameDefaultTimestamp,
   kXHRJSONEncodingDetection,
@@ -201,11 +201,8 @@ class CORE_EXPORT AuditsIssue {
   // Reports a Deprecation issue to DevTools.
   // `execution_context` is used to extract the affected frame and source.
   // `type` is the enum used to differentiate messages.
-  // `legacy_message` and `legacy_type` are for untranslated deprecations.
   static void ReportDeprecationIssue(ExecutionContext* execution_context,
-                                     DeprecationIssueType type,
-                                     const String& legacy_message,
-                                     const String& legacy_type);
+                                     DeprecationIssueType type);
 
   static void ReportClientHintIssue(LocalDOMWindow* local_dom_window,
                                     ClientHintIssueReason reason);
