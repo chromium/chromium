@@ -29,7 +29,6 @@ chromevox_modules = [
   "../common/string_util.js",
   "../common/tree_walker.js",
   "background/automation_object_constructor_installer.js",
-  "background/braille/bluetooth_braille_display_manager.js",
   "background/braille/braille_key_types.js",
   "background/braille/cursor_dots.js",
   "background/braille/liblouis.js",
@@ -69,6 +68,7 @@ chromevox_modules = [
   "injected/extension_bridge.js",
   "injected/loader.js",
   "injected/script_installer.js",
+  "options/bluetooth_braille_display_manager.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
   "third_party/tamachiyomi/ja_phonetic_map.js",
 ]
@@ -407,7 +407,7 @@ if (is_chromeos_ash) {
   # renderer.
   js2gtest("chromevox_webui_js_tests") {
     test_type = "webui"
-    sources = [ "background/braille/bluetooth_braille_display_manager_test.js" ]
+    sources = [ "options/bluetooth_braille_display_manager_test.js" ]
     gen_include_files = [
       "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
