@@ -85,16 +85,6 @@ TEST_F(
 
 // Times out on Mac. See https://crbug.com/1060981.
 GEN('#if BUILDFLAG(IS_MAC)');
-GEN('#define MAYBE_SettingsUIAdvanced DISABLED_SettingsUIAdvanced');
-GEN('#else');
-GEN('#define MAYBE_SettingsUIAdvanced SettingsUIAdvanced');
-GEN('#endif');
-TEST_F('SettingsUIInteractiveTest', 'MAYBE_SettingsUIAdvanced', function() {
-  runMochaSuite('SettingsUIAdvanced');
-});
-
-// Times out on Mac. See https://crbug.com/1060981.
-GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_SettingsUISearch DISABLED_SettingsUISearch');
 GEN('#else');
 GEN('#define MAYBE_SettingsUISearch SettingsUISearch');

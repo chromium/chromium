@@ -10,7 +10,7 @@
         -webkit-tap-highlight-color: transparent;
       }
 
-      #topMenu {
+      #menu {
         color: var(--settings-nav-item-color);
         display: flex;
         flex-direction: column;
@@ -22,39 +22,13 @@
         color: var(--cr-nav-menu-item-color);
       }
 
-      #advancedButton {
-        --ink-color: var(--settings-nav-item-color);
-        background: none;
-        border: none;
-        box-shadow: none;
-        color: var(--settings-nav-item-color);
-        height: unset;
-        margin-top: 8px;
-        padding-inline-end: 0;
-        text-transform: none;
-      }
-
-      #advancedButton:focus {
-        outline: none;
-      }
-
-      :host-context(.focus-outline-visible) #advancedButton:focus {
-        outline: auto 5px -webkit-focus-ring-color;
-      }
-
-      #advancedButton > span,
-      #extensionsLink > span {
-        flex: 1;
-      }
-
-      #advancedButton > iron-icon,
       #extensionsLink > .cr-icon {
         height: var(--cr-icon-size);
         margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
         width: var(--cr-icon-size);
       }
 
-      #menuSeparator {
+      .menu-separator {
         /* Per bettes@, this is different from the other separator lines. */
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         margin-bottom: 8px;
@@ -73,7 +47,7 @@
       }
 
       @media (prefers-color-scheme: dark) {
-        #menuSeparator {
+        .menu-separator {
           border-bottom: var(--cr-separator-line);  /* override */
         }
       }
@@ -81,7 +55,7 @@
 
     <div role="navigation">
       <cr-menu-selector>
-        <iron-selector id="topMenu" selectable="a:not(#extensionsLink)"
+        <iron-selector id="menu" selectable="a:not(#extensionsLink)"
             attr-for-selected="href" on-iron-activate="onSelectorActivate_"
             on-click="onLinkClick_" selected-attribute="selected">
           <a role="menuitem"
@@ -133,57 +107,36 @@
             $i18n{onStartup}
             <paper-ripple></paper-ripple>
           </a>
-          <cr-button
-              role="menuitem" tabindex="-1"
-              id="advancedButton"
-              class="cr-nav-menu-item"
-              aria-expanded$="[[boolToString_(advancedOpened)]]"
-              on-click="onAdvancedButtonToggle_"
-              hidden="[[!pageVisibility.advancedSettings]]">
-            <span>$i18n{advancedPageTitle}</span>
-            <iron-icon icon="[[arrowState_(advancedOpened)]]">
-            </iron-icon></cr-button>
-          <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]"
-              hidden="[[!pageVisibility.advancedSettings]]">
-            <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
-                role="navigation" on-click="onLinkClick_"
-                selected-attribute="selected">
-              <a role="menuitem" href="/languages"
-                  disabled$="[[!advancedOpened]]" class="cr-nav-menu-item">
-                <iron-icon icon="settings:language"></iron-icon>
-                $i18n{languagesPageTitle}
-                <paper-ripple></paper-ripple>
-              </a>
-              <a role="menuitem" href="/downloads"
-                  disabled$="[[!advancedOpened]]" class="cr-nav-menu-item">
-                <iron-icon icon="cr:file-download"></iron-icon>
-                $i18n{downloadsPageTitle}
-                <paper-ripple></paper-ripple>
-              </a>
-              <a role="menuitem" href="/accessibility" class="cr-nav-menu-item"
-                disabled$="[[!advancedOpened]]">
-                <iron-icon icon="settings:accessibility"></iron-icon>
-                $i18n{a11yPageTitle}
-                <paper-ripple></paper-ripple>
-              </a>
+          <div class="menu-separator"></div>
+          <a role="menuitem" href="/languages" class="cr-nav-menu-item">
+            <iron-icon icon="settings:language"></iron-icon>
+            $i18n{languagesPageTitle}
+            <paper-ripple></paper-ripple>
+          </a>
+          <a role="menuitem" href="/downloads" class="cr-nav-menu-item">
+            <iron-icon icon="cr:file-download"></iron-icon>
+            $i18n{downloadsPageTitle}
+            <paper-ripple></paper-ripple>
+          </a>
+          <a role="menuitem" href="/accessibility" class="cr-nav-menu-item">
+            <iron-icon icon="settings:accessibility"></iron-icon>
+            $i18n{a11yPageTitle}
+            <paper-ripple></paper-ripple>
+          </a>
     <if expr="not chromeos_ash">
-              <a role="menuitem" href="/system" class="cr-nav-menu-item"
-                  disabled$="[[!advancedOpened]]">
-                <iron-icon icon="settings:build"></iron-icon>
-                $i18n{systemPageTitle}
-                <paper-ripple></paper-ripple>
-              </a>
+          <a role="menuitem" href="/system" class="cr-nav-menu-item">
+            <iron-icon icon="settings:build"></iron-icon>
+            $i18n{systemPageTitle}
+            <paper-ripple></paper-ripple>
+          </a>
     </if>
-              <a role="menuitem" id="reset" href="/reset"
-                  disabled$="[[!advancedOpened]]"
-                  hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
-                <iron-icon icon="settings:restore"></iron-icon>
-                $i18n{resetPageTitle}
-                <paper-ripple></paper-ripple>
-              </a>
-            </iron-selector>
-          </iron-collapse>
-          <div id="menuSeparator"></div>
+          <a role="menuitem" id="reset" href="/reset"
+              hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
+            <iron-icon icon="settings:restore"></iron-icon>
+            $i18n{resetPageTitle}
+            <paper-ripple></paper-ripple>
+          </a>
+          <div class="menu-separator"></div>
           <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
               href="chrome://extensions" target="_blank"
               hidden="[[!pageVisibility.extensions]]"

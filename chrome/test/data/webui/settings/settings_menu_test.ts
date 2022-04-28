@@ -7,7 +7,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
@@ -23,49 +23,6 @@ suite('SettingsMenu', function() {
 
   teardown(function() {
     settingsMenu.remove();
-  });
-
-  test('advancedOpenedBinding', function() {
-    assertFalse(settingsMenu.advancedOpened);
-    settingsMenu.advancedOpened = true;
-    flush();
-    assertTrue(settingsMenu.$.advancedSubmenu.opened);
-
-    settingsMenu.advancedOpened = false;
-    flush();
-    assertFalse(settingsMenu.$.advancedSubmenu.opened);
-  });
-
-  test('tapAdvanced', function() {
-    assertFalse(settingsMenu.advancedOpened);
-
-    const advancedToggle = settingsMenu.$.advancedButton;
-    assertTrue(!!advancedToggle);
-
-    advancedToggle.click();
-    flush();
-    assertTrue(settingsMenu.$.advancedSubmenu.opened);
-
-    advancedToggle.click();
-    flush();
-    assertFalse(settingsMenu.$.advancedSubmenu.opened);
-  });
-
-  test('upAndDownIcons', function() {
-    // There should be different icons for a top level menu being open
-    // vs. being closed. E.g. arrow-drop-up and arrow-drop-down.
-    const ironIconElement =
-        settingsMenu.$.advancedButton.querySelector('iron-icon');
-    assertTrue(!!ironIconElement);
-
-    settingsMenu.advancedOpened = true;
-    flush();
-    const openIcon = ironIconElement!.icon;
-    assertTrue(!!openIcon);
-
-    settingsMenu.advancedOpened = false;
-    flush();
-    assertNotEquals(openIcon, ironIconElement!.icon);
   });
 
   // Test that navigating via the paper menu always clears the current
@@ -103,13 +60,13 @@ suite('SettingsMenuReset', function() {
   });
 
   test('openResetSection', function() {
-    const selector = settingsMenu.$.subMenu;
+    const selector = settingsMenu.$.menu;
     const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
   });
 
   test('navigateToAnotherSection', function() {
-    const selector = settingsMenu.$.subMenu;
+    const selector = settingsMenu.$.menu;
     let path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
@@ -121,7 +78,7 @@ suite('SettingsMenuReset', function() {
   });
 
   test('navigateToBasic', function() {
-    const selector = settingsMenu.$.subMenu;
+    const selector = settingsMenu.$.menu;
     const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
@@ -143,8 +100,6 @@ suite('SettingsMenuReset', function() {
           expectedHidden,
           settingsMenu.shadowRoot!.querySelector<HTMLElement>(
                                       '#onStartup')!.hidden);
-      assertEquals(expectedHidden, settingsMenu.$.advancedButton.hidden);
-      assertEquals(expectedHidden, settingsMenu.$.advancedSubmenu.hidden);
       assertEquals(
           expectedHidden,
           settingsMenu.shadowRoot!.querySelector<HTMLElement>(

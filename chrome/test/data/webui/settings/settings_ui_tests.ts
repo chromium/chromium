@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsMenuElement, SettingsUiElement} from 'chrome://settings/settings.js';
+import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsUiElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -69,74 +69,6 @@ suite('SettingsUIToolbarAndDrawer', function() {
     flush();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
-  });
-});
-
-suite('SettingsUIAdvanced', function() {
-  let ui: SettingsUiElement;
-
-  setup(function() {
-    document.body.innerHTML = '';
-    ui = document.createElement('settings-ui');
-    document.body.appendChild(ui);
-    return CrSettingsPrefs.initialized.then(() => flush());
-  });
-
-  test('advanced UIs stay in sync', function() {
-    const main = ui.$.main;
-    const floatingMenu = ui.shadowRoot!.querySelector<SettingsMenuElement>(
-        '#left settings-menu');
-    assertTrue(!!main);
-    assertTrue(!!floatingMenu);
-
-    assertFalse(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
-    assertFalse(ui.getAdvancedOpenedInMainForTest());
-    assertFalse(ui.getAdvancedOpenedInMenuForTest());
-    assertFalse(floatingMenu!.advancedOpened);
-    assertFalse(main.advancedToggleExpanded);
-
-    main.advancedToggleExpanded = true;
-    flush();
-
-    assertFalse(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
-    assertTrue(ui.getAdvancedOpenedInMainForTest());
-    assertTrue(ui.getAdvancedOpenedInMenuForTest());
-    assertTrue(floatingMenu!.advancedOpened);
-    assertTrue(main.advancedToggleExpanded);
-
-    ui.$.drawerTemplate.if = true;
-    flush();
-
-    const drawerMenu = ui.$.drawer.querySelector('settings-menu');
-    assertTrue(!!drawerMenu);
-    assertTrue(floatingMenu!.advancedOpened);
-    assertTrue(drawerMenu!.advancedOpened);
-
-    // Collapse 'Advanced' in the menu
-    drawerMenu!.shadowRoot!.querySelector<HTMLElement>(
-                               '#advancedButton')!.click();
-    flush();
-
-    // Collapsing it in the menu should not collapse it in the main area
-    assertFalse(drawerMenu!.advancedOpened);
-    assertFalse(floatingMenu!.advancedOpened);
-    assertFalse(ui.getAdvancedOpenedInMenuForTest());
-    assertTrue(main.advancedToggleExpanded);
-    assertTrue(ui.getAdvancedOpenedInMainForTest());
-
-    // Expand both 'Advanced's again
-    drawerMenu!.shadowRoot!.querySelector<HTMLElement>(
-                               '#advancedButton')!.click();
-
-    // Collapse 'Advanced' in the main area
-    main.advancedToggleExpanded = false;
-    flush();
-
-    // Collapsing it in the main area should not collapse it in the menu
-    assertFalse(ui.getAdvancedOpenedInMainForTest());
-    assertTrue(drawerMenu!.advancedOpened);
-    assertTrue(floatingMenu!.advancedOpened);
-    assertTrue(ui.getAdvancedOpenedInMenuForTest());
   });
 });
 
