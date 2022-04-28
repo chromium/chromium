@@ -2361,7 +2361,8 @@ void Element::UpdatePopupAttribute(String value) {
     if (PopupType() == type)
       return;
     // If the popup type is changing, hide it.
-    hidePopup();
+    if (popupOpen())
+      hidePopup(ASSERT_NO_EXCEPTION);
   }
   if (type == PopupValueType::kNone) {
     if (HasValidPopupAttribute()) {
@@ -2400,10 +2401,18 @@ bool Element::popupOpen() const {
   return false;
 }
 
-void Element::showPopup() {
+void Element::showPopup(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!HasValidPopupAttribute() || popupOpen() || !isConnected())
-    return;
+  if (!HasValidPopupAttribute()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Not supported on elements that do not have a valid value for the "
+        "'popup' attribute");
+  } else if (popupOpen() || !isConnected()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid on already-showing or disconnected popup elements");
+  }
   if (PopupType() == PopupValueType::kPopup ||
       PopupType() == PopupValueType::kHint) {
     if (GetDocument().HintShowing()) {
@@ -2428,10 +2437,18 @@ void Element::showPopup() {
   GetDocument().EnqueueAnimationFrameEvent(event);
 }
 
-void Element::hidePopup() {
+void Element::hidePopup(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!HasValidPopupAttribute() || !popupOpen())
-    return;
+  if (!HasValidPopupAttribute()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Not supported on elements that do not have a valid value for the "
+        "'popup' attribute");
+  } else if (!popupOpen()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid on already-hidden popup elements");
+  }
   DCHECK(isConnected());
   GetPopupData()->setOpen(false);
   GetPopupData()->setInvoker(nullptr);
@@ -2653,7 +2670,7 @@ void Element::InvokePopup(Element* invoker) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   DCHECK(HasValidPopupAttribute());
   GetPopupData()->setInvoker(invoker);
-  showPopup();
+  showPopup(ASSERT_NO_EXCEPTION);
 }
 
 Element* Element::anchorElement() const {
@@ -2990,7 +3007,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
                          if (popup && popup->isConnected() &&
                              (popup->PopupType() == PopupValueType::kAsync ||
                               !popup->GetDocument().PopupOrHintShowing())) {
-                           popup->showPopup();
+                           popup->showPopup(ASSERT_NO_EXCEPTION);
                          }
                        },
                        WrapWeakPersistent(this)));

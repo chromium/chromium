@@ -111,7 +111,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     if (Element* popupElement = togglePopupElement()) {
       if (popupElement->popupOpen()) {
-        popupElement->hidePopup();
+        popupElement->hidePopup(ASSERT_NO_EXCEPTION);
       } else {
         popupElement->InvokePopup(this);
       }

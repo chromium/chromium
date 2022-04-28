@@ -107,7 +107,8 @@
     assert_equals(popup1HideCount,p1HideCount,'popup1');
     assert_equals(popup2HideCount,p2HideCount,'popup2');
     popup1.hidePopup();
-    popup2.hidePopup();
+    assert_false(popup1.matches(':popup-open'));
+    assert_false(popup2.matches(':popup-open'));
   },'Clicking inside a child popup shouldn\'t close either popup');
 
   promise_test(async () => {

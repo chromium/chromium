@@ -33,15 +33,21 @@
     assert_false(popupVisible(popup, /*isPopup*/true));
     popup.showPopup();
     assert_true(popupVisible(popup, /*isPopup*/true));
+    assert_throws_dom("InvalidStateError",() => popup.showPopup(),'Calling showPopup on a showing popup should throw InvalidStateError');
     popup.hidePopup();
     assert_false(popupVisible(popup, /*isPopup*/true));
+    assert_throws_dom("InvalidStateError",() => popup.hidePopup(),'Calling hidePopup on a hidden popup should throw InvalidStateError');
+    const parent = popup.parentElement;
+    popup.remove();
+    assert_throws_dom("InvalidStateError",() => popup.showPopup(),'Calling showPopup on a disconnected popup should throw InvalidStateError');
+    parent.appendChild(popup);
   }
   function assertNotAPopup(nonPopup) {
     // Non-popup elements should already be visible.
     assert_true(popupVisible(nonPopup, /*isPopup*/false));
-    nonPopup.showPopup(); // Should do nothing
+    assert_throws_dom("NotSupportedError",() => nonPopup.showPopup(),'Calling showPopup on a non-popup should throw NotSupportedError');
     assert_true(popupVisible(nonPopup, /*isPopup*/false));
-    nonPopup.hidePopup(); // Should also do nothing
+    assert_throws_dom("NotSupportedError",() => nonPopup.hidePopup(),'Calling hidePopup on a non-popup should throw NotSupportedError');
     assert_true(popupVisible(nonPopup, /*isPopup*/false));
   }
 

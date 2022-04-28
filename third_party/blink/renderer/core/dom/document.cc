@@ -7173,14 +7173,14 @@ void Document::HideTopmostPopupOrHint() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (popup_and_hint_stack_.IsEmpty())
     return;
-  popup_and_hint_stack_.back()->hidePopup();
+  popup_and_hint_stack_.back()->hidePopup(ASSERT_NO_EXCEPTION);
 }
 
 void Document::HideAllPopupsUntil(const Element* endpoint) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   while (!popup_and_hint_stack_.IsEmpty() &&
          popup_and_hint_stack_.back() != endpoint) {
-    popup_and_hint_stack_.back()->hidePopup();
+    popup_and_hint_stack_.back()->hidePopup(ASSERT_NO_EXCEPTION);
   }
 }
 
@@ -7190,7 +7190,7 @@ void Document::HidePopupIfShowing(Element* popup) {
   if (!popup->popupOpen())
     return;
   if (popup->PopupType() == PopupValueType::kAsync) {
-    popup->hidePopup();
+    popup->hidePopup(ASSERT_NO_EXCEPTION);
   } else {
     HideAllPopupsUntil(popup);
     DCHECK(!popup_and_hint_stack_.IsEmpty() &&

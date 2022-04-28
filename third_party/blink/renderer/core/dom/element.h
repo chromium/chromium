@@ -543,8 +543,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   PopupData* GetPopupData() const;
   PopupValueType PopupType() const;
   bool popupOpen() const;
-  void showPopup();
-  void hidePopup();
+  void showPopup(ExceptionState& exception_state);
+  void hidePopup(ExceptionState& exception_state);
   static const Element* NearestOpenAncestralPopup(Node* start_node);
   static void HandlePopupLightDismiss(const Event& event);
   void InvokePopup(Element* invoker);
