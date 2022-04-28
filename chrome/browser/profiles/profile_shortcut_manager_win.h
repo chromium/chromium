@@ -86,7 +86,9 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
     UPDATE_NON_PROFILE_SHORTCUTS,
   };
 
-  static void DisableUnpinningForUnitTests();
+  // Unit tests can't launch other processes.
+  static void DisableUnpinningForTests();
+  static void DisableOutOfProcessShortcutOpsForTests();
 
   explicit ProfileShortcutManagerWin(ProfileManager* manager);
   ProfileShortcutManagerWin(const ProfileShortcutManagerWin&) = delete;

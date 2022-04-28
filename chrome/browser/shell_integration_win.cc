@@ -585,6 +585,109 @@ void UnpinShortcutsHelper::OnUnpinShortcutResult() {
   delete this;
 }
 
+// Helper class to create or update desktop shortcuts Hides the complexity of
+// managing the lifetime of the connection to the Windows utility service.
+class CreateOrUpdateShortcutsHelper {
+ public:
+  CreateOrUpdateShortcutsHelper(const CreateOrUpdateShortcutsHelper&) = delete;
+  CreateOrUpdateShortcutsHelper& operator=(
+      const CreateOrUpdateShortcutsHelper&) = delete;
+
+  static void DoCreateOrUpdateShortcuts(
+      const std::vector<base::FilePath>& shortcuts,
+      const std::vector<base::win::ShortcutProperties>& properties,
+      base::win::ShortcutOperation operation,
+      win::CreateOrUpdateShortcutsResultCallback);
+
+ private:
+  // Possible results of DoCreateOrUpdateShortcuts().
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. These correspond to
+  // CreateOrUpdateShortcutsResult in enums.xml.
+  enum class CreateOrUpdateShortcutsResult {
+    kSuccess = 0,
+    kErrorProcessDisconnected = 1,
+    kErrorShortcutOperationFailed = 2,
+    kMaxValue = kErrorShortcutOperationFailed
+  };
+
+  static void RecordCreateOrUpdateShortcutsResult(
+      CreateOrUpdateShortcutsResult result);
+
+  CreateOrUpdateShortcutsHelper(
+      const std::vector<base::FilePath>& shortcuts,
+      const std::vector<base::win::ShortcutProperties>& properties,
+      base::win::ShortcutOperation operation,
+      win::CreateOrUpdateShortcutsResultCallback completion_callback);
+
+  void OnConnectionError();
+  void OnCreateOrUpdateShortcutResult(bool succeeded);
+
+  mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
+
+  win::CreateOrUpdateShortcutsResultCallback completion_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// static
+void CreateOrUpdateShortcutsHelper::RecordCreateOrUpdateShortcutsResult(
+    CreateOrUpdateShortcutsResult result) {
+  base::UmaHistogramEnumeration("Windows.CreateOrUpdateShortcuts.Result",
+                                result);
+}
+
+// static
+void CreateOrUpdateShortcutsHelper::DoCreateOrUpdateShortcuts(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback completion_callback) {
+  // Self-deleting when the ShellHandler completes.
+  new CreateOrUpdateShortcutsHelper(shortcuts, properties, operation,
+                                    std::move(completion_callback));
+}
+
+CreateOrUpdateShortcutsHelper::CreateOrUpdateShortcutsHelper(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback completion_callback)
+    : remote_util_win_(LaunchUtilWinServiceInstance()),
+      completion_callback_(std::move(completion_callback)) {
+  DCHECK(completion_callback_);
+
+  // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
+  // before |this|, therefore making base::Unretained() safe to use.
+  remote_util_win_.set_disconnect_handler(
+      base::BindOnce(&CreateOrUpdateShortcutsHelper::OnConnectionError,
+                     base::Unretained(this)));
+  remote_util_win_->CreateOrUpdateShortcuts(
+      shortcuts, properties, operation,
+      base::BindOnce(
+          &CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult,
+          base::Unretained(this)));
+}
+
+void CreateOrUpdateShortcutsHelper::OnConnectionError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordCreateOrUpdateShortcutsResult(
+      CreateOrUpdateShortcutsResult::kErrorProcessDisconnected);
+  std::move(completion_callback_).Run(false);
+  delete this;
+}
+
+void CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult(
+    bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RecordCreateOrUpdateShortcutsResult(
+      succeeded ? CreateOrUpdateShortcutsResult::kSuccess
+                : CreateOrUpdateShortcutsResult::kErrorShortcutOperationFailed);
+  std::move(completion_callback_).Run(succeeded);
+  delete this;
+}
+
 void MigrateChromeAndChromeProxyShortcuts(
     const base::FilePath& chrome_exe,
     const base::FilePath& chrome_proxy_path,
@@ -812,6 +915,15 @@ std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path) {
 void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
                     base::OnceClosure completion_callback) {
   UnpinShortcutsHelper::DoUnpin(shortcuts, std::move(completion_callback));
+}
+
+void CreateOrUpdateShortcuts(
+    const std::vector<base::FilePath>& shortcuts,
+    const std::vector<base::win::ShortcutProperties>& properties,
+    base::win::ShortcutOperation operation,
+    win::CreateOrUpdateShortcutsResultCallback callback) {
+  CreateOrUpdateShortcutsHelper::DoCreateOrUpdateShortcuts(
+      shortcuts, properties, operation, std::move(callback));
 }
 
 void MigrateTaskbarPins(base::OnceClosure completion_callback) {

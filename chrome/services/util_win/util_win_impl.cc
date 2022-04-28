@@ -252,15 +252,20 @@ void UtilWinImpl::UnpinShortcuts(
   std::move(callback).Run();
 }
 
-void UtilWinImpl::CreateOrUpdateShortcutLinks(
+void UtilWinImpl::CreateOrUpdateShortcuts(
     const std::vector<base::FilePath>& shortcut_paths,
-    const base::win::ShortcutProperties& properties,
+    const std::vector<base::win::ShortcutProperties>& properties,
     base::win::ShortcutOperation operation,
-    CreateOrUpdateShortcutLinksCallback callback) {
+    CreateOrUpdateShortcutsCallback callback) {
+  base::win::ScopedCOMInitializer com_initializer;
+  if (!com_initializer.Succeeded()) {
+    std::move(callback).Run(false);
+    return;
+  }
   bool ret = true;
-  for (const auto& shortcut_path : shortcut_paths) {
-    ret &= base::win::CreateOrUpdateShortcutLink(shortcut_path, properties,
-                                                 operation);
+  for (size_t i = 0; i < shortcut_paths.size(); ++i) {
+    ret &= base::win::CreateOrUpdateShortcutLink(shortcut_paths[i],
+                                                 properties[i], operation);
   }
   std::move(callback).Run(ret);
 }

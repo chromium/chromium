@@ -149,8 +149,8 @@ interface UtilWin {
 
   // Creates or updates shortcuts. Returns true if all operations succeeded,
   // false if any failed.
-  CreateOrUpdateShortcutLinks(array<mojo_base.mojom.FilePath> shortcut_paths,
-                                ShortcutProperties properties,
+  CreateOrUpdateShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths,
+                              array<ShortcutProperties> properties,
                                 ShortcutOperation operation) =>
       (bool succeeded);
 

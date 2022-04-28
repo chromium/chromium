@@ -80,6 +80,7 @@ const int kCurrentProfileIconVersion = 9;
 
 bool disabled_for_unit_tests = false;
 bool disable_unpinning_for_unit_tests = false;
+bool disable_oop_shortcut_update_or_create_for_unit_tests = false;
 
 // Updates the preferences with the current icon version on icon creation
 // success.
@@ -499,11 +500,34 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
     operation = ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL;
   }
 
+  // `shortcut_operation` will be the same for each shortcut.
+  base::win::ShortcutOperation shortcut_operation;
+  std::vector<base::win::ShortcutProperties> shortcuts_properties;
+  std::vector<base::FilePath> shortcuts_to_create_or_update;
   for (const auto& shortcut : shortcuts) {
     const base::FilePath shortcut_name = shortcut.BaseName().RemoveExtension();
     properties.set_shortcut_name(shortcut_name.value());
-    ShellUtil::CreateOrUpdateShortcut(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                      properties, operation);
+    bool should_install_shortcut;
+    base::win::ShortcutProperties shortcut_properties;
+    base::FilePath shortcut_path;
+    ShellUtil::TranslateShortcutCreationOrUpdateInfo(
+        ShellUtil::SHORTCUT_LOCATION_DESKTOP, properties, operation,
+        shortcut_operation, shortcut_properties, should_install_shortcut,
+        shortcut_path);
+    if (should_install_shortcut) {
+      if (!disable_oop_shortcut_update_or_create_for_unit_tests) {
+        shortcuts_to_create_or_update.push_back(std::move(shortcut_path));
+        shortcuts_properties.push_back(std::move(shortcut_properties));
+      } else {
+        base::win::CreateOrUpdateShortcutLink(
+            shortcut_path, shortcut_properties, shortcut_operation);
+      }
+    }
+  }
+  if (!shortcuts_to_create_or_update.empty()) {
+    shell_integration::win::CreateOrUpdateShortcuts(
+        shortcuts_to_create_or_update, shortcuts_properties, shortcut_operation,
+        base::DoNothing());
   }
 }
 
@@ -849,8 +873,12 @@ ProfileShortcutManagerWin::~ProfileShortcutManagerWin() {
   profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
 }
 
-void ProfileShortcutManagerWin::DisableUnpinningForUnitTests() {
+void ProfileShortcutManagerWin::DisableUnpinningForTests() {
   disable_unpinning_for_unit_tests = true;
+}
+
+void ProfileShortcutManagerWin::DisableOutOfProcessShortcutOpsForTests() {
+  disable_oop_shortcut_update_or_create_for_unit_tests = true;
 }
 
 void ProfileShortcutManagerWin::CreateOrUpdateProfileIcon(
