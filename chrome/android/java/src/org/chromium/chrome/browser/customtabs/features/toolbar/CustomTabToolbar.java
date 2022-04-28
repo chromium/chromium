@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.chromium.base.MathUtils.interpolate;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -25,16 +26,19 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -44,6 +48,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CloseButtonPosition;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -60,6 +65,7 @@ import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -93,6 +99,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageView mIncognitoImageView;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
+    private MenuButton mMenuButton;
     // This View will be non-null only for bottom sheet custom tabs.
     private ImageView mHandleView;
 
@@ -138,6 +145,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private HandleStrategy mHandleStrategy;
+    private @CloseButtonPosition int mCloseButtonPosition;
 
     /**
      * Constructor for getting this class inflated from an xml layout file.
@@ -159,6 +167,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mCloseButton = findViewById(R.id.close_button);
         mCloseButton.setOnLongClickListener(this);
+        mMenuButton = findViewById(R.id.menu_button_wrapper);
 
         mLocationBar.onFinishInflate(this);
     }
@@ -308,6 +317,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.showBranding();
     }
 
+    /**
+     * Sets the close button position for this toolbar.
+     * @param closeButtonPosition The {@link CloseButtonPosition}.
+     */
+    public void setCloseButtonPosition(@CloseButtonPosition int closeButtonPosition) {
+        mCloseButtonPosition = closeButtonPosition;
+    }
+
     private void updateButtonsTint() {
         updateButtonTint(mCloseButton);
         int numCustomActionButtons = mCustomActionButtons.getChildCount();
@@ -324,11 +341,45 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
     }
 
+    private void maybeSwapCloseAndMenuButtons() {
+        if (mCloseButtonPosition != CLOSE_BUTTON_POSITION_END) return;
+
+        final View closeButton = findViewById(R.id.close_button);
+        final int closeButtonIndex = indexOfChild(closeButton);
+        final ViewGroup.LayoutParams closeButtonLayoutParams = closeButton.getLayoutParams();
+        final View menuButton = findViewById(R.id.menu_button_wrapper);
+        final int menuButtonIndex = indexOfChild(menuButton);
+        final ViewGroup.LayoutParams menuButtonLayoutParams = menuButton.getLayoutParams();
+        removeViewAt(menuButtonIndex);
+        addView(menuButton, closeButtonIndex, menuButtonLayoutParams);
+        removeView(closeButton);
+        addView(closeButton, menuButtonIndex, closeButtonLayoutParams);
+    }
+
+    private void maybeAdjustButtonSpacingForCloseButtonPosition() {
+        if (mCloseButtonPosition != CLOSE_BUTTON_POSITION_END) return;
+
+        final @Dimension int buttonWidth =
+                getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        final FrameLayout.LayoutParams menuButtonLayoutParams =
+                (FrameLayout.LayoutParams) mMenuButton.getLayoutParams();
+        menuButtonLayoutParams.width = buttonWidth;
+        menuButtonLayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+        mMenuButton.setLayoutParams(menuButtonLayoutParams);
+        mMenuButton.setPaddingRelative(0, 0, 0, 0);
+
+        ((FrameLayout.LayoutParams) mCloseButton.getLayoutParams()).gravity =
+                Gravity.CENTER_VERTICAL | Gravity.END;
+
+        ((FrameLayout.LayoutParams) mCustomActionButtons.getLayoutParams())
+                .setMarginEnd(buttonWidth);
+    }
+
     private void updateToolbarLayoutMargin() {
         final boolean shouldShowIncognitoIcon = getToolbarDataProvider().isIncognito();
         mIncognitoImageView.setVisibility(shouldShowIncognitoIcon ? VISIBLE : GONE);
 
-        int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
+        int startMargin = calculateStartMarginForStartButtonVisibility();
 
         updateStartMarginOfVisibleElementsUntilLocationBarFrameLayout(startMargin);
 
@@ -341,10 +392,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.updateLeftMarginOfTitleUrlContainer();
     }
 
-    private int calculateStartMarginWhenCloseButtonVisibilityGone() {
-        return (mCloseButton.getVisibility() == GONE) ? getResources().getDimensionPixelSize(
-                       R.dimen.custom_tabs_toolbar_horizontal_margin_no_close)
-                                                      : 0;
+    private int calculateStartMarginForStartButtonVisibility() {
+        final View buttonAtStart =
+                mCloseButtonPosition == CLOSE_BUTTON_POSITION_END ? mMenuButton : mCloseButton;
+        return (buttonAtStart.getVisibility() == GONE) ? getResources().getDimensionPixelSize(
+                       R.dimen.custom_tabs_toolbar_horizontal_margin_no_start)
+                                                       : 0;
     }
 
     private void updateStartMarginOfVisibleElementsUntilLocationBarFrameLayout(int startMargin) {
@@ -497,7 +550,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        maybeSwapCloseAndMenuButtons();
         updateToolbarLayoutMargin();
+        maybeAdjustButtonSpacingForCloseButtonPosition();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

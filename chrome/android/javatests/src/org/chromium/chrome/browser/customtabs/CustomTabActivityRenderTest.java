@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_POSITION;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 
 import android.app.PendingIntent;
@@ -171,6 +173,15 @@ public class CustomTabActivityRenderTest {
         startActivityAndRenderToolbar(
                 "cct_toolbar_with_custom_close_button_and_max_top_action_icon_and_with_https_"
                 + mRunWithHttps);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testCCTToolbarWithEndCloseButton() throws IOException {
+        mIntent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_END);
+
+        startActivityAndRenderToolbar("cct_close_button_end_with_https_" + mRunWithHttps);
     }
 
     @Test

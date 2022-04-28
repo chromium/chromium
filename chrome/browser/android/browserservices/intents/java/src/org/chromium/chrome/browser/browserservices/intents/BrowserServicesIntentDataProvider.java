@@ -57,6 +57,25 @@ public abstract class BrowserServicesIntentDataProvider {
         int V2_NOTIFICATION_OR_SNACKBAR = 1;
     }
 
+    @IntDef({CLOSE_BUTTON_POSITION_DEFAULT, CLOSE_BUTTON_POSITION_START, CLOSE_BUTTON_POSITION_END})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CloseButtonPosition {}
+
+    /** Same as {@link #CLOSE_BUTTON_POSITION_START}. */
+    public static final int CLOSE_BUTTON_POSITION_DEFAULT = 0;
+
+    /** Positions the close button at the start of the toolbar. */
+    public static final int CLOSE_BUTTON_POSITION_START = 1;
+
+    /** Positions the close button at the end of the toolbar. */
+    public static final int CLOSE_BUTTON_POSITION_END = 2;
+
+    /**
+     * Maximum value for the CLOSE_BUTTON_POSITION_* configuration options. For validation purposes
+     * only.
+     */
+    public static final int CLOSE_BUTTON_POSITION_MAX = 2;
+
     /**
      * @return The type of the Activity;
      */
@@ -455,5 +474,12 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public @Px int getInitialActivityHeight() {
         return 0;
+    }
+
+    /**
+     * Returns the {@link CloseButtonPosition}.
+     */
+    public @CloseButtonPosition int getCloseButtonPosition() {
+        return CLOSE_BUTTON_POSITION_DEFAULT;
     }
 }

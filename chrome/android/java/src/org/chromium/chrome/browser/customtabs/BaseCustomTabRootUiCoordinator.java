@@ -161,6 +161,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(coordinator, toolbar);
+        toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
     }
 
     @Override

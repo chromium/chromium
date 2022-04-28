@@ -169,6 +169,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
 
+    /**
+     * Extra that specifies the position of the close button on the toolbar. Default is
+     * {@link #CLOSE_BUTTON_POSITION_DEFAULT}.
+     */
+    public static final String EXTRA_CLOSE_BUTTON_POSITION =
+            "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION";
+
     private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
     private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
     private static final String DEFAULT_POLICY_USE_ALLOWLIST = "use-allowlist";
@@ -849,5 +856,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
         assert false : "We can't get here since the default policy is use denylist.";
         return false;
+    }
+
+    @Override
+    public @CloseButtonPosition int getCloseButtonPosition() {
+        return IntentUtils.safeGetIntExtra(
+                mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
 }
