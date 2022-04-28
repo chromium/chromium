@@ -64,7 +64,14 @@ void InputMethodControllerTest::CreateHTMLWithCompositionInputEventListeners() {
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
   script->setInnerHTML(
       "document.getElementById('sample').addEventListener('beforeinput', "
-      "  event => document.title = `beforeinput.data:${event.data};`);"
+      "event => {"
+      "  document.title = `beforeinput.data:${event.data};`;"
+      "  document.title += 'beforeinput.targetRanges:';"
+      "  const range = event.getTargetRanges()[0];"
+      "  if (range !== undefined) {"
+      "    document.title += `${range.startOffset}-${range.endOffset};`;"
+      "  } else document.title += ';';"
+      "});"
       "document.getElementById('sample').addEventListener('input', "
       "  event => document.title += `input.data:${event.data};`);"
       "document.getElementById('sample').addEventListener('compositionend', "
@@ -1327,12 +1334,16 @@ TEST_F(InputMethodControllerTest, CompositionInputEventForReplace) {
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("hell", ime_text_spans, 4, 4);
-  EXPECT_EQ("beforeinput.data:hell;input.data:hell;", GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:hell;beforeinput.targetRanges:0-0;input.data:hell;",
+      GetDocument().title());
 
   // Replace the existing composition.
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("hello", ime_text_spans, 0, 0);
-  EXPECT_EQ("beforeinput.data:hello;input.data:hello;", GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:hello;beforeinput.targetRanges:0-4;input.data:hello;",
+      GetDocument().title());
 }
 
 TEST_F(InputMethodControllerTest, CompositionInputEventForConfirm) {
@@ -1346,7 +1357,9 @@ TEST_F(InputMethodControllerTest, CompositionInputEventForConfirm) {
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("hello", ime_text_spans, 5, 5);
-  EXPECT_EQ("beforeinput.data:hello;input.data:hello;", GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:hello;beforeinput.targetRanges:0-0;input.data:hello;",
+      GetDocument().title());
 
   // Confirm the ongoing composition.
   GetDocument().setTitle(g_empty_string);
@@ -1365,13 +1378,17 @@ TEST_F(InputMethodControllerTest, CompositionInputEventForDelete) {
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("hello", ime_text_spans, 5, 5);
-  EXPECT_EQ("beforeinput.data:hello;input.data:hello;", GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:hello;beforeinput.targetRanges:0-0;input.data:hello;",
+      GetDocument().title());
 
   // Delete the existing composition.
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("", ime_text_spans, 0, 0);
-  EXPECT_EQ("beforeinput.data:;input.data:null;compositionend.data:;",
-            GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:;beforeinput.targetRanges:0-5;input.data:null;"
+      "compositionend.data:;",
+      GetDocument().title());
 }
 
 TEST_F(InputMethodControllerTest, CompositionInputEventForInsert) {
@@ -1387,18 +1404,22 @@ TEST_F(InputMethodControllerTest, CompositionInputEventForInsert) {
   GetDocument().setTitle(g_empty_string);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().CommitText("hello", ime_text_spans, 0);
-  EXPECT_EQ("beforeinput.data:hello;input.data:hello;", GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:hello;beforeinput.targetRanges:0-0;input.data:hello;",
+      GetDocument().title());
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("n", ime_text_spans, 1, 1);
-  EXPECT_EQ("beforeinput.data:n;input.data:n;", GetDocument().title());
+  EXPECT_EQ("beforeinput.data:n;beforeinput.targetRanges:5-5;input.data:n;",
+            GetDocument().title());
 
   // Insert new text with previous composition.
   GetDocument().setTitle(g_empty_string);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().CommitText("hello", ime_text_spans, 1);
   EXPECT_EQ(
-      "beforeinput.data:hello;input.data:hello;compositionend.data:hello;",
+      "beforeinput.data:hello;beforeinput.targetRanges:5-6;input.data:hello;"
+      "compositionend.data:hello;",
       GetDocument().title());
 }
 
@@ -1419,14 +1440,17 @@ TEST_F(InputMethodControllerTest, CompositionInputEventForInsertEmptyText) {
 
   GetDocument().setTitle(g_empty_string);
   Controller().SetComposition("n", ime_text_spans, 1, 1);
-  EXPECT_EQ("beforeinput.data:n;input.data:n;", GetDocument().title());
+  EXPECT_EQ("beforeinput.data:n;beforeinput.targetRanges:0-0;input.data:n;",
+            GetDocument().title());
 
   // Insert empty text with previous composition.
   GetDocument().setTitle(g_empty_string);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().CommitText("", ime_text_spans, 1);
-  EXPECT_EQ("beforeinput.data:;input.data:null;compositionend.data:;",
-            GetDocument().title());
+  EXPECT_EQ(
+      "beforeinput.data:;beforeinput.targetRanges:0-1;input.data:null;"
+      "compositionend.data:;",
+      GetDocument().title());
 }
 
 TEST_F(InputMethodControllerTest, CompositionEndEventWithNoSelection) {
