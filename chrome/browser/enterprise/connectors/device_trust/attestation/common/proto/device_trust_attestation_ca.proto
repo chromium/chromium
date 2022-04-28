@@ -102,7 +102,11 @@ message KeyInfo {
   // DeviceIdentity policy.
   optional string signing_scheme = 8;
   // Device Trust Signals
-  optional DeviceTrustSignals device_trust_signals = 9;
+  // Deprecated due to signals collection change to store signals in a dictionary
+  // and converting them to a JSON string. Use `device_trust_signals_json` instead.
+  optional DeviceTrustSignals device_trust_signals = 9 [deprecated = true];
+  // Device Trust Signals
+  optional string device_trust_signals_json = 10;
 }
 
 // Device Trust Signals
