@@ -246,14 +246,16 @@ class BLINK_COMMON_EXPORT StorageKey {
   // kCrossSite if any frame in the current frame's ancestor chain is
   // cross-site with the current frame. kSameSite if entire ancestor
   // chain is same-site with the current frame. Used by service workers.
-  blink::mojom::AncestorChainBit ancestor_chain_bit_;
+  blink::mojom::AncestorChainBit ancestor_chain_bit_{
+      blink::mojom::AncestorChainBit::kSameSite};
 
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
   // serialization or comparison, and this information is lost if you convert
   // to a BlinkStorageKey or send it via mojom.
   // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
-  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_;
+  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
+      blink::mojom::AncestorChainBit::kSameSite};
 };
 
 BLINK_COMMON_EXPORT
