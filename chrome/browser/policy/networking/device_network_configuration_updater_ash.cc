@@ -4,8 +4,6 @@
 
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 
-#include <map>
-
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/tpm/install_attributes.h"
@@ -14,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -122,7 +121,7 @@ void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
   // number or Asset ID are empty, the placeholders will be expanded to an empty
   // string. This is to be consistent with user policy identity string
   // expansions.
-  std::map<std::string, std::string> substitutions;
+  base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kDeviceSerialNumber] =
       chromeos::system::StatisticsProvider::GetInstance()
           ->GetEnterpriseMachineID();

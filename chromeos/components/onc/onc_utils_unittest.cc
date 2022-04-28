@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
@@ -63,8 +64,8 @@ namespace {
 const char* kLoginId = "hans";
 const char* kLoginEmail = "hans@my.domain.com";
 
-std::map<std::string, std::string> GetTestStringSubstutions() {
-  std::map<std::string, std::string> substitutions;
+base::flat_map<std::string, std::string> GetTestStringSubstutions() {
+  base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kLoginID] = kLoginId;
   substitutions[::onc::substitutes::kLoginEmail] = kLoginEmail;
   return substitutions;

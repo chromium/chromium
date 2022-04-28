@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_COMPONENTS_ONC_VARIABLE_EXPANDER_H_
 #define CHROMEOS_COMPONENTS_ONC_VARIABLE_EXPANDER_H_
 
-#include <map>
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 
 namespace base {
 class Value;
@@ -30,10 +30,8 @@ namespace chromeos {
 //   // str is now "I run chrome on my chromebook"
 class COMPONENT_EXPORT(CHROMEOS_ONC) VariableExpander {
  public:
-  VariableExpander();
-
   // Takes a map of variables to values.
-  explicit VariableExpander(std::map<std::string, std::string> variables);
+  explicit VariableExpander(base::flat_map<std::string, std::string> variables);
 
   VariableExpander(const VariableExpander&) = delete;
   VariableExpander& operator=(const VariableExpander&) = delete;
@@ -53,7 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) VariableExpander {
 
  private:
   // Maps variable -> value.
-  const std::map<std::string, std::string> variables_;
+  const base::flat_map<std::string, std::string> variables_;
 };
 
 }  // namespace chromeos

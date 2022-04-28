@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -97,9 +98,9 @@ enum class ResolveStatus { kResolving, kResolved };
 
 // Returns substitutions based on |cert|'s contents to be used in a
 // VariableExpander.
-std::map<std::string, std::string> GetSubstitutionsForCert(
+base::flat_map<std::string, std::string> GetSubstitutionsForCert(
     CERTCertificate* cert) {
-  std::map<std::string, std::string> substitutions;
+  base::flat_map<std::string, std::string> substitutions;
 
   {
     std::vector<std::string> names;

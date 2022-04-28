@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -308,7 +309,7 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
   // Set up expansions:
   //   '${LOGIN_ID}'    -> 'user'
   //   '${LOGIN_EMAIL}' -> 'user@EXAMPLE.COM'
-  std::map<std::string, std::string> substitutions;
+  base::flat_map<std::string, std::string> substitutions;
   substitutions[kLoginId] =
       primary_user->GetAccountName(false /* use_display_email */);
   substitutions[kLoginEmail] = primary_user->GetAccountId().GetUserEmail();

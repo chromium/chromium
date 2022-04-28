@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -477,7 +478,7 @@ void ExpandStringPlaceholdersInNetworksForUser(const user_manager::User* user,
 
   // Note: It is OK for the placeholders to be replaced with empty strings if
   // that is what the getters on |user| provide.
-  std::map<std::string, std::string> substitutions;
+  base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kLoginID] = user->GetAccountName(false);
   substitutions[::onc::substitutes::kLoginEmail] =
       user->GetAccountId().GetUserEmail();
