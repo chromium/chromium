@@ -130,6 +130,8 @@ TerminalSource::TerminalSource(Profile* profile,
         ContentSettingsType::SOUND}) {
     webui_allowlist->RegisterAutoGrantedPermission(terminal_origin, permission);
   }
+  webui_allowlist->RegisterAutoGrantedThirdPartyCookies(
+      terminal_origin, {ContentSettingsPattern::Wildcard()});
 }
 
 TerminalSource::~TerminalSource() = default;
