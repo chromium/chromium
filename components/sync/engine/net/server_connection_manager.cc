@@ -151,9 +151,11 @@ void ServerConnectionManager::NotifyStatusChanged() {
 
 HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
+    bool allow_batching,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HttpResponse http_response = PostBuffer(buffer_in, access_token_, buffer_out);
+  HttpResponse http_response =
+      PostBuffer(buffer_in, access_token_, allow_batching, buffer_out);
   SetServerResponse(http_response);
   return http_response;
 }

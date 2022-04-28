@@ -100,6 +100,11 @@ void HttpBridge::SetExtraRequestHeaders(const char* headers) {
   extra_headers_.assign(headers);
 }
 
+void HttpBridge::SetAllowBatching(bool allow_batching) {
+  DCHECK(!fetch_state_.url_loader);
+  allow_batching_ = allow_batching;
+}
+
 void HttpBridge::SetURL(const GURL& url) {
 #if DCHECK_IS_ON()
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -245,8 +250,10 @@ void HttpBridge::MakeAsynchronousPost() {
       std::move(resource_request), traffic_annotation);
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
 
-  if (network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation))
+  if (allow_batching_ &&
+      network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation)) {
     url_loader->SetAllowBatching();
+  }
 
   std::string request_to_send;
   compression::GzipCompress(request_content_, &request_to_send);

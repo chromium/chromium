@@ -31,6 +31,7 @@ class BlockingHttpPost : public HttpPostProvider {
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
+  void SetAllowBatching(bool allow_batching) override {}
   bool MakeSynchronousPost(int* net_error_code,
                            int* http_status_code) override {
     wait_for_abort_.TimedWait(TestTimeouts::action_max_timeout());
@@ -71,7 +72,8 @@ TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
       &signal);
 
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response =
+      server.PostBuffer("", "testauth", /*allow_batching=*/false, &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -85,7 +87,8 @@ TEST(SyncServerConnectionManagerTest, EarlyAbortPost) {
 
   signal.Signal();
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response =
+      server.PostBuffer("", "testauth", /*allow_batching=*/false, &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -105,7 +108,8 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
       TestTimeouts::tiny_timeout());
 
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response =
+      server.PostBuffer("", "testauth", /*allow_batching=*/false, &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
   abort_thread.Stop();
@@ -123,6 +127,7 @@ class FailingHttpPost : public HttpPostProvider {
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
+  void SetAllowBatching(bool allow_batching) override {}
   bool MakeSynchronousPost(int* net_error_code,
                            int* http_status_code) override {
     *net_error_code = net_error_code_;
@@ -168,7 +173,8 @@ TEST(SyncServerConnectionManagerTest, FailPostWithTimedOut) {
       std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
 
   std::string buffer_out;
-  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
+  HttpResponse http_response =
+      server.PostBuffer("", "testauth", /*allow_batching=*/false, &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
