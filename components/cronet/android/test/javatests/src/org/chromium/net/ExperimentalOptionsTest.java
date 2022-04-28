@@ -273,6 +273,7 @@ public class ExperimentalOptionsTest {
         cronetEngine.shutdown();
     }
 
+    @DisabledTest(message = "crbug.com/1320725")
     @Test
     @LargeTest
     @Feature({"Cronet"})
