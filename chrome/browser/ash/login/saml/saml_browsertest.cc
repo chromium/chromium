@@ -1773,41 +1773,29 @@ class SAMLDeviceAttestationEnrolledTest : public SAMLDeviceAttestationTest {
 // Verify that device attestation is not available when
 // DeviceWebBasedAttestationAllowedUrls policy is not set.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationTest, DefaultPolicy) {
-  base::HistogramTester histogram_tester;
-
   // Leave policy unset.
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(kSamlChallengeKeyHandlerResultMetric,
-                                      attestation::TpmChallengeKeyResultCode::
-                                          kDeviceWebBasedAttestationUrlError,
-                                      1);
 }
 
 // Verify that device attestation is not available when
 // DeviceWebBasedAttestationAllowedUrls policy is set to empty list of allowed
 // URLs.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationTest, EmptyPolicy) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({/* empty list */});
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(kSamlChallengeKeyHandlerResultMetric,
-                                      attestation::TpmChallengeKeyResultCode::
-                                          kDeviceWebBasedAttestationUrlError,
-                                      1);
 }
 
 // Verify that device attestation is not available when device is not enterprise
 // enrolled.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationTest, NotEnterpriseEnrolledError) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1818,9 +1806,6 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationTest, NotEnterpriseEnrolledError) {
   }
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kNonEnterpriseDeviceError, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SAMLDeviceAttestationTest, testing::Bool());
@@ -1829,7 +1814,6 @@ INSTANTIATE_TEST_SUITE_P(All, SAMLDeviceAttestationTest, testing::Bool());
 // not enabled.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
                        DeviceAttestationNotEnabledError) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1840,14 +1824,10 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
   }
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kDevicePolicyDisabledError, 1);
 }
 
 // Verify that device attestation works when all policies configured correctly.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, Success) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
@@ -1861,15 +1841,11 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, Success) {
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
       fake_saml_idp()->AssertChallengeResponseMatchesTpmResponse());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kSuccess, 1);
 }
 
 // Verify that device attestation is not available for URLs that are not in the
 // allowed URLs list.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpDomain()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
@@ -1881,16 +1857,11 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
   }
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(kSamlChallengeKeyHandlerResultMetric,
-                                      attestation::TpmChallengeKeyResultCode::
-                                          kDeviceWebBasedAttestationUrlError,
-                                      1);
 }
 
 // Verify that device attestation is available for URLs that match a pattern
 // from allowed URLs list.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"[*.]" + fake_saml_idp()->GetIdpDomain()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
@@ -1904,16 +1875,12 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
       fake_saml_idp()->AssertChallengeResponseMatchesTpmResponse());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kSuccess, 1);
 }
 
 // Verify that device attestation works in case of multiple items in allowed
 // URLs list.
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
                        PolicyTwoEntriesSuccess) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
@@ -1927,13 +1894,9 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest,
   ASSERT_TRUE(fake_saml_idp()->IsLastChallengeResponseExists());
   ASSERT_NO_FATAL_FAILURE(
       fake_saml_idp()->AssertChallengeResponseMatchesTpmResponse());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
-  base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
   settings_provider_->SetBoolean(kDeviceAttestationEnabled, true);
 
@@ -1957,9 +1920,6 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   }
 
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
-  histogram_tester.ExpectUniqueSample(
-      kSamlChallengeKeyHandlerResultMetric,
-      attestation::TpmChallengeKeyResultCode::kTimeoutError, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

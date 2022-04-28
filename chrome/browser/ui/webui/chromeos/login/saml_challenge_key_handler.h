@@ -17,8 +17,6 @@
 
 namespace chromeos {
 
-extern const char kSamlChallengeKeyHandlerResultMetric[];
-
 // This class handles "samlChallengeMachineKey" request for GaiaScreenHandler.
 // It calculates response for a challenge from Verified Access server for remote
 // attestation during SAML authentication.
@@ -71,7 +69,6 @@ class SamlChallengeKeyHandler final {
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace ash {
-using ::chromeos::kSamlChallengeKeyHandlerResultMetric;
 using ::chromeos::SamlChallengeKeyHandler;
 }  // namespace ash
 

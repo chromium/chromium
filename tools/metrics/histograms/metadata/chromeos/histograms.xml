@@ -1364,16 +1364,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records SAML provider when SAML login flow is used.</summary>
 </histogram>
 
-<histogram name="ChromeOS.SAML.SamlChallengeKeyHandlerResult"
-    enum="SamlChallengeKeyHandlerResult" expires_after="2022-02-01">
-  <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
-  <summary>
-    Tracks results of calculating response for a challenge from Verified Access
-    server for remove attestation during SAML authentication.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
     expires_after="2022-09-21">
   <owner>mslus@chromium.org</owner>

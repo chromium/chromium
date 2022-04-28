@@ -80291,35 +80291,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Included under SameSite=Strict"/>
 </enum>
 
-<enum name="SamlChallengeKeyHandlerResult">
-  <summary>
-    Tracks results of calculating response for a challenge from Verified Access
-    server for remove attestation during SAML authentication.
-  </summary>
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kDevicePolicyDisabledError"/>
-  <int value="2" label="kSignChallengeFailedError"/>
-  <int value="3" label="kUserNotManagedError"/>
-  <int value="4" label="kKeyRegistrationFailedError"/>
-  <int value="5" label="kUserKeyNotAvailableError"/>
-  <int value="6" label="kUserPolicyDisabledError"/>
-  <int value="7" label="kNonEnterpriseDeviceError"/>
-  <int value="8" label="kDbusError"/>
-  <int value="9" label="kUserRejectedError"/>
-  <int value="10" label="kGetCertificateFailedError"/>
-  <int value="11" label="kResetRequiredError"/>
-  <int value="12" label="kAttestationUnsupportedError"/>
-  <int value="13" label="kTimeoutError"/>
-  <int value="14" label="kDeviceWebBasedAttestationUrlError"/>
-  <int value="15" label="kExtensionNotWhitelistedError"/>
-  <int value="16" label="kChallengeBadBase64Error"/>
-  <int value="17" label="kDeviceWebBasedAttestationNotOobeError"/>
-  <int value="18" label="kGetPublicKeyFailedError"/>
-  <int value="19" label="kMarkCorporateKeyFailedError"/>
-  <int value="20" label="kAttestationServiceInternalError"/>
-  <int value="21" label="kUploadCertificateFailedError"/>
-</enum>
-
 <enum name="SamlInSessionPasswordChangeEvent">
   <summary>
     Track how often we try to guide users through the in-session flow to change

@@ -17,21 +17,12 @@
 
 namespace chromeos {
 
-const char kSamlChallengeKeyHandlerResultMetric[] =
-    "ChromeOS.SAML.SamlChallengeKeyHandlerResult";
-
 namespace {
 
 const char kSuccessField[] = "success";
 const char kResponseField[] = "response";
 
 const size_t kPatternsSizeWarningLevel = 500;
-
-void RecordChallengeKeyResult(
-    attestation::TpmChallengeKeyResultCode result_code) {
-  base::UmaHistogramEnumeration(kSamlChallengeKeyHandlerResultMetric,
-                                result_code);
-}
 
 // Checks if `url` matches one of the `patterns`.
 bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
@@ -146,8 +137,6 @@ base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {
 
 void SamlChallengeKeyHandler::ReturnResult(
     const attestation::TpmChallengeKeyResult& result) {
-  RecordChallengeKeyResult(result.result_code);
-
   base::Value js_result(base::Value::Type::DICTIONARY);
   if (!result.IsSuccess()) {
     LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
