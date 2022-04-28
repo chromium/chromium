@@ -1854,10 +1854,10 @@ void UnfollowSite(content::WebContents* web_contents) {
   feed::UnfollowSite(web_contents);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void RunScreenAi(Browser* browser) {
   browser->RunScreenAIAnnotator();
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome

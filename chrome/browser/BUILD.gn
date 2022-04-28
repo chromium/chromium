@@ -23,6 +23,7 @@ import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/features.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
@@ -1910,6 +1911,7 @@ static_library("browser") {
     "//components/payments/core:error_strings",
     "//components/policy/proto",
     "//components/safe_browsing:buildflags",
+    "//components/services/screen_ai/buildflags",
     "//components/services/storage/public/mojom",
     "//components/sync",
     "//components/sync_device_info",
@@ -2540,14 +2542,17 @@ static_library("browser") {
       deps += [ "//chromeos/services/libassistant/public/mojom" ]
     }
   }
-  if (is_linux || is_chromeos) {
+  if (enable_screen_ai_service) {
     sources += [
-      "//chrome/browser/accessibility/ax_screen_ai_annotator.cc",
-      "//chrome/browser/accessibility/ax_screen_ai_annotator.h",
+      "accessibility/ax_screen_ai_annotator.cc",
+      "accessibility/ax_screen_ai_annotator.h",
+      "component_updater/screen_ai_component_installer.cc",
+      "component_updater/screen_ai_component_installer.h",
     ]
     deps += [
       "//components/services/screen_ai",
       "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
+      "//components/services/screen_ai/public/cpp:utilities",
     ]
   }
 
@@ -2573,15 +2578,7 @@ static_library("browser") {
     ]
   }
   if (is_linux || is_chromeos) {
-    sources += [
-      "component_updater/screen_ai_component_installer.cc",
-      "component_updater/screen_ai_component_installer.h",
-    ]
-
-    deps += [
-      "//chrome/browser/error_reporting",
-      "//components/services/screen_ai/public/cpp:utilities",
-    ]
+    deps += [ "//chrome/browser/error_reporting" ]
   }
 
   if (use_ozone) {

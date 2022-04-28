@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/assistant/assistant.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
@@ -29,6 +30,7 @@ component("policy") {
     ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/services/screen_ai/buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//sandbox/policy/mojom",
@@ -58,8 +60,6 @@ component("policy") {
       "linux/bpf_print_compositor_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
-      "linux/bpf_screen_ai_policy_linux.cc",
-      "linux/bpf_screen_ai_policy_linux.h",
       "linux/bpf_service_policy_linux.cc",
       "linux/bpf_service_policy_linux.h",
       "linux/bpf_speech_recognition_policy_linux.cc",
@@ -77,6 +77,12 @@ component("policy") {
       sources += [
         "linux/bpf_print_backend_policy_linux.cc",
         "linux/bpf_print_backend_policy_linux.h",
+      ]
+    }
+    if (enable_screen_ai_service) {
+      sources += [
+        "linux/bpf_screen_ai_policy_linux.cc",
+        "linux/bpf_screen_ai_policy_linux.h",
       ]
     }
     configs += [

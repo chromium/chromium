@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/assistant/assistant.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -40,6 +41,7 @@ source_set("utility") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/services/screen_ai/buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",
@@ -122,13 +124,16 @@ source_set("utility") {
 
   if (is_linux || is_chromeos) {
     deps += [
-      "//components/services/screen_ai:screen_ai_sandbox_hook",
       "//content/utility/speech:speech_recognition_sandbox_hook",
       "//services/network:network_sandbox_hook",
     ]
     if (enable_oop_printing) {
       deps += [ "//printing:printing_sandbox_hook" ]
     }
+  }
+
+  if (enable_screen_ai_service) {
+    deps += [ "//components/services/screen_ai:screen_ai_sandbox_hook" ]
   }
 
   if (enable_vr && !is_android) {

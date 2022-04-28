@@ -38,6 +38,7 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -90,9 +91,9 @@
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -214,9 +215,9 @@ void RegisterComponentsForUpdate() {
 
   RegisterClientSidePhishingComponent(cus);
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   RegisterScreenAIComponent(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   RegisterUrlParamClassificationComponent(cus);
 }

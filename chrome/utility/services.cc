@@ -17,6 +17,7 @@
 #include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
@@ -28,8 +29,8 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/services/screen_ai/screen_ai_service_impl.h"
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -215,7 +216,7 @@ auto RunSpeechRecognitionService(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 auto RunScreenAIService(
     mojo::PendingReceiver<screen_ai::mojom::ScreenAIService> receiver) {
   return std::make_unique<screen_ai::ScreenAIService>(std::move(receiver));
@@ -382,7 +383,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunSpeechRecognitionService);
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsScreenAIEnabled())
     services.Add(RunScreenAIService);
 #endif

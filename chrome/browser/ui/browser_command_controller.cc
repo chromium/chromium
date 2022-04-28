@@ -55,6 +55,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -71,7 +72,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
@@ -926,7 +927,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ExecuteUIDebugCommand(id, browser_);
       break;
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case IDC_RUN_SCREEN_AI:
       RunScreenAi(browser_);
       break;
@@ -1474,7 +1475,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   command_updater_.UpdateCommandEnabled(IDC_RUN_SCREEN_AI,
                                         features::IsScreenAIEnabled());
 #endif

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromeos/assistant/assistant.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -22,15 +23,15 @@ mojom("mojom") {
     enabled_features += [ "enable_plugins" ]
   }
   if (is_linux || is_chromeos) {
-    enabled_features += [
-      "has_zygote",
-      "is_linux_or_chromeos",
-    ]
+    enabled_features += [ "has_zygote" ]
   }
   if (is_linux || is_chromeos_ash) {
     enabled_features += [ "is_linux_or_chromeos_ash" ]
   }
   if (enable_cros_libassistant) {
     enabled_features += [ "enable_cros_libassistant" ]
+  }
+  if (enable_screen_ai_service) {
+    enabled_features += [ "enable_screen_ai_service" ]
   }
 }

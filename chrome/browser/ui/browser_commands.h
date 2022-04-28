@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -251,10 +252,10 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
 void FollowSite(content::WebContents* web_contents);
 void UnfollowSite(content::WebContents* web_contents);
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // Triggers the Screen AI to be run once on the |browser|.
 void RunScreenAi(Browser* browser);
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome
 

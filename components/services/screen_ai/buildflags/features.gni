@@ -1,0 +1,11 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Screen AI service is still not supported on other platforms.
+  enable_screen_ai_service = is_linux || is_chromeos_ash || is_chromeos_lacros
+}

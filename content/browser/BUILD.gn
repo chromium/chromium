@@ -81,6 +81,7 @@ source_set("browser") {
     "//components/os_crypt",
     "//components/payments/content/icon",
     "//components/payments/mojom",
+    "//components/services/screen_ai/buildflags",
 
     # TODO(698985): Remove `permissions_common`.
     "//components/permissions:permissions_common",

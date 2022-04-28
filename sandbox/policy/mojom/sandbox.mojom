@@ -60,7 +60,7 @@ enum Sandbox {
   kSpeechRecognition,
 
   // Like kUtility but allows loading of screen AI library.
-  [EnableIf=is_linux_or_chromeos]
+  [EnableIf=enable_screen_ai_service]
   kScreenAI,
 
   // The PPAPI plugin process.

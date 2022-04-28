@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
 
@@ -37,7 +38,9 @@ SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
+#endif
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 
