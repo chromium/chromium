@@ -7,6 +7,7 @@
       display: none !important;
     }
     :host {
+      --personalization-app-grid-item-background-color: var(--google-grey-100);
       --personalization-app-grid-item-border-radius: 12px;
       --personalization-app-grid-item-height: 120px;
       --personalization-app-grid-item-spacing: 16px;
@@ -20,16 +21,10 @@
       --personalization-app-label-font: 500 13px/20px
           var(--cros-font-family-google-sans);
     }
-    @media (prefers-color-scheme: light) {
-      .placeholder,
-      .photo-images-container {
-        background-color: var(--google-grey-100);
-      }
-    }
     @media (prefers-color-scheme: dark) {
-      .placeholder,
-      .photo-images-container {
-        background-color: rgba(var(--google-grey-700-rgb), 0.3);
+      :host {
+        --personalization-app-grid-item-background-color:
+          rgba(var(--google-grey-700-rgb), 0.3);
       }
     }
     iron-list {
@@ -96,6 +91,7 @@
       outline: none;
     }
     .photo-images-container {
+      background-color: var(--personalization-app-grid-item-background-color);
       border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: 12px;
       box-sizing: border-box;
@@ -201,6 +197,7 @@
     }
 
     .placeholder {
+      background-color: var(--personalization-app-grid-item-background-color);
       border-radius: 12px;
     }
 
