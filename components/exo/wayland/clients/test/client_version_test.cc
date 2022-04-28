@@ -11,6 +11,7 @@
 #include <idle-inhibit-unstable-v1-server-protocol.h>
 #include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <keyboard-extension-unstable-v1-server-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
 #include <overlay-prioritizer-server-protocol.h>
 #include <pointer-constraints-unstable-v1-server-protocol.h>
@@ -86,6 +87,8 @@ struct Globals {
   std::unique_ptr<zcr_text_input_extension_v1> zcr_text_input_extension_v1;
   std::unique_ptr<zcr_keyboard_configuration_v1> zcr_keyboard_configuration_v1;
   std::unique_ptr<zcr_keyboard_extension_v1> zcr_keyboard_extension_v1;
+  std::unique_ptr<zwp_keyboard_shortcuts_inhibit_manager_v1>
+      zwp_keyboard_shortcuts_inhibit_manager_v1;
   std::unique_ptr<zcr_notification_shell_v1> zcr_notification_shell_v1;
   std::unique_ptr<zcr_remote_shell_v1> zcr_remote_shell_v1;
   std::unique_ptr<zcr_remote_shell_v2> zcr_remote_shell_v2;
@@ -177,6 +180,8 @@ void RegistryHandler(void* data,
                             zcr_keyboard_configuration_v1),
           REGISTRY_CALLBACK(zcr_keyboard_extension_v1,
                             zcr_keyboard_extension_v1),
+          REGISTRY_CALLBACK(zwp_keyboard_shortcuts_inhibit_manager_v1,
+                            zwp_keyboard_shortcuts_inhibit_manager_v1),
           REGISTRY_CALLBACK(zcr_notification_shell_v1,
                             zcr_notification_shell_v1),
           REGISTRY_CALLBACK(zcr_remote_shell_v1, zcr_remote_shell_v1),

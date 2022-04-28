@@ -104,6 +104,10 @@ wayland_protocol("keyboard_extension_protocol") {
   sources = [ "unstable/keyboard/keyboard-extension-unstable-v1.xml" ]
 }
 
+wayland_protocol("keyboard_shortcuts_inhibit_protocol") {
+  sources = [ "src/unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml" ]
+}
+
 wayland_protocol("input_timestamps_protocol") {
   sources = [ "src/unstable/input-timestamps/input-timestamps-unstable-v1.xml" ]
 }
