@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
@@ -29,19 +30,24 @@ PasswordSaveUnsyncedCredentialsLocallyView::
                              anchor_view,
                              /*easily_dismissable=*/false),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
+  const bool is_gpm = base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerDesktop);
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   SetAcceptCallback(
       base::BindOnce(&PasswordSaveUnsyncedCredentialsLocallyView::OnSaveClicked,
                      base::Unretained(this)));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(
-                     IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON));
+  SetButtonLabel(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(
+          is_gpm ? IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM
+                 : IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON));
   SetCancelCallback(base::BindOnce(
       &SaveUnsyncedCredentialsLocallyBubbleController::OnCancelClicked,
       base::Unretained(&controller_)));
+  SetShowIcon(is_gpm);
   CreateLayout();
 }
 
@@ -58,13 +64,25 @@ PasswordSaveUnsyncedCredentialsLocallyView::GetController() const {
   return &controller_;
 }
 
+ui::ImageModel PasswordSaveUnsyncedCredentialsLocallyView::GetWindowIcon() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    return ui::ImageModel();
+  }
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
+}
+
 void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
   auto description = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION),
+          base::FeatureList::IsEnabled(
+              password_manager::features::kUnifiedPasswordManagerDesktop)
+              ? IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION_GPM
+              : IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT);
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);

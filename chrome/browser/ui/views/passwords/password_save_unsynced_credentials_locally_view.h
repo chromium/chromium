@@ -29,6 +29,7 @@ class PasswordSaveUnsyncedCredentialsLocallyView
   // PasswordBubbleViewBase:
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   void CreateLayout();
 

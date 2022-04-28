@@ -4897,10 +4897,10 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION" desc="The tooltip text of the request acces button that appears on the toolbar when an extension requests access to the site">
           <ph name="EXTENSIONS_REQUESTING_ACCESS">$1<ex>Extension A</ex></ph> is requesting to read and change <ph name="ORIGIN">$2<ex>google.com</ex></ph>
-        </message> 
+        </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS" desc="The tooltip text of the request acces button that appears on the toolbar when an extension requests access to the site">
           Requesting to read and change <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>google.com</ex></ph>:
-        </message> 
+        </message>
         <if expr="not use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE" desc="The label in an extension's context menu indicating the extension cannot access the current page. (sentence case)">
             Can't read or change site's data
@@ -7533,11 +7533,20 @@ Check your passwords anytime in  <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google
         <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE" desc="The title of the 'save unsynced credentials' bubble.">
           Passwords not saved
         </message>
+        <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE_GPM" desc="The title of the 'save unsynced credentials' bubble.">
+          Save passwords?
+        </message>
         <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION" desc="The description text of the 'save unsynced credentials' bubble.">
           Chrome couldn't save these passwords in your Google Account. You can still save them on this device.
         </message>
+        <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION_GPM" desc="The description text of the 'save unsynced credentials' bubble.">
+          Google Password Manager couldn't save these passwords in your Google Account. You can save them to this device.
+        </message>
         <message name="IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON" desc="Button text for the 'save unsynced credentials' bubble's save option.">
           Save
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM" desc="Button text for the 'save unsynced credentials' bubble's save option.">
+          Save to device
         </message>
         <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="Button text for the 'save unsynced credentials' bubble's discard option.">
           No thanks
