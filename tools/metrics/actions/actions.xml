@@ -33048,6 +33048,8 @@ should be able to be added at any place in this file.
              feature."/>
   <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
   <suffix name="FeedHeaderMenu" label="For FeedHeaderMenu feature."/>
+  <suffix name="FollowWhileBrowsing"
+      label="For Follow While-Browsing IPH feature."/>
   <suffix name="GenericAlwaysTriggerHelpUiFeature"
       label="For generic always show help UI feature."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>

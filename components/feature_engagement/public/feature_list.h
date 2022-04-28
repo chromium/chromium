@@ -220,6 +220,8 @@ DEFINE_VARIATION_PARAM(kIPHDiscoverFeedHeaderFeature,
 DEFINE_VARIATION_PARAM(kIPHDefaultSiteViewFeature, "IPH_DefaultSiteView");
 DEFINE_VARIATION_PARAM(kIPHPasswordSuggestionsFeature,
                        "IPH_PasswordSuggestions");
+DEFINE_VARIATION_PARAM(kIPHFollowWhileBrowsingFeature,
+                       "IPH_FollowWhileBrowsing");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -356,6 +358,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDiscoverFeedHeaderFeature),
         VARIATION_ENTRY(kIPHDefaultSiteViewFeature),
         VARIATION_ENTRY(kIPHPasswordSuggestionsFeature),
+        VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHDesktopTabGroupsNewGroupFeature),

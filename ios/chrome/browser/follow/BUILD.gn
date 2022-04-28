@@ -26,8 +26,14 @@ source_set("tab_helper") {
     "follow_tab_helper.mm",
   ]
   deps = [
+    ":follow",
     "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/feature_engagement",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/follow",
     "//ios/web/public",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

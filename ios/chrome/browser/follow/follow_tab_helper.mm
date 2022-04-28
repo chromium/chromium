@@ -5,6 +5,13 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/follow/follow_java_script_feature.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,10 +44,23 @@ void FollowTabHelper::PageLoaded(
     case web::PageLoadCompletionStatus::FAILURE:
       break;
     case web::PageLoadCompletionStatus::SUCCESS:
-      // TODO(crbug.com/1318755): Get recommended status from follow provider.
-      // If recommended, use feature engagement tracker to decide whether to
-      // show the while-browsing IPH.
-      break;
+      FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
+          web_state, base::BindOnce(^(FollowWebPageURLs* web_page_urls) {
+            BOOL channel_recommended =
+                ios::GetChromeBrowserProvider()
+                    .GetFollowProvider()
+                    ->GetRecommendedStatus(web_page_urls);
+            feature_engagement::Tracker* tracker =
+                feature_engagement::TrackerFactory::GetForBrowserState(
+                    ChromeBrowserState::FromBrowserState(
+                        web_state->GetBrowserState()));
+            if (channel_recommended &&
+                tracker->ShouldTriggerHelpUI(
+                    feature_engagement::kIPHFollowWhileBrowsingFeature)) {
+              // TODO(crbug.com/1318755): Trigger IPH UI. Call |Dismissed| when
+              // UI is dismissed.
+            }
+          }));
   }
 }
 
