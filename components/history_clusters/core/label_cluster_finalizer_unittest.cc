@@ -68,11 +68,27 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
   }
 
   {
-    // With hostname labelling and entity labelling, we should use the hostname.
+    // With hostname labelling and entity labelling both enabled, we should
+    // prefer the entity because if we prefer hostnames, every cluster will have
+    // a hostname label, and no entity labels will ever get surfaced.
     Config config;
     config.should_label_clusters = true;
     config.labels_from_hostnames = true;
     config.labels_from_entities = true;
+    SetConfigForTesting(config);
+
+    history::Cluster cluster;
+    cluster.visits = {visit2, visit3};
+    FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.label, u"chosenlabel");
+  }
+
+  {
+    // With hostname labelling active only, we should use the hostname.
+    Config config;
+    config.should_label_clusters = true;
+    config.labels_from_hostnames = true;
+    config.labels_from_entities = false;
     SetConfigForTesting(config);
 
     history::Cluster cluster;

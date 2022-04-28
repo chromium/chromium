@@ -37,6 +37,27 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
     }
   }
 
+  // If we haven't found a label yet, use Entities, if that flag is enabled.
+  // TODO(crbug.com/1294348): Implement a configurable quality threshold, so
+  // low quality Entity labels can be ignored in favor of hostnames below.
+  if (GetConfig().labels_from_entities && !current_highest_scoring_label) {
+    base::flat_map<std::string, float> entity_to_score;
+    for (const auto& visit : cluster.visits) {
+      for (const auto& entity : visit.annotated_visit.content_annotations
+                                    .model_annotations.entities) {
+        auto it = entity_to_score.find(entity.id);
+        float new_score = it != entity_to_score.end()
+                              ? it->second + (entity.weight * visit.score)
+                              : entity.weight * visit.score;
+        if (new_score > max_label_score) {
+          max_label_score = new_score;
+          current_highest_scoring_label = base::UTF8ToUTF16(entity.id);
+        }
+        entity_to_score[entity.id] = new_score;
+      }
+    }
+  }
+
   // If we haven't found a label yet, use hostnames if the flag is enabled.
   if (GetConfig().labels_from_hostnames && !current_highest_scoring_label) {
     base::flat_map<std::u16string, float> hostname_to_score;
@@ -57,26 +78,6 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       current_highest_scoring_label = l10n_util::GetStringFUTF16(
           IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_MULTIPLE_HOSTNAMES,
           *current_highest_scoring_label);
-    }
-  }
-
-  // If we haven't found a label yet, use the Entity name, if that flag is
-  // enabled.
-  if (GetConfig().labels_from_entities && !current_highest_scoring_label) {
-    base::flat_map<std::string, float> entity_to_score;
-    for (const auto& visit : cluster.visits) {
-      for (const auto& entity : visit.annotated_visit.content_annotations
-                                    .model_annotations.entities) {
-        auto it = entity_to_score.find(entity.id);
-        float new_score = it != entity_to_score.end()
-                              ? it->second + (entity.weight * visit.score)
-                              : entity.weight * visit.score;
-        if (new_score > max_label_score) {
-          max_label_score = new_score;
-          current_highest_scoring_label = base::UTF8ToUTF16(entity.id);
-        }
-        entity_to_score[entity.id] = new_score;
-      }
     }
   }
 
