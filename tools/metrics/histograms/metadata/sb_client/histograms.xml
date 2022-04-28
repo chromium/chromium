@@ -73,6 +73,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.DmgAnalysisTimedOut" enum="BooleanTimedOut"
     expires_after="2022-09-30">
+  <obsolete>
+    Replaced with SBClientDownload.DmgArchiveAnalysisResult in 04-2022
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -424,6 +427,21 @@ chromium-metrics-reviews@google.com.
     <variant name="Document" summary="office documents"/>
     <variant name="Rar" summary=".rar files"/>
     <variant name="Zip" summary=".zip files"/>
+  </token>
+</histogram>
+
+<histogram name="SBClientDownload.{ArchiveType}ArchiveAnalysisResult"
+    enum="ArchiveAnalysisResult" expires_after="2022-10-26">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records a more granular reason why we failed to unpack a {ArchiveType} file.
+    This is recorded on every download of an {ArchiveType} file.
+  </summary>
+  <token key="ArchiveType">
+    <variant name="Dmg"/>
+    <variant name="Rar"/>
+    <variant name="Zip"/>
   </token>
 </histogram>
 

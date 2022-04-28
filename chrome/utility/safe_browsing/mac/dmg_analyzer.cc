@@ -145,6 +145,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
   base::UmaHistogramBoolean("SBClientDownload.DmgIterationSuccess",
                             opened_iterator);
   if (!opened_iterator) {
+    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kUnknown;
     return;
   }
 
@@ -204,10 +205,12 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
     }
   }
 
-  base::UmaHistogramBoolean("SBClientDownload.DmgAnalysisTimedOut", timeout);
-
-  if (!timeout)
+  if (timeout) {
+    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kTimeout;
+  } else {
+    results->analysis_result = safe_browsing::ArchiveAnalysisResult::kValid;
     results->success = true;
+  }
 }
 
 }  // namespace dmg

@@ -43,12 +43,16 @@ void AnalyzeRarFile(base::File rar_file,
   bool too_big_to_unpack =
       base::checked_cast<uint64_t>(rar_file.GetLength()) >
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("rar");
-  if (too_big_to_unpack)
+  if (too_big_to_unpack) {
+    results->analysis_result = ArchiveAnalysisResult::kTooLarge;
     return;
+  }
 
   third_party_unrar::RarReader reader;
-  if (!reader.Open(std::move(rar_file), temp_file.Duplicate()))
+  if (!reader.Open(std::move(rar_file), temp_file.Duplicate())) {
+    results->analysis_result = ArchiveAnalysisResult::kUnknown;
     return;
+  }
 
   bool timeout = false;
   while (reader.ExtractNextEntry()) {
@@ -68,6 +72,8 @@ void AnalyzeRarFile(base::File rar_file,
       results->file_count++;
   }
 
+  results->analysis_result =
+      timeout ? ArchiveAnalysisResult::kTimeout : ArchiveAnalysisResult::kValid;
   results->success = !timeout;
 }
 

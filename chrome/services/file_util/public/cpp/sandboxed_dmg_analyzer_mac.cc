@@ -50,7 +50,7 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
 
   if (!file.IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -59,7 +59,7 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
   bool too_big_to_unpack = base::checked_cast<uint64_t>(size) > max_size_;
   if (too_big_to_unpack) {
     DLOG(ERROR) << "File is too big: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kTooLarge);
     return;
   }
 
@@ -68,13 +68,16 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
                                 std::move(file)));
 }
 
-void SandboxedDMGAnalyzer::ReportFileFailure() {
+void SandboxedDMGAnalyzer::ReportFileFailure(
+    safe_browsing::ArchiveAnalysisResult reason) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   if (callback_) {
+    safe_browsing::ArchiveAnalyzerResults results;
+    results.analysis_result = reason;
+
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_),
-                                  safe_browsing::ArchiveAnalyzerResults()));
+        FROM_HERE, base::BindOnce(std::move(callback_), results));
   }
 }
 

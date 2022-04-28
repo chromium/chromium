@@ -39,6 +39,7 @@ void AnalyzeZipFile(base::File zip_file,
   zip::ZipReader reader;
   if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
     DVLOG(1) << "Failed to open zip file";
+    results->analysis_result = ArchiveAnalysisResult::kUnknown;
     return;
   }
 
@@ -47,6 +48,7 @@ void AnalyzeZipFile(base::File zip_file,
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("zip");
   if (too_big_to_unpack) {
     results->success = false;
+    results->analysis_result = ArchiveAnalysisResult::kTooLarge;
     return;
   }
 
@@ -80,6 +82,14 @@ void AnalyzeZipFile(base::File zip_file,
       results->directory_count++;
     else
       results->file_count++;
+  }
+
+  if (timeout) {
+    results->analysis_result = ArchiveAnalysisResult::kTimeout;
+  } else if (reader.ok()) {
+    results->analysis_result = ArchiveAnalysisResult::kValid;
+  } else {
+    results->analysis_result = ArchiveAnalysisResult::kUnknown;
   }
 
   results->success = reader.ok() && !timeout;

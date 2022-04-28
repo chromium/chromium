@@ -20,10 +20,27 @@ class File;
 
 namespace safe_browsing {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ArchiveAnalysisResult {
+  kUnknown = 0,  // kUnknown indicates a case where we don't have a specific
+                 // reason, but parsing failed. This bucket will be broken into
+                 // more buckets in the future, as we identify more reasons for
+                 // analysis failure.
+  kUnspecified = 1,  // kUnspecified indicates that the analysis code provided
+                     // no reason at all. Logging this value indicates a bug.
+  kValid = 2,
+  kTooLarge = 3,
+  kTimeout = 4,
+  kFailedToOpen = 5,
+  kFailedToOpenTempFile = 6,
+  kMaxValue = kFailedToOpenTempFile
+};
+
 struct ArchiveAnalyzerResults {
-  bool success;
-  bool has_executable;
-  bool has_archive;
+  bool success = false;
+  bool has_executable = false;
+  bool has_archive = false;
   google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>
       archived_binary;
   std::vector<base::FilePath> archived_archive_filenames;
@@ -33,8 +50,10 @@ struct ArchiveAnalyzerResults {
       ClientDownloadRequest_DetachedCodeSignature>
       detached_code_signatures;
 #endif  // BUILDFLAG(IS_MAC)
-  int file_count;
-  int directory_count;
+  int file_count = 0;
+  int directory_count = 0;
+  ArchiveAnalysisResult analysis_result = ArchiveAnalysisResult::kUnspecified;
+
   ArchiveAnalyzerResults();
   ArchiveAnalyzerResults(const ArchiveAnalyzerResults& other);
   ~ArchiveAnalyzerResults();

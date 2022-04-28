@@ -48,7 +48,7 @@ void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
 
   if (!file.IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path_.value();
-    ReportFileFailure();
+    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
     return;
   }
 
@@ -63,7 +63,8 @@ void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
 
   if (!temp_file.IsValid()) {
     DLOG(ERROR) << "Could not open temp file: " << temp_path.value();
-    ReportFileFailure();
+    ReportFileFailure(
+        safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile);
     return;
   }
 
@@ -72,11 +73,14 @@ void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
                                 std::move(file), std::move(temp_file)));
 }
 
-void SandboxedZipAnalyzer::ReportFileFailure() {
+void SandboxedZipAnalyzer::ReportFileFailure(
+    safe_browsing::ArchiveAnalysisResult reason) {
   if (callback_) {
+    safe_browsing::ArchiveAnalyzerResults results;
+    results.analysis_result = reason;
+
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_),
-                                  safe_browsing::ArchiveAnalyzerResults()));
+        FROM_HERE, base::BindOnce(std::move(callback_), results));
   }
 }
 

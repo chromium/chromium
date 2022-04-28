@@ -4086,6 +4086,16 @@ Unknown properties are collapsed to zero. -->
       label="inotify exceeds its limit while processing a filesystem change"/>
 </enum>
 
+<enum name="ArchiveAnalysisResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unspecified"/>
+  <int value="2" label="Valid"/>
+  <int value="3" label="Too large"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Failed to open archive"/>
+  <int value="6" label="Failed to open temporary file"/>
+</enum>
+
 <enum name="ArchivemountError">
   <obsolete>
     Deprecated 10/2021. Replaced by FuseArchiveError.
