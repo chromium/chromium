@@ -4,6 +4,8 @@
 
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 
+#include "net/test/test_certificate_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -13,6 +15,9 @@
 #endif
 
 namespace ios_web_view {
+
+using ::testing::IsNull;
+using ::testing::NotNull;
 
 class CWVSSLStatusTest : public PlatformTest {
  public:
@@ -96,6 +101,24 @@ TEST_F(CWVSSLStatusTest, CertStatusHasNonErrorStatus) {
       [[CWVSSLStatus alloc] initWithInternalStatus:internal_status];
   // CWVCertStatus does not provide non-error statuses.
   EXPECT_EQ(0, cwv_status.certStatus);
+}
+
+TEST_F(CWVSSLStatusTest, CertificateNullForSSLStatusWithoutCertificate) {
+  web::SSLStatus internal_status;
+
+  CWVSSLStatus* cwv_status =
+      [[CWVSSLStatus alloc] initWithInternalStatus:internal_status];
+  EXPECT_THAT(cwv_status.certificate, IsNull());
+}
+
+TEST_F(CWVSSLStatusTest, CertificateNotNullForSSLStatusWithCertificate) {
+  web::SSLStatus internal_status;
+  internal_status.certificate =
+      net::X509Certificate::CreateFromBytes(webkit_der);
+
+  CWVSSLStatus* cwv_status =
+      [[CWVSSLStatus alloc] initWithInternalStatus:internal_status];
+  EXPECT_THAT(cwv_status.certificate, NotNull());
 }
 
 }  // namespace ios_web_view

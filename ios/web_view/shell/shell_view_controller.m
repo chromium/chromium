@@ -806,6 +806,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          [weakSelf showSyncMenu];
                                        }]];
 
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Show Certificate Details"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf showCertificateDetails];
+                                       }]];
+
   if (self.downloadTask) {
     [alertController
         addAction:[UIAlertAction actionWithTitle:@"Cancel download"
@@ -815,6 +822,27 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          }]];
   }
 
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showCertificateDetails {
+  CWVX509Certificate* certificate = [[_webView visibleSSLStatus] certificate];
+  NSString* message;
+
+  if (certificate) {
+    message = [NSString stringWithFormat:@"Issuer: %@\nExpires: %@",
+                                         certificate.issuerDisplayName,
+                                         certificate.validExpiry];
+  } else {
+    message = @"No Certificate";
+  }
+
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:@"Certificate Details" message:message];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Done"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
   [self presentViewController:alertController animated:YES completion:nil];
 }
 

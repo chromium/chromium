@@ -52,4 +52,7 @@
 // Supports -[CWVNavigationDelegate handleLookalikeURLWithHandler:].
 #define IOS_WEB_VIEW_SUPPORTS_CWV_LOOKALIKE_URL_HANDLER 1
 
+// Allows accessing SSL certificate details through the CWVWebView.
+#define IOS_WEB_VIEW_SUPPORTS_CWV_X509_CERTIFICATE 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

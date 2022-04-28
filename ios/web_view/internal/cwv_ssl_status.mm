@@ -6,6 +6,7 @@
 
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
+#import "ios/web_view/internal/cwv_x509_certificate_internal.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 
@@ -37,6 +38,11 @@ CWVSecurityStyle CWVSecurityStyleFromWebSecurityStyle(
   self = [super init];
   if (self) {
     _internalStatus = internalStatus;
+
+    if (internalStatus.certificate) {
+      _certificate = [[CWVX509Certificate alloc]
+          initWithInternalCertificate:internalStatus.certificate];
+    }
   }
   return self;
 }

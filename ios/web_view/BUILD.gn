@@ -84,6 +84,7 @@ ios_web_view_public_headers = [
   "public/cwv_user_script.h",
   "public/cwv_web_view.h",
   "public/cwv_web_view_configuration.h",
+  "public/cwv_x509_certificate.h",
 ]
 
 source_set("web_view_sources") {
@@ -159,6 +160,8 @@ source_set("web_view_sources") {
     "internal/cwv_web_view_configuration.mm",
     "internal/cwv_web_view_configuration_internal.h",
     "internal/cwv_web_view_internal.h",
+    "internal/cwv_x509_certificate.mm",
+    "internal/cwv_x509_certificate_internal.h",
     "internal/ios_global_state_web_view_configuration.mm",
     "internal/language/web_view_language_model_manager_factory.h",
     "internal/language/web_view_language_model_manager_factory.mm",
@@ -456,6 +459,7 @@ test("ios_web_view_unittests") {
     "internal/cwv_ssl_status_unittest.mm",
     "internal/cwv_web_view_configuration_unittest.mm",
     "internal/cwv_web_view_unittest.mm",
+    "internal/cwv_x509_certificate_unittest.mm",
     "internal/metrics/cwv_metrics_provider_unittest.mm",
     "internal/passwords/cwv_credential_provider_extension_utils_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
@@ -496,6 +500,7 @@ test("ios_web_view_unittests") {
     "//ios/web/public/security",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
+    "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
