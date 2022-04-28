@@ -286,7 +286,7 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id,
-    const network::ResourceRequest& request);
+    network::ResourceRequest& request);
 
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.
 // Used for PlzDedicatedWorker.

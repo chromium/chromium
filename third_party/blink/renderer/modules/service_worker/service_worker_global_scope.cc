@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -319,7 +320,8 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
                 WrapPersistent(classic_script_loader)),
       WTF::Bind(&ServiceWorkerGlobalScope::DidFetchClassicScript,
                 WrapWeakPersistent(this), WrapPersistent(classic_script_loader),
-                stack_id));
+                stack_id),
+      RejectCoepUnsafeNone(false), {}, CreateUniqueIdentifier());
 }
 
 void ServiceWorkerGlobalScope::FetchAndRunModuleScript(

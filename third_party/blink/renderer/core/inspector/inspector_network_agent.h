@@ -267,6 +267,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   String NavigationInitiatorInfo(LocalFrame*);
 
  private:
+  String RequestId(DocumentLoader*, uint64_t identifier);
   void Enable();
   void WillSendRequestInternal(DocumentLoader*,
                                const KURL& fetch_context_url,

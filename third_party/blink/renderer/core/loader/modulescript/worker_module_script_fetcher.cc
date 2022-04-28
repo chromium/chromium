@@ -55,8 +55,12 @@ void WorkerModuleScriptFetcher::Fetch(
   if (worker_main_script_load_params) {
     DCHECK_EQ(level_, ModuleGraphLevel::kTopLevelModuleFetch);
 
-    fetch_params.MutableResourceRequest().SetInspectorId(
-        CreateUniqueIdentifier());
+    auto identifier = CreateUniqueIdentifier();
+    if (global_scope_->IsServiceWorkerGlobalScope()) {
+      global_scope_->SetMainResoureIdentifier(identifier);
+    }
+
+    fetch_params.MutableResourceRequest().SetInspectorId(identifier);
     worker_main_script_loader_ = MakeGarbageCollected<WorkerMainScriptLoader>();
     worker_main_script_loader_->Start(
         fetch_params, std::move(worker_main_script_load_params),

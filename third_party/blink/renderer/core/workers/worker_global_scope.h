@@ -234,6 +234,15 @@ class CORE_EXPORT WorkerGlobalScope
 
   bool IsUrlValid() { return url_.IsValid(); }
 
+  void SetMainResoureIdentifier(uint64_t identifier) {
+    DCHECK(!main_resource_identifier_.has_value());
+    main_resource_identifier_ = identifier;
+  }
+
+  absl::optional<uint64_t> MainResourceIdentifier() const {
+    return main_resource_identifier_;
+  }
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -331,6 +340,11 @@ class CORE_EXPORT WorkerGlobalScope
   // shared workers.
   std::unique_ptr<WorkerMainScriptLoadParameters>
       worker_main_script_load_params_for_modules_;
+
+  // |main_resource_identifier_| is used to track main script that was started
+  // in the browser process. This field not having a value does not imply
+  // anything.
+  absl::optional<uint64_t> main_resource_identifier_;
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources.

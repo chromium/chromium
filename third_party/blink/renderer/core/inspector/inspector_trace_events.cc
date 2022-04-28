@@ -1198,7 +1198,8 @@ void inspector_evaluate_script_event::Data(perfetto::TracedValue context,
 void inspector_parse_script_event::Data(perfetto::TracedValue context,
                                         uint64_t identifier,
                                         const String& url) {
-  String request_id = IdentifiersFactory::RequestId(nullptr, identifier);
+  String request_id = IdentifiersFactory::RequestId(
+      static_cast<ExecutionContext*>(nullptr), identifier);
   auto dict = std::move(context).WriteDictionary();
   dict.Add("requestId", request_id);
   dict.Add("url", url);
@@ -1207,7 +1208,8 @@ void inspector_parse_script_event::Data(perfetto::TracedValue context,
 void inspector_deserialize_script_event::Data(perfetto::TracedValue context,
                                               uint64_t identifier,
                                               const String& url) {
-  String request_id = IdentifiersFactory::RequestId(nullptr, identifier);
+  String request_id = IdentifiersFactory::RequestId(
+      static_cast<ExecutionContext*>(nullptr), identifier);
   auto dict = std::move(context).WriteDictionary();
   dict.Add("requestId", request_id);
   dict.Add("url", url);

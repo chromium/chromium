@@ -143,7 +143,8 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     base::OnceClosure finished_callback,
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-        blob_url_loader_factory) {
+        blob_url_loader_factory,
+    absl::optional<uint64_t> main_script_identifier) {
   DCHECK(fetch_client_settings_object_fetcher);
   DCHECK(response_callback || finished_callback);
   response_callback_ = std::move(response_callback);
@@ -161,7 +162,15 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   // Use WorkerMainScriptLoader to load the main script for dedicated workers
   // (PlzDedicatedWorker) and shared workers.
   if (worker_main_script_load_params) {
-    request.SetInspectorId(CreateUniqueIdentifier());
+    auto* worker_global_scope = DynamicTo<WorkerGlobalScope>(execution_context);
+    DCHECK(worker_global_scope);
+    if (main_script_identifier.has_value()) {
+      worker_global_scope->SetMainResoureIdentifier(
+          main_script_identifier.value());
+      request.SetInspectorId(main_script_identifier.value());
+    } else {
+      request.SetInspectorId(CreateUniqueIdentifier());
+    }
     request.SetReferrerString(Referrer::NoReferrer());
     request.SetPriority(ResourceLoadPriority::kHigh);
     FetchParameters fetch_params(

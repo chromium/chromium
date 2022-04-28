@@ -104,6 +104,10 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 # Tested by paint/background/root-element-background-transparency.html for now.
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
+# The following deal with failed main service worker requests
+crbug.com/1304795 http/tests/inspector-protocol/fetch/service-worker-network-id-alignment-classic-failures.js [ Skip ]
+crbug.com/1304795 http/tests/inspector-protocol/fetch/service-worker-network-id-alignment-module-failures.js [ Skip ]
+
 # ====== Synchronous, budgeted HTML parser tests from here ========================
 # See crbug.com/1254921 for details.
 # These tests either started failing outright, or became flaky, when the new HTML

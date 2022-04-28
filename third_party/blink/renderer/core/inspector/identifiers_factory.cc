@@ -29,10 +29,13 @@
 #include "base/process/process_handle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -41,6 +44,22 @@ namespace blink {
 String IdentifiersFactory::CreateIdentifier() {
   static base::AtomicSequenceNumber last_used_identifier;
   return AddProcessIdPrefixTo(last_used_identifier.GetNext());
+}
+
+// static
+String IdentifiersFactory::RequestId(ExecutionContext* execution_context,
+                                     uint64_t identifier) {
+  if (!identifier)
+    return String();
+  auto* worker_global_scope = DynamicTo<WorkerGlobalScope>(execution_context);
+  if (worker_global_scope &&
+      worker_global_scope->MainResourceIdentifier() == identifier) {
+    return String(worker_global_scope->GetDevToolsToken().ToString());
+  }
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (window && window->document())
+    return RequestId(window->document()->Loader(), identifier);
+  return AddProcessIdPrefixTo(identifier);
 }
 
 // static
@@ -55,7 +74,7 @@ String IdentifiersFactory::RequestId(DocumentLoader* loader,
 
 // static
 String IdentifiersFactory::SubresourceRequestId(uint64_t identifier) {
-  return RequestId(nullptr, identifier);
+  return RequestId(static_cast<ExecutionContext*>(nullptr), identifier);
 }
 
 // static

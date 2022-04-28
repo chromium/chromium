@@ -1067,8 +1067,7 @@ void InspectorNetworkAgent::DidBlockRequest(
                           ResourceResponse(), options, type,
                           base::TimeTicks::Now());
 
-  String request_id =
-      IdentifiersFactory::RequestId(loader, request.InspectorId());
+  String request_id = RequestId(loader, request.InspectorId());
 
   // Conversion Measurement API triggers recording of conversions
   // as redirects to a `/.well-known/register-conversion` url.
@@ -1094,10 +1093,20 @@ void InspectorNetworkAgent::DidChangeResourcePriority(
     DocumentLoader* loader,
     uint64_t identifier,
     ResourceLoadPriority load_priority) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
   GetFrontend()->resourceChangedPriority(
       request_id, ResourcePriorityJSON(load_priority),
       base::TimeTicks::Now().since_origin().InSecondsF());
+}
+
+String InspectorNetworkAgent::RequestId(DocumentLoader* loader,
+                                        uint64_t identifier) {
+  // It's difficult to go from a loader to an execution context, and in the case
+  // of iframes the loader that is resolved via |GetTargetExecutionContext()| is
+  // not the intended loader
+  if (loader)
+    return IdentifiersFactory::RequestId(loader, identifier);
+  return IdentifiersFactory::RequestId(GetTargetExecutionContext(), identifier);
 }
 
 void InspectorNetworkAgent::WillSendRequestInternal(
@@ -1109,8 +1118,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     InspectorPageAgent::ResourceType type,
     base::TimeTicks timestamp) {
   String loader_id = IdentifiersFactory::LoaderId(loader);
-  String request_id =
-      IdentifiersFactory::RequestId(loader, request.InspectorId());
+  String request_id = RequestId(loader, request.InspectorId());
   NetworkResourcesData::ResourceData const* data =
       resources_data_->Data(request_id);
   // Support for POST request redirect.
@@ -1235,8 +1243,8 @@ void InspectorNetworkAgent::SetDevToolsIds(
   // The loader parameter is for generating a browser generated ID for a browser
   // initiated request. We pass it null here because we are reporting a renderer
   // generated ID for a renderer initiated request.
-  request.SetDevToolsId(IdentifiersFactory::RequestId(/* loader */ nullptr,
-                                                      request.InspectorId()));
+  request.SetDevToolsId(
+      IdentifiersFactory::SubresourceRequestId(request.InspectorId()));
 }
 
 void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
@@ -1330,8 +1338,7 @@ void InspectorNetworkAgent::WillSendRequest(
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,
                                                  uint64_t identifier) {
-  GetFrontend()->requestServedFromCache(
-      IdentifiersFactory::RequestId(loader, identifier));
+  GetFrontend()->requestServedFromCache(RequestId(loader, identifier));
 }
 
 void InspectorNetworkAgent::DidReceiveResourceResponse(
@@ -1339,7 +1346,7 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
     DocumentLoader* loader,
     const ResourceResponse& response,
     const Resource* cached_resource) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
   bool is_not_modified = response.HttpStatusCode() == 304;
 
   bool resource_is_empty = true;
@@ -1361,6 +1368,14 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
       saved_type == InspectorPageAgent::kEventSourceResource ||
       saved_type == InspectorPageAgent::kPingResource) {
     type = saved_type;
+  }
+
+  // Main Worker requests are initiated in the browser, so saved_type will not
+  // be found. We therefore must explicitly set it.
+  if (worker_global_scope_ &&
+      worker_global_scope_->MainResourceIdentifier() == identifier) {
+    DCHECK(saved_type == InspectorPageAgent::kOtherResource);
+    type = InspectorPageAgent::kScriptResource;
   }
 
   // Resources are added to NetworkResourcesData as a WeakMember here and
@@ -1411,7 +1426,7 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
                                            const char* data,
                                            uint64_t data_length) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
 
   if (data) {
     NetworkResourcesData::ResourceData const* resource_data =
@@ -1434,7 +1449,7 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
 void InspectorNetworkAgent::DidReceiveBlob(uint64_t identifier,
                                            DocumentLoader* loader,
                                            scoped_refptr<BlobDataHandle> blob) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
   resources_data_->BlobReceived(request_id, std::move(blob));
 }
 
@@ -1442,7 +1457,7 @@ void InspectorNetworkAgent::DidReceiveEncodedDataLength(
     DocumentLoader* loader,
     uint64_t identifier,
     size_t encoded_data_length) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
   resources_data_->AddPendingEncodedDataLength(request_id, encoded_data_length);
 }
 
@@ -1453,7 +1468,7 @@ void InspectorNetworkAgent::DidFinishLoading(
     int64_t encoded_data_length,
     int64_t decoded_body_length,
     bool should_report_corb_blocking) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
   NetworkResourcesData::ResourceData const* resource_data =
       resources_data_->Data(request_id);
 
@@ -1500,7 +1515,7 @@ void InspectorNetworkAgent::DidFailLoading(
     DocumentLoader* loader,
     const ResourceError& error,
     const base::UnguessableToken& devtools_frame_or_worker_token) {
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id = RequestId(loader, identifier);
 
   // A Trust Token redemption can be served from cache if a valid
   // Signed-Redemption-Record is present. In this case the request is aborted
@@ -1784,7 +1799,7 @@ void InspectorNetworkAgent::DidSendWebSocketMessage(uint64_t identifier,
                                                     const char* payload,
                                                     size_t payload_length) {
   GetFrontend()->webSocketFrameSent(
-      IdentifiersFactory::RequestId(nullptr, identifier),
+      IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
       WebSocketMessageToProtocol(op_code, masked, payload, payload_length));
 }
@@ -1793,7 +1808,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessageError(
     uint64_t identifier,
     const String& error_message) {
   GetFrontend()->webSocketFrameError(
-      IdentifiersFactory::RequestId(nullptr, identifier),
+      IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(), error_message);
 }
 

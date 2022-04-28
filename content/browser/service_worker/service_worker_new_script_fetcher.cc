@@ -106,7 +106,6 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
 
   // Notify to DevTools that the request for fetching the service worker script
   // is about to start. It fires `Network.onRequestWillBeSent` event.
-  request.devtools_request_id = version_->reporting_source().ToString();
   devtools_instrumentation::OnServiceWorkerMainScriptRequestWillBeSent(
       requesting_frame_id_, context_.wrapper(), version_->version_id(),
       request);

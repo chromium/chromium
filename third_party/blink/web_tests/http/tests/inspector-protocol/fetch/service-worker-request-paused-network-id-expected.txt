@@ -1,4 +1,0 @@
-Tests that networkId present on Fetch.requestPaused for initial Service Worker script request
-OK: init: networkId === requestId
-OK: subFetch: networkId === requestId
-
