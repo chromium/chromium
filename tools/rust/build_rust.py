@@ -50,22 +50,21 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
-                    LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
+from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR,
+                    GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
-from update_rust import (RUST_REVISION, RUST_SUB_REVISION, STAGE0_JSON_SHA256,
-                         GetPackageVersion)
+from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
+                         RUST_TOOLCHAIN_OUT_DIR, STAGE0_JSON_SHA256,
+                         THIRD_PARTY_DIR, GetPackageVersion)
 
 RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
-THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
 RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
-RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
 VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
@@ -73,7 +72,8 @@ RUST_CONFIG_TEMPLATE_PATH = os.path.join(
 
 # Desired tools and libraries in our Rust toolchain.
 DISTRIBUTION_ARTIFACTS = [
-    'cargo', 'clippy', 'library/std', 'rust-analyzer', 'rustfmt'
+    'cargo', 'clippy', 'compiler/rustc', 'library/std', 'rust-analyzer',
+    'rustfmt'
 ]
 
 # Which test suites to run. Any failure will fail the build.
@@ -290,9 +290,10 @@ def main():
   # Delete vendored sources and .cargo subdir. Otherwise when updating an
   # existing checkout, vendored sources will not be re-fetched leaving deps out
   # of date.
-  for dir in [os.path.join(RUST_SRC_DIR, d) for d in ['vendor', '.cargo']]:
-    if os.path.exists(dir):
-      shutil.rmtree(dir)
+  if not args.skip_checkout:
+    for dir in [os.path.join(RUST_SRC_DIR, d) for d in ['vendor', '.cargo']]:
+      if os.path.exists(dir):
+        shutil.rmtree(dir)
 
   if not args.skip_clean:
     print('Cleaning build artifacts...')

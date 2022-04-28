@@ -14,6 +14,7 @@ a Chromium checkout to access functions from other scripts.
 import argparse
 import os
 import sys
+import tempfile
 
 from pathlib import Path
 
@@ -24,13 +25,18 @@ sys.path.append(
                  'scripts'))
 
 RUST_REVISION = '1f631e8e'
-RUST_SUB_REVISION = 1
+RUST_SUB_REVISION = 2
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
     '6b1c61d494ad447f41c8ae3b9b3239626eecac00e0f0b793b844e0761133dc37')
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
+THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
+RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 
 
 def GetPackageVersion():
@@ -43,12 +49,12 @@ def main():
   parser = argparse.ArgumentParser(description='Update Rust package')
   parser.add_argument('--print-rust-revision',
                       action='store_true',
-                      help='Print Rust revision (without Clang revision). Can '
-                      'be run outside of a Chromium checkout.')
+                      help='Print Rust revision (without Clang revision) and '
+                      'quit. Can be run outside of a Chromium checkout.')
   parser.add_argument('--print-package-version',
                       action='store_true',
                       help='Print Rust package version (including both the '
-                      'Rust and Clang revisions)')
+                      'Rust and Clang revisions) and quit.')
   args = parser.parse_args()
 
   if args.print_rust_revision:
@@ -58,6 +64,12 @@ def main():
   if args.print_package_version:
     print(GetPackageVersion())
     return 0
+
+  from update import (DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix)
+  with tempfile.TemporaryFile() as f:
+    url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
+        GetDefaultHostOs()), GetPackageVersion())
+    DownloadAndUnpack(url, THIRD_PARTY_DIR)
 
 
 if __name__ == '__main__':
