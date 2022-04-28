@@ -94,7 +94,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
             std::vector<mojom::PaymentMethodDataPtr> method_data,
             mojom::PaymentDetailsPtr details,
             mojom::PaymentOptionsPtr options) override;
-  void Show(bool is_user_gesture, bool wait_for_updated_details) override;
+  void Show(bool wait_for_updated_details) override;
   void ShowNew(bool wait_for_updated_details) override;
   void Retry(mojom::PaymentValidationErrorsPtr errors) override;
   void UpdateWith(mojom::PaymentDetailsPtr details) override;

@@ -275,7 +275,7 @@ void PaymentRequest::Init(
   }
 }
 
-void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
+void PaymentRequest::Show(bool wait_for_updated_details) {
   ShowNew(wait_for_updated_details);
 }
 

@@ -29,7 +29,7 @@ public final class InvalidPaymentRequest implements PaymentRequest {
     }
 
     @Override
-    public void show(boolean unusedIsUserGesture, boolean unusedWaitForUpdatedDetails) {
+    public void show(boolean unusedWaitForUpdatedDetails) {
         showNew(unusedWaitForUpdatedDetails);
     }
 
