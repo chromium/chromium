@@ -329,6 +329,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisabledTest(message = "https://crbug.com/1316249")
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFRESyncConsentScreenWithChildAccountLegacy() throws IOException {
         HistogramDelta startPageHistogram =
