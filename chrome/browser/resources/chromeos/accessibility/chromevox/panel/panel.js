@@ -6,14 +6,13 @@
  * @fileoverview The ChromeVox panel and menus.
  */
 import {EventGenerator} from '../../common/event_generator.js';
-
 import {BrailleCommandData} from '../common/braille_command_data.js';
 import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
 
-import {ISearchUI} from './i_search.js';
+import {ISearchUI} from './i_search_ui.js';
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMenuItem} from './panel_menu_item.js';

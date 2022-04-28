@@ -3,56 +3,22 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Objects related to incremental search.
+ * @fileoverview The logic behind incremental search.
  */
+import {ISearchHandler} from './i_search_handler.js';
 
-import {PanelInterface} from './panel_interface.js';
-
-const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
-const RoleType = chrome.automation.RoleType;
 
-/**
- * An interface implemented by objects that wish to handle events related to
- * incremental search.
- * @interface
- */
-class ISearchHandler {
-  constructor() {}
-
-  /**
-   * Called when there are no remaining nodes in the document matching
-   * search.
-   * @param {!AutomationNode} boundaryNode The last node before reaching either
-   * the start or end of the document.
-   */
-  onSearchReachedBoundary(boundaryNode) {}
-
-  /**
-   * Called when search result node changes.
-   * @param {!AutomationNode} node The new search result.
-   * @param {number} start The index into the name where the search match
-   *     starts.
-   * @param {number} end The index into the name where the search match ends.
-   */
-  onSearchResultChanged(node, start, end) {}
-}
-
-
-/**
- * Controls an incremental search.
- */
+/** Controls an incremental search. */
 export class ISearch {
-  /**
-   * @param {!cursors.Cursor} cursor
-   */
+  /** @param {!cursors.Cursor} cursor */
   constructor(cursor) {
     if (!cursor.node) {
       throw 'Incremental search started from invalid range.';
     }
 
-    /** @private {ISearchHandler} */
-    this.handler_;
+    /** @private {?ISearchHandler} */
+    this.handler_ = null;
 
     const leaf = AutomationUtil.findNodePre(
                      cursor.node, Dir.FORWARD, AutomationPredicate.leaf) ||
@@ -65,13 +31,11 @@ export class ISearch {
     this.callbackId_ = 0;
 
     // Global exports.
-    /** Exported for this background script. */
+    /** Exported for the panel script. */
     ChromeVox = chrome.extension.getBackgroundPage()['ChromeVox'];
   }
 
-  /**
-   * @param {!ISearchHandler} handler
-   */
+  /** @param {?ISearchHandler} handler */
   set handler(handler) {
     this.handler_ = handler;
   }
@@ -115,148 +79,5 @@ export class ISearch {
 
   clear() {
     clearTimeout(this.callbackId_);
-  }
-}
-
-
-/**
- * @implements {ISearchHandler}
- */
-export class ISearchUI {
-  /**
-   * @param {Element} input
-   */
-  constructor(input) {
-    /** @type {ChromeVoxState} @private */
-    this.background_ =
-        chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-    this.iSearch_ = new ISearch(this.background_.currentRange.start);
-    this.input_ = input;
-    this.dir_ = Dir.FORWARD;
-    this.iSearch_.handler = this;
-
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onTextInput = this.onTextInput.bind(this);
-
-    input.addEventListener('keydown', this.onKeyDown, true);
-    input.addEventListener('textInput', this.onTextInput, false);
-  }
-
-  /**
-   * @param {Element} input
-   * @return {ISearchUI}
-   */
-  static init(input) {
-    if (ISearchUI.instance_) {
-      ISearchUI.instance_.destroy();
-    }
-
-    if (!input) {
-      throw 'Expected search input';
-    }
-
-    ISearchUI.instance_ = new ISearchUI(input);
-    input.focus();
-    input.select();
-    return ISearchUI.instance_;
-  }
-
-  /**
-   * Listens to key down events.
-   * @param {Event} evt
-   * @return {boolean}
-   */
-  onKeyDown(evt) {
-    switch (evt.key) {
-      case 'ArrowUp':
-        this.dir_ = Dir.BACKWARD;
-        break;
-      case 'ArrowDown':
-        this.dir_ = Dir.FORWARD;
-        break;
-      case 'Escape':
-        PanelInterface.instance.closeMenusAndRestoreFocus();
-        return false;
-      case 'Enter':
-        PanelInterface.instance.setPendingCallback(function() {
-          const node = this.iSearch_.cursor.node;
-          if (!node) {
-            return;
-          }
-          chrome.extension.getBackgroundPage()
-              .ChromeVoxState.instance['navigateToRange'](
-                  cursors.Range.fromNode(node));
-        }.bind(this));
-        PanelInterface.instance.closeMenusAndRestoreFocus();
-        return false;
-      default:
-        return false;
-    }
-    this.iSearch_.search(this.input_.value, this.dir_, true);
-    evt.preventDefault();
-    evt.stopPropagation();
-    return false;
-  }
-
-  /**
-   * Listens to text input events.
-   * @param {Event} evt
-   * @return {boolean}
-   */
-  onTextInput(evt) {
-    const searchStr = evt.target.value + evt.data;
-    this.iSearch_.clear();
-    this.iSearch_.search(searchStr, this.dir_);
-    return true;
-  }
-
-  /**
-   * @override
-   */
-  onSearchReachedBoundary(boundaryNode) {
-    this.output_(boundaryNode);
-    ChromeVox.earcons.playEarcon(Earcon.WRAP);
-  }
-
-  /**
-   * @override
-   */
-  onSearchResultChanged(node, start, end) {
-    this.output_(node, start, end);
-  }
-
-  /**
-   * @param {!AutomationNode} node
-   * @param {number=} opt_start
-   * @param {number=} opt_end
-   * @private
-   */
-  output_(node, opt_start, opt_end) {
-    Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-    const o = new Output();
-    if (opt_start && opt_end) {
-      o.withString([
-        node.name.substr(0, opt_start),
-        node.name.substr(opt_start, opt_end - opt_start),
-        node.name.substr(opt_end)
-      ].join(', '));
-      o.format('$role', node);
-    } else {
-      o.withRichSpeechAndBraille(
-          cursors.Range.fromNode(node), null, OutputEventType.NAVIGATE);
-    }
-    o.go();
-
-    this.background_.setCurrentRange(cursors.Range.fromNode(node));
-  }
-
-  /** Unregisters event handlers. */
-  destroy() {
-    this.iSearch_.handler_ = null;
-    this.iSearch_ = null;
-    const input = this.input_;
-    this.input_ = null;
-    input.removeEventListener('keydown', this.onKeyDown, true);
-    input.removeEventListener('textInput', this.onTextInput, false);
   }
 }
