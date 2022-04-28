@@ -96,6 +96,29 @@ constexpr char kZIndex[] = "z_index";
 // Valid value sets.
 const std::set<std::string> kValidDeskTypes = {kDeskTypeTemplate,
                                                kDeskTypeSaveAndRecall};
+const std::set<std::string> kValidLaunchContainers = {
+    kLaunchContainerWindow, kLaunchContainerPanelDeprecated,
+    kLaunchContainerTab, kLaunchContainerNone, kLaunchContainerUnspecified};
+const std::set<std::string> kValidWindowOpenDispositions = {
+    kWindowOpenDispositionUnknown,
+    kWindowOpenDispositionCurrentTab,
+    kWindowOpenDispositionSingletonTab,
+    kWindowOpenDispositionNewForegroundTab,
+    kWindowOpenDispositionNewBackgroundTab,
+    kWindowOpenDispositionNewPopup,
+    kWindowOpenDispositionNewWindow,
+    kWindowOpenDispositionSaveToDisk,
+    kWindowOpenDispositionOffTheRecord,
+    kWindowOpenDispositionIgnoreAction,
+    kWindowOpenDispositionSwitchToTab,
+    kWindowOpenDispositionNewPictureInPicture};
+const std::set<std::string> kValidWindowStates = {kWindowStateNormal,
+                                                  kWindowStateMinimized,
+                                                  kWindowStateMaximized,
+                                                  kWindowStateFullscreen,
+                                                  kWindowStatePrimarySnapped,
+                                                  kWindowStateSecondarySnapped,
+                                                  kZIndex};
 
 // Version number.
 constexpr int kVersionNum = 1;
@@ -154,11 +177,7 @@ std::string GetJsonAppId(const base::Value& app) {
 
 // Returns true if launch container string value is valid.
 bool IsValidLaunchContainer(const std::string& launch_container) {
-  return launch_container == kLaunchContainerWindow ||
-         launch_container == kLaunchContainerPanelDeprecated ||
-         launch_container == kLaunchContainerTab ||
-         launch_container == kLaunchContainerNone ||
-         launch_container == kLaunchContainerUnspecified;
+  return base::Contains(kValidLaunchContainers, launch_container);
 }
 
 // Returns a casted apps::mojom::LaunchContainer to be set as an app restore
@@ -189,18 +208,7 @@ int32_t StringToLaunchContainer(const std::string& launch_container) {
 
 // Returns true if the disposition is a valid value.
 bool IsValidWindowOpenDisposition(const std::string& disposition) {
-  return disposition == kWindowOpenDispositionUnknown ||
-         disposition == kWindowOpenDispositionCurrentTab ||
-         disposition == kWindowOpenDispositionSingletonTab ||
-         disposition == kWindowOpenDispositionNewForegroundTab ||
-         disposition == kWindowOpenDispositionNewBackgroundTab ||
-         disposition == kWindowOpenDispositionNewPopup ||
-         disposition == kWindowOpenDispositionNewWindow ||
-         disposition == kWindowOpenDispositionSaveToDisk ||
-         disposition == kWindowOpenDispositionOffTheRecord ||
-         disposition == kWindowOpenDispositionIgnoreAction ||
-         disposition == kWindowOpenDispositionSwitchToTab ||
-         disposition == kWindowOpenDispositionNewPictureInPicture;
+  return base::Contains(kValidWindowOpenDispositions, disposition);
 }
 
 // Returns a casted WindowOpenDisposition to be set in the app restore data.
@@ -308,12 +316,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
 }
 
 bool IsValidWindowState(const std::string& window_state) {
-  return window_state == kWindowStateNormal ||
-         window_state == kWindowStateMinimized ||
-         window_state == kWindowStateMaximized ||
-         window_state == kWindowStateFullscreen ||
-         window_state == kWindowStatePrimarySnapped ||
-         window_state == kWindowStateSecondarySnapped;
+  return base::Contains(kValidWindowStates, window_state);
 }
 
 // Convert JSON string WindowState |state| to ui::WindowShowState used by
