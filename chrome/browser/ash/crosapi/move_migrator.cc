@@ -617,6 +617,12 @@ MoveMigrator::TaskResult MoveMigrator::MoveSplitItemsToOriginalDir(
 
   for (base::FilePath path = e.Next(); !path.empty(); path = e.Next()) {
     base::FilePath ash_path = original_profile_dir.Append(path.BaseName());
+    if (base::DirectoryExists(ash_path) && !DeletePathRecursively(ash_path)) {
+      PLOG(ERROR) << "Failed deleting " << ash_path.value();
+      return {TaskStatus::kMoveSplitItemsToOriginalDirMoveSplitItemsFailed,
+              errno};
+    }
+
     if (!base::Move(path, ash_path)) {
       PLOG(ERROR) << "Failed moving " << path.value() << " to "
                   << ash_path.value();
