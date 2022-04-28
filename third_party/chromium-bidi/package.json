@@ -16,6 +16,10 @@
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
   },
+  "files": [
+    "src/.build/"
+  ],
+  "repository": "GoogleChromeLabs/chromium-bidi",
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
@@ -28,9 +32,6 @@
     "websocket": "^1.0.34",
     "ws": "^7.4.5"
   },
-  "files": [
-    "src/.build/"
-  ],
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
