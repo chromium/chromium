@@ -520,6 +520,7 @@ try_.builder(
     # TODO(crbug.com/1199405): Move this to bionic once _all_ builders have
     # migrated.
     os = os.LINUX_TRUSTY,
+    notifies = ["chrome-rust-toolchain"],
 )
 
 try_.builder(
