@@ -99,7 +99,7 @@ if ((is_apple || is_win) && is_asan) {
 
 config("sanitizer_options_link_helper") {
   if (is_apple) {
-    ldflags = [ "-Wl,-U,_sanitizer_options_link_helper" ]
+    ldflags = [ "-Wl,-u,__sanitizer_options_link_helper" ]
   } else if (!is_win) {
     ldflags = [ "-Wl,-u_sanitizer_options_link_helper" ]
   }

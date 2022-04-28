@@ -1218,7 +1218,7 @@ if (is_win) {
 
   # TOOD(crbug/1163903#c8) - thakis@ look into why profile and coverage
   # instrumentation adds these symbols in different orders
-  if (!is_component_build && chrome_pgo_phase != 1) {
+  if (!is_component_build && chrome_pgo_phase != 1 && !using_sanitizer) {
     action("verify_chrome_framework_order") {
       script = "//chrome/tools/build/mac/verify_order.py"
       stamp_file = "$target_out_dir/run_$target_name.stamp"

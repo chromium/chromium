@@ -143,8 +143,12 @@ target(_libcxx_target_type, "libc++") {
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:exceptions",
     "//build/config/compiler:rtti",
-    "//build/config/sanitizers:sanitizer_options_link_helper",
   ]
+
+  if (using_sanitizer) {
+    configs += [ "//build/config/sanitizers:sanitizer_options_link_helper" ]
+  }
+
   if (libcxx_is_shared && !is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
