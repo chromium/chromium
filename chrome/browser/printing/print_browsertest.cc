@@ -3149,7 +3149,6 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartBasicPrint) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
-  StartBasicPrint(web_contents);
 
   // The test will get the default settings followed by asking the user for
   // settings.  After that a print job will be started, with a page getting
@@ -3157,6 +3156,8 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartBasicPrint) {
   // `Stop()` to ensure print job wrap-up finished cleanly before completing
   // the test.  This results in a total of 6 calls.
   SetNumExpectedMessages(/*num=*/6);
+
+  StartBasicPrint(web_contents);
 
   WaitUntilCallbackReceived();
 
@@ -3185,7 +3186,6 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
-  StartBasicPrint(web_contents);
 
   // The test will get the default settings followed by asking the user for
   // settings.  Since this pretends the user canceled from that, no further
@@ -3193,6 +3193,8 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
   // wrap-up finished cleanly before completing the test.  This results in a
   // total of 3 expected calls.
   SetNumExpectedMessages(/*num=*/3);
+
+  StartBasicPrint(web_contents);
 
   WaitUntilCallbackReceived();
 
@@ -3245,13 +3247,14 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
-  StartBasicPrint(web_contents);
 
   // The test will fail getting the default settings, aborting the rest of
   // printing.  Wait for a call to `Stop()` to ensure print job wrap-up
   // finished cleanly before completing the test. This results in a total of
   // 2 calls.
   SetNumExpectedMessages(/*num=*/2);
+
+  StartBasicPrint(web_contents);
 
   WaitUntilCallbackReceived();
 
