@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,11 +20,11 @@ import org.chromium.ui.modelutil.PropertyModel;
  * It handles the communication with the {@link ModalDialogManager}.
  * */
 public class LoadingModalDialogCoordinator {
-    private final ModalDialogManager mModalDialogManager;
     private final RelativeLayout mCustomView;
     private final Context mContext;
 
     private PropertyModel mDialogModel;
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     /**
      * Creates the {@link LoadingModalDialogCoordinator}.
@@ -32,10 +33,10 @@ public class LoadingModalDialogCoordinator {
      * @param context The context for accessing resources.
      */
     public static LoadingModalDialogCoordinator create(
-            ModalDialogManager modalDialogManager, Context context) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         RelativeLayout dialogView =
                 (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.loading_modal, null);
-        return new LoadingModalDialogCoordinator(context, modalDialogManager, dialogView);
+        return new LoadingModalDialogCoordinator(context, modalDialogManagerSupplier, dialogView);
     }
 
     /**
@@ -45,21 +46,24 @@ public class LoadingModalDialogCoordinator {
      * @param modalDialogManager The ModalDialogManager to display the dialog.
      * @param dialogView The custom view with dialog content.
      */
-    private LoadingModalDialogCoordinator(@NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager, @NonNull RelativeLayout dialogView) {
+    private LoadingModalDialogCoordinator(Context context,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull RelativeLayout dialogView) {
         mContext = context;
-        mModalDialogManager = modalDialogManager;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mCustomView = dialogView;
     }
 
     /** Shows the loading modal dialog. */
     public void show() {
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        if (modalDialogManager == null) return;
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
                         .with(ModalDialogProperties.CONTROLLER, new LoadingModalDialogMediator())
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
                         .build();
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+        modalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 }

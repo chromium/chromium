@@ -15,12 +15,15 @@ import android.os.SystemClock;
 import com.google.common.base.Optional;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A helper class for showing PasswordSettings. */
 public class PasswordManagerHelper {
@@ -70,11 +73,14 @@ public class PasswordManagerHelper {
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
             SettingsLauncher settingsLauncher, CredentialManagerLauncher credentialManagerLauncher,
-            SyncService syncService) {
+            SyncService syncService,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
         if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)) {
+            LoadingModalDialogCoordinator loadingModalDialogCoordinator =
+                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
             return;
         }

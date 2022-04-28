@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -46,6 +47,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -81,6 +83,8 @@ class SafetyCheckMediator
     private PasswordStoreBridge mPasswordStoreBridge;
     private boolean mPasswordsLoaded;
     private boolean mLeaksLoaded;
+
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Indicates that the password check results are blocked on disk load at different stages.
     @IntDef({PasswordCheckLoadStage.IDLE, PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD,
@@ -161,12 +165,15 @@ class SafetyCheckMediator
      * @param settingsLauncher An instance of the {@link SettingsLauncher} implementation.
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
      * @param passwordCheckupHelper An instance of the {@link PasswordCheckupClientHelper}.
+     * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      */
     public SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            PasswordCheckupClientHelper passwordCheckupHelper) {
+            PasswordCheckupClientHelper passwordCheckupHelper,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(model, client, settingsLauncher, signinLauncher, passwordCheckupHelper, new Handler());
         mPasswordStoreBridge = new PasswordStoreBridge();
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @VisibleForTesting
@@ -551,7 +558,7 @@ class SafetyCheckMediator
                         : null;
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
                         ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher,
-                        credentialManagerLauncher, SyncService.get());
+                        credentialManagerLauncher, SyncService.get(), mModalDialogManagerSupplier);
                 return true;
             };
         }

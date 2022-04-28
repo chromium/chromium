@@ -70,6 +70,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
@@ -174,6 +175,7 @@ junit_binary("password_manager_junit_tests") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

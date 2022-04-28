@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -39,6 +40,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Handle the clicks on the {@link OmniboxPedal}.
@@ -46,12 +48,15 @@ import org.chromium.ui.base.PageTransition;
 public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     private final @NonNull Activity mActivity;
     private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public OmniboxPedalDelegateImpl(@NonNull Activity activity,
-            OneshotSupplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier) {
+            OneshotSupplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mActivity = activity;
         historyClustersCoordinatorSupplier.onAvailable(
                 coordinator -> mHistoryClustersCoordinator = coordinator);
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @Override
@@ -66,8 +71,8 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                         mActivity, ClearBrowsingDataTabsFragment.class);
                 break;
             case OmniboxPedalType.MANAGE_PASSWORDS:
-                PasswordManagerLauncher.showPasswordSettings(
-                        mActivity, ManagePasswordsReferrer.CHROME_SETTINGS);
+                PasswordManagerLauncher.showPasswordSettings(mActivity,
+                        ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
                 break;
             case OmniboxPedalType.UPDATE_CREDIT_CARD:
                 settingsLauncher.launchSettingsActivity(

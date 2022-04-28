@@ -376,8 +376,8 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
-        mOmniboxPedalDelegate =
-                new OmniboxPedalDelegateImpl(mActivity, mHistoryClustersCoordinatorSupplier);
+        mOmniboxPedalDelegate = new OmniboxPedalDelegateImpl(
+                mActivity, mHistoryClustersCoordinatorSupplier, mModalDialogManagerSupplier);
         mLayoutManagerSupplierCallback = this::onLayoutManagerAvailable;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mLayoutManagerSupplier.addObserver(mLayoutManagerSupplierCallback);

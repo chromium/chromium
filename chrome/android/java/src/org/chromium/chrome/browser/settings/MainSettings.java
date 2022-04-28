@@ -24,6 +24,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
@@ -58,6 +59,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -97,6 +99,7 @@ public class MainSettings extends PreferenceFragmentCompat
     private SignInPreference mSignInPreference;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -338,8 +341,8 @@ public class MainSettings extends PreferenceFragmentCompat
                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                         .setBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED, true);
             }
-            PasswordManagerLauncher.showPasswordSettings(
-                    getActivity(), ManagePasswordsReferrer.CHROME_SETTINGS);
+            PasswordManagerLauncher.showPasswordSettings(getActivity(),
+                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
             return true;
         });
     }
@@ -445,5 +448,10 @@ public class MainSettings extends PreferenceFragmentCompat
                         || isPreferenceControlledByCustodian(preference);
             }
         };
+    }
+
+    public void setModalDialogManagerSupplier(
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 }

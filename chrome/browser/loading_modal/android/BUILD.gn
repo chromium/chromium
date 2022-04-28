@@ -23,10 +23,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  deps = [
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//ui/android:ui_java_resources",
-  ]
+  deps = [ "//ui/android:ui_java_resources" ]
   sources = [
     "java/res/layout/loading_modal.xml",
     "java/res/values/dimens.xml",

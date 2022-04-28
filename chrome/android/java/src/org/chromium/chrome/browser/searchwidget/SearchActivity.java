@@ -201,7 +201,8 @@ public class SearchActivity extends AsyncInitializationActivity
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
                 /*ExploreIconState*/(pixelSize, callback) ->{},
                 /*merchantTrustSignalsCoordinatorSupplier=*/null,
-                new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>()), null,
+                new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>(),
+                        getModalDialogManagerSupplier()), null,
                 ChromePureJavaExceptionReporter::postReportJavaException);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);

@@ -32,6 +32,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,6 +43,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 
@@ -95,6 +97,9 @@ public class PasswordManagerHelperTest {
 
     @Mock
     private PendingIntent mPendingIntentMock;
+
+    @Mock
+    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     @Before
     public void setUp() {
@@ -176,7 +181,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
 
         verify(mCredentialManagerLauncherMock)
                 .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
@@ -191,7 +196,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
@@ -214,7 +219,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
 
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -239,7 +244,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock, mModalDialogManagerSupplier);
 
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
