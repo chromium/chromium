@@ -447,7 +447,7 @@ vars = {
   'libcxx_revision':       '79a2e924d96e2fc1e4b937c42efd08898fa472d7',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:24062bb72eba57ed59a25c9e0c2981e165b6dd4c',
+  'gn_version': 'git_revision:48b013c9d9debc0f5fc1dd71a257b3c38c5acb43',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
