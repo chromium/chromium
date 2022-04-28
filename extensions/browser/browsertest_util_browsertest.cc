@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
   EXPECT_NONFATAL_FAILURE(
       EXPECT_FALSE(ExecuteScriptInBackgroundPageNoWait(
           browser_context(), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "")),
-      "Extension aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa has no background page.");
+      "No enabled extension with id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 }
 
 }  // namespace

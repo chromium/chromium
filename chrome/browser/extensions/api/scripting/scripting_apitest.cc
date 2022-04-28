@@ -391,18 +391,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 
   // A helper function to run the script in the worker context.
   auto run_script_in_worker = [this, extension](const std::string& script) {
-    base::RunLoop run_loop;
-    base::Value value_out;
-    auto callback = [&run_loop, &value_out](base::Value value) {
-      value_out = std::move(value);
-      run_loop.Quit();
-    };
-
-    browsertest_util::ExecuteScriptInServiceWorker(
-        profile(), extension->id(), script,
-        base::BindLambdaForTesting(callback));
-    run_loop.Run();
-    return value_out;
+    return browsertest_util::BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), script);
   };
 
   auto get_default_result = [run_script_in_worker]() {
