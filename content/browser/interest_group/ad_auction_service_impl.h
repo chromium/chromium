@@ -78,6 +78,11 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // `this` can only be destroyed by DocumentService.
   ~AdAuctionServiceImpl() override;
 
+  // Checks if a join or leave interest group is allowed to be sent from the
+  // current renderer. If not, returns false and invokes
+  // ReportBadMessageAndDeleteThis().
+  bool JoinOrLeaveApiAllowedFromRenderer(const url::Origin& owner);
+
   // Returns true if `origin` is allowed to perform the specified
   // `interest_group_api_operation` in this frame. Must be called on worklet /
   // interest group origins before using them in any interest group API.

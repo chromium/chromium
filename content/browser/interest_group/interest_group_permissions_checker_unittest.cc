@@ -117,43 +117,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(InterestGroupPermissionsChecker::Operation::kJoin,
                     InterestGroupPermissionsChecker::Operation::kLeave));
 
-// Test cases that shouldn't result in a fetch, due to one or both origins not
-// being HTTPS.
-TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, NonHttpsOrigins) {
-  const struct {
-    const char* frame_origin;
-    const char* group_origin;
-  } kTestCases[] = {
-      // Same origin, but not HTTPS.
-      {"http://foo.test", "http://foo.test"},
-
-      // Only one HTTPS.
-      {"https://foo.test", "http://foo.test"},
-      {"http://foo.test", "https://foo.test"},
-
-      // Both origins secure, but one scheme not HTTPS.
-      {"https://foo.test", "wss://foo.test"},
-      {"wss://foo.test", "https://foo.test"},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.frame_origin);
-    SCOPED_TRACE(test_case.group_origin);
-
-    url::Origin frame_origin =
-        url::Origin::Create(GURL(test_case.frame_origin));
-    network::TestURLLoaderFactory url_loader_factory;
-    BoolCallback bool_callback;
-    interest_group_permissions_checker_.CheckPermissions(
-        GetOperation(), frame_origin,
-        url::Origin::Create(GURL(test_case.group_origin)),
-        net::NetworkIsolationKey(frame_origin, frame_origin),
-        url_loader_factory, bool_callback.callback());
-    EXPECT_FALSE(bool_callback.GetResult());
-    EXPECT_EQ(0u, url_loader_factory.total_requests());
-  }
-}
-
 // Same origin operations should be allowed without a .well-known request.
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, SameOrigin) {
   interest_group_permissions_checker_.CheckPermissions(

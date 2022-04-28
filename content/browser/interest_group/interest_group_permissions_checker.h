@@ -77,6 +77,10 @@ class CONTENT_EXPORT InterestGroupPermissionsChecker {
   //
   // `permissions_check_callback` may not call CheckPermissions() or delete
   // `this` when invoked.
+  //
+  // Performs no validity checks on origins. It's up to the caller to make sure
+  // they're HTTPS, and provided origins are in general allowed to join/leave
+  // interest groups.
   void CheckPermissions(Operation operation,
                         const url::Origin& frame_origin,
                         const url::Origin& interest_group_owner,

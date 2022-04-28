@@ -171,29 +171,6 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config,
 
 }  // namespace
 
-AdAuctionServiceImpl::AdAuctionServiceImpl(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
-      main_frame_origin_(
-          render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
-      main_frame_url_(render_frame_host->GetMainFrame()->GetLastCommittedURL()),
-      auction_worklet_manager_(
-          &GetInterestGroupManager().auction_process_manager(),
-          GetTopWindowOrigin(),
-          origin(),
-          this) {}
-
-AdAuctionServiceImpl::~AdAuctionServiceImpl() {
-  while (!auctions_.empty()) {
-    // Need to fail all auctions rather than just deleting them, to ensure Mojo
-    // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
-    // not be destroyed before the Mojo pipe is, and the parent DocumentService
-    // class owns the pipe, so it may still be open at this point.
-    (*auctions_.begin())->FailAuction();
-  }
-}
-
 // static
 void AdAuctionServiceImpl::CreateMojoService(
     RenderFrameHost* render_frame_host,
@@ -207,13 +184,8 @@ void AdAuctionServiceImpl::CreateMojoService(
 
 void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group) {
-  // If the interest group API is not allowed for this context by Permissions
-  // Policy, do nothing
-  if (!render_frame_host()->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    ReportBadMessageAndDeleteThis("Unexpected request");
+  if (!JoinOrLeaveApiAllowedFromRenderer(group.owner))
     return;
-  }
 
   // If the interest group API is not allowed for this origin do nothing. This
   // is not considered a bad message because the renderer cannot currently check
@@ -236,27 +208,14 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
 void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
                                               const std::string& name) {
-  // If the interest group API is not allowed for this context by Permissions
-  // Policy, do nothing
-  if (!render_frame_host()->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroup feature disabled");
+  if (!JoinOrLeaveApiAllowedFromRenderer(owner))
     return;
-  }
 
   // If the interest group API is not allowed for this origin do nothing. This
   // is not considered a bad message because the renderer cannot currently check
   // for this state.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kLeave, owner)) {
-    return;
-  }
-
-  if (origin().scheme() != url::kHttpsScheme) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroup only supported for secure "
-        "origins");
     return;
   }
 
@@ -484,6 +443,56 @@ RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
+}
+
+AdAuctionServiceImpl::AdAuctionServiceImpl(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
+    : DocumentService(render_frame_host, std::move(receiver)),
+      main_frame_origin_(
+          render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
+      main_frame_url_(render_frame_host->GetMainFrame()->GetLastCommittedURL()),
+      auction_worklet_manager_(
+          &GetInterestGroupManager().auction_process_manager(),
+          GetTopWindowOrigin(),
+          origin(),
+          this) {}
+
+AdAuctionServiceImpl::~AdAuctionServiceImpl() {
+  while (!auctions_.empty()) {
+    // Need to fail all auctions rather than just deleting them, to ensure Mojo
+    // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
+    // not be destroyed before the Mojo pipe is, and the parent DocumentService
+    // class owns the pipe, so it may still be open at this point.
+    (*auctions_.begin())->FailAuction();
+  }
+}
+
+bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
+    const url::Origin& owner) {
+  // If the interest group API is not allowed for this context by Permissions
+  // Policy, do nothing
+  if (!render_frame_host()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    ReportBadMessageAndDeleteThis("Unexpected request");
+    return false;
+  }
+
+  if (owner.scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: Interest groups may only be owned by secure "
+        "origins");
+    return false;
+  }
+
+  if (origin().scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: Interest groups may only be joined or left from "
+        "secure origins");
+    return false;
+  }
+
+  return true;
 }
 
 bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(

@@ -83,18 +83,10 @@ void InterestGroupPermissionsChecker::CheckPermissions(
     const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::URLLoaderFactory& url_loader_factory,
     PermissionsCheckCallback permissions_check_callback) {
-  // Block non-HTTPS pages from adding/removing interest groups, and disallow
-  // interest groups with non-HTTPS origins. Joining non-HTTPS groups is also
-  // blocked by the interest group type traits code, but leaving groups is not
-  // (admittedly, leaving isn't meaningful if can't join such a group anyways,
-  // but best to avoid the .well-known fetch in that case, regardless).
-  //
-  // TODO(mmenke): These cases should likely report bad messages.
-  if (frame_origin.scheme() != url::kHttpsScheme ||
-      interest_group_owner.scheme() != url::kHttpsScheme) {
-    std::move(permissions_check_callback).Run(false);
-    return;
-  }
+  // Only HTTPS frames can join or leave interest groups, and only HTTPS origins
+  // can own interest groups.
+  DCHECK_EQ(frame_origin.scheme(), url::kHttpsScheme);
+  DCHECK_EQ(interest_group_owner.scheme(), url::kHttpsScheme);
 
   // Same origin operations are always allowed. Need to invoke callback
   // synchronously in this case, so if a page adds an interest group and then

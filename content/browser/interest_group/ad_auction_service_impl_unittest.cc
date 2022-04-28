@@ -717,29 +717,37 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupBasic) {
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
-// Non-HTTPS interest groups should be rejected, and result in the pipe being
-// closed.
-TEST_F(AdAuctionServiceImplTest, JoinInterestGroupOriginNotHttps) {
+// Non-HTTPS frames should not be able to join interest groups.
+TEST_F(AdAuctionServiceImplTest, JoinInterestGroupFrameNotHttps) {
   // Note that the ContentBrowserClient allows URLs based on hosts, not origins,
   // so it should not block this URL. Instead, it should run into the HTTPS
   // check.
   const GURL kHttpUrlA = GURL("http://a.test/");
   const url::Origin kHttpOriginA = url::Origin::Create(kHttpUrlA);
   NavigateAndCommit(kHttpUrlA);
+
+  // Try to join an HTTPS interest group.
   blink::InterestGroup interest_group = CreateInterestGroup();
+  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
+
+  // Try to join a same-origin HTTP interest group.
   interest_group.owner = kHttpOriginA;
   JoinInterestGroupAndExpectPipeClosed(interest_group);
   EXPECT_EQ(0, GetJoinCount(kHttpOriginA, kInterestGroupName));
 }
 
-// Test one origin trying to add an interest group for another.
-TEST_F(AdAuctionServiceImplTest, JoinInterestGroupWrongOwnerOrigin) {
+// Try to join a non-HTTPS interest group.
+TEST_F(AdAuctionServiceImplTest, JoinInterestGroupOwnerNotHttps) {
   blink::InterestGroup interest_group = CreateInterestGroup();
-  interest_group.owner = kOriginB;
-  JoinInterestGroupAndFlush(interest_group);
-  // Interest group should not be added for either origin.
-  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-  EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
+  interest_group.owner = url::Origin::Create(GURL("http://a.test/"));
+  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
+
+  // Secure, but not HTTPS.
+  interest_group.owner = url::Origin::Create(GURL("wss://a.test/"));
+  JoinInterestGroupAndExpectPipeClosed(interest_group);
+  EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 }
 
 // Test joining an interest group with a disallowed URL. Doesn't
