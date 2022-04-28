@@ -1185,7 +1185,10 @@
     "bases": [
       "external/wpt/css/css-pseudo",
       "wpt_internal/css/css-pseudo",
-      "external/wpt/css/css-highlight-api"
+      "external/wpt/css/css-highlight-api",
+      "paint/markers/inline_spelling_markers.html",
+      "paint/markers/inline-spelling-markers-hidpi.html",
+      "paint/markers/inline-spelling-markers-hidpi-composited.html"
     ],
     "args": ["--enable-blink-features=HighlightOverlayPainting"]
   },

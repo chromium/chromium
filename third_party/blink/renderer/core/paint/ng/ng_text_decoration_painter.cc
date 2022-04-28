@@ -35,73 +35,80 @@ NGTextDecorationPainter::~NGTextDecorationPainter() {
   DCHECK(step_ == kBegin);
 }
 
+void NGTextDecorationPainter::UpdateDecorationInfo(
+    absl::optional<TextDecorationInfo>& result,
+    const ComputedStyle& style,
+    const TextPaintStyle& text_style) {
+  result.reset();
+
+  if (style.TextDecorationsInEffect() == TextDecorationLine::kNone ||
+      // Ellipsis should not have text decorations. This is not defined, but
+      // 4 impls do this: <https://github.com/w3c/csswg-drafts/issues/6531>
+      text_item_.IsEllipsis())
+    return;
+
+  absl::optional<AppliedTextDecoration> effective_selection_decoration =
+      UNLIKELY(phase_ == kSelection)
+          ? selection_->GetSelectionStyle().selection_text_decoration
+          : absl::nullopt;
+
+  if (text_item_.Type() == NGFragmentItem::kSvgText &&
+      paint_info_.IsRenderingResourceSubtree()) {
+    // Need to recompute a scaled font and a scaling factor because they
+    // depend on the scaling factor of an element referring to the text.
+    float scaling_factor = 1;
+    Font scaled_font;
+    LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+        *text_item_.GetLayoutObject(), scaling_factor, scaled_font);
+    DCHECK(scaling_factor);
+    // Adjust the origin of the decoration because
+    // NGTextPainter::PaintDecorationsExceptLineThrough() will change the
+    // scaling of the GraphicsContext.
+    LayoutUnit top = decoration_rect_.offset.top;
+    // In svg/text/text-decorations-in-scaled-pattern.svg, the size of
+    // ScaledFont() is zero, and the top position is unreliable. So we
+    // adjust the baseline position, then shift it for scaled_font.
+    top +=
+        text_item_.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
+    top *= scaling_factor / text_item_.SvgScalingFactor();
+    top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
+    result.emplace(PhysicalOffset(decoration_rect_.offset.left, top),
+                   decoration_rect_.Width(), style.GetFontBaseline(), style,
+                   scaled_font, effective_selection_decoration, nullptr,
+                   MinimumThickness1(false), scaling_factor);
+  } else {
+    result.emplace(
+        decoration_rect_.offset, decoration_rect_.Width(),
+        style.GetFontBaseline(), style, text_item_.ScaledFont(),
+        effective_selection_decoration, nullptr,
+        MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
+  }
+}
+
 void NGTextDecorationPainter::Begin(Phase phase) {
   DCHECK(step_ == kBegin);
 
   phase_ = phase;
   has_line_through_decoration_ = false;
-  decoration_info_.reset();
+  UpdateDecorationInfo(decoration_info_, style_, text_style_);
   clip_rect_.reset();
 
-  if (style_.TextDecorationsInEffect() != TextDecorationLine::kNone &&
-      // Ellipsis should not have text decorations. This is not defined, but
-      // 4 impls do this: <https://github.com/w3c/csswg-drafts/issues/6531>
-      !text_item_.IsEllipsis()) {
-    absl::optional<AppliedTextDecoration> effective_selection_decoration =
-        UNLIKELY(phase_ == kSelection)
-            ? selection_->GetSelectionStyle().selection_text_decoration
-            : absl::nullopt;
+  if (decoration_info_ && UNLIKELY(selection_)) {
+    clip_rect_.emplace(selection_->RectInWritingModeSpace());
 
-    if (text_item_.Type() == NGFragmentItem::kSvgText &&
-        paint_info_.IsRenderingResourceSubtree()) {
-      // Need to recompute a scaled font and a scaling factor because they
-      // depend on the scaling factor of an element referring to the text.
-      float scaling_factor = 1;
-      Font scaled_font;
-      LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-          *text_item_.GetLayoutObject(), scaling_factor, scaled_font);
-      DCHECK(scaling_factor);
-      // Adjust the origin of the decoration because
-      // NGTextPainter::PaintDecorationsExceptLineThrough() will change the
-      // scaling of the GraphicsContext.
-      LayoutUnit top = decoration_rect_.offset.top;
-      // In svg/text/text-decorations-in-scaled-pattern.svg, the size of
-      // ScaledFont() is zero, and the top position is unreliable. So we
-      // adjust the baseline position, then shift it for scaled_font.
-      top +=
-          text_item_.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
-      top *= scaling_factor / text_item_.SvgScalingFactor();
-      top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
-      decoration_info_.emplace(
-          PhysicalOffset(decoration_rect_.offset.left, top),
-          decoration_rect_.Width(), style_.GetFontBaseline(), style_,
-          scaled_font, effective_selection_decoration, nullptr,
-          MinimumThickness1(false), scaling_factor);
-    } else {
-      decoration_info_.emplace(
-          decoration_rect_.offset, decoration_rect_.Width(),
-          style_.GetFontBaseline(), style_, text_item_.ScaledFont(),
-          effective_selection_decoration, nullptr,
-          MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
-    }
-
-    if (UNLIKELY(selection_)) {
-      clip_rect_.emplace(selection_->RectInWritingModeSpace());
-
-      // Whether it’s best to clip to selection rect on both axes or only inline
-      // depends on the situation, but the latter can improve the appearance of
-      // decorations. For example, we often paint overlines entirely past the
-      // top edge of selection rect, and wavy underlines have similar problems.
-      //
-      // Sadly there’s no way to clip to a rect of infinite height, so for now,
-      // let’s clip to selection rect plus its height both above and below. This
-      // should be enough to avoid clipping most decorations in the wild.
-      //
-      // TODO(dazabani@igalia.com): take text-underline-offset and other
-      // text-decoration properties into account?
-      clip_rect_->set_y(clip_rect_->y() - clip_rect_->height());
-      clip_rect_->set_height(3.0 * clip_rect_->height());
-    }
+    // Whether it’s best to clip to selection rect on both axes or only inline
+    // depends on the situation, but the latter can improve the appearance of
+    // decorations. For example, we often paint overlines entirely past the
+    // top edge of selection rect, and wavy underlines have similar problems.
+    //
+    // Sadly there’s no way to clip to a rect of infinite height, so for now,
+    // let’s clip to selection rect plus its height both above and below. This
+    // should be enough to avoid clipping most decorations in the wild.
+    //
+    // TODO(dazabani@igalia.com): take text-underline-offset and other
+    // text-decoration properties into account?
+    clip_rect_->set_y(clip_rect_->y() - clip_rect_->height());
+    clip_rect_->set_height(3.0 * clip_rect_->height());
   }
 
   step_ = kExcept;

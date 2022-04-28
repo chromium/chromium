@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
+#include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -119,16 +120,20 @@ class CORE_EXPORT NGHighlightPainter {
     bool paint_selected_text_only_;
   };
 
-  NGHighlightPainter(const NGTextFragmentPaintInfo& fragment_paint_info,
-                     NGTextPainter& text_painter,
-                     NGTextDecorationPainter& decoration_painter,
-                     const PaintInfo& paint_info,
-                     const NGInlineCursor& cursor,
-                     const NGFragmentItem& fragment_item,
-                     const PhysicalOffset& box_origin,
-                     const ComputedStyle& style,
-                     SelectionPaintState*,
-                     bool is_printing);
+  NGHighlightPainter(
+      const NGTextFragmentPaintInfo& fragment_paint_info,
+      NGTextPainter& text_painter,
+      NGTextDecorationPainter& decoration_painter,
+      const PaintInfo& paint_info,
+      const NGInlineCursor& cursor,
+      const NGFragmentItem& fragment_item,
+      const absl::optional<AffineTransform> writing_mode_rotation,
+      const PhysicalRect& decoration_rect,
+      const PhysicalOffset& box_origin,
+      const ComputedStyle& style,
+      const TextPaintStyle& text_style,
+      SelectionPaintState*,
+      bool is_printing);
 
   enum Phase { kBackground, kForeground };
   void Paint(Phase phase);
@@ -142,20 +147,48 @@ class CORE_EXPORT NGHighlightPainter {
                               const AutoDarkMode&,
                               bool paint_marker_backgrounds,
                               absl::optional<AffineTransform> rotation);
-  const Vector<NGHighlightOverlay::HighlightLayer>& Layers() { return layers_; }
-  const Vector<NGHighlightOverlay::HighlightPart>& Parts() { return parts_; }
+  void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
+  void PaintDecorationsExceptLineThrough(
+      const NGHighlightOverlay::HighlightPart&);
+  void PaintDecorationsOnlyLineThrough(
+      const NGHighlightOverlay::HighlightPart&);
+  void PaintSpellingGrammarDecorations(
+      const NGHighlightOverlay::HighlightPart&);
+  wtf_size_t LayerCount() { return layers_.size(); }
 
   SelectionPaintState* Selection() { return selection_; }
 
  private:
+  struct LayerPaintState {
+    LayerPaintState(NGHighlightOverlay::HighlightLayer id,
+                    scoped_refptr<const ComputedStyle> style,
+                    TextPaintStyle text_style)
+        : id(id), style(std::move(style)), text_style(text_style) {}
+
+    // Equality on HighlightLayer id only, for Vector::Find.
+    bool operator==(const LayerPaintState&) const = delete;
+    bool operator!=(const LayerPaintState&) const = delete;
+    bool operator==(const NGHighlightOverlay::HighlightLayer&) const;
+    bool operator!=(const NGHighlightOverlay::HighlightLayer&) const;
+
+    const NGHighlightOverlay::HighlightLayer id;
+    const scoped_refptr<const ComputedStyle> style;
+    const TextPaintStyle text_style;
+    absl::optional<TextDecorationInfo> decoration_info{};
+    bool has_line_through_decorations{false};
+  };
+
   const NGTextFragmentPaintInfo& fragment_paint_info_;
   NGTextPainter& text_painter_;
   NGTextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const NGInlineCursor& cursor_;
   const NGFragmentItem& fragment_item_;
+  const absl::optional<AffineTransform> writing_mode_rotation_;
+  const PhysicalRect& decoration_rect_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& style_;
+  const TextPaintStyle& originating_text_style_;
   SelectionPaintState* selection_;
   const LayoutObject* layout_object_;
   Node* node_;
@@ -164,7 +197,7 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector spelling_;
   DocumentMarkerVector grammar_;
   DocumentMarkerVector custom_;
-  Vector<NGHighlightOverlay::HighlightLayer> layers_;
+  Vector<LayerPaintState> layers_;
   Vector<NGHighlightOverlay::HighlightPart> parts_;
   const bool skip_backgrounds_;
 };

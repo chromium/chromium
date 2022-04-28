@@ -233,6 +233,8 @@ Color TextDecorationInfo::LineColor() const {
     return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
   if (line_data_.line == TextDecorationLine::kGrammarError)
     return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
+  if (highlight_override_)
+    return *highlight_override_;
 
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
@@ -331,6 +333,11 @@ gfx::RectF TextDecorationInfo::BoundsForWavy() const {
 
 absl::optional<Path> TextDecorationInfo::StrokePath() const {
   return line_data_.stroke_path;
+}
+
+void TextDecorationInfo::SetHighlightOverrideColor(
+    const absl::optional<Color>& color) {
+  highlight_override_ = color;
 }
 
 float TextDecorationInfo::WavyDecorationSizing() const {

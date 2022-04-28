@@ -102,6 +102,9 @@ class CORE_EXPORT TextDecorationInfo {
   // Return a path for current decoration.
   absl::optional<Path> StrokePath() const;
 
+  // Overrides the line color with the given topmost active highlight ‘color’.
+  void SetHighlightOverrideColor(const absl::optional<Color>&);
+
  private:
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
@@ -142,6 +145,7 @@ class CORE_EXPORT TextDecorationInfo {
     absl::optional<Path> stroke_path;
   };
   LineData line_data_;
+  absl::optional<Color> highlight_override_;
 };
 
 }  // namespace blink
