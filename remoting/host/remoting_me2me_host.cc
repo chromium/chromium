@@ -1930,12 +1930,16 @@ int HostProcessMain() {
     gtk_init(nullptr, nullptr);
 #endif
   }
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11)
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND))
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
+        // (defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND))
 
   if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
     rtc::tracing::SetupInternalTracer();
@@ -1984,7 +1988,9 @@ int HostProcessMain() {
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();
 
-  rtc::tracing::ShutdownInternalTracer();
+  if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
+    rtc::tracing::ShutdownInternalTracer();
+  }
 
   return exit_code;
 }
