@@ -69,7 +69,11 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
         Context context = windowAndroid.getContext().get();
         PasswordEditDialogView dialogView =
                 (PasswordEditDialogView) LayoutInflater.from(context).inflate(
-                        R.layout.password_edit_dialog, null);
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+                                ? R.layout.password_edit_dialog_with_details
+                                : R.layout.password_edit_dialog,
+                        null);
         return new PasswordEditDialogCoordinator(
                 context, windowAndroid.getModalDialogManager(), dialogView, delegate);
     }

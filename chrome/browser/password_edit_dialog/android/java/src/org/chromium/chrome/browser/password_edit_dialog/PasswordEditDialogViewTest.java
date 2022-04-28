@@ -11,16 +11,24 @@ import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -41,11 +49,14 @@ public class PasswordEditDialogViewTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     private static Activity sActivity;
 
     PasswordEditDialogView mDialogView;
     Spinner mUsernamesView;
-    TextView mPasswordView;
+    TextInputEditText mPasswordView;
     TextView mFooterView;
     int mSelectedUsernameIndex;
 
@@ -60,11 +71,16 @@ public class PasswordEditDialogViewTest {
     public void setupTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDialogView = (PasswordEditDialogView) sActivity.getLayoutInflater().inflate(
-                    R.layout.password_edit_dialog, null);
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+                            ? R.layout.password_edit_dialog_with_details
+                            : R.layout.password_edit_dialog,
+                    null);
             mUsernamesView = (Spinner) mDialogView.findViewById(R.id.usernames_spinner);
-            mPasswordView = (TextView) mDialogView.findViewById(R.id.password);
             mFooterView = (TextView) mDialogView.findViewById(R.id.footer);
             sActivity.setContentView(mDialogView);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
+                mPasswordView = (TextInputEditText) mDialogView.findViewById(R.id.password);
+            }
         });
     }
 
@@ -84,7 +100,27 @@ public class PasswordEditDialogViewTest {
     /** Tests that all the properties propagated correctly. */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testProperties() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder()
+                                          .with(PasswordEditDialogProperties.FOOTER, FOOTER)
+                                          .build();
+            PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
+        });
+        Assert.assertEquals("Initial selected username index doesn't match", INITIAL_USERNAME_INDEX,
+                mUsernamesView.getSelectedItemPosition());
+        Assert.assertEquals("Username text doesn't match", USERNAMES[INITIAL_USERNAME_INDEX],
+                mUsernamesView.getSelectedItem().toString());
+        Assert.assertNull(mPasswordView);
+        Assert.assertEquals("Footer should be visible", View.VISIBLE, mFooterView.getVisibility());
+    }
+
+    /** Tests that all the properties propagated correctly. */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testPropertiesWithDetails() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PropertyModel model = populateDialogPropertiesBuilder()
                                           .with(PasswordEditDialogProperties.FOOTER, FOOTER)
@@ -102,6 +138,7 @@ public class PasswordEditDialogViewTest {
     /** Tests that when the footer property is empty footer view is hidden. */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testEmptyFooter() {
         // Test with null footer property.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -125,6 +162,7 @@ public class PasswordEditDialogViewTest {
     /** Tests username selected callback. */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUsernameSelection() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PropertyModel model = populateDialogPropertiesBuilder().build();

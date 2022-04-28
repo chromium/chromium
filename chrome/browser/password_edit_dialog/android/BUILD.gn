@@ -35,6 +35,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -50,6 +51,7 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/password_edit_dialog.xml",
+    "java/res/layout/password_edit_dialog_with_details.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -87,9 +89,12 @@ android_library("javatests") {
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

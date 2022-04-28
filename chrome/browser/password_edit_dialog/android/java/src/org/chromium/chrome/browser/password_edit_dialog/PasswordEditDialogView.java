@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import android.content.Context;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,7 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,9 +30,9 @@ import java.util.List;
  */
 public class PasswordEditDialogView extends LinearLayout implements OnItemSelectedListener {
     private Spinner mUsernamesSpinner;
-    private TextView mPasswordView;
     private TextView mFooterView;
     private Callback<Integer> mUsernameSelectedCallback;
+    private TextInputEditText mPasswordView;
 
     /**
      * The view binder method to propagate parameters from model to view
@@ -45,7 +49,8 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
             // gets routed to coordinator through USERNAME_SELECTED_CALLBACK.
             dialogView.setUsernames(model.get(PasswordEditDialogProperties.USERNAMES),
                     model.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
-        } else if (propertyKey == PasswordEditDialogProperties.PASSWORD) {
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+                && propertyKey == PasswordEditDialogProperties.PASSWORD) {
             dialogView.setPassword(model.get(PasswordEditDialogProperties.PASSWORD));
         } else if (propertyKey == PasswordEditDialogProperties.FOOTER) {
             dialogView.setFooter(model.get(PasswordEditDialogProperties.FOOTER));
@@ -68,8 +73,12 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
         mUsernamesSpinner = findViewById(R.id.usernames_spinner);
         mUsernamesSpinner.setOnItemSelectedListener(this);
 
-        mPasswordView = findViewById(R.id.password);
         mFooterView = findViewById(R.id.footer);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
+            mPasswordView = findViewById(R.id.password);
+            mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT
+                    | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        }
     }
 
     void setUsernames(List<String> usernames, int selectedUsernameIndex) {
