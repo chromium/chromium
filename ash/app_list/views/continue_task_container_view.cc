@@ -428,6 +428,8 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
   views_to_remove_after_animation_.swap(views_to_remove);
   for (auto* view : views_to_remove)
     RemoveChildViewT(view);
+
+  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
 }
 
 void ContinueTaskContainerView::SetResults(
