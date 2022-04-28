@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -245,8 +246,9 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
         property_name && !property_name->IsCustomProperty() &&
         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
     if (is_for_layout_dependent_property) {
-      owner->GetDocument().UpdateStyleAndLayout(
-          DocumentUpdateReason::kJavaScript);
+      auto& owner_doc = owner->GetDocument();
+      owner_doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+      owner_doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
       // The style recalc could have caused the styled node to be discarded or
       // replaced if it was a PseudoElement so we need to update it.
       styled_node = StyledNode();
@@ -267,8 +269,10 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
                                               StyledLayoutObject());
 
   if (is_for_layout_dependent_property) {
-    styled_node->GetDocument().UpdateStyleAndLayoutForNode(
-        styled_node, DocumentUpdateReason::kJavaScript);
+    auto& doc = styled_node->GetDocument();
+    doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+    doc.UpdateStyleAndLayoutForNode(styled_node,
+                                    DocumentUpdateReason::kJavaScript);
   }
 }
 
