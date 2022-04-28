@@ -5121,6 +5121,7 @@
       typedom_types: ["Keyword"],
       valid_for_marker: true,
       valid_for_canvas_formatted_text: true,
+      surrogate_for: "-webkit-line-break",
     },
     // An Apple extension.
     {
