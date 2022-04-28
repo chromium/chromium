@@ -54,6 +54,8 @@ chromevox_modules = [
   "common/abstract_earcons.js",
   "common/background_bridge.js",
   "common/braille_interface.js",
+  "common/bridge_constants.js",
+  "common/bridge_helper.js",
   "common/extension_bridge.js",
   "common/key_sequence.js",
   "common/log_types.js",

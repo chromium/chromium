@@ -199,12 +199,12 @@ ChromeVoxPrefs.loggingPrefs = {
 /** @type {!ChromeVoxPrefs} */
 ChromeVoxPrefs.instance = new ChromeVoxPrefs();
 
-const target = 'ChromeVoxPrefs';
-BackgroundBridge.registerHandler(
-    target, 'getPrefs', () => ChromeVoxPrefs.instance.getPrefs());
-BackgroundBridge.registerHandler(
-    target, 'setLoggingPrefs',
+BridgeHelper.registerHandler(
+    BridgeTarget.CHROMEVOX_PREFS, BridgeAction.GET_PREFS,
+    () => ChromeVoxPrefs.instance.getPrefs());
+BridgeHelper.registerHandler(
+    BridgeTarget.CHROMEVOX_PREFS, BridgeAction.SET_LOGGING_PREFS,
     ({key, value}) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
-BackgroundBridge.registerHandler(
-    target, 'setPref',
+BridgeHelper.registerHandler(
+    BridgeTarget.CHROMEVOX_PREFS, BridgeAction.SET_PREF,
     ({key, value}) => ChromeVoxPrefs.instance.setPref(key, value));

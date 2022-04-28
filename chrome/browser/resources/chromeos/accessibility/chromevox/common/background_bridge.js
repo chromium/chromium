@@ -9,6 +9,10 @@
 
 goog.provide('BackgroundBridge');
 
+goog.require('BridgeAction');
+goog.require('BridgeHelper');
+goog.require('BridgeTarget');
+
 BackgroundBridge.BrailleBackground = {
   /**
    * Translate braille cells into text.
@@ -16,14 +20,15 @@ BackgroundBridge.BrailleBackground = {
    * @return {!Promise<?string>}
    */
   async backTranslate(cells) {
-    return BackgroundBridge.sendMessage_(
-        'BrailleBackground', 'backTranslate', cells);
+    return BridgeHelper.sendMessage(
+        BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.BACK_TRANSLATE, cells);
   },
 
   /** @param {string} brailleTable The table for this translator to use. */
   async refreshBrailleTable(brailleTable) {
-    return BackgroundBridge.sendMessage_(
-        'BrailleBackground', 'refreshBrailleTable', brailleTable);
+    return BridgeHelper.sendMessage(
+        BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.REFRESH_BRAILLE_TABLE,
+        brailleTable);
   },
 };
 
@@ -34,7 +39,8 @@ BackgroundBridge.ChromeVoxPrefs = {
    *     localStorage.
    */
   async getPrefs() {
-    return BackgroundBridge.sendMessage_('ChromeVoxPrefs', 'getPrefs');
+    return BridgeHelper.sendMessage(
+        BridgeTarget.CHROMEVOX_PREFS, BridgeAction.GET_PREFS);
   },
 
   /**
@@ -43,8 +49,9 @@ BackgroundBridge.ChromeVoxPrefs = {
    * @param {boolean} value The new value of the pref.
    */
   async setLoggingPrefs(key, value) {
-    return BackgroundBridge.sendMessage_(
-        'ChromeVoxPrefs', 'setLoggingPrefs', {key, value});
+    return BridgeHelper.sendMessage(
+        BridgeTarget.CHROMEVOX_PREFS, BridgeAction.SET_LOGGING_PREFS,
+        {key, value});
   },
 
   /**
@@ -53,68 +60,7 @@ BackgroundBridge.ChromeVoxPrefs = {
    * @param {Object|string|boolean} value The new value of the pref.
    */
   async setPref(key, value) {
-    return BackgroundBridge.sendMessage_(
-        'ChromeVoxPrefs', 'setPref', {key, value});
+    return BridgeHelper.sendMessage(
+        BridgeTarget.CHROMEVOX_PREFS, BridgeAction.SET_PREF, {key, value});
   },
 };
-
-// Helper functions:
-
-/** @private {!Object<string, Object<string, Function>>} */
-BackgroundBridge.handlers = {};
-
-/**
- * @param {string} target The name of the class that is registering the handler.
- * @param {string} action The name of the intended function or, if not a direct
- *     method of the class, a pseudo-function name.
- * @param {Function} handler A function that performs the indicated action. It
- *     may optionally take a single parameter, and may have an optional return
- *         value that will be forwarded to the requestor.
- *     If the method takes multiple parameters, they are passed as named members
- *         of an object literal.
- */
-BackgroundBridge.registerHandler = (target, action, handler) => {
-  if (!BackgroundBridge.handlers[target]) {
-    BackgroundBridge.handlers[target] = {};
-  }
-  BackgroundBridge.handlers[target][action] = handler;
-};
-
-BackgroundBridge.castTo = (type) => {
-  return (obj) => {
-    if (obj === null || obj === undefined) {
-      return obj;
-    }
-    Object.setPrototypeOf(obj, type.prototype);
-    return obj;
-  };
-};
-
-
-/**
- * @param {string} target The name of the class that will handle this request.
- * @param {string} action The name of the intended function or, if not a direct
- *     method of the class, a pseudo-function name.
- * @param {*=} value An optional single parameter to include with the message.
- *     If the method takes multiple parameters, they are passed as named members
- *     of an object literal.
- *
- * @return {!Promise} A promise, that resolves when the handler function has
- *     finished and contains any value returned by the handler.
- * @private
- */
-BackgroundBridge.sendMessage_ = (target, action, value) => {
-  return new Promise(
-      resolve => chrome.runtime.sendMessage({target, action, value}, resolve));
-};
-
-chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  const targetHandlers = BackgroundBridge.handlers[message.target];
-  if (!targetHandlers || !targetHandlers[message.action]) {
-    return;
-  }
-
-  const handler = targetHandlers[message.action];
-  Promise.resolve(handler(message.value)).then(respond);
-  return true; /** Wait for asynchronous response. */
-});
