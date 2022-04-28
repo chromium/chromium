@@ -1431,69 +1431,79 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         consentCard = $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
       });
 
-      test('Verify consent card hides on status callback', async () => {
-        // Arrange.
-        assertEquals(true, isVisible(consentCard));
-        handler.setResultFor(
-            'showNativeConsentDialog',
-            Promise.resolve({consentStatus: ConsentStatus.DISMISSED}));
-        const transitionEndEvent =
-            eventToPromise('transitionend', moduleElement.$.consentContainer);
+      test(
+          'Verify consent card is continue visible after consent dialog dimissed',
+          async () => {
+            // Arrange.
+            assertEquals(true, isVisible(consentCard));
+            handler.setResultFor(
+                'showNativeConsentDialog',
+                Promise.resolve({consentStatus: ConsentStatus.DISMISSED}));
+            const transitionEndEvent = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
+            const transitionTimeoutEvent = new Promise(resolve => {
+              setTimeout(
+                  resolve, 300, 'transition should be ended if there\'s any');
+            });
 
-        // Act.
-        nextStep(consentCard);
-        await flushTasks();
-        await transitionEndEvent;
+            // Act.
+            nextStep(consentCard);
+            await flushTasks();
+            await Promise.race([transitionEndEvent, transitionTimeoutEvent]);
 
-        // Assert.
-        assertEquals(false, isVisible(consentCard));
-      });
+            // Assert.
+            assertEquals(true, isVisible(consentCard));
+          });
 
-      test('Verify consent toast shows after acceptance', async () => {
-        // Arrange.
-        const consentToast = moduleElement.$.confirmDiscountConsentToast;
-        assertEquals(true, isVisible(consentCard));
-        handler.setResultFor(
-            'showNativeConsentDialog',
-            Promise.resolve({consentStatus: ConsentStatus.ACCEPTED}));
-        const transitionEndEvent =
-            eventToPromise('transitionend', moduleElement.$.consentContainer);
+      test(
+          'Verify consent card is hidden and toast shows after acceptance',
+          async () => {
+            // Arrange.
+            const consentToast = moduleElement.$.confirmDiscountConsentToast;
+            assertEquals(true, isVisible(consentCard));
+            handler.setResultFor(
+                'showNativeConsentDialog',
+                Promise.resolve({consentStatus: ConsentStatus.ACCEPTED}));
+            const transitionEndEvent = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
 
-        // Act.
-        nextStep(consentCard);
-        await flushTasks();
-        await transitionEndEvent;
+            // Act.
+            nextStep(consentCard);
+            await flushTasks();
+            await transitionEndEvent;
 
-        // Assert.
-        assertEquals(false, isVisible(consentCard));
-        assertEquals(true, consentToast.open);
-        assertEquals(
-            'Accept confirmation!',
-            moduleElement.$.confirmDiscountConsentMessage.innerText);
-      });
+            // Assert.
+            assertEquals(false, isVisible(consentCard));
+            assertEquals(true, consentToast.open);
+            assertEquals(
+                'Accept confirmation!',
+                moduleElement.$.confirmDiscountConsentMessage.innerText);
+          });
 
-      test('Verify consent toast shows after rejection', async () => {
-        // Arrange.
-        const consentToast = moduleElement.$.confirmDiscountConsentToast;
-        assertEquals(true, isVisible(consentCard));
-        handler.setResultFor(
-            'showNativeConsentDialog',
-            Promise.resolve({consentStatus: ConsentStatus.REJECTED}));
-        const transitionEndEvent =
-            eventToPromise('transitionend', moduleElement.$.consentContainer);
+      test(
+          'Verify consent card is hidden and toast shows after rejection',
+          async () => {
+            // Arrange.
+            const consentToast = moduleElement.$.confirmDiscountConsentToast;
+            assertEquals(true, isVisible(consentCard));
+            handler.setResultFor(
+                'showNativeConsentDialog',
+                Promise.resolve({consentStatus: ConsentStatus.REJECTED}));
+            const transitionEndEvent = eventToPromise(
+                'transitionend', moduleElement.$.consentContainer);
 
-        // Act.
-        nextStep(consentCard);
-        await flushTasks();
-        await transitionEndEvent;
+            // Act.
+            nextStep(consentCard);
+            await flushTasks();
+            await transitionEndEvent;
 
-        // Assert.
-        assertEquals(false, isVisible(consentCard));
-        assertEquals(true, consentToast.open);
-        assertEquals(
-            'Reject confirmation!',
-            moduleElement.$.confirmDiscountConsentMessage.innerText);
-      });
+            // Assert.
+            assertEquals(false, isVisible(consentCard));
+            assertEquals(true, consentToast.open);
+            assertEquals(
+                'Reject confirmation!',
+                moduleElement.$.confirmDiscountConsentMessage.innerText);
+          });
     });
   });
 });

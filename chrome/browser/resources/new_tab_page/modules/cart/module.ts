@@ -485,7 +485,6 @@ export class ChromeCartModuleElement extends I18nMixin
           this.onDiscountConsentAccepted_();
           break;
         case ConsentStatus.DISMISSED:
-          this.onDiscountConsentDismissed_();
           break;
         case ConsentStatus.REJECTED:
           this.onDiscountConsentRejected_();
