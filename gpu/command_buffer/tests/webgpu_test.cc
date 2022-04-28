@@ -8,6 +8,7 @@
 #include <dawn/webgpu.h>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"

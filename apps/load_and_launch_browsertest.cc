@@ -9,6 +9,7 @@
 #include <iterator>
 
 #include "apps/switches.h"
+#include "base/command_line.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_switches.h"

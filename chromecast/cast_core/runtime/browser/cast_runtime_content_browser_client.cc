@@ -4,6 +4,7 @@
 
 #include "chromecast/cast_core/runtime/browser/cast_runtime_content_browser_client.h"
 
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/service_manager_connection.h"

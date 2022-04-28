@@ -6,6 +6,7 @@
 
 #include <drm_fourcc.h>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"

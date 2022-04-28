@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"

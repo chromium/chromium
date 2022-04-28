@@ -5,6 +5,7 @@
 #include "ash/test/ash_test_suite.h"
 
 #include "ash/test/ash_test_helper.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"

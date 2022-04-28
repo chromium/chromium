@@ -7,6 +7,7 @@
 
 #include "content/browser/accessibility/hit_testing_browsertest.h"
 
+#include "base/command_line.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"

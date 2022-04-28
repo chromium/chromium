@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/app_restore/features.h"

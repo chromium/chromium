@@ -7,6 +7,7 @@
 
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 
+#include "base/command_line.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 

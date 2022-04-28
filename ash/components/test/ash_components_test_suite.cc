@@ -4,6 +4,7 @@
 
 #include "ash/components/test/ash_components_test_suite.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"

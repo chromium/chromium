@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/strings/escape.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"

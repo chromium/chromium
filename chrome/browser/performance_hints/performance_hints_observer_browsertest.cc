@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_hints/performance_hints_observer.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"

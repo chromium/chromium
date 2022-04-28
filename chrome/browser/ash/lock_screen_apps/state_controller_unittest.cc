@@ -16,6 +16,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"

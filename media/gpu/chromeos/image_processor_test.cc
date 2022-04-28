@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"

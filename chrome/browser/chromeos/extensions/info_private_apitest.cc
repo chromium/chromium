@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "base/command_line.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"

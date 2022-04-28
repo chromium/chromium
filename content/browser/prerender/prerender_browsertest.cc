@@ -8,6 +8,7 @@
 #include "base/barrier_closure.h"
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"

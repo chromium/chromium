@@ -12,6 +12,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"

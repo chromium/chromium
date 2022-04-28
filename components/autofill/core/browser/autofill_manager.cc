@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_manager.h"
 
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/form_structure.h"

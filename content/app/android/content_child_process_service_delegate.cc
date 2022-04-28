@@ -10,6 +10,7 @@
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/child/child_thread_impl.h"

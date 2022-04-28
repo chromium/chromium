@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"

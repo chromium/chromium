@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/test/frame_test_util.h"

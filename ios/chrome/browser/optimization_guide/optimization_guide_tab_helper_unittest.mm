@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 
+#include "base/command_line.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"

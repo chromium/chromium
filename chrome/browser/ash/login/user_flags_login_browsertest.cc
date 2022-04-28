@@ -4,6 +4,7 @@
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/user_context.h"
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"

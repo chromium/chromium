@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"

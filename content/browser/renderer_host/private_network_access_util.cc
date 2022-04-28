@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/private_network_access_util.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/policy_container_host.h"

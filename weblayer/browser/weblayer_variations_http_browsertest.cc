@@ -4,6 +4,7 @@
 
 #include "weblayer/test/weblayer_browser_test.h"
 
+#include "base/command_line.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/variations/variations_ids_provider.h"

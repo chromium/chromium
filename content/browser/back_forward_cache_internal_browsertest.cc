@@ -4,6 +4,7 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/bind.h"

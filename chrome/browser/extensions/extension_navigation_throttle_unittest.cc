@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_navigation_throttle.h"
 
 #include <memory>
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"

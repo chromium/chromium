@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 
+#include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

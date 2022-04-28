@@ -5,6 +5,7 @@
 #include "chrome/browser/chrome_browser_main_parts_lacros.h"
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"

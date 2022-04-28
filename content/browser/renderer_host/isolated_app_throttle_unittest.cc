@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/isolated_app_throttle.h"
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"

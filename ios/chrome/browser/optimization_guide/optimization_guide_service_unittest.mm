@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
+#include "base/command_line.h"
 #import "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"

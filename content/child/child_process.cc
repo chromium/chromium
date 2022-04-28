@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"

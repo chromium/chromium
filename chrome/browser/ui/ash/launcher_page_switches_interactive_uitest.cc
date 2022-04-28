@@ -6,6 +6,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"

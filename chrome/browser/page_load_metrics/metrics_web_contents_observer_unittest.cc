@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "chrome/common/url_constants.h"

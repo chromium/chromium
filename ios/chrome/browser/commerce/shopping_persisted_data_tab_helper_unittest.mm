@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"

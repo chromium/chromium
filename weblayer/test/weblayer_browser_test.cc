@@ -5,6 +5,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_context.h"
 #include "weblayer/browser/browser_context_impl.h"

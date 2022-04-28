@@ -5,6 +5,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_suite.h"

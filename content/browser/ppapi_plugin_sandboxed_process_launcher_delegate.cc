@@ -4,6 +4,7 @@
 
 #include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/browser/sms/sms_provider_gms.h"

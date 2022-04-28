@@ -4,6 +4,7 @@
 
 #include "content/browser/site_info.h"
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/escape.h"

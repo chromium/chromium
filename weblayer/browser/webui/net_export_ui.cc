@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/webui/net_export_ui.h"
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "components/embedder_support/user_agent_utils.h"

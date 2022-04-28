@@ -5,6 +5,7 @@
 #include "weblayer/browser/feature_list_creator.h"
 
 #include "base/base_switches.h"
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"

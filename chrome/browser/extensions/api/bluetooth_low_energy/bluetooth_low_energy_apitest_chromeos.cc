@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
