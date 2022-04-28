@@ -64,6 +64,20 @@ def fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "Linux Builder Goma RBE Canary",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_canary",
+                    "goma_use_local",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
 )
 
 fyi_goma_rbe_canary_builder(
@@ -176,6 +190,20 @@ def fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "Linux Builder Goma RBE Latest Client",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_latest_client",
+                    "goma_use_local",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
 )
 
 fyi_goma_rbe_latest_client_builder(

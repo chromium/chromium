@@ -187,6 +187,10 @@ gpu_linux_builder(
 
 gpu_linux_builder(
     name = "gpu-try-linux-nvidia-rel",
+    mirrors = [
+        "ci/GPU Linux Builder",
+        "ci/Linux Release (NVIDIA)",
+    ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
