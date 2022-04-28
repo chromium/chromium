@@ -5551,19 +5551,10 @@ class NavigationBrowserTestWithPerformanceManager
   }
 };
 
-// TODO(crbug.com/1233836, crbug.com/1238886): Test is flaky on Mac 11, Linux
-// and ChromeOS.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
-  DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame
-#else
-#define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
-  BeginNewNavigationAfterCommitNavigationInMainFrame
-#endif
-
+// TODO(https://crbug.com/1233836): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(
     NavigationBrowserTestWithPerformanceManager,
-    MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame) {
+    DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
