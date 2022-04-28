@@ -5076,6 +5076,7 @@ static_library("browser") {
       "//ui/wm/public",
     ]
     allow_circular_includes_from += [
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
     ]

@@ -3193,6 +3193,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
     ]
     allow_circular_includes_from += [
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
     ]
