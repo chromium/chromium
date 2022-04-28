@@ -8,6 +8,8 @@
 #include "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
@@ -65,9 +67,14 @@ using autofill_address_profile_infobar_overlays::
   [self.consumer
       setSubtitleText:base::SysUTF16ToNSString(self.config->description())];
   [self.consumer setRestrictSubtitleTextToSingleLine:YES];
-  [self.consumer
-      setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];
 
+  if (UseSymbols()) {
+    [self.consumer setIconImage:DefaultSymbolWithPointSize(
+                                    kPinSymbol, kSymbolImagePointSize)];
+  } else {
+    [self.consumer
+        setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];
+  }
   // This is done to hide the settings image from the banner view. The modal
   // would still be presented when the user chooses to pick the Save/Update
   // action.

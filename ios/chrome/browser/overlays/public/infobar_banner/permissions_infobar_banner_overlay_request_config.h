@@ -26,8 +26,8 @@ class PermissionsBannerRequestConfig
   // The button text.
   NSString* button_text() const { return button_text_; }
 
-  // The banner's icon image.
-  UIImage* icon_image() const { return icon_image_; }
+  // The state of the camera permission.
+  bool is_camera_accessible() const { return is_camera_accessible_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(PermissionsBannerRequestConfig);
@@ -38,7 +38,7 @@ class PermissionsBannerRequestConfig
 
   NSString* title_text_;
   NSString* button_text_;
-  UIImage* icon_image_ = nil;
+  bool is_camera_accessible_ = false;
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;

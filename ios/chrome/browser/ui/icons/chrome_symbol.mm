@@ -44,9 +44,15 @@ NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
+NSString* const kCameraSymbol = @"camera";
+NSString* const kCameraFillSymbol = @"camera_fill";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";
+NSString* const kMicrophoneSymbol = @"mic.fill";
+NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
+NSString* const kPinSymbol = @"pin";
+NSString* const kGearShapeSymbol = @"gearshape.fill";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {
@@ -66,6 +72,18 @@ UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
 UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
   return CustomSymbolWithConfiguration(
       symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
+}
+
+UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
+                                            NSInteger pointSize) {
+  return [DefaultSymbolWithPointSize(symbolName, pointSize)
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+
+UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
+                                           NSInteger pointSize) {
+  return [CustomSymbolWithPointSize(symbolName, pointSize)
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 bool UseSymbols() {

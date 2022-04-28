@@ -44,6 +44,8 @@ source_set("symbols") {
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
+    "//ios/chrome/browser/ui/icons/resources:camera",
+    "//ios/chrome/browser/ui/icons/resources:camera_fill",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",

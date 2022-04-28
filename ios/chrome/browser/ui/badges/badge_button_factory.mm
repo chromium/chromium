@@ -158,7 +158,8 @@ NSString* const kOverflowPopupMenuActionIdentifier =
 
 - (BadgeButton*)overflowBadgeButton {
   UIImage* image = ShouldUseUIKitPopupMenu()
-                       ? [UIImage systemImageNamed:@"ellipsis.circle.fill"]
+                       ? DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
+                                                    kSymbolImagePointSize)
                        : [UIImage imageNamed:@"wrench_badge"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeOverflow
@@ -207,11 +208,15 @@ NSString* const kOverflowPopupMenuActionIdentifier =
 }
 
 - (BadgeButton*)saveAddressProfileBadgeButton {
+  UIImage* image;
+  image = UseSymbols()
+              ? DefaultSymbolWithPointSize(kPinSymbol, kSymbolImagePointSize)
+              : [UIImage imageNamed:@"ic_place"];
+
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeSaveAddressProfile
-                          image:[[UIImage imageNamed:@"ic_place"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(saveAddressProfileBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -237,12 +242,10 @@ NSString* const kOverflowPopupMenuActionIdentifier =
 }
 
 - (BadgeButton*)permissionsCameraBadgeButton {
-  BadgeButton* button = [self
-      createButtonForType:kBadgeTypePermissionsCamera
-                    image:[[UIImage
-                              imageNamed:@"infobar_permissions_camera_fill"]
-                              imageWithRenderingMode:
-                                  UIImageRenderingModeAlwaysTemplate]];
+  BadgeButton* button =
+      [self createButtonForType:kBadgeTypePermissionsCamera
+                          image:CustomSymbolTemplateWithPointSize(
+                                    kCameraFillSymbol, kSymbolImagePointSize)];
   [button addTarget:self.delegate
                 action:@selector(permissionsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];

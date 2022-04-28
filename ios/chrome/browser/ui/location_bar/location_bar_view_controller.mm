@@ -500,10 +500,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(startVoiceSearch)
           forControlEvents:UIControlEventTouchUpInside];
 
-      UIImage* micImage =
-          UseSymbols()
-              ? DefaultSymbolWithPointSize(@"mic.fill", kSymbolImagePointSize)
-              : [UIImage imageNamed:@"location_bar_voice"];
+      UIImage* micImage = UseSymbols()
+                              ? DefaultSymbolWithPointSize(
+                                    kMicrophoneSymbol, kSymbolImagePointSize)
+                              : [UIImage imageNamed:@"location_bar_voice"];
       [self.locationBarSteadyView.trailingButton
           setImage:[micImage imageWithRenderingMode:
                                  UIImageRenderingModeAlwaysTemplate]

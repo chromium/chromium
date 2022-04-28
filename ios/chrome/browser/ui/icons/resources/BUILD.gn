@@ -31,3 +31,17 @@ symbolset("translate") {
     "translate.symbolset/translate.cr.svg",
   ]
 }
+
+symbolset("camera") {
+  sources = [
+    "camera.symbolset/Contents.json",
+    "camera.symbolset/camera.cr.svg",
+  ]
+}
+
+symbolset("camera_fill") {
+  sources = [
+    "camera_fill.symbolset/Contents.json",
+    "camera_fill.symbolset/camera.fill.cr.svg",
+  ]
+}

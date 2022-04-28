@@ -58,8 +58,11 @@ UIAction* GetOverflowMenuElementForBadgeType(
       action_identifier = kBadgeButtonSaveAddressProfileActionIdentifier;
       title =
           l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-      image = [[UIImage imageNamed:@"ic_place"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+      image = UseSymbols() ? DefaultSymbolWithPointSize(kPinSymbol,
+                                                        kSymbolImagePointSize)
+                           : [UIImage imageNamed:@"ic_place"];
+      image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       histogram_type = MobileMessagesInfobarType::AutofillSaveAddressProfile;
       break;
     case kBadgeTypeSaveCard:
@@ -90,7 +93,7 @@ UIAction* GetOverflowMenuElementForBadgeType(
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
-      image = [[UIImage imageNamed:@"infobar_permissions_camera"]
+      image = [CustomSymbolWithPointSize(kCameraSymbol, kSymbolImagePointSize)
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;

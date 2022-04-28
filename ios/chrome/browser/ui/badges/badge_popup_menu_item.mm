@@ -122,7 +122,10 @@ const CGFloat kBadgeCornerRadius = 5.0;
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypeSaveAddressProfile:
-      badgeImage = [[UIImage imageNamed:@"ic_place"]
+      badgeImage = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kPinSymbol, kSymbolImagePointSize)
+                                : [UIImage imageNamed:@"ic_place"];
+      badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypeSaveCard:
@@ -147,8 +150,8 @@ const CGFloat kBadgeCornerRadius = 5.0;
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypePermissionsCamera:
-      badgeImage = [[UIImage imageNamed:@"infobar_permissions_camera"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      badgeImage = CustomSymbolTemplateWithPointSize(kCameraSymbol,
+                                                     kSymbolImagePointSize);
       break;
     case kBadgeTypePermissionsMicrophone:
       badgeImage = [[UIImage systemImageNamed:@"mic"]

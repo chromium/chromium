@@ -8,6 +8,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -254,8 +256,13 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:labelsStackView];
     // Open Modal Button setup.
   self.openModalButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* gearImage = [[UIImage imageNamed:@"infobar_settings_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* gearImage =
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kGearShapeSymbol, kSymbolImagePointSize)
+          : [UIImage imageNamed:@"infobar_settings_icon"];
+  gearImage =
+      [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
   [self.openModalButton setImage:gearImage forState:UIControlStateNormal];
   self.openModalButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   [self.openModalButton addTarget:self

@@ -21,15 +21,6 @@
 
 using infobars::InfoBar;
 
-namespace {
-
-// Name of the camera icon image for the permissions banner.
-NSString* const kCameraImageName = @"infobar_permissions_camera_fill";
-// Name of the microphone icon image for the permissions banner.
-NSString* const kMicrophoneSystemImageName = @"mic.fill";
-
-}  // namespace
-
 OVERLAY_USER_DATA_SETUP_IMPL(PermissionsBannerRequestConfig);
 
 PermissionsBannerRequestConfig::PermissionsBannerRequestConfig(InfoBar* infobar)
@@ -41,7 +32,7 @@ PermissionsBannerRequestConfig::PermissionsBannerRequestConfig(InfoBar* infobar)
       delegate->GetMostRecentlyAccessiblePermissions();
   if ([accessible_permissions containsObject:@(web::PermissionCamera)]) {
     // Camera access is enabled.
-    icon_image_ = [UIImage imageNamed:kCameraImageName];
+    is_camera_accessible_ = true;
     title_text_ =
         [accessible_permissions containsObject:@(web::PermissionMicrophone)]
             ? l10n_util::GetNSString(
@@ -50,7 +41,6 @@ PermissionsBannerRequestConfig::PermissionsBannerRequestConfig(InfoBar* infobar)
                   IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE);
   } else {
     // Only microphone access is enabled.
-    icon_image_ = [UIImage systemImageNamed:kMicrophoneSystemImageName];
     title_text_ = l10n_util::GetNSString(
         IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE);
   }

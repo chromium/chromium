@@ -12,9 +12,15 @@ extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
+extern NSString* const kCameraSymbol;
+extern NSString* const kCameraFillSymbol;
 
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
+extern NSString* const kMicrophoneSymbol;
+extern NSString* const kEllipsisCircleFillSymbol;
+extern NSString* const kPinSymbol;
+extern NSString* const kGearShapeSymbol;
 
 // Returns a SF symbol named |symbolName| configured with the given
 // |configuration|.
@@ -33,6 +39,16 @@ UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
 // Returns a custom symbol named |symbolName| configured with the default
 // configuration and the given |pointSize|.
 UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
+
+// Returns a SF symbol named |symbolName| as a template image, configured with
+// the default configuration and the given |pointSize|.
+UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
+                                            NSInteger pointSize);
+
+// Returns a custom symbol named |symbolName| as a template image, configured
+// with the default configuration and the given |pointSize|.
+UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
+                                           NSInteger pointSize);
 
 // Returns YES if the kUseSFSymbolsSamples flag is enabled.
 bool UseSymbols();
