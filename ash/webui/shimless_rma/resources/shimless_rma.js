@@ -50,6 +50,7 @@ export const ButtonState = {
  *  requiresReloadWhenShown: boolean,
  *  buttonNext: !ButtonState,
  *  buttonNextLabelKey: ?string,
+ *  buttonCancelLabelKey: ?string,
  *  buttonCancel: !ButtonState,
  *  buttonBack: !ButtonState,
  * }}
@@ -159,8 +160,8 @@ export const StateComponentMapping = {
     componentIs: 'reimaging-calibration-failed-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonNextLabelKey: 'skipButtonLabel',
-    buttonCancel: ButtonState.HIDDEN,
+    buttonCancelLabelKey: 'calibrationFailedSkipCalibrationButtonLabel',
+    buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kRunCalibration]: {
@@ -665,10 +666,27 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.cancelButtonClicked_ = true;
     this.setAllButtonsState_(
         /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
-    this.shimlessRmaService_.abortRma().then((result) => {
-      this.cancelButtonClicked_ = false;
-      this.handleStandardAndCriticalError_(result.error);
-    });
+    const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
+    if (page.onCancelButtonClick) {
+      // A special case for the calibration failed page, where the skip button
+      // replaces the cancel button.
+      // TODO(swifton): find a more straightforward solution for this case.
+      page.onCancelButtonClick()
+          .then((stateResult) => {
+            this.processStateResult_(stateResult);
+          })
+          .catch((err) => {
+            this.cancelButtonClicked_ = false;
+            this.setAllButtonsState_(
+                /* shouldDisableButtons= */ false,
+                /* showBusyStateOverlay= */ false);
+          });
+    } else {
+      this.shimlessRmaService_.abortRma().then((result) => {
+        this.cancelButtonClicked_ = false;
+        this.handleStandardAndCriticalError_(result.error);
+      });
+    }
   }
 
   /**
@@ -680,6 +698,17 @@ export class ShimlessRma extends ShimlessRmaBase {
         this.currentPage_.buttonNextLabelKey ?
             this.currentPage_.buttonNextLabelKey :
             'nextButtonLabel');
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getCancelButtonLabel_() {
+    return this.i18n(
+        this.currentPage_.buttonCancelLabelKey ?
+            this.currentPage_.buttonCancelLabelKey :
+            'cancelButtonLabel');
   }
 }
 

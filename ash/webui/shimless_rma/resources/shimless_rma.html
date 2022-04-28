@@ -106,7 +106,7 @@
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
       <span id="cancelButtonLabel">
-        [[i18n('cancelButtonLabel')]]
+        [[getCancelButtonLabel_(currentPage_.buttonCancelLabelKey)]]
       </span>
       <paper-spinner-lite id="cancelButtonSpinner" class="busy-icon"
           hidden$="[[!cancelButtonClicked_]]" active>

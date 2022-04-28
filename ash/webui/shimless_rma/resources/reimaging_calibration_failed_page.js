@@ -77,6 +77,23 @@ export class ReimagingCalibrationFailedPage extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+
+    /**
+     * The "Skip calibration" button on this page is styled and positioned like
+     * a cancel button. So we use the common cancel button from shimless_rma.js
+     * This function needs to be public, because it's invoked by
+     * shimless_rma.js as part of the response to the cancel button click.
+     * @return {!Promise<!StateResult>}
+     */
+    this.onCancelButtonClick = () => {
+      if (this.tryingToSkipWithFailedComponents_()) {
+        this.shadowRoot.querySelector('#failedComponentsDialog').showModal();
+        return Promise.reject(
+            new Error('Attempting to skip with failed components.'));
+      }
+
+      return this.skipCalibration_();
+    };
   }
 
   /** @override */
@@ -125,16 +142,7 @@ export class ReimagingCalibrationFailedPage extends
     });
   }
 
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.tryingToSkipWithFailedComponents_()) {
-      this.shadowRoot.querySelector('#failedComponentsDialog').showModal();
-      return Promise.reject(
-          new Error('Attempting to skip with failed components.'));
-    }
-
-    return this.skipCalibration_();
-  }
+  // TODO(swifton): Implement onNextButtonClick. It should retry calibration.
 
   /**
    * @return {!Promise<!StateResult>}
