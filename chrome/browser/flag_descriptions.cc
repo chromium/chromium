@@ -1964,6 +1964,12 @@ const char kPageInfoAboutThisSiteName[] =
 const char kPageInfoAboutThisSiteDescription[] =
     "Enable the 'About this site' section in the page info.";
 
+const char kPageInfoMoreAboutThisPageName[] =
+    "'More about this page' link in page info";
+const char kPageInfoMoreAboutThisPageDescription[] =
+    "Enable the 'More about this page' link in the 'From the web' section of "
+    "page info.";
+
 const char kPageInfoHistoryDesktopName[] = "Page info history";
 const char kPageInfoHistoryDesktopDescription[] =
     "Enable a history section in the page info.";

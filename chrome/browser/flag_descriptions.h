@@ -1094,6 +1094,9 @@ extern const char kPageEntitiesPageContentAnnotationsDescription[];
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 
+extern const char kPageInfoMoreAboutThisPageName[];
+extern const char kPageInfoMoreAboutThisPageDescription[];
+
 extern const char kPageInfoHistoryDesktopName[];
 extern const char kPageInfoHistoryDesktopDescription[];
 
