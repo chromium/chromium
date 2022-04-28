@@ -140,8 +140,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   unsigned fragment_length_;
   bool is_remaining_text_layout_object_;
   scoped_refptr<StringImpl> content_string_;
-  // Reference back to FirstLetterPseudoElement; cleared by
-  // FirstLetterPseudoElement::detachLayoutTree() if it goes away first.
+
   Member<FirstLetterPseudoElement> first_letter_pseudo_element_;
 };
 
