@@ -42,7 +42,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   // Called by the embedder when a frame navigates to a new URL. Queries the
   // storage to find notes associated with that URL, and if there are any, kicks
   // off the logic to display them in the page.
-  void OnFrameNavigated(content::RenderFrameHost* rfh);
+  virtual void OnFrameNavigated(content::RenderFrameHost* rfh);
 
   // Called by |UserNotesManager| objects when a |UserNoteInstance| is added to
   // the page they're attached to. Updates the model map to add a ref to the

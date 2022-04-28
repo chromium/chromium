@@ -4,6 +4,7 @@
 
 #include "chrome/browser/user_notes/user_notes_tab_helper.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #include "components/user_notes/browser/user_note_service.h"
 #include "components/user_notes/browser/user_notes_manager.h"
@@ -13,6 +14,12 @@
 #include "content/public/browser/web_contents.h"
 
 namespace user_notes {
+
+// static
+std::unique_ptr<UserNotesTabHelper> UserNotesTabHelper::CreateForTest(
+    content::WebContents* web_contents) {
+  return base::WrapUnique(new UserNotesTabHelper(web_contents));
+}
 
 UserNotesTabHelper::UserNotesTabHelper(content::WebContents* web_contents)
     : WebContentsObserver(web_contents),

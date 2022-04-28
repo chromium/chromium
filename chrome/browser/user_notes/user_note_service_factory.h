@@ -7,6 +7,8 @@
 
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+#include <memory>
+
 namespace base {
 template <typename>
 struct DefaultSingletonTraits;
@@ -21,6 +23,10 @@ class UserNoteService;
 class UserNoteServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static UserNoteService* GetForContext(content::BrowserContext* context);
+
+  // Allows tests to set a mock UserNoteService that is going to be returned
+  // by `GetForContext` every time, even if `context` is null.
+  static void SetServiceForTesting(std::unique_ptr<UserNoteService> service);
 
   UserNoteServiceFactory(const UserNoteServiceFactory&) = delete;
   UserNoteServiceFactory& operator=(const UserNoteServiceFactory&) = delete;
@@ -38,6 +44,8 @@ class UserNoteServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+
+  std::unique_ptr<UserNoteService> service_for_testing_;
 };
 
 }  // namespace user_notes

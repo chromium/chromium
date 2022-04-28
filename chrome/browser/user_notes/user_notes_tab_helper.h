@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_USER_NOTES_USER_NOTES_TAB_HELPER_H_
 #define CHROME_BROWSER_USER_NOTES_USER_NOTES_TAB_HELPER_H_
 
+#include "base/gtest_prod_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -25,13 +26,22 @@ class UserNotesTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<UserNotesTabHelper> {
  public:
+  // Exposes a way to construct this object from unit tests. Do not use in
+  // product code; instead, use `UserNotesTabHelper::CreateForWebContents`,
+  // inherited from `WebContentsUserData`.
+  static std::unique_ptr<UserNotesTabHelper> CreateForTest(
+      content::WebContents* web_contents);
+
   UserNotesTabHelper(const UserNotesTabHelper&) = delete;
   UserNotesTabHelper& operator=(const UserNotesTabHelper&) = delete;
 
   ~UserNotesTabHelper() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UserNotesTabHelperTest,
+                           NotifyServiceOfNavigationWhenNeeded);
   friend class content::WebContentsUserData<UserNotesTabHelper>;
+  friend class MockUserNotesTabHelper;
 
   explicit UserNotesTabHelper(content::WebContents* web_contents);
 
