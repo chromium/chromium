@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+#include <type_traits>
+
 #include "base/bits.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -28,8 +30,7 @@ class Deserializer {
 
   template <typename T>
   bool Read(T* val) {
-    static_assert(base::is_trivially_copyable<T>::value,
-                  "Not trivially copyable");
+    static_assert(std::is_trivially_copyable_v<T>);
     if (!AlignMemory(sizeof(T), alignof(T)))
       return false;
 

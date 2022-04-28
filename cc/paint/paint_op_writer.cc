@@ -5,6 +5,7 @@
 #include "cc/paint/paint_op_writer.h"
 
 #include <memory>
+#include <type_traits>
 
 #include "base/bits.h"
 #include "base/notreached.h"
@@ -110,7 +111,7 @@ PaintOpWriter::~PaintOpWriter() = default;
 
 template <typename T>
 void PaintOpWriter::WriteSimple(const T& val) {
-  static_assert(base::is_trivially_copyable<T>::value, "");
+  static_assert(std::is_trivially_copyable_v<T>);
 
   // Round up each write to 4 bytes.  This is not technically perfect alignment,
   // but it is about 30% faster to post-align each write to 4 bytes than it is

@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/client/client_font_manager.h"
 
+#include <type_traits>
+
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +23,7 @@ class Serializer {
 
   template <typename T>
   void Write(const T* val) {
-    static_assert(base::is_trivially_copyable<T>::value, "");
+    static_assert(std::is_trivially_copyable_v<T>);
     WriteData(val, sizeof(T), alignof(T));
   }
 

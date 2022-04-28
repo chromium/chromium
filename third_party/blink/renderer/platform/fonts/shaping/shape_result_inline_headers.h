@@ -33,7 +33,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
 
 #include <hb.h>
+
 #include <memory>
+#include <type_traits>
+
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -421,8 +424,7 @@ struct ShapeResult::RunInfo final
     GlyphDataCollection(const GlyphDataCollection& other)
         : data_(new HarfBuzzRunGlyphData[other.size()]),
           offsets_(other.offsets_) {
-      static_assert(base::is_trivially_copyable<HarfBuzzRunGlyphData>::value,
-                    "HarfBuzzRunGlyphData should be trivially copyable");
+      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
       std::copy(other.data_.get(), other.data_.get() + other.size(),
                 data_.get());
     }
@@ -467,8 +469,7 @@ struct ShapeResult::RunInfo final
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFromRange(const GlyphDataRange& range) {
       CHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
-      static_assert(base::is_trivially_copyable<HarfBuzzRunGlyphData>::value,
-                    "HarfBuzzRunGlyphData should be trivially copyable");
+      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
       std::copy(range.begin, range.end, data_.get());
       offsets_.CopyFromRange(range);
     }

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -104,8 +105,7 @@ bool PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
 
 template <typename T>
 void PaintOpReader::ReadSimple(T* val) {
-  static_assert(base::is_trivially_copyable<T>::value,
-                "Not trivially copyable");
+  static_assert(std::is_trivially_copyable_v<T>);
 
   // Align everything to 4 bytes, as the writer does.
   static constexpr size_t kAlign = 4;

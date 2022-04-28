@@ -124,9 +124,9 @@ class VectorBuffer {
 
   // Trivially copyable types can use memcpy. trivially copyable implies
   // that there is a trivial destructor as we don't have to call it.
-  template <typename T2 = T,
-            typename std::enable_if<base::is_trivially_copyable<T2>::value,
-                                    int>::type = 0>
+  template <
+      typename T2 = T,
+      typename std::enable_if<std::is_trivially_copyable_v<T2>, int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
 
@@ -139,7 +139,7 @@ class VectorBuffer {
   // destruct the original.
   template <typename T2 = T,
             typename std::enable_if<std::is_move_constructible<T2>::value &&
-                                        !base::is_trivially_copyable<T2>::value,
+                                        !std::is_trivially_copyable_v<T2>,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));
@@ -155,7 +155,7 @@ class VectorBuffer {
   // destruct the original.
   template <typename T2 = T,
             typename std::enable_if<!std::is_move_constructible<T2>::value &&
-                                        !base::is_trivially_copyable<T2>::value,
+                                        !std::is_trivially_copyable_v<T2>,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to));

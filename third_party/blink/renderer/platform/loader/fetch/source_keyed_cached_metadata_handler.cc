@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
+#include <type_traits>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -150,8 +152,7 @@ namespace {
 // but without the risk of undefined behaviour.
 template <typename T>
 T ReadVal(const uint8_t* data) {
-  static_assert(base::is_trivially_copyable<T>::value,
-                "ReadVal requires the value type to be copyable");
+  static_assert(std::is_trivially_copyable_v<T>);
   T ret;
   memcpy(&ret, data, sizeof(T));
   return ret;
