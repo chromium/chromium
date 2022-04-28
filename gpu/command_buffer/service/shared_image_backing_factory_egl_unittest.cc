@@ -87,7 +87,6 @@ class SharedImageBackingFactoryEGLThreadSafeTest
 
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
-    workarounds.max_texture_size = INT_MAX - 1;
 
     scoped_refptr<gles2::FeatureInfo> feature_info;
     CreateSharedContext(workarounds, surface_, context_, context_state_,

@@ -150,7 +150,6 @@ class SharedImageBackingFactoryGLTextureTest
       : SharedImageBackingFactoryGLTextureTestBase(false) {}
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
-    workarounds.max_texture_size = INT_MAX - 1;
     SetUpBase(workarounds, &image_factory_);
   }
 

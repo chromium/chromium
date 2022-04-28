@@ -180,17 +180,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
         std::move(feature_info));
   }
 
-  // As most of the GPU resources used for compositing are created on Chrome
-  // side this affects only validation inside Skia. The workaround effectively
-  // clamps max frame buffer size that comes from Android. As we don't control
-  // frame buffer size using this workaround leads to not drawing anything on
-  // screen.
-  // TODO(vasilyt): Remove this once it handles on Skia side.
-  gpu::GpuDriverBugWorkarounds workarounds_for_skia = workarounds;
-  workarounds_for_skia.max_texture_size_limit_4096 = false;
-
   shared_context_state_->InitializeGrContext(
-      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds_for_skia,
+      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds,
       nullptr /* gr_shader_cache */);
 }
 

@@ -529,11 +529,6 @@ SharedImageBackingFactoryAHB::SharedImageBackingFactoryAHB(
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
 
-  // TODO(vikassoni): Check vulkan image size restrictions also.
-  if (workarounds.max_texture_size) {
-    max_gl_texture_size_ =
-        std::min(max_gl_texture_size_, workarounds.max_texture_size);
-  }
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow
   // cases, clamped to INT_MAX, always invalid.

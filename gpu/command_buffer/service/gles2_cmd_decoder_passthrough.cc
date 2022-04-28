@@ -779,7 +779,6 @@ GLES2DecoderPassthroughImpl::GLES2DecoderPassthroughImpl(
       offscreen_single_buffer_(false),
       offscreen_target_buffer_preserved_(false),
       create_color_buffer_count_for_test_(0),
-      max_2d_texture_size_(0),
       bound_draw_framebuffer_(0),
       bound_read_framebuffer_(0),
       gpu_decoder_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
@@ -1147,10 +1146,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   lose_context_when_out_of_memory_ =
       attrib_helper.lose_context_when_out_of_memory;
 
-  api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_2d_texture_size_);
+  GLint max_2d_texture_size = 0;
+  api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_2d_texture_size);
   api()->glGetIntegervFn(GL_MAX_RENDERBUFFER_SIZE, &max_renderbuffer_size_);
   max_offscreen_framebuffer_size_ =
-      std::min(max_2d_texture_size_, max_renderbuffer_size_);
+      std::min(max_2d_texture_size, max_renderbuffer_size_);
 
   if (offscreen_) {
     offscreen_single_buffer_ = attrib_helper.single_buffer;

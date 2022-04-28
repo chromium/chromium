@@ -862,7 +862,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   size_t create_color_buffer_count_for_test_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes
-  GLint max_2d_texture_size_ = 0;
   GLint max_renderbuffer_size_ = 0;
   GLint max_offscreen_framebuffer_size_ = 0;
 

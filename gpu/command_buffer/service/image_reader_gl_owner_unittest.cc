@@ -53,7 +53,6 @@ class ImageReaderGLOwnerTest : public testing::Test {
     ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
 
     GpuDriverBugWorkarounds workarounds;
-    workarounds.max_texture_size = INT_MAX - 1;
     auto context_state = base::MakeRefCounted<SharedContextState>(
         share_group_, surface_, context_,
         false /* use_virtualized_gl_contexts */, base::DoNothing());

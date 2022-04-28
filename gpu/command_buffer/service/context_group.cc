@@ -376,16 +376,15 @@ gpu::ContextResult ContextGroup::Initialize(
                     : gpu::ContextResult::kFatalFailure;
   }
 
-  if (feature_info_->workarounds().max_texture_size) {
+  if (feature_info_->workarounds().client_max_texture_size) {
     max_texture_size = std::min(
-        max_texture_size,
-        feature_info_->workarounds().max_texture_size);
-    max_rectangle_texture_size = std::min(
-        max_rectangle_texture_size,
-        feature_info_->workarounds().max_texture_size);
+        max_texture_size, feature_info_->workarounds().client_max_texture_size);
+    max_rectangle_texture_size =
+        std::min(max_rectangle_texture_size,
+                 feature_info_->workarounds().client_max_texture_size);
     max_cube_map_texture_size =
         std::min(max_cube_map_texture_size,
-                 feature_info_->workarounds().max_texture_size);
+                 feature_info_->workarounds().client_max_texture_size);
   }
 
   if (feature_info_->workarounds().max_3d_array_texture_size) {
