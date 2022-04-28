@@ -11,13 +11,107 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <mach/mach_vm.h>
+#include <mach/vm_statistics.h>
+
+#include "base/no_destructor.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
+#endif
+
 namespace gpu {
+
+#if BUILDFLAG(IS_MAC)
+namespace {
+class IOSurfaceMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  IOSurfaceMemoryDumpProvider();
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  // NoDestructor only.
+  ~IOSurfaceMemoryDumpProvider() override = default;
+};
+
+IOSurfaceMemoryDumpProvider::IOSurfaceMemoryDumpProvider() {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "command_buffer", nullptr);
+}
+
+bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (args.level_of_detail !=
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+    return true;
+  }
+
+  // Collect IOSurface total memory usage.
+  size_t virtual_size = 0;
+  size_t resident_size = 0;
+  size_t swapped_out_size = 0;
+  size_t dirty_size = 0;
+
+  task_t task = mach_task_self();
+  mach_vm_address_t address = 0;
+  mach_vm_size_t size = 0;
+
+  while (true) {
+    address += size;
+
+    vm_region_extended_info_data_t info;
+    mach_port_t object_name;
+    mach_msg_type_number_t count;
+
+    count = VM_REGION_EXTENDED_INFO_COUNT;
+    kern_return_t ret = mach_vm_region(
+        task, &address, &size, VM_REGION_EXTENDED_INFO,
+        reinterpret_cast<vm_region_info_t>(&info), &count, &object_name);
+    // No regions above the requested address.
+    if (ret == KERN_INVALID_ADDRESS)
+      break;
+
+    if (ret != KERN_SUCCESS)
+      return false;
+
+    // Only look at IOSurfaces.
+    if (info.user_tag != VM_MEMORY_IOSURFACE)
+      continue;
+
+    virtual_size += size;
+    resident_size += info.pages_resident * base::GetPageSize();
+    swapped_out_size += info.pages_swapped_out * base::GetPageSize();
+    dirty_size += info.pages_dirtied * base::GetPageSize();
+  }
+
+  auto* dump = pmd->CreateAllocatorDump("iosurface");
+  dump->AddScalar("virtual_size", "bytes", virtual_size);
+  dump->AddScalar("resident_size", "bytes", resident_size);
+  dump->AddScalar("swapped_out_size", "bytes", swapped_out_size);
+  dump->AddScalar("dirty_size", "bytes", dirty_size);
+
+  dump->AddScalar("size", "bytes", dirty_size);
+  return true;
+}
+}  // namespace
+#endif
 
 CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
                                            MemoryTracker* memory_tracker)
@@ -26,6 +120,9 @@ CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
           std::make_unique<TransferBufferManager>(memory_tracker)) {
   DCHECK(client_);
   state_.token = 0;
+#if BUILDFLAG(IS_MAC)
+  static base::NoDestructor<IOSurfaceMemoryDumpProvider> dump_provider;
+#endif
 }
 
 CommandBufferService::~CommandBufferService() = default;
