@@ -19,7 +19,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
@@ -399,10 +398,10 @@ struct BASE_EXPORT SystemMemoryInfoKB {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX) BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   int shmem = 0;
   int slab = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
   int speculative = 0;
@@ -502,7 +501,7 @@ BASE_EXPORT TimeDelta GetUserCpuTimeSinceBoot();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Data from files in directory /sys/block/zram0 about ZRAM usage.
 struct BASE_EXPORT SwapInfo {
   SwapInfo()
@@ -555,7 +554,7 @@ struct BASE_EXPORT GraphicsMemoryInfoKB {
 // reading the graphics memory info is slow, this function returns false.
 BASE_EXPORT bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 struct BASE_EXPORT SystemPerformanceInfo {
   SystemPerformanceInfo();
@@ -616,7 +615,7 @@ class BASE_EXPORT SystemMetrics {
   VmStatInfo vmstat_info_;
   SystemDiskInfo disk_info_;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   SwapInfo swap_info_;
   GraphicsMemoryInfoKB gpu_memory_info_;
 #endif

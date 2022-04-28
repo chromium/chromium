@@ -225,13 +225,13 @@ class BASE_EXPORT Process {
 #endif
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Exposed for testing.
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
 BASE_EXPORT bool IsProcessBackgroundedCGroup(
     const StringPiece& cgroup_contents);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base
 

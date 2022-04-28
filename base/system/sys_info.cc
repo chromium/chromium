@@ -18,7 +18,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 namespace {
@@ -94,7 +93,7 @@ bool SysInfo::IsLowEndDeviceImpl() {
 #endif
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    !BUILDFLAG(IS_CHROMEOS)
 std::string SysInfo::HardwareModelName() {
   return std::string();
 }

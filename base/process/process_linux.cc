@@ -26,7 +26,7 @@ namespace {
 
 const int kForegroundPriority = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // We are more aggressive in our lowering of background process priority
 // for chromeos as we have much more control over other processes running
 // on the machine.
@@ -71,7 +71,7 @@ struct CGroups {
 };
 #else
 const int kBackgroundPriority = 5;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -94,10 +94,10 @@ Time Process::CreationTime() const {
 
 // static
 bool Process::CanBackgroundProcesses() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (CGroups::Get().enabled)
     return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static const bool can_reraise_priority =
       internal::CanLowerNiceTo(kForegroundPriority);
@@ -107,7 +107,7 @@ bool Process::CanBackgroundProcesses() {
 bool Process::IsProcessBackgrounded() const {
   DCHECK(IsValid());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (CGroups::Get().enabled) {
     // Used to allow reading the process priority from proc on thread launch.
     base::ThreadRestrictions::ScopedAllowIO allow_io;
@@ -118,7 +118,7 @@ bool Process::IsProcessBackgrounded() const {
     }
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return GetPriority() == kBackgroundPriority;
 }
@@ -126,14 +126,14 @@ bool Process::IsProcessBackgrounded() const {
 bool Process::SetProcessBackgrounded(bool background) {
   DCHECK(IsValid());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (CGroups::Get().enabled) {
     std::string pid = NumberToString(process_);
     const base::FilePath file = background ? CGroups::Get().background_file
                                            : CGroups::Get().foreground_file;
     return base::WriteFile(file, pid.c_str(), pid.size()) > 0;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!CanBackgroundProcesses())
     return false;
@@ -144,7 +144,7 @@ bool Process::SetProcessBackgrounded(bool background) {
   return result == 0;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsProcessBackgroundedCGroup(const StringPiece& cgroup_contents) {
   // The process can be part of multiple control groups, and for each cgroup
   // hierarchy there's an entry in the file. We look for a control group
@@ -165,7 +165,7 @@ bool IsProcessBackgroundedCGroup(const StringPiece& cgroup_contents) {
 
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Reads /proc/<pid>/status and returns the PID in its PID namespace.

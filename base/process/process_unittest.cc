@@ -14,7 +14,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -404,7 +403,7 @@ TEST_F(ProcessTest, ChildProcessIsRunning) {
       base::TimeDelta(), nullptr));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the function IsProcessBackgroundedCGroup() can parse the contents
 // of the /proc/<pid>/cgroup file successfully.
@@ -418,6 +417,6 @@ TEST_F(ProcessTest, TestIsProcessBackgroundedCGroup) {
   EXPECT_TRUE(IsProcessBackgroundedCGroup(kBackgrounded));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

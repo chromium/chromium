@@ -203,7 +203,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.swap_free, 3672368);
   EXPECT_EQ(meminfo.dirty, 184);
   EXPECT_EQ(meminfo.reclaimable, 30936);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(meminfo.shmem, 140204);
   EXPECT_EQ(meminfo.slab, 54212);
 #endif
@@ -404,7 +404,7 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
         // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {
   SwapInfo swapinfo;
 
@@ -439,7 +439,7 @@ TEST_F(SystemMetricsTest, ParseZramStat) {
   EXPECT_EQ(299ULL, swapinfo.num_reads);
   EXPECT_EQ(1ULL, swapinfo.num_writes);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -481,7 +481,7 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
   EXPECT_GT(info.file_backed, 0);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes shmem.
   EXPECT_GT(info.shmem, 0);
   EXPECT_LT(info.shmem, info.total);

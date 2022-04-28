@@ -183,7 +183,7 @@ const char kEnableThreadInstructionCount[] = "enable-thread-instruction-count";
 extern const char kEnableCrashpad[] = "enable-crashpad";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Override the default scheduling boosting value for urgent tasks.
 // This can be adjusted if a specific chromeos device shows better perf/power
 // ratio (e.g. by running video conference tests).

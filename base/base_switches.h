@@ -68,7 +68,7 @@ extern const char kEnableThreadInstructionCount[];
 extern const char kEnableCrashpad[];
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kSchedulerBoostUrgent[];
 #endif
 

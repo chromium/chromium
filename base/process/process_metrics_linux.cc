@@ -33,7 +33,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -47,7 +46,7 @@ void TrimKeyValuePairs(StringPairs* pairs) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Read a file with a single number string and return the number as a uint64_t.
 uint64_t ReadFileToUint64(const FilePath& file) {
   std::string file_contents;
@@ -527,7 +526,7 @@ Value SystemMemoryInfoKB::ToValue() const {
   res.SetIntKey("swap_used", swap_total - swap_free);
   res.SetIntKey("dirty", dirty);
   res.SetIntKey("reclaimable", reclaimable);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   res.SetIntKey("shmem", shmem);
   res.SetIntKey("slab", slab);
 #endif
@@ -589,7 +588,7 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
       target = &meminfo->dirty;
     else if (tokens[0] == "SReclaimable:")
       target = &meminfo->reclaimable;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Chrome OS has a tweaked kernel that allows querying Shmem, which is
     // usually video memory otherwise invisible to the OS.
     else if (tokens[0] == "Shmem:")
@@ -850,7 +849,7 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   return internal::GetUserCpuTimeSinceBoot();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 Value SwapInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);
 
@@ -1065,7 +1064,7 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   return gpu_meminfo->gpu_memory_size != -1;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 int ProcessMetrics::GetIdleWakeupsPerSecond() {

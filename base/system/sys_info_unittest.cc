@@ -26,7 +26,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -299,7 +298,7 @@ TEST_F(SysInfoTest, GetHardwareInfoWMIMatchRegistry) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SysInfoTest, GoogleChromeOSVersionNumbers) {
   int32_t os_major_version = -1;
@@ -429,6 +428,6 @@ TEST_F(SysInfoTest, ScopedRunningOnChromeOS) {
   EXPECT_EQ(was_running, SysInfo::IsRunningOnChromeOS());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

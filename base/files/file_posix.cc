@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -512,7 +511,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   static_assert(O_RDONLY == 0, "O_RDONLY must equal zero");
 
   int mode = S_IRUSR | S_IWUSR;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   mode |= S_IRGRP | S_IROTH;
 #endif
 
