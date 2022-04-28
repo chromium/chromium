@@ -373,6 +373,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     bool managed_device;
     std::string device_domain;
     base::FilePath crostini_ansible_playbook_filepath;
+    bool insights_extension_enabled;
   };
 
   void ResetTestConfig() { ResetTestConfig(true); }
@@ -394,6 +395,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.managed_account = true;
     setup_config_.managed_device = false;
     setup_config_.device_domain = "devicedomain.com";
+    setup_config_.insights_extension_enabled = false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -462,6 +464,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         crostini::prefs::kCrostiniAnsiblePlaybookFilePath,
         GetTestConfig().crostini_ansible_playbook_filepath);
     crostini_features()->set_is_allowed_now(true);
+
+    profile_->GetPrefs()->SetBoolean(
+        ::prefs::kInsightsExtensionEnabled,
+        GetTestConfig().insights_extension_enabled);
 
     const policy::SystemLogUploader system_log_uploader(
         /*syslog_delegate=*/nullptr,
@@ -1085,6 +1091,19 @@ TEST_F(ManagementUIHandlerTests, AllDisabledDeviceReportingInfo) {
   ResetTestConfig(false);
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
+                      expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests,
+       DeviceReportingInfoWhenInsightsExtensionEnabled) {
+  ResetTestConfig(false);
+  GetTestConfig().insights_extension_enabled = true;
+  const base::Value info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportActivityTimes, "device activity"},
+      {kManagementReportNetworkData, "device"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetListDeprecated(),
                       expected_elements);

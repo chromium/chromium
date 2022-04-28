@@ -561,7 +561,8 @@ void ManagementUIHandler::AddDeviceReportingInfo(
     return;
 
   // Elements appear on the page in the order they are added.
-  if (collector->IsReportingActivityTimes()) {
+  if (collector->IsReportingActivityTimes() ||
+      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
                               DeviceReportingType::kDeviceActivity);
   } else {
@@ -570,7 +571,8 @@ void ManagementUIHandler::AddDeviceReportingInfo(
                                 DeviceReportingType::kSupervisedUser);
     }
   }
-  if (collector->IsReportingNetworkData()) {
+  if (collector->IsReportingNetworkData() ||
+      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportNetworkData,
                               DeviceReportingType::kDevice);
   }
