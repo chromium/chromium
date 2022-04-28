@@ -22,9 +22,9 @@ class QueryProcessor {
  public:
   // TODO(ssid): Remove these indirections and replace all uses with the global
   // types.
-  using Tensor = Tensor;
-  using IndexedTensors = IndexedTensors;
-  using FeatureIndex = FeatureIndex;
+  using Tensor = segmentation_platform::processing::Tensor;
+  using IndexedTensors = segmentation_platform::processing::IndexedTensors;
+  using FeatureIndex = segmentation_platform::processing::FeatureIndex;
 
   // TODO(haileywang): Maybe use a unique_ptr<> here.
   using QueryProcessorCallback =
