@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ActiveDirectoryJoin"
-    enum="ActiveDirectoryDomainJoinType" expires_after="M104">
+    enum="ActiveDirectoryDomainJoinType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
