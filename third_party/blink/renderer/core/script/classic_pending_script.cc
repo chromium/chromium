@@ -262,13 +262,29 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   auto* script_resource = To<ScriptResource>(GetResource());
   CHECK(!cache_consumer_);
   cache_consumer_ = script_resource->TakeCacheConsumer();
+
   if (cache_consumer_) {
-    AdvanceReadyState(kWaitingForCacheConsumer);
-    // TODO(leszeks): Decide whether kNetworking is the right task type here.
-    cache_consumer_->NotifyClientWaiting(
-        this,
-        element->GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
-  } else {
+    ExecutionContext* execution_context = element->GetExecutionContext();
+    // Only wait for the cache consume if there is an execution context it can
+    // notify us on.
+    if (execution_context) {
+      AdvanceReadyState(kWaitingForCacheConsumer);
+      // TODO(leszeks): Decide whether kNetworking is the right task type here.
+      cache_consumer_->NotifyClientWaiting(
+          this, execution_context->GetTaskRunner(TaskType::kNetworking));
+
+    } else {
+      // Otherwise (probably when our Document isn't active anymore),
+      // we can simply drop the cache consumer and let it be cleaned up by the
+      // GC; no one is waiting on it so it's safe to just drop it without
+      // needing to cancel or dispose it in any way.
+      cache_consumer_ = nullptr;
+    }
+  }
+
+  if (!cache_consumer_) {
+    // Either there was never a cache consume, or it was dropped. Either way, we
+    // are ready.
     AdvanceReadyState(kReady);
   }
 }
