@@ -113,6 +113,34 @@ inline void HasCodecs(absl::optional<base::StringPiece> codecs,
   EXPECT_EQ(variant.GetCodecs(), codecs) << from.ToString();
 }
 
+// Checks the value of `GetResolution` on the latest variant against the given
+// value.
+inline void HasResolution(absl::optional<types::DecimalResolution> resolution,
+                          const base::Location& from,
+                          const VariantStream& variant) {
+  ASSERT_EQ(variant.GetResolution().has_value(), resolution.has_value())
+      << from.ToString();
+  if (resolution.has_value()) {
+    EXPECT_EQ(variant.GetResolution()->width, resolution->width)
+        << from.ToString();
+    EXPECT_EQ(variant.GetResolution()->height, resolution->height)
+        << from.ToString();
+  }
+}
+
+// Checks the value of `GetFrameRate` on the latest variant against the given
+// value.
+inline void HasFrameRate(absl::optional<types::DecimalFloatingPoint> frame_rate,
+                         const base::Location& from,
+                         const VariantStream& variant) {
+  ASSERT_EQ(variant.GetFrameRate().has_value(), frame_rate.has_value())
+      << from.ToString();
+  if (frame_rate.has_value()) {
+    EXPECT_DOUBLE_EQ(variant.GetFrameRate().value(), frame_rate.value())
+        << from.ToString();
+  }
+}
+
 }  // namespace media::hls
 
 #endif

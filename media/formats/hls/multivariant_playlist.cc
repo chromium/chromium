@@ -145,7 +145,8 @@ ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
 
     variants.emplace_back(std::move(variant_uri), inf_tag->bandwidth,
                           inf_tag->average_bandwidth, inf_tag->score,
-                          std::move(inf_tag->codecs));
+                          std::move(inf_tag->codecs), inf_tag->resolution,
+                          inf_tag->frame_rate);
 
     // Reset per-variant tags
     inf_tag.reset();

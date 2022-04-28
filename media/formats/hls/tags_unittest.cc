@@ -335,6 +335,20 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(tag.average_bandwidth, 1000u);
   EXPECT_DOUBLE_EQ(tag.score.value(), 12.2);
   EXPECT_EQ(tag.codecs, "foo,bar");
+  EXPECT_EQ(tag.resolution, absl::nullopt);
+  EXPECT_EQ(tag.frame_rate, absl::nullopt);
+
+  tag = OkTest<XStreamInfTag>(
+      R"(BANDWIDTH=1010,RESOLUTION=1920x1080,FRAME-RATE=29.97)", variable_dict,
+      sub_buffer);
+  EXPECT_EQ(tag.bandwidth, 1010u);
+  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(tag.score, absl::nullopt);
+  EXPECT_EQ(tag.codecs, absl::nullopt);
+  ASSERT_TRUE(tag.resolution.has_value());
+  EXPECT_EQ(tag.resolution->width, 1920u);
+  EXPECT_EQ(tag.resolution->height, 1080u);
+  EXPECT_DOUBLE_EQ(tag.frame_rate.value(), 29.97);
 
   // "BANDWIDTH" is the only required attribute
   tag = OkTest<XStreamInfTag>(R"(BANDWIDTH=5050)", variable_dict, sub_buffer);
@@ -342,6 +356,8 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
   EXPECT_EQ(tag.score, absl::nullopt);
   EXPECT_EQ(tag.codecs, absl::nullopt);
+  EXPECT_EQ(tag.resolution, absl::nullopt);
+  EXPECT_EQ(tag.frame_rate, absl::nullopt);
 
   ErrorTest<XStreamInfTag>(absl::nullopt, variable_dict, sub_buffer,
                            ParseStatusCode::kMalformedTag);
@@ -392,6 +408,21 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
   EXPECT_EQ(tag.score, absl::nullopt);
   EXPECT_EQ(tag.codecs, "bar,baz");
+  EXPECT_EQ(tag.resolution, absl::nullopt);
+
+  // "RESOLUTION" must be a valid decimal-resolution
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,RESOLUTION=1920x)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,RESOLUTION=x123)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "FRAME-RATE" must be a valid decimal-floating-point (unsigned)
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,FRAME-RATE=-1)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,FRAME-RATE=One)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,FRAME-RATE=30.0.0)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
 }
 
 TEST(HlsTagsTest, ParseXTargetDurationTag) {

@@ -26,6 +26,8 @@ TEST(HlsMultivariantPlaylistTest, XStreamInfTag) {
   builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
   builder.ExpectVariant(HasScore, absl::nullopt);
   builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
   builder.ExpectOk();
 
   {
@@ -74,6 +76,8 @@ TEST(HlsMultivariantPlaylistTest, XStreamInfTag) {
   builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
   builder.ExpectVariant(HasScore, absl::nullopt);
   builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
   builder.ExpectOk();
 
   // URIs without corresponding EXT-X-STREAM-INF tags are not allowed
@@ -82,6 +86,77 @@ TEST(HlsMultivariantPlaylistTest, XStreamInfTag) {
     fork.AppendLine("playlist5.m3u8");
     fork.ExpectError(ParseStatusCode::kVariantMissingStreamInfTag);
   }
+
+  // Check the value of the 'AVERAGE-BANDWIDTH' attribute
+  builder.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=106,AVERAGE-BANDWIDTH=105");
+  builder.AppendLine("playlist5.m3u8");
+  builder.ExpectAdditionalVariant();
+  builder.ExpectVariant(HasPrimaryRenditionUri,
+                        GURL("http://localhost/playlist5.m3u8"));
+  builder.ExpectVariant(HasBandwidth, 106u);
+  builder.ExpectVariant(HasAverageBandwidth, 105u);
+  builder.ExpectVariant(HasScore, absl::nullopt);
+  builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
+  builder.ExpectOk();
+
+  // Check the value of the 'SCORE' attribute
+  builder.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=107,SCORE=10.5");
+  builder.AppendLine("playlist6.m3u8");
+  builder.ExpectAdditionalVariant();
+  builder.ExpectVariant(HasPrimaryRenditionUri,
+                        GURL("http://localhost/playlist6.m3u8"));
+  builder.ExpectVariant(HasBandwidth, 107u);
+  builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
+  builder.ExpectVariant(HasScore, 10.5);
+  builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
+  builder.ExpectOk();
+
+  // Check the value of the 'CODECS' attribute
+  builder.AppendLine(R"(#EXT-X-STREAM-INF:BANDWIDTH=108,CODECS="foo,bar")");
+  builder.AppendLine("playlist7.m3u8");
+  builder.ExpectAdditionalVariant();
+  builder.ExpectVariant(HasPrimaryRenditionUri,
+                        GURL("http://localhost/playlist7.m3u8"));
+  builder.ExpectVariant(HasBandwidth, 108u);
+  builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
+  builder.ExpectVariant(HasScore, absl::nullopt);
+  builder.ExpectVariant(HasCodecs, "foo,bar");
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
+  builder.ExpectOk();
+
+  // Check the value of the 'RESOLUTION' attribute
+  builder.AppendLine(R"(#EXT-X-STREAM-INF:BANDWIDTH=109,RESOLUTION=1920x1080)");
+  builder.AppendLine("playlist8.m3u8");
+  builder.ExpectAdditionalVariant();
+  builder.ExpectVariant(HasPrimaryRenditionUri,
+                        GURL("http://localhost/playlist8.m3u8"));
+  builder.ExpectVariant(HasBandwidth, 109u);
+  builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
+  builder.ExpectVariant(HasScore, absl::nullopt);
+  builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(
+      HasResolution, types::DecimalResolution{.width = 1920, .height = 1080});
+  builder.ExpectVariant(HasFrameRate, absl::nullopt);
+  builder.ExpectOk();
+
+  // Check the value of the 'FRAME-RATE' attribute
+  builder.AppendLine(R"(#EXT-X-STREAM-INF:BANDWIDTH=110,FRAME-RATE=59.94)");
+  builder.AppendLine("playlist9.m3u8");
+  builder.ExpectAdditionalVariant();
+  builder.ExpectVariant(HasPrimaryRenditionUri,
+                        GURL("http://localhost/playlist9.m3u8"));
+  builder.ExpectVariant(HasBandwidth, 110u);
+  builder.ExpectVariant(HasAverageBandwidth, absl::nullopt);
+  builder.ExpectVariant(HasScore, absl::nullopt);
+  builder.ExpectVariant(HasCodecs, absl::nullopt);
+  builder.ExpectVariant(HasResolution, absl::nullopt);
+  builder.ExpectVariant(HasFrameRate, 59.94);
+  builder.ExpectOk();
 }
 
 // This test is similar to the `HlsMediaPlaylistTest` test of the same name, but
@@ -128,6 +203,35 @@ TEST(HlsMultivariantPlaylistTest, VariableSubstitution) {
     auto fork = builder;
     fork.AppendLine(R"(#EXT-X-DEFINE:NAME="BW",VALUE="102")");
     fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH={$BW}");
+    fork.AppendLine("playlist3.m3u8");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="AVG-BW",VALUE="102")");
+    fork.AppendLine(
+        "#EXT-X-STREAM-INF:BANDWIDTH=100,AVERAGE-BANDWIDTH={$AVG-BW}");
+    fork.AppendLine("playlist3.m3u8");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="SCORE",VALUE="10")");
+    fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,SCORE={$SCORE}");
+    fork.AppendLine("playlist3.m3u8");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="RES",VALUE="1920x1080")");
+    fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,RESOLUTION={$RES}");
+    fork.AppendLine("playlist3.m3u8");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="FR",VALUE="30")");
+    fork.AppendLine("#EXT-X-STREAM-INF:BANDWIDTH=100,FRAME-RATE={$FR}");
     fork.AppendLine("playlist3.m3u8");
     fork.ExpectError(ParseStatusCode::kMalformedTag);
   }

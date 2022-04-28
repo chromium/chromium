@@ -145,6 +145,13 @@ struct MEDIA_EXPORT XStreamInfTag {
   // optional here so that the caller may decide how they wish to handle its
   // absence.
   absl::optional<std::string> codecs;
+
+  // The optimal pixel resolution at which to display all video in this variant
+  // stream.
+  absl::optional<types::DecimalResolution> resolution;
+
+  // This describes the maximum framerate for all video in this variant stream.
+  absl::optional<types::DecimalFloatingPoint> frame_rate;
 };
 
 // Represents the contents of the #EXT-X-TARGETDURATION tag.

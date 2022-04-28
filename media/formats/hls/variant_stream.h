@@ -19,7 +19,9 @@ class MEDIA_EXPORT VariantStream {
                 types::DecimalInteger bandwidth,
                 absl::optional<types::DecimalInteger> average_bandwidth,
                 absl::optional<types::DecimalFloatingPoint> score,
-                absl::optional<std::string> codecs);
+                absl::optional<std::string> codecs,
+                absl::optional<types::DecimalResolution> resolution,
+                absl::optional<types::DecimalFloatingPoint> frame_rate);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
@@ -78,12 +80,25 @@ class MEDIA_EXPORT VariantStream {
   // renditions of this variant.
   const absl::optional<std::string>& GetCodecs() const { return codecs_; }
 
+  // A value representing the optimal pixel resolution at which to display all
+  // video in this variant stream.
+  const absl::optional<types::DecimalResolution> GetResolution() const {
+    return resolution_;
+  }
+
+  // This represents the maximum framerate for all video in this variant stream.
+  const absl::optional<types::DecimalFloatingPoint> GetFrameRate() const {
+    return frame_rate_;
+  }
+
  private:
   GURL primary_rendition_uri_;
   types::DecimalInteger bandwidth_;
   absl::optional<types::DecimalInteger> average_bandwidth_;
   absl::optional<types::DecimalFloatingPoint> score_;
   absl::optional<std::string> codecs_;
+  absl::optional<types::DecimalResolution> resolution_;
+  absl::optional<types::DecimalFloatingPoint> frame_rate_;
 };
 
 }  // namespace media::hls
