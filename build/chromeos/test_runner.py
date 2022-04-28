@@ -729,11 +729,17 @@ def host_cmd(args, cmd_args):
 
   test_env = setup_env()
   if args.deploy_chrome or args.deploy_lacros:
-    # Mounting ash-chrome gives it enough disk space to not need stripping.
-    cros_run_test_cmd.extend([
-        '--deploy-lacros', '--lacros-launcher-script',
-        LACROS_LAUNCHER_SCRIPT_PATH
-    ] if args.deploy_lacros else ['--deploy', '--mount', '--nostrip'])
+    if args.deploy_lacros:
+      cros_run_test_cmd.extend([
+          '--deploy-lacros', '--lacros-launcher-script',
+          LACROS_LAUNCHER_SCRIPT_PATH
+      ])
+    else:
+      # Mounting ash-chrome gives it enough disk space to not need stripping
+      # most of the time.
+      cros_run_test_cmd.extend(['--deploy', '--mount'])
+      if not args.strip_chrome:
+        cros_run_test_cmd.append('--nostrip')
 
     cros_run_test_cmd += [
         '--build-dir',
@@ -856,6 +862,10 @@ def main():
       '--deploy-lacros',
       action='store_true',
       help='Deploy a lacros-chrome instead of ash-chrome.')
+  host_cmd_parser.add_argument(
+      '--strip-chrome',
+      action='store_true',
+      help='Strips symbols from ash-chrome before deploying to the device.')
 
   gtest_parser = subparsers.add_parser(
       'gtest', help='Runs a device-side gtest.')

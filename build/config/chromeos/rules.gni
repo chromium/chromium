@@ -246,6 +246,7 @@ template("generate_skylab_deps") {
 #       them, and it's designed for use cases where one builds for one board
 #       (e.g. amd64-generic), but tests on a different board (e.g. eve).
 #   tast_vars: A list of "key=value" runtime variable pairs to pass to invoke
+#   strip_chrome: If true, strips Chrome before deploying it for non-Tast tests.
 #       the Tast tests. For more details, please see:
 #       https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables
 template("generate_runner_script") {
@@ -256,6 +257,7 @@ template("generate_runner_script") {
                            "generated_script",
                            "runtime_deps_file",
                            "skip_generating_board_args",
+                           "strip_chrome",
                            "tast_attr_expr",
                            "tast_tests",
                            "tast_vars",
@@ -280,6 +282,9 @@ template("generate_runner_script") {
   if (!defined(deploy_lacros)) {
     deploy_lacros = false
   }
+  if (!defined(strip_chrome)) {
+    strip_chrome = false
+  }
   assert(!(deploy_chrome && deploy_lacros),
          "deploy_chrome and deploy_lacros are exclusive.")
 
@@ -289,6 +294,10 @@ template("generate_runner_script") {
              "There should be no locally built binary needed.")
   assert(is_tast || !defined(tast_vars),
          "tast_vars is only support for Tast tests")
+
+  if (is_tast) {
+    not_needed([ "strip_chrome" ])
+  }
 
   # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
   # need some additional runtime data located in the SDK cache.
@@ -414,6 +423,10 @@ template("generate_runner_script") {
       rebase_path(root_out_dir, "//"),
       "-v",
     ]
+
+    if (!is_tast && strip_chrome) {
+      executable_args += [ "--strip-chrome" ]
+    }
 
     if (!skip_generating_board_args) {
       executable_args += [

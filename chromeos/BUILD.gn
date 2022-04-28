@@ -158,6 +158,12 @@ if (is_chromeos_ash && is_chromeos_device) {
     # Assume every time we build cros_test_wrapper, we also build chrome and
     # want to deploy it to the DUT.
     deploy_chrome = true
+
+    # The only targets that currently use cros_test_wrapper are Telemetry-based
+    # tests, which have their own crash/symbolization handling code. So, strip
+    # Chrome before deploying in order to save disk space and avoid potential
+    # memory issues on 32-bit devices.
+    strip_chrome = true
   }
 
   tast_test("chrome_login_tast_tests") {
