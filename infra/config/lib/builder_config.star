@@ -340,31 +340,37 @@ def _try_settings(
         rts_config = rts_config,
     )
 
+def _is_copy_from(obj):
+    # register_builder_config and the generator use the presence/absence of this
+    # attribute to distinguish builders specifying their own spec/mirrors and
+    # builders copying from another
+    return hasattr(obj, "__copy_from__")
+
 def _copy_from(builder, modifier_fn = None):
-    """Details for specifying a builder spec in terms of another builder's.
+    """Details for specifying spec/mirrors in terms of another builder.
 
     Args:
-        builder: (str) The name of another builder to copy the spec from. The
-            name can be a simple name if it unambigously refers to another
-            builder.
-        modifier_fn: (func(builder_spec) -> builder_spec) An optional function
-            that can be used to modify the spec used by the builder. If
-            provided, the function will be called with the other builder's spec
-            and should return the spec to be used for the builder that is using
+        builder: (str) The name of another builder to copy from. The name can be
+            a simple name if it unambigously refers to another builder.
+        modifier_fn: (func(T) -> T) An optional function that can be used to
+            modify the spec/mirrors used by the builder. If provided, the
+            function will be called with the other builder's spec and should
+            return the value to be used for the builder that is using
             `copy_from`. See //lib/structs.star for functions to enable
             returning a modified spec.
     """
     return struct(
         # register_builder_config and the generator use the presence/absence of
-        # this attribute to distinguish builders specifying their own spec and
-        # builders copying from another
+        # this attribute to distinguish builders specifying their own
+        # spec/mirrors and builders copying from another
         __copy_from__ = "__copy_from__",
         builder = builder,
         modifier_fn = modifier_fn,
     )
 
 builder_config = struct(
-    # Function for expressing builder spec in terms of another builder's spec
+    # Function for expressing builder spec or mirrors in terms of another
+    # builder's
     copy_from = _copy_from,
 
     # Function and associated constants for defining builder spec
@@ -412,6 +418,12 @@ _BUILDER_SPEC_COPY_FROM = nodes.create_link_node_type(
     _BUILDER_CONFIG,
 )
 
+_MIRRORS_COPY_FROM = nodes.create_link_node_type(
+    "mirrors_copy_from",
+    _BUILDER_CONFIG,
+    _BUILDER_CONFIG,
+)
+
 def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, try_settings):
     """Registers the builder config so the properties can be computed.
 
@@ -448,11 +460,14 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
         try_settings = try_settings,
     ))
 
-    if hasattr(builder_spec, "__copy_from__"):
+    if _is_copy_from(builder_spec):
         _BUILDER_SPEC_COPY_FROM.link(builder_config_key, builder_spec.builder)
 
-    for m in mirrors or []:
-        _BUILDER_CONFIG_MIRROR.link(builder_config_key, m)
+    if _is_copy_from(mirrors):
+        _MIRRORS_COPY_FROM.link(builder_config_key, mirrors.builder)
+    else:
+        for m in mirrors or []:
+            _BUILDER_CONFIG_MIRROR.link(builder_config_key, m)
 
     graph.add_edge(builder_config_key, keys.builder(bucket, name))
 
@@ -463,13 +478,14 @@ def _builder_name(node):
         fail("got {}, expecting a node with a bucket-scoped key".format(node))
     return "{}/{}".format(container.id, key.id)
 
-def _get_mirrored_builders(bc_state, node):
-    nodes = _BUILDER_CONFIG_MIRROR.children(node.key)
+def _get_mirroring_nodes(bc_state, node):
+    nodes = []
 
-    for mirror in nodes:
-        if not bc_state.builder_spec(mirror):
-            fail("builder {} mirrors builder {} which does not have a builder spec"
-                .format(_builder_name(node), _builder_name(mirror)))
+    for mirroring in _BUILDER_CONFIG_MIRROR.parents(node.key):
+        nodes.append(mirroring)
+        for copying in _MIRRORS_COPY_FROM.parents(mirroring.key):
+            if node in bc_state.mirrors(copying):
+                nodes.append(copying)
 
     return nodes
 
@@ -477,13 +493,13 @@ def _get_mirroring_builders(bc_state, node):
     if not bc_state.builder_spec(node):
         return []
 
-    nodes = _BUILDER_CONFIG_MIRROR.parents(node.key)
+    nodes = _get_mirroring_nodes(bc_state, node)
 
     # If there are builders that mirror the parent of the current builder and
     # include all triggered testers, then they mirror the current builder also
     parent = bc_state.parent(node)
     if parent:
-        for m in _BUILDER_CONFIG_MIRROR.parents(parent.key):
+        for m in _get_mirroring_nodes(bc_state, parent):
             if m.props.try_settings.include_all_triggered_testers:
                 nodes.append(m)
 
@@ -598,7 +614,7 @@ def _set_builder_config_property(ctx):
                     entries.append(_entry(bc_state, child, node))
                     builder_ids_in_scope_for_testing.append(_builder_id(child))
             else:
-                mirrors = _get_mirrored_builders(bc_state, node)
+                mirrors = bc_state.mirrors(node)
 
                 encountered = {}
 
@@ -625,6 +641,9 @@ def _set_builder_config_property(ctx):
                     if node.props.try_settings.include_all_triggered_testers:
                         for child in bc_state.children(m):
                             add(child, m)
+
+                if not entries_to_check_for_consistency:
+                    fail("{}/{}".format(bucket_name, builder_name))
 
                 _check_specs_for_consistency(bucket_name, builder_name, entries_to_check_for_consistency)
 
@@ -792,17 +811,13 @@ def _bc_state():
 
         return children
 
-    # The builder specs can be recursively defined in that one builder could set
-    # its builder spec to be copied from a builder that in turn specifies its
-    # builder spec is copied from another builder. Starlark doesn't allow
-    # recursion or while loops, so loop over an arbitrarily large range
     def builder_spec_getter():
         builder_specs_by_node = {}
 
         def get(node):
             if node not in builder_specs_by_node:
                 builder_spec = node.props.builder_spec
-                if not hasattr(builder_spec, "__copy_from__"):
+                if not _is_copy_from(builder_spec):
                     builder_specs_by_node[node] = builder_spec
                     return builder_spec
 
@@ -819,7 +834,7 @@ def _bc_state():
                         "copying builder spec from builder that doesn't have one",
                         node.trace,
                     )
-                if hasattr(builder_spec_to_copy, "__copy_from__"):
+                if _is_copy_from(builder_spec_to_copy):
                     fail(
                         "cannot copy the builder spec from a builder that is copying another builder spec",
                         node.trace,
@@ -831,7 +846,7 @@ def _bc_state():
                     builder_spec_to_copy = modifier_fn(builder_spec_to_copy)
                     if not builder_spec_to_copy:
                         fail(
-                            "no builder returned from {}".format(modifier_fn),
+                            "no builder spec returned from {}".format(modifier_fn),
                             node.trace,
                         )
 
@@ -841,10 +856,68 @@ def _bc_state():
 
         return get
 
+    def _get_mirrored_builders(node):
+        nodes = _BUILDER_CONFIG_MIRROR.children(node.key)
+
+        for mirror in nodes:
+            if not bc_state.builder_spec(mirror):
+                fail("builder {} mirrors builder {} which does not have a builder spec"
+                    .format(_builder_name(node), _builder_name(mirror)))
+
+        return nodes
+
+    def mirrors_getter():
+        mirrors_by_node = {}
+
+        def get(node):
+            if node not in mirrors_by_node:
+                mirrors = node.props.mirrors
+                if not _is_copy_from(mirrors):
+                    mirrors = _get_mirrored_builders(node)
+                    mirrors_by_node[node] = mirrors
+                    return mirrors
+
+                copy_froms = _MIRRORS_COPY_FROM.children(node.key)
+                if len(copy_froms) != 1:
+                    fail(
+                        "internal error: there should be exactly one builder to copy mirrors from",
+                        node.trace,
+                    )
+                copy_from = copy_froms[0]
+                mirrors_to_copy = copy_from.props.mirrors
+                if not mirrors_to_copy:
+                    fail(
+                        "copying mirrors from builder that doesn't have any",
+                        node.trace,
+                    )
+                if _is_copy_from(mirrors_to_copy):
+                    fail(
+                        "cannot copy the mirrors from a builder that is copying another mirrors",
+                        node.trace,
+                    )
+                mirrors_to_copy = _get_mirrored_builders(copy_from)
+                mirrors_by_node[copy_from] = mirrors_to_copy
+
+                modifier_fn = mirrors.modifier_fn
+                if modifier_fn:
+                    mirrors_to_copy = modifier_fn(mirrors_to_copy)
+                    if not mirrors_to_copy:
+                        fail(
+                            "no mirrors returned from {}".format(modifier_fn),
+                            node.trace,
+                        )
+
+                mirrors_by_node[node] = mirrors_to_copy
+
+            return mirrors_by_node[node]
+
+        return get
+
     bc_state = struct(
         parent = _node_cached(get_parent),
         children = _node_cached(get_children),
         builder_spec = builder_spec_getter(),
+        mirrors = mirrors_getter(),
     )
 
     return bc_state
