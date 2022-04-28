@@ -959,13 +959,6 @@ static_library("extensions") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/webui/resources:media_app_bundle_resources_grit",
-      "//ui/display/manager",
-    ]
-  }
-
   if (is_chromeos) {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
@@ -1015,45 +1008,32 @@ static_library("extensions") {
       "//chromeos/crosapi/mojom",
       "//remoting/host/it2me:chrome_os_host",
     ]
-    if (is_chromeos_lacros) {
-      sources += [
-        "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.cc",
-        "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
-        "api/file_browser_handler/file_browser_handler_flow_lacros.cc",
-        "api/file_browser_handler/file_browser_handler_flow_lacros.h",
-        "api/file_manager/file_browser_handler_api_lacros.cc",
-        "api/file_manager/file_browser_handler_api_lacros.h",
-        "api/image_writer_private/image_writer_controller_lacros.cc",
-        "api/image_writer_private/image_writer_controller_lacros.h",
-        "api/messaging/native_message_host_lacros.cc",
-        "system_display/display_info_provider_lacros.cc",
-        "system_display/display_info_provider_lacros.h",
-      ]
-      deps += [ "//chromeos/lacros" ]
-    } else {
-      sources += [ "api/messaging/native_message_host_chromeos.cc" ]
-      deps += [
-        "//chrome/browser/ash/crosapi",
-        "//remoting/host",
-      ]
-      allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
-    }
   } else {
     sources += [
+      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
+      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
+      "api/image_writer_private/operation_nonchromeos.cc",
       "api/messaging/native_message_process_host.cc",
       "api/messaging/native_message_process_host.h",
       "api/messaging/native_messaging_launch_from_native.cc",
       "api/messaging/native_messaging_launch_from_native.h",
       "api/messaging/native_process_launcher.cc",
       "api/messaging/native_process_launcher.h",
+      "chrome_kiosk_delegate.cc",
+      "preinstalled_apps.cc",
+      "preinstalled_apps.h",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
-      "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
+    deps += [
+      "//components/enterprise",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//components/keep_alive_registry",
     ]
+    if (is_posix) {
+      sources += [ "api/messaging/native_process_launcher_posix.cc" ]
+    }
+    if (use_gio) {
+      configs += [ "//build/linux:gio_config" ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -1082,6 +1062,7 @@ static_library("extensions") {
       "api/input_ime/input_ime_api_chromeos.h",
       "api/media_perception_private/media_perception_api_delegate_chromeos.cc",
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
+      "api/messaging/native_message_host_chromeos.cc",
       "api/networking_private/networking_private_ui_delegate_chromeos.cc",
       "api/networking_private/networking_private_ui_delegate_chromeos.h",
       "api/quick_unlock_private/quick_unlock_private_api.cc",
@@ -1142,6 +1123,8 @@ static_library("extensions") {
       "//ash/webui/camera_app_ui",
       "//ash/webui/camera_app_ui:mojo_bindings",
       "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
+      "//ash/webui/resources:media_app_bundle_resources_grit",
+      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
@@ -1172,64 +1155,51 @@ static_library("extensions") {
       "//components/user_manager",
       "//media/capture:capture_lib",
       "//media/capture/video/chromeos/mojom:cros_camera",
+      "//remoting/host",
       "//third_party/protobuf:protobuf_lite",
       "//ui/accessibility",
       "//ui/base/ime/ash",
       "//ui/chromeos",
       "//ui/chromeos/events",
+      "//ui/display/manager",
       "//ui/file_manager:file_manager_gen_resources",
       "//ui/file_manager:resources",
       "//ui/ozone",
       "//ui/views",
     ]
-  } else if (is_chromeos_lacros) {
+    allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
     sources += [
+      "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.cc",
+      "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
+      "api/file_browser_handler/file_browser_handler_flow_lacros.cc",
+      "api/file_browser_handler/file_browser_handler_flow_lacros.h",
+      "api/file_manager/file_browser_handler_api_lacros.cc",
+      "api/file_manager/file_browser_handler_api_lacros.h",
+      "api/image_writer_private/image_writer_controller_lacros.cc",
+      "api/image_writer_private/image_writer_controller_lacros.h",
       "api/image_writer_private/operation_nonchromeos.cc",
       "api/image_writer_private/removable_storage_provider_linux.cc",
+      "api/messaging/native_message_host_lacros.cc",
+      "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
+      "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
       "chrome_kiosk_delegate.cc",
       "preinstalled_apps.cc",
       "preinstalled_apps.h",
+      "system_display/display_info_provider_lacros.cc",
+      "system_display/display_info_provider_lacros.h",
     ]
     deps += [
+      "//chromeos/lacros",
       "//chromeos/ui/base",
       "//components/enterprise",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/keep_alive_registry",
     ]
-  } else {
-    assert(!is_chromeos_ash)
-    assert(!is_chromeos_lacros)
-    sources += [
-      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
-      "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
-      "api/image_writer_private/operation_nonchromeos.cc",
-      "chrome_kiosk_delegate.cc",
-      "preinstalled_apps.cc",
-      "preinstalled_apps.h",
-    ]
-    deps += [
-      "//components/enterprise",
-      "//components/enterprise/common/proto:connectors_proto",
-      "//components/keep_alive_registry",
-    ]
-    if (is_linux) {
-      sources +=
-          [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
-    }
-    if (is_mac) {
-      sources += [
-        "api/enterprise_reporting_private/keychain_data_helper_mac.h",
-        "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
-      ]
-    }
-    if (is_posix) {
-      sources += [ "api/messaging/native_process_launcher_posix.cc" ]
-    }
-    if (use_gio) {
-      configs += [ "//build/linux:gio_config" ]
-    }
   }
 
   if (use_ozone) {
@@ -1242,12 +1212,19 @@ static_library("extensions") {
 
   if (is_mac) {
     sources += [
+      "api/enterprise_reporting_private/keychain_data_helper_mac.h",
+      "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
       "api/image_writer_private/removable_storage_provider_mac.cc",
       "global_shortcut_listener_mac.h",
       "global_shortcut_listener_mac.mm",
       "system_display/display_info_provider_mac.cc",
       "system_display/display_info_provider_mac.h",
     ]
+  }
+
+  if (is_linux) {
+    sources +=
+        [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
   }
 
   if (is_linux || is_chromeos) {
