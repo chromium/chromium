@@ -992,6 +992,7 @@ if (is_chromeos_ash) {
       "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
+      "//ui/ozone:ozone_integration_tests",
 
       # Blocked on https://github.com/catapult-project/catapult/issues/2297
       #"//third_party/catapult/telemetry:bitmaptools",
