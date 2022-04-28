@@ -440,6 +440,13 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
   if (Ended())
     return;
 
+  if (auto* track = Component()->GetPlatformTrack()) {
+    // Synchronously disable the platform track to prevent media from flowing,
+    // even if the stopTrack() below is completed asynchronously.
+    // See https://crbug.com/1320312.
+    track->SetEnabled(false);
+  }
+
   setReadyState(MediaStreamSource::kReadyStateEnded);
   feature_handle_for_scheduler_.reset();
   UserMediaController* user_media =

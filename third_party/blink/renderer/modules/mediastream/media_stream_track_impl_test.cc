@@ -84,4 +84,23 @@ TEST_F(MediaStreamTrackImplTest, LabelSanitizer) {
   EXPECT_EQ(track->label(), "AirPods");
 }
 
+TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
+  V8TestingScope v8_scope;
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeAudio, "name",
+      false /* remote */);
+  auto platform_track =
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
+  MediaStreamAudioTrack* platform_track_ptr = platform_track.get();
+  MediaStreamComponent* component = MakeGarbageCollected<MediaStreamComponent>(
+      source, std::move(platform_track));
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  ASSERT_TRUE(platform_track_ptr->IsEnabled());
+  track->stopTrack(v8_scope.GetExecutionContext());
+  EXPECT_FALSE(platform_track_ptr->IsEnabled());
+}
+
 }  // namespace blink
