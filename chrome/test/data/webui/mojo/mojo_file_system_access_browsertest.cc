@@ -18,6 +18,7 @@
 #include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "chrome/test/data/webui/mojo/mojo_file_system_access_test.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -86,11 +87,9 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
         mojo::ScopedMessagePipeHandle::From(std::move(h)),
         blink::mojom::FileSystemAccessTransferToken::Version_);
 
-    web_ui()
-        ->GetWebContents()
-        ->GetMainFrame()
-        ->GetProcess()
-        ->GetStoragePartition()
+    auto* web_contents = web_ui()->GetWebContents();
+    web_contents->GetBrowserContext()
+        ->GetStoragePartition(web_contents->GetSiteInstance())
         ->GetFileSystemAccessEntryFactory()
         ->ResolveTransferToken(
             std::move(token),
