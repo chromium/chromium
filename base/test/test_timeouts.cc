@@ -47,9 +47,9 @@ void InitializeTimeout(const char* switch_name,
   // For MSan the slowdown depends heavily on the value of msan_track_origins
   // build flag. The multiplier below corresponds to msan_track_origins = 1.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // A handful of tests on ChromeOS run *very* close to the 6x limit used
-  // else where, so it's bumped to 7x.
-  constexpr int kTimeoutMultiplier = 7;
+  // A handful of tests on ChromeOS time out when using the 6x limit used
+  // elsewhere, so it's bumped to 10x.
+  constexpr int kTimeoutMultiplier = 10;
 #else
   constexpr int kTimeoutMultiplier = 6;
 #endif
