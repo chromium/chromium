@@ -48,7 +48,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "fuchsia",
@@ -99,7 +98,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true

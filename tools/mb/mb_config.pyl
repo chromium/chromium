@@ -3845,7 +3845,6 @@
     },
 
     'gpu_fyi_tests': {
-      'gn_args': 'is_gpu_fyi_bot=true',
       'mixins': ['gpu_tests'],
     },
 

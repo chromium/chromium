@@ -6,7 +6,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -20,7 +19,6 @@
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -32,7 +30,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -45,7 +42,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -58,7 +54,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -71,7 +66,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
@@ -86,7 +80,6 @@
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -98,7 +91,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -111,7 +103,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -124,7 +115,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -136,7 +126,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -149,7 +138,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -162,7 +150,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -687,7 +674,6 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
