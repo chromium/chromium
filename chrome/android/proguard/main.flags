@@ -36,9 +36,8 @@
   *** build() return null;
 }
 
-# TODO(b/214263216): Allow obfuscation once R8 is fixed.
 # Keep implementation classes needed for split compat. These will be accessed by
 # reflection.
--keep public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
+-keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
 }
