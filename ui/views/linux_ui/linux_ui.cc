@@ -4,6 +4,7 @@
 
 #include "ui/views/linux_ui/linux_ui.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/gfx/skia_font_delegate.h"
@@ -38,5 +39,34 @@ LinuxUI* LinuxUI::instance() {
 LinuxUI::LinuxUI() = default;
 
 LinuxUI::~LinuxUI() = default;
+
+LinuxUI::CmdLineArgs::CmdLineArgs() = default;
+
+LinuxUI::CmdLineArgs::CmdLineArgs(const CmdLineArgs&) = default;
+
+LinuxUI::CmdLineArgs& LinuxUI::CmdLineArgs::operator=(const CmdLineArgs&) =
+    default;
+
+LinuxUI::CmdLineArgs::~CmdLineArgs() = default;
+
+// static
+LinuxUI::CmdLineArgs LinuxUI::CopyCmdLine(
+    const base::CommandLine& command_line) {
+  const auto& argv = command_line.argv();
+  size_t args_chars = 0;
+  for (const auto& arg : argv)
+    args_chars += arg.size() + 1;
+
+  CmdLineArgs cmd_line;
+  cmd_line.args = std::vector<char>(args_chars);
+  char* dst = cmd_line.args.data();
+  for (const auto& arg : argv) {
+    cmd_line.argv.push_back(strcpy(dst, arg.c_str()));
+    dst += arg.size() + 1;
+  }
+  cmd_line.argc = cmd_line.argv.size();
+
+  return cmd_line;
+}
 
 }  // namespace views
