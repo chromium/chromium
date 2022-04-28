@@ -3974,7 +3974,8 @@ bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {
   // as this problem will go away.
   AXObject* ax_dom_parent = AXObjectCache().GetWithoutInvalidation(
       LayoutTreeBuilderTraversal::Parent(*child.GetNode()));
-  if (!ax_dom_parent->ShouldUseLayoutObjectTraversalForChildren()) {
+  if (ax_dom_parent &&
+      !ax_dom_parent->ShouldUseLayoutObjectTraversalForChildren()) {
     DCHECK_NE(ax_dom_parent, this);
     for (Node* child_node =
              LayoutTreeBuilderTraversal::FirstChild(*ax_dom_parent->GetNode());

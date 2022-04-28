@@ -991,6 +991,7 @@
               "external/wpt/accessibility/crashtests/included-descendant-dom-removal.html",
               "external/wpt/accessibility/crashtests/included-descendant-layout-removal.html",
               "external/wpt/accessibility/crashtests/svg-mouse-listener.html",
+              "external/wpt/accessibility/crashtests/img-map-pseudo.html",
               "external/wpt/accessibility/crashtests/input-time-datalist.html",
               "external/wpt/accessibility/crashtests/map-inside-map.html",
               "external/wpt/accessibility/crashtests/map-inside-map-2.html",
