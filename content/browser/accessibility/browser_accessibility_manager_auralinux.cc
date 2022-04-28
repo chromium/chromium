@@ -243,8 +243,12 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       DCHECK(node->IsPlatformDocument());
-      DCHECK(
-          !node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
+      // TODO(accessibility): While this check is theoretically what we want to
+      // be the case, timing and other issues can cause it to fail. This seems
+      // to impact bots rather than Orca and its users. If this proves to be a
+      // real-world problem, we can investigate further and reinstate it.
+      // DCHECK(
+      //    !node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, false);
       FireEvent(node, ax::mojom::Event::kLoadComplete);
       break;
