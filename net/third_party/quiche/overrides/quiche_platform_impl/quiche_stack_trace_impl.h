@@ -13,6 +13,10 @@ inline std::string QuicheStackTraceImpl() {
   return base::debug::StackTrace().ToString();
 }
 
+inline bool QuicheShouldRunStackTraceTestImpl() {
+  return base::debug::StackTrace::WillSymbolizeToStreamForTesting();
+}
+
 }  // namespace quiche
 
 #endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_STACK_TRACE_IMPL_H_
