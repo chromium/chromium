@@ -1526,7 +1526,7 @@ class Module(object):
       imported_module.Stylize(stylizer)
 
   def Dump(self, f):
-    pickle.dump(self, f, 2)
+    pickle.dump(self, f)
 
   @classmethod
   def Load(cls, f):
