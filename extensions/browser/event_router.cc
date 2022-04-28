@@ -1188,7 +1188,7 @@ void EventRouter::AddFilterToEvent(const std::string& event_name,
     filtered_events->GetListWithoutPathExpansion(event_name, &filter_list);
   }
 
-  filter_list->Append(filter->CreateDeepCopy());
+  filter_list->Append(filter->Clone());
 }
 
 void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,

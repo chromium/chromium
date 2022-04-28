@@ -517,7 +517,8 @@ TEST_P(EventListenerMapWithContextTest, AddLazyListenersFromPreferences) {
   };
   auto filter_list = std::make_unique<ListValue>();
   for (const TestCase& test_case : kTestCases)
-    filter_list->Append(CreateHostSuffixFilter(test_case.filter_host_suffix));
+    filter_list->Append(base::Value::FromUniquePtrValue(
+        CreateHostSuffixFilter(test_case.filter_host_suffix)));
 
   DictionaryValue filtered_listeners;
   filtered_listeners.Set(kEvent1Name, std::move(filter_list));
