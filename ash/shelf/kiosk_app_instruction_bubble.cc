@@ -75,12 +75,13 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
+  GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
 }
 
 KioskAppInstructionBubble::~KioskAppInstructionBubble() = default;
 
 void KioskAppInstructionBubble::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  ShelfBubble::OnThemeChanged();
 
   SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);

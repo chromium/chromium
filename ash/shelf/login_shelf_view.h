@@ -123,6 +123,7 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void SetKioskLicenseModeForTesting(bool is_kiosk_license_mode);
 
   // views::View:
+  void AddedToWidget() override;
   const char* GetClassName() const override;
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;

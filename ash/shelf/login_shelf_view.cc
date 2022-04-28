@@ -666,12 +666,15 @@ LoginShelfView::LoginShelfView(
             ->enterprise_domain()
             ->management_device_mode() == ManagementDeviceMode::kKioskSku;
   }
-  UpdateUi();
 }
 
 LoginShelfView::~LoginShelfView() = default;
 
 void LoginShelfView::UpdateAfterSessionChange() {
+  UpdateUi();
+}
+
+void LoginShelfView::AddedToWidget() {
   UpdateUi();
 }
 
@@ -964,7 +967,7 @@ void LoginShelfView::UpdateUi() {
                                  ShouldShowAppsButton());
   if (kiosk_license_mode_) {
     // Create the bubble once the login shelf view is available for anchoring.
-    if (!kiosk_instruction_bubble_ && GetWidget()) {
+    if (!kiosk_instruction_bubble_) {
       Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
       kiosk_instruction_bubble_ = new KioskAppInstructionBubble(
           GetViewByID(kApps), shelf->alignment(),
