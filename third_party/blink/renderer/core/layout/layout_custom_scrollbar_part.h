@@ -43,6 +43,8 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
                                                     CustomScrollbar* = nullptr,
                                                     ScrollbarPart = kNoPart);
 
+  void Trace(Visitor*) const override;
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutCustomScrollbarPart";
@@ -136,8 +138,8 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   int ComputeWidth(int container_width) const;
   int ComputeHeight(int container_height) const;
 
-  UntracedMember<ScrollableArea> scrollable_area_;
-  UntracedMember<CustomScrollbar> scrollbar_;
+  Member<ScrollableArea> scrollable_area_;
+  Member<CustomScrollbar> scrollbar_;
 
   ScrollbarPart part_;
 };
