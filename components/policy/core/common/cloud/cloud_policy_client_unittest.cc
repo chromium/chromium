@@ -89,8 +89,12 @@ constexpr char kMachineID[] = "fake-machine-id";
 constexpr char kMachineModel[] = "fake-machine-model";
 constexpr char kBrandCode[] = "fake-brand-code";
 constexpr char kAttestedDeviceId[] = "fake-attested-device-id";
-constexpr char kEthernetMacAddress[] = "fake-ethernet-mac-address";
-constexpr char kDockMacAddress[] = "fake-dock-mac-address";
+constexpr CloudPolicyClient::MacAddress kEthernetMacAddress = {0, 1, 2,
+                                                               3, 4, 5};
+constexpr char kEthernetMacAddressStr[] = "000102030405";
+constexpr CloudPolicyClient::MacAddress kDockMacAddress = {170, 187, 204,
+                                                           221, 238, 255};
+constexpr char kDockMacAddressStr[] = "AABBCCDDEEFF";
 constexpr char kManufactureDate[] = "fake-manufacture-date";
 constexpr char kOAuthToken[] = "fake-oauth-token";
 constexpr char kDMToken[] = "fake-dm-token";
@@ -251,8 +255,8 @@ em::DeviceManagementRequest GetRegistrationRequest() {
   register_request->set_brand_code(kBrandCode);
   register_request->mutable_device_register_identification()
       ->set_attested_device_id(kAttestedDeviceId);
-  register_request->set_ethernet_mac_address(kEthernetMacAddress);
-  register_request->set_dock_mac_address(kDockMacAddress);
+  register_request->set_ethernet_mac_address(kEthernetMacAddressStr);
+  register_request->set_dock_mac_address(kDockMacAddressStr);
   register_request->set_manufacture_date(kManufactureDate);
   register_request->set_lifetime(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
@@ -280,8 +284,8 @@ em::DeviceManagementRequest GetReregistrationRequest() {
   reregister_request->set_brand_code(kBrandCode);
   reregister_request->mutable_device_register_identification()
       ->set_attested_device_id(kAttestedDeviceId);
-  reregister_request->set_ethernet_mac_address(kEthernetMacAddress);
-  reregister_request->set_dock_mac_address(kDockMacAddress);
+  reregister_request->set_ethernet_mac_address(kEthernetMacAddressStr);
+  reregister_request->set_dock_mac_address(kDockMacAddressStr);
   reregister_request->set_manufacture_date(kManufactureDate);
   reregister_request->set_lifetime(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
@@ -314,8 +318,8 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   register_request->set_brand_code(kBrandCode);
   register_request->mutable_device_register_identification()
       ->set_attested_device_id(kAttestedDeviceId);
-  register_request->set_ethernet_mac_address(kEthernetMacAddress);
-  register_request->set_dock_mac_address(kDockMacAddress);
+  register_request->set_ethernet_mac_address(kEthernetMacAddressStr);
+  register_request->set_dock_mac_address(kDockMacAddressStr);
   register_request->set_manufacture_date(kManufactureDate);
   register_request->set_lifetime(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);

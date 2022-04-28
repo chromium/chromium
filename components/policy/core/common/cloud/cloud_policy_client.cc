@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
@@ -153,6 +154,18 @@ DecodeRemoteCommands(DeviceManagementStatus status,
       ToVector(response.remote_command_response().secure_commands()));
 }
 
+// Returns a separator-less string with MAC address to match the format of
+// reporting MAC addresses.
+std::string FormatMacAddress(const CloudPolicyClient::MacAddress& mac_address) {
+  CHECK_EQ(mac_address.size(), 6u);
+  // Print 2-digit (02) upper-case hex (X) values of MAC address.
+  std::string mac_address_string = base::StringPrintf(
+      "%02X%02X%02X%02X%02X%02X", mac_address[0], mac_address[1],
+      mac_address[2], mac_address[3], mac_address[4], mac_address[5]);
+  DCHECK_EQ(mac_address_string.size(), 12u);
+  return mac_address_string;
+}
+
 }  // namespace
 
 CloudPolicyClient::RegistrationParameters::RegistrationParameters(
@@ -186,8 +199,8 @@ CloudPolicyClient::CloudPolicyClient(
     const std::string& machine_model,
     const std::string& brand_code,
     const std::string& attested_device_id,
-    const std::string& ethernet_mac_address,
-    const std::string& dock_mac_address,
+    absl::optional<MacAddress> ethernet_mac_address,
+    absl::optional<MacAddress> dock_mac_address,
     const std::string& manufacture_date,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -196,8 +209,12 @@ CloudPolicyClient::CloudPolicyClient(
       machine_model_(machine_model),
       brand_code_(brand_code),
       attested_device_id_(attested_device_id),
-      ethernet_mac_address_(ethernet_mac_address),
-      dock_mac_address_(dock_mac_address),
+      ethernet_mac_address_(ethernet_mac_address.has_value()
+                                ? FormatMacAddress(ethernet_mac_address.value())
+                                : std::string()),
+      dock_mac_address_(dock_mac_address.has_value()
+                            ? FormatMacAddress(dock_mac_address.value())
+                            : std::string()),
       manufacture_date_(manufacture_date),
       service_(service),  // Can be null for unit tests.
       device_dm_token_callback_(device_dm_token_callback),

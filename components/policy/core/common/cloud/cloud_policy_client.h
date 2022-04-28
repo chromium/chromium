@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -106,6 +107,8 @@ class POLICY_EXPORT CloudPolicyClient {
       absl::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate)>;
 
+  using MacAddress = std::array<uint8_t, 6>;
+
   // Observer interface for state and policy changes.
   class POLICY_EXPORT Observer {
    public:
@@ -196,8 +199,8 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& machine_model,
       const std::string& brand_code,
       const std::string& attested_device_id,
-      const std::string& ethernet_mac_address,
-      const std::string& dock_mac_address,
+      absl::optional<MacAddress> ethernet_mac_address,
+      absl::optional<MacAddress> dock_mac_address,
       const std::string& manufacture_date,
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

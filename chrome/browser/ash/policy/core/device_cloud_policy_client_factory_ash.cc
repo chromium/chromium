@@ -9,20 +9,46 @@
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/system/statistics_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-// Format MAC address from AA:AA:AA:AA:AA:AA into AAAAAAAAAAAA (12 digit string)
-// The :'s should be removed from MAC addresses to match the format of
-// reporting MAC addresses and corresponding VPD fields.
-// TODO(crbug.com/1236180): Move FormatMacAddress deeper into the
-// CloudPolicyClient.
-void FormatMacAddress(std::string* mac_address) {
-  base::ReplaceChars(*mac_address, ":", "", mac_address);
-  DCHECK(mac_address->empty() || mac_address->size() == 12);
+constexpr int kDottedMacAddressSize = 17;
+
+// Parses MAC address string frommated as AA:AA:AA:AA:AA:AA. Returns nullopt if
+// `mac_address_string` is empty or ill-formated.
+absl::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
+    base::StringPiece mac_address_string) {
+  if (mac_address_string.size() != kDottedMacAddressSize)
+    return absl::nullopt;
+
+  policy::CloudPolicyClient::MacAddress parsed_mac_address;
+  base::span<policy::CloudPolicyClient::MacAddress::value_type>
+      parsed_mac_address_span(parsed_mac_address);
+
+  // Go through every 2 chars digit + 1 char separator. Check the separator is
+  // correct. Parse the hex digit.
+  for (int string_idx = 0, span_idx = 0;
+       string_idx < mac_address_string.size() &&
+       span_idx < parsed_mac_address.size();
+       string_idx += 3, ++span_idx) {
+    const int separator_idx = string_idx + 2;
+    if (separator_idx < mac_address_string.size() &&
+        mac_address_string[separator_idx] != ':') {
+      return absl::nullopt;
+    }
+
+    if (!base::HexStringToSpan(mac_address_string.substr(string_idx, 2),
+                               parsed_mac_address_span.subspan(span_idx, 1))) {
+      return absl::nullopt;
+    }
+  }
+
+  return parsed_mac_address;
 }
 
 std::string GetMachineModel(
@@ -49,22 +75,20 @@ std::string GetAttestedDeviceId(
   return attested_device_id;
 }
 
-std::string GetEthernetMacAddress(
+absl::optional<policy::CloudPolicyClient::MacAddress> GetEthernetMacAddress(
     chromeos::system::StatisticsProvider* statistics_provider) {
   std::string ethernet_mac_address;
   statistics_provider->GetMachineStatistic(
       chromeos::system::kEthernetMacAddressKey, &ethernet_mac_address);
-  FormatMacAddress(&ethernet_mac_address);
-  return ethernet_mac_address;
+  return ParseMacAddress(ethernet_mac_address);
 }
 
-std::string GetDockMacAddress(
+absl::optional<policy::CloudPolicyClient::MacAddress> GetDockMacAddress(
     chromeos::system::StatisticsProvider* statistics_provider) {
   std::string dock_mac_address;
   statistics_provider->GetMachineStatistic(chromeos::system::kDockMacAddressKey,
                                            &dock_mac_address);
-  FormatMacAddress(&dock_mac_address);
-  return dock_mac_address;
+  return ParseMacAddress(dock_mac_address);
 }
 
 std::string GetManufactureDate(
