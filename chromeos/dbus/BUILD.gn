@@ -12,14 +12,11 @@ component("dbus") {
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   public_deps = [
     "//chromeos/dbus/arc",
-    "//chromeos/dbus/cicerone",
     "//chromeos/dbus/common",
-    "//chromeos/dbus/concierge",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/init",
     "//chromeos/dbus/lorgnette_manager",
-    "//chromeos/dbus/seneschal",
     "//chromeos/dbus/shill",
     "//dbus",
   ]

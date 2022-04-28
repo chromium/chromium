@@ -130,6 +130,7 @@ static_library("arc") {
     "//chromeos/components/sensors:sensors",
     "//chromeos/dbus",
     "//chromeos/dbus:concierge_proto",
+    "//chromeos/dbus/concierge",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
