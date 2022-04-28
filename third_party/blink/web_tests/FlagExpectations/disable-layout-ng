@@ -1810,4 +1810,4 @@ crbug.com/1223918 wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 crbug.com/1223918 virtual/css-highlight-inheritance/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 
 # These Focusgroup-related tests are expected to fail without LayoutNG.
-external/wpt/html/interaction/focus/focusgroup/grid-focusgroup-relayout-before-navigation.tentative.html [ Failure ]
+external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/relayout-before-navigation.tentative.html [ Failure ]
