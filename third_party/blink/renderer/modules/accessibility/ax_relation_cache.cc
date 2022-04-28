@@ -177,6 +177,10 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (owner->IsTextField())
     return false;
 
+  // A frame/iframe/fencedframe can only parent a document.
+  if (AXObject::IsFrame(owner->GetNode()))
+    return false;
+
   // Images can only use <img usemap> to "own" <area> children.
   // This requires special parenting logic, and aria-owns is prevented here in
   // order to keep things from getting too complex.
