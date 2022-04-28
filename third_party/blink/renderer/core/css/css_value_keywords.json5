@@ -416,13 +416,12 @@
     "-webkit-baseline-middle",
     //
     // text-align
-    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
+    // The order and contents this block MUST match the kTextAlign[Last] cases
+    // of CSSParserFastPaths::IsValidKeywordPropertyAndValue().
     //
     "-webkit-auto",
     "left",
     "right",
-    "inline-start",
-    "inline-end",
     "center",
     "justify",
     "-webkit-left",
@@ -430,6 +429,11 @@
     "-webkit-center",
     "-webkit-match-parent",
     "-internal-center",
+    //
+    // float, clear, etc.
+    //
+    "inline-start",
+    "inline-end",
     //
     // text-justify
     //
