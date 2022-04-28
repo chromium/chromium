@@ -39,6 +39,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
@@ -161,6 +162,8 @@ class AppsContainerView::ContinueContainer : public views::View {
                     AppListViewDelegate* view_delegate,
                     SearchResultPageDialogController* dialog_controller)
       : view_delegate_(view_delegate), separator_(apps_container->separator()) {
+    DCHECK(view_delegate_);
+    DCHECK(separator_);
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
     SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -218,13 +221,10 @@ class AppsContainerView::ContinueContainer : public views::View {
             AshColorProvider::BaseLayerType::kTransparent40));
   }
 
-  bool HasRecentApps() const {
-    return recent_apps_ && recent_apps_->GetVisible();
-  }
+  bool HasRecentApps() const { return recent_apps_->GetVisible(); }
 
   void UpdateAppListConfig(AppListConfig* config) {
-    if (recent_apps_)
-      recent_apps_->UpdateAppListConfig(config);
+    recent_apps_->UpdateAppListConfig(config);
   }
 
   void UpdateContinueSectionVisibility() {
@@ -246,8 +246,6 @@ class AppsContainerView::ContinueContainer : public views::View {
 
  private:
   void UpdateRecentAppsMargins() {
-    if (!recent_apps_ || !continue_section_)
-      return;
     // Remove recent apps top margin if continue section is hidden.
     recent_apps_->SetProperty(
         views::kMarginsKey,
@@ -257,8 +255,6 @@ class AppsContainerView::ContinueContainer : public views::View {
   }
 
   void UpdateSeparatorVisibility() {
-    if (!separator_ || !recent_apps_ || !continue_section_)
-      return;
     separator_->SetVisible(recent_apps_->GetVisible() ||
                            continue_section_->GetVisible());
   }
