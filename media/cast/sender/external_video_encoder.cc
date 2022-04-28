@@ -9,7 +9,7 @@
 #include <sstream>
 #include <utility>
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/cpu.h"                     // nogncheck
 #include "base/no_destructor.h"           // nogncheck
 #include "third_party/re2/src/re2/re2.h"  // nogncheck
@@ -71,7 +71,7 @@ bool IsHardwareVP8EncodingSupported(
     base::StringPiece receiver_model_name,
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // NOTE: the hardware encoder on some Chrome OS devices does not play well
   // with Vizio TVs. See https://crbug.com/1238774 for more information.
   // Vizio uses the TV model string for the receiver model name.
@@ -101,12 +101,12 @@ bool IsHardwareH264EncodingSupported(
         profiles) {
 // TODO(b/169533953): Look into chromecast fails to decode bitstreams produced
 // by the AMD HW encoder.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   static const base::NoDestructor<base::CPU> cpuid;
   static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
   if (is_amd)
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
 // broken.

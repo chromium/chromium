@@ -6,11 +6,12 @@
 
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/cpu.h"  // nogncheck
 #endif
 
@@ -104,7 +105,7 @@ TEST(ExternalVideoEncoderTest,
 
   for (const char* model_name : kVizioTvModelNames) {
     constexpr bool should_recommend =
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
         false;
 #else
         true;
@@ -127,7 +128,7 @@ TEST(ExternalVideoEncoderTest, RecommendsH264HardwareEncoderProperly) {
   for (const char* model_name : kFirstPartyModelNames) {
 // On ChromeOS only, disable hardware encoder on AMD chipsets due to
 // failure on Chromecast chipsets to decode.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     if (base::CPU().vendor_name() == "AuthenticAMD") {
       EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
           CODEC_VIDEO_H264, std::string(model_name), kValidVeaProfiles));

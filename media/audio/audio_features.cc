@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace features {
 
@@ -38,7 +37,7 @@ const base::Feature kUseAAudioDriver{"UseAAudioDriver",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kCrOSSystemAEC{"CrOSSystemAECWithBoardTuningsAllowed",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCrOSSystemAECDeactivatedGroups{
