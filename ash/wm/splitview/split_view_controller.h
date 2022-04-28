@@ -40,9 +40,12 @@ class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
 
-// The controller for the split view. It snaps a window to left/right side of
-// the screen. It also observes the two snapped windows and decides when to exit
-// the split view mode.
+// `SplitViewController` handles how window snapping interacts with overview
+// mode and tablet mode. There is an instance for each display. In clamshell
+// mode, `SplitViewController` is relevant on displays with a snapped window
+// on one side and an overview grid (empty or not) on the other side. In
+// tablet mode, `SplitViewController` is relevant on all displays with snapped
+// windows.
 // TODO(xdai): Make it work for multi-display non mirror environment.
 class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public WindowStateObserver,
