@@ -468,30 +468,36 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
 TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  AshColorProvider* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   ShowAssistantUi();
 
-  EXPECT_EQ(greeting_label()->GetEnabledColor(),
-            ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
-  EXPECT_EQ(intro_label()->GetEnabledColor(),
-            ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const SkColor initial_greeting_label_color =
+      greeting_label()->GetEnabledColor();
+  const SkColor initial_intro_label_color = intro_label()->GetEnabledColor();
+  const SkColor intial_text_primary_color =
+      color_provider->GetContentLayerColor(
+          ColorProvider::ContentLayerType::kTextColorPrimary);
+  EXPECT_EQ(initial_greeting_label_color, intial_text_primary_color);
+  EXPECT_EQ(initial_intro_label_color, intial_text_primary_color);
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  const SkColor text_primary_color = color_provider->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorPrimary);
+  EXPECT_NE(intial_text_primary_color, text_primary_color);
 
-  EXPECT_EQ(greeting_label()->GetEnabledColor(),
-            ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
-  EXPECT_EQ(intro_label()->GetEnabledColor(),
-            ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
+  // Check that both label colors are updated to the text primary color,
+  // calculated based on the new color mode.
+  const SkColor greeting_label_color = greeting_label()->GetEnabledColor();
+  const SkColor intro_label_color = intro_label()->GetEnabledColor();
+  EXPECT_EQ(greeting_label_color, text_primary_color);
+  EXPECT_EQ(intro_label_color, text_primary_color);
 }
 
 TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
