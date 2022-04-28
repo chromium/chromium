@@ -8,6 +8,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -22,6 +24,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -40,14 +43,15 @@ PresentationRequest* PresentationRequest::Create(
     ExecutionContext* execution_context,
     const String& url,
     ExceptionState& exception_state) {
-  Vector<String> urls(1);
-  urls[0] = url;
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> urls(1);
+  urls[0] = MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(url);
   return Create(execution_context, urls, exception_state);
 }
 
+// static
 PresentationRequest* PresentationRequest::Create(
     ExecutionContext* execution_context,
-    const Vector<String>& urls,
+    const HeapVector<Member<V8UnionPresentationSourceOrUSVString>>& sources,
     ExceptionState& exception_state) {
   if (execution_context->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kPresentationController)) {
@@ -62,7 +66,14 @@ PresentationRequest* PresentationRequest::Create(
   }
 
   Vector<KURL> parsed_urls;
-  for (const auto& url : urls) {
+  for (const auto& source : sources) {
+    if (source->IsPresentationSource()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Presentation sources must be URL strings.");
+      return nullptr;
+    }
+    const String& url = source->GetAsUSVString();
     const KURL& parsed_url = KURL(execution_context->Url(), url);
 
     if (!parsed_url.IsValid()) {
@@ -86,8 +97,9 @@ PresentationRequest* PresentationRequest::Create(
   }
 
   if (parsed_urls.IsEmpty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Do not support empty sequence of URLs.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "An empty sequence of URLs is not supported.");
     return nullptr;
   }
 

@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// For more information, see the explainer at
+// https://github.com/webscreens/site-initiated-mirroring/blob/main/explainer.md
+
+// Indicates the preferred tradeoff between low latency and smooth streaming.
+// The actual behavior is implementation specific. Only applies to mirroring
+// sources.
+[RuntimeEnabled=SiteInitiatedMirroring]
+enum CaptureLatency {
+  "default",
+  // Having a smooth stream is prioritized over having a low latency.
+  "high",
+  // Having a low latency is prioritized over having a smooth stream.
+  "low",
+};
+
+// Indicates where the audio playback should occur. Only applies to mirroring
+// sources.
+[RuntimeEnabled=SiteInitiatedMirroring]
+enum AudioPlaybackDestination {
+  "receiver",
+  "controller",
+};
+
+[RuntimeEnabled=SiteInitiatedMirroring]
+dictionary PresentationSource {
+  required USVString url;
+  CaptureLatency latencyHint;
+  AudioPlaybackDestination audioPlayback;
+};

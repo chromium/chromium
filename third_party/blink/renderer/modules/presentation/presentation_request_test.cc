@@ -6,12 +6,25 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 namespace {
+
+HeapVector<Member<V8UnionPresentationSourceOrUSVString>> CreateSources(
+    const WTF::Vector<String>& urls) {
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
+  for (const String& url : urls) {
+    sources.push_back(
+        MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(url));
+  }
+  return sources;
+}
 
 TEST(PresentationRequestTest, TestSingleUrlConstructor) {
   V8TestingScope scope;
@@ -28,12 +41,11 @@ TEST(PresentationRequestTest, TestSingleUrlConstructor) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
   V8TestingScope scope;
-  WTF::Vector<String> urls;
-  urls.push_back("https://example.com");
-  urls.push_back("cast://deadbeef?param=foo");
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
+      CreateSources({"https://example.com", "cast://deadbeef?param=foo"});
 
   PresentationRequest* request = PresentationRequest::Create(
-      scope.GetExecutionContext(), urls, scope.GetExceptionState());
+      scope.GetExecutionContext(), sources, scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
   WTF::Vector<KURL> request_urls = request->Urls();
@@ -46,11 +58,10 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
   V8TestingScope scope;
-  WTF::Vector<String> urls;
-  urls.push_back("https://example.com");
-  urls.push_back("");
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
+      CreateSources({"https://example.com", ""});
 
-  PresentationRequest::Create(scope.GetExecutionContext(), urls,
+  PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kSyntaxError,
@@ -84,11 +95,10 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
   V8TestingScope scope(KURL("https://example.test"));
 
-  WTF::Vector<String> urls;
-  urls.push_back("http://example.com");
-  urls.push_back("https://example1.com");
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
+      CreateSources({"http://example.com", "https://example1.com"});
 
-  PresentationRequest::Create(scope.GetExecutionContext(), urls,
+  PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kSecurityError,
@@ -97,9 +107,9 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
   V8TestingScope scope;
-  WTF::Vector<String> urls;
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
 
-  PresentationRequest::Create(scope.GetExecutionContext(), urls,
+  PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
@@ -117,14 +127,12 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
   V8TestingScope scope;
-  WTF::Vector<String> urls;
-  urls.push_back("foobar:unknown");
-  urls.push_back("https://example.com");
-  urls.push_back("cast://deadbeef?param=foo");
-  urls.push_back("deadbeef:random");
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
+      CreateSources({"foobar:unknown", "https://example.com",
+                     "cast://deadbeef?param=foo", "deadbeef:random"});
 
   PresentationRequest* request = PresentationRequest::Create(
-      scope.GetExecutionContext(), urls, scope.GetExceptionState());
+      scope.GetExecutionContext(), sources, scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
   WTF::Vector<KURL> request_urls = request->Urls();
@@ -137,11 +145,10 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
   V8TestingScope scope;
-  WTF::Vector<String> urls;
-  urls.push_back("foobar:unknown");
-  urls.push_back("deadbeef:random");
+  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
+      CreateSources({"foobar:unknown", "deadbeef:random"});
 
-  PresentationRequest::Create(scope.GetExecutionContext(), urls,
+  PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,

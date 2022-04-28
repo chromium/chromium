@@ -617,6 +617,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/presentation/presentation_connection_list.idl",
           "//third_party/blink/renderer/modules/presentation/presentation_receiver.idl",
           "//third_party/blink/renderer/modules/presentation/presentation_request.idl",
+          "//third_party/blink/renderer/modules/presentation/presentation_source.idl",
           "//third_party/blink/renderer/modules/push_messaging/push_event.idl",
           "//third_party/blink/renderer/modules/push_messaging/push_event_init.idl",
           "//third_party/blink/renderer/modules/push_messaging/push_manager.idl",

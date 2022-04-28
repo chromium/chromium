@@ -11,7 +11,7 @@
     Exposed=Window
 ] interface PresentationRequest : EventTarget {
     [CallWith=ExecutionContext, RaisesException, MeasureAs=PresentationRequestConstructor] constructor(USVString url);
-    [CallWith=ExecutionContext, RaisesException, MeasureAs=PresentationRequestConstructor] constructor(sequence<USVString> urls);
+    [CallWith=ExecutionContext, RaisesException, MeasureAs=PresentationRequestConstructor] constructor(sequence<(USVString or PresentationSource)> urls);
     [CallWith=ScriptState, RaisesException, MeasureAs=PresentationRequestStart] Promise<PresentationConnection> start();
     [CallWith=ScriptState, RaisesException, MeasureAs=PresentationRequestReconnect] Promise<PresentationConnection> reconnect(DOMString id);
     [CallWith=ScriptState, RaisesException, MeasureAs=PresentationRequestGetAvailability] Promise<PresentationAvailability> getAvailability();
