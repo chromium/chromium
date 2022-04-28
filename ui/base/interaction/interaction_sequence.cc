@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -25,52 +26,6 @@ template <typename Signature, typename... Args>
 void RunIfValid(base::OnceCallback<Signature> callback, Args... args) {
   if (callback)
     std::move(callback).Run(args...);
-}
-
-// Version of AutoReset that takes a pointer-to-member and a weak reference in
-// case the object that owns the value goes away before the AutoReset does.
-template <class T, class U>
-class SafeAutoReset {
- public:
-  SafeAutoReset(base::WeakPtr<T> ptr, U T::*ref, U new_value)
-      : ptr_(ptr), ref_(ref), old_value_(ptr.get()->*ref) {
-    ptr.get()->*ref = new_value;
-  }
-
-  SafeAutoReset(SafeAutoReset<T, U>&& other)
-      : ptr_(std::move(other.ptr_)),
-        ref_(other.ref_),
-        old_value_(other.old_value_) {}
-
-  SafeAutoReset& operator=(SafeAutoReset<T, U>&& other) {
-    if (this != &other) {
-      Reset();
-      ptr_ = std::move(other.ptr_);
-      ref_ = other.ref_;
-      old_value_ = other.old_value_;
-    }
-    return *this;
-  }
-
-  ~SafeAutoReset() { Reset(); }
-
- private:
-  void Reset() {
-    if (ptr_)
-      ptr_.get()->*ref_ = old_value_;
-  }
-
-  base::WeakPtr<T> ptr_;
-  U T::*ref_ = nullptr;
-  U old_value_ = U();
-};
-
-// Convenience method to create a SafeAutoReset with less boilerplate.
-template <class T, class U>
-static SafeAutoReset<T, U> MakeSafeAutoReset(base::WeakPtr<T> ptr,
-                                             U T::*ref,
-                                             U new_value) {
-  return SafeAutoReset<T, U>(ptr, ref, new_value);
 }
 
 // Sets step->must_remain_visible if it does not have a value.
@@ -551,9 +506,9 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
   {
     // This block is non-re-entrant.
     DCHECK(!processing_step_);
-    auto processing =
-        MakeSafeAutoReset(weak_factory_.GetWeakPtr(),
-                          &InteractionSequence::processing_step_, true);
+    base::WeakAutoReset processing(weak_factory_.GetWeakPtr(),
+                                   &InteractionSequence::processing_step_,
+                                   true);
 
     // End the current step.
     if (current_step_) {
