@@ -174,6 +174,10 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1309289
   "policy.AllowDeletingBrowserHistory",
 
+  # https://crbug.com/1307750
+  "dlp.DataLeakPreventionRulesListPrinting.ash_blocked",
+  "dlp.DataLeakPreventionRulesListPrinting.ash_allowed",
+
   # https://crbug.com/1309052
   "policy.ShowHomeButton",
   "policy.ShowLogoutButtonInTray",
@@ -202,6 +206,16 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1312908
   "policy.DefaultNotificationsSetting",
+
+  # https://crbug.com/1314935
+  "dlp.DataLeakPreventionRulesListClipboardShelf",
+
+  # https://crbug.com/1314923
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_allowed",
+  "dlp.DataLeakPreventionRulesListClipboardOmni",
+
+  # https://crbug.com/1315123
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 
   # https://crbug.com/1312069
   "apps.LaunchHelpAppFromSettings.stable",
