@@ -213,11 +213,15 @@ void SSLManager::DidCommitProvisionalLoad(const LoadCommittedDetails& details) {
     remove_content_status_flags = ~0;
   }
 
-  if (!UpdateEntry(entry, add_content_status_flags,
-                   remove_content_status_flags)) {
+  if (!UpdateEntry(entry, add_content_status_flags, remove_content_status_flags,
+                   /*notify_changes=*/details.is_in_active_page)) {
     // Ensure the WebContents is notified that the SSL state changed when a
     // load is committed, in case the active navigation entry has changed.
-    NotifyDidChangeVisibleSSLState();
+    // Notification will only be called during activation if this commit is
+    // triggered by prerendering.
+    if (details.is_in_active_page) {
+      NotifyDidChangeVisibleSSLState();
+    }
   }
 }
 
@@ -288,7 +292,9 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::MIXED_CONTENT);
   }
-  UpdateEntry(entry, 0, 0);
+  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // UpdateEntry.
+  UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
 }
 
@@ -316,7 +322,9 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
-  UpdateEntry(entry, 0, 0);
+  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // UpdateEntry.
+  UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
 }
 
@@ -395,7 +403,8 @@ void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
 
 bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
                              int add_content_status_flags,
-                             int remove_content_status_flags) {
+                             int remove_content_status_flags,
+                             bool notify_changes) {
   // We don't always have a navigation entry to update, for example in the
   // case of the Web Inspector.
   if (!entry)
@@ -438,7 +447,9 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
 
   if (entry->GetSSL().initialized != original_ssl_status.initialized ||
       entry->GetSSL().content_status != original_ssl_status.content_status) {
-    NotifyDidChangeVisibleSSLState();
+    if (notify_changes) {
+      NotifyDidChangeVisibleSSLState();
+    }
     return true;
   }
 
@@ -467,7 +478,10 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 
   if (!entry)
     return;
-  UpdateEntry(entry, add_content_status_flags, remove_content_status_flags);
+  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // UpdateEntry.
+  UpdateEntry(entry, add_content_status_flags, remove_content_status_flags,
+              /*notify_changes=*/true);
 }
 
 void SSLManager::NotifyDidChangeVisibleSSLState() {
@@ -481,8 +495,11 @@ void SSLManager::NotifySSLInternalStateChanged(BrowserContext* context) {
   SSLManagerSet* managers =
       static_cast<SSLManagerSet*>(context->GetUserData(kSSLManagerKeyName));
 
-  for (auto i = managers->get().begin(); i != managers->get().end(); ++i) {
-    (*i)->UpdateEntry((*i)->controller()->GetLastCommittedEntry(), 0, 0);
+  for (auto* manager : managers->get()) {
+    // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+    // UpdateEntry.
+    manager->UpdateEntry(manager->controller()->GetLastCommittedEntry(), 0, 0,
+                         /*notify_changes=*/true);
   }
 }
 

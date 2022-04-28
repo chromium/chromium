@@ -90,6 +90,19 @@ class SSLPrerenderTest : public InProcessBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+class SecurityVisibleStateObserver : public content::WebContentsObserver {
+ public:
+  explicit SecurityVisibleStateObserver(WebContents& web_contents)
+      : WebContentsObserver(&web_contents) {}
+  void DidChangeVisibleSecurityState() override {
+    is_visible_state_changed_ = true;
+  }
+  bool is_visible_state_changed() const { return is_visible_state_changed_; }
+
+ private:
+  bool is_visible_state_changed_ = false;
+};
+
 // Verifies that a certificate error in a prerendered page causes cancelation
 // of prerendering without showing an interstitial.
 // TODO(bokan): In the future, when prerendering supports cross origin
@@ -277,5 +290,37 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             tab);
     EXPECT_FALSE(helper);
     histograms.ExpectTotalCount(kHistogramName, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
+                       TestNoVisibleStateChangedOnInitialPrerendering) {
+  auto https_server = CreateHTTPSServer(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server->Start());
+
+  const GURL kPrerenderUrl =
+      https_server->GetURL("a.test", "/empty.html?prerender");
+  const GURL kInitialUrl = https_server->GetURL("a.test", "/empty.html");
+
+  // Test steps
+  {
+    ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
+
+    // Trigger the prerender.
+    content::TestActivationManager activation_manager(web_contents(),
+                                                      kPrerenderUrl);
+    SecurityVisibleStateObserver visible_state_observer(*web_contents());
+    const int kPrerenderHostId = prerender_helper_.AddPrerender(kPrerenderUrl);
+    ASSERT_NE(kPrerenderHostId, RenderFrameHost::kNoFrameTreeNodeId);
+    ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
+    ASSERT_FALSE(visible_state_observer.is_visible_state_changed());
+
+    // Activate.
+    ASSERT_TRUE(
+        content::ExecJs(web_contents()->GetMainFrame(),
+                        content::JsReplace("location = $1", kPrerenderUrl)));
+    activation_manager.WaitForNavigationFinished();
+    EXPECT_TRUE(activation_manager.was_activated());
+    EXPECT_TRUE(visible_state_observer.is_visible_state_changed());
   }
 }

@@ -1392,6 +1392,9 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   details->is_prerender_activation =
       navigation_request->IsPrerenderedPageActivation();
+  details->is_in_active_page = navigation_request->GetRenderFrameHost()
+                                   ->GetOutermostMainFrame()
+                                   ->IsInPrimaryMainFrame();
 
   // Make sure we do not discard the pending entry for a different ongoing
   // navigation when a same document commit comes in unexpectedly from the

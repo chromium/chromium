@@ -89,7 +89,8 @@ class SSLManager {
   void OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler);
 
   // Updates the NavigationEntry's |content_status| flags according to state in
-  // |ssl_host_state_delegate|. |add_content_status_flags| and
+  // |ssl_host_state_delegate|, and calls NotifyDidChangeVisibleSSLState
+  // according to |notify_changes|. |add_content_status_flags| and
   // |remove_content_status_flags| are bitmasks of SSLStatus::ContentStatusFlags
   // that will be added or removed from the |content_status| field. (Pass 0 to
   // add/remove no content status flags.) |remove_content_status_flags| are
@@ -97,7 +98,8 @@ class SSLManager {
   // flags changes, this method will notify the WebContents and return true.
   bool UpdateEntry(NavigationEntryImpl* entry,
                    int add_content_status_flags,
-                   int remove_content_status_flags);
+                   int remove_content_status_flags,
+                   bool notify_changes);
 
   // Helper function for UpdateEntry().
   void UpdateLastCommittedEntry(int add_content_status_flags,

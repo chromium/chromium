@@ -56,6 +56,9 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // fenced frames, main frames in BFCache or prerendering).
   bool is_main_frame = true;
 
+  // True when the navigation is in the primary page.
+  bool is_in_active_page = false;
+
   // True when the navigation triggered a prerender activation.
   bool is_prerender_activation = false;
 
