@@ -162,11 +162,13 @@ Do not add too many splits, and monitor the size of our `ApplicationInfo` object
 
 When distributing Chrome on Android system images, we generate a single `.apk`
 file that contains all splits merged together (or rather, all splits whose
-`AndroidManifest.xml` contain `<dist:fusing dist:include="true" />`). You can
-build one via:
+`AndroidManifest.xml` contain `<dist:fusing dist:include="true" />`). We do this
+for simplicity; Android supports apk splits on the system image.
 
+You can build Chrome's system `.apk` via:
 ```sh
-out/Release/bin/trichrome_chrome_bundle build-bundle-apks --output-apks SystemChrome.apk --build-mode system
+out/Release/bin/trichrome_chrome_bundle build-bundle-apks --output-apks SystemChrome.apks --build-mode system
+unzip SystemChrome.apks system/system.apk
 ```
 
 Shipping a single `.apk` file simplifies distribution, but eliminates all the
