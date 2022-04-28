@@ -2663,6 +2663,8 @@
     "CrashReportBreadcrumbs": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "windows",
                 "mac",
                 "linux"
