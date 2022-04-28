@@ -72,7 +72,7 @@ export const ShowPasswordMixin = dedupingMixin(
                   chrome.passwordsPrivate.PlaintextReason.VIEW)
               .then(password => {
                 this.set('entry.password', password);
-              });
+              }, () => {});
         }
 
         hide() {

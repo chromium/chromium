@@ -746,7 +746,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         .then(password => {
           existingEntry.password = password;
           this.switchToEditMode_(existingEntry);
-        });
+        }, () => {});
   }
 
   private switchToEditMode_(existingEntry: MultiStorePasswordUiEntry) {

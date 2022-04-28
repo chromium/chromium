@@ -26,18 +26,22 @@ export const PasswordRequestorMixin = dedupingMixin(
         requestPlaintextPassword(
             id: number,
             reason: chrome.passwordsPrivate.PlaintextReason): Promise<string> {
+          // <if expr="chromeos_ash or chromeos_lacros">
+          // If no password was found, refresh auth token and retry.
           return new Promise(resolve => {
             PasswordManagerImpl.getInstance()
                 .requestPlaintextPassword(id, reason)
                 .then(password => resolve(password), () => {
-                  // <if expr="chromeos_ash or chromeos_lacros">
-                  // If no password was found, refresh auth token and retry.
                   this.tokenRequestManager.request(() => {
                     this.requestPlaintextPassword(id, reason).then(resolve);
                   });
-                  // </if>
                 });
           });
+          // </if>
+          // <if expr="not (chromeos_ash or chromeos_lacros)">
+          return PasswordManagerImpl.getInstance().requestPlaintextPassword(
+              id, reason);
+          // </if>
         }
 
         getPlaintextInsecurePassword(

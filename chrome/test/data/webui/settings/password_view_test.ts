@@ -99,25 +99,31 @@ suite('PasswordViewTest', function() {
     assertVisibilityOfPageElements(page, /*visibility=*/ true);
   });
 
-  test('Invalid site and username does not display an entry', async function() {
-    const passwordList = [
-      createPasswordEntry({url: SITE, username: 'user2', id: ID}),
-    ];
+  test(
+      'Invalid site and username does not display an entry ' +
+          'and routes to passwords page',
+      async function() {
+        const passwordList = [
+          createPasswordEntry({url: SITE, username: 'user2', id: ID}),
+        ];
 
-    passwordManager.data.passwords = passwordList;
-    const page = document.createElement('password-view');
-    document.body.appendChild(page);
-    const params = new URLSearchParams({
-      username: USERNAME,
-      site: SITE,
-    });
-    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+        passwordManager.data.passwords = passwordList;
+        const page = document.createElement('password-view');
+        document.body.appendChild(page);
+        const params = new URLSearchParams({
+          username: USERNAME,
+          site: SITE,
+        });
+        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    assertEquals(0, passwordManager.getCallCount('requestPlaintextPassword'));
+        assertEquals(
+            0, passwordManager.getCallCount('requestPlaintextPassword'));
 
-    await flushTasks();
-    assertVisibilityOfPageElements(page, /*visibility=*/ false);
-  });
+        await flushTasks();
+        assertVisibilityOfPageElements(page, /*visibility=*/ false);
+
+        assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
+      });
 
   test('Federated credential layout', async function() {
     const passwordList = [
@@ -142,30 +148,37 @@ suite('PasswordViewTest', function() {
     assertVisibilityOfFederatedCredentialElements(page);
   });
 
-  test('Nothing is shown when password request fails', async function() {
-    const passwordList = [
-      createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
-    ];
+  // <if expr="not chromeos_ash and not chromeos_lacros">
+  test(
+      'When password request fails view page is empty, ' +
+          'and page is routed to passwords page',
+      async function() {
+        const passwordList = [
+          createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
+        ];
 
-    passwordManager.data.passwords = passwordList;
-    const page = document.createElement('password-view');
-    document.body.appendChild(page);
-    const params = new URLSearchParams({
-      username: USERNAME,
-      site: SITE,
-    });
-    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+        passwordManager.data.passwords = passwordList;
+        const page = document.createElement('password-view');
+        document.body.appendChild(page);
+        const params = new URLSearchParams({
+          username: USERNAME,
+          site: SITE,
+        });
+        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    // This will fail because passwordManager.setPlaintextPasswords was not
-    // called.
-    const {id, reason} =
-        await passwordManager.whenCalled('requestPlaintextPassword');
-    assertEquals(ID, id);
-    assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
+        // This will fail because passwordManager.setPlaintextPasswords was not
+        // called.
+        const {id, reason} =
+            await passwordManager.whenCalled('requestPlaintextPassword');
+        assertEquals(ID, id);
+        assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
 
-    await flushTasks();
-    assertVisibilityOfPageElements(page, /*visibility=*/ false);
-  });
+        await flushTasks();
+        assertVisibilityOfPageElements(page, /*visibility=*/ false);
+
+        assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
+      });
+  // </if>
 
   test('Clicking show password button shows / hides it', async function() {
     const passwordList = [
@@ -272,7 +285,7 @@ suite('PasswordViewTest', function() {
 
   test(
       'When edit button is tapped, the edit dialog is open with credential. ' +
-          'When the dialog is closed and username changed, view page gets updated',
+          'When the username is changed, view page gets updated',
       async function() {
         const NEW_USERNAME = 'user2';
         const entry =
@@ -323,11 +336,13 @@ suite('PasswordViewTest', function() {
         const urlParams = Router.getInstance().getQueryParameters();
         assertEquals(urlParams.get('site'), SITE);
         assertEquals(urlParams.get('username'), NEW_USERNAME);
+        assertEquals(
+            routes.PASSWORD_VIEW, Router.getInstance().getCurrentRoute());
       });
 
   test(
       'When delete button is clicked for a password on device, ' +
-          'it is deleted and routed to parent page',
+          'it is deleted and routed to passwords page',
       async function() {
         const entry = createPasswordEntry(
             {url: SITE, username: USERNAME, id: ID, fromAccountStore: false});

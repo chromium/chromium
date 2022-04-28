@@ -254,7 +254,7 @@ export class PasswordsListHandlerElement extends
             this.set('activePassword_.entry.password', password);
             this.requestedDialogMode_ = PasswordDialogMode.EDIT;
             this.showPasswordEditDialog_ = true;
-          });
+          }, () => {});
     } else {
       this.requestedDialogMode_ = PasswordDialogMode.FEDERATED_VIEW;
       this.showPasswordEditDialog_ = true;
@@ -302,7 +302,7 @@ export class PasswordsListHandlerElement extends
         .then((_: string) => {
           this.activePassword_ = null;
           this.displayCopyNotification_();
-        });
+        }, () => {});
 
     this.$.menu.close();
   }

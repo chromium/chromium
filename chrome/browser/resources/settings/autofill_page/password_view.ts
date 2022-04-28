@@ -74,26 +74,32 @@ export class PasswordViewElement extends PasswordViewElementBase {
         type: Array,
         value: () => [],
       },
+
       credential: {
         type: Object,
         value: null,
         notify: true,
       },
+
       isPasswordVisible_: {
         type: Boolean,
         value: false,
       },
+
       password_: {
         type: String,
         value: '',
       },
+
       // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
       // </if>
+
       site: {
         type: String,
         value: '',
       },
+
       username: {
         type: String,
         value: '',
@@ -110,6 +116,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private isPasswordVisible_: boolean;
   private password_: string;
   // <if expr="chromeos_ash or chromeos_lacros">
+  private isTokenObtained_: boolean = false;
   private showPasswordPromptDialog_: boolean;
   // </if>
   private showEditDialog_: boolean;
@@ -135,6 +142,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {
+      this.site = '';
+      this.username = '';
+      this.password_ = '';
+      this.credential = null;
       return;
     }
     const queryParameters = Router.getInstance().getQueryParameters();
@@ -229,7 +240,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
     }
     // The dialog is recently closed. If the username has changed, reroute the
     // page to the new credential.
-    this.username = newUsername;
     const newParams = Router.getInstance().getQueryParameters();
     newParams.set(PasswordViewPageUrlParams.USERNAME, newUsername);
     Router.getInstance().updateRouteParams(newParams);
@@ -253,19 +263,28 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private onTokenObtained_(
       e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>) {
     assert(e.detail);
+    this.isTokenObtained_ = true;
     this.tokenRequestManager.resolve();
   }
 
   private onPasswordPromptClose_() {
     this.showPasswordPromptDialog_ = false;
     const toFocus = this.activeDialogAnchorStack_.pop();
+    if (!this.isTokenObtained_ && (!toFocus || toFocus.id !== 'editButton')) {
+      // User dismissed the password prompt by clicking cancel. Reroute back if
+      // prompt was not requested within the page.
+      Router.getInstance().navigateTo(routes.PASSWORDS);
+      return;
+    }
     assert(toFocus);
     focusWithoutInk(toFocus);
+    this.isTokenObtained_ = false;
   }
 
   private openPasswordPromptDialog_() {
     this.activeDialogAnchorStack_.push(getDeepActiveElement() as HTMLElement);
     this.showPasswordPromptDialog_ = true;
+    this.isTokenObtained_ = false;
   }
   // </if>
 
@@ -303,6 +322,11 @@ export class PasswordViewElement extends PasswordViewElementBase {
               savedPassword.username === this.username;
         });
     if (!item) {
+      if (!this.showEditDialog_) {
+        // Rerouting might have happened due to the edited username. Do not
+        // reroute back.
+        Router.getInstance().navigateTo(routes.PASSWORDS);
+      }
       return;
     }
 
@@ -315,8 +339,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
           .then(password => {
             this.password_ = password;
             this.credential = item;
+          })
+          .catch(_error => {
+            Router.getInstance().navigateTo(routes.PASSWORDS);
           });
     }
+    this.showEditDialog_ = false;
   }
 }
 
