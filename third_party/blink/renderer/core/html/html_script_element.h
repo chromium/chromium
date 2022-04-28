@@ -114,8 +114,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   bool ElementHasDuplicateAttributes() const override {
     return HasDuplicateAttribute();
   }
-  bool IsRenderBlocking() const override {
-    return blocking_attribute_->IsRenderBlocking();
+  bool IsExplicitlyRenderBlocking() const override {
+    return blocking_attribute_->IsExplicitlyRenderBlocking();
   }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
                                const WTF::OrdinalNumber&,

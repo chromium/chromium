@@ -384,7 +384,8 @@ Resource* PreloadHelper::PreloadIfNeeded(
   }
   link_fetch_params.SetLinkPreload(true);
 
-  bool render_blocking = BlockingAttribute::IsRenderBlocking(params.blocking);
+  bool render_blocking =
+      BlockingAttribute::IsExplicitlyRenderBlocking(params.blocking);
   link_fetch_params.SetRenderBlockingBehavior(
       render_blocking ? RenderBlockingBehavior::kBlocking
                       : RenderBlockingBehavior::kNonBlocking);
@@ -521,7 +522,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // is cryptographic nonce, integrity metadata is integrity metadata, parser
   // metadata is "not-parser-inserted", credentials mode is credentials mode,
   // and referrer policy is referrer policy." [spec text]
-  bool render_blocking = BlockingAttribute::IsRenderBlocking(params.blocking);
+  bool render_blocking =
+      BlockingAttribute::IsExplicitlyRenderBlocking(params.blocking);
   ModuleScriptFetchRequest request(
       params.href, ModuleType::kJavaScript, context_type, destination,
       ScriptFetchOptions(

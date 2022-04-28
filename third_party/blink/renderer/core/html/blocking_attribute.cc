@@ -28,7 +28,8 @@ HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
 }
 
 // static
-bool BlockingAttribute::IsRenderBlocking(const String& attribute_value) {
+bool BlockingAttribute::IsExplicitlyRenderBlocking(
+    const String& attribute_value) {
   if (!RuntimeEnabledFeatures::BlockingAttributeEnabled())
     return false;
   if (attribute_value.IsEmpty())

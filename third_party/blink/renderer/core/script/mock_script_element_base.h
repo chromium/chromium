@@ -42,7 +42,7 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
   MOCK_CONST_METHOD0(GetNonceForElement, const AtomicString&());
   MOCK_CONST_METHOD0(ElementHasDuplicateAttributes, bool());
   MOCK_CONST_METHOD0(InitiatorName, AtomicString());
-  MOCK_CONST_METHOD0(IsRenderBlocking, bool());
+  MOCK_CONST_METHOD0(IsExplicitlyRenderBlocking, bool());
   MOCK_METHOD3(AllowInlineScriptForCSP,
                bool(const AtomicString&,
                     const WTF::OrdinalNumber&,

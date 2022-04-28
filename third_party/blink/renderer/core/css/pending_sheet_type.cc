@@ -30,7 +30,7 @@ ComputePendingSheetTypeAndRenderBlockingBehavior(Element& sheet_owner,
   }
   bool has_render_blocking_attr =
       RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-      BlockingAttribute::IsRenderBlocking(
+      BlockingAttribute::IsExplicitlyRenderBlocking(
           sheet_owner.FastGetAttribute(html_names::kBlockingAttr));
   return has_render_blocking_attr
              ? std::make_pair(PendingSheetType::kDynamicRenderBlocking,

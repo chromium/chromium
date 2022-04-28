@@ -534,7 +534,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   bool has_render_blocking_attr =
       RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-      element_->IsRenderBlocking();
+      element_->IsExplicitlyRenderBlocking();
   RenderBlockingBehavior render_blocking_behavior =
       !has_render_blocking_attr && (non_blocking_ || dynamic_async_ ||
                                     element_->DeferAttributeValue())

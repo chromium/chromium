@@ -108,7 +108,7 @@ void HTMLScriptElement::ParseAttribute(
                                                  params.new_value);
     blocking_attribute_->CountTokenUsage();
     if (GetDocument().GetRenderBlockingResourceManager() &&
-        !blocking_attribute_->IsRenderBlocking()) {
+        !blocking_attribute_->IsExplicitlyRenderBlocking()) {
       GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
           *this);
     }

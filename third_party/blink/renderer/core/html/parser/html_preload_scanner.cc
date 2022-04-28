@@ -305,14 +305,15 @@ class TokenPreloadScanner::StartTagScanner {
     RenderBlockingBehavior render_blocking_behavior =
         RenderBlockingBehavior::kUnset;
     if (request_type == PreloadRequest::kRequestTypeLinkRelPreload) {
-      render_blocking_behavior =
-          BlockingAttribute::IsRenderBlocking(blocking_attribute_value_)
-              ? RenderBlockingBehavior::kBlocking
-              : RenderBlockingBehavior::kNonBlocking;
+      render_blocking_behavior = BlockingAttribute::IsExplicitlyRenderBlocking(
+                                     blocking_attribute_value_)
+                                     ? RenderBlockingBehavior::kBlocking
+                                     : RenderBlockingBehavior::kNonBlocking;
     } else if (is_script &&
                (is_module || defer_ == FetchParameters::kLazyLoad)) {
       render_blocking_behavior =
-          BlockingAttribute::IsRenderBlocking(blocking_attribute_value_)
+          BlockingAttribute::IsExplicitlyRenderBlocking(
+              blocking_attribute_value_)
               ? RenderBlockingBehavior::kBlocking
               : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
                            : RenderBlockingBehavior::kNonBlocking);
