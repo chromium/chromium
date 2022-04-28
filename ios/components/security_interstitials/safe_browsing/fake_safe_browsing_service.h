@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_
-#define IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_
+#ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_
+#define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_
 
 #include <string>
 
-#include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -48,4 +48,4 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
   network::TestURLLoaderFactory url_loader_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_
+#endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_SERVICE_H_

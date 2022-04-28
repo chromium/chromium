@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/safe_browsing/safe_browsing_service_impl.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -16,9 +16,9 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
 #include "ios/web/public/thread/web_task_traits.h"

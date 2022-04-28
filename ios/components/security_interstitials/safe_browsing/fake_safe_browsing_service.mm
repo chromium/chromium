@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#include "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 
 #include "base/callback_helpers.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
-#import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
+#import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -51,7 +51,7 @@ class FakeSafeBrowsingUrlCheckerImpl
                             /*showed_interstitial=*/false);
   }
 };
-}
+}  // namespace
 
 // static
 const std::string FakeSafeBrowsingService::kUnsafeHost =

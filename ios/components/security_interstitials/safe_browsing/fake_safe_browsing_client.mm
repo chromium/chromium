@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

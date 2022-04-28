@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
-#define IOS_CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
+#ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
+#define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -68,4 +68,4 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   safe_browsing::SBThreatTypeSet threat_types_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
+#endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_

@@ -253,6 +253,7 @@ source_set("browser_impl") {
     "//ios/chrome/browser/update_client",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
+    "//ios/components/security_interstitials/safe_browsing",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",

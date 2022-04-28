@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
+#import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -11,8 +11,8 @@
 #import "base/test/ios/wait_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
@@ -26,8 +26,8 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using security_interstitials::UnsafeResource;
 
 namespace {

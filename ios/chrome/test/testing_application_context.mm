@@ -13,7 +13,7 @@
 #include "components/network_time/network_time_tracker.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

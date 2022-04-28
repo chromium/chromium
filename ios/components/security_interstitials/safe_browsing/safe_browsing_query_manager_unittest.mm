@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 
 #import <Foundation/Foundation.h>
 
 #include "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"

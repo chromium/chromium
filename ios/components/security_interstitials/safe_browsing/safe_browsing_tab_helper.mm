@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/safe_browsing_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 
 #import <Foundation/Foundation.h>
 
@@ -14,9 +14,9 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"

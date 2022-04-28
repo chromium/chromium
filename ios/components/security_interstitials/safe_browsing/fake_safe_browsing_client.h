@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
+#define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
+
 #import "base/memory/scoped_refptr.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
-
-#ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
-#define IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
 
 class SafeBrowsingService;
 
@@ -62,4 +62,4 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   base::WeakPtrFactory<FakeSafeBrowsingClient> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_
+#endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_

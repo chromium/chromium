@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/safe_browsing/safe_browsing_service_impl.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -32,8 +32,8 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
