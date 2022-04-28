@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -101,7 +102,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
          */
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPasswordStoreBridge = new PasswordStoreBridge();
-            mPasswordStoreBridge.addObserver(this, false);
+            mPasswordStoreBridge.addObserver(this, /* callImmediatelyIfReady= */ true);
             // Load initial credentials.
             PasswordStoreCredential[] seedCredentials = mParameters.getSeedCredentials();
             for (int i = 0; i < seedCredentials.length; i++) {
@@ -110,14 +111,18 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         });
 
         // Wait until operation finishes and credentials cache is updated.
-        waitUntil(() -> mCredentials.length == mParameters.getSeedCredentials().length);
+        waitUntil(()
+                          -> mCredentials != null
+                        && mCredentials.length == mParameters.getSeedCredentials().length);
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge.removeObserver(this);
-            mPasswordStoreBridge.destroy();
+            if (mPasswordStoreBridge != null) {
+                mPasswordStoreBridge.removeObserver(this);
+                mPasswordStoreBridge.destroy();
+            }
         });
     }
 
@@ -217,7 +222,10 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
         // Should fail during login. Wait for error opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Can't change your password"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                anyOf(withText("Can't change your password"),
+                        withText(
+                                "Sign in with your current password. If you don’t know it, reset it.")),
+                isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Assert initial credential has not changed.
         PasswordStoreCredential newCredential = getCredentialForDomainAndUser(
