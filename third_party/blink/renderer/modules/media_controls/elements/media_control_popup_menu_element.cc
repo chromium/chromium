@@ -90,6 +90,7 @@ class MediaControlPopupMenuElement::EventListener final
         case VKEY_RETURN:
         case VKEY_SPACE:
           To<Element>(event->target()->ToNode())->DispatchSimulatedClick(event);
+          popup_menu_->FocusPopupAnchorIfOverflowClosed();
           break;
         default:
           handled = false;
@@ -287,6 +288,14 @@ void MediaControlPopupMenuElement::SelectPreviousitem() {
 void MediaControlPopupMenuElement::CloseFromKeyboard() {
   SetIsWanted(false);
   PopupAnchor()->Focus();
+}
+
+void MediaControlPopupMenuElement::FocusPopupAnchorIfOverflowClosed() {
+  if (!GetMediaControls().OverflowMenuIsWanted() &&
+      !GetMediaControls().PlaybackSpeedListIsWanted() &&
+      !GetMediaControls().TextTrackListIsWanted()) {
+    PopupAnchor()->Focus();
+  }
 }
 
 }  // namespace blink

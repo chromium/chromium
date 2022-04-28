@@ -227,6 +227,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   friend class MediaControlsImplTest;
   friend class MediaControlsImplInProductHelpTest;
   friend class MediaControlDisplayCutoutFullscreenButtonElementTest;
+  friend class MediaControlPopupMenuElementTest;
   friend class MediaControlTimelineElementTest;
 
   // Need to be members of MediaControls for private member access.
