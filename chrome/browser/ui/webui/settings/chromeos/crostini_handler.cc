@@ -111,16 +111,16 @@ void CrostiniHandler::RegisterMessages() {
           &CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
-      "addCrostiniPortForward",
-      base::BindRepeating(&CrostiniHandler::HandleAddCrostiniPortForward,
-                          handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
       "getCrostiniDiskInfo",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniDiskInfo,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "resizeCrostiniDisk",
       base::BindRepeating(&CrostiniHandler::HandleResizeCrostiniDisk,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "addCrostiniPortForward",
+      base::BindRepeating(&CrostiniHandler::HandleAddCrostiniPortForward,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "removeCrostiniPortForward",
@@ -479,14 +479,13 @@ void CrostiniHandler::OnActivePortsChanged(const base::ListValue& activePorts) {
 
 void CrostiniHandler::HandleAddCrostiniPortForward(
     const base::Value::List& args) {
-  CHECK_EQ(6U, args.size());
+  CHECK_EQ(5U, args.size());
 
   std::string callback_id = args[0].GetString();
-  std::string vm_name = args[1].GetString();
-  std::string container_name = args[2].GetString();
-  int port_number = args[3].GetInt();
-  int protocol_type = args[4].GetInt();
-  std::string label = args[5].GetString();
+  crostini::ContainerId container_id(args[1]);
+  int port_number = args[2].GetInt();
+  int protocol_type = args[3].GetInt();
+  std::string label = args[4].GetString();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -494,8 +493,7 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddPort(
-      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
-      port_number,
+      container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       std::move(label),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
@@ -506,12 +504,12 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
 void CrostiniHandler::HandleRemoveCrostiniPortForward(
     const base::Value::List& args) {
   const auto& list = args;
-  CHECK_EQ(5U, list.size());
+  CHECK_EQ(4U, list.size());
+
   std::string callback_id = list[0].GetString();
-  std::string vm_name = list[1].GetString();
-  std::string container_name = list[2].GetString();
-  int port_number = list[3].GetInt();
-  int protocol_type = list[4].GetInt();
+  crostini::ContainerId container_id(list[1]);
+  int port_number = list[2].GetInt();
+  int protocol_type = list[3].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -519,8 +517,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemovePort(
-      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
-      port_number,
+      container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
                      callback_weak_ptr_factory_.GetWeakPtr(),
@@ -529,28 +526,25 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  std::string vm_name = args[0].GetString();
-  std::string container_name = args[1].GetString();
+  CHECK_EQ(1U, args.size());
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     return;
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveAllPorts(
-      crostini::ContainerId(std::move(vm_name), std::move(container_name)));
+      crostini::ContainerId(args[0]));
 }
 
 void CrostiniHandler::HandleActivateCrostiniPortForward(
     const base::Value::List& args) {
   const auto& list = args;
-  CHECK_EQ(5U, list.size());
+  CHECK_EQ(4U, list.size());
 
   std::string callback_id = list[0].GetString();
-  std::string vm_name = list[1].GetString();
-  std::string container_name = list[2].GetString();
-  int port_number = list[3].GetInt();
-  int protocol_type = list[4].GetInt();
+  crostini::ContainerId container_id(list[1]);
+  int port_number = list[2].GetInt();
+  int protocol_type = list[3].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -558,8 +552,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->ActivatePort(
-      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
-      port_number,
+      container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
                      callback_weak_ptr_factory_.GetWeakPtr(),
@@ -569,13 +562,12 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
     const base::Value::List& args) {
   const auto& list = args;
-  CHECK_EQ(5U, list.size());
+  CHECK_EQ(4U, list.size());
 
   std::string callback_id = list[0].GetString();
-  std::string vm_name = list[1].GetString();
-  std::string container_name = list[2].GetString();
-  int port_number = list[3].GetInt();
-  int protocol_type = list[4].GetInt();
+  crostini::ContainerId container_id(list[1]);
+  int port_number = list[2].GetInt();
+  int protocol_type = list[3].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -583,8 +575,7 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->DeactivatePort(
-      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
-      port_number,
+      container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
                      callback_weak_ptr_factory_.GetWeakPtr(),

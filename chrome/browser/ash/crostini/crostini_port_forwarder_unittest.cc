@@ -127,10 +127,7 @@ class CrostiniPortForwarderTest : public testing::Test {
               pref.value().FindIntKey(crostini::kPortNumberKey).value());
     EXPECT_EQ(static_cast<int>(key.protocol_type),
               pref.value().FindIntKey(crostini::kPortProtocolKey).value());
-    EXPECT_EQ(key.container_id.vm_name,
-              *pref.value().FindStringKey(crostini::kPortVmNameKey));
-    EXPECT_EQ(key.container_id.container_name,
-              *pref.value().FindStringKey(crostini::kPortContainerNameKey));
+    EXPECT_EQ(key.container_id, ContainerId(pref.value()));
     EXPECT_EQ(label, *pref.value().FindStringKey(crostini::kPortLabelKey));
   }
 

@@ -18,7 +18,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerId, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -55,6 +55,17 @@ Polymer({
     portState_: {
       type: String,
       value: PortState.VALID,
+    },
+
+    /**
+     * @private {!ContainerId}
+     */
+    containerId_: {
+      type: Object,
+      value: {
+        vm_name: DEFAULT_CROSTINI_VM,
+        container_name: DEFAULT_CROSTINI_CONTAINER,
+      },
     },
 
     /**
@@ -154,7 +165,7 @@ Polymer({
     const portLabel = this.$.portLabelInput.value;
     CrostiniBrowserProxyImpl.getInstance()
         .addCrostiniPortForward(
-            DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
+            this.containerId_, portNumber,
             /** @type {!CrostiniPortProtocol} */ (this.inputProtocolIndex_),
             portLabel)
         .then(result => {

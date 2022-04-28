@@ -129,34 +129,44 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  addCrostiniPortForward(
-      vmName, containerName, portNumber, protocolIndex, label) {
+  addCrostiniPortForward(containerId, portNumber, protocolIndex, label) {
     this.methodCalled(
-        'addCrostiniPortForward', vmName, containerName, portNumber,
-        protocolIndex, label);
+        'addCrostiniPortForward', containerId, portNumber, protocolIndex,
+        label);
     return Promise.resolve(this.portOperationSuccess);
   }
 
   /** @override */
-  removeCrostiniPortForward(vmName, containerName, portNumber, protocolIndex) {
+  removeCrostiniPortForward(containerId, portNumber, protocolIndex) {
     this.methodCalled(
-        'removeCrostiniPortForward', vmName, containerName, portNumber,
+        'removeCrostiniPortForward', containerId, portNumber, protocolIndex);
+    return Promise.resolve(this.portOperationSuccess);
+  }
+
+  /** @override */
+  activateCrostiniPortForward(containerId, portNumber, protocolIndex) {
+    this.methodCalled(
+        'activateCrostiniPortForward', containerId, portNumber, protocolIndex);
+    return Promise.resolve(this.portOperationSuccess);
+  }
+
+  /** @override */
+  deactivateCrostiniPortForward(containerId, portNumber, protocolIndex) {
+    this.methodCalled(
+        'deactivateCrostiniPortForward', containerId, portNumber,
         protocolIndex);
     return Promise.resolve(this.portOperationSuccess);
   }
 
   /** @override */
-  activateCrostiniPortForward(
-      vmName, containerName, portNumber, protocolIndex) {
-    this.methodCalled(
-        'activateCrostiniPortForward', vmName, containerName, portNumber,
-        protocolIndex);
-    return Promise.resolve(this.portOperationSuccess);
+  removeAllCrostiniPortForwards(containerId) {
+    this.methodCalled('removeAllCrostiniPortForwards', containerId);
   }
 
   /** @override */
-  removeAllCrostiniPortForwards(vmName, containerName) {
-    this.methodCalled('removeAllCrostiniPortForwards');
+  getCrostiniActivePorts() {
+    this.methodCalled('getCrostiniActivePorts');
+    return Promise.resolve(new Array());
   }
 
   /** @override */
@@ -169,21 +179,6 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   resizeCrostiniDisk(vmName, newSizeBytes) {
     this.methodCalled('resizeCrostiniDisk', vmName, newSizeBytes);
     return this.getNewPromiseFor('resizeCrostiniDisk');
-  }
-
-  /** @override */
-  deactivateCrostiniPortForward(
-      vmName, containerName, portNumber, protocolIndex) {
-    this.methodCalled(
-        'deactivateCrostiniPortForward', vmName, containerName, portNumber,
-        protocolIndex);
-    return Promise.resolve(this.portOperationSuccess);
-  }
-
-  /** @override */
-  getCrostiniActivePorts() {
-    this.methodCalled('getCrostiniActivePorts');
-    return Promise.resolve(new Array());
   }
 
   /** @override */

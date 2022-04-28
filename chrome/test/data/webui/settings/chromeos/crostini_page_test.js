@@ -537,6 +537,9 @@ suite('CrostiniPageTests', function() {
         subpage.$$('cr-dialog cr-button[id="continue"]').click();
         assertEquals(
             1, crostiniBrowserProxy.getCallCount('addCrostiniPortForward'));
+        assertEquals(
+            4,
+            crostiniBrowserProxy.getArgs('addCrostiniPortForward')[0].length);
       });
 
       test('AddPortFail', async function() {

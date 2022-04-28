@@ -26,7 +26,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerId, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -177,12 +177,16 @@ Polymer({
    * @private
    */
   onShowRemoveSinglePortMenuClick_: function(event) {
-    const dataSet = /** @type {{portNumber: string, protocolType: string}} */
+    const dataSet = /**
+                       @type {{portNumber: string, protocolType: string,
+                               containerId: !ContainerId}}
+                     */
         (event.currentTarget.dataset);
     this.lastMenuOpenedPort_ = {
       port_number: Number(dataSet.portNumber),
       protocol_type: /** @type {!CrostiniPortProtocol} */
-          (Number(dataSet.protocolType))
+          (Number(dataSet.protocolType)),
+      container_id: dataSet.containerId
     };
     const menu = /** @type {!CrActionMenuElement} */
         (this.$.removeSinglePortMenu.get());
@@ -201,7 +205,7 @@ Polymer({
         this.lastMenuOpenedPort_.protocol_type != null);
     CrostiniBrowserProxyImpl.getInstance()
         .removeCrostiniPortForward(
-            DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER,
+            this.lastMenuOpenedPort_.container_id,
             this.lastMenuOpenedPort_.port_number,
             this.lastMenuOpenedPort_.protocol_type)
         .then(result => {
@@ -220,8 +224,12 @@ Polymer({
     const menu = /** @type {!CrActionMenuElement} */
         (this.$.removeAllPortsMenu.get());
     assert(menu.open);
+    const containerId = /**@type {!ContainerId} */ ({
+      vm_name: DEFAULT_CROSTINI_VM,
+      container_name: DEFAULT_CROSTINI_CONTAINER
+    });
     CrostiniBrowserProxyImpl.getInstance().removeAllCrostiniPortForwards(
-        DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER);
+        containerId);
     recordSettingChange();
     menu.close();
   },
@@ -231,7 +239,10 @@ Polymer({
    * @private
    */
   onPortActivationChange_: function(event) {
-    const dataSet = /** @type {{portNumber: string, protocolType: string}} */
+    const dataSet = /**
+                       @type {{portNumber: string, protocolType: string,
+                           containerId: !ContainerId}}
+                     */
         (event.currentTarget.dataset);
     const portNumber = Number(dataSet.portNumber);
     const protocolType = /** @type {!CrostiniPortProtocol} */
@@ -240,8 +251,7 @@ Polymer({
       event.target.checked = false;
       CrostiniBrowserProxyImpl.getInstance()
           .activateCrostiniPortForward(
-              DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
-              protocolType)
+              dataSet.containerId, portNumber, protocolType)
           .then(result => {
             if (!result) {
               this.$.errorToast.show();
@@ -251,8 +261,7 @@ Polymer({
     } else {
       CrostiniBrowserProxyImpl.getInstance()
           .deactivateCrostiniPortForward(
-              DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
-              protocolType)
+              dataSet.containerId, portNumber, protocolType)
           .then(
               result => {
                   // TODO(crbug.com/848127): Error handling for result

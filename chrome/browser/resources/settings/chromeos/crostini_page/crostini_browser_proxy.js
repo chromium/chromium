@@ -12,6 +12,12 @@ import {loadTimeData} from '../../i18n_setup.js';
 /** @type {string} */ export const DEFAULT_CROSTINI_VM = 'termina';
 /** @type {string} */ export const DEFAULT_CROSTINI_CONTAINER = 'penguin';
 
+/**
+ * Non-js key names are kept to match c++ style keys in prefs.
+ * @typedef {{vm_name: string,
+ *            container_name: string}}
+ */
+export let ContainerId;
 
 /**
  * These values should remain consistent with their C++ counterpart
@@ -26,7 +32,8 @@ export const CrostiniPortProtocol = {
 /**
  * @typedef {{label: string,
  *            port_number: number,
- *            protocol_type: !CrostiniPortProtocol}}
+ *            protocol_type: !CrostiniPortProtocol,
+ *            container_id: !ContainerId}}
  */
 export let CrostiniPortSetting;
 
@@ -42,7 +49,8 @@ export let CrostiniDiskInfo;
 
 /**
  * @typedef {{port_number: number,
- *            protocol_type: !CrostiniPortProtocol}}
+ *            protocol_type: !CrostiniPortProtocol,
+ *            container_id: !ContainerId}}
  */
 export let CrostiniPortActiveSetting;
 
@@ -57,13 +65,6 @@ export const PortState = {
 
 export const MIN_VALID_PORT_NUMBER = 1024;   // Minimum 16-bit integer value.
 export const MAX_VALID_PORT_NUMBER = 65535;  // Maximum 16-bit integer value.
-
-/**
- * Non-js key names are kept to match c++ style keys in prefs.
- * @typedef {{vm_name: string,
- *            container_name: string}}
- */
-export let ContainerId;
 
 /**
  * |ipv4| below is null if the container is not currently running.
@@ -136,18 +137,6 @@ export class CrostiniBrowserProxy {
   requestCrostiniContainerUpgradeAvailable() {}
 
   /**
-   * @param {string} vmName Name of vm to add port forwarding for.
-   * @param {string} containerName Name of container to add port forwarding
-   *     for.
-   * @param {number} portNumber Port number to start forwarding.
-   * @param {!CrostiniPortProtocol} protocol Networking protocol to use.
-   * @param {string} label Label for this port.
-   * @return {!Promise<boolean>} Whether the requested port was added and
-   * forwarded successfully.
-   */
-  addCrostiniPortForward(vmName, containerName, portNumber, protocol, label) {}
-
-  /**
    * @param {string} vmName Name of the VM to get disk info for.
    * @param {boolean} requestFullInfo Whether to request full disk info, which
    *     can take several seconds because it requires starting the VM. Set to
@@ -175,46 +164,49 @@ export class CrostiniBrowserProxy {
   checkCrostiniMicSharingStatus(proposedValue) {}
 
   /**
-   * @param {string} vmName Name of vm to remove port forwarding for.
-   * @param {string} containerName Name of container to remove port forwarding
-   *     for.
+   * @param {!ContainerId} containerId id of container to add port forwarding.
+   * @param {number} portNumber Port number to start forwarding.
+   * @param {!CrostiniPortProtocol} protocol Networking protocol to use.
+   * @param {string} label Label for this port.
+   * @return {!Promise<boolean>} Whether the requested port was added and
+   * forwarded successfully.
+   */
+  addCrostiniPortForward(containerId, portNumber, protocol, label) {}
+
+  /**
+   * @param {!ContainerId} containerId id from which to remove port forwarding.
    * @param {number} portNumber Port number to stop forwarding and remove.
    * @param {!CrostiniPortProtocol} protocol Networking protocol to use.
    * @return {!Promise<boolean>} Whether requested port was deallocated and
    * removed successfully.
    */
-  removeCrostiniPortForward(vmName, containerName, portNumber, protocol) {}
+  removeCrostiniPortForward(containerId, portNumber, protocol) {}
 
   /**
-   * @param {string} vmName Name of vm to remove all port forwarding for.
-   * @param {string} containerName Name of container to remove all port
-   *     forwarding for.
+   * @param {!ContainerId} containerId id from which to remove all port
+   *     forwarding.
    */
-  removeAllCrostiniPortForwards(vmName, containerName) {}
+  removeAllCrostiniPortForwards(containerId) {}
 
   /**
-   * @param {string} vmName Name of vm to activate port forwarding for.
-   * @param {string} containerName Name of container to activate port
-   *     forwarding for.
+   * @param {!ContainerId} containerId id for which to activate port forward.
    * @param {number} portNumber Existing port number to activate.
    * @param {!CrostiniPortProtocol} protocol Networking protocol for existing
    * port rule to activate.
    * @return {!Promise<boolean>} Whether the requested port was forwarded
    * successfully
    */
-  activateCrostiniPortForward(vmName, containerName, portNumber, protocol) {}
+  activateCrostiniPortForward(containerId, portNumber, protocol) {}
 
   /**
-   * @param {string} vmName Name of vm to activate port forwarding for.
-   * @param {string} containerName Name of container to activate port
-   *     forwarding for.
+   * @param {!ContainerId} containerId id for which to deactivate port forward.
    * @param {number} portNumber Existing port number to activate.
    * @param {!CrostiniPortProtocol} protocol Networking protocol for existing
    * port rule to deactivate.
    * @return {!Promise<boolean>} Whether the requested port was deallocated
    * successfully.
    */
-  deactivateCrostiniPortForward(vmName, containerName, portNumber, protocol) {}
+  deactivateCrostiniPortForward(containerId, portNumber, protocol) {}
 
   /**
    * @return {!Promise<!Array<CrostiniPortActiveSetting>>}
@@ -343,13 +335,6 @@ export class CrostiniBrowserProxyImpl {
   }
 
   /** @override */
-  addCrostiniPortForward(vmName, containerName, portNumber, protocol, label) {
-    return sendWithPromise(
-        'addCrostiniPortForward', vmName, containerName, portNumber, protocol,
-        label);
-  }
-
-  /** @override */
   getCrostiniDiskInfo(vmName, fullInfo) {
     return sendWithPromise('getCrostiniDiskInfo', vmName, fullInfo);
   }
@@ -364,30 +349,33 @@ export class CrostiniBrowserProxyImpl {
     return sendWithPromise('checkCrostiniMicSharingStatus', proposedValue);
   }
 
-  /** override */
-  removeCrostiniPortForward(vmName, containerName, portNumber, protocol) {
+  /** @override */
+  addCrostiniPortForward(containerId, portNumber, protocol, label) {
     return sendWithPromise(
-        'removeCrostiniPortForward', vmName, containerName, portNumber,
-        protocol);
+        'addCrostiniPortForward', containerId, portNumber, protocol, label);
   }
 
   /** override */
-  removeAllCrostiniPortForwards(vmName, containerName) {
-    chrome.send('removeAllCrostiniPortForwards', [vmName, containerName]);
+  removeCrostiniPortForward(containerId, portNumber, protocol) {
+    return sendWithPromise(
+        'removeCrostiniPortForward', containerId, portNumber, protocol);
   }
 
   /** override */
-  activateCrostiniPortForward(vmName, containerName, portNumber, protocol) {
+  removeAllCrostiniPortForwards(containerId) {
+    chrome.send('removeAllCrostiniPortForwards', [containerId]);
+  }
+
+  /** override */
+  activateCrostiniPortForward(containerId, portNumber, protocol) {
     return sendWithPromise(
-        'activateCrostiniPortForward', vmName, containerName, portNumber,
-        protocol);
+        'activateCrostiniPortForward', containerId, portNumber, protocol);
   }
 
   /** @override */
-  deactivateCrostiniPortForward(vmName, containerName, portNumber, protocol) {
+  deactivateCrostiniPortForward(containerId, portNumber, protocol) {
     return sendWithPromise(
-        'deactivateCrostiniPortForward', vmName, containerName, portNumber,
-        protocol);
+        'deactivateCrostiniPortForward', containerId, portNumber, protocol);
   }
 
   /** @override */

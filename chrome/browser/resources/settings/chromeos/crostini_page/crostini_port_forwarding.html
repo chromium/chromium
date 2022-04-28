@@ -108,6 +108,7 @@
             checked="[[item.is_active]]"
             data-port-number$="[[item.port_number]]"
             data-protocol-type$="[[item.protocol_type]]"
+            data-container-id$="[[item.container_id]]"
             on-change="onPortActivationChange_"
             aria-label="$i18n{crostiniPortForwardingToggleAriaLabel}"
             aria-describedby$=
@@ -120,6 +121,7 @@
             on-click="onShowRemoveSinglePortMenuClick_"
             data-port-number$="[[item.port_number]]"
             data-protocol-type$="[[item.protocol_type]]"
+            data-container-id$="[[item.container_id]]"
             aria-label=
                     "$i18n{crostiniPortForwardingShowMoreActionsAriaLabel}"
             aria-describedby$=
