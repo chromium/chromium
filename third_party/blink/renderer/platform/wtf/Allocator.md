@@ -19,7 +19,7 @@ The following objects are allocated by Oilpan:
 * HeapVector<T>, HeapHashSet<T>, HeapHashMap<T, U> etc
 
 The implementation is in platform/heap/.
-See [BlinkGCDesign.md](../heap/BlinkGCDesign.md) to learn the design.
+See [BlinkGCAPIReference.md](../heap/BlinkGCAPIReference.md) to learn the design.
 
 ### PartitionAlloc
 

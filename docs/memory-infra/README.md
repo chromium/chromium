@@ -91,7 +91,7 @@ and it is discounted from malloc and the blue columns.
 
 <!-- TODO(primiano): Improve this. https://crbug.com/??? -->
 
-[oilpan]:     /third_party/blink/renderer/platform/heap/BlinkGCDesign.md
+[oilpan]:     /third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md
 [discardable]:base/memory/discardable_memory.h
 [cc-memory]:  probe-cc.md
 [gpu-memory]: probe-gpu.md
