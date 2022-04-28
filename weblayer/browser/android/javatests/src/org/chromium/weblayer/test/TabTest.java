@@ -171,6 +171,7 @@ public class TabTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(101)
+    @DisabledTest(message = "https://crbug.com/1319845")
     public void testCaptureScreenShotAfterResize() throws TimeoutException, ExecutionException {
         String url = mActivityTestRule.getTestDataURL("quadrant_colors.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
