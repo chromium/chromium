@@ -79,6 +79,18 @@ BackgroundBridge.ChromeVoxState = {
   },
 };
 
+BackgroundBridge.CommandHandler = {
+  /**
+   * Handles ChromeVox commands.
+   * @param {string} command
+   * @return {!Promise<boolean>} True if the command should propagate.
+   */
+  async onCommand(command) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.COMMAND_HANDLER, BridgeAction.ON_COMMAND, command);
+  },
+};
+
 BackgroundBridge.LogStore = {
   /** Clear the log buffer. */
   async clearLog() {

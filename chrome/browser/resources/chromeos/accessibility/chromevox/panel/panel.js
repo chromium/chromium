@@ -415,12 +415,9 @@ export class Panel extends PanelInterface {
           }
 
           menu.addMenuItem(
-              binding.title, keyText, brailleText, gestureText, function() {
-                const CommandHandler =
-                    chrome.extension
-                        .getBackgroundPage()['CommandHandlerInterface'];
-                CommandHandler.instance.onCommand(binding.command);
-              }, binding.command);
+              binding.title, keyText, brailleText, gestureText,
+              () => BackgroundBridge.CommandHandler.onCommand(binding.command),
+              binding.command);
         }
       });
 
@@ -450,12 +447,9 @@ export class Panel extends PanelInterface {
 
         for (const item of touchGestureItems) {
           touchMenu.addMenuItem(
-              item.titleText, '', '', item.gestureText, function() {
-                const CommandHandler =
-                    chrome.extension
-                        .getBackgroundPage()['CommandHandlerInterface'];
-                CommandHandler.instance.onCommand(item.command);
-              }, item.command);
+              item.titleText, '', '', item.gestureText,
+              () => BackgroundBridge.CommandHandler.onCommand(item.command),
+              item.command);
         }
       }
 
@@ -1201,8 +1195,7 @@ export class Panel extends PanelInterface {
       chromeVoxStateInstance.destroyUserActionMonitor();
     });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
-      const commandHandler = backgroundPage['CommandHandlerInterface'];
-      commandHandler.instance.onCommand('fullyDescribe');
+      BackgroundBridge.CommandHandler.onCommand('fullyDescribe');
     });
     $('chromevox-tutorial').addEventListener('requestearcon', (evt) => {
       const earconId = evt.detail.earconId;
@@ -1343,8 +1336,7 @@ window.addEventListener('hashchange', function() {
   // it in in every case. (fullscreen/focus turns the state off, collapse
   // turns it back on).
   if (Panel.originalStickyState_) {
-    bkgnd['CommandHandlerInterface']['instance']['onCommand'](
-        'toggleStickyMode');
+    BackgroundBridge.CommandHandler.onCommand('toggleStickyMode');
   }
 }, false);
 

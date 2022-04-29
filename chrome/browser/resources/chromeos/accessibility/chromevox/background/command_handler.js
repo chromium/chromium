@@ -1534,3 +1534,7 @@ export class CommandHandler extends CommandHandlerInterface {
 }
 
 CommandHandlerInterface.instance = new CommandHandler();
+
+BridgeHelper.registerHandler(
+    BridgeTarget.COMMAND_HANDLER, BridgeAction.ON_COMMAND,
+    (command) => CommandHandlerInterface.instance.onCommand(command));
