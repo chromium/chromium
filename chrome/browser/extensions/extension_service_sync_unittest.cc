@@ -274,7 +274,7 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledNormal) {
 
   ASSERT_FALSE(extension_system()->is_ready());
   service()->Init();
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
   ASSERT_TRUE(extension_system()->is_ready());
 
   // Extensions added before service is_ready() don't trigger sync startup.
@@ -333,7 +333,7 @@ TEST_F(ExtensionServiceSyncTest, DisableExtensionFromSync) {
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
 
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
 
   // We start enabled.
   const Extension* extension = registry()->enabled_extensions().GetByID(good0);
@@ -518,7 +518,7 @@ TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
 
   ASSERT_TRUE(service()->IsExtensionEnabled(good0));
   ASSERT_TRUE(service()->IsExtensionEnabled(good2));
@@ -580,7 +580,7 @@ TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
   ASSERT_TRUE(service()->IsExtensionEnabled(good0));
 
   syncer::FakeSyncChangeProcessor* processor =

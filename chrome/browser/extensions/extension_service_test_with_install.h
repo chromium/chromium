@@ -128,6 +128,13 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   void TerminateExtension(const std::string& id);
 
+  void ClearLoadedExtensions();
+
+  const ExtensionList& loaded_extensions() const { return loaded_extensions_; }
+  const Extension* installed_extension() const { return installed_extension_; }
+  bool was_update() const { return was_update_; }
+  UnloadedExtensionReason unloaded_reason() const { return unloaded_reason_; }
+
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
@@ -139,20 +146,18 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
                                   bool is_update,
                                   const std::string& old_name) override;
 
-  // TODO(treib,devlin): Make these private and add accessors as needed.
-  extensions::ExtensionList loaded_;
-  raw_ptr<const Extension> installed_;
-  bool was_update_;
-  std::string old_name_;
-  std::string unloaded_id_;
-  UnloadedExtensionReason unloaded_reason_;
-
  private:
   void InstallCRXInternal(const base::FilePath& crx_path,
                           mojom::ManifestLocation install_location,
                           InstallState install_state,
                           int creation_flags);
 
+  extensions::ExtensionList loaded_extensions_;
+  raw_ptr<const Extension> installed_extension_;
+  bool was_update_;
+  std::string old_name_;
+  std::string unloaded_id_;
+  UnloadedExtensionReason unloaded_reason_;
   size_t expected_extensions_count_;
 
   FeatureSwitch::ScopedOverride override_external_install_prompt_;
