@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/util/heartbeat_event.h"
+#include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event.h"
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -20,24 +20,25 @@
 namespace reporting {
 namespace {
 
-const base::Feature kEncryptedReportingHeartbeatEvent{
-    "EncryptedReportingHeartbeatEvent", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEncryptedReportingManualTestHeartbeatEvent{
+    "EncryptedReportingManualTestHeartbeatEvent",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
-HeartbeatEvent::HeartbeatEvent() {
+ManualTestHeartbeatEvent::ManualTestHeartbeatEvent() {
   StartHeartbeatEvent();
 }
 
-HeartbeatEvent::~HeartbeatEvent() {
+ManualTestHeartbeatEvent::~ManualTestHeartbeatEvent() {
   Shutdown();
 }
 
-void HeartbeatEvent::Shutdown() {
-}
+void ManualTestHeartbeatEvent::Shutdown() {}
 
-void HeartbeatEvent::StartHeartbeatEvent() const {
-  if (!base::FeatureList::IsEnabled(kEncryptedReportingHeartbeatEvent)) {
+void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
+  if (!base::FeatureList::IsEnabled(
+          kEncryptedReportingManualTestHeartbeatEvent)) {
     return;
   }
 

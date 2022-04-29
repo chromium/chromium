@@ -2558,10 +2558,10 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "policy/messaging_layer/util/heartbeat_event.cc",
-      "policy/messaging_layer/util/heartbeat_event.h",
-      "policy/messaging_layer/util/heartbeat_event_factory.cc",
-      "policy/messaging_layer/util/heartbeat_event_factory.h",
+      "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event.h",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
       "policy/system_features_disable_list_policy_handler.cc",
       "policy/system_features_disable_list_policy_handler.h",
     ]
