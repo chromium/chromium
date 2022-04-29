@@ -134,4 +134,14 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   return result;
 }
 
+bool StyleRecalcChange::IndependentInherit(
+    const ComputedStyle& old_style) const {
+  // During UpdateStyleAndLayoutTreeForContainer(), if the old_style is marked
+  // as depending on container queries, we need to do a proper recalc for the
+  // element.
+  return propagate_ == kIndependentInherit &&
+         (!RecalcContainerQueryDependent() ||
+          !old_style.DependsOnContainerQueries());
+}
+
 }  // namespace blink

@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class ComputedStyle;
 class Element;
 class Node;
 class PseudoElement;
@@ -118,7 +119,11 @@ class CORE_EXPORT StyleRecalcChange {
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
-  bool IndependentInherit() const { return propagate_ == kIndependentInherit; }
+  // Returns true if we should and can do independent inheritance. The passed in
+  // computed style is the existing style for the element we are considering.
+  // It is used to check if we need to do a normal recalc for container query
+  // dependent elements.
+  bool IndependentInherit(const ComputedStyle& old_style) const;
   bool TraverseChildren(const Element&) const;
   bool TraverseChild(const Node&) const;
   bool TraversePseudoElements(const Element&) const;

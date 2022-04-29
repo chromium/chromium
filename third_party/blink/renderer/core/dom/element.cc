@@ -3736,7 +3736,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   StyleRecalcChange child_change = change.ForChildren(*this);
 
   const ComputedStyle* parent_style = ParentComputedStyle();
-  if (parent_style && old_style && change.IndependentInherit()) {
+  if (parent_style && old_style && change.IndependentInherit(*old_style)) {
     // When propagating inherited changes, we don't need to do a full style
     // recalc if the only changed properties are independent. In this case, we
     // can simply clone the old ComputedStyle and set these directly.
