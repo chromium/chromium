@@ -97,6 +97,16 @@ TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {
   ASSERT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
 }
 
+// An extension with an action but no extension command specified should get a
+// command assigned to it.
+TEST_F(CommandsManifestTest, ActionSynthesizesCommand) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("action_synthesizes_command.json");
+  const Command* command = CommandsInfo::GetActionCommand(extension.get());
+  ASSERT_TRUE(command != nullptr);
+  ASSERT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
+}
+
 // This test makes sure that the "commands" feature and the "commands.global"
 // property load properly.
 TEST_F(CommandsManifestTest, LoadsOnStable) {
