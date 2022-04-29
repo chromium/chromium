@@ -61,6 +61,7 @@ generate_grd("build_grd") {
     "illustrations/insert_usb.svg",
     "illustrations/lid_on_flat_surface.svg",
     "illustrations/repair_start.svg",
+    "illustrations/success.svg",
     "illustrations/update_os.svg",
     "shimless_rma_types.js",
     "shimless_rma_util.js",
