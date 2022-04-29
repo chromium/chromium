@@ -14,6 +14,8 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
@@ -44,6 +46,13 @@ if (is_android) {
 
   grit("generate_components_strings") {
     source = "../components/components_strings.grd"
+
+    defines = [
+      "enable_arcore=$enable_arcore",
+      "enable_pdf=$enable_pdf",
+      "enable_print_preview=$enable_print_preview",
+      "enable_vr=$enable_vr",
+    ]
 
     # components_strings contains strings from all components. WebLayer
     # will never display most of them, so we try to limit the included

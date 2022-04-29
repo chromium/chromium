@@ -91,10 +91,7 @@ if (is_android) {
 
 grit("generated_resources") {
   source = "generated_resources.grd"
-  defines = chrome_grit_defines
-  if (is_cfm) {
-    defines += [ "is_cfm" ]
-  }
+  defines = chrome_grit_defines + [ "is_cfm=${is_cfm}" ]
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/generated_resources.h" ] +

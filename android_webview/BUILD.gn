@@ -1181,6 +1181,7 @@ grit("generate_components_strings") {
   source = "../components/components_strings.grd"
 
   defines = [
+    "enable_arcore=$enable_arcore",
     "enable_pdf=$enable_pdf",
     "enable_print_preview=$enable_print_preview",
     "enable_vr=$enable_vr",
