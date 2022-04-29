@@ -384,7 +384,7 @@ SkBitmap CreateLowQualityResizedBitmap(
 
 // A ImageSkiaSource that scales 100P image to the target scale factor
 // if the ImageSkiaRep for the target scale factor isn't available.
-class ThemeImageSource: public gfx::ImageSkiaSource {
+class ThemeImageSource : public gfx::ImageSkiaSource {
  public:
   explicit ThemeImageSource(const gfx::ImageSkia& source) : source_(source) {
   }
@@ -497,7 +497,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
   BitmapMap bitmap_map_;
 };
 
-class TabBackgroundImageSource: public gfx::CanvasImageSource {
+class TabBackgroundImageSource : public gfx::CanvasImageSource {
  public:
   TabBackgroundImageSource(SkColor background_color,
                            const gfx::ImageSkia& image_to_tint,
@@ -588,6 +588,22 @@ bool IsColorGrayscale(SkColor color) {
   auto channels = {SkColorGetR(color), SkColorGetG(color), SkColorGetB(color)};
   const int range = std::max(channels) - std::min(channels);
   return range < kChannelTolerance;
+}
+
+// The minimum contrast the omnibox background must have against the toolbar.
+constexpr float kMinOmniboxToolbarContrast = 1.3f;
+
+ui::ColorTransform ChooseOmniboxBgBlendTarget() {
+  return base::BindRepeating(
+      [](SkColor input_color, const ui::ColorMixer& mixer) {
+        const SkColor toolbar_color = mixer.GetResultColor(kColorToolbar);
+        const SkColor endpoint_color =
+            color_utils::GetEndpointColorWithMinContrast(toolbar_color);
+        return (color_utils::GetContrastRatio(toolbar_color, endpoint_color) >=
+                kMinOmniboxToolbarContrast)
+                   ? endpoint_color
+                   : color_utils::GetColorWithMaxContrast(endpoint_color);
+      });
 }
 
 }  // namespace
@@ -1065,6 +1081,13 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
 void BrowserThemePack::AddColorMixers(
     ui::ColorProvider* provider,
     const ui::ColorProviderManager::Key& key) const {
+  ui::ColorMixer& mixer = provider->AddMixer();
+
+  // TODO(http://crbug.com/878664): Enable for all cases.
+  mixer[kColorOmniboxBackground] = ui::BlendForMinContrast(
+      kColorToolbar, kColorToolbar, ChooseOmniboxBgBlendTarget(),
+      kMinOmniboxToolbarContrast);
+
   // A map from theme property IDs to color IDs for use in color mixers.
   constexpr struct {
     int property_id;
@@ -1124,7 +1147,6 @@ void BrowserThemePack::AddColorMixers(
        kColorTabGroupContextMenuOrange},
   };
 
-  ui::ColorMixer& mixer = provider->AddMixer();
   for (const auto& entry : kThemePropertiesMap) {
     SkColor color;
     if (GetColor(entry.property_id, &color))

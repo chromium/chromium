@@ -45,14 +45,14 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       kColorLocationBarClearAllButtonIcon, gfx::kDisabledControlAlpha);
 
   // Omnibox background colors.
-  mixer[kColorOmniboxBackground] =
-      ui::GetResultingPaintColor(ui::FromTransformInput(), kColorToolbar);
+  mixer[kColorOmniboxBackground] = ui::SelectBasedOnDarkInput(
+      kColorToolbar, gfx::kGoogleGrey900, gfx::kGoogleGrey100);
   mixer[kColorOmniboxBackgroundHovered] =
       ui::BlendTowardMaxContrast(kColorOmniboxBackground, 0x0A);
 
   // Omnibox text colors.
-  mixer[kColorOmniboxText] = ui::GetResultingPaintColor(
-      ui::FromTransformInput(), kColorOmniboxBackground);
+  mixer[kColorOmniboxText] =
+      ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorOmniboxResultsTextSelected] = {selected_text_color};
   mixer[kColorOmniboxKeywordSelected] = ui::SelectBasedOnDarkInput(
       kColorOmniboxBackground, gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
