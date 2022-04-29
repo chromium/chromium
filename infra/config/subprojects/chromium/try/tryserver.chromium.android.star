@@ -196,6 +196,7 @@ try_.builder(
 
 try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
+    mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )
 
 try_.builder(
@@ -329,6 +330,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android-pie-x86-rel",
+    mirrors = [
+        "ci/android-pie-x86-rel",
+    ],
     goma_jobs = goma.jobs.J150,
 )
 
