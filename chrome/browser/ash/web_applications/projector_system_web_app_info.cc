@@ -69,11 +69,6 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
-  // TODO(b/195127670): Add info.url_handlers for https://projector.apps.chrome
-  // domain. Requires web-app-origin-association file at the new domain to prove
-  // cross-ownership. See
-  // https://web.dev/pwa-url-handler/#the-web-app-origin-association-file.
-
   return info;
 }
 

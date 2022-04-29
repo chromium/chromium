@@ -314,7 +314,7 @@ apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
       // prefixes. Detect and convert these, since prefix matching is easier &
       // cheaper.
       if (IsPrefixOnlyGlob(path.pattern())) {
-        DCHECK(path.pattern().size() >= 2);
+        DCHECK_GE(path.pattern().size(), 2);
         return MakeConditionValue(
             path.pattern().substr(0, path.pattern().size() - 2),
             apps::mojom::PatternMatchType::kPrefix);

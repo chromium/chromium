@@ -44,10 +44,11 @@ constexpr char kStartTime[] = "21 Jan 2022 10:00:00 GMT";
 }  // namespace
 
 // Summary of expected behavior on ChromeOS:
-// ____________________________|_SWA_launches_|_URL_redirection
-// projector.apps.chrome       | Yes          | Yes
-// chrome://projector/app/     | Yes          | No
-// chrome-untrusted://projector| No           | No
+// _____________________________|_SWA_launches_|_URL_redirection
+// screencast.apps.chrome       | Yes          | Yes
+// projector.apps.chrome        | Yes          | Yes (online only)
+// chrome://projector/app/      | Yes          | No
+// chrome-untrusted://projector | No           | No
 
 class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
  public:
@@ -86,7 +87,7 @@ class ProjectorNavigationThrottleTestParameterized
   bool navigate_from_link() const { return GetParam(); }
 };
 
-// Verifies that navigating to https://projector.apps.chrome/xyz redirects to
+// Verifies that navigating to https://screencast.apps.chrome/xyz redirects to
 // chrome://projector/app/xyz and launches the SWA.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
                        PwaNavigationRedirects) {
@@ -164,12 +165,13 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser* old_browser = browser();
 
-  // Suppose the user clicks a link like https://projector.apps.chrome in gchat.
-  // The redirect URL actually looks like the below.
+  // Suppose the user clicks a link like https://screencast.apps.chrome in
+  // gchat. The redirect URL actually looks like the below.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("https://www.google.com/url?q=https://"
-           "projector.apps.chrome&sa=D&source=hangouts&ust=1642759200000000")));
+      GURL(
+          "https://www.google.com/url?q=https://"
+          "screencast.apps.chrome&sa=D&source=hangouts&ust=1642759200000000")));
   // The Google servers would redirect to the URL in the ?q= query parameter.
   // Simulate this behavior in this test without actually pinging the Google
   // servers to prevent flakiness.
@@ -290,8 +292,8 @@ class ProjectorNavigationThrottleDisabledTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that navigating to https://projector.apps.chrome does not launch the
-// SWA when the app is disabled.
+// Verifies that navigating to https://screencast.apps.chrome does not launch
+// the SWA when the app is disabled.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
                        PwaNavigationLandingPage) {
   GURL pwa_url(kChromeUIUntrustedProjectorPwaUrl);
@@ -308,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
-  // Normally, navigating to https://projector.apps.chrome would reach the
+  // Normally, navigating to https://screencast.apps.chrome would reach the
   // landing page, but we don't have internet connection in this browser test.
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_ERROR);
