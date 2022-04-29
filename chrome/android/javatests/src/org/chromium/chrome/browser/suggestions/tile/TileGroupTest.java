@@ -229,7 +229,8 @@ public class TileGroupTest {
             tileView = ((MostVisitedTilesCarouselLayout) getTileLayout())
                                .findTileViewForTesting(suggestion);
         } else {
-            tileView = ((MostVisitedTilesGridLayout) getTileLayout()).getTileView(suggestion);
+            tileView = ((MostVisitedTilesGridLayout) getTileLayout())
+                               .findTileViewForTesting(suggestion);
         }
         return tileView;
     }

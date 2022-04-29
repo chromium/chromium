@@ -11,14 +11,17 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -28,7 +31,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *  Mediator for handling {@link MostVisitedTilesCarouselLayout}-related logic.
+ *  Mediator for handling {@link MostVisitedTilesCarouselLayout} when {@link
+ * org.chromium.chrome.browser.flags.ChromeFeatureList#SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID} is
+ * enabled or {@link MostVisitedTilesGridLayout} when the feature is disabled -related logic.
  */
 public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
     private static final String TAG = "TopSites";
@@ -37,34 +42,42 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private static final int MAX_RESULTS = 12;
 
     private final Resources mResources;
-    private final MostVisitedTilesCarouselLayout mMvTilesLayout;
+    private final ViewGroup mMvTilesLayout;
     private final ViewStub mNoMvPlaceholderStub;
     private final PropertyModel mModel;
+    private final boolean mIsScrollableMVTEnabled;
     private final boolean mIsTablet;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
+    private final Runnable mSnapshotTileGridChangedRunnable;
+    private final Runnable mTileCountChangedRunnable;
     private int mTileViewPortraitIntervalPadding;
 
     private TileRenderer mRenderer;
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
 
-    public MostVisitedTilesMediator(Resources resources, View mvTilesContainerLayout,
-            TileRenderer renderer, PropertyModel propertyModel,
-            boolean shouldShowSkeletonUIPreNative, boolean isTablet) {
+    public MostVisitedTilesMediator(Resources resources, ViewGroup mvTilesLayout,
+            ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
+            boolean shouldShowSkeletonUIPreNative, boolean isScrollableMVTEnabled, boolean isTablet,
+            @Nullable Runnable snapshotTileGridChangedRunnable,
+            @Nullable Runnable tileCountChangedRunnable) {
         mResources = resources;
         mRenderer = renderer;
         mModel = propertyModel;
+        mIsScrollableMVTEnabled = isScrollableMVTEnabled;
         mIsTablet = isTablet;
-        mMvTilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
-        mNoMvPlaceholderStub = mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub);
+        mSnapshotTileGridChangedRunnable = snapshotTileGridChangedRunnable;
+        mTileCountChangedRunnable = tileCountChangedRunnable;
+        mMvTilesLayout = mvTilesLayout;
+        mNoMvPlaceholderStub = noMvPlaceholderStub;
 
         mTileViewLandscapePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape);
         mTileViewPortraitEdgePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
 
-        maybeSetPortraitIntervalPaddings();
+        maybeSetPortraitIntervalPaddingsForCarousel();
 
         if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
     }
@@ -100,34 +113,41 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mRenderer.renderTileSection(mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
                 mMvTilesLayout, mTileGroup.getTileSetupDelegate());
         mTileGroup.notifyTilesRendered();
-        updateTilesViewLayout();
+        updateTilesViewForCarouselLayout();
 
+        if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
         MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
                 mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
     }
 
     @Override
     public void onTileCountChanged() {
+        if (mTileCountChangedRunnable != null) mTileCountChangedRunnable.run();
         updateTileGridPlaceholderVisibility();
     }
 
     @Override
     public void onTileIconChanged(Tile tile) {
         updateTileIcon(tile);
+        if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
     }
 
     @Override
     public void onTileOfflineBadgeVisibilityChanged(Tile tile) {
         updateOfflineBadge(tile);
+        if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
     }
 
     public void onConfigurationChanged() {
-        maybeSetPortraitIntervalPaddings();
-        updateTilesViewLayout();
+        maybeSetPortraitIntervalPaddingsForCarousel();
+        updateTilesViewForCarouselLayout();
     }
 
     public void destroy() {
-        if (mMvTilesLayout != null) mMvTilesLayout.destroy();
+        if (mMvTilesLayout != null && mIsScrollableMVTEnabled) {
+            ((MostVisitedTilesCarouselLayout) mMvTilesLayout).destroy();
+        }
+
         if (mTileGroup != null) {
             mTileGroup.destroy();
             mTileGroup = null;
@@ -153,30 +173,38 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                     MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
             if (tiles == null) return;
             mRenderer.renderTileSection(tiles, mMvTilesLayout, null);
-            updateTilesViewLayout();
+            updateTilesViewForCarouselLayout();
         } catch (IOException e) {
             Log.i(TAG, "No cached MV tiles file.");
         }
     }
 
     private void updateTileIcon(Tile tile) {
-        SuggestionsTileView tileView = findTileView(tile);
+        SuggestionsTileView tileView = findTileView(tile.getData());
         if (tileView != null) {
             tileView.renderIcon(tile);
         }
     }
 
     private void updateOfflineBadge(Tile tile) {
-        SuggestionsTileView tileView = findTileView(tile);
+        SuggestionsTileView tileView = findTileView(tile.getData());
         if (tileView != null) tileView.renderOfflineBadge(tile);
     }
 
-    private SuggestionsTileView findTileView(Tile tile) {
-        return mMvTilesLayout.findTileView(tile);
+    private SuggestionsTileView findTileView(SiteSuggestion data) {
+        int childCount = mMvTilesLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            SuggestionsTileView tileView = (SuggestionsTileView) mMvTilesLayout.getChildAt(i);
+            if (data.equals(tileView.getData())) return tileView;
+        }
+        return null;
     }
 
-    private void maybeSetPortraitIntervalPaddings() {
-        if (mResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+    private void maybeSetPortraitIntervalPaddingsForCarousel() {
+        // If it's gird layout (mIsScrollableMVTEnabled is false), the paddings are handled in
+        // {@link MostVisitedTilesGridLayout}
+        if (!mIsScrollableMVTEnabled
+                || mResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
                 || mTileViewPortraitIntervalPadding != 0) {
             return;
         }
@@ -192,8 +220,10 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         }
     }
 
-    private void updateTilesViewLayout() {
-        if (mMvTilesLayout.getChildCount() < 1) return;
+    private void updateTilesViewForCarouselLayout() {
+        // If it's gird layout (mIsScrollableMVTEnabled is false), the paddings are handled in
+        // {@link MostVisitedTilesGridLayout}
+        if (!mIsScrollableMVTEnabled || mMvTilesLayout.getChildCount() < 1) return;
 
         if (mResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewLandscapePadding);

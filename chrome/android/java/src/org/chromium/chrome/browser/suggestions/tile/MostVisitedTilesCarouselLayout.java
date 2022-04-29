@@ -9,13 +9,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 
 /**
- * The layout for the container of MV tiles on the Start surface.
+ * The most visited tiles carousel layout.
  */
 public class MostVisitedTilesCarouselLayout extends LinearLayout {
     /**
@@ -40,21 +41,6 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout {
         if (childCount == 0) return;
         updateSingleTileViewStartMargin((TileView) getChildAt(0), edgePadding);
         updateSingleTileViewEndMargin((TileView) getChildAt(childCount - 1), edgePadding);
-    }
-
-    SuggestionsTileView findTileView(Tile tile) {
-        for (int i = 0; i < getChildCount(); i++) {
-            View tileView = getChildAt(i);
-
-            assert tileView instanceof SuggestionsTileView : "Tiles must be SuggestionsTileView";
-
-            SuggestionsTileView suggestionsTileView = (SuggestionsTileView) tileView;
-
-            if (tile.getUrl().equals(suggestionsTileView.getUrl())) {
-                return (SuggestionsTileView) tileView;
-            }
-        }
-        return null;
     }
 
     void destroy() {
@@ -82,6 +68,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout {
         }
     }
 
+    @Nullable
     @VisibleForTesting
     public SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
         int childCount = getChildCount();

@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -79,6 +80,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -145,6 +147,8 @@ public class NewTabPageTest {
     VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock
     FeedReliabilityLogger mFeedReliabilityLogger;
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
@@ -497,8 +501,10 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testPlaceholder() {
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         final View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
         final View searchBoxView = ntpLayout.findViewById(R.id.search_box);
@@ -508,7 +514,7 @@ public class NewTabPageTest {
         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
         Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
         Assert.assertEquals(8, mMvTilesLayout.getChildCount());
-        Assert.assertNull(ntpLayout.getPlaceholder());
+        Assert.assertNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
 
         // When the search provider has no logo and there are no tile suggestions, the placeholder
         // is shown.
@@ -518,15 +524,17 @@ public class NewTabPageTest {
             Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
 
             mMostVisitedSites.setTileSuggestions(new String[] {});
+            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
-            ntpLayout.getTileGroup().onSwitchToForeground(false); // Force tile refresh.
+            ntpLayout.onSwitchToForeground(); // Force tile refresh.
         });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     "The tile grid was not updated.", mMvTilesLayout.getChildCount(), is(0));
         });
-        Assert.assertNotNull(ntpLayout.getPlaceholder());
-        Assert.assertEquals(View.VISIBLE, ntpLayout.getPlaceholder().getVisibility());
+        Assert.assertNotNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
+        Assert.assertEquals(View.VISIBLE,
+                mNtp.getView().findViewById(R.id.tile_grid_placeholder).getVisibility());
 
         // Once the search provider has a logo again, the logo and search box are shown again and
         // the placeholder is hidden.
@@ -534,7 +542,14 @@ public class NewTabPageTest {
             ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
             Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
             Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
-            Assert.assertEquals(View.GONE, ntpLayout.getPlaceholder().getVisibility());
+
+            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+            // Mock to notify the template URL service observer.
+            ntpLayout.getMostVisitedTilesCoordinatorForTesting()
+                    .onTemplateURLServiceChangedForTesting();
+            Assert.assertEquals(View.GONE,
+                    mNtp.getView().findViewById(R.id.tile_grid_placeholder).getVisibility());
         });
     }
 

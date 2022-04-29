@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.junit.Assert;
@@ -37,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -58,9 +60,7 @@ public class MostVisitedMediatorUnitTest {
     @Mock
     DisplayMetrics mDisplayMetrics;
     @Mock
-    View mMvTilesContainerLayout;
-    @Mock
-    MostVisitedTilesCarouselLayout mMvTilesLayout;
+    ViewGroup mMvTilesLayout;
     @Mock
     ViewStub mNoMvPlaceholderStub;
     @Mock
@@ -69,6 +69,8 @@ public class MostVisitedMediatorUnitTest {
     Tile mTile;
     @Mock
     SuggestionsTileView mTileView;
+    @Mock
+    SiteSuggestion mData;
     @Mock
     TileRenderer mTileRenderer;
     @Mock
@@ -81,6 +83,10 @@ public class MostVisitedMediatorUnitTest {
     OfflinePageBridge mOfflinePageBridge;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private Runnable mSnapshotTileGridChangedRunnable;
+    @Mock
+    private Runnable mTileCountChangedRunnable;
 
     private FakeMostVisitedSites mMostVisitedSites;
     private PropertyModel mModel;
@@ -93,20 +99,18 @@ public class MostVisitedMediatorUnitTest {
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mDisplayMetrics.widthPixels = 1000;
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
-
         when(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait))
                 .thenReturn(12);
         when(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape)).thenReturn(16);
         when(mResources.getDimensionPixelOffset(R.dimen.tile_view_width)).thenReturn(80);
 
+        when(mTileView.getData()).thenReturn(mData);
+        when(mTile.getData()).thenReturn(mData);
+
         mMvTilesLayout.addView(mTileView);
         when(mMvTilesLayout.getChildCount()).thenReturn(1);
-        when(mMvTilesLayout.findTileView(mTile)).thenReturn(mTileView);
-
-        when(mMvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub))
-                .thenReturn(mNoMvPlaceholderStub);
+        when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
         when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
-        when(mMvTilesContainerLayout.findViewById(R.id.mv_tiles_layout)).thenReturn(mMvTilesLayout);
 
         mMostVisitedSites = new FakeMostVisitedSites();
         doAnswer(invocation -> {
@@ -129,6 +133,7 @@ public class MostVisitedMediatorUnitTest {
         verify(mTileRenderer, atLeastOnce())
                 .renderTileSection(anyList(), eq(mMvTilesLayout), any());
         verify(mMvTilesLayout).addView(any());
+        verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
     @Test
@@ -147,6 +152,7 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertFalse(mModel.get(IS_MVT_LAYOUT_VISIBLE));
         Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
+        verify(mTileCountChangedRunnable, atLeastOnce()).run();
 
         // When there is mv tile and the default search engine doesn't have logo, the placeholder
         // should be hidden and the mv tiles layout should be shown.
@@ -164,6 +170,7 @@ public class MostVisitedMediatorUnitTest {
         mMediator.onTileIconChanged(mTile);
 
         verify(mTileView).renderIcon(mTile);
+        verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
     @Test
@@ -172,6 +179,7 @@ public class MostVisitedMediatorUnitTest {
         mMediator.onTileOfflineBadgeVisibilityChanged(mTile);
 
         verify(mTileView).renderOfflineBadge(mTile);
+        verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
     @Test
@@ -202,7 +210,7 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
-    public void testSetPortraitPaddings() {
+    public void testSetPortraitPaddings_ScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         createMediator();
         mMediator.onTileDataChanged();
@@ -218,6 +226,15 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
+    public void testSetPortraitPaddings_NonScrollableMVT() {
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        createMediator(/*isScrollableMVTEnabled=*/false);
+        mMediator.onTileDataChanged();
+        Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
+        Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
+    }
+
+    @Test
     public void testSetLandscapePaddings() {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         createMediator();
@@ -229,9 +246,23 @@ public class MostVisitedMediatorUnitTest {
                 (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
     }
 
+    @Test
+    public void testSetLandscapePaddings_NonScrollableMVT() {
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        createMediator(/*isScrollableMVTEnabled=*/false);
+        mMediator.onTileDataChanged();
+        Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
+        Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
+    }
+
     private void createMediator() {
-        mMediator = new MostVisitedTilesMediator(
-                mResources, mMvTilesContainerLayout, mTileRenderer, mModel, false, false);
+        createMediator(true);
+    }
+
+    private void createMediator(boolean isScrollableMVTEnabled) {
+        mMediator = new MostVisitedTilesMediator(mResources, mMvTilesLayout, mNoMvPlaceholderStub,
+                mTileRenderer, mModel, false, isScrollableMVTEnabled, false,
+                mSnapshotTileGridChangedRunnable, mTileCountChangedRunnable);
         mMediator.initWithNative(mSuggestionsUiDelegate, mContextMenuManager, mTileGroupDelegate,
                 mOfflinePageBridge, mTileRenderer);
     }

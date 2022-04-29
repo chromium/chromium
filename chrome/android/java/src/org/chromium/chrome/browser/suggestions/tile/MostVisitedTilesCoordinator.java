@@ -8,6 +8,10 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesViewBinder.ViewHolder;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -51,30 +54,52 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * @param mvTilesContainerLayout The container view of most visited tiles layout.
      * @param windowAndroid The current {@link WindowAndroid}
      * @param shouldShowSkeletonUIPreNative Whether to show the background icon for pre-native
-     *         surface.
+     *                                      surface.
+     * @param isScrollableMVTEnabled Whether scrollable MVT is enabled. If true  {@link
+     *                               MostVisitedTilesCarouselLayout} is used; if false {@link
+     *                               MostVisitedTilesGridLayout} is used.
+     * @param maxRows The maximum number of rows to display. This will only be used for {@link
+     *                MostVisitedTilesGridLayout}.
+     * @param maxColumns The maximum number of columns to display. This will only be used for {@link
+     *                   MostVisitedTilesGridLayout}.
+     * @param snapshotTileGridChangedRunnable The runnable called when the snapshot tile grid is
+     *                                        changed.
+     * @param tileCountChangedRunnable The runnable called when the tile count is changed.
      */
     public MostVisitedTilesCoordinator(Activity activity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, View mvTilesContainerLayout,
-            WindowAndroid windowAndroid, boolean shouldShowSkeletonUIPreNative) {
+            WindowAndroid windowAndroid, boolean shouldShowSkeletonUIPreNative,
+            boolean isScrollableMVTEnabled, int maxRows, int maxColumns,
+            @Nullable Runnable snapshotTileGridChangedRunnable,
+            @Nullable Runnable tileCountChangedRunnable) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
-        MostVisitedTilesCarouselLayout mvTilesLayout =
-                mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
-        mUiConfig = new UiConfig(mvTilesLayout);
 
+        ((ViewStub) mvTilesContainerLayout.findViewById(
+                 isScrollableMVTEnabled ? R.id.mv_tiles_carousel_stub : R.id.mv_tiles_grid_stub))
+                .inflate();
+        ViewGroup tilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
+        assert (tilesLayout != null);
+        if (!isScrollableMVTEnabled) {
+            ((MostVisitedTilesGridLayout) tilesLayout).setMaxColumns(maxColumns);
+            ((MostVisitedTilesGridLayout) tilesLayout).setMaxRows(maxRows);
+        }
+
+        mUiConfig = new UiConfig(tilesLayout);
         PropertyModel propertyModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(propertyModel,
-                new ViewHolder(mvTilesContainerLayout, mvTilesLayout),
+                new MostVisitedTilesViewBinder.ViewHolder(mvTilesContainerLayout, tilesLayout),
                 MostVisitedTilesViewBinder::bind);
-
         mRenderer =
                 new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
 
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-
-        mMediator = new MostVisitedTilesMediator(activity.getResources(), mvTilesContainerLayout,
-                mRenderer, propertyModel, shouldShowSkeletonUIPreNative, isTablet);
+        mMediator = new MostVisitedTilesMediator(activity.getResources(), tilesLayout,
+                mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
+                propertyModel, shouldShowSkeletonUIPreNative && isScrollableMVTEnabled,
+                isScrollableMVTEnabled,
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                snapshotTileGridChangedRunnable, tileCountChangedRunnable);
     }
 
     /**
@@ -126,8 +151,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     }
 
     public void onSwitchToForeground() {
-        assert !isMVTilesCleanedUp();
-        mMediator.onSwitchToForeground();
+        if (!isMVTilesCleanedUp()) mMediator.onSwitchToForeground();
     }
 
     /* ConfigurationChangedObserver implementation. */
@@ -135,5 +159,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     public void onConfigurationChanged(Configuration newConfig) {
         mMediator.onConfigurationChanged();
         mUiConfig.updateDisplayStyle();
+    }
+
+    @VisibleForTesting
+    public void onTemplateURLServiceChangedForTesting() {
+        mMediator.onTemplateURLServiceChanged();
     }
 }

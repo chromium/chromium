@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,9 +23,9 @@ final class MostVisitedTilesViewBinder {
      */
     public static class ViewHolder {
         public final View mvContainerLayout;
-        public final MostVisitedTilesCarouselLayout mvTilesLayout;
+        public final ViewGroup mvTilesLayout;
 
-        ViewHolder(View mvContainerLayout, MostVisitedTilesCarouselLayout mvTilesLayout) {
+        ViewHolder(View mvContainerLayout, ViewGroup mvTilesLayout) {
             this.mvContainerLayout = mvContainerLayout;
             this.mvTilesLayout = mvTilesLayout;
         }
@@ -41,9 +42,13 @@ final class MostVisitedTilesViewBinder {
             model.get(PLACEHOLDER_VIEW)
                     .setVisibility(model.get(IS_MVT_LAYOUT_VISIBLE) ? View.GONE : View.VISIBLE);
         } else if (HORIZONTAL_INTERVAL_PADDINGS == propertyKey) {
-            viewHolder.mvTilesLayout.setIntervalPaddings(model.get(HORIZONTAL_INTERVAL_PADDINGS));
+            assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
+            ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)
+                    .setIntervalPaddings(model.get(HORIZONTAL_INTERVAL_PADDINGS));
         } else if (HORIZONTAL_EDGE_PADDINGS == propertyKey) {
-            viewHolder.mvTilesLayout.setEdgePaddings(model.get(HORIZONTAL_EDGE_PADDINGS));
+            assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
+            ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)
+                    .setEdgePaddings(model.get(HORIZONTAL_EDGE_PADDINGS));
         }
     }
 }

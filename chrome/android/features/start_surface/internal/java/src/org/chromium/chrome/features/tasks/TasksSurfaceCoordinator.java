@@ -145,12 +145,14 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL);
 
         if (hasMVTiles) {
-            mMostVisitedCoordinator =
-                    new MostVisitedTilesCoordinator(activity, activityLifecycleDispatcher,
-                            mView.findViewById(R.id.mv_tiles_container), windowAndroid,
-                            TabUiFeatureUtilities.supportInstantStart(
-                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                                    mActivity));
+            mMostVisitedCoordinator = new MostVisitedTilesCoordinator(activity,
+                    activityLifecycleDispatcher, mView.findViewById(R.id.mv_tiles_container),
+                    windowAndroid,
+                    TabUiFeatureUtilities.supportInstantStart(
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                            mActivity),
+                    /*isScrollableMVTEnabled=*/true, Integer.MAX_VALUE, Integer.MAX_VALUE,
+                    /*snapshotTileGridChangedRunnable=*/null, /*tileCountChangedRunnable=*/null);
         }
 
         if (hasQueryTiles) {

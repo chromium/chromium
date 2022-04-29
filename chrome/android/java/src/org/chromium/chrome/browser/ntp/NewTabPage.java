@@ -438,9 +438,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mNewTabPageLayout.initialize(mNewTabPageManager, activity, mTileGroupDelegate,
                 mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
-                mFeedSurfaceProvider.getScrollDelegate(), mContextMenuManager,
+                mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
-                activityTabProvider, lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid);
+                lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid);
         TraceEvent.end(TAG);
     }
 
