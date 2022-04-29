@@ -1688,21 +1688,22 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
     return;
   }
 
+  NSError* contextError = web::NetErrorFromError(error);
+  if (policyDecisionCancellationError) {
+    contextError = base::ios::ErrorWithAppendedUnderlyingError(
+        contextError, policyDecisionCancellationError);
+  }
+
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
   if (IsFailedHttpsUpgrade(error, navigationContext,
                            policyDecisionCancellationError)) {
+    navigationContext->SetError(contextError);
     navigationContext->SetIsFailedHTTPSUpgrade();
     [self handleCancelledError:error
                  forNavigation:navigation
                provisionalLoad:provisionalLoad];
     return;
-  }
-
-  NSError* contextError = web::NetErrorFromError(error);
-  if (policyDecisionCancellationError) {
-    contextError = base::ios::ErrorWithAppendedUnderlyingError(
-        contextError, policyDecisionCancellationError);
   }
 
   navigationContext->SetError(contextError);
