@@ -44,6 +44,10 @@ GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;
 
 #if BUILDFLAG(IS_MAC)
 GPU_EXPORT extern const base::Feature kMetal;
+
+#if defined(ARCH_CPU_ARM64)
+GPU_EXPORT extern const base::Feature kDisableFlushWorkaroundForMacCrash;
+#endif
 #endif
 
 GPU_EXPORT extern const base::Feature kSharedImageManager;

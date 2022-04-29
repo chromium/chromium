@@ -634,6 +634,10 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   void FlushToWorkAroundMacCrashes() {
 #if BUILDFLAG(IS_MAC)
+#if defined(ARCH_CPU_ARM64)
+    if (!is_workaround_for_mac_crash_enabled_)
+      return;
+#endif
     if (!shared_context_state_->GrContextIsGL())
       return;
     // This function does aggressive flushes to work around crashes in the
@@ -974,6 +978,10 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   bool is_privileged_ = false;
 
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  const bool is_workaround_for_mac_crash_enabled_;
+#endif
+
   const bool is_raw_draw_enabled_;
 
   const bool is_drdc_enabled_;
@@ -1094,6 +1102,10 @@ RasterDecoderImpl::RasterDecoderImpl(
           this,
           gpu_preferences_.disable_oopr_debug_crash_dump)),
       is_privileged_(is_privileged),
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+      is_workaround_for_mac_crash_enabled_(!base::FeatureList::IsEnabled(
+          features::kDisableFlushWorkaroundForMacCrash)),
+#endif
       is_raw_draw_enabled_(features::IsUsingRawDraw()),
       is_drdc_enabled_(features::IsDrDcEnabled()) {
   DCHECK(shared_context_state_);
