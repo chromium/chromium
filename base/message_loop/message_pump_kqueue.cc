@@ -11,7 +11,6 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time_override.h"
 
@@ -122,11 +121,7 @@ void MessagePumpKqueue::MachPortWatchController::Reset() {
 }
 
 MessagePumpKqueue::MessagePumpKqueue()
-    : kqueue_(kqueue()),
-      is_ludicrous_timer_slack_enabled_(base::IsLudicrousTimerSlackEnabled()),
-      ludicrous_timer_slack_was_suspended_(
-          base::IsLudicrousTimerSlackSuspended()),
-      weak_factory_(this) {
+    : kqueue_(kqueue()), weak_factory_(this) {
   PCHECK(kqueue_.is_valid()) << "kqueue";
 
   // Create a Mach port that will be used to wake up the pump by sending
@@ -313,18 +308,7 @@ bool MessagePumpKqueue::WatchFileDescriptor(int fd,
   return true;
 }
 
-bool MessagePumpKqueue::
-    GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting() const {
-  return IsLudicrousTimerSlackEnabledAndNotSuspended();
-}
-
-void MessagePumpKqueue::MaybeUpdateWakeupTimerForTesting(
-    const base::TimeTicks& wakeup_time) {
-  MaybeUpdateWakeupTimer(wakeup_time);
-}
-
 void MessagePumpKqueue::SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
-                                            bool use_slack,
                                             kevent64_s* timer_event) {
   // The ident of the wakeup timer. There's only the one timer as the pair
   // (ident, filter) is the identity of the event.
@@ -347,14 +331,6 @@ void MessagePumpKqueue::SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
     // timer is set immediately.
     timer_event->fflags = NOTE_USECONDS;
     timer_event->data = (wakeup_time - base::TimeTicks::Now()).InMicroseconds();
-
-    if (use_slack) {
-      // Specify ludicrous slack when the experiment is enabled and hasn't
-      // been process-locally suspended.
-      // See "man kqueue" in recent macOSen for documentation.
-      timer_event->fflags |= NOTE_LEEWAY;
-      timer_event->ext[1] = GetLudicrousTimerSlack().InMicroseconds();
-    }
   }
 }
 
@@ -544,30 +520,17 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
 
 void MessagePumpKqueue::MaybeUpdateWakeupTimer(
     const base::TimeTicks& wakeup_time) {
-  // Read the state of the suspend flag only once in this function to avoid
-  // TOCTTOU problems.
-  const bool is_ludicrous_slack_suspended = IsLudicrousTimerSlackSuspended();
   if (wakeup_time == scheduled_wakeup_time_) {
-    if (scheduled_wakeup_time_ == base::TimeTicks::Max() ||
-        ludicrous_timer_slack_was_suspended_ == is_ludicrous_slack_suspended) {
-      // No change in the timer setting necessary.
-      return;
-    }
+    // No change in the timer setting necessary.
+    return;
   }
 
-  if (ludicrous_timer_slack_was_suspended_ == is_ludicrous_slack_suspended) {
-    // If there wasn't a suspension toggle, the wakeup time must have changed.
-    DCHECK_NE(wakeup_time, scheduled_wakeup_time_);
-  }
-
-  const bool use_slack =
-      is_ludicrous_timer_slack_enabled_ && !is_ludicrous_slack_suspended;
   if (wakeup_time == base::TimeTicks::Max()) {
     // If the timer was already reset, don't re-reset it on a suspend toggle.
     if (scheduled_wakeup_time_ != base::TimeTicks::Max()) {
       // Clear the timer.
       kevent64_s timer{};
-      SetWakeupTimerEvent(wakeup_time, use_slack, &timer);
+      SetWakeupTimerEvent(wakeup_time, &timer);
       int rv = ChangeOneEvent(kqueue_, &timer);
       PCHECK(rv == 0) << "kevent64, delete timer";
       --event_count_;
@@ -575,7 +538,7 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
   } else {
     // Set/reset the timer.
     kevent64_s timer{};
-    SetWakeupTimerEvent(wakeup_time, use_slack, &timer);
+    SetWakeupTimerEvent(wakeup_time, &timer);
     int rv = ChangeOneEvent(kqueue_, &timer);
     PCHECK(rv == 0) << "kevent64, set timer";
 
@@ -584,17 +547,7 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
       ++event_count_;
   }
 
-  ludicrous_timer_slack_was_suspended_ = is_ludicrous_slack_suspended;
   scheduled_wakeup_time_ = wakeup_time;
-
-  // This odd-looking check is here to validate that message pumps aren't
-  // constructed before the feature flag is initialized.
-  DCHECK_EQ(base::IsLudicrousTimerSlackEnabled(),
-            is_ludicrous_timer_slack_enabled_);
-}
-
-bool MessagePumpKqueue::IsLudicrousTimerSlackEnabledAndNotSuspended() const {
-  return is_ludicrous_timer_slack_enabled_ && !IsLudicrousTimerSlackSuspended();
 }
 
 }  // namespace base

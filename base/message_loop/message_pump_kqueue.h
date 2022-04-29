@@ -126,15 +126,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
                            FdWatchController* controller,
                            FdWatcher* delegate);
 
-  bool GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting() const;
-  void MaybeUpdateWakeupTimerForTesting(const base::TimeTicks& wakeup_time);
-
- protected:
-  // Virtual for testing.
-  virtual void SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
-                                   bool use_slack,
-                                   kevent64_s* timer_event);
-
  private:
   // Called by the watch controller implementations to stop watching the
   // respective types of handles.
@@ -160,8 +151,8 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // Updates |scheduled_wakeup_time_| to follow.
   void MaybeUpdateWakeupTimer(const base::TimeTicks& wakeup_time);
 
-  // Ludicrous slack is applied when this function returns true.
-  bool IsLudicrousTimerSlackEnabledAndNotSuspended() const;
+  void SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
+                           kevent64_s* timer_event);
 
   // Receive right to which an empty Mach message is sent to wake up the pump
   // in response to ScheduleWork().
@@ -185,13 +176,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   // Whether the pump has been Quit() or not.
   bool keep_running_ = true;
-
-  // Cache flag for ease of testing.
-  const bool is_ludicrous_timer_slack_enabled_;
-
-  // True if Ludicrous slack was suspended last time the wakeup timer was
-  // updated.
-  bool ludicrous_timer_slack_was_suspended_;
 
   // The currently scheduled wakeup, if any. If no wakeup is scheduled,
   // contains base::TimeTicks::Max().
