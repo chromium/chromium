@@ -517,7 +517,9 @@ inline NGLineBoxStrut ComputeLineMarginsForVisualContainer(
 CORE_EXPORT NGBoxStrut ComputeBorders(const NGConstraintSpace&,
                                       const NGBlockNode&);
 
-CORE_EXPORT NGBoxStrut ComputeBordersForInline(const ComputedStyle& style);
+CORE_EXPORT NGBoxStrut ComputeBordersForInline(const ComputedStyle&);
+
+CORE_EXPORT NGBoxStrut ComputeNonCollapsedTableBorders(const ComputedStyle&);
 
 inline NGLineBoxStrut ComputeLineBorders(
     const ComputedStyle& style) {

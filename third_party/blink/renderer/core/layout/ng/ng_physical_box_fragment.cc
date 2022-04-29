@@ -171,8 +171,9 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
                                              writing_direction, physical_size,
                                              box_fragment->Size()));
     }
+
     if (builder->table_collapsed_borders_)
-      calculator.AddTableCollapsedBorders(*builder->table_collapsed_borders_);
+      calculator.AddTableSelfRect();
 
     layout_overflow = calculator.Result(inflow_bounds);
   }
@@ -1160,28 +1161,9 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
 PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
   const ComputedStyle& style = Style();
-  const bool has_visual_overflowing_effect = style.HasVisualOverflowingEffect();
-  const bool is_table = IsTableNG();
-  const bool is_table_row = IsTableNGRow();
-  if (!has_visual_overflowing_effect && !is_table && !is_table_row)
-    return LocalRect();
 
   PhysicalRect ink_overflow(LocalRect());
-  if (UNLIKELY(is_table)) {
-    // Table's collapsed borders contribute to visual overflow.
-    // In the inline direction, table's border box does not include
-    // visual border width (largest border), but does include
-    // layout border width (border of first cell).
-    // Expands border box to include visual border width.
-    if (const NGTableBorders* collapsed_borders = TableCollapsedBorders()) {
-      PhysicalRect borders_overflow = LocalRect();
-      NGBoxStrut visual_size_diff =
-          collapsed_borders->GetCollapsedBorderVisualSizeDiff();
-      borders_overflow.Expand(
-          visual_size_diff.ConvertToPhysical(style.GetWritingDirection()));
-      ink_overflow.Unite(borders_overflow);
-    }
-  } else if (UNLIKELY(is_table_row)) {
+  if (UNLIKELY(IsTableNGRow())) {
     // This is necessary because table-rows paints beyond border box if it
     // contains rowspanned cells.
     for (const NGLink& child : PostLayoutChildren()) {
@@ -1202,7 +1184,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
     }
   }
 
-  if (!has_visual_overflowing_effect)
+  if (!style.HasVisualOverflowingEffect())
     return ink_overflow;
 
   ink_overflow.Expand(style.BoxDecorationOutsets());

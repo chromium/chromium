@@ -59,10 +59,10 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
       calculator.AddChild(*box_fragment, child.offset);
     }
   }
-  if (fragment.IsTableNG()) {
-    if (const NGTableBorders* table_borders = fragment.TableCollapsedBorders())
-      calculator.AddTableCollapsedBorders(*table_borders);
-  }
+
+  if (fragment.TableCollapsedBorders())
+    calculator.AddTableSelfRect();
+
   return calculator.Result(fragment.InflowBounds());
 }
 
@@ -111,6 +111,10 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
 
   layout_overflow_.UniteEvenIfEmpty(inflow_overflow);
   return layout_overflow_;
+}
+
+void NGLayoutOverflowCalculator::AddTableSelfRect() {
+  AddOverflow({PhysicalOffset(), size_});
 }
 
 template <typename Items>
@@ -175,15 +179,6 @@ void NGLayoutOverflowCalculator::AddItems(
     const NGPhysicalBoxFragment& box_fragment,
     const NGFragmentItems& items) {
   AddItemsInternal(box_fragment.GetLayoutObject(), items.Items());
-}
-
-void NGLayoutOverflowCalculator::AddTableCollapsedBorders(
-    const NGTableBorders& table_borders) {
-  PhysicalRect overflow{PhysicalOffset(), size_};
-  overflow.Expand(
-      table_borders.GetCollapsedBorderVisualSizeDiff().ConvertToPhysical(
-          writing_direction_));
-  AddOverflow(overflow);
 }
 
 PhysicalRect NGLayoutOverflowCalculator::AdjustOverflowForHanging(

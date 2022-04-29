@@ -1244,12 +1244,8 @@ NGBoxStrut ComputeMarginsFor(const NGConstraintSpace& constraint_space,
 namespace {
 
 NGBoxStrut ComputeBordersInternal(const ComputedStyle& style) {
-  NGBoxStrut borders;
-  borders.inline_start = LayoutUnit(style.BorderStartWidth());
-  borders.inline_end = LayoutUnit(style.BorderEndWidth());
-  borders.block_start = LayoutUnit(style.BorderBeforeWidth());
-  borders.block_end = LayoutUnit(style.BorderAfterWidth());
-  return borders;
+  return {style.BorderStartWidth(), style.BorderEndWidth(),
+          style.BorderBeforeWidth(), style.BorderAfterWidth()};
 }
 
 }  // namespace
@@ -1274,6 +1270,10 @@ NGBoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
 }
 
 NGBoxStrut ComputeBordersForInline(const ComputedStyle& style) {
+  return ComputeBordersInternal(style);
+}
+
+NGBoxStrut ComputeNonCollapsedTableBorders(const ComputedStyle& style) {
   return ComputeBordersInternal(style);
 }
 
