@@ -122,6 +122,13 @@
        {}
       ]
      ],
+     "img-map-pseudo.html": [
+      "443934e431b9ffe9a0bca469c1d97cb8edccf5c6",
+      [
+       null,
+       {}
+      ]
+     ],
      "in-page-link-with-aria-hidden.html": [
       "237707ba074c6943a3922c8a49fa81acb173a566",
       [
@@ -73498,6 +73505,19 @@
        ]
       ]
      },
+     "background-position-calc-minmax-001.html": [
+      "4e71f55623b49d728cb9f49caa9583c751a26868",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-position-negative-percentage-comparison.html": [
       "389ee719196cd3dd1afae63d6d773039d0472111",
       [
@@ -142525,6 +142545,19 @@
        [
         [
          "/css/css-overflow/reference/input-scrollable-region-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-block-end-scroll-area-001.html": [
+      "3b8f4ca3f355718d05fe6eeda200bddccb388f57",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/ref-if-there-is-no-red.xht",
          "=="
         ]
        ],
@@ -259590,6 +259623,10 @@
        "7309746e54f73c9d0f978d1986b6df40e950793b",
        []
       ],
+      "ref-filled-green-100px-square.xht": [
+       "05a13794482a94f6c10bd9d4c98704e63ef60331",
+       []
+      ],
       "ref-if-there-is-no-red.xht": [
        "a5b4e9f47a8e60ad0bede1ac81e02b3542c80f3b",
        []
@@ -259850,6 +259887,10 @@
        "2ca46e53f3c3db20d4cd14d7284f9ba1c658bed9",
        []
       ],
+      "pattern-gr-rr-200x200.png": [
+       "5fe3651bd530ef3f310c0dd725d8ddcdc4ccec88",
+       []
+      ],
       "pattern-grg-rgr-grg.png": [
        "6fcfeb4883edea810f880fabb861e09df7871695",
        []
@@ -259858,8 +259899,20 @@
        "fcf4f3fd7d95431b8cd1bc5f5129fcb724c5e40f",
        []
       ],
+      "pattern-rg-rr-200x200.png": [
+       "2474cc0f5ae4f8de4e84c66a48abc536df58fefb",
+       []
+      ],
       "pattern-rgr-grg-rgr.png": [
        "db8ed5cf7bd1837d4810f2885309f8413c6c77d5",
+       []
+      ],
+      "pattern-rr-gr-200x200.png": [
+       "599fbd302891e949999aed25678c83c907abda40",
+       []
+      ],
+      "pattern-rr-rg-200x200.png": [
+       "1333efafd32b65f88a984d3c0bebe3a88b7ca556",
        []
       ],
       "pattern-tr.png": [
@@ -278200,6 +278253,10 @@
       ],
       "overflow-recalc-001-ref.html": [
        "b18dee8caf1864dc30fe656750fe81a8863f1e90",
+       []
+      ],
+      "ref-if-there-is-no-red.xht": [
+       "a5b4e9f47a8e60ad0bede1ac81e02b3542c80f3b",
        []
       ],
       "text-overflow-ellipsis-001-ref.html": [
@@ -401009,6 +401066,13 @@
        {}
       ]
      ],
+     "CSSStyleSheet-constructable-cssRules.html": [
+      "72b0e15c8b84a01f2b96e4acd52aec2507bcf2b8",
+      [
+       null,
+       {}
+      ]
+     ],
      "CSSStyleSheet-constructable-disabled-regular-sheet-insertion.html": [
       "ef4ea1480658af9aee9ef3464650893481d8ed46",
       [
@@ -467850,8 +467914,170 @@
          ]
         },
         "grid-navigation": {
-         "relayout-before-navigation.tentative.html": [
+         "col-flow-only.html": [
+          "a634412d53026e84aa37e1d98f86df0a9a686f43",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "col-wrap-and-row-flow.html": [
+          "b5f678a706f57e477d8366b2ff76170773903ec5",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "col-wrap-only.html": [
+          "ff19b8778ea089ecb7f8bebadfaaffc0bd609db8",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "colspan.html": [
+          "c9daeffaeb130b89c224c2bdb66432f63ee40de5",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "css-table-not-focusgroup.html": [
+          "c0aea689aebd0fb60e78e3864381200a99cd4eb7",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "css-table.html": [
+          "45e1e2c472cc9a5a07c3cd56882db42b2b0e5481",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "does-not-wrap-or-flow.html": [
+          "050dec3622aca2b07481c407ccb542699209729c",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "empty-spaces.html": [
+          "90a09e1a9409b1068bd08ade998a1059f34126f5",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "flows-in-both-axes.html": [
+          "86fc25456bf067842ac129d05524cadb60bc0a2c",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "moves-across-table-sections.html": [
+          "d7d1b55f459344ed48d74bde815b22507d7266b5",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "non-table.html": [
+          "c02de186e652bca396e8cad8405738425c50dc6c",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "relayout-before-navigation.html": [
           "d1fd0ce6ebbb3abee3802ce17fbbba17d6ada58c",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "row-flow-only.html": [
+          "138b1b33d545b0e647168c2090b1019fa599d51d",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "row-wrap-and-col-flow.html": [
+          "8ed69e2e3e778c9846174814cfa70613e7c38f71",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "row-wrap-only.html": [
+          "0154ee2125ba51a2dc4eab2b22f38f36929a5a86",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "rowspan.html": [
+          "81ab54ef8e66c3c499f1a35af2427e9882dd4b19",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "simple-case-with-non-focusable-cell-in-the-center.html": [
+          "25d2900a9ffc54df7c8109c5934001a0e1494234",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "simple-case.html": [
+          "738895ce0b34c10943cc5680d35249a4981fbd19",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "wraps-in-both-axes.html": [
+          "809ee5364578321c7a37471f1885546dc910ee8d",
           [
            null,
            {
