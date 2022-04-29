@@ -145,22 +145,28 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   button->SetProminent(true);
   row->AddChildView(std::move(button));
 
-  // Add consent text. It requires a StyledLabel so that we can add the links to
-  // the privacy policy and terms of service URLs.
-  views::StyledLabel* consent_label =
+  // Do not add disclosure text if this is a sign in.
+  if (account.login_state == Account::LoginState::kSignIn) {
+    return row;
+  }
+
+  // Add disclosure text. It requires a StyledLabel so that we can add the links
+  // to the privacy policy and terms of service URLs.
+  views::StyledLabel* disclosure_label =
       row->AddChildView(std::make_unique<views::StyledLabel>());
-  consent_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  disclosure_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
   std::vector<size_t> offsets;
   if (client_data_.terms_of_service_url.is_empty()) {
     // Case for when we only need to add a link for privacy policy URL, but not
     // terms of service. We use two placeholders for the start and end of
     // 'privacy policy' in order to style that text as a link.
-    std::u16string consent_text = l10n_util::GetStringFUTF16(
+    std::u16string disclosure_text = l10n_util::GetStringFUTF16(
         IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS,
         {idp_etld_plus_one_, std::u16string(), std::u16string()}, &offsets);
-    consent_label->SetText(consent_text);
+    disclosure_label->SetText(disclosure_text);
     // Add link styling for privacy policy url.
-    consent_label->AddStyleRange(
+    disclosure_label->AddStyleRange(
         gfx::Range(offsets[1], offsets[2]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &AccountSelectionBubbleView::OnLinkClicked,
@@ -175,17 +181,17 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   std::vector<std::u16string> replacements = {
       idp_etld_plus_one_, std::u16string(), std::u16string(), std::u16string(),
       std::u16string()};
-  std::u16string consent_text = l10n_util::GetStringFUTF16(
+  std::u16string disclosure_text = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT, replacements, &offsets);
-  consent_label->SetText(consent_text);
+  disclosure_label->SetText(disclosure_text);
   // Add link styling for privacy policy url.
-  consent_label->AddStyleRange(
+  disclosure_label->AddStyleRange(
       gfx::Range(offsets[1], offsets[2]),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AccountSelectionBubbleView::OnLinkClicked,
           weak_ptr_factory_.GetWeakPtr(), client_data_.privacy_policy_url)));
   // Add link styling for terms of service url.
-  consent_label->AddStyleRange(
+  disclosure_label->AddStyleRange(
       gfx::Range(offsets[3], offsets[4]),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AccountSelectionBubbleView::OnLinkClicked,
@@ -264,8 +270,10 @@ void AccountSelectionBubbleView::OnLinkClicked(const GURL& gurl) {
 
 void AccountSelectionBubbleView::OnSingleAccountPicked(
     const content::IdentityRequestAccount& account) {
-  // TODO(npm): differentiate new users from returning users upon single account
-  // being picked.
+  if (account.login_state == Account::LoginState::kSignIn) {
+    OnAccountSelected(account);
+    return;
+  }
   RemoveAllChildViews();
   AddChildView(std::make_unique<views::Separator>());
   std::vector<content::IdentityRequestAccount> accounts = {account};

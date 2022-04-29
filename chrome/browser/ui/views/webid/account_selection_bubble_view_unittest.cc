@@ -53,11 +53,29 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     CreateViewAndShow(accounts, exclude_terms_of_service);
   }
 
+  void CreateReturningAccountViewAndShow() {
+    const content::IdentityRequestAccount accounts[] = {
+        {"id", "email", "name", "given_name", GURL::EmptyGURL(),
+         Account::LoginState::kSignIn}};
+    CreateViewAndShow(accounts, false /*=exclude_terms_of_service*/);
+  }
+
   void CreateMultipleAccountViewAndShow() {
     const content::IdentityRequestAccount accounts[] = {
         {"id0", "email0", "name0", "given_name0", GURL::EmptyGURL()},
         {"id1", "email1", "name1", "given_name1", GURL::EmptyGURL()},
         {"id2", "email2", "name2", "given_name2", GURL::EmptyGURL()}};
+    CreateViewAndShow(accounts);
+  }
+
+  void CreateMultipleReturningAccountViewAndShow() {
+    const content::IdentityRequestAccount accounts[] = {
+        {"id0", "email0", "name0", "given_name0", GURL::EmptyGURL(),
+         Account::LoginState::kSignIn},
+        {"id1", "email1", "name1", "given_name1", GURL::EmptyGURL(),
+         Account::LoginState::kSignIn},
+        {"id2", "email2", "name2", "given_name2", GURL::EmptyGURL(),
+         Account::LoginState::kSignIn}};
     CreateViewAndShow(accounts);
   }
 
@@ -180,10 +198,10 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   ASSERT_TRUE(button);
   EXPECT_EQ(button->GetText(), u"Continue as given_name");
 
-  views::StyledLabel* consent_text =
+  views::StyledLabel* disclosure_text =
       static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
-  ASSERT_TRUE(consent_text);
-  EXPECT_EQ(consent_text->GetText(),
+  ASSERT_TRUE(disclosure_text);
+  EXPECT_EQ(disclosure_text->GetText(),
             u"To continue, idp-example.com will share your name, email "
             u"address, and profile picture with this site. See this site's "
             u"privacy policy and terms of service.");
@@ -206,10 +224,10 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   ASSERT_TRUE(button);
   EXPECT_EQ(button->GetText(), u"Continue as given_name");
 
-  views::StyledLabel* consent_text =
+  views::StyledLabel* disclosure_text =
       static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
-  ASSERT_TRUE(consent_text);
-  EXPECT_EQ(consent_text->GetText(),
+  ASSERT_TRUE(disclosure_text);
+  EXPECT_EQ(disclosure_text->GetText(),
             u"To continue, idp-example.com will share your name, email "
             u"address, and profile picture with this site. See this site's "
             u"privacy policy.");
@@ -301,10 +319,10 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   ASSERT_TRUE(button);
   EXPECT_EQ(button->GetText(), u"Continue as given_name1");
 
-  views::StyledLabel* consent_text =
+  views::StyledLabel* disclosure_text =
       static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
-  ASSERT_TRUE(consent_text);
-  EXPECT_EQ(consent_text->GetText(),
+  ASSERT_TRUE(disclosure_text);
+  EXPECT_EQ(disclosure_text->GetText(),
             u"To continue, idp-example.com will share your name, email "
             u"address, and profile picture with this site. See this site's "
             u"privacy policy and terms of service.");
@@ -314,6 +332,69 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   button_test_continue.NotifyClick(event);
 
   // Check that the UI changes to sign in.
+  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
+  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
+  EXPECT_FALSE(dialog()->GetOkButton());
+  EXPECT_FALSE(dialog()->GetCancelButton());
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSigningIn);
+
+  ASSERT_EQ(dialog()->children().size(), 2u);
+  views::ProgressBar* progress_bar =
+      static_cast<views::ProgressBar*>(dialog()->children()[0]);
+  ASSERT_TRUE(progress_bar);
+
+  CheckAccountRow(dialog()->children()[1], u"name1", u"email1");
+}
+
+TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
+  CreateReturningAccountViewAndShow();
+  // Perform some basic dialog checks.
+  EXPECT_TRUE(dialog()->ShouldShowCloseButton());
+  EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
+
+  EXPECT_FALSE(dialog()->GetOkButton());
+  EXPECT_FALSE(dialog()->GetCancelButton());
+
+  EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSignIn);
+
+  // Check basic structure.
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 2u);
+  views::Separator* separator = static_cast<views::Separator*>(children[0]);
+  EXPECT_TRUE(separator);
+  views::View* single_account_chooser = children[1];
+
+  // There should be no disclosure text, so only 2 children: the account row and
+  // the continue button.
+  ASSERT_EQ(single_account_chooser->children().size(), 2u);
+
+  CheckAccountRow(single_account_chooser->children()[0], u"name", u"email");
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+}
+
+TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
+  CreateMultipleReturningAccountViewAndShow();
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 2u);
+  views::View* multiple_account_chooser = children[1];
+  std::vector<views::View*> accounts = multiple_account_chooser->children();
+  ASSERT_EQ(accounts.size(), 3u);
+
+  // Click on the middle account, i.e. accounts[1].
+  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
+  ASSERT_TRUE(account_row);
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi button_test(account_row);
+  button_test.NotifyClick(event);
+
+  // Check that the UI changes directly to 'verifying'.
   EXPECT_TRUE(dialog()->ShouldShowCloseButton());
   EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
   EXPECT_FALSE(dialog()->GetOkButton());
