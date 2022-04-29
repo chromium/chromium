@@ -67,8 +67,6 @@ const char kSecureContextBlocked[] =
     "Access to the feature \"gamepad\" requires a secure context";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
-const char kFencedFrameBlocked[] =
-    "getGamepad is not allowed in a fenced frame tree.";
 
 NavigatorGamepad& NavigatorGamepad::From(Navigator& navigator) {
   NavigatorGamepad* supplement =
@@ -130,13 +128,6 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
 
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
 
-  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
-  // permission policy implements the Gamepad API support.
-  if (navigator.DomWindow()->GetFrame()->IsInFencedFrameTree()) {
-    exception_state.ThrowSecurityError(kFencedFrameBlocked);
-    return HeapVector<Member<Gamepad>>();
-  }
-
   ExecutionContext* context = navigator_gamepad->GetExecutionContext();
   if (!context || !context->IsSecureContext()) {
     if (base::FeatureList::IsEnabled(::features::kRestrictGamepadAccess)) {
@@ -155,22 +146,10 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
     }
   }
 
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kGamepad)) {
-    if (base::FeatureList::IsEnabled(::features::kRestrictGamepadAccess)) {
-      exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-      return HeapVector<Member<Gamepad>>();
-    } else {
-      context->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "getGamepad will now require a Permission Policy. "
-              "Please update your application accordingly. "
-              "For more information see "
-              "https://github.com/w3c/gamepad/pull/112"),
-          /*discard_duplicates=*/true);
-    }
+  if (!context || !context->IsFeatureEnabled(
+                      mojom::blink::PermissionsPolicyFeature::kGamepad)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    return HeapVector<Member<Gamepad>>();
   }
 
   HeapVector<Member<Gamepad>> result =

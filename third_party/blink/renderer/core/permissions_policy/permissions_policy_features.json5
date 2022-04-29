@@ -251,7 +251,7 @@
     {
       name: "Gamepad",
       permissions_policy_name: "gamepad",
-      depends_on: ["RestrictGamepadAccess"],
+      feature_default: "EnableForAll",
     },
     {
       name: "Geolocation",

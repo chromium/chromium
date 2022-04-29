@@ -30,6 +30,7 @@ display-capture
 document-domain
 encrypted-media
 fullscreen
+gamepad
 geolocation
 gyroscope
 hid
