@@ -674,15 +674,7 @@ constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueAndReopen \
-  FLAKY_WriteIntoNewStorageQueueAndReopen
-#else
-#define MAYBE_WriteIntoNewStorageQueueAndReopen \
-  WriteIntoNewStorageQueueAndReopen
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndReopen) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -693,15 +685,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
-  FLAKY_WriteIntoNewStorageQueueReopenAndWriteMore
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
-  WriteIntoNewStorageQueueReopenAndWriteMore
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -715,15 +699,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore) {
   WriteStringOrDie(kMoreData[2]);
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueAndUpload \
-  FLAKY_WriteIntoNewStorageQueueAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueAndUpload \
-  WriteIntoNewStorageQueueAndUpload
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUpload) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -746,15 +722,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUpload) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures \
-  FLAKY_WriteIntoNewStorageQueueAndUploadWithFailures
-#else
-#define MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures \
-  WriteIntoNewStorageQueueAndUploadWithFailures
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -780,16 +748,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndUploadWithFailures) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
-  FLAKY_WriteIntoNewStorageQueueReopenWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWriteMoreAndUpload
-#endif
-TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -823,17 +782,8 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload \
-  FLAKY_WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload
-#endif
-TEST_P(
-    StorageQueueTest,
-    MAYBE_WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
+TEST_P(StorageQueueTest,
+       WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -875,17 +825,9 @@ TEST_P(
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload \
-  FLAKY_WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload
-#endif
 TEST_P(
     StorageQueueTest,
-    MAYBE_WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload) {
+    WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -940,16 +882,8 @@ TEST_P(
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  FLAKY_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#endif
 TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1035,14 +969,7 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueAndFlush \
-  FLAKY_WriteIntoNewStorageQueueAndFlush
-#else
-#define MAYBE_WriteIntoNewStorageQueueAndFlush WriteIntoNewStorageQueueAndFlush
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndFlush) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1065,16 +992,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndFlush) {
   storage_queue_->Flush();
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush \
-  FLAKY_WriteIntoNewStorageQueueReopenWriteMoreAndFlush
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush \
-  WriteIntoNewStorageQueueReopenWriteMoreAndFlush
-#endif
-TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -1135,15 +1053,7 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
   storage_queue_->Flush();
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteAndRepeatedlyUploadWithConfirmations \
-  FLAKY_WriteAndRepeatedlyUploadWithConfirmations
-#else
-#define MAYBE_WriteAndRepeatedlyUploadWithConfirmations \
-  WriteAndRepeatedlyUploadWithConfirmations
-#endif
-TEST_P(StorageQueueTest, MAYBE_WriteAndRepeatedlyUploadWithConfirmations) {
+TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   WriteStringOrDie(kData[0]);
@@ -1249,16 +1159,7 @@ TEST_P(StorageQueueTest, MAYBE_WriteAndRepeatedlyUploadWithConfirmations) {
   }
 }
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen \
-  FLAKY_WriteAndRepeatedlyUploadWithConfirmationsAndReopen
-#else
-#define MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen \
-  WriteAndRepeatedlyUploadWithConfirmationsAndReopen
-#endif
-TEST_P(StorageQueueTest,
-       MAYBE_WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
+TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
   WriteStringOrDie(kData[0]);

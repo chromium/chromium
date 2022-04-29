@@ -225,16 +225,8 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   TestUploadClient::LastRecordDigestMap last_record_digest_map_;
 };
 
-// TODO(crbug.com/1316604): Flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
-  FLAKY_WriteIntoNewStorageQueueReopenWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWriteMoreAndUpload
-#endif
 TEST_P(StorageQueueStressTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
+       WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   for (size_t iStart = 0; iStart < kTotalQueueStarts; ++iStart) {
     test::TestCallbackWaiter write_waiter;
     base::RepeatingCallback<void(Status)> cb = base::BindRepeating(
