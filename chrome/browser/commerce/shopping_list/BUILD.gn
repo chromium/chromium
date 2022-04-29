@@ -14,13 +14,13 @@ static_library("shopping_list") {
 
   deps = [
     "//base",
-    "//chrome/browser:resources",
     "//chrome/browser/commerce:shopping_service",
     "//chrome/browser/power_bookmarks:proto",
     "//chrome/common",
     "//components/commerce/core:proto",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/resources",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
   ]

@@ -388,7 +388,6 @@
       <if expr="not is_android">
         <include name="IDR_DESKTOP_SHARING_HUB_PB" file="${root_gen_dir}\chrome\browser\share\core\resources\desktop_sharing_hub.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
       </if>
-      <part file="commerce/shopping_list/resources/shopping_list_resources.grdp" />
     </includes>
   </release>
 </grit>
