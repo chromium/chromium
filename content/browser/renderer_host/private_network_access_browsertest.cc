@@ -1103,7 +1103,7 @@ RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
 //
 // |parent| must not be nullptr.
 RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
-                                     const GURL& url) {
+                                     base::StringPiece url) {
   std::string script_template = R"(
     new Promise((resolve) => {
       const iframe = document.createElement("iframe");
@@ -1115,8 +1115,13 @@ RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
   return AddChildWithScript(parent, JsReplace(script_template, url));
 }
 
+RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
+                                     const GURL& url) {
+  return AddChildFromURL(parent, url.spec());
+}
+
 RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("about:blank"));
+  return AddChildFromURL(parent, "about:blank");
 }
 
 RenderFrameHostImpl* AddChildInitialEmptyDoc(RenderFrameHostImpl* parent) {
@@ -1140,11 +1145,11 @@ RenderFrameHostImpl* AddChildFromSrcdoc(RenderFrameHostImpl* parent) {
 }
 
 RenderFrameHostImpl* AddChildFromDataURL(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("data:text/html,foo"));
+  return AddChildFromURL(parent, "data:text/html,foo");
 }
 
 RenderFrameHostImpl* AddChildFromJavascriptURL(RenderFrameHostImpl* parent) {
-  return AddChildFromURL(parent, GURL("javascript:'foo'"));
+  return AddChildFromURL(parent, "javascript:'foo'");
 }
 
 RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
@@ -2811,6 +2816,85 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkRequestPolicyNotInheritedForSandboxedInitialEmptyDoc) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy. "about:blank" behaves slightly differently from the
+// initial empty doc in code, but should have the same policy in the end.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkRequestPolicyNotInheritedForSandboxedAboutBlank) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that error pages have a set private network request
+// policy of `kAllow` irrespective of the navigation initiator.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       PrivateNetworkRequestPolicyIsAllowForErrorPage) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), "/close-socket");
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // ==================================================
