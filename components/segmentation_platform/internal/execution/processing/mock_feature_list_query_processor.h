@@ -21,6 +21,7 @@ class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
               (const proto::SegmentationModelMetadata&,
                optimization_guide::proto::OptimizationTarget,
                base::Time,
+               FeatureListQueryProcessor::ProcessOption,
                FeatureProcessorCallback),
               (override));
 };

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_COLLECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATA_COLLECTION_TRAINING_DATA_COLLECTOR_IMPL_H_
 
-#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include <set>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -13,10 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
@@ -41,24 +45,31 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                                 base::HistogramBase::Sample sample) override;
 
  private:
+  // Parameters used for reporting immediate output collections.
+  struct ImmediaCollectionParam {
+    uint64_t output_metric_hash;  // Hash of the output metric name.
+    int output_index;             // Index of the output metric in metadata.
+    float output_value;           // Value of the output.
+  };
+
   void OnGetSegmentsInfoList(
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
   void ReportForSegmentsInfoList(
-      uint64_t output_metric_hash,
-      base::HistogramBase::Sample output_metric_sample,
+      const absl::optional<ImmediaCollectionParam>& param,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
-  void OnGetInputTensor(
-      float output_value,
-      int output_index,
-      OptimizationTarget segment_id,
-      int64_t model_version,
-      const absl::optional<proto::PredictionResult>& prediction_result,
-      bool success,
-      const std::vector<float>& inputs);
+  void OnGetTrainingTensors(const absl::optional<ImmediaCollectionParam>& param,
+                            const proto::SegmentInfo& segment_info,
+                            bool success,
+                            const std::vector<float>& input_tensors,
+                            const std::vector<float>& output_tensors);
 
-  bool CanReportImmediateTrainingData(const proto::SegmentInfo& segment_info);
+  // Returns whether training data can be reported through UKM. If
+  // |include_output| is false, only input data will be checked to see if they
+  // meet the collection requirement.
+  bool CanReportTrainingData(const proto::SegmentInfo& segment_info,
+                             bool include_output);
 
   raw_ptr<SegmentInfoDatabase> segment_info_database_;
   raw_ptr<processing::FeatureListQueryProcessor> feature_list_query_processor_;
@@ -72,6 +83,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   base::flat_map<uint64_t,
                  base::flat_set<optimization_guide::proto::OptimizationTarget>>
       immediate_collection_histograms_;
+
+  // A list of segment IDs that needs to report metrics continuously.
+  std::set<OptimizationTarget> continuous_collection_segments_;
 
   base::WeakPtrFactory<TrainingDataCollectorImpl> weak_ptr_factory_{this};
 };

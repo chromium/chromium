@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunOnceCallback;
+using segmentation_platform::processing::FeatureListQueryProcessor;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
@@ -151,9 +152,11 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
                                        proto::Aggregation::BUCKETED_COUNT);
 
   EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(
-          RunOnceCallback<3>(/*error=*/true, std::vector<float>{1, 2, 3}));
+              ProcessFeatureList(
+                  _, segment_id, clock_.Now(),
+                  FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
+      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>{1, 2, 3},
+                                   std::vector<float>()));
 
   // The input tensor should contain all values flattened to a single vector.
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
@@ -164,8 +167,11 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
       std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
 
   EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, segment_id, clock_.Now(), _))
-      .WillOnce(RunOnceCallback<3>(/*error=*/true, std::vector<float>{}));
+              ProcessFeatureList(
+                  _, segment_id, clock_.Now(),
+                  FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
+      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>(),
+                                   std::vector<float>()));
   ExecuteModel(
       *metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
       std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
@@ -182,9 +188,12 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
                                        proto::Aggregation::BUCKETED_COUNT);
 
   EXPECT_CALL(*feature_list_query_processor_,
-              ProcessFeatureList(_, kSegmentId, clock_.Now(), _))
-      .WillOnce(RunOnceCallback<3>(/*error=*/false,
-                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7}));
+              ProcessFeatureList(
+                  _, kSegmentId, clock_.Now(),
+                  FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
+      .WillOnce(RunOnceCallback<4>(/*error=*/false,
+                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7},
+                                   std::vector<float>()));
 
   // The input tensor should contain all values flattened to a single vector.
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));

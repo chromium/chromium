@@ -66,9 +66,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     // Setup behavior for |feature_list_processor_|.
     std::vector<float> inputs({1.f});
-    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _))
-        .WillByDefault(RunOnceCallback<3>(true, inputs));
-    ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
+    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _))
+        .WillByDefault(RunOnceCallback<4>(true, inputs, std::vector<float>()));
+    ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
         .WillByDefault(Return(true));
 
     test_segment_info_db_ = std::make_unique<test::TestSegmentInfoDatabase>();
@@ -87,17 +87,20 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   MockSignalStorageConfig* signal_storage_config() {
     return &signal_storage_config_;
   }
+  processing::MockFeatureListQueryProcessor* feature_list_processor() {
+    return &feature_list_processor_;
+  }
 
   proto::SegmentInfo* CreateSegmentInfo() {
     test_segment_db()->AddUserActionFeature(kTestOptimizationTarget0, "action",
                                             1, 1, proto::Aggregation::COUNT);
-    // Segment 0 contains 1 immediate collection uma output for for
-    // |kHistogramName0|, 1 continuous collection output for for
+    // Segment 0 contains 1 immediate collection uma output for
+    // |kHistogramName0|, 1 uma output collection with delay for
     // |kHistogramName1|.
     auto* segment_info = CreateSegment(kTestOptimizationTarget0);
     AddOutput(segment_info, kHistogramName0);
     proto::TrainingOutput* output1 = AddOutput(segment_info, kHistogramName1);
-    output1->mutable_uma_output()->set_duration(1u);
+    output1->mutable_uma_output()->mutable_uma_feature()->set_tensor_length(1);
     return segment_info;
   }
 
@@ -155,6 +158,14 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     test_recorder_.SetOnAddEntryCallback(
         Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
     collector_->OnHistogramSignalUpdated(histogram_name, sample);
+    run_loop.Run();
+  }
+
+  void WaitForContinousCollection() {
+    base::RunLoop run_loop;
+    test_recorder_.SetOnAddEntryCallback(
+        Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
+    collector_->ReportCollectedContinuousTrainingData();
     run_loop.Run();
   }
 
@@ -221,7 +232,7 @@ TEST_F(TrainingDataCollectorImplTest,
 
 // No UKM report due to minimum data collection time not met.
 TEST_F(TrainingDataCollectorImplTest, SignalCollectionRequirementNotMet) {
-  EXPECT_CALL(*signal_storage_config(), MeetsSignalCollectionRequirement(_))
+  EXPECT_CALL(*signal_storage_config(), MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(false));
 
   CreateSegmentInfo();
@@ -259,6 +270,24 @@ TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
   collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
+}
+
+TEST_F(TrainingDataCollectorImplTest, WaitForContinousCollection) {
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _))
+      .WillByDefault(RunOnceCallback<4>(true, std::vector<float>{1.f},
+                                        std::vector<float>{2.f, 3.f}));
+  CreateSegmentInfo();
+  Init();
+  WaitForContinousCollection();
+  ExpectUkm({Segmentation_ModelExecution::kOptimizationTargetName,
+             Segmentation_ModelExecution::kModelVersionName,
+             Segmentation_ModelExecution::kInput0Name,
+             Segmentation_ModelExecution::kActualResultName,
+             Segmentation_ModelExecution::kActualResult2Name},
+            {kTestOptimizationTarget0, kModelVersion,
+             SegmentationUkmHelper::FloatToInt64(1.f),
+             SegmentationUkmHelper::FloatToInt64(2.f),
+             SegmentationUkmHelper::FloatToInt64(3.f)});
 }
 
 }  // namespace

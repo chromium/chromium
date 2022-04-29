@@ -30,7 +30,7 @@ class MockSignalStorageConfig : public SignalStorageConfig {
 
   MOCK_METHOD(bool,
               MeetsSignalCollectionRequirement,
-              (const proto::SegmentationModelMetadata& model_metadata),
+              (const proto::SegmentationModelMetadata& model_metadata, bool),
               (override));
 
   MOCK_METHOD(void,

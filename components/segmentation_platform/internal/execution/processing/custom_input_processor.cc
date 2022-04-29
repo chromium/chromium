@@ -67,7 +67,8 @@ void CustomInputProcessor::OnFinishProcessing(
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     IndexedTensors result) {
   custom_inputs_.clear();
-  feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
+  feature_processor_state->AppendTensor(result[kIndexNotUsed],
+                                        true /*is_input*/);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(feature_processor_state)));

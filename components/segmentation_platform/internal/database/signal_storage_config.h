@@ -46,7 +46,8 @@ class SignalStorageConfig {
   // evaluation. The model should be skipped if it hasn't been captured long
   // enough.
   virtual bool MeetsSignalCollectionRequirement(
-      const proto::SegmentationModelMetadata& model_metadata);
+      const proto::SegmentationModelMetadata& model_metadata,
+      bool include_output = false);
 
   // Called whenever we find a model. Noop for existing models. Loops through
   // all the signals and updates their storage requirements. Also sets their

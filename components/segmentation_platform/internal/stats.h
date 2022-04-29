@@ -199,7 +199,9 @@ enum class TrainingDataCollectionEvent {
   kNotEnoughCollectionTime = 5,
   kUkmReportingFailed = 6,
   kPartialDataNotAllowed = 7,
-  kMaxValue = kPartialDataNotAllowed,
+  kContinousCollectionStart = 8,
+  kContinousCollectionSuccess = 9,
+  kMaxValue = kContinousCollectionSuccess,
 };
 
 // Records analytics for training data collection.

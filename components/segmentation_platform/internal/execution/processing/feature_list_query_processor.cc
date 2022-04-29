@@ -39,6 +39,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
     const proto::SegmentationModelMetadata& model_metadata,
     OptimizationTarget segment_id,
     base::Time prediction_time,
+    ProcessOption process_option,
     FeatureProcessorCallback callback) {
   // The total bucket duration is defined by product of the bucket_duration
   // value and the length of related time_unit field, e.g. 28 * length(DAY).
@@ -48,24 +49,35 @@ void FeatureListQueryProcessor::ProcessFeatureList(
 
   // Grab the metadata for all the features, which will be processed one at a
   // time, before executing the model.
-  auto input_features = std::make_unique<std::deque<proto::InputFeature>>();
-  for (int i = 0; i < model_metadata.features_size(); ++i) {
-    proto::InputFeature input_feature;
-    input_feature.mutable_uma_feature()->CopyFrom(model_metadata.features(i));
-    input_features->emplace_back(input_feature);
+  std::deque<FeatureProcessorState::Data> features;
+  if (process_option == ProcessOption::kInputsOnly ||
+      process_option == ProcessOption::kInputsAndOutputs) {
+    for (int i = 0; i < model_metadata.features_size(); ++i) {
+      proto::InputFeature input_feature;
+      input_feature.mutable_uma_feature()->CopyFrom(model_metadata.features(i));
+      features.emplace_back(std::move(input_feature));
+    }
+    for (int i = 0; i < model_metadata.input_features_size(); ++i)
+      features.emplace_back(model_metadata.input_features(i));
   }
-  for (int i = 0; i < model_metadata.input_features_size(); ++i)
-    input_features->emplace_back(model_metadata.input_features(i));
+
+  if (process_option == ProcessOption::kOutputsOnly ||
+      process_option == ProcessOption::kInputsAndOutputs) {
+    for (auto& output : model_metadata.training_outputs().outputs()) {
+      DCHECK(output.has_uma_output()) << "Currently only support UMA output.";
+      features.emplace_back(std::move(output));
+    }
+  }
 
   // Capture all the relevant metadata information into a FeatureProcessorState.
   auto feature_processor_state = std::make_unique<FeatureProcessorState>(
-      prediction_time, bucket_duration, segment_id, std::move(input_features),
+      prediction_time, bucket_duration, segment_id, std::move(features),
       std::move(callback));
 
-  ProcessNextInputFeature(std::move(feature_processor_state));
+  ProcessNext(std::move(feature_processor_state));
 }
 
-void FeatureListQueryProcessor::ProcessNextInputFeature(
+void FeatureListQueryProcessor::ProcessNext(
     std::unique_ptr<FeatureProcessorState> feature_processor_state) {
   // Finished processing all input features or an error occurred.
   if (feature_processor_state->IsFeatureListEmpty() ||
@@ -75,45 +87,69 @@ void FeatureListQueryProcessor::ProcessNextInputFeature(
   }
 
   // Get next input feature to process.
-  proto::InputFeature input_feature =
-      feature_processor_state->PopNextInputFeature();
+  FeatureProcessorState::Data data = feature_processor_state->PopNextData();
   std::unique_ptr<QueryProcessor> processor;
 
+  // Check either input or output has value.
+  DCHECK(data.input_feature.has_value() || data.output_feature.has_value());
+  DCHECK(!data.input_feature.has_value() || !data.output_feature.has_value());
+
   // Process all the features in-order, starting with the first feature.
-  if (input_feature.has_uma_feature()) {
-    base::flat_map<QueryProcessor::FeatureIndex, proto::UMAFeature> queries = {
-        {kIndexNotUsed, input_feature.uma_feature()}};
-    processor = std::make_unique<UmaFeatureProcessor>(
-        std::move(queries), signal_database_, feature_aggregator_.get(),
-        feature_processor_state->prediction_time(),
-        feature_processor_state->bucket_duration(),
-        feature_processor_state->segment_id());
-  } else if (input_feature.has_custom_input()) {
-    base::flat_map<QueryProcessor::FeatureIndex, proto::CustomInput> queries = {
-        {kIndexNotUsed, input_feature.custom_input()}};
-    processor = std::make_unique<CustomInputProcessor>(
-        std::move(queries), feature_processor_state->prediction_time());
-  } else if (input_feature.has_sql_feature()) {
-    SqlFeatureProcessor::QueryList queries = {
-        {kIndexNotUsed, input_feature.sql_feature()}};
-    processor = std::make_unique<SqlFeatureProcessor>(
-        std::move(queries), feature_processor_state->prediction_time(),
-        ukm_database_);
+  if (data.input_feature.has_value()) {
+    if (data.input_feature->has_uma_feature()) {
+      base::flat_map<QueryProcessor::FeatureIndex, proto::UMAFeature> queries =
+          {{kIndexNotUsed, data.input_feature->uma_feature()}};
+      processor = GetUmaFeatureProcessor(std::move(queries),
+                                         feature_processor_state.get());
+    } else if (data.input_feature->has_custom_input()) {
+      base::flat_map<QueryProcessor::FeatureIndex, proto::CustomInput> queries =
+          {{kIndexNotUsed, data.input_feature->custom_input()}};
+      processor = std::make_unique<CustomInputProcessor>(
+          std::move(queries), feature_processor_state->prediction_time());
+    } else if (data.input_feature->has_sql_feature()) {
+      SqlFeatureProcessor::QueryList queries = {
+          {kIndexNotUsed, data.input_feature->sql_feature()}};
+      processor = std::make_unique<SqlFeatureProcessor>(
+          std::move(queries), feature_processor_state->prediction_time(),
+          ukm_database_);
+    }
+  } else {
+    // Process output features
+    if (data.output_feature->has_uma_output()) {
+      DCHECK(data.output_feature->uma_output().has_uma_feature());
+      base::flat_map<QueryProcessor::FeatureIndex, proto::UMAFeature> queries =
+          {{kIndexNotUsed, data.output_feature->uma_output().uma_feature()}};
+      processor = GetUmaFeatureProcessor(std::move(queries),
+                                         feature_processor_state.get());
+    }
   }
 
   auto* processor_ptr = processor.get();
   processor_ptr->Process(
       std::move(feature_processor_state),
       base::BindOnce(&FeatureListQueryProcessor::OnFeatureProcessed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(processor)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(processor),
+                     data.input_feature.has_value()));
 }
 
 void FeatureListQueryProcessor::OnFeatureProcessed(
     std::unique_ptr<QueryProcessor> feature_processor,
+    bool is_input,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessor::IndexedTensors result) {
-  feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
-  ProcessNextInputFeature(std::move(feature_processor_state));
+  feature_processor_state->AppendTensor(result[kIndexNotUsed], is_input);
+  ProcessNext(std::move(feature_processor_state));
+}
+
+std::unique_ptr<UmaFeatureProcessor>
+FeatureListQueryProcessor::GetUmaFeatureProcessor(
+    base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
+    FeatureProcessorState* feature_processor_state) {
+  return std::make_unique<UmaFeatureProcessor>(
+      std::move(uma_features), signal_database_, feature_aggregator_.get(),
+      feature_processor_state->prediction_time(),
+      feature_processor_state->bucket_duration(),
+      feature_processor_state->segment_id());
 }
 
 }  // namespace segmentation_platform::processing

@@ -64,6 +64,26 @@ class FeatureListQueryProcessorTest : public testing::Test {
     return clock_.Now() - bucket_duration * bucket_count;
   }
 
+  proto::UMAFeature CreateUmaFeature(
+      proto::SignalType signal_type,
+      const std::string& name,
+      uint64_t bucket_count,
+      uint64_t tensor_length,
+      proto::Aggregation aggregation,
+      const std::vector<int32_t>& accepted_enum_ids) {
+    proto::UMAFeature uma_feature;
+    uma_feature.set_type(signal_type);
+    uma_feature.set_name(name);
+    uma_feature.set_name_hash(base::HashMetricName(name));
+    uma_feature.set_bucket_count(bucket_count);
+    uma_feature.set_tensor_length(tensor_length);
+    uma_feature.set_aggregation(aggregation);
+
+    for (int32_t accepted_enum_id : accepted_enum_ids)
+      uma_feature.add_enum_ids(accepted_enum_id);
+    return uma_feature;
+  }
+
   void AddUmaFeature(proto::SignalType signal_type,
                      const std::string& name,
                      uint64_t bucket_count,
@@ -71,18 +91,26 @@ class FeatureListQueryProcessorTest : public testing::Test {
                      proto::Aggregation aggregation,
                      const std::vector<int32_t>& accepted_enum_ids) {
     auto* input_feature = model_metadata.add_input_features();
-    proto::UMAFeature* uma_feature = input_feature->mutable_uma_feature();
-    uma_feature->set_type(signal_type);
-    uma_feature->set_name(name);
-    uma_feature->set_name_hash(base::HashMetricName(name));
-    uma_feature->set_bucket_count(bucket_count);
-    uma_feature->set_tensor_length(tensor_length);
-    uma_feature->set_aggregation(aggregation);
-
-    for (int32_t accepted_enum_id : accepted_enum_ids)
-      uma_feature->add_enum_ids(accepted_enum_id);
+    auto* uma_feature = input_feature->mutable_uma_feature();
+    uma_feature->CopyFrom(CreateUmaFeature(signal_type, name, bucket_count,
+                                           tensor_length, aggregation,
+                                           accepted_enum_ids));
   }
 
+  void AddOutputUmaFeature(proto::SignalType signal_type,
+                           const std::string& name,
+                           uint64_t bucket_count,
+                           uint64_t tensor_length,
+                           proto::Aggregation aggregation,
+                           const std::vector<int32_t>& accepted_enum_ids) {
+    model_metadata.mutable_training_outputs()
+        ->add_outputs()
+        ->mutable_uma_output()
+        ->mutable_uma_feature()
+        ->CopyFrom(CreateUmaFeature(signal_type, name, bucket_count,
+                                    tensor_length, aggregation,
+                                    accepted_enum_ids));
+  }
   void AddUserActionWithProcessingSetup(base::TimeDelta bucket_duration) {
     // Set up a single user action feature.
     std::string user_action_name = "some_action";
@@ -125,14 +153,17 @@ class FeatureListQueryProcessorTest : public testing::Test {
   void ExpectProcessedFeatureList(
       bool expected_error,
       const std::vector<float>& expected_input_tensor,
-      base::Time prediction_time) {
+      const std::vector<float>& expected_output_tensor,
+      base::Time prediction_time,
+      FeatureListQueryProcessor::ProcessOption process_option =
+          FeatureListQueryProcessor::ProcessOption::kInputsOnly) {
     base::RunLoop loop;
     feature_list_query_processor_->ProcessFeatureList(
-        model_metadata, segment_id_, prediction_time,
+        model_metadata, segment_id_, prediction_time, process_option,
         base::BindOnce(
             &FeatureListQueryProcessorTest::OnProcessingFinishedCallback,
             base::Unretained(this), loop.QuitClosure(), expected_error,
-            expected_input_tensor));
+            expected_input_tensor, expected_output_tensor));
     loop.Run();
   }
 
@@ -140,17 +171,20 @@ class FeatureListQueryProcessorTest : public testing::Test {
       bool expected_error,
       const std::vector<float>& expected_input_tensor) {
     ExpectProcessedFeatureList(expected_error, expected_input_tensor,
-                               clock_.Now());
+                               std::vector<float>(), clock_.Now());
   }
 
   void OnProcessingFinishedCallback(
       base::RepeatingClosure closure,
       bool expected_error,
       const std::vector<float>& expected_input_tensor,
+      const std::vector<float>& expected_output_tensor,
       bool error,
-      const std::vector<float>& input_tensor) {
+      const std::vector<float>& input_tensor,
+      const std::vector<float>& output_tensor) {
     EXPECT_EQ(expected_error, error);
     EXPECT_EQ(expected_input_tensor, input_tensor);
+    EXPECT_EQ(expected_output_tensor, output_tensor);
     std::move(closure).Run();
   }
 
@@ -277,7 +311,7 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {
   ExpectProcessedFeatureList(true, std::vector<float>{});
 }
 
-TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
+TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
   CreateFeatureListQueryProcessor();
 
   // Initialize with required metadata.
@@ -295,6 +329,12 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
   AddUmaFeature(proto::SignalType::HISTOGRAM_ENUM, histogram_enum_name, 4, 1,
                 proto::Aggregation::COUNT, {});
 
+  // Set up output feature.
+  std::string output_histogram_enum_name = "output_histogram_enum";
+  AddOutputUmaFeature(proto::SignalType::HISTOGRAM_ENUM,
+                      output_histogram_enum_name, 5, 1,
+                      proto::Aggregation::COUNT, {});
+
   // First uma feature should be the user action.
   std::vector<SignalDatabaseSample> user_action_samples{
       {clock_.Now(), 0},
@@ -305,11 +345,13 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
               GetSamples(proto::SignalType::USER_ACTION,
                          base::HashMetricName(user_action_name),
                          StartTime(bucket_duration, 2), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<4>(user_action_samples));
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<4>(user_action_samples));
   EXPECT_CALL(*feature_aggregator_,
               Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT,
                       2, clock_.Now(), bucket_duration, user_action_samples))
-      .WillOnce(Return(std::vector<float>{3}));
+      .Times(2)
+      .WillRepeatedly(Return(std::vector<float>{3}));
 
   // Second uma feature should be the value histogram.
   std::vector<SignalDatabaseSample> histogram_value_samples{
@@ -321,12 +363,14 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
               GetSamples(proto::SignalType::HISTOGRAM_VALUE,
                          base::HashMetricName(histogram_value_name),
                          StartTime(bucket_duration, 3), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<4>(histogram_value_samples));
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<4>(histogram_value_samples));
   EXPECT_CALL(
       *feature_aggregator_,
       Process(proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM, 3,
               clock_.Now(), bucket_duration, histogram_value_samples))
-      .WillOnce(Return(std::vector<float>{6}));
+      .Times(2)
+      .WillRepeatedly(Return(std::vector<float>{6}));
 
   // Third uma feature should be the enum histogram.
   std::vector<SignalDatabaseSample> histogram_enum_samples{
@@ -339,15 +383,45 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeatures) {
               GetSamples(proto::SignalType::HISTOGRAM_ENUM,
                          base::HashMetricName(histogram_enum_name),
                          StartTime(bucket_duration, 4), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<4>(histogram_enum_samples));
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<4>(histogram_enum_samples));
   EXPECT_CALL(
       *feature_aggregator_,
       Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::COUNT, 4,
               clock_.Now(), bucket_duration, histogram_enum_samples))
-      .WillOnce(Return(std::vector<float>{4}));
+      .Times(2)
+      .WillRepeatedly(Return(std::vector<float>{4}));
 
   // The input tensor should contain all three values: 3, 6, and 4.
   ExpectProcessedFeatureList(false, std::vector<float>{3, 6, 4});
+
+  // Output is also enum histogram
+  std::vector<SignalDatabaseSample> output_histogram_enum_samples{
+      {clock_.Now(), 1}, {clock_.Now(), 2}, {clock_.Now(), 3},
+      {clock_.Now(), 4}, {clock_.Now(), 5},
+  };
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::HISTOGRAM_ENUM,
+                         base::HashMetricName(output_histogram_enum_name),
+                         StartTime(bucket_duration, 5), clock_.Now(), _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<4>(output_histogram_enum_samples));
+  EXPECT_CALL(
+      *feature_aggregator_,
+      Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::COUNT, 5,
+              clock_.Now(), bucket_duration, output_histogram_enum_samples))
+      .Times(2)
+      .WillRepeatedly(Return(std::vector<float>{5}));
+  // The input tensor should contain all three values: {3, 6, 4}, output
+  // contains {5}
+  ExpectProcessedFeatureList(
+      false, std::vector<float>{3, 6, 4}, std::vector<float>{5}, clock_.Now(),
+      FeatureListQueryProcessor::ProcessOption::kInputsAndOutputs);
+
+  // Only return tensors for output features.
+  ExpectProcessedFeatureList(
+      false, std::vector<float>(), std::vector<float>{5}, clock_.Now(),
+      FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 }
 
 TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {

@@ -44,7 +44,12 @@ class FeatureListQueryProcessor {
       delete;
 
   using FeatureProcessorCallback =
-      base::OnceCallback<void(bool, const std::vector<float>&)>;
+      base::OnceCallback<void(bool,
+                              const std::vector<float>& /*inputs*/,
+                              const std::vector<float>& /*outputs*/)>;
+
+  // Options for determining what should be included in the result.
+  enum class ProcessOption { kInputsOnly, kOutputsOnly, kInputsAndOutputs };
 
   // Given a model's metadata, processes the feature list from the metadata and
   // computes the input tensor for the ML model. Result is returned through a
@@ -56,22 +61,30 @@ class FeatureListQueryProcessor {
       const proto::SegmentationModelMetadata& model_metadata,
       OptimizationTarget segment_id,
       base::Time prediction_time,
+      ProcessOption process_option,
       FeatureProcessorCallback callback);
 
  private:
   // Called by ProcessFeatureList to process the next input feature in the list.
   // It then delegates the processing to the correct feature processor class
   // until the feature list is empty.
-  void ProcessNextInputFeature(
+  void ProcessNext(
       std::unique_ptr<FeatureProcessorState> feature_processor_state);
 
   // Callback called after a feature has been processed, indicating that we can
   // safely discard the feature processor that handled the processing. Continue
   // with the rest of the input features by calling ProcessNextInputFeature.
+  // `is_input' indicates whether the feature is for input tensors.
   void OnFeatureProcessed(
       std::unique_ptr<QueryProcessor> feature_processor,
+      bool is_input,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
       QueryProcessor::IndexedTensors result);
+
+  // Gets a UMA feature processor for a
+  std::unique_ptr<UmaFeatureProcessor> GetUmaFeatureProcessor(
+      base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
+      FeatureProcessorState* feature_processor_state);
 
   // Signal database for uma features.
   const raw_ptr<SignalDatabase> signal_database_;

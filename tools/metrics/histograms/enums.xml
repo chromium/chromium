@@ -82014,6 +82014,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Not enough data collection time"/>
   <int value="6" label="UKM reporting failure"/>
   <int value="7" label="Partial Data now allowed to upload"/>
+  <int value="8" label="Continuous collection start"/>
+  <int value="9" label="Continuous collection success"/>
 </enum>
 
 <enum name="SegmentationPlatformValidationResult">

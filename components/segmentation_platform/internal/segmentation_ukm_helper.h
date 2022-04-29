@@ -52,6 +52,11 @@ class SegmentationUkmHelper {
   // Helper method to encode a float number into int64.
   static int64_t FloatToInt64(float f);
 
+  // Gets a set of segment IDs that are allowed to upload metrics.
+  const base::flat_set<OptimizationTarget>& allowed_segment_ids() {
+    return allowed_segment_ids_;
+  }
+
  private:
   bool AddInputsToUkm(ukm::builders::Segmentation_ModelExecution* ukm_builder,
                       OptimizationTarget segment_id,
@@ -69,7 +74,7 @@ class SegmentationUkmHelper {
 
   void Initialize();
 
-  base::flat_set<int> allowed_segment_ids_;
+  base::flat_set<OptimizationTarget> allowed_segment_ids_;
 };
 
 }  // namespace segmentation_platform

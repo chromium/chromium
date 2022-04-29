@@ -28,10 +28,7 @@ class SqlFeatureProcessorTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
-    feature_processor_state_ = std::make_unique<FeatureProcessorState>(
-        base::Time(), base::TimeDelta(),
-        OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN, nullptr,
-        base::BindOnce([](bool, const std::vector<float>&) {}));
+    feature_processor_state_ = std::make_unique<FeatureProcessorState>();
     ukm_database_ = std::make_unique<MockUkmDatabase>();
   }
 

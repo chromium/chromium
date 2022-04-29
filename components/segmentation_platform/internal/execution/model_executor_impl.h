@@ -52,7 +52,8 @@ class ModelExecutorImpl : public ModelExecutor {
   // for executing the model.
   void OnProcessingFeatureListComplete(std::unique_ptr<ExecutionState> state,
                                        bool error,
-                                       const std::vector<float>& input_tensor);
+                                       const std::vector<float>& input_tensor,
+                                       const std::vector<float>& output_tensor);
 
   // ExecuteModel takes the current input tensor and passes it to the ML
   // model for execution.

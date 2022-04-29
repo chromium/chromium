@@ -16,10 +16,9 @@
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
 namespace {
+using processing::FeatureListQueryProcessor;
 
 // Parse outputs into a map of metric hash of the uma output and its index in
 // the output list.
@@ -73,7 +72,14 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
   histogram_signal_handler_->AddObserver(this);
 
   DCHECK(segments);
+  const base::flat_set<OptimizationTarget>& allowed_ids =
+      SegmentationUkmHelper::GetInstance()->allowed_segment_ids();
   for (const auto& segment : *segments) {
+    // Skip the segment if it is not in allowed list.
+    if (!allowed_ids.contains(static_cast<int>(segment.first))) {
+      continue;
+    }
+
     const proto::SegmentInfo& segment_info = segment.second;
     // Validate segment info.
     auto validation_result = metadata_utils::ValidateSegmentInfo(segment_info);
@@ -95,9 +101,11 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
       const auto& output =
           segment_info.model_metadata().training_outputs().outputs(
               hash_index.second);
-      // Ignore continuous collection UMA.
-      if (output.uma_output().has_duration())
+      // If tensor length is 0, the output is for immediate collection.
+      if (output.uma_output().uma_feature().tensor_length() != 0) {
+        continuous_collection_segments_.insert(segment.first);
         continue;
+      }
       immediate_collection_histograms_[hash_index.first].emplace(segment.first);
     }
   }
@@ -113,34 +121,46 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   if (it != immediate_collection_histograms_.end()) {
     std::vector<OptimizationTarget> optimization_targets(it->second.begin(),
                                                          it->second.end());
+    auto param = absl::make_optional<ImmediaCollectionParam>();
+    param->output_metric_hash = hash;
+    param->output_value = static_cast<float>(sample);
     segment_info_database_->GetSegmentInfoForSegments(
         optimization_targets,
         base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
-                       weak_ptr_factory_.GetWeakPtr(), hash, sample));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(param)));
   }
 }
 
 void TrainingDataCollectorImpl::ReportForSegmentsInfoList(
-    uint64_t output_metric_hash,
-    base::HistogramBase::Sample output_metric_sample,
+    const absl::optional<ImmediaCollectionParam>& param,
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments) {
   DCHECK(segments);
+  // Make a copy of the input param so it can be modified later.
+  absl::optional<ImmediaCollectionParam> immediate_collection_param = param;
+  bool include_outputs = !param.has_value();
   for (const auto& segment : *segments) {
     RecordTrainingDataCollectionEvent(
         segment.first,
-        stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
+        immediate_collection_param.has_value()
+            ? stats::TrainingDataCollectionEvent::kImmediateCollectionStart
+            : stats::TrainingDataCollectionEvent::kContinousCollectionStart);
+
     const proto::SegmentInfo& segment_info = segment.second;
     // Figure out the output index.
-    auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
-    if (hash_index_map.find(output_metric_hash) == hash_index_map.end())
-      continue;
+    if (immediate_collection_param.has_value()) {
+      auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
+      if (hash_index_map.find(immediate_collection_param->output_metric_hash) ==
+          hash_index_map.end()) {
+        continue;
+      }
+      immediate_collection_param->output_index =
+          hash_index_map[immediate_collection_param->output_metric_hash];
+    }
 
-    if (!CanReportImmediateTrainingData(segment.second))
+    // For non-immediate collections, we need to validate all output
+    // tensors are allowed by UKM policies.
+    if (!CanReportTrainingData(segment.second, include_outputs)) {
       continue;
-
-    absl::optional<proto::PredictionResult> result;
-    if (segment_info.has_prediction_result()) {
-      result = segment_info.prediction_result();
     }
 
     // Generate training data input.
@@ -148,17 +168,18 @@ void TrainingDataCollectorImpl::ReportForSegmentsInfoList(
     // features and update the comment in model_metadata.proto.
     feature_list_query_processor_->ProcessFeatureList(
         segment_info.model_metadata(), segment_info.segment_id(), clock_->Now(),
-        base::BindOnce(&TrainingDataCollectorImpl::OnGetInputTensor,
+        include_outputs
+            ? FeatureListQueryProcessor::ProcessOption::kInputsAndOutputs
+            : FeatureListQueryProcessor::ProcessOption::kInputsOnly,
+        base::BindOnce(&TrainingDataCollectorImpl::OnGetTrainingTensors,
                        weak_ptr_factory_.GetWeakPtr(),
-                       static_cast<float>(output_metric_sample),
-                       hash_index_map[output_metric_hash],
-                       segment_info.segment_id(), segment_info.model_version(),
-                       result));
+                       immediate_collection_param, segment_info));
   }
 }
 
-bool TrainingDataCollectorImpl::CanReportImmediateTrainingData(
-    const proto::SegmentInfo& segment_info) {
+bool TrainingDataCollectorImpl::CanReportTrainingData(
+    const proto::SegmentInfo& segment_info,
+    bool include_output) {
   if (!segment_info.has_model_version() ||
       !segment_info.has_model_update_time_s() ||
       segment_info.model_update_time_s() == 0) {
@@ -205,7 +226,7 @@ bool TrainingDataCollectorImpl::CanReportImmediateTrainingData(
 
   // Each input must be collected for enough time.
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
-          model_metadata)) {
+          model_metadata, include_output)) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
@@ -215,36 +236,59 @@ bool TrainingDataCollectorImpl::CanReportImmediateTrainingData(
   return true;
 }
 
-void TrainingDataCollectorImpl::OnGetInputTensor(
-    float output_value,
-    int output_index,
-    OptimizationTarget segment_id,
-    int64_t model_version,
-    const absl::optional<proto::PredictionResult>& prediction_result,
+void TrainingDataCollectorImpl::OnGetTrainingTensors(
+    const absl::optional<ImmediaCollectionParam>& param,
+    const proto::SegmentInfo& segment_info,
     bool success,
-    const std::vector<float>& inputs) {
+    const std::vector<float>& input_tensors,
+    const std::vector<float>& output_tensors) {
   if (!success) {
     RecordTrainingDataCollectionEvent(
-        segment_id, stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
     return;
   }
 
+  absl::optional<proto::PredictionResult> result;
+  if (segment_info.has_prediction_result()) {
+    result = segment_info.prediction_result();
+  }
+
+  std::vector<int> output_indexes;
+  if (param.has_value()) {
+    output_indexes = {param->output_index};
+  } else {
+    for (size_t i = 0; i < output_tensors.size(); ++i) {
+      output_indexes.emplace_back(i);
+    }
+  }
+
   auto ukm_source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      segment_id, model_version, inputs, {output_value}, {output_index},
-      prediction_result);
+      segment_info.segment_id(), segment_info.model_version(), input_tensors,
+      param.has_value() ? std::vector<float>{param->output_value}
+                        : output_tensors,
+      output_indexes, result);
   if (ukm_source_id == ukm::kInvalidSourceId) {
-    VLOG(1) << "Failed to collect training data for segment:" << segment_id;
+    VLOG(1) << "Failed to collect training data for segment:"
+            << segment_info.segment_id();
     RecordTrainingDataCollectionEvent(
-        segment_id, stats::TrainingDataCollectionEvent::kUkmReportingFailed);
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kUkmReportingFailed);
   } else {
     RecordTrainingDataCollectionEvent(
-        segment_id,
-        stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess);
+        segment_info.segment_id(),
+        param.has_value()
+            ? stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess
+            : stats::TrainingDataCollectionEvent::kContinousCollectionSuccess);
   }
 }
 
 void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
-  // TODO(qinmin): report all metrics that requires continuous observation.
+  segment_info_database_->GetSegmentInfoForSegments(
+      std::vector<OptimizationTarget>(continuous_collection_segments_.begin(),
+                                      continuous_collection_segments_.end()),
+      base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
+                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
 }
 
 }  // namespace segmentation_platform

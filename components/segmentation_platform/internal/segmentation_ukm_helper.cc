@@ -63,8 +63,7 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult5,
     &Segmentation_ModelExecution::SetActualResult6};
 
-// Gets a set of segment IDs that are allowed to upload metrics.
-base::flat_set<int> GetSegmentIdsAllowedForReporting() {
+base::flat_set<OptimizationTarget> GetSegmentIdsAllowedForReporting() {
   std::vector<std::string> segment_ids = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
           segmentation_platform::features::
@@ -72,11 +71,11 @@ base::flat_set<int> GetSegmentIdsAllowedForReporting() {
           segmentation_platform::kSegmentIdsAllowedForReportingKey),
       ",;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  base::flat_set<int> result;
+  base::flat_set<OptimizationTarget> result;
   for (const auto& id : segment_ids) {
     int segment_id;
     if (base::StringToInt(id, &segment_id))
-      result.emplace(segment_id);
+      result.emplace(static_cast<OptimizationTarget>(segment_id));
   }
   return result;
 }

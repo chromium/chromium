@@ -76,15 +76,16 @@ proto::SignalStorageConfig* SignalStorageConfig::FindSignal(
 }
 
 bool SignalStorageConfig::MeetsSignalCollectionRequirement(
-    const proto::SegmentationModelMetadata& model_metadata) {
+    const proto::SegmentationModelMetadata& model_metadata,
+    bool include_outputs) {
   base::TimeDelta min_signal_collection_length =
       model_metadata.min_signal_collection_length() *
       metadata_utils::GetTimeUnit(model_metadata);
 
   // Loop through all the signals specified in the model, and check if they have
   // been collected long enough.
-  auto features = metadata_utils::GetAllUmaFeatures(model_metadata,
-                                                    /*include_outputs=*/false);
+  auto features =
+      metadata_utils::GetAllUmaFeatures(model_metadata, include_outputs);
   for (auto const& feature : features) {
     // Skip the signals that has bucket_count set to 0. These ones are only for
     // collection purposes and hence don't get used in model evaluation.
