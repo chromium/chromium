@@ -5014,7 +5014,8 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       cmd = [_CHROME_BINARY,
              '--remote-debugging-port=%d' % port,
              '--user-data-dir=%s' % temp_dir,
-             '--use-mock-keychain']
+             '--use-mock-keychain',
+             '--password-store=basic']
       process = subprocess.Popen(cmd)
       try:
         driver = self.CreateDriver(debugger_address='localhost:%d' % port)
@@ -5056,7 +5057,8 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
               '--remote-debugging-address=%s' % debug_addr,
               '--remote-debugging-port=%d' % port,
               '--user-data-dir=%s' % temp_dir,
-              '--use-mock-keychain']
+              '--use-mock-keychain',
+              '--password-store=basic']
         process = subprocess.Popen(cmd)
         try:
           driver = self.CreateDriver(
