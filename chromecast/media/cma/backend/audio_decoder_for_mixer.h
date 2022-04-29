@@ -42,7 +42,7 @@ class AudioDecoderForMixer
   ~AudioDecoderForMixer() override;
 
   virtual void Initialize();
-  virtual bool Start(int64_t pts, bool start_playback_asap);
+  virtual bool Start(int64_t pts, bool av_sync_enabled);
   void StartPlaybackAt(int64_t timestamp);
   virtual void Stop();
   virtual bool Pause();
@@ -80,7 +80,7 @@ class AudioDecoderForMixer
   void OnMixerError() override;
 
   void CreateBufferPool(const AudioConfig& config, int frame_count);
-  void CreateMixerInput(const AudioConfig& config, bool start_playback_asap);
+  void CreateMixerInput(const AudioConfig& config, bool av_sync_enabled);
   void CleanUpPcm();
   void ResetMixerInputForNewConfig(const AudioConfig& config);
   void CreateDecoder();
@@ -128,7 +128,7 @@ class AudioDecoderForMixer
   scoped_refptr<IOBufferPool> buffer_pool_;
 
   int64_t playback_start_pts_ = 0;
-  bool start_playback_asap_ = false;
+  bool av_sync_enabled_ = false;
 
   base::WeakPtrFactory<AudioDecoderForMixer> weak_factory_;
 };

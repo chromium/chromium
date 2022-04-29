@@ -263,7 +263,7 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
           expected_playout_time +
           SamplesToMicroseconds(filled / mixer_input_->playback_rate_,
                                 sample_rate_);
-      float* fill_channel_data[AudioClockSimulator::kMaxChannels];
+      float* fill_channel_data[kMaxChannels];
       for (int c = 0; c < num_channels_; ++c) {
         fill_channel_data[c] = channels[c] + filled;
       }
@@ -305,6 +305,8 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
   void AddSilence(int frames) { pending_silence_.emplace(frames); }
 
  private:
+  static constexpr size_t kMaxChannels = 32;
+
   int FillFramesForFader(int num_frames,
                          int64_t playout_timestamp,
                          float* const* channel_data) NO_THREAD_SAFETY_ANALYSIS {
@@ -369,6 +371,8 @@ MixerInputConnection::MixerInputConnection(
       pts_is_timestamp_(params.has_timestamped_audio_config()),
       max_timestamp_error_(GetMaxTimestampError(params)),
       never_crop_(params.timestamped_audio_config().never_crop()),
+      enable_audio_clock_simulation_(pts_is_timestamp_ ||
+                                     params.enable_audio_clock_simulation()),
       effective_playout_channel_(playout_channel_),
       io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       max_queued_frames_(std::max(GetQueueSize(params), algorithm_fill_size_)),
@@ -393,7 +397,6 @@ MixerInputConnection::MixerInputConnection(
                     num_channels_,
                     input_samples_per_second_,
                     algorithm_fill_size_),
-      audio_clock_simulator_(&rate_shifter_),
       use_start_timestamp_(params.use_start_timestamp()),
       playback_start_timestamp_(use_start_timestamp_ ? INT64_MAX : INT64_MIN),
       weak_factory_(this) {
@@ -489,10 +492,6 @@ bool MixerInputConnection::HandleAudioData(char* data,
                                            size_t size,
                                            int64_t timestamp) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  if (inactivity_timer_.IsRunning()) {
-    inactivity_timer_.Reset();
-  }
-
   const int frame_size =
       num_channels_ * audio_service::GetSampleSizeBytes(sample_format_);
   if (size % frame_size != 0) {
@@ -553,10 +552,6 @@ bool MixerInputConnection::HandleAudioBuffer(
     size_t size,
     int64_t timestamp) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  if (inactivity_timer_.IsRunning()) {
-    inactivity_timer_.Reset();
-  }
-
   DCHECK_EQ(data - buffer->data(), kAudioMessageHeaderSize);
   if (sample_format_ != audio_service::SAMPLE_FORMAT_FLOAT_P) {
     return HandleAudioData(data, size, timestamp);
@@ -584,17 +579,14 @@ void MixerInputConnection::OnConnectionError() {
   weak_factory_.InvalidateWeakPtrs();
 
   LOG(INFO) << "Remove " << this;
-  bool remove_self = false;
   {
     base::AutoLock lock(lock_);
     pending_data_ = nullptr;
     state_ = State::kRemoved;
     SetMediaPlaybackRateLocked(1.0);
-    remove_self = mixer_error_;
-  }
-
-  if (remove_self) {
-    mixer_->RemoveInput(this);
+    if (mixer_error_) {
+      RemoveSelf();
+    }
   }
 }
 
@@ -688,14 +680,18 @@ void MixerInputConnection::SetAudioClockRate(double rate) {
     return;
   }
 
-  base::AutoLock lock(lock_);
-  audio_clock_simulator_.SetRate(rate);
+  if (!enable_audio_clock_simulation_) {
+    AUDIO_LOG(ERROR) << "Audio clock rate simulation not enabled";
+    return;
+  }
+  mixer_->SetSimulatedClockRate(this, rate);
 }
 
 double MixerInputConnection::ChangeAudioRate(double desired_clock_rate,
                                              double error_slope,
                                              double current_error) {
-  return audio_clock_simulator_.SetRate(desired_clock_rate);
+  mixer_->SetSimulatedClockRate(this, desired_clock_rate);
+  return desired_clock_rate;
 }
 
 void MixerInputConnection::AdjustTimestamps(int64_t timestamp_adjustment) {
@@ -792,8 +788,15 @@ bool MixerInputConnection::active() {
   return !ignore_for_stream_count_ && !paused_;
 }
 
+bool MixerInputConnection::require_clock_rate_simulation() const {
+  return enable_audio_clock_simulation_;
+}
+
 void MixerInputConnection::WritePcm(scoped_refptr<net::IOBuffer> data) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  if (inactivity_timer_.IsRunning()) {
+    inactivity_timer_.Reset();
+  }
 
   RenderingDelay rendering_delay;
   bool queued;
@@ -865,14 +868,12 @@ double MixerInputConnection::ExtraDelayFrames() {
   // The other data includes:
   //   * The number of frames of the last mixer fill (since that will be played
   //     out starting at the last mixer rendering delay).
-  //   * Data in the audio clock simulator.
   //   * Data in the rate shifter.
   //   * Data buffered in the fader.
   //   * Queued data in |queue_|.
   // Note that the delay for data that will be pushed into the rate shifter
   // (ie, fader and queue_) needs to be adjusted for the current playback rate.
-  return mixer_read_size_ + audio_clock_simulator_.DelayFrames() +
-         rate_shifter_.BufferedFrames() +
+  return mixer_read_size_ + rate_shifter_.BufferedFrames() +
          ((timestamped_fader_->BufferedFrames() + queued_frames_) /
           playback_rate_);
 }
@@ -1070,8 +1071,8 @@ int MixerInputConnection::FillAudioPlaybackFrames(
     for (int c = 0; c < num_channels_; ++c) {
       channels[c] = buffer->channel(c) + write_offset;
     }
-    filled += audio_clock_simulator_.FillFrames(
-        num_frames, playback_absolute_timestamp, channels);
+    filled += rate_shifter_.FillFrames(num_frames, playback_absolute_timestamp,
+                                       channels);
 
     mixer_rendering_delay_ = rendering_delay;
 
@@ -1116,7 +1117,8 @@ int MixerInputConnection::FillAudioPlaybackFrames(
   }
 
   if (remove_self) {
-    mixer_->RemoveInput(this);
+    base::AutoLock lock(lock_);
+    RemoveSelf();
   }
 
   return filled;
@@ -1359,8 +1361,16 @@ void MixerInputConnection::OnAudioPlaybackError(MixerError error) {
   base::AutoLock lock(lock_);
   mixer_error_ = true;
   if (state_ == State::kRemoved) {
-    mixer_->RemoveInput(this);
+    RemoveSelf();
   }
+}
+
+void MixerInputConnection::RemoveSelf() {
+  if (removed_self_) {
+    return;
+  }
+  removed_self_ = true;
+  mixer_->RemoveInput(this);
 }
 
 void MixerInputConnection::OnOutputUnderrun() {

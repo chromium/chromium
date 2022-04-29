@@ -57,6 +57,7 @@ class MixerInput {
     virtual int playout_channel() = 0;
     // Returns true if the source is currently providing audio to be mixed.
     virtual bool active() = 0;
+    virtual bool require_clock_rate_simulation() const = 0;
 
     // Called when the input has been added to the mixer, before any other
     // calls are made. The |read_size| is the number of frames that will be
@@ -164,6 +165,9 @@ class MixerInput {
   // retrieved. This differs from TargetVolume() during transients.
   float InstantaneousVolume();
 
+  // Sets the simulated audio clock rate (by changing the resample rate).
+  void SetSimulatedClockRate(double new_clock_rate);
+
  private:
   int FillBuffer(int num_frames,
                  RenderingDelay rendering_delay,
@@ -203,6 +207,8 @@ class MixerInput {
   bool tried_to_fill_resampler_;
   int resampled_silence_count_ = 0;
   std::unique_ptr<::media::MultiChannelResampler> resampler_;
+  double resample_ratio_ = 1.0;
+  double simulated_clock_rate_ = 1.0;
 
   std::vector<AudioOutputRedirectorInput*> audio_output_redirectors_;
 

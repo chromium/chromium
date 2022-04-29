@@ -106,6 +106,9 @@ class StreamMixer {
   // Sets the per-stream volume multiplier for |source|.
   void SetVolumeMultiplier(MixerInput::Source* source, float multiplier);
 
+  // Sets the simulated audio clock rate for |source|.
+  void SetSimulatedClockRate(MixerInput::Source* source, double new_clock_rate);
+
   // Sends configuration string |config| to processor |name|.
   void SetPostProcessorConfig(std::string name, std::string config);
 
@@ -183,6 +186,8 @@ class StreamMixer {
   void SetOutputLimitOnThread(AudioContentType type, float limit);
   void SetVolumeMultiplierOnThread(MixerInput::Source* source,
                                    float multiplier);
+  void SetSimulatedClockRateOnThread(MixerInput::Source* source,
+                                     double new_clock_rate);
   void SetPostProcessorConfigOnThread(std::string name, std::string config);
   void AddAudioOutputRedirectorOnThread(
       std::unique_ptr<AudioOutputRedirector> redirector);

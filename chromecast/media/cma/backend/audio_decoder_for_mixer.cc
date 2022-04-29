@@ -142,7 +142,7 @@ void AudioDecoderForMixer::Initialize() {
 }
 
 bool AudioDecoderForMixer::Start(int64_t playback_start_pts,
-                                 bool start_playback_asap) {
+                                 bool av_sync_enabled) {
   TRACE_FUNCTION_ENTRY0();
   DCHECK(IsValidConfig(input_config_));
 
@@ -152,9 +152,9 @@ bool AudioDecoderForMixer::Start(int64_t playback_start_pts,
     CreateDecoder();
   }
   decoded_config_ = (decoder_ ? decoder_->GetOutputConfig() : input_config_);
-  CreateMixerInput(decoded_config_, start_playback_asap);
+  CreateMixerInput(decoded_config_, av_sync_enabled);
   playback_start_pts_ = playback_start_pts;
-  start_playback_asap_ = start_playback_asap;
+  av_sync_enabled_ = av_sync_enabled;
 
   return true;
 }
@@ -171,7 +171,7 @@ void AudioDecoderForMixer::CreateBufferPool(const AudioConfig& config,
 }
 
 void AudioDecoderForMixer::CreateMixerInput(const AudioConfig& config,
-                                            bool start_playback_asap) {
+                                            bool av_sync_enabled) {
   CreateBufferPool(config, buffer_pool_frames_);
   DCHECK_GT(buffer_pool_frames_, 0);
 
@@ -192,7 +192,8 @@ void AudioDecoderForMixer::CreateMixerInput(const AudioConfig& config,
   params.set_max_buffered_frames(MaxQueuedFrames(config.samples_per_second));
   params.set_fade_frames(::media::AudioTimestampHelper::TimeToFrames(
       kFadeTime, config.samples_per_second));
-  params.set_use_start_timestamp(!start_playback_asap);
+  params.set_use_start_timestamp(av_sync_enabled);
+  params.set_enable_audio_clock_simulation(av_sync_enabled);
 
   mixer_input_ =
       std::make_unique<mixer_service::OutputStreamConnection>(this, params);
@@ -383,8 +384,8 @@ void AudioDecoderForMixer::ResetMixerInputForNewConfig(
   int64_t last_timestamp = last_push_playout_timestamp_;
   last_push_playout_timestamp_ = kInvalidTimestamp;
 
-  CreateMixerInput(config, start_playback_asap_);
-  if (!start_playback_asap_) {
+  CreateMixerInput(config, av_sync_enabled_);
+  if (av_sync_enabled_) {
     if (last_timestamp != kInvalidTimestamp &&
         last_push_pts_ != kInvalidTimestamp) {
       mixer_input_->SetStartTimestamp(last_timestamp, last_push_pts_);

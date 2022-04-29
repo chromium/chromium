@@ -48,6 +48,7 @@ class MockMixerSource : public MixerInput::Source {
   int desired_read_size() override { return 1; }
   int playout_channel() override { return playout_channel_; }
   bool active() override { return true; }
+  bool require_clock_rate_simulation() const override { return false; }
 
   MOCK_METHOD2(InitializeAudioPlayback, void(int, RenderingDelay));
   MOCK_METHOD3(FillAudioPlaybackFrames,

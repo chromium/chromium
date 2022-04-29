@@ -79,6 +79,9 @@ message OutputStreamParams {
   // playout time (relative to DefaultMonotonicClock::Now()) of the first frame
   // of that buffer (instead of the usual arbitrary PTS value).
   optional TimestampedAudioConfig timestamped_audio_config = 17;
+
+  //  Enables audio clock simulation for AV sync.
+  optional bool enable_audio_clock_simulation = 18;
 }
 
 // Indicates that we want to start playing the sample with PTS |start_pts|

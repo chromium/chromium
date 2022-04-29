@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
-#include "chromecast/media/audio/audio_clock_simulator.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/media/audio/playback_rate_shifter.h"
@@ -113,6 +112,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   int desired_read_size() override;
   int playout_channel() override;
   bool active() override;
+  bool require_clock_rate_simulation() const override;
 
   void InitializeAudioPlayback(int read_size,
                                RenderingDelay initial_rendering_delay) override;
@@ -140,6 +140,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   double ExtraDelayFrames() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  void RemoveSelf() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void PostPcmCompletion();
   void PostEos();
   void PostError(MixerError error);
@@ -169,6 +170,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   const bool pts_is_timestamp_;
   const int64_t max_timestamp_error_;
   const bool never_crop_;
+  const bool enable_audio_clock_simulation_;
 
   std::atomic<int> effective_playout_channel_;
 
@@ -204,7 +206,6 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   const int fade_frames_;
   std::unique_ptr<TimestampedFader> timestamped_fader_ GUARDED_BY(lock_);
   PlaybackRateShifter rate_shifter_ GUARDED_BY(lock_);
-  AudioClockSimulator audio_clock_simulator_ GUARDED_BY(lock_);
   bool in_underrun_ GUARDED_BY(lock_) = false;
   bool started_ GUARDED_BY(lock_) = false;
   double playback_rate_ GUARDED_BY(lock_) = 1.0;
@@ -221,6 +222,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   int64_t playback_start_pts_ GUARDED_BY(lock_) = INT64_MIN;
   int remaining_silence_frames_ GUARDED_BY(lock_) = 0;
   bool fed_one_silence_buffer_after_removal_ GUARDED_BY(lock_) = false;
+  bool removed_self_ GUARDED_BY(lock_) = false;
 
   base::RepeatingClosure pcm_completion_task_;
   base::RepeatingClosure eos_task_;

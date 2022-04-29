@@ -1046,6 +1046,20 @@ void StreamMixer::SetVolumeMultiplierOnThread(MixerInput::Source* source,
   UpdateStreamCountsOnThread();
 }
 
+void StreamMixer::SetSimulatedClockRate(MixerInput::Source* source,
+                                        double new_clock_rate) {
+  RUN_ON_MIXER_THREAD(SetSimulatedClockRateOnThread, source, new_clock_rate);
+}
+
+void StreamMixer::SetSimulatedClockRateOnThread(MixerInput::Source* source,
+                                                double new_clock_rate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
+  auto it = inputs_.find(source);
+  if (it != inputs_.end()) {
+    it->second->SetSimulatedClockRate(new_clock_rate);
+  }
+}
+
 void StreamMixer::SetPostProcessorConfig(std::string name, std::string config) {
   RUN_ON_MIXER_THREAD(SetPostProcessorConfigOnThread, std::move(name),
                       std::move(config));

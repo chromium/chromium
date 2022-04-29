@@ -95,8 +95,9 @@ void RateAdjuster::AddError(int64_t error, int64_t timestamp) {
   // However, we also want to correct for any existing offset. We correct so
   // that the error should reduce to 0 by the next rate change interval;
   // however the rate change is capped to prevent very fast slewing.
-  double offset_correction = static_cast<double>(smoothed_error) /
-                             config_.rate_change_interval.InMicroseconds();
+  double offset_correction =
+      static_cast<double>(smoothed_error) /
+      (config_.rate_change_interval.InMicroseconds() * 2);
   if (std::abs(smoothed_error) < config_.max_ignored_current_error) {
     // Offset is small enough that we can ignore it, but still correct a little
     // bit to avoid bouncing in and out of the ignored region.
