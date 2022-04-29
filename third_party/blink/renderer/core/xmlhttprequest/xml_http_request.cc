@@ -1111,13 +1111,13 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
     UseCounter::Count(&execution_context, WebFeature::kXMLHttpRequestSynchronous);
     if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
       if (Frame* frame = window->GetFrame()) {
-        if (frame->IsMainFrame()) {
-          UseCounter::Count(&execution_context,
-                            WebFeature::kXMLHttpRequestSynchronousInMainFrame);
-        } else if (frame->IsCrossOriginToMainFrame()) {
+        if (frame->IsCrossOriginToOutermostMainFrame()) {
           UseCounter::Count(
               &execution_context,
               WebFeature::kXMLHttpRequestSynchronousInCrossOriginSubframe);
+        } else if (frame->IsMainFrame()) {
+          UseCounter::Count(&execution_context,
+                            WebFeature::kXMLHttpRequestSynchronousInMainFrame);
         } else {
           UseCounter::Count(
               &execution_context,

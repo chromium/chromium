@@ -68,7 +68,8 @@ void HTMLLinkElement::ParseAttribute(
   const AtomicString& value = params.new_value;
   if (name == html_names::kRelAttr) {
     rel_attribute_ = LinkRelAttribute(value);
-    if (rel_attribute_.IsMonetization() && !GetDocument().ParentDocument()) {
+    if (rel_attribute_.IsMonetization() &&
+        GetDocument().IsInOutermostMainFrame()) {
       // TODO(1031476): The Web Monetization specification is an unofficial
       // draft, available at https://webmonetization.org/specification.html
       // Currently it relies on a <meta> tag but there is an open issue about

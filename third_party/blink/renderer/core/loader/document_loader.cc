@@ -2767,7 +2767,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
   if (response_.IsSignedExchangeInnerResponse()) {
     CountUse(WebFeature::kSignedExchangeInnerResponse);
-    CountUse(frame_->IsMainFrame()
+    CountUse(frame_->IsOutermostMainFrame()
                  ? WebFeature::kSignedExchangeInnerResponseInMainFrame
                  : WebFeature::kSignedExchangeInnerResponseInSubFrame);
   }

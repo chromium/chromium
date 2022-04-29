@@ -618,7 +618,7 @@ void HTMLMetaElement::ProcessContent() {
     // TODO(1031476): The Web Monetization specification is an unofficial draft,
     // available at https://webmonetization.org/specification.html
     // For now, only use counters are implemented in Blink.
-    if (!GetDocument().ParentDocument()) {
+    if (GetDocument().IsInOutermostMainFrame()) {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementMonetization);
     }
