@@ -11047,6 +11047,7 @@ be describing additional metrics about the same event.
 
 <event name="Media.WebAudio.AudioContext.AudibleTime">
   <owner>hongchan@chromium.org</owner>
+  <owner>mjwilson@chromium.org</owner>
   <owner>webaudio-dev@chromium.org</owner>
   <summary>
     Records the AudioContext audible time information.
