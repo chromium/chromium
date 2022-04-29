@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/safety_check.h"
 #include "components/version_info/version_info.h"
@@ -450,6 +451,13 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     [self.handler showManagedInfoFrom:buttonView];
     return;
   }
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    if (itemType == SafeBrowsingItemType) {
+      // Directly open Safe Browsing settings instead of showing a popover.
+      [self.handler showSafeBrowsingPreferencePage];
+      return;
+    }
+  }
   if (itemType == UpdateItemType &&
       self.updateCheckRowState == UpdateCheckRowStateManaged) {
     [self.handler showManagedInfoFrom:buttonView];
@@ -483,6 +491,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
     case SafeBrowsingItemType: {
+      DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
       NSString* message = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO);
       GURL safeBrowsingURL(
