@@ -942,22 +942,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
-    expires_after="2022-01-30">
+    expires_after="2023-01-30">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records if GPU hardware acceleration is explicitly disabled by the user.
     Recorded when the browser process launches.
+
+    Warning: this histogram was expired from 2022-01-30 to 2022-04-29; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
-    expires_after="2022-04-24">
+    expires_after="2023-04-24">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Records whether the system has a discrete GPU, collected in the info
     collection GPU process, once per UMA ping. This is Windows platform only.
+
+    Warning: this histogram was expired from 2020-04-24 to 2022-04-29; data may
+    be missing.
   </summary>
 </histogram>
 
