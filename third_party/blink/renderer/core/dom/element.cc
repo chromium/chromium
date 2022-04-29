@@ -157,6 +157,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -600,18 +601,30 @@ void EnqueueAutofocus(Element& element) {
   top_document.EnqueueAutofocusCandidate(element);
 }
 
-bool MaySkipNGBlockNodeLayout(const LayoutObject& layout_object) {
-  // Return true if we are not guaranteed that the layout_object will hit the
-  // LayoutNG code path during layout, which is a problem for container queries.
-  //
+// For container query containers, we may skip the style recalc of the
+// container's descendants during regular style recalc, with the expectation
+// that we will recalc the style of those elements during `NGBlockNode::Layout`.
+// If a given LayoutObject isn't guaranteed to actually enter
+// `NGBlockNode::Layout`, then we recalc the skipped descendants during
+// layout-tree building instead.
+bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return false;
+  auto* box = DynamicTo<LayoutBox>(layout_object);
+  if (!box)
+    return false;
+  if (!NGBlockNode::CanUseNewLayout(*box))
+    return false;
   // Out-of-flow positioned replaced elements take the legacy path for layout
   // if the container for positioning is a legacy object. That is the case for
   // LayoutView, which is a legacy object but does not otherwise force
   // legacy layout objects.
-  return layout_object.ForceLegacyLayout() ||
-         (!RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
-          layout_object.IsOutOfFlowPositioned() &&
-          layout_object.IsLayoutReplaced());
+  if (!RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
+      layout_object.IsOutOfFlowPositioned() &&
+      layout_object.IsLayoutReplaced()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -3178,7 +3191,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   if (children_context.force_legacy_layout ||
       (being_rendered && !children_context.parent) ||
-      (layout_object && MaySkipNGBlockNodeLayout(*layout_object))) {
+      (layout_object &&
+       !IsGuaranteedToEnterNGBlockNodeLayout(*layout_object))) {
     // If the created LayoutObject is forced into a legacy object, or if a
     // LayoutObject was not created, even if we thought it should have been, for
     // instance because the parent LayoutObject returns false for
@@ -3417,7 +3431,7 @@ bool Element::SkipStyleRecalcForContainer(
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !layout_object->SelfNeedsLayout() ||
         !layout_object->IsEligibleForSizeContainment() ||
-        MaySkipNGBlockNodeLayout(*layout_object)) {
+        !IsGuaranteedToEnterNGBlockNodeLayout(*layout_object)) {
       return false;
     }
   }
