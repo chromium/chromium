@@ -483,16 +483,6 @@
                         "CrOSLateBootArcVmInitial30Throttle",
                         "CrOSLateBootArcVmInitial70Throttle"
                     ]
-                },
-                {
-                    "name": "throttle_to_30_percent",
-                    "enable_features": [
-                        "CrOSLateBootArcVmInitial30Throttle"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootArcVmInitial50Throttle",
-                        "CrOSLateBootArcVmInitial70Throttle"
-                    ]
                 }
             ]
         }
