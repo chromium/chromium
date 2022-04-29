@@ -552,6 +552,7 @@
       'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot',
       'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot',
       'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot',
+      'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot',
       'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot',
     },
 
@@ -1015,6 +1016,7 @@
       'gen-fuchsia-try': 'codesearch_gen_chromium_fuchsia_bot',
       'gen-lacros-try': 'codesearch_gen_chromium_lacros_bot',
       'gen-linux-try': 'codesearch_gen_chromium_bot',
+      'gen-mac-try': 'codesearch_gen_chromium_mac_bot',
       'gen-win-try': 'codesearch_gen_chromium_bot',
     },
 
@@ -2248,10 +2250,6 @@
       'codesearch',
     ],
 
-    'codesearch_gen_chromium_bot': [
-      'codesearch',
-    ],
-
     'codesearch_gen_chromium_chromiumos_bot': [
       'codesearch', 'chromeos',
     ],
@@ -2264,6 +2262,10 @@
     # simplicity, we only generate codesearch x-refs for lacros on Linux.
     'codesearch_gen_chromium_lacros_bot': [
       'codesearch', 'lacros_on_linux',
+    ],
+
+    'codesearch_gen_chromium_mac_bot': [
+      'codesearch', 'mac',
     ],
 
     'dawn_tests_asan_release_bot_dcheck_always_on_reclient': [
@@ -3979,6 +3981,10 @@
 
     'lsan': {
       'gn_args': 'is_lsan=true',
+    },
+
+    'mac': {
+      'gn_args': 'target_os="mac"',
     },
 
     'mac_strip': {

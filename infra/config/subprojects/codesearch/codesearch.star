@@ -71,6 +71,11 @@ try_.builder(
 )
 
 try_.builder(
+    name = "gen-mac-try",
+    os = os.MAC_10_15,
+)
+
+try_.builder(
     name = "gen-win-try",
     os = os.WINDOWS_10,
 )
