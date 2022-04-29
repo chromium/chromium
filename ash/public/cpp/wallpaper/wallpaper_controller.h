@@ -101,6 +101,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const GooglePhotosWallpaperParams& params,
       SetWallpaperCallback callback) = 0;
 
+  // Get the Google Photos daily refresh album id. Empty if
+  // `current_wallpaper_.type` is not `kDailyGooglePhotos`
+  virtual std::string GetGooglePhotosDailyRefreshAlbumId(
+      const AccountId& account_id) const = 0;
+
   // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
   // downloading the image if it is not on disk yet.
   // Sets wallpaper from the Chrome OS wallpaper picker. If the
@@ -279,7 +284,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Returns a struct with info about the active user's wallpaper; the location
   // is an empty string and the layout is invalid if there's no active user.
-  virtual WallpaperInfo GetActiveUserWallpaperInfo() = 0;
+  virtual WallpaperInfo GetActiveUserWallpaperInfo() const = 0;
 
   // Returns true if the wallpaper setting (used to open the wallpaper picker)
   // should be visible.

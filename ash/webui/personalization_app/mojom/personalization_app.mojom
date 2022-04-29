@@ -266,6 +266,10 @@ interface WallpaperProvider {
     // album.
     SelectGooglePhotosAlbum(string id) => (bool success);
 
+    // Gets the id of the current Google Photos album on daily refresh, or an
+    // empty string if Google Photos daily refresh is not active.
+    GetGooglePhotosDailyRefreshAlbumId() => (string album_id);
+
     // Sets the layout for current wallpaper.
     SetCurrentWallpaperLayout(WallpaperLayout layout);
 

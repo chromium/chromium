@@ -147,6 +147,9 @@ class PersonalizationAppWallpaperProviderImpl
       const std::string& id,
       SelectGooglePhotosAlbumCallback callback) override;
 
+  void GetGooglePhotosDailyRefreshAlbumId(
+      GetGooglePhotosDailyRefreshAlbumIdCallback callback) override;
+
   void SetCurrentWallpaperLayout(ash::WallpaperLayout layout) override;
 
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;

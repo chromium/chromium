@@ -21,6 +21,7 @@ namespace personalization_app {
 
 namespace {
 const char kFakeCollectionId[] = "fake_collection_id";
+const char kFakeAlbumId[] = "fake_album_id";
 }  // namespace
 
 FakePersonalizationAppWallpaperProvider::
@@ -125,6 +126,12 @@ void FakePersonalizationAppWallpaperProvider::SelectGooglePhotosAlbum(
     const std::string& id,
     SelectGooglePhotosAlbumCallback callback) {
   std::move(callback).Run(/*success=*/true);
+}
+
+void FakePersonalizationAppWallpaperProvider::
+    GetGooglePhotosDailyRefreshAlbumId(
+        GetGooglePhotosDailyRefreshAlbumIdCallback callback) {
+  std::move(callback).Run(kFakeAlbumId);
 }
 
 void FakePersonalizationAppWallpaperProvider::SelectLocalImage(

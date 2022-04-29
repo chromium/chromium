@@ -571,6 +571,14 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
           backend_weak_ptr_factory_.GetWeakPtr()));
 }
 
+void PersonalizationAppWallpaperProviderImpl::
+    GetGooglePhotosDailyRefreshAlbumId(
+        GetGooglePhotosDailyRefreshAlbumIdCallback callback) {
+  auto* controller = WallpaperController::Get();
+  std::move(callback).Run(
+      controller->GetGooglePhotosDailyRefreshAlbumId(GetAccountId(profile_)));
+}
+
 void PersonalizationAppWallpaperProviderImpl::SetCurrentWallpaperLayout(
     ash::WallpaperLayout layout) {
   WallpaperController::Get()->UpdateCurrentWallpaperLayout(

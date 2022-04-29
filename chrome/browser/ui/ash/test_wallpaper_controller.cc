@@ -27,7 +27,6 @@ void TestWallpaperController::ClearCounts() {
   set_online_wallpaper_count_ = 0;
   set_google_photos_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
-  collection_id_ = std::string();
   wallpaper_info_ = absl::nullopt;
   update_current_wallpaper_layout_count_ = 0;
   update_current_wallpaper_layout_layout_ = absl::nullopt;
@@ -82,6 +81,15 @@ void TestWallpaperController::SetGooglePhotosWallpaper(
   }
   wallpaper_info_ = ash::WallpaperInfo(params);
   std::move(callback).Run(/*success=*/true);
+}
+
+std::string TestWallpaperController::GetGooglePhotosDailyRefreshAlbumId(
+    const AccountId& account_id) const {
+  if (!wallpaper_info_.has_value() ||
+      wallpaper_info_->type != ash::WallpaperType::kDailyGooglePhotos) {
+    return std::string();
+  }
+  return wallpaper_info_->collection_id;
 }
 
 void TestWallpaperController::SetOnlineWallpaperIfExists(
@@ -230,7 +238,7 @@ bool TestWallpaperController::IsActiveUserWallpaperControlledByPolicy() {
   return false;
 }
 
-ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() {
+ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_.value_or(ash::WallpaperInfo());
 }
 
@@ -242,12 +250,19 @@ bool TestWallpaperController::ShouldShowWallpaperSetting() {
 void TestWallpaperController::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {
-  collection_id_ = collection_id;
+  if (!wallpaper_info_)
+    wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kDaily;
+  wallpaper_info_->collection_id = collection_id;
 }
 
 std::string TestWallpaperController::GetDailyRefreshCollectionId(
     const AccountId& account_id) const {
-  return collection_id_;
+  if (!wallpaper_info_.has_value() ||
+      wallpaper_info_->type != ash::WallpaperType::kDaily) {
+    return std::string();
+  }
+  return wallpaper_info_->collection_id;
 }
 
 void TestWallpaperController::UpdateDailyRefreshWallpaper(

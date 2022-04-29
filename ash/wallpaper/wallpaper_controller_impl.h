@@ -268,6 +268,8 @@ class ASH_EXPORT WallpaperControllerImpl
                                   SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
+  std::string GetGooglePhotosDailyRefreshAlbumId(
+      const AccountId& account_id) const override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -305,7 +307,7 @@ class ASH_EXPORT WallpaperControllerImpl
   const std::vector<SkColor>& GetWallpaperColors() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
-  WallpaperInfo GetActiveUserWallpaperInfo() override;
+  WallpaperInfo GetActiveUserWallpaperInfo() const override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;

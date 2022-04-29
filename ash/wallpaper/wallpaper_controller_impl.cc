@@ -1071,14 +1071,16 @@ bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info) {
   if (info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kGooglePhotos) {
+      info.type != WallpaperType::kGooglePhotos &&
+      info.type != WallpaperType::kDailyGooglePhotos) {
     update_wallpaper_timer_.Stop();
   }
 
   if (info.type == WallpaperType::kGooglePhotos)
     StartGooglePhotosStalenessTimer();
 
-  if (info.type != WallpaperType::kGooglePhotos) {
+  if (info.type != WallpaperType::kGooglePhotos &&
+      info.type != WallpaperType::kDailyGooglePhotos) {
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
   }
@@ -1354,12 +1356,34 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
 
   if (params.daily_refresh_enabled) {
-    wallpaper_controller_client_->FetchDailyGooglePhotosPhoto(
-        params.account_id, params.id, /*current_photo_id=*/absl::nullopt,
-        base::BindOnce(
-            &WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched,
-            set_wallpaper_weak_factory_.GetWeakPtr(), params.account_id,
-            params.id, std::move(callback)));
+    // If `params.id` is empty, then we are disabling Daily Refresh, so we set
+    // the currently shown wallpaper as a `WallpaperType::kGooglePhotos`
+    // Wallpaper.
+    if (params.id.empty()) {
+      WallpaperInfo info;
+      if (!GetUserWallpaperInfo(params.account_id, &info) ||
+          info.type != WallpaperType::kDailyGooglePhotos) {
+        LOG(ERROR) << "Failed to get wallpaper info when disabling google "
+                      "photos daily refresh.";
+        std::move(callback).Run(false);
+        return;
+      }
+
+      update_wallpaper_timer_.Stop();
+      std::move(callback).Run(true);
+
+      info.collection_id = std::string();
+      info.type = WallpaperType::kGooglePhotos;
+      SetUserWallpaperInfo(params.account_id, info);
+      return;
+    } else {
+      wallpaper_controller_client_->FetchDailyGooglePhotosPhoto(
+          params.account_id, params.id, /*current_photo_id=*/absl::nullopt,
+          base::BindOnce(
+              &WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched,
+              set_wallpaper_weak_factory_.GetWeakPtr(), params.account_id,
+              params.id, std::move(callback)));
+    }
   } else {
     wallpaper_controller_client_->FetchGooglePhotosPhoto(
         params.account_id, params.id,
@@ -1367,6 +1391,14 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
                        set_wallpaper_weak_factory_.GetWeakPtr(),
                        std::move(params), std::move(callback)));
   }
+}
+
+std::string WallpaperControllerImpl::GetGooglePhotosDailyRefreshAlbumId(
+    const AccountId& account_id) const {
+  WallpaperInfo info = GetActiveUserWallpaperInfo();
+  if (info.type != WallpaperType::kDailyGooglePhotos)
+    return std::string();
+  return info.collection_id;
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(
@@ -1723,7 +1755,7 @@ bool WallpaperControllerImpl::IsActiveUserWallpaperControlledByPolicy() {
   return IsPolicyControlled(active_user_session->user_info.account_id);
 }
 
-WallpaperInfo WallpaperControllerImpl::GetActiveUserWallpaperInfo() {
+WallpaperInfo WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
   WallpaperInfo info;
   const UserSession* const active_user_session = GetActiveUserSession();
   if (!active_user_session ||
