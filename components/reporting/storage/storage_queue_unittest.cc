@@ -213,6 +213,7 @@ class StorageQueueTest
       std::move(processed_cb)
           .Run(mock_upload_->UploadGap(uploader_id, sequencing_id, count));
     }
+
     void DoUploadComplete(int64_t uploader_id, Status status) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("Complete: ")
@@ -1106,8 +1107,7 @@ TEST_P(StorageQueueTest,
   storage_queue_->Flush();
 }
 
-// Test flaky: crbug.com/1312731
-TEST_P(StorageQueueTest, DISABLED_ValidateVariousRecordSizes) {
+TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
   std::vector<std::string> data;
   for (size_t i = 16; i < 16 + 16; ++i) {
     data.emplace_back(i, 'R');

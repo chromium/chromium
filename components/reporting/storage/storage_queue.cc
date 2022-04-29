@@ -224,8 +224,12 @@ Status StorageQueue::Init() {
   }
   // Delete all files except used ones.
   DeleteUnusedFiles(used_files_set);
-  // Initiate periodic uploading, if needed.
-  if (!options_.upload_period().is_zero()) {
+  // Initiate periodic uploading, if needed (IMMEDIATE, SECURITY and MANUAL
+  // priorities do not need it - they are created with 0, 0 and infinite period
+  // respectively).
+  //
+  if (!options_.upload_period().is_zero() &&
+      !options_.upload_period().is_max()) {
     upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
                         &StorageQueue::PeriodicUpload);
   }
