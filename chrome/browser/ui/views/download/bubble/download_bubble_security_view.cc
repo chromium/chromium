@@ -216,20 +216,22 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   deep_scan_button_->SetVisible(false);
   bypass_deep_scan_button_->SetVisible(false);
   DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
-  if (ui_info.has_first_button) {
-    first_button_ = GetButtonForCommand(ui_info.first_button_command);
-    first_button_->SetText(ui_info.first_button_label);
+
+  if (ui_info.subpage_buttons.size() > 0) {
+    first_button_ = GetButtonForCommand(ui_info.subpage_buttons[0].command);
+    first_button_->SetText(ui_info.subpage_buttons[0].label);
+    first_button_->SetProminent(ui_info.subpage_buttons[0].is_prominent);
     if (ui_info.has_checkbox) {
       first_button_->SetEnabled(false);
     }
     first_button_->SetVisible(true);
   }
-  if (ui_info.has_second_button) {
+  if (ui_info.subpage_buttons.size() > 1) {
     views::MdTextButton* second_button =
-        GetButtonForCommand(ui_info.second_button_command);
-    second_button->SetText(ui_info.second_button_label);
+        GetButtonForCommand(ui_info.subpage_buttons[1].command);
+    second_button->SetText(ui_info.subpage_buttons[1].label);
     second_button->SetVisible(true);
-    second_button->SetProminent(true);
+    second_button->SetProminent(ui_info.subpage_buttons[1].is_prominent);
   }
 }
 

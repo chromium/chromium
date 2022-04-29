@@ -111,6 +111,7 @@ class DownloadBubbleRowView : public HoverButton,
   // Buttons on the main page.
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   raw_ptr<views::MdTextButton> discard_button_ = nullptr;
+  raw_ptr<views::MdTextButton> keep_button_ = nullptr;
   raw_ptr<views::MdTextButton> scan_button_ = nullptr;
   raw_ptr<views::MdTextButton> open_now_button_ = nullptr;
 

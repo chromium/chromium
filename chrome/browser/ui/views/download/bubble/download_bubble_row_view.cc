@@ -194,7 +194,7 @@ views::View* DownloadBubbleRowView::TargetForRect(views::View* root,
   views::View* v = views::ViewTargeterDelegate::TargetForRect(root, rect);
   // Return the button if that is the target.
   if (v && (v == cancel_button_ || v == discard_button_ || v == scan_button_ ||
-            v == open_now_button_)) {
+            v == open_now_button_ || v == keep_button_)) {
     return v;
   }
   // All events go to this otherwise.
@@ -277,6 +277,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   discard_button_ =
       AddMainPageButton(DownloadCommands::DISCARD,
                         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE));
+  keep_button_ = AddMainPageButton(
+      DownloadCommands::KEEP, l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
   scan_button_ =
       AddMainPageButton(DownloadCommands::DEEP_SCAN,
                         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN));
@@ -328,6 +330,8 @@ void DownloadBubbleRowView::UpdateButtonsForItems() {
                              DownloadCommands::CANCEL);
   discard_button_->SetVisible(ui_info_.primary_button_command ==
                               DownloadCommands::DISCARD);
+  keep_button_->SetVisible(ui_info_.primary_button_command ==
+                           DownloadCommands::KEEP);
   scan_button_->SetVisible(ui_info_.primary_button_command ==
                            DownloadCommands::DEEP_SCAN);
   open_now_button_->SetVisible(ui_info_.primary_button_command ==
