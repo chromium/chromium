@@ -4448,6 +4448,7 @@
         "args": [
           "--git-revision=${got_revision}"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],

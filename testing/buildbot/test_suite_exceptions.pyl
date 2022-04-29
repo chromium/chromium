@@ -3188,6 +3188,13 @@
       },
     },
   },
+  'variations_smoke_tests': {
+    'modifications': {
+      'win-chrome': {
+        'experiment_percentage': 100,
+      },
+    },
+  },
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
