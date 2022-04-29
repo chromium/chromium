@@ -28,6 +28,7 @@
 #include <mach/vm_statistics.h>
 
 #include "base/no_destructor.h"
+#include "base/process/process_metrics.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -76,6 +77,25 @@ bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
   while (true) {
     address += size;
 
+    // GetBasicInfo is faster than querying the extended attributes. Query this
+    // first to filter out regions that cannot correspond to IOSurfaces.
+    vm_region_basic_info_64 basic_info;
+    base::MachVMRegionResult result =
+        base::GetBasicInfo(task, &size, &address, &basic_info);
+    if (result == base::MachVMRegionResult::Finished) {
+      break;
+    } else if (result == base::MachVMRegionResult::Error) {
+      return false;
+    }
+
+    // All IOSurfaces have rw-/rw- permissions. More distinctive characteristics
+    // require the extended info, which are more expensive to query.
+    const vm_prot_t rw = VM_PROT_READ | VM_PROT_WRITE;
+    if (basic_info.protection != rw || basic_info.max_protection != rw)
+      continue;
+
+    // Candidate, need the extended info to get the user tag, but also the page
+    // status breakdown.
     vm_region_extended_info_data_t info;
     mach_port_t object_name;
     mach_msg_type_number_t count;
