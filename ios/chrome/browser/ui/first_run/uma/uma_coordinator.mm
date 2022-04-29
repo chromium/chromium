@@ -47,7 +47,6 @@
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   navigationController.presentationController.delegate = self;
   if (@available(iOS 15, *)) {
-    // TODO(crbug.com/1290848): Needs to set the presentation for iPad.
     UISheetPresentationController* presentationController =
         navigationController.sheetPresentationController;
     presentationController.prefersEdgeAttachedInCompactHeight = YES;
