@@ -108,18 +108,6 @@ crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_Rounded
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_VP9 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_VP9_DXVA [ Skip ]
 
-# Newly flaky on Linux.
-crbug.com/1318208 [ linux ] TraceTest_Video_BackdropFilter [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_DXVA [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_VP9 [ RetryOnFailure ]
-crbug.com/1318208 [ linux ] TraceTest_Video_VP9_DXVA [ RetryOnFailure ]
-
 # Skip unaccelerated canvas test since we don't use swap chains without GPU compositing.
 crbug.com/1009860 [ win10 ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]
 
