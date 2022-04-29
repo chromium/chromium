@@ -45,8 +45,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   void SetRunningTaskId(absl::optional<TaskId> id) { running_task_id_ = id; }
 
-  void TaskScopeCompleted(ScriptState*, TaskId);
-
  private:
   struct TaskIdPair {
     TaskIdPair() = default;
@@ -61,14 +59,27 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   class TaskScopeImpl : public TaskScope {
    public:
-    TaskScopeImpl(ScriptState*, TaskAttributionTrackerImpl*, TaskId);
+    TaskScopeImpl(ScriptState*,
+                  TaskAttributionTrackerImpl*,
+                  TaskId scope_task_id,
+                  absl::optional<TaskId> previous_task_id,
+                  absl::optional<TaskId> previous_v8_task_id);
     ~TaskScopeImpl() override;
     TaskScopeImpl(const TaskScopeImpl&) = delete;
     TaskScopeImpl& operator=(const TaskScopeImpl&) = delete;
 
+    TaskId GetTaskId() const { return scope_task_id_; }
+    absl::optional<TaskId> PreviousTaskId() const { return previous_task_id_; }
+    absl::optional<TaskId> PreviousV8TaskId() const {
+      return previous_v8_task_id_;
+    }
+    ScriptState* GetScriptState() const { return script_state_; }
+
    private:
     TaskAttributionTrackerImpl* task_tracker_;
     TaskId scope_task_id_;
+    absl::optional<TaskId> previous_task_id_;
+    absl::optional<TaskId> previous_v8_task_id_;
     Persistent<ScriptState> script_state_;
   };
 
@@ -79,6 +90,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     virtual ~V8Adapter() = default;
   };
 
+  void TaskScopeCompleted(const TaskScopeImpl&);
   TaskIdPair& GetTaskIdPairFromTaskContainer(TaskId);
   void InsertTaskIdPair(TaskId task_id, absl::optional<TaskId> parent_task_id);
   void SaveTaskIdStateInV8(ScriptState*, absl::optional<TaskId>);
@@ -89,7 +101,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   TaskId next_task_id_;
   absl::optional<TaskId> running_task_id_;
-  WTF::Vector<TaskId> running_task_ids_;
 
   std::unique_ptr<V8Adapter> v8_adapter_;
 
