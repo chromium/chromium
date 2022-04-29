@@ -102,5 +102,7 @@ void SandboxedZipAnalyzer::AnalyzeFileDone(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   remote_analyzer_.reset();
-  std::move(callback_).Run(results);
+  if (callback_) {
+    std::move(callback_).Run(results);
+  }
 }
