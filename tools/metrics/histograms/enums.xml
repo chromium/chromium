@@ -51302,6 +51302,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="GIF shared"/>
 </enum>
 
+<enum name="LinkCapturingEvent">
+  <summary>Defines events in the link capturing user flow</summary>
+  <int value="0" label="Entry point shown"/>
+  <int value="1" label="App opened"/>
+  <int value="2" label="Settings changed"/>
+</enum>
+
 <enum name="LinkGenerationCopiedLinkType">
   <int value="0" label="Copied from new right-click menu generation"/>
   <int value="1" label="Copied from existing highlight right-click menu"/>

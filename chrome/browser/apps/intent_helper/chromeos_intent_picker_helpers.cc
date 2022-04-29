@@ -180,6 +180,9 @@ void OnIntentPickerClosedChromeOs(content::WebContents* web_contents,
   if (should_persist) {
     DCHECK(!launch_name.empty());
     proxy->AddPreferredApp(launch_name, url);
+    apps::IntentHandlingMetrics::RecordLinkCapturingEvent(
+        entry_type,
+        apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);
   }
 
   if (should_launch_app) {
@@ -204,6 +207,9 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
         ->NotifyFeatureEngagementEvent(kIntentChipOpensAppEvent);
     IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
   }
+
+  apps::IntentHandlingMetrics::RecordLinkCapturingEvent(
+      app_type, apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened);
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 

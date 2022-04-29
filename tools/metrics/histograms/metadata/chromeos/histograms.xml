@@ -984,6 +984,33 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Intents.LinkCapturingEvent" enum="LinkCapturingEvent"
+    expires_after="2022-12-01">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown, when a link is
+    successfully captured and results in opening an app, and when the user
+    changes their settings to automatically capture similar links in the future.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent.{AppType}App"
+    enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown for the {AppType} app
+    type, when a link is successfully captured and results in opening a/ an
+    {AppType} app, and when the user changes their settings to automatically
+    capture similar links in the future.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.IsLacrosBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: Used to identify lacros binary in metrics backend. -->
 

@@ -115,6 +115,21 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
 
 void IntentPickerTabHelper::ShowIconForApps(
     const std::vector<apps::IntentPickerAppInfo>& apps) {
+#if BUILDFLAG(IS_CHROMEOS)
+
+  // We enter this block when we have apps available and there weren't any
+  // previously.
+  if (!should_show_icon_ && !apps.empty()) {
+    // This point doesn't exactly match when the icon is shown in the UI (e.g.
+    // if the tab is not active), but recording here corresponds more closely to
+    // navigations which cause the icon to appear.
+    apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
+        apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconShown);
+
+    apps::IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(apps);
+  }
+#endif
+
   if (apps::features::AppIconInIntentChipEnabled()) {
     if (apps.size() == 1 && apps[0].launch_name != last_shown_app_id_) {
       const std::string& app_id = apps[0].launch_name;
@@ -244,16 +259,6 @@ void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
 }
 
 void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (should_show_icon && !should_show_icon_) {
-    // This point doesn't exactly match when the icon is shown in the UI (e.g.
-    // if the tab is not active), but recording here corresponds more closely to
-    // navigations which cause the icon to appear.
-    apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
-        apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconShown);
-  }
-#endif
-
   if (apps::features::LinkCapturingUiUpdateEnabled()) {
     UpdateCollapsedState(should_show_icon);
   }

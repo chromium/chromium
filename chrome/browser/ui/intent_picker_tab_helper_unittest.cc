@@ -12,6 +12,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
+
 class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -98,3 +102,107 @@ TEST_F(IntentPickerTabHelperTest, ShowIntentIcon_ResetsCollapsedState) {
                                         /*should_show_icon=*/true);
   ASSERT_FALSE(helper()->should_show_collapsed_chip());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
+  base::HistogramTester histogram_tester;
+
+  NavigateAndCommit(GURL("https://www.google.com"));
+
+  // Create empty app list which ensures the intent picker icon is hidden.
+  std::vector<apps::IntentPickerAppInfo> apps_list;
+  helper()->ShowIconForApps(apps_list);
+
+  // None of the histograms should be incremented.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 0);
+
+  // Create app list with both a web and an ARC app, and show the intent picker
+  // icon.
+  apps_list.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(),
+                         "app_id", "Test app");
+  apps_list.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
+                         "app_id", "Test app");
+  helper()->ShowIconForApps(apps_list);
+
+  // All of the histograms should be incremented.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+
+  // Hide the intent picker icon.
+  apps_list.clear();
+  helper()->ShowIconForApps(apps_list);
+
+  // Create app list with only a web app and show the intent picker icon.
+  apps_list.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(),
+                         "app_id", "Test app");
+  helper()->ShowIconForApps(apps_list);
+
+  // Only the web app and general histograms should be incremented.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+
+  // Hide the intent picker icon.
+  apps_list.clear();
+  helper()->ShowIconForApps(apps_list);
+
+  // Create app list with only an ARC app and show the intent picker icon.
+  apps_list.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
+                         "app_id", "Test app");
+  helper()->ShowIconForApps(apps_list);
+
+  // Only the ARC app and general histograms should be incremented.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 3);
+
+  // Hide the intent picker icon.
+  apps_list.clear();
+  helper()->ShowIconForApps(apps_list);
+
+  // Create app list with non-ARC and non-web types and show the intent picker
+  // icon.
+  apps_list.clear();
+  apps_list.emplace_back(apps::PickerEntryType::kMacOs, ui::ImageModel(),
+                         "app_id", "Test app");
+  helper()->ShowIconForApps(apps_list);
+
+  // Only the general histogram should be incremented.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 4);
+}
+#endif  // #if BUILDFLAG(IS_CHROMEOS)

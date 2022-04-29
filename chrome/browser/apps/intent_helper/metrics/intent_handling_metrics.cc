@@ -5,6 +5,8 @@
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
@@ -14,6 +16,13 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
+
+const char kLinkCapturingHistogram[] = "ChromeOS.Intents.LinkCapturingEvent";
+const char kLinkCapturingHistogramWeb[] =
+    "ChromeOS.Intents.LinkCapturingEvent.WebApp";
+const char kLinkCapturingHistogramArc[] =
+    "ChromeOS.Intents.LinkCapturingEvent.ArcApp";
+
 using PickerAction = apps::IntentHandlingMetrics::PickerAction;
 using IntentPickerAction = apps::IntentHandlingMetrics::IntentPickerAction;
 using Platform = apps::IntentHandlingMetrics::Platform;
@@ -172,6 +181,39 @@ void IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
 void IntentHandlingMetrics::RecordIntentPickerIconEvent(
     IntentPickerIconEvent event) {
   UMA_HISTOGRAM_ENUMERATION("ChromeOS.Intents.IntentPickerIconEvent", event);
+}
+
+void IntentHandlingMetrics::RecordLinkCapturingEvent(PickerEntryType app_type,
+                                                     LinkCapturingEvent event) {
+  switch (app_type) {
+    case PickerEntryType::kWeb:
+      base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb, event);
+      break;
+    case PickerEntryType::kArc:
+      base::UmaHistogramEnumeration(kLinkCapturingHistogramArc, event);
+      break;
+    case PickerEntryType::kUnknown:
+    case PickerEntryType::kDevice:
+    case PickerEntryType::kMacOs:
+      break;
+  }
+  base::UmaHistogramEnumeration(kLinkCapturingHistogram, event);
+}
+
+void IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(
+    const std::vector<IntentPickerAppInfo>& app_infos) {
+  if (base::Contains(app_infos, PickerEntryType::kWeb,
+                     &IntentPickerAppInfo::type)) {
+    base::UmaHistogramEnumeration(kLinkCapturingHistogramWeb,
+                                  LinkCapturingEvent::kEntryPointShown);
+  }
+  if (base::Contains(app_infos, PickerEntryType::kArc,
+                     &IntentPickerAppInfo::type)) {
+    base::UmaHistogramEnumeration(kLinkCapturingHistogramArc,
+                                  LinkCapturingEvent::kEntryPointShown);
+  }
+  base::UmaHistogramEnumeration(kLinkCapturingHistogram,
+                                LinkCapturingEvent::kEntryPointShown);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

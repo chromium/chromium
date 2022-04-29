@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -845,6 +846,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 // test launch the PWA.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        ARCAndPWACandidateLaunchPWA) {
+  base::HistogramTester histogram_tester;
+
   GURL test_url(InScopeAppUrl());
   std::string app_name_pwa = "pwa_test_name";
   auto app_id_pwa = InstallWebApp(app_name_pwa, test_url);
@@ -902,6 +905,30 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Launch the app.
   intent_picker_bubble()->AcceptDialog();
   EXPECT_TRUE(VerifyPWALaunched(app_id_pwa));
+
+  // WebApp histogram.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
+
+  // ArcApp histogram.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
+
+  // General histogram.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
 }
 
 // Test that bubble pops out when there is both PWA and ARC candidates, and
@@ -1127,6 +1154,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 // Test that remember by choice checkbox works for open PWA option.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        RememberOpenPWA) {
+  base::HistogramTester histogram_tester;
+
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = InstallWebApp(app_name, test_url);
@@ -1169,6 +1198,18 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ui_test_utils::NavigateToURL(&params_new);
 
   EXPECT_TRUE(VerifyPWALaunched(app_id));
+
+  // Check that the correct histograms are incremented for recording that
+  // settings were changed.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
 class IntentPickerBrowserTestPrerendering
