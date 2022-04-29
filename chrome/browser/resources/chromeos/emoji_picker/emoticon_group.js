@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
@@ -33,6 +35,15 @@ class EmoticonGroupComponent extends PolymerElement {
       name: emoticonName,
       category: CategoryEnum.EMOTICON
     }));
+  }
+
+  /**
+   * @param {Number} index
+   * @returns {string} unique string to distinguish different emoticons within
+   *     same group.
+   */
+  generateEmoticonId(index) {
+    return `emoticon-${index}`;
   }
 }
 

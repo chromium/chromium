@@ -46,6 +46,29 @@
     .emoticon-button:hover {
         background-color: var(--emoji-hover-background);
     }
+
+    .tooltip {
+        --paper-tooltip-background: var(--cros-tooltip-background-color);
+        --paper-tooltip-delay-in: var(--emoji-tooltip-delay-in);
+        --paper-tooltip-delay-out: var(--emoji-tooltip-delay-out);
+        --paper-tooltip-duration-in: 0;
+        --paper-tooltip-duration-out: 0;
+        --paper-tooltip-opacity: 1;
+        --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+
+        /* CSS mixin goes against style guide, but this is the only way to style
+        * the paper tooltip without changing the source code (which is in
+        * third_party)
+        */
+        --paper-tooltip: {
+            box-shadow: var(--cr-elevation-1);
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+            margin: 4px;
+            padding: 4px 8px 4px 8px;
+            white-space: nowrap;
+        };
+    }
 </style>
 
 <template is="dom-if" if="[[group]]">
@@ -57,11 +80,15 @@
 <div id="palette">
     <div id="fake-focus-target" tabindex="-1"></div>
     <template is="dom-repeat" items="[[data]]" as="emoticon">
-        <button class="emoticon-button"
+        <button class="emoticon-button" id="[[generateEmoticonId(index)]]"
             emoticon-name$="[[emoticon.base.name]]"
             on-click="onEmoticonClick"
             emoticon-string$="[[emoticon.base.string]]">
             [[emoticon.base.string]]
         </button>
+        <paper-tooltip class="tooltip" for="[[generateEmoticonId(index)]]"
+            fit-to-visible-bounds part="tooltip" offset="8">
+        [[emoticon.base.name]]
+      </paper-tooltip>
     </template>
 </div>
