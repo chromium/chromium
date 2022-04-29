@@ -5,8 +5,9 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {ISearch} from './i_search.js';
-import {ISearchHandler} from './i_search_handler.js';
+import {ISearch} from '../background/panel/i_search.js';
+import {ISearchHandler} from '../background/panel/i_search_handler.js';
+
 import {PanelInterface} from './panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
