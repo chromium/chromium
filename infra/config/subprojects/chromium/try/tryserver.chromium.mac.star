@@ -248,6 +248,9 @@ ios_builder(
 ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/ios-simulator",
+    ],
     check_for_flakiness = True,
     main_list_view = "try",
     use_clang_coverage = True,
@@ -290,6 +293,7 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-inverse-fieldtrials-fyi",
+    mirrors = builder_config.copy_from("try/ios-simulator"),
 )
 
 ios_builder(
@@ -363,6 +367,12 @@ try_.gpu.optional_tests_builder(
 
 ios_builder(
     name = "ios-simulator-rts",
+    mirrors = builder_config.copy_from("try/ios-simulator"),
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.ALWAYS,
+        ),
+    ),
     builderless = False,
     check_for_flakiness = True,
     use_clang_coverage = True,
