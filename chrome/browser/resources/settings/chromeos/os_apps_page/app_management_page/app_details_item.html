@@ -26,12 +26,17 @@
   </localized-link>
   </div>
 </div>
-<div class="indented-permission-block" id="type-and-source">
+<div class="indented-app-details" id="type-and-source">
   <localized-link
     id="type-and-source-text"
     on-link-clicked="onStoreLinkClicked_"
     localized-string="[[getTypeAndSourceString_(app)]]">
     [[getTypeAndSourceString_(app)]]
+    <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]" restamp>
+      <iron-icon id="launch-icon" icon="app-management:launch"
+        onclick="onStoreLinkCLicked">
+      </iron-icon>
+    </template>
   </localized-link>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
     <div id="browser-link-info">
@@ -49,22 +54,22 @@
   </template>
 </div>
 <template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
-  <div class="indented-permission-block" id="storage-title">
+  <div class="indented-app-details" id="storage-title">
     $i18n{appManagementAppDetailsStorageTitle}
+    <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
+      <div class="indented-app-details" id="app-size">
+        [[getAppSizeString_(app)]]
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
+      <div class="indented-app-details" id="data-size">
+        [[getDataSizeString_(app)]]
+      </div>
+    </template>
   </div>
-  <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
-    <div class="indented-storage-block" id="app-size">
-      [[getAppSizeString_(app)]]
-    </div>
-  </template>
-  <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
-    <div class="indented-storage-block" id="data-size">
-      [[getDataSizeString_(app)]]
-    </div>
-  </template>
 </template>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
-  <div class="indented-permission-block" id="version">
+  <div class="indented-app-details" id="version">
     [[getVersionString_(app)]]
   </div>
 </template>

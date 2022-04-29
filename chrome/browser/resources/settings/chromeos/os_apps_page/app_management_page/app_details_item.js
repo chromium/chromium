@@ -128,6 +128,18 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
   }
 
   /**
+   * The launch icon is show for apps installed from the CHrome WEb
+   * Store and Google Play Store.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowLaunchIcon_(app) {
+    return app.dataSize !== null && app.dataSize !== '';
+  }
+
+  /**
    * Returns the string for the app type.
    *
    * @param {!App} app
