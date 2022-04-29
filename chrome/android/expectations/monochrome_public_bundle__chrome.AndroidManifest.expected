@@ -921,6 +921,10 @@
         <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
       </intent-filter>  # DIFF-ANCHOR: 99686c45
     </service>  # DIFF-ANCHOR: c34d99ad
+    <service  # DIFF-ANCHOR: b56e4a55
+        android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: b56e4a55
     <service  # DIFF-ANCHOR: ac44dbad
         android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetService"
         android:exported="false"

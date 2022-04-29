@@ -3,6 +3,7 @@ include_rules = [
 
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/banners/android/java",
+  "+chrome/browser/bluetooth/android",
   "+chrome/browser/device",
   "+chrome/browser/privacy",
   "+chrome/browser/privacy_sandbox",

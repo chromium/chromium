@@ -17,6 +17,8 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
+import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
@@ -181,6 +183,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), mTab.getWebContents(),
                     mTab.getUrl());
+            BluetoothNotificationManager.updateBluetoothNotificationForTab(
+                    ContextUtils.getApplicationContext(), BluetoothNotificationService.class,
+                    mTab.getId(), mTab.getWebContents(), mTab.getUrl(), mTab.isIncognito());
         }
         if ((flags & InvalidateTypes.TITLE) != 0) {
             // Update cached title then notify observers.

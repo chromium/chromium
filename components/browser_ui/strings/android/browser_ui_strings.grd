@@ -666,6 +666,20 @@
         Sharing your screen
       </message>
 
+      <!-- Bluetooth -->
+      <message name="IDS_CONNECTED_TO_BLUETOOTH_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a Bluetooth device.">
+        Connected to a Bluetooth device
+      </message>
+      <message name="IDS_SCANNING_FOR_BLUETOOTH_DEVICES_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is scanning for nearby Bluetooth devices.">
+        Scanning for Bluetooth devices
+      </message>
+      <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
+        Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://googlechrome.github.io/samples/web-bluetooth/device-info.html</ex></ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
+        Tap to return to the site
+      </message>
+
       <message name="IDS_SHARE_LINK_CHOOSER_TITLE" desc="title for the share dialog when sharing the current address [CHAR_LIMIT=27]">
         Share via
       </message>

@@ -20,6 +20,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
+import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
+import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
@@ -328,6 +330,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         public void destroy() {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
+            BluetoothNotificationManager.updateBluetoothNotificationForTab(
+                    ContextUtils.getApplicationContext(), BluetoothNotificationService.class,
+                    mTab.getId(), null, mLastUrl, mTab.isIncognito());
             super.destroy();
         }
     }

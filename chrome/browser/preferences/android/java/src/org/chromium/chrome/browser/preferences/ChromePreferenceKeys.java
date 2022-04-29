@@ -1000,6 +1000,8 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX =
             new KeyPrefix("zero_suggest_header_group_collapsed_by_default*");
 
+    public static final String BLUETOOTH_NOTIFICATION_IDS = "Chrome.Bluetooth.NotificationIds";
+
     /**
      * These values are currently used as SharedPreferences keys, along with the keys in
      * {@link LegacyChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys
@@ -1018,6 +1020,7 @@ public final class ChromePreferenceKeys {
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
+                BLUETOOTH_NOTIFICATION_IDS,
                 CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,

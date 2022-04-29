@@ -380,6 +380,24 @@ public class ChannelsInitializerTest {
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Feature({"Browser", "Notifications"})
+    public void testEnsureInitialized_bluetoothChannel() {
+        mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.BLUETOOTH);
+
+        assertThat(getChannelsIgnoringDefault(), hasSize(1));
+        NotificationChannel channel = getChannelsIgnoringDefault().get(0);
+        assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.BLUETOOTH));
+        assertThat(channel.getName().toString(),
+                is(mContext.getString(
+                        org.chromium.chrome.R.string.notification_category_bluetooth)));
+        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
+        assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+    }
+
     /**
      * Gets the current notification channels from the notification manager, except for any with
      * the default ID, which will be removed from the list before returning.
