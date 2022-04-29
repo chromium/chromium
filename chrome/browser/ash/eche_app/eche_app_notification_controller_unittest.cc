@@ -162,11 +162,37 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 }
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
-  absl::optional<std::u16string> title = u"title";
+  std::u16string title = u"title";
   notification_controller_->ShowScreenLockNotification(title);
   absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification.has_value());
+  ASSERT_TRUE(notification->title().size() > 0);
+  ASSERT_TRUE(notification->message().size() > 0);
+  ASSERT_EQ(2u, notification->buttons().size());
+  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
+
+  // Clicking the first notification button should launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchSettings());
+  notification->delegate()->Click(0, absl::nullopt);
+
+  // Clicking the second notification button should launch learn more.
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  notification->delegate()->Click(1, absl::nullopt);
+}
+
+TEST_F(EcheAppNotificationControllerTest,
+       ShowScreenLockNotificationWithNullValue) {
+  // Null value for title should still show a degraded message.
+  std::u16string title;
+  notification_controller_->ShowScreenLockNotification(title);
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kEcheAppScreenLockNotifierId);
+  ASSERT_TRUE(notification.has_value());
+  ASSERT_TRUE(notification->title().size() > 0);
+  ASSERT_TRUE(notification->message().size() > 0);
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
@@ -182,7 +208,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
 }
 
 TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
-  absl::optional<std::u16string> title = u"title";
+  std::u16string title = u"title";
   notification_controller_->ShowScreenLockNotification(title);
   notification_controller_->CloseNotification(kEcheAppScreenLockNotifierId);
   absl::optional<message_center::Notification> notification =
@@ -216,7 +242,7 @@ TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
 
 TEST_F(EcheAppNotificationControllerTest,
        CloseConnectionOrLaunchErrorNotifications) {
-  absl::optional<std::u16string> title = u"title";
+  std::u16string title = u"title";
   absl::optional<std::u16string> message = u"message";
   notification_controller_->ShowScreenLockNotification(title);
   notification_controller_->ShowNotificationFromWebUI(

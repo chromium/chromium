@@ -5084,10 +5084,10 @@
     Help
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
-    Couldn’t open <ph name="APP_NAME">$1<ex>the app</ex></ph>
+    Can't open app
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
-    Set a pin or password on this Chromebook to protect access to your phone’s apps.
+    To open <ph name="APP_NAME">$1<ex>the app</ex></ph>, enable "Show lock screen when waking from sleep"
   </message>
   <message name="IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON" desc="Label for the inactivity notification button of EcheApp to open open.">
     Open again

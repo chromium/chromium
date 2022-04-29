@@ -180,7 +180,9 @@ void EcheAppManagerFactory::ShowNotification(
     if (absl::get<LaunchAppHelper::NotificationInfo::NotificationType>(
             info->type()) ==
         LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
-      weak_ptr->notification_controller_->ShowScreenLockNotification(title);
+      weak_ptr->notification_controller_->ShowScreenLockNotification(
+          title ? title.value()
+                : u"");  // If null, show a default value to be safe.
     }
   } else if (info->category() ==
              LaunchAppHelper::NotificationInfo::Category::kWebUI) {

@@ -137,18 +137,17 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
 }
 
 void EcheAppNotificationController::ShowScreenLockNotification(
-    const absl::optional<std::u16string>& title) {
+    const std::u16string& title) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON)));
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE)));
-
   ShowNotification(CreateNotification(
       kEcheAppScreenLockNotifierId,
-      l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE,
-                                 title.value()),
-      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE),
+      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE),
+      l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE,
+                                 title),
       ui::ImageModel(), rich_notification_data,
       new NotificationDelegate(kEcheAppScreenLockNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
