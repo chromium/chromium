@@ -75,14 +75,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                                   webapps::WebappInstallSource install_source,
                                   WebAppManifestCheckCallback callback);
 
-  // Checks a WebApp installability (service worker check optional), retrieves
-  // manifest and icons and then performs the actual installation.
-  void InstallWebAppFromManifest(content::WebContents* contents,
-                                 bool bypass_service_worker_check,
-                                 webapps::WebappInstallSource install_source,
-                                 WebAppInstallDialogCallback dialog_callback,
-                                 OnceInstallCallback callback);
-
   // Infers WebApp info from the blink renderer process and then retrieves a
   // manifest in a way similar to |InstallWebAppFromManifest|. If the manifest
   // is incomplete or missing, the inferred info is used.

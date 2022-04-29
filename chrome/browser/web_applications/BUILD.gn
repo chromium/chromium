@@ -636,6 +636,7 @@ source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
+    "commands/fetch_manifest_and_install_command_browsertest.cc",
     "externally_managed_app_manager_impl_browsertest.cc",
     "isolated_app_browsertest.cc",
     "manifest_update_manager_browsertest.cc",

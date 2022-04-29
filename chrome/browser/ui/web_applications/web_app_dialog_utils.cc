@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -141,12 +143,15 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   if (!provider)
     return false;
 
-  provider->install_manager().InstallWebAppFromManifest(
-      web_contents, bypass_service_worker_check, install_source,
-      base::BindOnce(OnWebAppInstallShowInstallDialog,
-                     WebAppInstallManager::WebAppInstallFlow::kInstallSite,
-                     install_source, iph_state),
-      base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
+  provider->command_manager().EnqueueCommand(
+      std::make_unique<FetchManifestAndInstallCommand>(
+          &provider->install_finalizer(), &provider->registrar(),
+          install_source, web_contents->GetWeakPtr(),
+          bypass_service_worker_check,
+          base::BindOnce(OnWebAppInstallShowInstallDialog,
+                         WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+                         install_source, iph_state),
+          base::BindOnce(OnWebAppInstalled, std::move(installed_callback))));
   return true;
 }
 
