@@ -138,6 +138,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_ZOOM, ui::EF_NONE, TOGGLE_FULLSCREEN},
     {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN, TOGGLE_FULLSCREEN},
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, UNPIN},
+    {true, ui::VKEY_S, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
+     FOCUS_CAMERA_PREVIEW},
     {true, ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_SHELF},
     {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, FOCUS_PIP},
     {true, ui::VKEY_HELP, ui::EF_NONE, SHOW_SHORTCUT_VIEWER},

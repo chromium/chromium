@@ -104,9 +104,9 @@ class ASH_EXPORT OverviewHighlightController {
   // The current view that is being tab dragged, if any.
   OverviewHighlightableView* tab_dragged_view_ = nullptr;
 
-  // Accessibility features will focus on whatever window is returned by
-  // `GetA11yOverrideWindow()`. Once `this` goes out of scope, the a11y override
-  // window is set to null.
+  // Helps to update the current a11y override window. And accessibility
+  // features will focus on the window that is being set. Once `this` goes out
+  // of scope, the a11y override window is set to nullptr.
   std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 

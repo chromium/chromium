@@ -226,6 +226,12 @@ class ASH_EXPORT CaptureModeCameraController
   // operations that interacts with the video capture service.
   void OnShuttingDown();
 
+  // As `camera_preview_view_` is a
+  // CaptureModeSessionFocusCycler::HighlightableView. This will show the focus
+  // ring and trigger setting a11y focus on the camera preview. Note, this is
+  // only for focusing the preview while recording is in progress.
+  void PseudoFocusCameraPreview();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 

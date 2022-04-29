@@ -1998,6 +1998,172 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 }
 
+TEST_F(CaptureModeCameraTest,
+       FocusableCameraPreviewInVideoRecordingWithFullscreenCapture) {
+  UpdateDisplay("800x700");
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* event_generator = GetEventGenerator();
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
+  StartVideoRecordingImmediately();
+
+  EXPECT_TRUE(camera_preview_view->is_collapsible());
+  EXPECT_FALSE(camera_controller->is_camera_preview_collapsed());
+
+  // Press shortcut "Search+Alt+S" should focus the camera preview.
+  SendKey(ui::VKEY_S, event_generator, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Press tab should fade in the resize button and advance the focus on it.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Shift tab should advance the focus back to the camera preview view. But the
+  // resize button will be kept as visible as it will be fade out in a few
+  // seconds.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Press tab again to focus on the resize button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Press space key when the resize button is focused should be able to expand
+  // or collapse the camera preview.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(camera_controller->is_camera_preview_collapsed());
+  EXPECT_TRUE(resize_button->has_focus());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(camera_controller->is_camera_preview_collapsed());
+  EXPECT_TRUE(resize_button->has_focus());
+
+  // Press escape key should remove the focus from the camera preview, either
+  // the camera preview view or the resize button.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+
+  // Press shortcut "Search+Alt+S" should not focus the camera preview when
+  // capture session is active even though video recording is in progress.
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  SendKey(ui::VKEY_S, event_generator, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+
+  // Press tab should still able to focus the camera preview view and the resize
+  // button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/5);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_TRUE(resize_button->has_focus());
+  // Continue tab should be able to advance the focus on the settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(CaptureModeSessionTestApi(controller->capture_mode_session())
+                  .GetCaptureModeBarView()
+                  ->settings_button()
+                  ->has_focus());
+}
+
+TEST_F(CaptureModeCameraTest,
+       FocusableCameraPreviewInVideoRecordingWithRegionCapture) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetUserCaptureRegion(gfx::Rect(10, 10, 400, 550),
+                                   /*by_user=*/true);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* event_generator = GetEventGenerator();
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
+  StartVideoRecordingImmediately();
+
+  EXPECT_FALSE(camera_controller->is_camera_preview_collapsed());
+  EXPECT_FALSE(camera_preview_view->is_collapsible());
+
+  // Press shortcut "Search+Alt+S" should focus the camera preview.
+  SendKey(ui::VKEY_S, event_generator, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Press tab nothing will happen. As the camera preview is not collapsible,
+  // which means the camera preview is the only focusable item. Focus will not
+  // be moved to the resize button and it will continue to be hidden.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Mouse pressing outside of the camera preview should remove the focus from
+  // the camera preview.
+  const gfx::Point origin = camera_preview_view->GetBoundsInScreen().origin();
+  const gfx::Vector2d delta(-50, -50);
+  event_generator->MoveMouseTo(origin + delta);
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+}
+
+TEST_F(CaptureModeCameraTest,
+       FocusableCameraPreviewInVideoRecordingWithWindowCapture) {
+  UpdateDisplay("1366x768");
+  window()->SetBounds(gfx::Rect(30, 40, 800, 700));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* event_generator = GetEventGenerator();
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  auto* resize_button = GetPreviewResizeButton();
+
+  event_generator->MoveMouseTo(window()->GetBoundsInScreen().origin());
+  EXPECT_EQ(controller->capture_mode_session()->GetSelectedWindow(), window());
+  StartVideoRecordingImmediately();
+
+  EXPECT_FALSE(camera_controller->is_camera_preview_collapsed());
+  EXPECT_TRUE(camera_preview_view->is_collapsible());
+
+  // Press shortcut "Search+Alt+S" should focus the camera preview.
+  SendKey(ui::VKEY_S, event_generator, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+
+  // Press tab should fade in the resize button and advance the focus on it.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(camera_preview_view->has_focus());
+  EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Shift tab should advance the focus back to the camera preview view. But the
+  // resize button will be kept as visible as it will be fade out in a few
+  // seconds.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  EXPECT_FALSE(resize_button->has_focus());
+}
+
 TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
 

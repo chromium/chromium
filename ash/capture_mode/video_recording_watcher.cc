@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -116,6 +117,11 @@ gfx::RectF GetCursorOverlayBounds(
   cursor_relative_bounds.Scale(1.f / window_size.width(),
                                1.f / window_size.height());
   return cursor_relative_bounds;
+}
+
+CameraPreviewView* GetCameraPreviewView() {
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  return camera_controller ? camera_controller->camera_preview_view() : nullptr;
 }
 
 }  // namespace
@@ -494,13 +500,30 @@ void VideoRecordingWatcher::OnDimmedWindowParentChanged(
   }
 }
 
+void VideoRecordingWatcher::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() != ui::ET_KEY_PRESSED)
+    return;
+
+  auto* camera_preview_view = GetCameraPreviewView();
+  if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
+    event->StopPropagation();
+    event->SetHandled();
+    return;
+  }
+}
+
 void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSEWHEEL:
     case ui::ET_MOUSE_CAPTURE_CHANGED:
       return;
 
-    case ui::ET_MOUSE_PRESSED:
+    case ui::ET_MOUSE_PRESSED: {
+      auto* camera_preview_view = GetCameraPreviewView();
+      if (camera_preview_view)
+        camera_preview_view->MaybeBlurFocus(*event);
+    }
+      [[fallthrough]];
     case ui::ET_MOUSE_RELEASED:
       // Pressed/released events are important, so we handle them immediately.
       UpdateCursorOverlayNow(

@@ -4,7 +4,9 @@
 
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 
+#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -102,7 +104,9 @@ CameraPreviewView::CameraPreviewView(
           base::BindRepeating(&CameraPreviewView::OnResizeButtonPressed,
                               base::Unretained(this)),
           GetIconOfResizeButton(
-              camera_controller_->is_camera_preview_collapsed())))) {
+              camera_controller_->is_camera_preview_collapsed())))),
+      scoped_a11y_overrider_(
+          std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
   resize_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -125,30 +129,69 @@ void CameraPreviewView::SetIsCollapsible(bool value) {
 }
 
 bool CameraPreviewView::MaybeHandleKeyEvent(const ui::KeyEvent* event) {
-  if (!has_focus())
-    return false;
+  // Handle control+arrow keys to snap the camera preview to different corners
+  // when it has focus.
+  if (has_focus() && event->IsControlDown() && IsArrowKeyEvent(event)) {
+    const CameraPreviewSnapPosition current_snap_position =
+        camera_controller_->camera_preview_snap_position();
+    CameraPreviewSnapPosition new_snap_position = current_snap_position;
+    const ui::KeyboardCode key_code = event->key_code();
+    if (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
+      new_snap_position =
+          capture_mode_util::GetCameraNextHorizontalSnapPosition(
+              current_snap_position, /*going_left=*/key_code == ui::VKEY_LEFT);
+    } else {
+      DCHECK(key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN);
+      new_snap_position = capture_mode_util::GetCameraNextVerticalSnapPosition(
+          current_snap_position, /*going_up=*/key_code == ui::VKEY_UP);
+    }
 
-  if (!event->IsControlDown() || !IsArrowKeyEvent(event))
-    return false;
-
-  const CameraPreviewSnapPosition current_snap_position =
-      camera_controller_->camera_preview_snap_position();
-  CameraPreviewSnapPosition new_snap_position = current_snap_position;
-  const ui::KeyboardCode key_code = event->key_code();
-  if (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
-    new_snap_position = capture_mode_util::GetCameraNextHorizontalSnapPosition(
-        current_snap_position, /*going_left=*/key_code == ui::VKEY_LEFT);
-  } else {
-    DCHECK(key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN);
-    new_snap_position = capture_mode_util::GetCameraNextVerticalSnapPosition(
-        current_snap_position, /*going_up=*/key_code == ui::VKEY_UP);
+    // Still call `SetCameraPreviewSnapPosition` even if the snap position does
+    // not change. As we still want to trigger a11y alert in this case.
+    camera_controller_->SetCameraPreviewSnapPosition(new_snap_position,
+                                                     /*animate=*/true);
+    return new_snap_position != current_snap_position;
   }
 
-  // Still call `SetCameraPreviewSnapPosition` even if the snap position does
-  // not change. As we still want to trigger a11y alert in this case.
-  camera_controller_->SetCameraPreviewSnapPosition(new_snap_position,
-                                                   /*animate=*/true);
-  return new_snap_position == current_snap_position;
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive() || !controller->is_recording_in_progress())
+    return false;
+
+  // Handle the key events on camera preview when it has focus (either the
+  // preview view or the resize button) in video recording.
+  const bool camera_preview_has_focus =
+      has_focus() || resize_button_->has_focus();
+  bool should_handle_event = false;
+  switch (event->key_code()) {
+    case ui::VKEY_TAB:
+      if (camera_preview_has_focus) {
+        if (resize_button_->has_focus()) {
+          DCHECK(is_collapsible_);
+          resize_button_->PseudoBlur();
+          PseudoFocus();
+        } else if (is_collapsible_) {
+          PseudoBlur();
+          resize_button_->PseudoFocus();
+        }
+        should_handle_event = true;
+      }
+      break;
+    case ui::VKEY_SPACE:
+      if (resize_button_->has_focus()) {
+        resize_button_->ClickView();
+        should_handle_event = true;
+      }
+      break;
+    case ui::VKEY_ESCAPE:
+      if (camera_preview_has_focus) {
+        BlurA11yFocus();
+        should_handle_event = true;
+      }
+      break;
+    default:
+      break;
+  }
+  return should_handle_event;
 }
 
 void CameraPreviewView::RefreshResizeButtonVisibility() {
@@ -163,6 +206,21 @@ void CameraPreviewView::RefreshResizeButtonVisibility() {
   } else {
     FadeOutResizeButton();
   }
+}
+
+void CameraPreviewView::UpdateA11yOverrideWindow() {
+  if (has_focus() || resize_button_->has_focus()) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        GetWidget()->GetNativeWindow());
+  } else {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(nullptr);
+  }
+}
+
+void CameraPreviewView::MaybeBlurFocus(const ui::MouseEvent& event) {
+  auto* target = static_cast<aura::Window*>(event.target());
+  if (!GetWidget()->GetNativeWindow()->Contains(target))
+    BlurA11yFocus();
 }
 
 void CameraPreviewView::AddedToWidget() {
@@ -372,6 +430,12 @@ float CameraPreviewView::CalculateResizeButtonTargetOpacity() {
   }
 
   return 0.f;
+}
+
+void CameraPreviewView::BlurA11yFocus() {
+  PseudoBlur();
+  resize_button_->PseudoBlur();
+  UpdateA11yOverrideWindow();
 }
 
 BEGIN_METADATA(CameraPreviewView, views::View)

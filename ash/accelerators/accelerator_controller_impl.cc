@@ -20,6 +20,8 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -460,6 +462,26 @@ views::Widget* FindPipWidget() {
       base::BindRepeating([](views::Widget* widget) {
         return WindowState::Get(widget->GetNativeWindow())->IsPip();
       }));
+}
+
+bool CanHandleFocusCameraPreview() {
+  auto* controller = CaptureModeController::Get();
+  // Only use the shortcut to focus the camera preview while video recording is
+  // in progress. As focus traversal of the camera preview in the capture
+  // session will be handled by CaptureModeSessionFocusCycler instead.
+  if (controller->IsActive() || !controller->is_recording_in_progress())
+    return false;
+
+  auto* camera_controller = controller->camera_controller();
+  auto* preview_widget =
+      camera_controller ? camera_controller->camera_preview_widget() : nullptr;
+  return preview_widget && preview_widget->IsVisible();
+}
+
+void HandleFocusCameraPreview() {
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  DCHECK(camera_controller);
+  camera_controller->PseudoFocusCameraPreview();
 }
 
 void HandleToggleMirrorMode() {
@@ -1963,6 +1985,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleWindowSnap();
     case FOCUS_PIP:
       return !!FindPipWidget();
+    case FOCUS_CAMERA_PREVIEW:
+      return CanHandleFocusCameraPreview();
     case MINIMIZE_TOP_WINDOW_ON_BACK:
       return window_util::ShouldMinimizeTopWindowOnBack();
     case TAKE_PARTIAL_SCREENSHOT:
@@ -2158,6 +2182,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case FOCUS_SHELF:
       HandleFocusShelf();
+      break;
+    case FOCUS_CAMERA_PREVIEW:
+      HandleFocusCameraPreview();
       break;
     case FOCUS_PIP:
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));

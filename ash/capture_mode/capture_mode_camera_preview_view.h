@@ -33,6 +33,7 @@ class NativeViewHost;
 namespace ash {
 
 class CaptureModeCameraController;
+class ScopedA11yOverrideWindowSetter;
 
 // Resize button inside the camera preview view.
 class CameraPreviewResizeButton : public CaptureModeButton {
@@ -93,6 +94,17 @@ class CameraPreviewView
   // Called to update visibility of the `resize_button_` when necessary.
   void RefreshResizeButtonVisibility();
 
+  // Updates the a11y override window when focus state changes on the camera
+  // preview. The a11y override window will be set to nullptr if neither the
+  // camera preview nor the resize button has focus. This is done to make sure
+  // a11y focus can be moved to others appropriately.
+  void UpdateA11yOverrideWindow();
+
+  // Removes the focus from camera preview when necessary. Happens if mouse
+  // pressing outside of the camera preview when it has focus. A11y override
+  // window will be updated as well.
+  void MaybeBlurFocus(const ui::MouseEvent& event);
+
   // views::View:
   void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -151,6 +163,10 @@ class CameraPreviewView
   // Returns the target opacity for resize button.
   float CalculateResizeButtonTargetOpacity();
 
+  // Removes the focus from the camera preview and updates the a11y override
+  // window.
+  void BlurA11yFocus();
+
   CaptureModeCameraController* const camera_controller_;
 
   // The ID of the camera for which this preview was created.
@@ -179,6 +195,13 @@ class CameraPreviewView
 
   base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
       accessibility_observation_{this};
+
+  // Helps to update the current a11y override window. It will be the native
+  // window of the camera preview or nullptr, depends on whether the camera
+  // preview has focus or not. Accessibility features will focus on the window
+  // after it is set. Once `this` goes out of scope, the a11y override window is
+  // set to nullptr.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 
   base::WeakPtrFactory<CameraPreviewView> weak_ptr_factory_{this};
 };

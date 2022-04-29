@@ -122,6 +122,7 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnDimmedWindowParentChanged(aura::Window* dimmed_window) override;
 
   // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // TabletModeObserver:

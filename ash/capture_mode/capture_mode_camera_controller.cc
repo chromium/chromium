@@ -668,6 +668,18 @@ void CaptureModeCameraController::OnShuttingDown() {
   is_shutting_down_ = true;
 }
 
+void CaptureModeCameraController::PseudoFocusCameraPreview() {
+  DCHECK(camera_preview_view_);
+  DCHECK(camera_preview_view_->GetVisible());
+
+  auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->IsActive());
+  DCHECK(controller->is_recording_in_progress());
+
+  camera_preview_view_->PseudoFocus();
+  camera_preview_view_->UpdateA11yOverrideWindow();
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
