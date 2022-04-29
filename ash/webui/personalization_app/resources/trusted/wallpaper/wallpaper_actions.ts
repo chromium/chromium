@@ -27,9 +27,12 @@ export enum WallpaperActionName {
   BEGIN_LOAD_SELECTED_IMAGE = 'begin_load_selected_image',
   BEGIN_SELECT_IMAGE = 'begin_select_image',
   BEGIN_UPDATE_DAILY_REFRESH_IMAGE = 'begin_update_daily_refresh_image',
+  CLEAR_DAILY_REFRESH_ACTION = 'clear_daily_refresh_action',
   END_SELECT_IMAGE = 'end_select_image',
   SET_COLLECTIONS = 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID = 'set_daily_refresh_collection_id',
+  SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID =
+      'set_google_photos_daily_refresh_album_id',
   SET_GOOGLE_PHOTOS_ENABLED = 'set_google_photos_enabled',
   SET_IMAGES_FOR_COLLECTION = 'set_images_for_collection',
   SET_LOCAL_IMAGES = 'set_local_images',
@@ -39,15 +42,15 @@ export enum WallpaperActionName {
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
 }
 
-export type WallpaperActions =
-    AppendGooglePhotosAlbumAction|AppendGooglePhotosAlbumsAction|
-    AppendGooglePhotosPhotosAction|BeginLoadGooglePhotosAlbumAction|
-    BeginLoadGooglePhotosAlbumsAction|BeginLoadGooglePhotosEnabledAction|
-    BeginLoadGooglePhotosPhotosAction|BeginLoadImagesForCollectionsAction|
-    BeginLoadLocalImagesAction|BeginLoadLocalImageDataAction|
-    BeginUpdateDailyRefreshImageAction|BeginLoadSelectedImageAction|
-    BeginSelectImageAction|EndSelectImageAction|SetCollectionsAction|
-    SetDailyRefreshCollectionIdAction|SetGooglePhotosEnabledAction|
+export type WallpaperActions = AppendGooglePhotosAlbumAction|
+    AppendGooglePhotosAlbumsAction|AppendGooglePhotosPhotosAction|
+    BeginLoadGooglePhotosAlbumAction|BeginLoadGooglePhotosAlbumsAction|
+    BeginLoadGooglePhotosEnabledAction|BeginLoadGooglePhotosPhotosAction|
+    BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
+    BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
+    BeginLoadSelectedImageAction|BeginSelectImageAction|ClearDailyRefreshAction|
+    EndSelectImageAction|SetCollectionsAction|SetDailyRefreshCollectionIdAction|
+    SetGooglePhotosDailyRefreshAlbumIdAction|SetGooglePhotosEnabledAction|
     SetImagesForCollectionAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction;
@@ -278,17 +281,47 @@ export function setCollectionsAction(collections: WallpaperCollection[]|
 
 export type SetDailyRefreshCollectionIdAction = Action&{
   name: WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID,
-  collectionId: string | null,
+  collectionId: string,
 };
 
 /**
  * Set and enable daily refresh for given collectionId.
  */
-export function setDailyRefreshCollectionIdAction(collectionId: string|null):
+export function setDailyRefreshCollectionIdAction(collectionId: string):
     SetDailyRefreshCollectionIdAction {
   return {
     collectionId,
     name: WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID,
+  };
+}
+
+export type SetGooglePhotosDailyRefreshAlbumIdAction = Action&{
+  name: WallpaperActionName.SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID,
+  albumId: string,
+};
+
+/**
+ * Set and enable daily refresh for given Google Photos albumId.
+ */
+export function setGooglePhotosDailyRefreshAlbumIdAction(albumId: string):
+    SetGooglePhotosDailyRefreshAlbumIdAction {
+  return {
+    albumId,
+    name: WallpaperActionName.SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID,
+  };
+}
+
+export type ClearDailyRefreshAction = Action&{
+  name: WallpaperActionName.CLEAR_DAILY_REFRESH_ACTION,
+};
+
+/**
+ * Clear the data related to daily refresh, indicating daily refresh is not
+ * active.
+ */
+export function clearDailyRefreshAction(): ClearDailyRefreshAction {
+  return {
+    name: WallpaperActionName.CLEAR_DAILY_REFRESH_ACTION,
   };
 }
 

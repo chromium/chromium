@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CurrentWallpaper, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {CurrentWallpaper, DailyRefreshType, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -246,7 +246,8 @@ suite('WallpaperSelectedTest', function() {
         personalizationStore.data.wallpaper.loading.selected = false;
         const collection_id = wallpaperProvider.collections![0]!.id;
         personalizationStore.data.wallpaper.dailyRefresh = {
-          collectionId: collection_id,
+          id: collection_id,
+          type: DailyRefreshType.BACKDROP,
         };
 
         wallpaperSelectedElement = initElement(

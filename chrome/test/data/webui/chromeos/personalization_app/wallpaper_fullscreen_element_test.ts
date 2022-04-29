@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CurrentWallpaper, DisplayableImage, WallpaperFullscreen, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {CurrentWallpaper, DailyRefreshType, DisplayableImage, WallpaperFullscreen, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -316,8 +316,10 @@ suite('WallpaperFullscreenTest', function() {
       ...personalizationStore.data.wallpaper.currentSelected,
       type: WallpaperType.kDaily,
     };
-    personalizationStore.data.wallpaper.dailyRefresh.collectionId =
-        wallpaperProvider.collections![0]!.id;
+    personalizationStore.data.wallpaper.dailyRefresh = {
+      id: wallpaperProvider.collections![0]!.id,
+      type: DailyRefreshType.BACKDROP,
+    };
     personalizationStore.data.wallpaper.pendingSelected =
         wallpaperProvider.images![1];
     personalizationStore.notifyObservers();

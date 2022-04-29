@@ -11,7 +11,7 @@ import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
 
 import {WallpaperActionName} from './wallpaper_actions.js';
-import {WallpaperState} from './wallpaper_state.js';
+import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 
 function backdropReducer(
     state: WallpaperState['backdrop'], action: Actions,
@@ -300,9 +300,16 @@ function dailyRefreshReducer(
   switch (action.name) {
     case WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID:
       return {
-        ...state,
-        collectionId: action.collectionId,
+        id: action.collectionId,
+        type: DailyRefreshType.BACKDROP,
       };
+    case WallpaperActionName.SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID:
+      return {
+        id: action.albumId,
+        type: DailyRefreshType.GOOGLE_PHOTOS,
+      };
+    case WallpaperActionName.CLEAR_DAILY_REFRESH_ACTION:
+      return null;
     default:
       return state;
   }

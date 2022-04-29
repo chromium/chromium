@@ -80,8 +80,18 @@ export interface LocalState {
   data: Record<FilePath['path'], string>;
 }
 
+export enum DailyRefreshType {
+  GOOGLE_PHOTOS = 'daily_refresh_google_photos',
+  BACKDROP = 'daily_refresh_backdrop',
+}
+
+/**
+ * |id| stores either a Backdrop collection id or a Google Photos album id.
+ * |type| stores which type of daily refresh and type of id this is.
+ */
 export interface DailyRefreshState {
-  collectionId: string|null;
+  id: string;
+  type: DailyRefreshType;
 }
 
 export interface WallpaperState {
@@ -90,7 +100,7 @@ export interface WallpaperState {
   local: LocalState;
   currentSelected: CurrentWallpaper|null;
   pendingSelected: WallpaperImage|FilePath|GooglePhotosPhoto|null;
-  dailyRefresh: DailyRefreshState;
+  dailyRefresh: DailyRefreshState|null;
   fullscreen: boolean;
   googlePhotos: GooglePhotosState;
 }
@@ -115,7 +125,7 @@ export function emptyState(): WallpaperState {
     local: {images: null, data: {}},
     currentSelected: null,
     pendingSelected: null,
-    dailyRefresh: {collectionId: null},
+    dailyRefresh: null,
     fullscreen: false,
     googlePhotos: {
       enabled: undefined,

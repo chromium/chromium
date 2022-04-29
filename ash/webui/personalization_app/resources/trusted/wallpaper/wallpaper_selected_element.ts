@@ -163,7 +163,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
             state.wallpaper.loading.refreshWallpaper);
     this.watch(
         'dailyRefreshCollectionId_',
-        state => state.wallpaper.dailyRefresh.collectionId);
+        state => state.wallpaper.dailyRefresh ?
+            state.wallpaper.dailyRefresh.id :
+            null);
     this.updateFromStore();
     getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
   }
