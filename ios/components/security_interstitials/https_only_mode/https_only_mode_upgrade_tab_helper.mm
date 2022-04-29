@@ -277,14 +277,19 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
+  // If already HTTPS (real or faux), simply allow the response.
+  if (url.SchemeIs(url::kHttpsScheme) || IsFakeHTTPSForTesting(url)) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
 
-  // Upgrade to HTTPS.
-  if (url.SchemeIs(url::kHttpScheme) && !IsFakeHTTPSForTesting(url) &&
-      !is_http_fallback_navigation_) {
-    web::NavigationItem* item_pending =
-        web_state()->GetNavigationManager()->GetPendingItem();
+  web::NavigationItem* item_pending =
+      web_state()->GetNavigationManager()->GetPendingItem();
+  DCHECK(item_pending);
+  // Upgrade to HTTPS if the navigation wasn't upgraded before.
+  if (!item_pending->IsUpgradedToHttps()) {
     DCHECK(!stopped_loading_to_upgrade_);
-    DCHECK(!item_pending->IsUpgradedToHttps());
     // Copy navigation parameters, then cancel the current navigation.
     http_url_ = url;
     referrer_ = item_pending->GetReferrer();
@@ -296,7 +301,24 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Cancel());
     return;
   }
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+
+  // The navigation was already upgraded but landed on an HTTP URL, possibly
+  // through redirects (e.g. upgraded HTTPS -> HTTP). In this case, show the
+  // interstitial.
+  // Note that this doesn't handle HTTP URLs in the middle of redirects such as
+  // HTTPS -> HTTP -> HTTPS. The alternative is to do this check in
+  // ShouldAllowRequest(), but we don't have enough information there to ensure
+  // whether the HTTP URL is part of the redirect chain or a completely new
+  // navigation.
+  // This is divergence from the desktop implementation of this feature which
+  // relies on a redirect loop triggering a net error.
+  RecordUMA(Event::kUpgradeFailed);
+  DCHECK(was_upgraded_);
+  was_upgraded_ = false;
+  HttpsOnlyModeContainer* container =
+      HttpsOnlyModeContainer::FromWebState(web_state());
+  container->SetHttpUrl(url);
+  std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(HttpsOnlyModeUpgradeTabHelper)

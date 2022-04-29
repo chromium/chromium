@@ -6,6 +6,8 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -52,6 +54,24 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHTTPSResponse(
     const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response(
       new net::test_server::BasicHttpResponse);
+
+  const GURL request_url = request.GetURL();
+  const std::string destValue =
+      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  // If the URL is in the form http://example.com/?redirect=url,
+  // redirect the response to `url`.
+  if (base::StartsWith(destValue, "redirect=")) {
+    const std::string dest = destValue.substr(strlen("redirect="));
+    response->set_code(net::HttpStatusCode::HTTP_MOVED_PERMANENTLY);
+    response->AddCustomHeader("Location", dest);
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->set_content_type("text/html");
+    response->set_content(base::StringPrintf(
+        "<html><head></head><body>Redirecting to %s</body></html>",
+        dest.c_str()));
+    return response;
+  }
+
   response->set_content_type("text/html");
   response->set_content("HTTPS_RESPONSE");
   return std::move(response);
@@ -226,7 +246,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                     expectTotalCount:(repeatCount * 2)
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
-                @"Failed to record event histogram");
+                @"Incorrect numbber of records in event histogram");
 
   GREYAssertNil([MetricsAppInterface
                      expectCount:repeatCount
@@ -282,6 +302,41 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertSuccessfulUpgrade];
+}
+
+// Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL
+// which redirects to the original HTTP URL. This should show the interstitial.
+- (void)testUpgrade_HTTPSRedirectsToHTTP {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+
+  GURL targetURL = self.testServer->GetURL("/");
+  GURL upgradedURL =
+      self.goodHTTPSServer->GetURL("/?redirect=" + targetURL.spec());
+  const std::string port_str = base::NumberToString(self.testServer->port());
+  GURL::Replacements replacements;
+  replacements.SetPortStr(port_str);
+  GURL testURL = upgradedURL.ReplaceComponents(replacements);
+
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"You are seeing this warning because this "
+                                    "site does not support HTTPS"];
+  [self assertFailedUpgrade:1];
+
+  // Click through the interstitial. This should load the HTTP page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+
+  // Going back should go to chrome://version.
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
+  [self assertFailedUpgrade:1];
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
