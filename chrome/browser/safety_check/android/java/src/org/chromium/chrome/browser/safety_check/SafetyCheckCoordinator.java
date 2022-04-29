@@ -47,7 +47,9 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
         new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
                 signinLauncher, passwordCheckupHelper, modalDialogManagerSupplier);
         if (passwordCheckupHelper == null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PASSWORD_DOMAIN_CAPABILITIES_FETCHING))) {
             // Triggers pre-fetching the list of password change scripts.
             PasswordCheckFactory.getOrCreate(settingsLauncher).fetchScripts();
         }
