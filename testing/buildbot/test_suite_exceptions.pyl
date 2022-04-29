@@ -3081,8 +3081,12 @@
   },
   'test_buildbucket_api_gpu_use_cases': {
     'remove_from': [
-      # crbug.com/1080749
-      'Optional Linux Release (NVIDIA)',
+      'Optional Linux Release (NVIDIA)',  # crbug.com/1080749
+    ],
+  },
+  'test_buildbucket_api_gpu_use_cases GTX 1660': {
+    'remove_from': [
+      'linux_optional_gpu_tests_rel',  # crbug.com/1080749
     ],
   },
   'trace_test': {

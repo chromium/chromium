@@ -80,6 +80,18 @@
       ],
     },
   },
+  'LINUX_INTEL_HD_630_STABLE': {
+    'identifier': 'HD 630',
+    'mixins': [
+      'linux_intel_hd_630_stable',
+    ],
+  },
+  'LINUX_NVIDIA_GTX_1660_STABLE': {
+    'identifier': 'GTX 1660',
+    'mixins': [
+      'linux_nvidia_gtx_1660_stable',
+    ],
+  },
   'SIM_IPAD_AIR_2_14_4': {
     'args': [
       '--platform',

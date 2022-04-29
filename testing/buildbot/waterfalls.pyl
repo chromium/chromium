@@ -6877,6 +6877,15 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'linux_optional_gpu_tests_rel': {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'test_suites': {
+          'gtest_tests': 'linux_optional_gpu_tests_rel_gtests',
+          'isolated_scripts': 'linux_optional_gpu_tests_rel_isolated_scripts',
+          'gpu_telemetry_tests': 'linux_optional_gpu_tests_rel_gpu_telemetry_tests',
+        },
+      },
     },
   },
   {

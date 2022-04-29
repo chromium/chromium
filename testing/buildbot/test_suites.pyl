@@ -7582,5 +7582,55 @@
         ]
       },
     },
+
+    'linux_optional_gpu_tests_rel_gpu_telemetry_tests': {
+      'gpu_common_and_optional_telemetry_tests': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_mediapipe_passthrough_telemetry_tests': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webcodecs_telemetry_test': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+    },
+
+    'linux_optional_gpu_tests_rel_gtests': {
+      'gpu_gles2_conform_gtests': {
+        'variants': [
+          'LINUX_INTEL_HD_630_STABLE',
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+    },
+
+    'linux_optional_gpu_tests_rel_isolated_scripts': {
+      'test_buildbucket_api_gpu_use_cases': {
+        'variants': [
+          'LINUX_NVIDIA_GTX_1660_STABLE',
+        ],
+      },
+    },
   }
 }
