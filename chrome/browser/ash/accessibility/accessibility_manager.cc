@@ -228,13 +228,6 @@ class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
 
   ~AccessibilityPanelWidgetObserver() override { CHECK(!IsInObserverList()); }
 
-  void OnWidgetClosing(views::Widget* widget) override {
-    CHECK_EQ(widget_, widget);
-    widget->RemoveObserver(this);
-    std::move(on_destroying_).Run();
-    // |this| should be deleted.
-  }
-
   void OnWidgetDestroying(views::Widget* widget) override {
     CHECK_EQ(widget_, widget);
     widget->RemoveObserver(this);
