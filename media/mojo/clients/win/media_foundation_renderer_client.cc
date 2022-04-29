@@ -552,7 +552,34 @@ void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
 void MediaFoundationRendererClient::OnOverlayStateChanged(
     const gpu::Mailbox& mailbox,
     bool promoted) {
-  NOTIMPLEMENTED() << "Use signal to change modes appropriately";
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  MEDIA_LOG(INFO, media_log_) << "Overlay State promoted = " << promoted
+                              << ", starting frame server mode = "
+                              << media_engine_in_frame_server_mode_;
+  renderer_extension_->SetRenderingMode(
+      promoted ? media::RenderingMode::DirectComposition
+               : media::RenderingMode::FrameServer);
+
+  if (promoted && media_engine_in_frame_server_mode_) {
+    // Switch to DComp
+    media_engine_in_frame_server_mode_ = false;
+    if (is_playing_) {
+      sink_->Stop();
+    }
+    // If we don't have a DComp Visual then create one, otherwise paint
+    // DComp frame again
+    if (!dcomp_video_frame_) {
+      InitializeDCOMPRenderingIfNeeded();
+    } else {
+      sink_->PaintSingleFrame(dcomp_video_frame_, true);
+    }
+  } else if (!promoted && !media_engine_in_frame_server_mode_) {
+    // Switch to Frame Server if not already there
+    media_engine_in_frame_server_mode_ = true;
+    if (is_playing_) {
+      sink_->Start(this);
+    }
+  }
 }
 
 void MediaFoundationRendererClient::ObserveMailboxForOverlayState(

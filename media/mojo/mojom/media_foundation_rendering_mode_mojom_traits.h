@@ -16,10 +16,10 @@ struct mojo::EnumTraits<media::mojom::RenderingMode, media::RenderingMode> {
     switch (data) {
       case media::mojom::RenderingMode::DirectComposition:
         *output = media::RenderingMode::DirectComposition;
-        break;
+        return true;
       case media::mojom::RenderingMode::FrameServer:
         *output = media::RenderingMode::FrameServer;
-        break;
+        return true;
     }
     NOTREACHED();
     return false;
@@ -29,10 +29,8 @@ struct mojo::EnumTraits<media::mojom::RenderingMode, media::RenderingMode> {
     switch (data) {
       case media::RenderingMode::DirectComposition:
         return media::mojom::RenderingMode::DirectComposition;
-        break;
       case media::RenderingMode::FrameServer:
         return media::mojom::RenderingMode::FrameServer;
-        break;
     }
     NOTREACHED();
     return media::mojom::RenderingMode::DirectComposition;
