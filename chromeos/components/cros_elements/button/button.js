@@ -1,77 +1,59 @@
+import { __decorate } from "chrome://resources/mwc/tslib/tslib.es6.js";
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import { Button as MwcButton } from '@material/mwc-button';
-import { css, customElement, property, query, CSSResult, CSSResultArray } from 'lit-element';
-
-function linearGradientOf(color : CSSResult) : CSSResult {
-  return css`linear-gradient(${color}, ${color})`;
+import { Button as MwcButton } from 'chrome://resources/mwc/@material/mwc-button/mwc-button.js';
+import { css, customElement, property, query } from 'chrome://resources/mwc/lit-element/lit-element.js';
+function linearGradientOf(color) {
+    return css `linear-gradient(${color}, ${color})`;
 }
-
 /**
  * A Google Material Design button, with modifications to match the Chrome OS
  * specs.
  */
-@customElement('cros-button')
-export class CrosButton extends MwcButton {
-  constructor() {
-    super();
-    this.setAttribute('dir', document.dir);
-    // Default to a secondary button.
-    this.outlined = true;
-    // Disable hover styling.
-    this.rippleHandlers.startHover = () => {};
-    this.rippleHandlers.endHover = () => {};
-    // Disable Focus styling.
-    this.rippleHandlers.startFocus = () => {};
-    this.rippleHandlers.endFocus = () => {};
-  }
-
-  @property({type: Boolean, reflect: true, attribute: true})
-  primary: boolean = false;
-
-  @property({type: Boolean, reflect: true, attribute: true})
-  text: boolean = false;
-
-  @property({type: Boolean, reflect: true, attribute: true})
-  pill: boolean = false;
-
-  @property({type: Boolean, reflect: true, attribute: 'hide-label'})
-  hideLabel: boolean = false;
-
-  @property({type: String, reflect: true, attribute: 'aria-expanded'})
-  ariaExpanded?: string;
-
-  @query('button') htmlButton?: HTMLButtonElement;
-
-  updateAriaLabels() {
-    if (this.ariaExpanded !== undefined) {
-      this.htmlButton!.setAttribute('aria-expanded', this.ariaExpanded);
-      this.htmlButton!.setAttribute('aria-haspopup', 'true');
-    } else {
-      this.htmlButton!.removeAttribute('aria-expanded');
-      this.htmlButton!.removeAttribute('aria-popup');
+let CrosButton = class CrosButton extends MwcButton {
+    constructor() {
+        super();
+        this.primary = false;
+        this.text = false;
+        this.pill = false;
+        this.hideLabel = false;
+        this.setAttribute('dir', document.dir);
+        // Default to a secondary button.
+        this.outlined = true;
+        // Disable hover styling.
+        this.rippleHandlers.startHover = () => { };
+        this.rippleHandlers.endHover = () => { };
+        // Disable Focus styling.
+        this.rippleHandlers.startFocus = () => { };
+        this.rippleHandlers.endFocus = () => { };
     }
-  }
-
-  firstUpdated() {
-    // Add in initial aria labels.
-    this.updateAriaLabels();
-  }
-
-  updated() {
-    // Enforce that both primary and text styles can not be applied at the same
-    // time.
-    if (this.primary && this.text) {
-      throw new Error("Primary/secondary/text modes are mutually exclusive");
+    updateAriaLabels() {
+        if (this.ariaExpanded !== undefined) {
+            this.htmlButton.setAttribute('aria-expanded', this.ariaExpanded);
+            this.htmlButton.setAttribute('aria-haspopup', 'true');
+        }
+        else {
+            this.htmlButton.removeAttribute('aria-expanded');
+            this.htmlButton.removeAttribute('aria-popup');
+        }
     }
-    this.unelevated = this.primary;
-    this.outlined = !this.primary && !this.text;
-    this.updateAriaLabels();
-  }
-
-  static getStyles(): CSSResultArray {
-    const crosStyles = css`
+    firstUpdated() {
+        // Add in initial aria labels.
+        this.updateAriaLabels();
+    }
+    updated() {
+        // Enforce that both primary and text styles can not be applied at the same
+        // time.
+        if (this.primary && this.text) {
+            throw new Error("Primary/secondary/text modes are mutually exclusive");
+        }
+        this.unelevated = this.primary;
+        this.outlined = !this.primary && !this.text;
+        this.updateAriaLabels();
+    }
+    static getStyles() {
+        const crosStyles = css `
       :host {
         /* Public API */
         --border-end-radius: 4px;
@@ -172,7 +154,7 @@ export class CrosButton extends MwcButton {
          * Apply hover colors with background-image / linear-gradient to
          * blend with background colour at runtime and avoid pre-blending.
          */
-        background-image: ${linearGradientOf(css`var(--hover-color)`)};
+        background-image: ${linearGradientOf(css `var(--hover-color)`)};
       }
 
       /* TODO(calamity): Specs say this should be a 2px border 2px away from the button. */
@@ -188,13 +170,29 @@ export class CrosButton extends MwcButton {
         box-shadow: none;
       }
     `;
-    return [MwcButton.styles, crosStyles];
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'cros-button': CrosButton;
-  }
-}
-
+        return [MwcButton.styles, crosStyles];
+    }
+};
+__decorate([
+    property({ type: Boolean, reflect: true, attribute: true })
+], CrosButton.prototype, "primary", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true, attribute: true })
+], CrosButton.prototype, "text", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true, attribute: true })
+], CrosButton.prototype, "pill", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true, attribute: 'hide-label' })
+], CrosButton.prototype, "hideLabel", void 0);
+__decorate([
+    property({ type: String, reflect: true, attribute: 'aria-expanded' })
+], CrosButton.prototype, "ariaExpanded", void 0);
+__decorate([
+    query('button')
+], CrosButton.prototype, "htmlButton", void 0);
+CrosButton = __decorate([
+    customElement('cros-button')
+], CrosButton);
+export { CrosButton };
+//# sourceMappingURL=button.js.map
