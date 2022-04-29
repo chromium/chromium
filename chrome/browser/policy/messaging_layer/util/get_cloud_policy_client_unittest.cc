@@ -14,7 +14,6 @@
 #include <cstddef>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
