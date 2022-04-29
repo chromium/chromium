@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -233,7 +234,9 @@ void DeskMiniView::OpenContextMenu() {
   // TODO(crbug.com/1308780): Source will need to be different when opening with
   // long press and possibly keyboard.
   context_menu_->ShowContextMenuForView(
-      this, desk_preview_->GetBoundsInScreen().bottom_left(),
+      this,
+      base::i18n::IsRTL() ? desk_preview_->GetBoundsInScreen().bottom_right()
+                          : desk_preview_->GetBoundsInScreen().bottom_left(),
       ui::MENU_SOURCE_MOUSE);
 }
 
