@@ -292,8 +292,9 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   bool SetCursorPosition(int context_id, int candidate_id, std::string* error);
 
   // Update the state of the menu items.
-  bool UpdateMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
-                       std::string* error);
+  virtual bool UpdateMenuItems(
+      const std::vector<InputMethodManager::MenuItem>& items,
+      std::string* error);
 
   // Hides the input view window (from API call).
   void HideInputView();

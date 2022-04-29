@@ -178,6 +178,8 @@ class NativeInputMethodEngine
     void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
     void ReportKoreanAction(ime::mojom::KoreanAction action) override;
     void ReportKoreanSettings(ime::mojom::KoreanSettingsPtr settings) override;
+    void UpdateQuickSettings(
+        ime::mojom::InputMethodQuickSettingsPtr quick_settings) override;
 
     // Called when suggestions are collected from the system via
     // suggestions_collector_.
@@ -268,6 +270,9 @@ class NativeInputMethodEngine
   explicit NativeInputMethodEngine(bool use_ime_service);
 
   ImeObserver* GetNativeObserver() const;
+
+  bool UpdateMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
+                       std::string* error) override;
 
   void OnInputMethodOptionsChanged() override;
 

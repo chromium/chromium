@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module ash.ime.mojom;
 
@@ -237,7 +237,7 @@ enum KoreanAction {
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 13
+// Next ordinal: 14
 interface InputMethodHost {
   // ========================================================
   // The following methods operate on the focused text field.
@@ -329,6 +329,9 @@ interface InputMethodHost {
   // prediction context.
   RequestSuggestions@7(SuggestionsRequest request)
     => (SuggestionsResponse response);
+
+  // Asks the system to update the quick settings menu.
+  [MinVersion=7] UpdateQuickSettings@13(InputMethodQuickSettings settings);
 
   // ============================================================
   // The following methods are for metrics and not require focus.

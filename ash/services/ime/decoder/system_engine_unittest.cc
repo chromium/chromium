@@ -58,6 +58,10 @@ struct MockInputMethod : public mojom::InputMethod {
               OnCandidateSelected,
               (uint32_t selected_candidate_index),
               (override));
+  MOCK_METHOD(void,
+              OnQuickSettingsUpdated,
+              (mojom::InputMethodQuickSettingsPtr quick_settings),
+              (override));
 };
 
 class TestDecoderState {
@@ -154,6 +158,10 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
   MOCK_METHOD(void,
               ReportKoreanSettings,
               (mojom::KoreanSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
+              UpdateQuickSettings,
+              (mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
 };
 

@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module ash.ime.mojom;
 
@@ -389,12 +389,58 @@ struct ZhuyinSettings {
   [MinVersion=7] uint32 page_size@2;
 };
 
+// Next ordinal: 2
+// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// all deployed versions before new ordinals can be introduced, and [Extensible]
+// requires specifying a [Default] field.
+// TODO(b/217279530): Consider removing this or unifying it with
+// InputMethodSettings.
+[Stable]
+union InputMethodQuickSettings {
+  ChineseQuickSettings chinese_settings@0;
+  JapaneseQuickSettings japanese_settings@1;
+};
+
+[Stable, Extensible]
+enum ChineseLanguageMode {
+  // In Chinese mode, the IME outputs Chinese characters.
+  [Default] kChinese = 0,
+  // In raw mode, the IME will only output latin-script characters.
+  kRaw = 1
+};
+
+// All Chinese IMEs have the same set of quick settings.
+// Next ordinal: 3
+[Stable]
+struct ChineseQuickSettings {
+  ChineseLanguageMode mode@0;
+  bool full_width_characters@1;
+  bool full_width_punctuation@2;
+};
+
+// Next ordinal: 6
+[Stable, Extensible]
+enum JapaneseInputMode {
+  [Default] kHiragana = 0,
+  kKatakana = 1,
+  kWideLatin = 2,
+  kHalfWidthKatakana = 3,
+  kLatin = 4,
+  kDirectInput = 5,
+};
+
+// Next ordinal: 1
+[Stable]
+struct JapaneseQuickSettings {
+  JapaneseInputMode mode@0;
+};
+
 // An input method that is provided natively by the IME Service.
 // The browser process uses this interface to communicate with IMEs hosted in
 // a Chrome utility process, and this interface uses the InputMethodHost
 // interface to communicate back to the browser process.
 //
-// Next ordinal: 7
+// Next ordinal: 8
 [Stable, RenamedFrom="chromeos.ime.mojom.InputMethod"]
 interface InputMethod {
   // DEPRECATED: Called when there's a new focused input field.
@@ -432,4 +478,7 @@ interface InputMethod {
   // the user. This is usually from the user clicking the candidate.
   // |selected_candidate_index| is the index of the selected candidate.
   [MinVersion=3] OnCandidateSelected@5(uint32 selected_candidate_index);
+
+  // Informs the IME that the user has changed the input method quick settings.
+  [MinVersion=11] OnQuickSettingsUpdated@7(InputMethodQuickSettings settings);
 };

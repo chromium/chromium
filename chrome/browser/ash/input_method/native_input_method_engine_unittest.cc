@@ -106,6 +106,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
               (uint32_t selected_candidate_index),
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
+  MOCK_METHOD(void,
+              OnQuickSettingsUpdated,
+              (ime::mojom::InputMethodQuickSettingsPtr quick_settings),
+              (override));
 
   mojo::AssociatedRemote<ime::mojom::InputMethodHost> host;
 

@@ -160,6 +160,12 @@ void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
   NOTREACHED();
 }
 
+void RuleBasedEngine::OnQuickSettingsUpdated(
+    mojom::InputMethodQuickSettingsPtr quick_settings) {
+  // Rule-based engines don't use quick settings.
+  NOTREACHED();
+}
+
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
     mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,

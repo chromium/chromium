@@ -636,6 +636,33 @@
       <message name="IDS_CHROMEOS_IME_INFOLIST_WINDOW_TITLE" desc="The title of the infolist window where the meanings and the usages of words are displayed.">
         Information
       </message>
+      <message name="IDS_CHROMEOS_IME_CHINESE_QUICK_SETTINGS_CHINESE" desc="It is the description of whether the current input method is Chinese.">
+        Input language is Chinese
+      </message>
+      <message name="IDS_CHROMEOS_IME_CHINESE_QUICK_SETTINGS_FULL_WIDTH_CHARACTER" desc="It is the description of whether the current character width is Full.">
+        Character width is Full
+      </message>
+      <message name="IDS_CHROMEOS_IME_CHINESE_QUICK_SETTINGS_FULL_WIDTH_PUNCTUATION" desc="It is the description of whether the current punctuation width is Full.">
+        Punctuation width is Full
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_HIRAGANA" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. &quot;Hiragana&quot; is a form of Japanese syllabic writing: https://en.wikipedia.org/wiki/Hiragana In Japanese, this string should be &quot;ひらがな&quot;. After a user clicks this item, typing anything with the Japanese input method will output text written in Hiragana by default. The other items in the menu are &quot;Katakana&quot;, &quot;Wide Latin&quot;, &quot;Half width katakana&quot;, &quot;Latin&quot;, and &quot;Direct input&quot; Character limit is 50.">
+        Hiragana
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_KATAKANA" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. &quot;Katakana&quot; is a form of Japanese syllabic writing: https://en.wikipedia.org/wiki/Katakana In Japanese, this string should be &quot;全角カタカナ&quot;. After a user clicks this item, typing anything with the Japanese input method will output text written in Katakana by default. The other items in the menu are &quot;Hiragana&quot;, &quot;Wide Latin&quot;, &quot;Half width katakana&quot;, &quot;Latin&quot;, and &quot;Direct input&quot;. Character limit is 50.">
+        Katakana
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_WIDE_LATIN" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. &quot;Latin&quot; refers to the Latin script, not the Latin language, so a better synonym would be &quot;alphanumeric&quot; or &quot;alphabet&quot;. &quot;Wide&quot; refers to the character width of the output, as a synonym of fullwidth, in contrast with halfwidth: https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms In Japanese, this string should be &quot;全角英数&quot;. After a user clicks this item, typing anything with the Japanese input method will output text written in the fullwidth Latin script. The other items in the menu are &quot;Hiragana&quot;, &quot;Katakana&quot;, &quot;Half width katakana&quot;, &quot;Latin&quot;, and &quot;Direct input&quot;. Character limit is 50.">
+        Wide Latin
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_HALF_WIDTH_KATAKANA" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. &quot;Katakana&quot; is a form of Japanese syllabic writing: https://en.wikipedia.org/wiki/Katakana &quot;Half width&quot; refers to the character width of the output, in contrast with fullwidth: https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms In Japanese, this string should be &quot;半角カタカナ&quot;. After a user clicks this item, typing anything with the Japanese input method will output text written in halfwidth Katakana. The other items in the menu are &quot;Hiragana&quot;, &quot;Katakana&quot;, &quot;Wide Latin&quot;, &quot;Latin&quot;, and &quot;Direct input&quot;. Character limit is 50.">
+        Half width katakana
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_LATIN" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. &quot;Latin&quot; refers to the Latin script, not the Latin language, so a better synonym would be &quot;alphanumeric&quot; or &quot;alphabet&quot;. In Japanese, this string should be &quot;半角英数&quot;. After a user clicks this item, typing anything with the Japanese input method will output text written in latin script. The other items in the menu are &quot;Hiragana&quot;, &quot;Katakana&quot;, &quot;Wide Latin&quot;, &quot;Half width katakana&quot;, and &quot;Direct input&quot;. Character limit is 50.">
+        Latin
+      </message>
+      <message name="IDS_CHROMEOS_IME_JAPANESE_QUICK_SETTINGS_DIRECT_INPUT" desc="This is the name of an item within a drop-down in the input method quick settings menu in ChromeOS. The quick settings menu opens when the user clicks on an icon in the shelf. If the user's current input method is Japanese, then this string is one of the items shown in a drop-down inside the menu. In Japanese, this string should be &quot;直接入力&quot;. After a user clicks this item, typing anything with the Japanese input method will output verbatim what was typed, character for character, based on the current layout. The other items in the menu are &quot;Hiragana&quot;, &quot;Katakana&quot;, &quot;Wide Latin&quot;, &quot;Half width katakana&quot;, and &quot;Latin&quot;. Character limit is 50.">
+        Direct input
+      </message>
       <message name="IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_SIMPLIFIED" desc="Medium length name for the input method for simplified Chinese which is shown following the text: Your input method has changed to...">
         Simplified Chinese
       </message>

@@ -27,8 +27,10 @@
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/ash/input_method/get_browser_url.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
+#include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
+#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -713,8 +715,11 @@ void NativeInputMethodEngine::ImeObserver::ActivateTextClient(
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
-  // Always hide the candidates window when switching input methods.
+  // Always hide the candidates window and clear the quick settings menu when
+  // switching input methods.
   UpdateCandidatesWindow(nullptr);
+  ui::ime::InputMethodMenuManager::GetInstance()
+      ->SetCurrentInputMethodMenuItemList({});
 
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
@@ -1037,7 +1042,19 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
 void NativeInputMethodEngine::ImeObserver::OnMenuItemActivated(
     const std::string& component_id,
     const std::string& menu_id) {
-  ime_base_observer_->OnMenuItemActivated(component_id, menu_id);
+  if (ShouldRouteToNativeMojoEngine(component_id)) {
+    if (input_method_.is_bound()) {
+      mojom::InputMethodQuickSettingsPtr settings = GetQuickSettingsAfterToggle(
+          ui::ime::InputMethodMenuManager::GetInstance()
+              ->GetCurrentInputMethodMenuItemList(),
+          menu_id);
+      // Notify the IME of the change and then update the menu.
+      input_method_->OnQuickSettingsUpdated(settings.Clone());
+      UpdateQuickSettings(std::move(settings));
+    }
+  } else {
+    ime_base_observer_->OnMenuItemActivated(component_id, menu_id);
+  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnScreenProjectionChanged(
@@ -1247,6 +1264,13 @@ void NativeInputMethodEngine::ImeObserver::ReportKoreanSettings(
                             settings->layout);
 }
 
+void NativeInputMethodEngine::ImeObserver::UpdateQuickSettings(
+    mojom::InputMethodQuickSettingsPtr quick_settings) {
+  ui::ime::InputMethodMenuManager::GetInstance()
+      ->SetCurrentInputMethodMenuItemList(
+          CreateMenuItemsFromQuickSettings(*quick_settings));
+}
+
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   if (remote_manager_.is_bound())
     remote_manager_.FlushForTesting();  // IN-TEST
@@ -1291,6 +1315,22 @@ void NativeInputMethodEngine::ImeObserver::
 
   input_method_->OnSurroundingTextChanged(
       std::move(utf8_text), surrounding_text.offset_pos, std::move(selection));
+}
+
+bool NativeInputMethodEngine::UpdateMenuItems(
+    const std::vector<InputMethodManager::MenuItem>& items,
+    std::string* error) {
+  // Ignore calls to UpdateMenuItems when the native Mojo engine is active.
+  // The menu items are stored in a singleton that is shared between the native
+  // Mojo engine and the extension. This method is called when the extension
+  // wants to update the menu items.
+  // Ignore this if the native Mojo engine is active to prevent the extension
+  // from overriding the menu items set by the native Mojo engine.
+  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+    return true;
+  }
+
+  return InputMethodEngine::UpdateMenuItems(items, error);
 }
 
 void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
