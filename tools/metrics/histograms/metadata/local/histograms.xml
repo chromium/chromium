@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2022-05-01">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-05-01">
   <owner>mek@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
