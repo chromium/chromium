@@ -93,7 +93,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void OnGetAllEntries(const base::GUID& item_to_focus,
                        aura::Window* const root_window,
                        desks_storage::DeskModel::GetAllEntriesStatus status,
-                       const std::vector<DeskTemplate*>& entries);
+                       const std::vector<const DeskTemplate*>& entries);
 
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted template.

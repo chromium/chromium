@@ -160,12 +160,12 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
   return desk_template;
 }
 
-std::vector<ash::DeskTemplate*> GetDeskTemplates() {
+std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
   base::RunLoop run_loop;
-  std::vector<ash::DeskTemplate*> templates;
+  std::vector<const ash::DeskTemplate*> templates;
 
   DesksTemplatesClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
-      [&](const std::vector<ash::DeskTemplate*>& desk_templates,
+      [&](const std::vector<const ash::DeskTemplate*>& desk_templates,
           std::string error_string) {
         templates = desk_templates;
         run_loop.Quit();
@@ -179,7 +179,7 @@ std::vector<ash::DeskTemplate*> GetDeskTemplates() {
 // false if not.
 bool ContainUuidInTemplates(
     const std::string& uuid,
-    const std::vector<ash::DeskTemplate*>& desk_templates) {
+    const std::vector<const ash::DeskTemplate*>& desk_templates) {
   base::GUID guid = base::GUID::ParseCaseInsensitive(uuid);
   DCHECK(guid.is_valid());
 
@@ -292,13 +292,13 @@ void ClickFirstTemplateItem() {
   ash::WaitForDesksTemplatesUI();
 }
 
-const std::vector<ash::DeskTemplate*> GetAllEntries() {
-  std::vector<ash::DeskTemplate*> templates;
+const std::vector<const ash::DeskTemplate*> GetAllEntries() {
+  std::vector<const ash::DeskTemplate*> templates;
   base::RunLoop loop;
   DesksTemplatesClient::Get()->GetDeskModel()->GetAllEntries(
       base::BindLambdaForTesting(
           [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-              const std::vector<ash::DeskTemplate*>& entries) {
+              const std::vector<const ash::DeskTemplate*>& entries) {
             DCHECK_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk,
                       status);
             templates = entries;
@@ -1161,10 +1161,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  ash::DeskTemplate* desk_template = templates.front();
+  const ash::DeskTemplate* desk_template = templates.front();
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
@@ -1317,10 +1317,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressAndReleaseKey(ui::VKEY_RETURN);
 
-  std::vector<ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  ash::DeskTemplate* desk_template = templates.front();
+  const ash::DeskTemplate* desk_template = templates.front();
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
@@ -1576,11 +1576,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   // Find `pwa_browser` window's app restore data.
-  ash::DeskTemplate* desk_template = templates.front();
+  const ash::DeskTemplate* desk_template = templates.front();
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
@@ -1629,11 +1629,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
   // Test that `pwa_browser` restore data can be found.
-  ash::DeskTemplate* desk_template = templates.front();
+  const ash::DeskTemplate* desk_template = templates.front();
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
@@ -1685,10 +1685,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   ClickSaveDeskAsTemplateButton();
 
-  std::vector<ash::DeskTemplate*> templates = GetAllEntries();
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  ash::DeskTemplate* desk_template = templates.front();
+  const ash::DeskTemplate* desk_template = templates.front();
 
   // Test the default template's name is the desk's name it was created from.
   EXPECT_EQ(desk_name, desk_template->template_name());

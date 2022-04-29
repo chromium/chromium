@@ -852,7 +852,7 @@ std::string DeskSyncBridge::GetStorageKey(
 }
 
 void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
-  std::vector<DeskTemplate*> entries;
+  std::vector<const DeskTemplate*> entries;
 
   if (!IsReady()) {
     std::move(callback).Run(GetAllEntriesStatus::kFailure, std::move(entries));

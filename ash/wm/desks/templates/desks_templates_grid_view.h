@@ -42,7 +42,7 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
   // Updates the UI by creating a grid layout and populating the grid with the
   // provided list of desk templates.
-  void PopulateGridUI(const std::vector<DeskTemplate*>& desk_templates,
+  void PopulateGridUI(const std::vector<const DeskTemplate*>& desk_templates,
                       const gfx::Rect& grid_bounds,
                       const base::GUID& last_saved_template_uuid);
 

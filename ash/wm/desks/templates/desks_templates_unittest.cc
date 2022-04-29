@@ -149,13 +149,13 @@ class DesksTemplatesTest : public OverviewTestBase {
 
   // Gets the current list of template entries from the desk model directly
   // without updating the UI.
-  const std::vector<DeskTemplate*> GetAllEntries() {
-    std::vector<DeskTemplate*> templates;
+  const std::vector<const DeskTemplate*> GetAllEntries() {
+    std::vector<const DeskTemplate*> templates;
 
     base::RunLoop loop;
     desk_model()->GetAllEntries(base::BindLambdaForTesting(
         [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-            const std::vector<DeskTemplate*>& entries) {
+            const std::vector<const DeskTemplate*>& entries) {
           EXPECT_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
           templates = entries;
           loop.Quit();
@@ -417,7 +417,7 @@ TEST_F(DesksTemplatesTest, AddDeleteEntry) {
   AddEntry(expected_uuid, expected_name, expected_time,
            DeskTemplateType::kTemplate);
 
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
   EXPECT_EQ(expected_uuid, entries[0]->uuid());
   EXPECT_EQ(base::UTF8ToUTF16(expected_name), entries[0]->template_name());
@@ -536,7 +536,7 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnReturnToEmptyOverviewDesk) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, desk_model()->GetEntryCount());
 
   // Close the window and enter overview mode. The no windows widget should be
@@ -933,7 +933,7 @@ TEST_F(DesksTemplatesTest, SaveDeskButtonsEnabledDisabled) {
   EXPECT_EQ(views::Button::STATE_DISABLED, save_as_template_button->GetState());
   EXPECT_EQ(views::Button::STATE_DISABLED, save_for_later_button->GetState());
 
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
 
   // Exit and reopen overview to delete the template.
   ToggleOverview();
@@ -1707,7 +1707,7 @@ TEST_F(DesksTemplatesTest, TabletModeActivationIssues) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
   // Tests that after transitioning into tablet mode, the activation and focus
@@ -2104,7 +2104,7 @@ TEST_F(DesksTemplatesTest, TemplatesAreVisibleAfterSecondSave) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
   // Delete the one and only template, which should hide the templates grid but
@@ -2224,7 +2224,7 @@ TEST_F(DesksTemplatesTest, WindowActivatableAfterSaveAndDeleteTemplate) {
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
   // Delete the one and only template, which should hide the templates grid but
@@ -3023,7 +3023,7 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   DesksTemplatesNameView* name_view =
       GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(name_1), name_view->GetText());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   EXPECT_EQ(uuid_2, entries[0]->uuid());
   // Assert metrics being recorded.
   histogram_tester.ExpectTotalCount(kReplaceTemplateHistogramName, 1);
@@ -3695,7 +3695,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
 
   // Open overview and save the desk.
   OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, entries.size());
 
   const DeskTemplate& saved_desk = *entries[0];

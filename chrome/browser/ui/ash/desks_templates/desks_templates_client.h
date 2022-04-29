@@ -86,7 +86,7 @@ class DesksTemplatesClient : public ash::SessionObserver {
                           DeleteDeskTemplateCallback callback);
 
   using GetDeskTemplatesCallback =
-      base::OnceCallback<void(const std::vector<ash::DeskTemplate*>&,
+      base::OnceCallback<void(const std::vector<const ash::DeskTemplate*>&,
                               std::string error)>;
   // Returns the current available saved desk templates.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
@@ -183,7 +183,7 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // storage.
   void OnGetAllTemplates(GetDeskTemplatesCallback callback,
                          desks_storage::DeskModel::GetAllEntriesStatus status,
-                         const std::vector<ash::DeskTemplate*>& entries);
+                         const std::vector<const ash::DeskTemplate*>& entries);
 
   // Callback function that is called once the DesksController has captured the
   // active desk as a template. Invokes |callback| with |desk_template| as an

@@ -497,7 +497,7 @@ void DesksTemplatesClient::OnGetTemplateToBeUpdated(
 void DesksTemplatesClient::OnGetAllTemplates(
     GetDeskTemplatesCallback callback,
     desks_storage::DeskModel::GetAllEntriesStatus status,
-    const std::vector<ash::DeskTemplate*>& entries) {
+    const std::vector<const ash::DeskTemplate*>& entries) {
   std::move(callback).Run(
       entries,
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk

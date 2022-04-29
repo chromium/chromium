@@ -102,7 +102,7 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
 }
 
 void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
-    const std::vector<ash::DeskTemplate*>& desk_templates,
+    const std::vector<const ash::DeskTemplate*>& desk_templates,
     std::string error_string) {
   if (!error_string.empty()) {
     Respond(Error(std::move(error_string)));

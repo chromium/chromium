@@ -74,7 +74,7 @@ class WmDesksPrivateGetSavedDeskTemplatesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnGetSavedDeskTemplate(
-      const std::vector<ash::DeskTemplate*>& desk_templates,
+      const std::vector<const ash::DeskTemplate*>& desk_templates,
       std::string error_string);
 };
 

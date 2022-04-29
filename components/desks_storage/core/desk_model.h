@@ -79,9 +79,9 @@ class DeskModel {
   DeskModel& operator=(const DeskModel&) = delete;
   virtual ~DeskModel();
 
-  using GetAllEntriesCallback =
-      base::OnceCallback<void(GetAllEntriesStatus status,
-                              const std::vector<ash::DeskTemplate*>& entries)>;
+  using GetAllEntriesCallback = base::OnceCallback<void(
+      GetAllEntriesStatus status,
+      const std::vector<const ash::DeskTemplate*>& entries)>;
   // Returns a vector of entries in the model.
   virtual void GetAllEntries(GetAllEntriesCallback callback) = 0;
 

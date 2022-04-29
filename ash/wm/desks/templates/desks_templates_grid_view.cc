@@ -165,7 +165,7 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
 }
 
 void DesksTemplatesGridView::PopulateGridUI(
-    const std::vector<DeskTemplate*>& desk_templates,
+    const std::vector<const DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds,
     const base::GUID& last_saved_template_uuid) {
   DCHECK(grid_items_.empty());
@@ -178,8 +178,7 @@ void DesksTemplatesGridView::PopulateGridUI(
     return;
   }
 
-  AddOrUpdateTemplates(std::vector<const DeskTemplate*>(desk_templates.begin(),
-                                                        desk_templates.end()),
+  AddOrUpdateTemplates(desk_templates,
                        /*initializing_grid_view=*/true,
                        last_saved_template_uuid);
 

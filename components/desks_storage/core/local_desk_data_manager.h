@@ -76,12 +76,12 @@ class LocalDeskDataManager : public DeskModel {
 
   // Gets all desk templates from user's local template directory.
   void GetAllEntriesTask(DeskModel::GetAllEntriesStatus* status_ptr,
-                         std::vector<ash::DeskTemplate*>* entries_ptr);
+                         std::vector<const ash::DeskTemplate*>* entries_ptr);
 
   // Wrapper method to call GetAllEntriesCallback.
   void OnGetAllEntries(
       std::unique_ptr<DeskModel::GetAllEntriesStatus> status_ptr,
-      std::unique_ptr<std::vector<ash::DeskTemplate*>> entries_ptr,
+      std::unique_ptr<std::vector<const ash::DeskTemplate*>> entries_ptr,
       DeskModel::GetAllEntriesCallback callback);
 
   // Get a specific desk template by |uuid_str|.

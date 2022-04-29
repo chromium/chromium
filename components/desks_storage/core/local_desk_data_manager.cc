@@ -179,7 +179,7 @@ LocalDeskDataManager::~LocalDeskDataManager() = default;
 void LocalDeskDataManager::GetAllEntries(
     DeskModel::GetAllEntriesCallback callback) {
   auto status = std::make_unique<DeskModel::GetAllEntriesStatus>();
-  auto entries = std::make_unique<std::vector<ash::DeskTemplate*>>();
+  auto entries = std::make_unique<std::vector<const ash::DeskTemplate*>>();
 
   // It's safe to pass base::Unretained(this) since the LocalDeskDataManager is
   // a long-lived object that should persist during user session.
@@ -315,7 +315,7 @@ void LocalDeskDataManager::EnsureCacheIsLoaded() {
 
 void LocalDeskDataManager::GetAllEntriesTask(
     DeskModel::GetAllEntriesStatus* status_ptr,
-    std::vector<ash::DeskTemplate*>* entries_ptr) {
+    std::vector<const ash::DeskTemplate*>* entries_ptr) {
   EnsureCacheIsLoaded();
   if (cache_status_ == CacheStatus::kInvalidPath) {
     *status_ptr = DeskModel::GetAllEntriesStatus::kFailure;
@@ -339,7 +339,7 @@ void LocalDeskDataManager::GetAllEntriesTask(
 
 void LocalDeskDataManager::OnGetAllEntries(
     std::unique_ptr<DeskModel::GetAllEntriesStatus> status_ptr,
-    std::unique_ptr<std::vector<ash::DeskTemplate*>> entries_ptr,
+    std::unique_ptr<std::vector<const ash::DeskTemplate*>> entries_ptr,
     DeskModel::GetAllEntriesCallback callback) {
   std::move(callback).Run(*status_ptr, *entries_ptr);
 }
