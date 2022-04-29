@@ -96,6 +96,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
+      bool client_is_trusted,
       const WTF::String& session_id) override;
   void InspectElement(const gfx::Point& point) override;
   void ReportChildTargets(bool report,
@@ -126,6 +127,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
+      bool client_is_trusted,
       const WTF::String& session_id);
   void InspectElementImpl(const gfx::Point& point);
   void ReportChildTargetsImpl(bool report,

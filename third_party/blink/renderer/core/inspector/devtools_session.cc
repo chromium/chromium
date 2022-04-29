@@ -120,6 +120,7 @@ DevToolsSession::DevToolsSession(
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
     bool client_expects_binary_responses,
+    bool client_is_trusted,
     const String& session_id,
     scoped_refptr<base::SequencedTaskRunner> mojo_task_runner)
     : agent_(agent),

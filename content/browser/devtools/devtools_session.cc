@@ -161,11 +161,11 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
   }
 
   use_io_session_ = force_using_io_session;
-  agent->AttachDevToolsSession(receiver_.BindNewEndpointAndPassRemote(),
-                               session_.BindNewEndpointAndPassReceiver(),
-                               io_session_.BindNewPipeAndPassReceiver(),
-                               session_state_cookie_.Clone(),
-                               client_->UsesBinaryProtocol(), session_id_);
+  agent->AttachDevToolsSession(
+      receiver_.BindNewEndpointAndPassRemote(),
+      session_.BindNewEndpointAndPassReceiver(),
+      io_session_.BindNewPipeAndPassReceiver(), session_state_cookie_.Clone(),
+      client_->UsesBinaryProtocol(), client_->IsTrusted(), session_id_);
   session_.set_disconnect_handler(base::BindOnce(
       &DevToolsSession::MojoConnectionDestroyed, base::Unretained(this)));
 

@@ -80,6 +80,12 @@ interface DevToolsAgent {
   // notifications) sent from this session should use binary (CBOR)
   // encoding as opposed to JSON encoding.
   //
+  // |client_is_trusted| indicates that the client is considered to be
+  // in the same trust domain from security perspective. For example browser
+  // automation tool using remote debugging interface is trusted but Chrome
+  // Extension using chrome.debugger API is not. Therefore the former will have
+  // access to the Database CDP domain and the latter won't.
+  //
   // |session_id| is a string which, if provided, uniquely identifies the
   // session. The renderer must send this back with each response. The current
   // implementation uses the string serialization of an UnguessableToken, but
@@ -89,6 +95,7 @@ interface DevToolsAgent {
                         pending_receiver<DevToolsSession> io_session,
                         DevToolsSessionState? reattach_session_state,
                         bool client_expects_binary_responses,
+                        bool client_is_trusted,
                         string session_id);
 
   // Requests an element at specific position to be inspected in every
