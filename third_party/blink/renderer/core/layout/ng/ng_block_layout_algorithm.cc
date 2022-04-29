@@ -655,12 +655,21 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
       // |container_builder_.UnpositionedListMarker| in the constructor, unless
       // |ListMarkerOccupiesWholeLine|, which is handled like a regular child.
     } else if (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()) {
-      // The child is a column spanner. We now need to finish this
-      // fragmentainer, then abort and let the column layout algorithm handle
-      // the spanner as a child.
+      // The child is a column spanner. If we have no breaks inside (in parallel
+      // flows), we now need to finish this fragmentainer, then abort and let
+      // the column layout algorithm handle the spanner as a child.
       DCHECK(!container_builder_.DidBreakSelf());
       DCHECK(!container_builder_.FoundColumnSpanner());
-      DCHECK(!child_break_token);
+      DCHECK(!IsResumingLayout(To<NGBlockBreakToken>(child_break_token)));
+
+      if (container_builder_.HasChildBreakInside()) {
+        // Something broke inside (typically in a parallel flow, or we wouldn't
+        // be here). Before we can handle the spanner, we need to finish what
+        // comes before it.
+        container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
+                                               /* is_forced_break */ true);
+        break;
+      }
 
       // Establish a column spanner path. The innermost node will be the spanner
       // itself, wrapped inside the container handled by this layout algorithm.
