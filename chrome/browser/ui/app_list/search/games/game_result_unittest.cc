@@ -62,4 +62,31 @@ TEST_F(GameResultTest, Basic) {
                           u" A, B, C"}));
 }
 
+TEST_F(GameResultTest, NoPlatforms) {
+  auto* app_discovery_service =
+      apps::AppDiscoveryServiceFactory::GetForProfile(profile_.get());
+
+  apps::Result apps_result1(
+      apps::AppSource::kGames, "12345", u"Title",
+      std::make_unique<apps::GameExtras>(
+          absl::make_optional(std::vector<std::u16string>({})), u"SourceName",
+          u"TestGamePublisher", GURL("https://icon-url.com/")));
+
+  GameResult result1(profile_.get(), &list_controller_, app_discovery_service,
+                     apps_result1, 0.6, u"SomeGame");
+
+  EXPECT_EQ(StringFromTextVector(result1.details_text_vector()), u"SourceName");
+
+  apps::Result apps_result2(
+      apps::AppSource::kGames, "12345", u"Title",
+      std::make_unique<apps::GameExtras>(absl::nullopt, u"SourceName",
+                                         u"TestGamePublisher",
+                                         GURL("https://icon-url.com/")));
+
+  GameResult result2(profile_.get(), &list_controller_, app_discovery_service,
+                     apps_result1, 0.6, u"SomeGame");
+
+  EXPECT_EQ(StringFromTextVector(result2.details_text_vector()), u"SourceName");
+}
+
 }  // namespace app_list

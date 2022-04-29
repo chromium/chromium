@@ -125,7 +125,7 @@ void GameResult::UpdateText(const apps::Result& game,
   accessible_name.push_back(source);
 
   const auto& platforms = extras->GetPlatforms();
-  if (platforms) {
+  if (platforms && !platforms->empty()) {
     std::u16string platforms_string =
         base::JoinString(platforms.value(), kPlatformDelimiter);
 

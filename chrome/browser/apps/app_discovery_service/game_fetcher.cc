@@ -90,7 +90,9 @@ absl::optional<std::vector<std::u16string>> GetPlatforms(
 
   std::vector<std::u16string> store_names;
   for (const auto& store : app.available_stores()) {
-    store_names.push_back(base::UTF8ToUTF16(store.store_label()));
+    if (!store.store_label().empty()) {
+      store_names.push_back(base::UTF8ToUTF16(store.store_label()));
+    }
   }
   return store_names;
 }
