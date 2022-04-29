@@ -29,7 +29,7 @@ const char MockChromeJsErrorReportProcessor::kDefaultExperimentListString[] =
 // "= default".
 // NOLINTNEXTLINE
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Shorten timeout or tests will time out.
   set_maximium_wait_for_crash_reporter_for_test(base::Seconds(5));
 #endif
@@ -79,7 +79,7 @@ MockChromeJsErrorReportProcessor::GetExperimentListInfo() const {
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::string>
 MockChromeJsErrorReportProcessor::GetCrashReporterArgvStart() {
   // Redirect uploads to our a simple upload shim which will then send them to
@@ -113,7 +113,7 @@ void MockChromeJsErrorReportProcessor::UpdateReportDatabase(
         std::move(remote_report_id), report_time);
   }
 }
-#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  //  !BUILDFLAG(IS_CHROMEOS)
 
 ScopedMockChromeJsErrorReportProcessor::ScopedMockChromeJsErrorReportProcessor(
     const MockCrashEndpoint& endpoint)

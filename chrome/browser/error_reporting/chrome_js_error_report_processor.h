@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -59,7 +58,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
     return recent_error_reports_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Force the error report processor to use the less-commonly-used temp file
   // solution for communicating with crash_reporter. This is normally only used
   // on old kernels without memfd_create, so we don't get good unit test
@@ -82,7 +81,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // wrapper to allow dependency injection.
   virtual variations::ExperimentListInfo GetExperimentListInfo() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the first element(s) of the crash_reporter argv. By default, this
   // is just the command name (so {"/sbin/crash_reporter"}). Virtual so that
   // tests can override and can provide additional arguments to the test binary
@@ -107,7 +106,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // feedback reports.
   virtual void UpdateReportDatabase(std::string remote_report_id,
                                     base::Time report_time);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
  private:
   struct PlatformInfo;
@@ -153,7 +152,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // Add parameters indicating the current field trial experiments.
   void AddExperimentIds(ParameterMap& params);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Write the parameters (and the stack_trace, if present) into a string
   // suitable for passing the crash_reporter. Returns the string.
   //

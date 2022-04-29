@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -90,7 +89,7 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
   // These should still be the default values.
 #if BUILDFLAG(IS_MAC)
   const char16_t kDefaultFont[] = u"Times";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
   const char16_t kDefaultFont[] = u"Tinos";
 #else
   const char16_t kDefaultFont[] = u"Times New Roman";

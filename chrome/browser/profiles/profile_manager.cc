@@ -495,7 +495,7 @@ base::FilePath GetLastUsedProfileBaseName() {
   return base::FilePath::FromASCII(chrome::kInitialProfile);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
   DCHECK(profile);
   if (is_child) {

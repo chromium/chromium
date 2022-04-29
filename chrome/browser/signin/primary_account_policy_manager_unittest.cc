@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/primary_account_policy_manager.h"
 
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
@@ -73,7 +72,7 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // All primary accounts are allowed on ChromeOS and Lacros, so this the
 // PrimaryAccountPolicyManagerTest does not clear the primary account on
 // ChromeOS.
@@ -135,4 +134,4 @@ TEST_F(PrimaryAccountPolicyManagerTest,
 }
 #endif  // #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

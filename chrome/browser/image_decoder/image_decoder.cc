@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ipc/ipc_channel.h"
@@ -156,10 +155,10 @@ void ImageDecoder::StartWithOptionsImpl(
 
   data_decoder::mojom::ImageCodec codec =
       data_decoder::mojom::ImageCodec::kDefault;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (image_codec == PNG_CODEC)
     codec = data_decoder::mojom::ImageCodec::kPng;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto callback =
       base::BindOnce(&OnDecodeImageDone,

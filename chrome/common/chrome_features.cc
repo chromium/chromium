@@ -273,7 +273,7 @@ const base::Feature kDesktopPWAsDefaultOfflinePage{
 // for web app windows.
 const base::Feature kDesktopPWAsElidedExtensionsMenu {
   "DesktopPWAsElidedExtensionsMenu",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -853,7 +853,7 @@ const base::Feature kAbusiveNotificationPermissionRevocation{
 
 const base::Feature kRemoveStatusBarInWebApps {
   "RemoveStatusBarInWebApps",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

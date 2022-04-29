@@ -645,8 +645,7 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
   return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
   if (event_flags & ui::EF_MOUSE_BUTTON)
     return ui::MENU_SOURCE_MOUSE;
@@ -2778,7 +2777,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       auto* host_native_view = GetRenderFrameHost()
                                    ? GetRenderFrameHost()->GetNativeView()
                                    : nullptr;
