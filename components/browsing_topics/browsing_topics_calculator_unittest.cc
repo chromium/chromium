@@ -343,6 +343,34 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsRankedByFrequency) {
   EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
 }
 
+TEST_F(BrowsingTopicsCalculatorTest, ModelHasNoTopicsForHost) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries({kHost1, kHost2, kHost3, kHost4, kHost5, kHost6},
+                    begin_time);
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kTokenizedHost1, {}},
+       {kTokenizedHost2, {}},
+       {kTokenizedHost3, {}},
+       {kTokenizedHost4, {}},
+       {kTokenizedHost5, {}},
+       {kTokenizedHost6, {}}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  EpochTopics result = CalculateTopics();
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          {{Topic(101), {}},
+                           {Topic(102), {}},
+                           {Topic(103), {}},
+                           {Topic(104), {}},
+                           {Topic(105), {}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 0u);
+}
+
 TEST_F(BrowsingTopicsCalculatorTest,
        TopTopicsRankedByFrequency_AlsoAffectedByHostsCount) {
   base::Time begin_time = base::Time::Now();
