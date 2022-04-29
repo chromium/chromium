@@ -1006,13 +1006,9 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   base::FilePath creator_suggested_filename;
   if (options.filename.get()) {
     // Strip "%" character as it affects environment variables.
-    std::string filenme;
-    base::ReplaceChars(*options.filename, "%", "_", &filenme);
-#if BUILDFLAG(IS_WIN)
-    creator_suggested_filename = base::FilePath::FromUTF8Unsafe(filenme);
-#elif BUILDFLAG(IS_POSIX)
-    creator_suggested_filename = base::FilePath(filenme);
-#endif
+    std::string filename;
+    base::ReplaceChars(*options.filename, "%", "_", &filename);
+    creator_suggested_filename = base::FilePath::FromUTF8Unsafe(filename);
     if (!net::IsSafePortableRelativePath(creator_suggested_filename)) {
       return RespondNow(Error(download_extension_errors::kInvalidFilename));
     }
