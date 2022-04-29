@@ -305,8 +305,8 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
 #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// https://crbug.com/1222685
-// https://crbug.com/1280308
+// TODO(https://crbug.com/1222685): Failing on Mac.
+// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -318,8 +318,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-#if BUILDFLAG(IS_MAC)
-// https://crbug.com/1270792
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
+// TODO(https://crbug.com/1270792): Failing on Mac.
+// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else
