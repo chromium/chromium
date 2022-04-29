@@ -305,9 +305,9 @@ export class Panel extends PanelInterface {
       const bkgnd = chrome.extension.getBackgroundPage();
       const range = bkgnd.ChromeVoxState.instance.getCurrentRange();
       const node = range ? range.start.node : null;
+      const eventSourceState = await BackgroundBridge.EventSourceState.get();
       const touchScreen =
-          (bkgnd['EventSourceState']['get']() ===
-               EventSourceType.TOUCH_GESTURE ||
+          (eventSourceState === EventSourceType.TOUCH_GESTURE ||
            this.mockTouchGestureSourceForTesting_);
 
       // Build the top-level menus.

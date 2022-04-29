@@ -40,3 +40,7 @@ EventSource.current_ =
     chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH ?
     EventSourceType.TOUCH_GESTURE :
     EventSourceType.NONE;
+
+BridgeHelper.registerHandler(
+    BridgeTarget.EVENT_SOURCE_STATE, BridgeAction.GET,
+    () => EventSourceState.get());

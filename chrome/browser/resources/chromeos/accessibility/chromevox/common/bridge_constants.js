@@ -17,6 +17,7 @@ BridgeTarget = {
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
   COMMAND_HANDLER: 'CommandHandler',
+  EVENT_SOURCE_STATE: 'EventSourceState',
   LOG_STORE: 'LogStore',
 };
 
@@ -27,6 +28,7 @@ BridgeTarget = {
 BridgeAction = {
   BACK_TRANSLATE: 'backTranslate',
   CLEAR_LOG: 'clearLog',
+  GET: 'get',
   GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
   ON_COMMAND: 'onCommand',

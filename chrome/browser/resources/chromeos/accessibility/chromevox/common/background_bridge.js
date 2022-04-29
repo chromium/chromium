@@ -101,6 +101,17 @@ BackgroundBridge.CommandHandler = {
   },
 };
 
+BackgroundBridge.EventSourceState = {
+  /**
+   * Gets the current event source.
+   * @return {!Promise<EventSourceType>}
+   */
+  async get() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.EVENT_SOURCE_STATE, BridgeAction.GET);
+  }
+};
+
 BackgroundBridge.LogStore = {
   /** Clear the log buffer. */
   async clearLog() {
