@@ -189,9 +189,13 @@ void AccessibleInputField::OnGestureEvent(ui::GestureEvent* event) {
 void AccessibleInputField::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Focusable nodes generally must have a name, but the focus of an accessible
   // input field is propagated to its ancestor.
-  node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-
   views::Textfield::GetAccessibleNodeData(node_data);
+
+  // We want the PIN input field, an empty input field, to retain
+  // NameFrom::kAttributeExplicitlyEmpty. However
+  // Textfield::GetAccessibleNodeData() sets NameFrom to NameFrom::kContent.
+  // We override NameFrom after this call.
+  node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 FixedLengthCodeInput::FixedLengthCodeInput(int length,
