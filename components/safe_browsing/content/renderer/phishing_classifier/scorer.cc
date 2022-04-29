@@ -83,8 +83,13 @@ std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
     std::string model_data) {
   TRACE_EVENT0("safe_browsing", "CreateTfLiteClassifier");
   tflite::task::vision::ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_content(
-      std::move(model_data));
+  tflite::task::core::BaseOptions* base_options =
+      options.mutable_base_options();
+  base_options->mutable_model_file()->set_file_content(std::move(model_data));
+  base_options->mutable_compute_settings()
+      ->mutable_tflite_settings()
+      ->mutable_cpu_settings()
+      ->set_num_threads(1);
   auto statusor_classifier =
       tflite::task::vision::ImageClassifier::CreateFromOptions(
           options, CreateOpResolver());
