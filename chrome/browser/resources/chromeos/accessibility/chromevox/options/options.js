@@ -242,12 +242,12 @@ export class OptionsPage {
   /**
    * Populates the voices select with options.
    */
-  static populateVoicesSelect() {
+  static async populateVoicesSelect() {
     const select = $('voices');
 
-    function setVoiceList() {
+    async function setVoiceList() {
       const selectedVoice =
-          chrome.extension.getBackgroundPage()['getCurrentVoice']();
+          await BackgroundBridge.ChromeVoxBackground.getCurrentVoice();
       const addVoiceOption = (visibleVoiceName, voiceName) => {
         const option = document.createElement('option');
         option.voiceName = voiceName;
@@ -292,7 +292,7 @@ export class OptionsPage {
     }
 
     window.speechSynthesis.onvoiceschanged = setVoiceList;
-    setVoiceList();
+    await setVoiceList();
 
     select.addEventListener('change', function(evt) {
       const selIndex = select.selectedIndex;

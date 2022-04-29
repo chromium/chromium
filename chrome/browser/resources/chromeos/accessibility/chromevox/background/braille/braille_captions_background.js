@@ -7,6 +7,7 @@
  * braille content to the Panel on Chrome OS, or a content script on
  * other platforms.
  */
+import {ChromeVoxPrefs} from '../prefs.js';
 
 export const BrailleCaptionsBackground = {};
 
@@ -145,7 +146,7 @@ BrailleCaptionsBackground.groupBrailleAndText = function(
 BrailleCaptionsBackground.setActive = function(newValue) {
   const self = BrailleCaptionsBackground;
   const oldValue = self.isEnabled();
-  window['prefs'].setPref(self.PREF_KEY, String(newValue));
+  ChromeVoxPrefs.instance.setPref(self.PREF_KEY, String(newValue));
   if (oldValue !== newValue) {
     if (self.stateCallback_) {
       self.stateCallback_();

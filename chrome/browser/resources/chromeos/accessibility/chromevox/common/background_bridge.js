@@ -32,6 +32,16 @@ BackgroundBridge.BrailleBackground = {
   },
 };
 
+BackgroundBridge.ChromeVoxBackground = {
+  /**
+   * Gets the voice currently used by ChromeVox when calling tts.
+   * @return {!Promise<string>}
+   */
+  async getCurrentVoice() {
+    return BridgeHelper.sendMessage('ChromeVoxBackground', 'getCurrentVoice');
+  },
+};
+
 BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).

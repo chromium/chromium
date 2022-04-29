@@ -72,7 +72,7 @@ export class ChromeVoxPrefs {
   /**
    * Set the value of a pref.
    * @param {string} key The pref key.
-   * @param {Object|string|boolean} value The new value of the pref.
+   * @param {Object|string|number|boolean} value The new value of the pref.
    */
   setPref(key, value) {
     if (localStorage[key] !== value) {
