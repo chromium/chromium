@@ -131,6 +131,9 @@ using base::UserMetricsAction;
                                                      WindowActivityToolsOrigin,
                                                      GURL(kChromeUINewTabURL))];
       break;
+    case PopupMenuActionFollow:
+      // TODO(crbug.com/1264872): add action.
+      break;
     case PopupMenuActionBookmarks:
       RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);

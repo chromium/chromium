@@ -248,3 +248,12 @@ imageset("popup_menu_enterprise_icon") {
     "popup_menu_enterprise_icon.imageset/popup_menu_enterprise_icon@3x.png",
   ]
 }
+
+imageset("popup_menu_follow") {
+  sources = [
+    "popup_menu_follow.imageset/Contents.json",
+    "popup_menu_follow.imageset/popup_menu_follow.png",
+    "popup_menu_follow.imageset/popup_menu_follow@2x.png",
+    "popup_menu_follow.imageset/popup_menu_follow@3x.png",
+  ]
+}

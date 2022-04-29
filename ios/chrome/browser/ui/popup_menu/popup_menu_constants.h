@@ -32,6 +32,8 @@ extern NSString* const kToolsMenuCloseAllTabsId;
 extern NSString* const kToolsMenuCloseAllIncognitoTabsId;
 // Close the current tab item accessibility Identifier.
 extern NSString* const kToolsMenuCloseTabId;
+// Follow item accessibility Identifier.
+extern NSString* const kToolsMenuFollowId;
 // Bookmarks item accessibility Identifier.
 extern NSString* const kToolsMenuBookmarksId;
 // Reading List item accessibility Identifier.

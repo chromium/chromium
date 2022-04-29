@@ -22,6 +22,7 @@ source_set("popup_menu") {
     "resources:popup_menu_edit_bookmark",
     "resources:popup_menu_enterprise_icon",
     "resources:popup_menu_find_in_page",
+    "resources:popup_menu_follow",
     "resources:popup_menu_help",
     "resources:popup_menu_history",
     "resources:popup_menu_new_incognito_tab",

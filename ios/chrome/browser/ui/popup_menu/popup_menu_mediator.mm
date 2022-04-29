@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -90,6 +91,24 @@ PopupMenuToolsItem* CreateTableViewItem(int titleID,
   PopupMenuToolsItem* item =
       [[PopupMenuToolsItem alloc] initWithType:kItemTypeEnumZero];
   item.title = l10n_util::GetNSString(titleID);
+  item.actionIdentifier = action;
+  item.accessibilityIdentifier = accessibilityID;
+  if (imageName) {
+    item.image = [[UIImage imageNamed:imageName]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+  return item;
+}
+
+PopupMenuToolsItem* CreateFollowItem(int titleID,
+                                     PopupMenuAction action,
+                                     NSString* imageName,
+                                     NSString* accessibilityID) {
+  DCHECK(IsWebChannelsEnabled());
+  PopupMenuToolsItem* item =
+      [[PopupMenuToolsItem alloc] initWithType:kItemTypeEnumZero];
+  item.title = l10n_util::GetNSStringF(titleID, base::SysNSStringToUTF16(@""));
+  item.enabled = NO;
   item.actionIdentifier = action;
   item.accessibilityIdentifier = accessibilityID;
   if (imageName) {
@@ -169,6 +188,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 @property(nonatomic, strong) PopupMenuToolsItem* openNewIncognitoTabItem;
 @property(nonatomic, strong) PopupMenuToolsItem* reloadStopItem;
+@property(nonatomic, strong) PopupMenuToolsItem* followItem;
 @property(nonatomic, strong) PopupMenuToolsItem* readLaterItem;
 @property(nonatomic, strong) PopupMenuToolsItem* bookmarkItem;
 @property(nonatomic, strong) PopupMenuToolsItem* translateItem;
@@ -1006,6 +1026,14 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 - (NSArray<TableViewItem*>*)actionItems {
   NSMutableArray* actionsArray = [NSMutableArray array];
+
+  if (!self.isIncognito && IsWebChannelsEnabled()) {
+    // Follow.
+    self.followItem =
+        CreateFollowItem(IDS_IOS_TOOLS_MENU_FOLLOW, PopupMenuActionFollow,
+                         @"popup_menu_follow", kToolsMenuFollowId);
+    [actionsArray addObject:self.followItem];
+  }
   // Read Later.
   self.readLaterItem = CreateTableViewItem(
       IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST, PopupMenuActionReadLater,
