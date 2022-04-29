@@ -373,7 +373,7 @@ public class ContextualSearchInstrumentationBase {
     private SelectionClient mContextualSearchClient;
     private LayoutManagerImpl mLayoutManager;
 
-    private ActivityMonitor mActivityMonitor;
+    protected ActivityMonitor mActivityMonitor;
     protected ContextualSearchSelectionController mSelectionController;
     private ContextualSearchInstrumentationTestHost mTestHost;
 
@@ -605,14 +605,14 @@ public class ContextualSearchInstrumentationBase {
         }
     }
 
-    private interface ThrowingRunnable {
+    protected interface ThrowingRunnable {
         void run() throws TimeoutException;
     }
 
     // Panel interactions are flaky, see crbug.com/635661. Rather than adding a long delay to
     // each test, we can retry failures. When trying to make the panel peak, we may also have to
     // clear the selection before trying again.
-    private void retryPanelBarInteractions(ThrowingRunnable r, boolean clearSelection)
+    protected void retryPanelBarInteractions(ThrowingRunnable r, boolean clearSelection)
             throws AssertionError, TimeoutException {
         int tries = 0;
         boolean success = false;
@@ -813,7 +813,7 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId The id of the node to be tapped.
      * @param isResolveExpected Whether a resolve is expected or not. Enforce by asserting.
      */
-    private FakeResolveSearch simulateResolvableSearchAndAssertResolveAndPreload(String nodeId,
+    protected FakeResolveSearch simulateResolvableSearchAndAssertResolveAndPreload(String nodeId,
             boolean isResolveExpected) throws InterruptedException, TimeoutException {
         FakeResolveSearch search = mFakeServer.getFakeResolveSearch(nodeId);
         assertNotNull("Could not find FakeResolveSearch for node ID:" + nodeId, search);
@@ -984,8 +984,15 @@ public class ContextualSearchInstrumentationBase {
     void assertClosedPanelResolve() {}
 
     //============================================================================================
-    // Assertions for different states
-    //============================================================================================
+
+    /**
+     * Fakes navigation of the Content View to the URL that was previously requested.
+     * @param isFailure whether the request resulted in a failure.
+     */
+    protected void fakeContentViewDidNavigate(boolean isFailure) {
+        String url = mFakeServer.getLoadedUrl();
+        mManager.getOverlayContentDelegate().onMainFrameNavigation(url, false, isFailure, false);
+    }
 
     /**
      * Simulates a click on the given word node. Waits for the bar to peek. TODO(donnd): rename to
@@ -1164,6 +1171,14 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Asserts that a Search Term has been requested.
+     * @param isExactResolve Whether the Resolve request must be exact (non-expanding).
+     */
+    protected void assertExactResolve(boolean isExactResolve) {
+        Assert.assertEquals(isExactResolve, mFakeServer.getIsExactResolve());
+    }
+
+    /**
      * Waits for the Search Panel (the Search Bar) to peek up from the bottom, and asserts that it
      * did peek.
      */
@@ -1314,6 +1329,13 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Flings the panel up to its expanded state.
+     */
+    protected void flingPanelUp() {
+        fling(0.5f, 0.95f, 0.5f, 0.55f, 1000);
+    }
+
+    /**
      * Swipes the panel down to its peeked state.
      */
     protected void swipePanelDown() {
@@ -1356,6 +1378,28 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Click various places to cause the panel to show, expand, then close.
+     */
+    protected void clickToExpandAndClosePanel() throws TimeoutException {
+        clickWordNode("states");
+        tapBarToExpandAndClosePanel();
+        waitForSelectionEmpty();
+    }
+
+    /**
+     * Simple sequence useful for checking if a Search Request is prefetched.
+     * Resets the fake server and clicks near to cause a search, then closes the panel,
+     * which takes us back to the starting state except that the fake server knows
+     * if a prefetch occurred.
+     */
+    protected void clickToTriggerPrefetch() throws Exception {
+        mFakeServer.reset();
+        simulateResolveSearch("search");
+        closePanel();
+        waitForPanelToCloseAndSelectionEmpty();
+    }
+
+    /**
      * Tap on the peeking Bar to expand the panel, then close it.
      */
     private void tapBarToExpandAndClosePanel() throws TimeoutException {
@@ -1367,7 +1411,7 @@ public class ContextualSearchInstrumentationBase {
      * Generate a click in the middle of panel's bar. TODO(donnd): Replace this method with
      * panelBarClick since this appears to be unreliable.
      */
-    private void clickPanelBar() {
+    protected void clickPanelBar() {
         View root = sActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
         float tapX = ((mPanel.getOffsetX() + mPanel.getWidth()) / 2f) * mDpToPx;
         float tapY = (mPanel.getOffsetY() + (mPanel.getBarContainerHeight() / 2f)) * mDpToPx;
@@ -1419,6 +1463,26 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Fakes a response to the Resolve request.
+     */
+    protected void fakeAResponse() {
+        fakeResponse(false, 200, "states", "United States Intelligence", "alternate-term", false);
+        waitForPanelToPeek();
+        assertLoadedLowPriorityUrl();
+        assertContainsParameters("states", "alternate-term");
+    }
+
+    /**
+     * Force the Panel to handle a click on open-in-a-new-tab icon.
+     */
+    protected void forceOpenTabIconClick() {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            mPanel.handleBarClick(mPanel.getOpenTabIconX() + mPanel.getOpenTabIconDimension() / 2,
+                    mPanel.getBarHeight() / 2);
+        });
+    }
+
+    /**
      * Force the Panel to close.
      */
     protected void closePanel() {
@@ -1446,7 +1510,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * @return The value of the given logged feature, or {@code null} if not logged.
      */
-    private Object loggedToRanker(@ContextualSearchInteractionRecorder.Feature int feature) {
+    protected Object loggedToRanker(@ContextualSearchInteractionRecorder.Feature int feature) {
         return getRankerLogger().getFeaturesLogged().get(feature);
     }
 

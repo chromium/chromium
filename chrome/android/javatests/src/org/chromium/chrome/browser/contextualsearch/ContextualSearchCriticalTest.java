@@ -41,15 +41,6 @@ import org.chromium.ui.test.util.UiRestriction;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
-    /**
-     * Fakes navigation of the Content View to the URL that was previously requested.
-     * @param isFailure whether the request resulted in a failure.
-     */
-    private void fakeContentViewDidNavigate(boolean isFailure) {
-        String url = mFakeServer.getLoadedUrl();
-        mManager.getOverlayContentDelegate().onMainFrameNavigation(url, false, isFailure, false);
-    }
-
     //============================================================================================
     // Test Cases
     //============================================================================================
