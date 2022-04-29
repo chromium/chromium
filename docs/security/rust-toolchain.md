@@ -44,9 +44,8 @@ Add `enable_rust = true` in your `gn` arguments. At the moment, this works
 only for Linux platforms (but [see below](#Building-on-non-Linux-platforms)
 for how to enable on other platforms).
 
-Also add `"checkout_clang_libs": True` to your `.gclient` file in order to
-include the necessary libraries for building required C++-Rust interop
-tooling.
+Also add `"use_rust": True` to your `.gclient` file to enable fetching required
+tools and libraries.
 
 See also [Using VSCode](#using-vscode).
 

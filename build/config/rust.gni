@@ -16,9 +16,17 @@ declare_args() {
   # is false.
   enable_rust = false
 
-  # Use experimental Rust toolchain built in-tree. See //tools/rust/build.py.
-  # When set to true rustc_version will need to be manually set.
-  use_chromium_rust_toolchain = false
+  # Use experimental Rust toolchain built in-tree. See //tools/rust. For now,
+  # only use it for linux targets. The package only has prebuilt libs for linux.
+  # More targets will be added later.
+  #
+  # Ideally this should check `current_os` so that e.g. Android builds will use
+  # the Android toolchain for target artifacts and the Chromium Rust toolchain
+  # for host artifacts. Currently there is an std mixup in //build/rust/std that
+  # prevents this.
+  #
+  # TODO(https://crbug.com/1245714): fix std handling and check `current_os`.
+  use_chromium_rust_toolchain = target_os == "linux" && host_os == "linux"
 
   # The version string returned by rustc -V, if using an alternative toolchain.
   rustc_version = ""

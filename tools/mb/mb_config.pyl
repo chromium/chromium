@@ -1208,9 +1208,9 @@
     'tryserver.chromium.rust': {
       'android-rust-arm-dbg': 'debug_bot_rust_android_arm',
       'android-rust-arm-rel': 'release_rust_android_arm',
-      'linux-rust-intree-x64-rel': 'release_rust_intree_linux_x64',
       'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64',
       'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain',
     },
 
     'tryserver.chromium.swangle': {
@@ -3243,12 +3243,12 @@
       'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm',
     ],
 
-    'release_rust_intree_linux_x64': [
-      'release_trybot_minimal_symbols', 'enable_rust', 'use_chromium_rust_toolchain', 'x64',
-    ],
-
     'release_rust_linux_x64': [
       'release_trybot_minimal_symbols', 'enable_rust', 'x64',
+    ],
+
+    'release_rust_linux_x64_android_toolchain': [
+      'release_trybot_minimal_symbols', 'enable_rust', 'use_android_rust_toolchain', 'x64',
     ],
 
     'release_rust_linux_x64_reclient': [
@@ -4333,8 +4333,8 @@
       'gn_args': 'enable_chromium_updater=true',
     },
 
-    'use_chromium_rust_toolchain': {
-      'gn_args': 'use_chromium_rust_toolchain=true',
+    'use_android_rust_toolchain': {
+      'gn_args': 'use_chromium_rust_toolchain=false',
     },
 
     'use_clang_coverage': {
