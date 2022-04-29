@@ -114,7 +114,7 @@ void LogMixedContentMetrics(MixedContentType type,
 // static
 void SSLManager::OnSSLCertificateError(
     const base::WeakPtr<SSLErrorHandler::Delegate>& delegate,
-    bool is_main_frame_request,
+    bool is_primary_main_frame_request,
     const GURL& url,
     NavigationOrDocumentHandle* navigation_or_document,
     int net_error,
@@ -135,8 +135,8 @@ void SSLManager::OnSSLCertificateError(
   }
 
   std::unique_ptr<SSLErrorHandler> handler(
-      new SSLErrorHandler(web_contents, delegate, is_main_frame_request, url,
-                          net_error, ssl_info, fatal));
+      new SSLErrorHandler(web_contents, delegate, is_primary_main_frame_request,
+                          url, net_error, ssl_info, fatal));
 
   if (!web_contents || !frame_tree_node) {
     // Requests can fail to dispatch because they don't have a WebContents. See
@@ -382,7 +382,7 @@ void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
   int cert_error = handler->cert_error();
   const net::SSLInfo& ssl_info = handler->ssl_info();
   const GURL& request_url = handler->request_url();
-  bool is_main_frame_request = handler->is_main_frame_request();
+  bool is_primary_main_frame_request = handler->is_primary_main_frame_request();
   bool fatal = handler->fatal();
 
   base::RepeatingCallback<void(bool, content::CertificateRequestResultType)>
@@ -397,8 +397,9 @@ void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
   }
 
   GetContentClient()->browser()->AllowCertificateError(
-      web_contents, cert_error, ssl_info, request_url, is_main_frame_request,
-      fatal, base::BindOnce(std::move(callback), true));
+      web_contents, cert_error, ssl_info, request_url,
+      is_primary_main_frame_request, fatal,
+      base::BindOnce(std::move(callback), true));
 }
 
 bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,

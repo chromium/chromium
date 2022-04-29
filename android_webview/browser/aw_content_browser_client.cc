@@ -399,7 +399,7 @@ void AwContentBrowserClient::AllowCertificateError(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    bool is_main_frame_request,
+    bool is_primary_main_frame_request,
     bool strict_enforcement,
     base::OnceCallback<void(content::CertificateRequestResultType)> callback) {
   AwContentsClientBridge* client =
