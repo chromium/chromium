@@ -16,7 +16,9 @@ import android.content.Context;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -37,6 +39,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 import java.util.HashMap;
@@ -50,6 +54,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ToggleTabStackButtonCoordinatorTest.ShadowChromeFeatureList.class})
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class ToggleTabStackButtonCoordinatorTest {
     private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
             new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
@@ -65,6 +70,9 @@ public class ToggleTabStackButtonCoordinatorTest {
             return "";
         }
     }
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
     private Context mContext;

@@ -29,6 +29,8 @@ extern const base::Feature kUseClientConfigIPH;
 // A feature to ensure all arrays can contain at least one feature.
 extern const base::Feature kIPHDummyFeature;
 
+extern const base::Feature kEnableIPH;
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 extern const base::Feature kIPHDesktopSharedHighlightingFeature;

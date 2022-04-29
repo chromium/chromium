@@ -14,6 +14,7 @@ const base::Feature kEnableAutomaticSnooze{"EnableAutomaticSnooze",
 const base::Feature kIPHDemoMode{"IPH_DemoMode",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHSnooze{"IPH_Snooze", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableIPH{"EnableIPH", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kUseClientConfigIPH{"UseClientConfigIPH",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 

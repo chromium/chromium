@@ -112,6 +112,7 @@ public final class UserEducationHelperTest {
     public void testShowIPHWithSnooze() throws Throwable {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, true);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         FeatureList.setTestValues(mTestValues);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.DOWNLOAD_HOME_FEATURE))

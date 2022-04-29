@@ -189,6 +189,7 @@ public final class WebFeedFollowIntroControllerTest {
                 ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 

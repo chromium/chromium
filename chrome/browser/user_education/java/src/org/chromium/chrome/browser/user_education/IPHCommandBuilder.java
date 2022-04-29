@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -219,19 +220,22 @@ public class IPHCommandBuilder {
                 mOnBlockedCallback = NO_OP_RUNNABLE;
             }
 
+            boolean disableIPH = !ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_IPH);
+
             if (mContentString == null) {
                 assert mResources != null;
-                mContentString = mResources.getString(mStringId);
+                mContentString = disableIPH ? "" : mResources.getString(mStringId);
             }
 
             if (mAccessibilityText == null) {
                 assert mResources != null;
-                mAccessibilityText = mResources.getString(mAccessibilityStringId);
+                mAccessibilityText = disableIPH ? "" : mResources.getString(mAccessibilityStringId);
             }
 
             if (mInsetRect == null && mAnchorRect == null) {
-                int yInsetPx = mResources.getDimensionPixelOffset(
-                        R.dimen.iph_text_bubble_menu_anchor_y_inset);
+                int yInsetPx = disableIPH ? 14
+                                          : mResources.getDimensionPixelOffset(
+                                                  R.dimen.iph_text_bubble_menu_anchor_y_inset);
                 mInsetRect = new Rect(0, 0, 0, yInsetPx);
             }
 

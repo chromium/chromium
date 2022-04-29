@@ -16,7 +16,9 @@ import com.google.common.collect.ImmutableMap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -36,6 +38,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -46,6 +50,7 @@ import java.util.Map;
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
+@EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -69,6 +74,9 @@ public class HomeButtonCoordinatorTest {
             return "";
         }
     }
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
     private Context mContext;

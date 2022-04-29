@@ -130,6 +130,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kToolbarUseHardwareBitmapDraw,
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
+    &feature_engagement::kEnableIPH,
     &feature_engagement::kEnableAutomaticSnooze,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,
     &feature_engagement::kIPHSnooze,
