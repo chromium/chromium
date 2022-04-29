@@ -966,9 +966,9 @@ For now, this label is only supported for attribute getters, although the `[High
 
 ### [DeprecateAs] _(m, a, c)_
 
-Summary: Measures usage of a deprecated feature via `UseCounter`, and notifies developers about deprecation via a console warning.
+Summary: Measures usage of a deprecated feature via `UseCounter`, and notifies developers about deprecation via a devtools issue.
 
-`[DeprecateAs]` can be considered an extended form of `[MeasureAs]`: it both measures the feature's usage via the same `UseCounter` mechanism, and also sends out a warning to the console (optionally with a message) in order to inform developers that the code they've written will stop working at some point in the relatively near future.
+`[DeprecateAs]` can be considered an extended form of `[MeasureAs]`: it both measures the feature's usage via the same `UseCounter` mechanism, and also sends out an issue to devtools in order to inform developers that the code they've written will stop working at some point in the relatively near future.
 
 Usage: `[DeprecateAs]` can be specified on methods, attributes, and constants.
 
@@ -978,7 +978,7 @@ Usage: `[DeprecateAs]` can be specified on methods, attributes, and constants.
     [DeprecateAs=DeprecatedPrefixedConstant] const short DEPRECATED_PREFIXED_CONSTANT = 1;
 ```
 
-The deprecation message shown on the console can be specified via the [Deprecation::GetDeprecationInfo](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/frame/deprecation.cc;l=194) method.
+For more documentation on deprecations, see [the documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/core/frame/deprecation/README.md).
 
 ### [DoNotTestNewObject] _(m)_
 

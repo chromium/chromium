@@ -21,18 +21,30 @@ This should be called `kFeatureName`, and the list should be kept alphabetical.
 
 This should be called `FeatureName`, and the list should be kept alphabetical.
 
-## (2) Call `Deprecation::CountDeprecation`
+## (2) Count the deprecation
+
+Pick one (or both if needed) of the following methods.
+
+### (2a) Call `Deprecation::CountDeprecation`
 
 This function requires a subclass of `ExecutionContext` and your new `WebFeature` to be passed in.
 If you're already counting use with an existing `WebFeature`, you should swap `LocalDOMWindow::CountUse` with `ExecutionContext::CountDeprecation` as it will bump the counter for you.
 If you only care about cross-site iframes, you can call `Deprecation::CountDeprecationCrossOriginIframe`.
+
+### (2b) Add `DeprecateAs` to the relevant IDL
+
+The [`DeprecateAs`](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/bindings/IDLExtendedAttributes.md#DeprecateAs_m_a_c) attribute can be added to the IDL as follows:
+
+```
+[DeprecateAs=FeatureName] void myDeprecatedFunction();
+```
 
 ## (3) Update [GetDeprecationInfo](/third_party/blink/renderer/core/frame/deprecation/deprecation.cc)
 
 The new case statement should look like:
 ```
 case WebFeature::kFeatureName:
-  return DeprecationInfo::WithTranslation(DeprecationIssueType::kFeatureName);
+  return DeprecationInfo::WithTranslation(feature, DeprecationIssueType::kFeatureName);
 ```
 
 ## (4) Update [AuditsIssue::ReportDeprecationIssue](/third_party/blink/renderer/core/inspector/inspector_audits_issue.cc)
@@ -60,7 +72,7 @@ Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (7) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
-Check out `devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
+[Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/workflows.md) `devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
 Check new branch out in `devtools/devtools-frontend`, and run (adjusting directories as needed):
 ```
 ./scripts/deps/roll_deps.py ~/chromium/src ~/devtools/devtools-frontend
@@ -74,7 +86,7 @@ Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (9) Update [DeprecationIssue](/third_party/devtools-frontend/src/front_end/models/issues_manager/DeprecationIssue.ts)
 
-You'll need to add a new string to `UIStrings` with your deprecation message, for example:
+You'll need to add a new string and [description](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/localization/descriptions.md) to `UIStrings` with your deprecation message, for example:
 ```
 /**
   *@description Additional information for translator on how and when this string is used
