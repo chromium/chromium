@@ -205,6 +205,8 @@ crbug.com/1213170 [ mac asan intel-0xd26 ] Pixel_WebGPUCopyExternalImage* [ Skip
 crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUWebGLTexImage2D [ Skip ]
 
+crbug.com/1203317 [ mac ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
+
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
