@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history_clusters;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -14,7 +15,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  * Bottom sheet content implementation for the HistoryClusters UI. This enables the bottom sheet
  * system to render our bottom sheet content and e.g. announce accessibility events correctly.
  */
-class HistoryClustersBottomSheetContent implements BottomSheetContent {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class HistoryClustersBottomSheetContent implements BottomSheetContent {
     private View mContentView;
     private View mToolbarView;
 
