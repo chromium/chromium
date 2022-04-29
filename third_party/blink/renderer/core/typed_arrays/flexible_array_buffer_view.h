@@ -21,9 +21,8 @@ class CORE_EXPORT FlexibleArrayBufferView {
 
  public:
   FlexibleArrayBufferView() = default;
-  FlexibleArrayBufferView(const FlexibleArrayBufferView&) = default;
-  FlexibleArrayBufferView(FlexibleArrayBufferView&&) = default;
-  FlexibleArrayBufferView(v8::Local<v8::ArrayBufferView> array_buffer_view) {
+  explicit FlexibleArrayBufferView(
+      v8::Local<v8::ArrayBufferView> array_buffer_view) {
     SetContents(array_buffer_view);
   }
   ~FlexibleArrayBufferView() = default;
@@ -74,12 +73,6 @@ class CORE_EXPORT FlexibleArrayBufferView {
   size_t ByteLength() const {
     DCHECK(!IsNull());
     return IsFull() ? full_->byteLength() : small_length_;
-  }
-
-  unsigned DeprecatedByteLengthAsUnsigned() const {
-    DCHECK(!IsNull());
-    return IsFull() ? base::checked_cast<unsigned>(full_->byteLength())
-                    : base::checked_cast<unsigned>(small_length_);
   }
 
  private:
