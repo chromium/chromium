@@ -1601,7 +1601,7 @@ enum WebFeature {
   kGeolocationDisabledByFeaturePolicy = 2196,
   kEncryptedMediaDisabledByFeaturePolicy = 2197,
   kBatteryStatusGetBattery = 2198,
-  kBatteryStatusInsecureOrigin = 2199,
+  kOBSOLETE_BatteryStatusInsecureOrigin = 2199,
   kBatteryStatusCrossOrigin = 2200,
   kBatteryStatusSameOriginABA = 2201,
   kHasIDClassTagAttribute = 2203,

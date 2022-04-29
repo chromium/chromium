@@ -51,9 +51,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kAuthorizationCoveredByWildcard:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kAuthorizationCoveredByWildcard);
-    case WebFeature::kBatteryStatusInsecureOrigin:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kBatteryStatusInsecureOrigin);
     case WebFeature::kCanRequestURLHTTPContainingNewline:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kCanRequestURLHTTPContainingNewline);

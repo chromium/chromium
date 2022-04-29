@@ -19,7 +19,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/battery-status.html?uid=${uid}`;
+  const url = `resources/battery-status.https.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;

@@ -427,10 +427,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           AuthorizationCoveredByWildcard;
       break;
-    case DeprecationIssueType::kBatteryStatusInsecureOrigin:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          BatteryStatusInsecureOrigin;
-      break;
     case DeprecationIssueType::kCanRequestURLHTTPContainingNewline:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           CanRequestURLHTTPContainingNewline;

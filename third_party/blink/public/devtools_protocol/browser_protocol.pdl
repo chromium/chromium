@@ -744,7 +744,6 @@ experimental domain Audits
   type DeprecationIssueType extends string
     enum
       AuthorizationCoveredByWildcard
-      BatteryStatusInsecureOrigin
       CanRequestURLHTTPContainingNewline
       ChromeLoadTimesConnectionInfo
       ChromeLoadTimesFirstPaintAfterLoadTime

@@ -5,6 +5,7 @@
 // https://w3c.github.io/battery/#the-batterymanager-interface
 [
     ActiveScriptWrappable,
+    SecureContext=RestrictBatteryStatusToSecureContexts,
     Exposed=Window
 ] interface BatteryManager : EventTarget {
     [HighEntropy=Direct, Measure] readonly attribute boolean charging;

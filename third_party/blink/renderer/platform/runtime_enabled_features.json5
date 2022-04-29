@@ -1986,6 +1986,10 @@
       status: "stable",
     },
     {
+      name: "RestrictBatteryStatusToSecureContexts",
+      status: "stable",
+    },
+    {
       name: "RestrictGamepadAccess",
       status: "experimental",
     },

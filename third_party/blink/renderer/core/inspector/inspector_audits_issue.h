@@ -39,7 +39,6 @@ class InspectorIssue;
 // Please keep this alphabetized.
 enum class DeprecationIssueType {
   kAuthorizationCoveredByWildcard,
-  kBatteryStatusInsecureOrigin,
   kCanRequestURLHTTPContainingNewline,
   kChromeLoadTimesConnectionInfo,
   kChromeLoadTimesFirstPaintAfterLoadTime,

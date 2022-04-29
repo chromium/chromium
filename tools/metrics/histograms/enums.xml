@@ -35995,7 +35995,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2196" label="GeolocationDisabledByFeaturePolicy"/>
   <int value="2197" label="EncryptedMediaDisabledByFeaturePolicy"/>
   <int value="2198" label="BatteryStatusGetBattery"/>
-  <int value="2199" label="BatteryStatusInsecureOrigin"/>
+  <int value="2199" label="OBSOLETE_BatteryStatusInsecureOrigin"/>
   <int value="2200" label="BatteryStatusCrossOrigin"/>
   <int value="2201" label="BatteryStatusSameOriginABA"/>
   <int value="2202" label="WebAudioValueSetterIsSetValue (Obsolete)"/>
