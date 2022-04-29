@@ -191,6 +191,41 @@ ci.builder(
 )
 
 ci.builder(
+    name = "chromeos-amd64-generic-cfi-thin-lto-rel (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release|x64",
+        short_name = "cfi",
+    ),
+    main_console_view = "main",
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+)
+
+ci.builder(
     name = "chromeos-amd64-generic-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

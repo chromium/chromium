@@ -158,6 +158,7 @@
       'chromeos-amd64-generic-asan-rel': 'chromeos_amd64-generic_asan_reclient',
       'chromeos-amd64-generic-asan-rel (reclient shadow)': 'chromeos_amd64-generic_asan_reclient',
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
+      'chromeos-amd64-generic-cfi-thin-lto-rel (reclient shadow)': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-dbg (reclient shadow)': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
@@ -1936,6 +1937,10 @@
 
     'chromeos_amd64-generic_cfi_thin_lto': [
       'chromeos_amd64-generic', 'cfi_full', 'thin_lto',
+    ],
+
+    'chromeos_amd64-generic_cfi_thin_lto_reclient': [
+      'chromeos_amd64-generic_reclient', 'cfi_full', 'thin_lto',
     ],
 
     'chromeos_amd64-generic_dbg': [
