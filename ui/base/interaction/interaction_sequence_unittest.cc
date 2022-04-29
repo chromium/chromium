@@ -3380,4 +3380,15 @@ TEST(InteractionSequenceTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
+TEST(InteractionSequenceTest, AddStepWithUnBuildStepBuilder) {
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetContext(kTestContext1)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetType(InteractionSequence::StepType::kActivated))
+          .Build();
+  sequence.reset();
+}
+
 }  // namespace ui

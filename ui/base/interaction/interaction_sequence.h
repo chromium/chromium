@@ -166,6 +166,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // one step.
     Builder& AddStep(std::unique_ptr<Step> step);
 
+    // Convenience methods to add a step when using a StepBuilder.
+    Builder& AddStep(StepBuilder& step_builder);
+
     // Sets the context for this sequence. Must be called if no step is added
     // by element or has had SetContext() called. Typically the initial step of
     // a sequence will use WithInitialElement() so it won't be necessary to call

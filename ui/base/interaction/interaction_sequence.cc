@@ -149,6 +149,11 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
   return *this;
 }
 
+InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
+    InteractionSequence::StepBuilder& step_builder) {
+  return AddStep(step_builder.Build());
+}
+
 InteractionSequence::Builder& InteractionSequence::Builder::SetContext(
     ElementContext context) {
   configuration_->context = context;
