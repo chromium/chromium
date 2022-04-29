@@ -33,6 +33,7 @@ source_set("browser_tests") {
 
   deps = [
     ":window_management",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
   ]
 

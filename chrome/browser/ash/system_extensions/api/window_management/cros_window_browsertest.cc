@@ -14,10 +14,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -57,6 +60,9 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
  public:
   CrosWindowBrowserTest() {
     feature_list_.InitAndEnableFeature(ash::features::kSystemExtensions);
+
+    installation_ =
+        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~CrosWindowBrowserTest() override = default;
 
@@ -113,6 +119,9 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
               EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      kPostTestStart));
   }
+
+ protected:
+  std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -425,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   proxy->InstanceRegistry().ForEachInstance(
       [&target_id, &new_window](const apps::InstanceUpdate& update) {
-        if (update.Window() == new_window) {
+        if (update.Window()->GetToplevelWindow() == new_window) {
           CHECK(target_id.empty());
           target_id = update.InstanceId().ToString();
         }
@@ -436,14 +445,71 @@ async function cros_test() {
   let windows = await chromeos.windowManagement.windows();
   assert_equals(windows.length, 2);
 
-  let window_to_close = windows.find(window => window.id === "%s");
-  assert_not_equals(undefined, window_to_close);
+  let window_to_close = windows.find(window => window.id === "%1$s");
+  assert_not_equals(undefined, window_to_close,
+      `Could not find window with id: (%1$s);`);
   window_to_close.close();
 
   // TODO(b/221123297): Currently test will flake on close under stress.
   // Defer testing until on close event implemented
   // windows = await chromeos.windowManagement.windows();
   // assert_equals(windows.length, 1);
+}
+  )",
+                                             target_id.c_str());
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSWACrashTest) {
+  // Finish installation of Sample SWA.
+  installation_->WaitForAppInstall();
+
+  // Wait for Sample SWA window to open.
+  content::TestNavigationObserver navigation_observer(
+      installation_->GetAppUrl());
+  navigation_observer.StartWatchingNewWebContents();
+
+  web_app::LaunchSystemWebAppAsync(browser()->profile(),
+                                   installation_->GetType());
+
+  navigation_observer.Wait();
+
+  // Initial window contains service worker. Track new window as test subject.
+  aura::Window* initial = browser()->window()->GetNativeWindow();
+  aura::Window* new_window =
+      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+
+  ASSERT_NE(initial, new_window);
+
+  // Set target id to crosWindow id of newly opened window as per instance
+  // registry.
+  std::string target_id;
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->InstanceRegistry().ForEachInstance(
+      [&target_id, &new_window](const apps::InstanceUpdate& update) {
+        if (update.Window()->GetToplevelWindow() == new_window) {
+          CHECK(target_id.empty());
+          target_id = update.InstanceId().ToString();
+        }
+      });
+
+  std::string test_code = base::StringPrintf(R"(
+async function cros_test() {
+  let windows = await chromeos.windowManagement.windows();
+  assert_equals(windows.length, 2);
+
+  let swa_window = windows.find(window => window.id === "%1$s");
+  assert_not_equals(undefined, swa_window,
+      `Could not find window with id: (%1$s);`);
+
+  swa_window.minimize();
+  swa_window.focus();
+  swa_window.maximize();
+  swa_window.setFullscreen(true);
+  swa_window.close();
 }
   )",
                                              target_id.c_str());
