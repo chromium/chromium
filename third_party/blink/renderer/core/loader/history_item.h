@@ -125,11 +125,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   ResourceRequest GenerateResourceRequest(mojom::FetchCacheMode);
 
   const String& GetNavigationApiKey() const { return navigation_api_key_; }
-  void SetNavigationApiKey(const String& key) {
-    // Temporary debugging for https://crbug.com/1319341
-    CHECK(!key.IsNull());
-    navigation_api_key_ = key;
-  }
+  void SetNavigationApiKey(const String& key) { navigation_api_key_ = key; }
 
   const String& GetNavigationApiId() const { return navigation_api_id_; }
   void SetNavigationApiId(const String& id) { navigation_api_id_ = id; }

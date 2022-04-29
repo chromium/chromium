@@ -296,10 +296,8 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // A same-document navigation (e.g., a document.open()) in a
   // |HasEntriesAndEventsDisabled()| situation will try to operate on an empty
   // |entries_|. The navigation API considers this a no-op.
-  if (entries_.IsEmpty())
+  if (HasEntriesAndEventsDisabled())
     return;
-  // Temporary debugging for https://crbug.com/1319341
-  CHECK(GetSupplementable()->GetFrame());
 
   NavigationHistoryEntry* old_current = currentEntry();
 
@@ -325,10 +323,6 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     // to append.
     current_entry_index_++;
     for (wtf_size_t i = current_entry_index_; i < entries_.size(); i++) {
-      // Temporary debugging for https://crbug.com/1319341
-      CHECK(GetSupplementable()->GetFrame());
-      CHECK_EQ(GetSupplementable(), entries_[i]->DomWindow());
-      CHECK(!entries_[i]->key().IsNull());
       keys_to_indices_.erase(entries_[i]->key());
       disposed_entries.push_back(entries_[i]);
     }
@@ -346,10 +340,6 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     entries_[current_entry_index_] =
         MakeGarbageCollected<NavigationHistoryEntry>(GetSupplementable(),
                                                      &item);
-    // Temporary debugging for https://crbug.com/1319341
-    CHECK(GetSupplementable()->GetFrame());
-    CHECK_EQ(GetSupplementable(), entries_[current_entry_index_]->DomWindow());
-    CHECK(!entries_[current_entry_index_]->key().IsNull());
     keys_to_indices_.insert(entries_[current_entry_index_]->key(),
                             current_entry_index_);
   }
@@ -740,11 +730,11 @@ void NavigationApi::PromoteUpcomingNavigationToOngoing(const String& key) {
 
 bool NavigationApi::HasEntriesAndEventsDisabled() const {
   auto* frame = GetSupplementable()->GetFrame();
-  return !frame ||
-         !GetSupplementable()
-              ->GetFrame()
-              ->Loader()
-              .HasLoadedNonInitialEmptyDocument() ||
+  // Disable for initial empty documents, opaque origins, or in detached
+  // windows. Also, in destroyed-but-not-detached windows due to memory purging
+  // (see https://crbug.com/1319341).
+  return !frame || GetSupplementable()->IsContextDestroyed() ||
+         !frame->Loader().HasLoadedNonInitialEmptyDocument() ||
          GetSupplementable()->GetSecurityOrigin()->IsOpaque();
 }
 
@@ -775,8 +765,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   auto* script_state =
       ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
-  if (!script_state)
-    return DispatchResult::kContinue;
   ScriptState::Scope scope(script_state);
 
   if (params.frame_load_type == WebFrameLoadType::kBackForward &&
@@ -901,6 +889,8 @@ void NavigationApi::InformAboutCanceledNavigation(
     has_dropped_navigation_ = true;
     return;
   }
+  if (HasEntriesAndEventsDisabled())
+    return;
 
   if (ongoing_navigate_event_) {
     auto* script_state =

@@ -84,4 +84,59 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardUncancelable) {
   EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
 }
 
+TEST_F(NavigationApiTest, DispatchNavigateEventAfterPurgeMemory) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  frame->ForciblyPurgeV8Memory();
+
+  KURL dest_url = url_test_helpers::ToKURL("https://example.com/foo.html#frag");
+  // Should not crash.
+  NavigationApi::navigation(*frame->DomWindow())
+      ->DispatchNavigateEvent(NavigationApi::DispatchParams(
+          dest_url, NavigateEventType::kFragment, WebFrameLoadType::kStandard));
+}
+
+TEST_F(NavigationApiTest, UpdateForNavigationAfterPurgeMemory) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  frame->ForciblyPurgeV8Memory();
+
+  HistoryItem* item = frame->Loader().GetDocumentLoader()->GetHistoryItem();
+  // Should not crash.
+  NavigationApi::navigation(*frame->DomWindow())
+      ->UpdateForNavigation(*item, WebFrameLoadType::kStandard);
+}
+
+TEST_F(NavigationApiTest, InformAboutCanceledNavigationAfterPurgeMemory) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  KURL dest_url = url_test_helpers::ToKURL("https://example.com/foo.html#frag");
+  // DispatchNavigateEvent() will ensure NavigationApi::ongoing_navigate_event_
+  // is non-null.
+  NavigationApi::navigation(*frame->DomWindow())
+      ->DispatchNavigateEvent(NavigationApi::DispatchParams(
+          dest_url, NavigateEventType::kFragment, WebFrameLoadType::kStandard));
+  // Purging memory will invalidate the v8::Context then call
+  // FrameLoader::StopAllLoaders(), which will in turn call
+  // NavigationApi::InformAboutCanceledNavigation. InformAboutCanceledNavigation
+  // shouldn't crash due to the invalid v8::Context.
+  frame->ForciblyPurgeV8Memory();
+}
+
 }  // namespace blink
