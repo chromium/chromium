@@ -152,13 +152,17 @@ std::string DownloadTaskImpl::GetMimeType() const {
   return mime_type_;
 }
 
-std::u16string DownloadTaskImpl::GetSuggestedFilename() const {
+base::FilePath DownloadTaskImpl::GenerateFileName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return net::GetSuggestedFilename(GetOriginalUrl(), GetContentDisposition(),
-                                   /*referrer_charset=*/std::string(),
-                                   /*suggested_name=*/std::string(),
-                                   /*mime_type=*/std::string(),
-                                   /*default_name=*/"document");
+  return net::GenerateFileName(original_url_, content_disposition_,
+                               /*referrer_charset=*/std::string(),
+                               /*suggested_name=*/GetSuggestedName(),
+                               /*mime_type=*/std::string(),
+                               /*default_name=*/"document");
+}
+
+std::string DownloadTaskImpl::GetSuggestedName() const {
+  return std::string();
 }
 
 bool DownloadTaskImpl::HasPerformedBackgroundDownload() const {

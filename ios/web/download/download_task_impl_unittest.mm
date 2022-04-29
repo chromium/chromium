@@ -42,6 +42,7 @@ namespace {
 const char kUrl[] = "chromium://download.test/";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
+const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
 NSString* const kHttpMethod = @"POST";
 
 class MockDownloadTaskObserver : public DownloadTaskObserver {
@@ -122,7 +123,7 @@ TEST_F(DownloadTaskImplTest, DefaultState) {
   EXPECT_EQ(kContentDisposition, task_->GetContentDisposition());
   EXPECT_EQ(kMimeType, task_->GetMimeType());
   EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
-  EXPECT_EQ("file.test", base::UTF16ToUTF8(task_->GetSuggestedFilename()));
+  EXPECT_EQ(base::FilePath(kTestFileName), task_->GenerateFileName());
 }
 
 // Tests that DownloadTaskImpl methods are overloaded

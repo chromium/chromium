@@ -38,6 +38,7 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   // DownloadTaskImpl overrides:
   void Start(const base::FilePath& path, Destination destination_hint) final;
   void Cancel() final;
+  std::string GetSuggestedName() const final;
 
   // DownloadTask overrides:
   NSData* GetResponseData() const final;
@@ -45,7 +46,6 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   int64_t GetTotalBytes() const final;
   int64_t GetReceivedBytes() const final;
   int GetPercentComplete() const final;
-  std::u16string GetSuggestedFilename() const final;
 
  private:
   DownloadNativeTaskBridge* download_bridge_ API_AVAILABLE(ios(15)) = nil;

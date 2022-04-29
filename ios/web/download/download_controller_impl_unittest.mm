@@ -26,6 +26,7 @@ namespace web {
 namespace {
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
+const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
 }  //  namespace
 
 // Test fixture for testing DownloadControllerImpl class.
@@ -85,7 +86,7 @@ TEST_F(DownloadControllerImplTest, OnDownloadCreated) {
   EXPECT_EQ(-1, task->GetPercentComplete());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
   EXPECT_EQ(kMimeType, task->GetMimeType());
-  EXPECT_EQ("file.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+  EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());
 }
 
 // Tests that DownloadController::CreateNativeDownloadTask calls
@@ -117,7 +118,7 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
     EXPECT_EQ(0, task->GetPercentComplete());
     EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
     EXPECT_EQ(kMimeType, task->GetMimeType());
-    EXPECT_EQ("file.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+    EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());
   }
 }
 

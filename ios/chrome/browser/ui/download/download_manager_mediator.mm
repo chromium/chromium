@@ -83,9 +83,8 @@ void DownloadManagerMediator::DownloadWithDestinationDir(
     return;
   }
 
-  std::u16string file_name = task_->GetSuggestedFilename();
-  DCHECK(!file_name.empty());
-  base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
+  base::FilePath filename = task_->GenerateFileName();
+  base::FilePath path = destination_dir.Append(filename);
   task->Start(path, web::DownloadTask::Destination::kToDisk);
 }
 
@@ -119,8 +118,9 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setCountOfBytesReceived:task_->GetReceivedBytes()];
   [consumer_ setCountOfBytesExpectedToReceive:task_->GetTotalBytes()];
   [consumer_ setProgress:GetDownloadManagerProgress()];
-  [consumer_
-      setFileName:base::SysUTF16ToNSString(task_->GetSuggestedFilename())];
+
+  base::FilePath filename = task_->GenerateFileName();
+  [consumer_ setFileName:base::SysUTF8ToNSString(filename.AsUTF8Unsafe())];
 
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
@@ -137,8 +137,7 @@ void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
 
   base::FilePath user_download_path;
   GetDownloadsDirectory(&user_download_path);
-  user_download_path = user_download_path.Append(
-      base::UTF16ToUTF8(task_->GetSuggestedFilename()));
+  user_download_path = user_download_path.Append(task_->GenerateFileName());
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

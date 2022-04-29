@@ -53,8 +53,8 @@ void DownloadNativeTaskImpl::Start(const base::FilePath& path,
   if (download_path_.empty()) {
     NSString* temporary_directory = NSTemporaryDirectory();
     NSString* temporary_filename = [temporary_directory
-        stringByAppendingPathComponent:base::SysUTF16ToNSString(
-                                           GetSuggestedFilename())];
+        stringByAppendingPathComponent:base::SysUTF8ToNSString(
+                                           GenerateFileName().AsUTF8Unsafe())];
     download_path_ =
         base::FilePath(base::SysNSStringToUTF8(temporary_filename));
   }
@@ -87,6 +87,14 @@ void DownloadNativeTaskImpl::Cancel() {
     download_bridge_ = nil;
   }
   DownloadTaskImpl::Cancel();
+}
+
+std::string DownloadNativeTaskImpl::GetSuggestedName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (@available(iOS 15, *)) {
+    return base::SysNSStringToUTF8(download_bridge_.suggestedFilename);
+  }
+  return std::string();
 }
 
 NSData* DownloadNativeTaskImpl::GetResponseData() const {
@@ -128,20 +136,6 @@ int DownloadNativeTaskImpl::GetPercentComplete() const {
     return static_cast<int>(download_bridge_.progress.fractionCompleted * 100);
   }
   return percent_complete_;
-}
-
-std::u16string DownloadNativeTaskImpl::GetSuggestedFilename() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string suggested_filename;
-  if (@available(iOS 15, *)) {
-    suggested_filename =
-        base::SysNSStringToUTF8(download_bridge_.suggestedFilename);
-  }
-  return net::GetSuggestedFilename(GetOriginalUrl(), GetContentDisposition(),
-                                   /*referrer_charset=*/std::string(),
-                                   /*suggested_name=*/suggested_filename,
-                                   /*mime_type=*/std::string(),
-                                   /*default_name=*/"document");
 }
 
 }  // namespace web

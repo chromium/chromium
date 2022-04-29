@@ -59,7 +59,8 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 @synthesize delegate = _delegate;
 
 - (NSString*)suggestedFileName {
-  return base::SysUTF16ToNSString(_internalTask->GetSuggestedFilename());
+  return base::SysUTF8ToNSString(
+      _internalTask->GenerateFileName().AsUTF8Unsafe());
 }
 
 - (NSString*)MIMEType {

@@ -35,9 +35,7 @@ char kBitTorrentMimeType[] = "application/x-bittorrent";
 char kJavaArchiveMimeType[] = "application/java-archive";
 
 bool IsUsdzFileFormat(const std::string& mime_type,
-                      const std::u16string& suggested_filename) {
-  base::FilePath suggested_path =
-      base::FilePath(base::UTF16ToUTF8(suggested_filename));
+                      const base::FilePath& suggested_path) {
   return mime_type == kUsdzMimeType || mime_type == kLegacyUsdzMimeType ||
          mime_type == kLegacyPixarUsdzMimeType ||
          suggested_path.MatchesExtension(kUsdzFileExtension) ||

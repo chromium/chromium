@@ -37,8 +37,10 @@ const char kUrl[] = "https://test.test/";
 const char kUrlDisallowingScaling[] =
     "https://test.test/#allowsContentScaling=0";
 
-NSString* const kTestSuggestedFileName = @"important_file.zip";
-NSString* const kTestUsdzFileName = @"important_file.usdz";
+const base::FilePath::CharType kTestSuggestedFileName[] =
+    FILE_PATH_LITERAL("important_file.zip");
+const base::FilePath::CharType kTestUsdzFileName[] =
+    FILE_PATH_LITERAL("important_file.usdz");
 
 }  // namespace
 
@@ -70,7 +72,7 @@ class ARQuickLookTabHelperTest : public PlatformTest,
 // Tests successfully downloading a USDZ file with the appropriate extension.
 TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestUsdzFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestUsdzFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -108,7 +110,7 @@ TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
 // Tests successfully downloading a USDZ file with the appropriate content-type.
 TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -148,7 +150,7 @@ TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
 TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL(kUrlDisallowingScaling), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -189,7 +191,7 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
 TEST_P(ARQuickLookTabHelperTest, DisallowsContentScalingExtendedQuery) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/#allowsContentScaling=0&testing=5"), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -205,7 +207,7 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScalingExtendedQuery) {
 TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/#randomFragment=0"), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -245,7 +247,7 @@ TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
 TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToOne) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/#allowsContentScaling=1"), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -261,7 +263,7 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToOne) {
 TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToRandomValue) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/#allowsContentScaling=randomThing"), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -275,11 +277,11 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToRandomValue) {
 // Tests replacing the download task brefore it's started.
 TEST_P(ARQuickLookTabHelperTest, ReplaceUnstartedDownload) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   tab_helper()->Download(std::move(task));
 
   auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task2->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task2->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr2 = task2.get();
   tab_helper()->Download(std::move(task2));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -310,7 +312,7 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceUnstartedDownload) {
 // Tests replacing the download task while it's in progress.
 TEST_P(ARQuickLookTabHelperTest, ReplaceInProgressDownload) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -319,7 +321,7 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceInProgressDownload) {
   }));
 
   auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task2->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task2->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr2 = task2.get();
   tab_helper()->Download(std::move(task2));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -351,7 +353,7 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceInProgressDownload) {
 // response returned authentication page.
 TEST_P(ARQuickLookTabHelperTest, MimeTypeChange) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -382,7 +384,7 @@ TEST_P(ARQuickLookTabHelperTest, MimeTypeChange) {
 // Tests the download failing with an error.
 TEST_P(ARQuickLookTabHelperTest, DownloadError) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -413,7 +415,7 @@ TEST_P(ARQuickLookTabHelperTest, DownloadError) {
 // Tests download HTTP response code of 401.
 TEST_P(ARQuickLookTabHelperTest, UnauthorizedHttpResponse) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
@@ -444,7 +446,7 @@ TEST_P(ARQuickLookTabHelperTest, UnauthorizedHttpResponse) {
 // Tests download HTTP response code of 403.
 TEST_P(ARQuickLookTabHelperTest, ForbiddenHttpResponse) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{

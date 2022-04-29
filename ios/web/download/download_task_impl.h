@@ -16,8 +16,6 @@
 #include "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
-@class NSURLSession;
-
 namespace web {
 
 class DownloadTaskObserver;
@@ -54,15 +52,15 @@ class DownloadTaskImpl : public DownloadTask {
   std::string GetContentDisposition() const override;
   std::string GetOriginalMimeType() const override;
   std::string GetMimeType() const override;
-  std::u16string GetSuggestedFilename() const override;
+  base::FilePath GenerateFileName() const override;
   bool HasPerformedBackgroundDownload() const override;
   void AddObserver(DownloadTaskObserver* observer) override;
   void RemoveObserver(DownloadTaskObserver* observer) override;
 
-  DownloadTaskImpl(const DownloadTaskImpl&) = delete;
-  DownloadTaskImpl& operator=(const DownloadTaskImpl&) = delete;
-
   ~DownloadTaskImpl() override;
+
+ private:
+  virtual std::string GetSuggestedName() const;
 
  protected:
   // Called when download was completed and the data writing was finished.

@@ -58,7 +58,8 @@ const char kTestUrl[] = "https://chromium.test/download.txt";
 const char kTestMimeType[] = "text/html";
 const int64_t kTestTotalBytes = 10;
 const int64_t kTestReceivedBytes = 0;
-NSString* const kTestSuggestedFileName = @"file.zip";
+const base::FilePath::CharType kTestSuggestedFileName[] =
+    FILE_PATH_LITERAL("file.zip");
 
 }  // namespace
 
@@ -103,8 +104,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     task->SetTotalBytes(kTestTotalBytes);
     task->SetReceivedBytes(kTestReceivedBytes);
-    task->SetSuggestedFilename(
-        base::SysNSStringToUTF16(kTestSuggestedFileName));
+    task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
     task->SetWebState(&web_state_);
     return task;
   }
@@ -185,7 +185,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+  task->Start(path.Append(task->GenerateFileName()),
               web::DownloadTask::Destination::kToDisk);
 
   @autoreleasepool {
@@ -450,7 +450,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+  task->Start(path.Append(task->GenerateFileName()),
               web::DownloadTask::Destination::kToDisk);
 
   // Stub UIActivityViewController.
@@ -885,7 +885,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+  task->Start(path.Append(task->GenerateFileName()),
               web::DownloadTask::Destination::kToDisk);
 
   // Start the download.

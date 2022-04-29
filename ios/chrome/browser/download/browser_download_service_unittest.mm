@@ -31,8 +31,10 @@
 
 namespace {
 const char kUrl[] = "https://test.test/";
-const char16_t kUsdzFileName[] = u"important_file.usdz";
-const char16_t kRealityFileName[] = u"important_file.reality";
+const base::FilePath::CharType kUsdzFileName[] =
+    FILE_PATH_LITERAL("important_file.usdz");
+const base::FilePath::CharType kRealityFileName[] =
+    FILE_PATH_LITERAL("important_file.reality");
 
 // Substitutes real TabHelper for testing.
 template <class TabHelper>
@@ -126,7 +128,7 @@ TEST_F(BrowserDownloadServiceTest, PkPassMimeType) {
 TEST_F(BrowserDownloadServiceTest, UsdzExtension) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
-  task->SetSuggestedFilename(kUsdzFileName);
+  task->SetGeneratedFileName(base::FilePath(kUsdzFileName));
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
@@ -144,7 +146,7 @@ TEST_F(BrowserDownloadServiceTest, UsdzExtension) {
 TEST_F(BrowserDownloadServiceTest, RealityExtension) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
-  task->SetSuggestedFilename(kRealityFileName);
+  task->SetGeneratedFileName(base::FilePath(kRealityFileName));
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));

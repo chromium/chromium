@@ -131,8 +131,7 @@ void BrowserDownloadService::OnDownloadCreated(
     PassKitTabHelper* tab_helper = PassKitTabHelper::FromWebState(web_state);
     if (tab_helper)
       tab_helper->Download(std::move(task));
-  } else if (IsUsdzFileFormat(task->GetMimeType(),
-                              task->GetSuggestedFilename()) &&
+  } else if (IsUsdzFileFormat(task->GetMimeType(), task->GenerateFileName()) &&
              !base::FeatureList::IsEnabled(kARKillSwitch)) {
     ARQuickLookTabHelper* tab_helper =
         ARQuickLookTabHelper::FromWebState(web_state);

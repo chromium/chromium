@@ -33,7 +33,8 @@ const char kTestUrl[] = "https://chromium.test/download.txt";
 const char kTestMimeType[] = "text/html";
 const int64_t kTestTotalBytes = 10;
 const int64_t kTestReceivedBytes = 0;
-NSString* const kTestSuggestedFileName = @"important_file.zip";
+const base::FilePath::CharType kTestSuggestedFileName[] =
+    FILE_PATH_LITERAL("important_file.zip");
 
 }  // namespace
 
@@ -73,8 +74,7 @@ TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
 // file writer is configured to write into Chrome's temporary download
 // directory.
 TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
-  task()->SetSuggestedFilename(
-      base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDowloading();
@@ -101,8 +101,7 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
 // file writer is configured to write into Chrome's Documents download
 // directory.
 TEST_F(DownloadManagerMediatorTest, StartDownload) {
-  task()->SetSuggestedFilename(
-      base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDowloading();
@@ -135,8 +134,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
 TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
 
-  task()->SetSuggestedFilename(
-      base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDowloading();
@@ -159,7 +157,8 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
 
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
-  EXPECT_NSEQ(kTestSuggestedFileName, consumer_.fileName);
+  EXPECT_EQ(base::FilePath(kTestSuggestedFileName),
+            base::FilePath(base::SysNSStringToUTF8(consumer_.fileName)));
   EXPECT_EQ(kTestTotalBytes, consumer_.countOfBytesExpectedToReceive);
   EXPECT_EQ(kTestReceivedBytes, consumer_.countOfBytesReceived);
   EXPECT_FLOAT_EQ(0.8f, consumer_.progress);
@@ -182,8 +181,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
 TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
 
-  task()->SetSuggestedFilename(
-      base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDowloading();
@@ -207,8 +205,7 @@ TEST_F(DownloadManagerMediatorTest,
        ConsumerSuceededStateUpdateWithoutDriveAppInstalled) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(NO);
 
-  task()->SetSuggestedFilename(
-      base::SysNSStringToUTF16(kTestSuggestedFileName));
+  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDowloading();

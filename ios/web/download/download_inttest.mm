@@ -101,7 +101,8 @@ TEST_F(DownloadTest, SuccessfulDownload) {
   EXPECT_EQ(-1, task->GetPercentComplete());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
   EXPECT_EQ(kMimeType, task->GetMimeType());
-  EXPECT_EQ("download.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("download.test")),
+            task->GenerateFileName());
 
   // Start the download task and wait for completion.
   task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);

@@ -44,7 +44,7 @@ class FakeDownloadTask final : public DownloadTask {
   std::string GetContentDisposition() const final;
   std::string GetOriginalMimeType() const final;
   std::string GetMimeType() const final;
-  std::u16string GetSuggestedFilename() const final;
+  base::FilePath GenerateFileName() const final;
   bool HasPerformedBackgroundDownload() const final;
   void AddObserver(DownloadTaskObserver* observer) final;
   void RemoveObserver(DownloadTaskObserver* observer) final;
@@ -61,7 +61,7 @@ class FakeDownloadTask final : public DownloadTask {
   void SetContentDisposition(const std::string& content_disposition);
   void SetMimeType(const std::string& mime_type);
   void SetResponseData(NSData* response_data);
-  void SetSuggestedFilename(const std::u16string& suggested_file_name);
+  void SetGeneratedFileName(const base::FilePath& generated_file_name);
   void SetPerformedBackgroundDownload(bool flag);
 
  private:
@@ -82,7 +82,7 @@ class FakeDownloadTask final : public DownloadTask {
   int percent_complete_ = -1;
   std::string original_mime_type_;
   std::string mime_type_;
-  std::u16string suggested_file_name_;
+  base::FilePath generated_file_name_;
   bool has_performed_background_download_ = false;
   __strong NSString* identifier_ = nil;
   base::FilePath response_path_;

@@ -122,9 +122,9 @@ std::string FakeDownloadTask::GetMimeType() const {
   return mime_type_;
 }
 
-std::u16string FakeDownloadTask::GetSuggestedFilename() const {
+base::FilePath FakeDownloadTask::GenerateFileName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return suggested_file_name_;
+  return generated_file_name_;
 }
 
 bool FakeDownloadTask::HasPerformedBackgroundDownload() const {
@@ -213,10 +213,10 @@ void FakeDownloadTask::SetMimeType(const std::string& mime_type) {
   OnDownloadUpdated();
 }
 
-void FakeDownloadTask::SetSuggestedFilename(
-    const std::u16string& suggested_file_name) {
+void FakeDownloadTask::SetGeneratedFileName(
+    const base::FilePath& generated_file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  suggested_file_name_ = suggested_file_name;
+  generated_file_name_ = generated_file_name;
   OnDownloadUpdated();
 }
 

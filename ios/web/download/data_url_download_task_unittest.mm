@@ -124,8 +124,8 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
       &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
 
-  base::FilePath path = scoped_temp_dir.GetPath().Append(
-      base::UTF16ToUTF8(task.GetSuggestedFilename()));
+  base::FilePath path =
+      scoped_temp_dir.GetPath().Append(task.GenerateFileName());
 
   StartTaskAndWaitUntilDone(&task, path);
 

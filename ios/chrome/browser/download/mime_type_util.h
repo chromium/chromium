@@ -7,6 +7,10 @@
 
 #include <string>
 
+namespace base {
+class FilePath;
+}
+
 // MIME type for iOS configuration file.
 extern char kMobileConfigurationType[];
 
@@ -69,6 +73,6 @@ extern char kLegacyPixarUsdzMimeType[];
 // 3D model. The file extension is checked in addition to the content-type since
 // many static file hosting services do not allow setting the content-type.
 bool IsUsdzFileFormat(const std::string& mime_type,
-                      const std::u16string& suggested_filename);
+                      const base::FilePath& suggested_filename);
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MIME_TYPE_UTIL_H_

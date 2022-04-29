@@ -42,7 +42,7 @@ const char kContentScalingSearchKey[] = "allowsContentScaling";
 // |download_task|.
 std::string GetMimeTypeSuffix(web::DownloadTask* download_task) {
   DCHECK(IsUsdzFileFormat(download_task->GetOriginalMimeType(),
-                          download_task->GetSuggestedFilename()));
+                          download_task->GenerateFileName()));
   return kUsdzMimeTypeHistogramSuffix;
 }
 
@@ -70,7 +70,7 @@ IOSDownloadARModelState GetHistogramEnum(web::DownloadTask* download_task) {
   }
   DCHECK(download_task->IsDone());
   if (!IsUsdzFileFormat(download_task->GetMimeType(),
-                        download_task->GetSuggestedFilename())) {
+                        download_task->GenerateFileName())) {
     return IOSDownloadARModelState::kWrongMimeTypeFailure;
   }
   if (download_task->GetHttpCode() == 401 ||
@@ -141,7 +141,7 @@ void ARQuickLookTabHelper::DidFinishDownload() {
   if (download_task_->GetHttpCode() == 401 ||
       download_task_->GetHttpCode() == 403 || download_task_->GetErrorCode() ||
       !IsUsdzFileFormat(download_task_->GetMimeType(),
-                        download_task_->GetSuggestedFilename())) {
+                        download_task_->GenerateFileName())) {
     return;
   }
 
@@ -187,10 +187,8 @@ void ARQuickLookTabHelper::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  std::u16string file_name = download_task_->GetSuggestedFilename();
-  base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
+  base::FilePath filename = download_task_->GenerateFileName();
+  base::FilePath path = destination_dir.Append(filename);
   download_task->Start(path, web::DownloadTask::Destination::kToDisk);
   LogHistogram(download_task_.get());
 }
