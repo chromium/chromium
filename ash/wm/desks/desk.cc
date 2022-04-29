@@ -74,6 +74,12 @@ void UpdateBackdropController(aura::Window* desk_container) {
   backdrop_controller->OnDeskContentChanged();
 }
 
+bool IsOverviewUiWindow(aura::Window* window) {
+  return window->GetId() == kShellWindowId_DesksBarWindow ||
+         window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
+         window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow;
+}
+
 // Returns true if |window| can be managed by the desk, and therefore can be
 // moved out of the desk when the desk is removed.
 bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
@@ -81,11 +87,8 @@ bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
   // container, therefore it should be allowed to move outside of its desk when
   // its desk is removed. The save desk as template widget is not activatable
   // but should also be moved to the next active desk.
-  if (window->GetId() == kShellWindowId_DesksBarWindow ||
-      window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
-      window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow) {
+  if (IsOverviewUiWindow(window))
     return true;
-  }
 
   // We never move transient descendants directly, this is taken care of by
   // `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
@@ -459,6 +462,30 @@ void Desk::Deactivate(bool update_window_activation) {
     wm::DeactivateWindow(active_window);
 }
 
+void Desk::MoveNonAppOverviewWindowsToDesk(Desk* target_desk) {
+  DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
+
+  {
+    // Wait until the end to allow notifying the observers of either desk.
+    auto this_desk_throttled = GetScopedNotifyContentChangedDisabler();
+    auto target_desk_throttled =
+        target_desk->GetScopedNotifyContentChangedDisabler();
+
+    // Create a `aura::WindowTracker` to hold `windows_`'s windows so that we do
+    // not edit `windows_` in place.
+    aura::WindowTracker window_tracker(windows_);
+
+    // Move only the non-app overview windows.
+    while (!window_tracker.windows().empty()) {
+      auto* window = window_tracker.Pop();
+      if (IsOverviewUiWindow(window))
+        MoveWindowToDeskInternal(window, target_desk, window->GetRootWindow());
+    }
+  }
+
+  target_desk->NotifyContentChanged();
+}
+
 void Desk::MoveWindowsToDesk(Desk* target_desk) {
   DCHECK(target_desk);
 
@@ -584,14 +611,9 @@ void Desk::UpdateDeskBackdrops() {
     UpdateBackdropController(GetDeskContainerForRoot(root));
 }
 
-void Desk::SetDeskBeingRemoved() {
-  is_desk_being_removed_ = true;
-}
-
-void Desk::RecordLifetimeHistogram() {
+void Desk::RecordLifetimeHistogram(int index) {
   // Desk index is 1-indexed in histograms.
-  const int desk_index =
-      Shell::Get()->desks_controller()->GetDeskIndex(this) + 1;
+  const int desk_index = index + 1;
   base::UmaHistogramCounts1000(
       base::StringPrintf("%s%i", kDeskLifetimeHistogramNamePrefix, desk_index),
       (base::Time::Now() - creation_time_).InHours());
@@ -624,37 +646,32 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
 }
 
 void Desk::CloseAllAppWindows() {
-  {
-    // We need to disable the desk notifying content has been changed here
-    // because the desk is going to be removed soon, so updating content here is
-    // unnecessary.
-    auto desk_throttled = GetScopedNotifyContentChangedDisabler();
+  // Content changed notifications for this desk should be disabled when
+  // we are destroying the windows.
+  auto throttle_desk_notifications = GetScopedNotifyContentChangedDisabler();
 
-    // We need to copy the app windows from `windows_` into `app_windows` so
-    // that we do not modify `windows_` in place. This also gives us a filtered
-    // list with all of the app windows that we need to remove.
-    std::vector<aura::Window*> app_windows;
-    base::ranges::copy_if(
-        windows_, std::back_inserter(app_windows), [](aura::Window* window) {
-          return window->GetProperty(aura::client::kAppType) !=
-                 static_cast<int>(AppType::NON_APP);
-        });
+  // We need to copy the app windows from `windows_` into `app_windows` so
+  // that we do not modify `windows_` in place. This also gives us a filtered
+  // list with all of the app windows that we need to remove.
+  std::vector<aura::Window*> app_windows;
+  base::ranges::copy_if(windows_, std::back_inserter(app_windows),
+                        [](aura::Window* window) {
+                          return window->GetProperty(aura::client::kAppType) !=
+                                 static_cast<int>(AppType::NON_APP);
+                        });
 
-    // We initialize `window_tracker` from the filtered `app_windows` list, and
-    // pop and close windows from the `window_tracker` list. This avoids us
-    // revisiting windows that may have already been indirectly closed due to
-    // the closure of other windows, as the `window_tracker` automatically
-    // removes windows when they are closed.
-    aura::WindowTracker window_tracker(app_windows);
-    while (!window_tracker.windows().empty()) {
-      aura::Window* window = window_tracker.Pop();
-      views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-      DCHECK(widget);
-      widget->CloseNow();
-    }
+  // We initialize `window_tracker` from the `app_windows` list, and
+  // pop and close windows from the `window_tracker` list. This avoids us
+  // revisiting windows that may have already been indirectly closed due to
+  // the closure of other windows, as the `window_tracker` automatically
+  // removes windows when they are closed.
+  aura::WindowTracker window_tracker(app_windows);
+  while (!window_tracker.windows().empty()) {
+    aura::Window* window = window_tracker.Pop();
+    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+    DCHECK(widget);
+    widget->CloseNow();
   }
-
-  NotifyContentChanged();
 }
 
 void Desk::MoveWindowToDeskInternal(aura::Window* window,

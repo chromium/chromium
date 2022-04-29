@@ -61,7 +61,8 @@ void NewDesk();
 // Removes the given `desk` and waits for the desk-removal animation to finish
 // if one would launch.
 // If `close_windows` is set to true, the windows in `desk` are closed as well.
-void RemoveDesk(const Desk* desk, bool close_windows = false);
+void RemoveDesk(const Desk* desk,
+                DeskCloseType close_type = DeskCloseType::kCombineDesks);
 
 // Returns the active desk.
 const Desk* GetActiveDesk();

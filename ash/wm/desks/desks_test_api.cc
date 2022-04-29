@@ -6,6 +6,7 @@
 
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/shell.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -92,8 +93,25 @@ DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(int index) {
 }
 
 // static
+views::LabelButton* DesksTestApi::GetCloseAllUndoToastDismissButton() {
+  ToastManagerImpl* toast_manager = Shell::Get()->toast_manager();
+  return toast_manager->GetCurrentOverlayForTesting()
+      ->dismiss_button_for_testing();
+}
+
+// static
 bool DesksTestApi::HasVerticalDotsButton() {
   return GetDesksBarView()->vertical_dots_button_;
+}
+
+// static
+bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
+  return DesksController::Get()->HasDesk(desk);
+}
+
+// static
+bool DesksTestApi::DesksControllerCanUndoDeskRemoval() {
+  return DesksController::Get()->temporary_removed_desk_ != nullptr;
 }
 
 // static

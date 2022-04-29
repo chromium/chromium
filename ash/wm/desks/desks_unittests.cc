@@ -24,6 +24,7 @@
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -300,7 +301,11 @@ class TestObserver : public DesksController::Observer {
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override {
-    desks_.emplace_back(desk);
+    const size_t new_desk_index = DesksController::Get()->GetDeskIndex(desk);
+    if (new_desk_index > desks_.size())
+      desks_.emplace_back(desk);
+    else
+      desks_.insert(desks_.begin() + new_desk_index, desk);
     EXPECT_TRUE(DesksController::Get()->AreDesksBeingModified());
   }
   void OnDeskRemoved(const Desk* desk) override {
@@ -7133,18 +7138,28 @@ TEST_F(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
     // We do it in this order so that we do not switch the active desk.
     if (test_case.source == CloseAllSource::kCloseAllButton) {
       ClickOnCloseAllButtonForDesk(1);
+      EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_2));
+      // `win1` and `win2` should both be valid at this point because `desk_2`
+      // is being preserved.
       EXPECT_TRUE(win1.is_valid());
-      EXPECT_FALSE(win2.is_valid());
+      EXPECT_TRUE(win2.is_valid());
 
       ClickOnCloseAllButtonForDesk(0);
-      EXPECT_FALSE(win1.is_valid());
-    } else if (test_case.source == CloseAllSource::kContextMenu) {
-      ExecuteContextMenuCloseAllForDesk(1);
+      EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_1));
       EXPECT_TRUE(win1.is_valid());
       EXPECT_FALSE(win2.is_valid());
+    } else if (test_case.source == CloseAllSource::kContextMenu) {
+      ExecuteContextMenuCloseAllForDesk(1);
+      EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_2));
+      // `win1` and `win2` should both be valid at this point because `desk_2`
+      // is being preserved.
+      EXPECT_TRUE(win1.is_valid());
+      EXPECT_TRUE(win2.is_valid());
 
       ExecuteContextMenuCloseAllForDesk(0);
-      EXPECT_FALSE(win1.is_valid());
+      EXPECT_FALSE(DesksTestApi::DesksControllerHasDesk(desk_1));
+      EXPECT_TRUE(win1.is_valid());
+      EXPECT_FALSE(win2.is_valid());
     }
 
     // Desk activation should have changed to `desk_3` and we should still be in
@@ -7155,6 +7170,180 @@ TEST_F(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
     // We should have one desk remaining, which means that `desks_bar_view` will
     // be in zero state, meaning that it will have no `DeskMiniView`s.
     EXPECT_TRUE(GetPrimaryRootDesksBarView()->mini_views().empty());
+  }
+}
+
+// Test that a stored desk is cleared when we add a desk.
+TEST_F(DesksCloseAllTest, ClearStoredDeskWhenDeskAdded) {
+  // Create two desks with one app window each.
+  WindowHolder win1(CreateAppWindow());
+  WindowHolder win2(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  controller->SendToDeskAtIndex(win1.window(), 0);
+  controller->SendToDeskAtIndex(win2.window(), 1);
+  Desk* desk_1 = controller->desks()[0].get();
+  Desk* desk_2 = controller->desks()[1].get();
+  ASSERT_EQ(1u, desk_1->windows().size());
+  ASSERT_EQ(1u, desk_2->windows().size());
+  ASSERT_TRUE(desk_1->is_active());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Remove `desk_2` to store it in the `controller`.
+  RemoveDesk(desk_2, DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_TRUE(desk_2->is_desk_being_removed());
+  ASSERT_EQ(1u, controller->desks().size());
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // Creating a new desk should clear the stored desk.
+  NewDesk();
+  EXPECT_EQ(2u, controller->desks().size());
+  EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+}
+
+// Test that a stored desk is cleared when closing another desk. If the second
+// desk is being removed by a close-all-and-wait operation, then the second desk
+// should replace the first desk in storage. If the second desk is being removed
+// by a combine desks operation or an immediate close-all operation, then the
+// stored desk should be cleared.
+TEST_F(DesksCloseAllTest, ClearStoredDeskWhenClosingAnotherDesk) {
+  // These test cases are differentiated on whether they use the
+  // close-all-and-wait operation to remove the second desk (where
+  // `desk_close_type` is `DeskCloseType::kCloseAllWindowsAndWait`), if they
+  // use the combine desks operation to remove the second desk (where
+  // `desk_close_type` is `DeskCloseType::kCombineDesks), or if they use the
+  // immediate close-all operation to remove the second desk (where
+  // `desk_close_type` is `DeskCloseType::kCloseAllWindows`).
+  struct {
+    const std::string scope_trace;
+    const DeskCloseType desk_close_type;
+  } kTestCases[] = {
+      {"Remove second desk with close-all-and-wait",
+       DeskCloseType::kCloseAllWindowsAndWait},
+      {"Remove second desk with combine desks", DeskCloseType::kCombineDesks},
+      {"Remove second desk with close-all", DeskCloseType::kCloseAllWindows},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    // Create two desks with one app window each.
+    WindowHolder win1(CreateAppWindow());
+    WindowHolder win2(CreateAppWindow());
+
+    // Create one additional desk (so that we can remove the first two).
+    NewDesk();
+    NewDesk();
+    auto* controller = DesksController::Get();
+    controller->SendToDeskAtIndex(win1.window(), 0);
+    controller->SendToDeskAtIndex(win2.window(), 1);
+    Desk* desk_1 = controller->desks()[0].get();
+    Desk* desk_2 = controller->desks()[1].get();
+    Desk* desk_3 = controller->desks()[2].get();
+    ASSERT_EQ(1u, desk_1->windows().size());
+    ASSERT_EQ(1u, desk_2->windows().size());
+    ASSERT_EQ(0u, desk_3->windows().size());
+    ASSERT_TRUE(desk_1->is_active());
+
+    EnterOverview();
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+    // Remove `desk_1` by a close-all-and-wait operation to store it in the
+    // `controller`.
+    RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
+    ASSERT_TRUE(desk_1->is_desk_being_removed());
+    ASSERT_EQ(2u, controller->desks().size());
+    ASSERT_TRUE(desk_2->is_active());
+    ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+    RemoveDesk(desk_2, test_case.desk_close_type);
+    EXPECT_EQ(1u, controller->desks().size());
+    EXPECT_NE(desk_1, controller->desks()[0].get());
+    EXPECT_NE(desk_2, controller->desks()[0].get());
+
+    switch (test_case.desk_close_type) {
+      case DeskCloseType::kCloseAllWindowsAndWait:
+        // If we are waiting after using close-all to remove the second desk,
+        // then desk_2 should still be preserved, and will maintain
+        // `desk_2->is_desk_being_removed()` to be true.
+        EXPECT_TRUE(desk_2->is_desk_being_removed());
+        EXPECT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+        break;
+      case DeskCloseType::kCombineDesks:
+      case DeskCloseType::kCloseAllWindows:
+        // `kCombineDesks` and `kCloseAllWindows` should both clear the removed
+        // desk immediately.
+        EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+        break;
+    }
+  }
+}
+
+// Tests that a desk that is closed with all of its windows is restored to its
+// original position and its original active state when the undo callback is
+// run. Also tests that a desk is destroyed when we allow for the undo toast to
+// expire.
+TEST_F(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
+  // These test cases are differentiated by whether they run the undo toast's
+  // callback to restore the desk (when `restore_desk` is true) or if they let
+  // the undo toast expire and destroy the removed desk (when `restore_desk` is
+  // false).
+  struct {
+    const std::string scope_trace;
+    const bool restore_desk;
+  } kTestCases[] = {
+      {"Restore removed desk by undo", true},
+      {"Allow undo toast to expire", false},
+  };
+
+  WindowHolder window(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  controller->SendToDeskAtIndex(window.window(), 0);
+  Desk* desk_1 = controller->desks()[0].get();
+  Desk* desk_2 = controller->desks()[1].get();
+  ASSERT_EQ(1u, desk_1->windows().size());
+  ASSERT_EQ(0u, desk_2->windows().size());
+  ASSERT_TRUE(desk_1->is_active());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
+    ASSERT_TRUE(desk_1->is_desk_being_removed());
+    ASSERT_EQ(1u, controller->desks().size());
+    ASSERT_TRUE(desk_2->is_active());
+    ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+    ASSERT_TRUE(window.is_valid());
+
+    if (test_case.restore_desk) {
+      // When `desk_1` is restored it should be back in its original position
+      // and should be active again.
+      views::LabelButton* dismiss_button =
+          DesksTestApi::GetCloseAllUndoToastDismissButton();
+      const gfx::Point button_center =
+          dismiss_button->GetBoundsInScreen().CenterPoint();
+      auto* event_generator = GetEventGenerator();
+      event_generator->MoveMouseTo(button_center);
+      event_generator->ClickLeftButton();
+      EXPECT_FALSE(desk_1->is_desk_being_removed());
+      EXPECT_EQ(2u, controller->desks().size());
+      EXPECT_TRUE(desk_1->is_active());
+      EXPECT_EQ(desk_1, controller->desks()[0].get());
+      EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+      EXPECT_TRUE(window.is_valid());
+    } else {
+      // When we wait for the undo toast to expire, `desk_1` should be
+      // destroyed.
+      WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
+      EXPECT_EQ(1u, controller->desks().size());
+      EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+      EXPECT_FALSE(window.is_valid());
+    }
   }
 }
 

@@ -73,6 +73,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
  private:
   friend class ToastManagerImplTest;
+  friend class DesksTestApi;
 
   class ToastDisplayObserver;
 

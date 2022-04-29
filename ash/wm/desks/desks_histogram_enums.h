@@ -46,7 +46,8 @@ enum class DesksSwitchSource {
   kPersistentDesksBar = 7,
   kLaunchTemplate = 8,
   kIndexedDeskSwitchShortcut = 9,
-  kMaxValue = kIndexedDeskSwitchShortcut,
+  kRemovalUndone = 10,
+  kMaxValue = kRemovalUndone,
 };
 
 }  // namespace ash

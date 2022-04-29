@@ -71,14 +71,13 @@ void NewDesk() {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
 }
 
-void RemoveDesk(const Desk* desk, bool close_windows) {
+void RemoveDesk(const Desk* desk, DeskCloseType close_type) {
   auto* controller = DesksController::Get();
   const bool in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
   const bool should_wait = controller->active_desk() == desk && !in_overview;
   DeskSwitchAnimationWaiter waiter;
-  controller->RemoveDesk(desk, DesksCreationRemovalSource::kButton,
-                         close_windows);
+  controller->RemoveDesk(desk, DesksCreationRemovalSource::kButton, close_type);
   if (should_wait)
     waiter.Wait();
 }

@@ -369,7 +369,7 @@ void HandleRemoveCurrentDesk() {
   // UX. https://crbug.com/977434.
   desks_controller->RemoveDesk(desks_controller->active_desk(),
                                DesksCreationRemovalSource::kKeyboard,
-                               /*close_windows=*/false);
+                               DeskCloseType::kCombineDesks);
   base::RecordAction(base::UserMetricsAction("Accel_Desks_RemoveDesk"));
 }
 

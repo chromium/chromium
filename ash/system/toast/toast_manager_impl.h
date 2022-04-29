@@ -44,6 +44,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class ToastManagerImplTest;
   friend class BluetoothNotificationControllerTest;
   friend class AutoConnectNotifierTest;
+  friend class DesksTestApi;
 
   void ShowLatest();
   void OnDurationPassed(int toast_number);

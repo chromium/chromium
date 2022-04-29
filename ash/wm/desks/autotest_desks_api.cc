@@ -180,7 +180,7 @@ bool AutotestDesksApi::RemoveActiveDesk(base::OnceClosure on_complete) {
   new DeskAnimationObserver(std::move(on_complete));
   controller->RemoveDesk(controller->active_desk(),
                          DesksCreationRemovalSource::kButton,
-                         /*close_windows=*/false);
+                         DeskCloseType::kCombineDesks);
   return true;
 }
 

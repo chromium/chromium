@@ -341,7 +341,7 @@ TEST_F(OverviewWindowDragControllerTest,
   auto* controller = Shell::Get()->desks_controller();
   controller->RemoveDesk(controller->desks().back().get(),
                          DesksCreationRemovalSource::kButton,
-                         /*close_windows=*/false);
+                         DeskCloseType::kCombineDesks);
   EXPECT_TRUE(overview_controller()->InOverviewSession());
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
@@ -521,7 +521,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   auto* desks_controller = DesksController::Get();
   DesksController::Get()->RemoveDesk(desks_controller->desks()[1].get(),
                                      DesksCreationRemovalSource::kButton,
-                                     /*close_windows=*/false);
+                                     DeskCloseType::kCombineDesks);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Check desks bar still exists after desk2 gets removed.

@@ -3228,7 +3228,7 @@ TEST_P(OverviewSessionTest, ClosingTransientTree) {
   // that over here. See crbug.com/1317875.
   auto* controller = DesksController::Get();
   controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  RemoveDesk(controller->active_desk(), /*close_windows=*/false);
+  RemoveDesk(controller->active_desk(), DeskCloseType::kCombineDesks);
 
   OverviewItem* item = GetOverviewItemForWindow(window);
   ASSERT_TRUE(item);

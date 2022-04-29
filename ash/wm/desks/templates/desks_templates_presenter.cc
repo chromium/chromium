@@ -379,7 +379,7 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
 
       desks_controller->RemoveDesk(active_desk,
                                    DesksCreationRemovalSource::kSaveAndRecall,
-                                   /*close_windows=*/true);
+                                   DeskCloseType::kCloseAllWindows);
     }
 
     RecordNewTemplateHistogram();

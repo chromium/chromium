@@ -142,7 +142,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
   // to false depending on whether the `kDesksCloseAll` feature is active, and
   // then removes the desk. If `close_windows` is true, the function tells the
-  // `DesksController` to remove `desk_`'s windows as well.
+  // `DesksController` to remove `desk_`'s windows as well, and wait for the
+  // user to confirm.
   void OnRemovingDesk(bool close_windows);
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`

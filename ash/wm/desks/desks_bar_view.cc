@@ -877,8 +877,6 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   DCHECK_LE(mini_views_.size(), desks.size());
 
   const int begin_x = GetFirstMiniViewXOffset();
-  std::vector<DeskMiniView*> new_mini_views;
-
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
 
@@ -886,6 +884,7 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   // insert new mini views in a position in `mini_views_` that corresponds to
   // their index in the `DeskController`'s list of desks.
   int mini_view_index = 0;
+  std::vector<DeskMiniView*> new_mini_views;
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
       DeskMiniView* mini_view = scroll_view_contents_->AddChildViewAt(
