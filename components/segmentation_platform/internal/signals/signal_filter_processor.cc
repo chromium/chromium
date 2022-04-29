@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -125,6 +126,10 @@ void SignalFilterProcessor::FilterSignals(
   if (history_observer_) {
     history_observer_->SetHistoryBasedSegments(
         std::move(extractor.history_based_segments));
+  }
+  for (const auto& segment_info : segment_infos) {
+    storage_service_->signal_storage_config()->OnSignalCollectionStarted(
+        segment_info->segment_info.model_metadata());
   }
 }
 

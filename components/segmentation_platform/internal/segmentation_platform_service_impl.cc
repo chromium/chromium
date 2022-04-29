@@ -18,9 +18,7 @@
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
@@ -192,8 +190,6 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
          metadata_utils::ValidationResult::kValidationSuccess);
 
-  storage_service_->signal_storage_config()->OnSignalCollectionStarted(
-      segment_info.model_metadata());
   signal_handler_.OnSignalListUpdated();
 
   execution_service_.OnNewModelInfoReady(segment_info);

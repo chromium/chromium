@@ -175,10 +175,6 @@ class SegmentationPlatformServiceImplTest
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
-    // Since the updated config had a new feature, the SignalStorageConfigs DB
-    // should have been updated.
-    segment_storage_config_db_->UpdateCallback(true);
-
     // The SignalFilterProcessor needs to read the segment information from the
     // database before starting to listen to the updated signals.
     segment_db_->LoadCallback(true);

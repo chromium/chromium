@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
@@ -116,9 +117,12 @@ class SignalFilterProcessorTest : public testing::Test {
     auto moved_segment_database =
         std::make_unique<test::TestSegmentInfoDatabase>();
     segment_database_ = moved_segment_database.get();
+    auto moved_signal_config = std::make_unique<MockSignalStorageConfig>();
+    signal_storage_config_ = moved_signal_config.get();
     ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
     storage_service_ = std::make_unique<StorageService>(
-        std::move(moved_segment_database), nullptr, nullptr,
+        std::move(moved_segment_database), nullptr,
+        std::move(moved_signal_config),
         std::make_unique<TestDefaultModelManager>(), ukm_data_manager_.get());
 
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
@@ -134,6 +138,7 @@ class SignalFilterProcessorTest : public testing::Test {
   std::unique_ptr<MockUkmDataManager> ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  raw_ptr<MockSignalStorageConfig> signal_storage_config_;
 };
 
 TEST_F(SignalFilterProcessorTest, UserActionRegistrationFlow) {
@@ -150,6 +155,7 @@ TEST_F(SignalFilterProcessorTest, UserActionRegistrationFlow) {
   EXPECT_CALL(*user_action_signal_handler_, SetRelevantUserActions(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&actions));
+  EXPECT_CALL(*signal_storage_config_, OnSignalCollectionStarted(_)).Times(2);
 
   signal_filter_processor_->OnSignalListUpdated();
   ASSERT_THAT(actions, Contains(base::HashMetricName(kUserActionName1)));
@@ -174,6 +180,7 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
   EXPECT_CALL(*histogram_signal_handler_, SetRelevantHistograms(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&histograms));
+  EXPECT_CALL(*signal_storage_config_, OnSignalCollectionStarted(_)).Times(2);
 
   signal_filter_processor_->OnSignalListUpdated();
   ASSERT_THAT(histograms,
@@ -218,7 +225,6 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
   segment_database_->AddSqlFeature(kSegmentId, "", config2);
 
   config2.Merge(config1);
-  UkmConfig actual_config;
 
   EXPECT_CALL(*ukm_data_manager_, StartObservingUkm(_))
       .Times(1)
@@ -228,6 +234,7 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
   EXPECT_CALL(*history_observer_,
               SetHistoryBasedSegments(
                   base::flat_set<OptimizationTarget>({kSegmentId})));
+  EXPECT_CALL(*signal_storage_config_, OnSignalCollectionStarted(_));
   signal_filter_processor_->OnSignalListUpdated();
 }
 
