@@ -29,7 +29,7 @@ class Decompression : public base::RefCountedThreadSafe<Decompression> {
   // string then can be further updated by the caller. std::string is used
   // instead of base::StringPiece because ownership is taken of |record| through
   // std::move(record).
-  static std::string DecompressRecord(
+  [[nodiscard]] static std::string DecompressRecord(
       std::string record,
       CompressionInformation compression_information);
 

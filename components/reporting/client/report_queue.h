@@ -147,7 +147,8 @@ class ReportQueue {
 
   // Prepares a callback to attach actual queue to the speculative.
   // Implemented only in SpeculativeReportQueue, CHECKs in a regular one.
-  virtual base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
+  [[nodiscard]] virtual base::OnceCallback<
+      void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const = 0;
 
  protected:
