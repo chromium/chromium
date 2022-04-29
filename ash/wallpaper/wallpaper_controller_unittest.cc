@@ -3790,9 +3790,9 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, UpdateDailyRefreshWallpaper) {
   EXPECT_EQ(expected, client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
-// Disabled due to flakes; see https://crrev.com/1320991.
+// Disabled due to flakes; see crbug/1320991.
 TEST_F(WallpaperControllerWallpaperWebUiTest,
-       DSAIBLED_UpdateDailyRefreshWallpaperCalledOnLogin) {
+       DISABLED_UpdateDailyRefreshWallpaperCalledOnLogin) {
   SimulateUserLogin(account_id_1);
 
   WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
