@@ -78,7 +78,9 @@ DlpRulesManager::Component GetComponentMapping(const std::string& component) {
       base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Component>(
           {{dlp::kArc, DlpRulesManager::Component::kArc},
            {dlp::kCrostini, DlpRulesManager::Component::kCrostini},
-           {dlp::kPluginVm, DlpRulesManager::Component::kPluginVm}});
+           {dlp::kPluginVm, DlpRulesManager::Component::kPluginVm},
+           {dlp::kDrive, DlpRulesManager::Component::kDrive},
+           {dlp::kUsb, DlpRulesManager::Component::kUsb}});
 
   auto* it = kComponentsMap.find(component);
   return (it == kComponentsMap.end())
@@ -302,7 +304,8 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     Restriction restriction,
     std::string* out_source_pattern) const {
   DCHECK(src_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard);
+  DCHECK(restriction == Restriction::kClipboard ||
+         restriction == Restriction::kFiles);
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
@@ -477,19 +480,26 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
       if (rule_level == Level::kNotSet)
         continue;
 
+      bool rule_has_destinations =
+          destinations_urls && !destinations_urls->GetList().empty();
+      bool rule_has_components = destinations_components &&
+                                 !destinations_components->GetList().empty();
+
       // TODO(crbug.com/1172959): Implement Warn level for Files.
-      if (rule_restriction == Restriction::kFiles && destinations_urls &&
-          !destinations_urls->GetListDeprecated().empty() &&
+      if (rule_restriction == Restriction::kFiles &&
+          (rule_has_destinations || rule_has_components) &&
           rule_level != Level::kWarn) {
         ::dlp::DlpFilesRule files_rule;
-        for (const auto& url : sources_urls->GetListDeprecated()) {
+        for (const auto& url : sources_urls->GetList()) {
           DCHECK(url.is_string());
           files_rule.add_source_urls(url.GetString());
         }
-        for (const auto& url : destinations_urls->GetListDeprecated()) {
+        for (const auto& url : destinations_urls->GetList()) {
           DCHECK(url.is_string());
           files_rule.add_destination_urls(url.GetString());
         }
+        // TODO(crbug.com/1321088): Add components to SetDlpFilesPolicyRequest.
+
         files_rule.set_level(GetLevelProtoEnum(rule_level));
         request_to_daemon.mutable_rules()->Add(std::move(files_rule));
       }

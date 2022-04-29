@@ -21,6 +21,8 @@ constexpr char kFilesRestriction[] = "FILES";
 constexpr char kArc[] = "ARC";
 constexpr char kCrostini[] = "CROSTINI";
 constexpr char kPluginVm[] = "PLUGIN_VM";
+constexpr char kDrive[] = "DRIVE";
+constexpr char kUsb[] = "USB";
 
 constexpr char kAllowLevel[] = "ALLOW";
 constexpr char kBlockLevel[] = "BLOCK";
