@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">डिवाइस किस तरह का है, इसके बारे में जानकारी नहीं है.</translation>
 <translation id="3966286471246132217">ज़्यादा सटीक नतीजों के लिए, टेस्ट पूरा होने तक सभी ऐप्लिकेशन बंद रखें.</translation>
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
+<translation id="3969602104473960991">ChromeOS का पासवर्ड बदला गया</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3993704782688964914">अब आपका <ph name="DEVICE_NAME" /> अप-टू-डेट है</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">अप ऐरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> के अलावा <ph name="NUMBER" /> और एल्बम</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
+<translation id="6122277663991249694">ChromeOS के इनपुट के तरीके से जुड़ी सेवा</translation>
 <translation id="6137767437444130246">उपयोगकर्ता प्रमाणपत्र</translation>
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -514,7 +516,7 @@
 <translation id="6647510110698214773">एन्क्रिप्शन का एल्गोरिदम</translation>
 <translation id="6650062777702288430">काना/अक्षर और अंक स्विच करने वाला बटन</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6659594942844771486">टैब</translation>
+<translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6723839937902243910">पावर</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">डिवाइस में पहले से मौजूद कीबोर्ड</translation>
+<translation id="8431300646573772016">ChromeOS में नया क्या है</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिविटी</translation>
 <translation id="844521431886043384">डीएनएस सेट अप नहीं किया गया है</translation>
 <translation id="8461329675984532579">'होम' पर सेवाएं देने वाली कंपनी का नाम</translation>

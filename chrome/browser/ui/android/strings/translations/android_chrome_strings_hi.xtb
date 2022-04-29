@@ -30,6 +30,7 @@
 <translation id="1146678959555564648">VR डालें</translation>
 <translation id="114825011539563458">निजता और सुरक्षा की सबसे अहम सेटिंग, एक जगह पर</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
 <translation id="1154704303112745282">यह पेज ऑफ़लाइन उपलब्ध नहीं है: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">"मुख्य साइटें" बटन पर टैप करके लोकप्रिय साइटें देखें</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
@@ -208,6 +209,7 @@
 <translation id="2126426811489709554">Chrome के द्वारा संचालित</translation>
 <translation id="2132122640199389833">लिंक किए गए सभी डिवाइस हटाएं</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
+<translation id="2134927169889348449">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं.</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
 <translation id="2141396931810938595">आपके इस्तेमाल करने के हिसाब से</translation>
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
@@ -392,6 +394,7 @@
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3066573403916685335">नीचे ले जाएं</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, <ph name="BEGIN_LINK3" />निजता नीति<ph name="END_LINK3" /> भी लागू होगी.</translation>
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
@@ -583,6 +586,7 @@
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
 <translation id="4290281343757112331">क्या आप बाद में डाउनलोड करना चाहते हैं?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग में, स्क्रीन लॉक चालू करें<ph name="END_LINK" /></translation>
+<translation id="4293476595220860475">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं. साथ ही, <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> भी लागू होगी.</translation>
 <translation id="4296252229500326964">नया गुप्त टैब</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1028,7 +1032,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
 <translation id="6649642165559792194">इमेज की झलक देखें <ph name="BEGIN_NEW" />नई<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6659594942844771486">टैब</translation>
+<translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="6671495933530132209">चित्र की कॉपी बनाएं</translation>
 <translation id="6674044799624355221">नए खतरों का पता लगाने के लिए, पेज के नमूने, डाउनलोड, एक्सटेंशन की गतिविधि, और सिस्टम की जानकारी भेजी जाती है</translation>
@@ -1048,6 +1052,7 @@
 <translation id="6767294960381293877">टैब शेयर करने के लिए चुने जाने वाले डिवाइस की सूची आधी खुली हुई है.</translation>
 <translation id="6770602306803890733">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है</translation>
 <translation id="6783942555455976443">इस पेज को बाद के लिए सेव करें और रिमाइंडर पाएं</translation>
+<translation id="6785476624617658922">Chrome और ChromeOS की सेवा की अन्य शर्तें</translation>
 <translation id="6795633245022906657">फटाफट एक नया टैब खोलें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="6802555630140434547">विंडो बंद हो जाएगी</translation>
 <translation id="6811034713472274749">पेज देखने के लिए तैयार है</translation>

@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">आपकी यूएसबी-सी केबल Thunderbolt पर काम नहीं करती है. डिवाइस की परफ़ॉर्मेंस पर बुरा असर पड़ सकता है.</translation>
 <translation id="2108303511227308752">Alt + Backspace कीबोर्ड शॉर्टकट बदल गया है. Delete बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + backspace दबाएं.</translation>
 <translation id="211328683600082144">माइक्रोफ़ोन चालू करें</translation>
+<translation id="2123115117533398272">ChromeOS नए कॉन्टेंट को एक्सप्लोर करने से जुड़े सुझाव देता है. यह क्वालिटी को बेहतर बनाने के लिए सिर्फ़ तब आंकड़े भेजता है, जब आपने इस्तेमाल के बारे में जानकारी देने वाला डेटा शेयर करने का विकल्प चुना हो. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">नया डेस्क</translation>
 <translation id="2127372758936585790">कम-शक्ति वाला चार्जर</translation>
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="263399434338050016">"सभी को चुनें"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">विंडो कैप्चर</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2658778018866295321">क्लिक करके खींचें और छोड़ें</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">कनेक्ट है</translation>
 <translation id="3378442621503952303">प्रोफ़ाइल से कनेक्ट किया जा रहा है. थोड़ा इंतज़ार करें.</translation>
 <translation id="3386978599540877378">सामग्री को बड़ा दिखाने की फ़ुल-स्क्रीन की सुविधा</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">अतिरिक्त सेटिंग</translation>
 <translation id="3410336247007142655">गहरे रंग वाली थीम की सेटिंग दिखाएं</translation>
 <translation id="3413817803639110246">अभी देखने के लिए कुछ भी नहीं है</translation>
