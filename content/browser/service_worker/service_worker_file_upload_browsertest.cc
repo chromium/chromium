@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "build/build_config.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -391,7 +392,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest,
 }
 
 // Tests a subresource request.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, Subresource) {
+// Flaky on Android; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Subresource DISABLED_Subresource
+#else
+#define MAYBE_Subresource Subresource
+#endif
+IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, MAYBE_Subresource) {
   // Prepare a file for the upload form.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -412,8 +419,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, Subresource) {
 
 // Tests a subresource request where the filename is non-ascii. Regression test
 // for https://crbug.com/1017184.
+// Flaky on Android; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Subresource_NonAsciiFilename DISABLED_Subresource_NonAsciiFilename
+#else
+#define MAYBE_Subresource_NonAsciiFilename Subresource_NonAsciiFilename
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest,
-                       Subresource_NonAsciiFilename) {
+                       MAYBE_Subresource_NonAsciiFilename) {
   // "こんにちは"
   const base::FilePath::CharType nonAsciiFilename[] =
       FILE_PATH_LITERAL("\u3053\u3093\u306B\u3061\u306F");
