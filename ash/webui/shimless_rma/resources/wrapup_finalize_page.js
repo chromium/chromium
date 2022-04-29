@@ -11,7 +11,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
+import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
 const finalizationStatusTextKeys = {
@@ -76,8 +76,6 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    /** @private {boolean} */
-    this.finalizationComplete_ = false;
     /**
      * Receiver responsible for observing hardware write protection state.
      * @private {?FinalizationObserverReceiver}
@@ -95,27 +93,17 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
    */
   onFinalizationUpdated(status, progress) {
     this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
-    this.finalizationComplete_ = status === FinalizationStatus.kComplete ||
-        status === FinalizationStatus.kFailedNonBlocking;
 
-    if (this.finalizationComplete_) {
-      enableNextButton(this);
-    } else {
-      disableNextButton(this);
+    if (status === FinalizationStatus.kComplete) {
+      executeThenTransitionState(
+          this, () => this.shimlessRmaService_.finalizationComplete());
+      return;
     }
+
     this.shouldShowSpinner_ = status === FinalizationStatus.kInProgress;
     this.shouldShowRetryButton_ =
         status === FinalizationStatus.kFailedBlocking ||
         status === FinalizationStatus.kFailedNonBlocking;
-  }
-
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.finalizationComplete_) {
-      return this.shimlessRmaService_.finalizationComplete();
-    } else {
-      return Promise.reject(new Error('Finalization is not complete.'));
-    }
   }
 
   /** @private */

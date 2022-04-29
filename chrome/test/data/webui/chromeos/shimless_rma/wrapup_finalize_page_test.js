@@ -69,38 +69,19 @@ export function wrapupFinalizePageTest() {
     assertFalse(manualEnableComponent.hidden);
   });
 
-  test('FinalizationIncompleteDisablesNext', async () => {
-    await initializeFinalizePage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'Finalization is not complete.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('FinalizationCompleteEnablesNext', async () => {
+  test('FinalizationCompleteAutoTransitions', async () => {
     const resolver = new PromiseResolver();
     await initializeFinalizePage();
-    service.triggerFinalizationObserver(FinalizationStatus.kComplete, 1.0, 0);
-    await flushTasks();
+
+    let callCount = 0;
     service.finalizationComplete = () => {
+      callCount++;
       return resolver.promise;
     };
-
-    const expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
+    service.triggerFinalizationObserver(FinalizationStatus.kComplete, 1.0, 0);
     await flushTasks();
 
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCount);
   });
 
   test('FinalizationFailedBlockingRetry', async () => {

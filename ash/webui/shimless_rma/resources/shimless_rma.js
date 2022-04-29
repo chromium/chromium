@@ -201,7 +201,7 @@ export const StateComponentMapping = {
   },
   [State.kFinalize]: {
     componentIs: 'wrapup-finalize-page',
-    buttonNext: ButtonState.VISIBLE,
+    buttonNext: ButtonState.HIDDEN,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
