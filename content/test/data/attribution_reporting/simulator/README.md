@@ -1,6 +1,6 @@
 JSON schema for the input of the simulator.
 
-```json
+```jsonc
 {
   // List of zero or more sources to register.
   "sources": [
