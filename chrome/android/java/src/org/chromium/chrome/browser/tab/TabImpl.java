@@ -568,18 +568,24 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void reload() {
+        NativePage nativePage = getNativePage();
+        if (nativePage != null) {
+            nativePage.reload();
+            return;
+        }
+
         // TODO(dtrainor): Should we try to rebuild the ContentView if it's frozen?
         if (OfflinePageUtils.isOfflinePage(this)) {
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.
             OfflinePageUtils.reload(getWebContents(),
                     /*loadUrlDelegate=*/new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(this));
-        } else {
-            if (getWebContents() != null) {
-                switchUserAgentIfNeeded();
-                getWebContents().getNavigationController().reload(true);
-            }
+            return;
         }
+
+        if (getWebContents() == null) return;
+        switchUserAgentIfNeeded();
+        getWebContents().getNavigationController().reload(true);
     }
 
     @Override

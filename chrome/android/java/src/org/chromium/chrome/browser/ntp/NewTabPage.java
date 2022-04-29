@@ -905,6 +905,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     public void updateForUrl(String url) {
     }
 
+    @Override
+    public void reload() {
+        mFeedSurfaceProvider.reload();
+    }
+
     // InvalidationAwareThumbnailProvider
 
     @Override

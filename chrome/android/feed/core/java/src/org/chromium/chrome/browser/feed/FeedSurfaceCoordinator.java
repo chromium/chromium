@@ -423,6 +423,13 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     }
 
     @Override
+    public void reload() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
+            onRefresh();
+        }
+    }
+
+    @Override
     public void onRefresh() {
         updateReloadButtonVisibility(/*isReloading=*/true);
         if (mReliabilityLogger != null) {
@@ -430,8 +437,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                     SystemClock.elapsedRealtimeNanos());
         }
         mMediator.manualRefresh((Boolean v) -> {
-            if (mSwipeRefreshLayout == null) return;
             updateReloadButtonVisibility(/*isReloading=*/false);
+            if (mSwipeRefreshLayout == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
         });
         getFeatureEngagementTracker().notifyEvent(EventConstants.FEED_SWIPE_REFRESHED);

@@ -56,4 +56,9 @@ public interface FeedSurfaceProvider {
      */
     @Nullable
     FeedReliabilityLogger getReliabilityLogger();
+
+    /**
+     * Reloads the contents.
+     */
+    void reload();
 }

@@ -71,6 +71,11 @@ public interface NativePage {
     }
 
     /**
+     * Reloads the native page.
+     */
+    default void reload() {}
+
+    /**
      * @return True if the native page needs the toolbar shadow to be drawn.
      */
     boolean needsToolbarShadow();
