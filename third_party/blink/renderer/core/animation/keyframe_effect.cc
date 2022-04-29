@@ -340,6 +340,11 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
   // no visual result.
   if (!effect_target_) {
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+  } else if (!IsCurrent()) {
+    // There is no reason to composite an effect that is not current, and
+    // CheckCanStartAnimationOnCompositor might assert about having some but
+    // not all properties if we call it on such an animation.
+    reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
   } else {
     if (effect_target_->GetComputedStyle() &&
         effect_target_->GetComputedStyle()->HasOffset())

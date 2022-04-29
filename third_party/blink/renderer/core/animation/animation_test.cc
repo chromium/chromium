@@ -107,11 +107,11 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
 
   KeyframeEffectModelBase* MakeSimpleEffectModel() {
     PropertyHandle PropertyHandleOpacity(GetCSSPropertyOpacity());
+    static CSSNumberInterpolationType opacity_type(PropertyHandleOpacity);
     TransitionKeyframe* start_keyframe =
         MakeGarbageCollected<TransitionKeyframe>(PropertyHandleOpacity);
     start_keyframe->SetValue(std::make_unique<TypedInterpolationValue>(
-        CSSNumberInterpolationType(PropertyHandleOpacity),
-        std::make_unique<InterpolableNumber>(1.0)));
+        opacity_type, std::make_unique<InterpolableNumber>(1.0)));
     start_keyframe->SetOffset(0.0);
     // Egregious hack: Sideload the compositor value.
     // This is usually set in a part of the rendering process SimulateFrame
@@ -121,8 +121,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     TransitionKeyframe* end_keyframe =
         MakeGarbageCollected<TransitionKeyframe>(PropertyHandleOpacity);
     end_keyframe->SetValue(std::make_unique<TypedInterpolationValue>(
-        CSSNumberInterpolationType(PropertyHandleOpacity),
-        std::make_unique<InterpolableNumber>(0.0)));
+        opacity_type, std::make_unique<InterpolableNumber>(0.0)));
     end_keyframe->SetOffset(1.0);
     // Egregious hack: Sideload the compositor value.
     end_keyframe->SetCompositorValue(
@@ -1813,6 +1812,7 @@ TEST_P(AnimationAnimationTestCompositing,
   scroll_animation->play();
   EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
             CompositorAnimations::kNoFailure);
+  UpdateAllLifecyclePhasesForTest();
   // Start the animation on compositor. The time offset of the compositor
   // keyframe should be unset if we start the animation with its start time.
   scroll_animation->PreCommit(1, nullptr, true);
@@ -1935,6 +1935,7 @@ TEST_P(AnimationAnimationTestCompositing,
 
   scroll_animation->play();
   EXPECT_EQ(scroll_animation->playState(), "running");
+  UpdateAllLifecyclePhasesForTest();
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(scroll_animation->HasActiveAnimationsOnCompositor());
 

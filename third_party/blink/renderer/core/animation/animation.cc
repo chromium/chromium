@@ -2132,7 +2132,7 @@ void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
   }
 
   Element* target = keyframe_effect->EffectTarget();
-  if (target && keyframe_effect->Model()) {
+  if (target && keyframe_effect->Model() && keyframe_effect->IsCurrent()) {
     compositor_property_animations_have_no_effect_ =
         CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
             *target, *keyframe_effect->Model(), paint_artifact_compositor);

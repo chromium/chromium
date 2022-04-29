@@ -479,6 +479,7 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoTarget) {
 TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
   const double animation_playback_rate = 1;
   Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
   StringKeyframeVector keyframes(2);
   keyframes[0] = MakeGarbageCollected<StringKeyframe>();
@@ -495,6 +496,8 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
       MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   auto* keyframe_effect =
       MakeGarbageCollected<KeyframeEffect>(element, effect_model, timing);
+  Animation* animation = GetDocument().Timeline().Play(keyframe_effect);
+  (void)animation;
 
   // If the target has a CSS offset we can't composite it.
   element->SetInlineStyleProperty(CSSPropertyID::kOffsetPosition, "50px 50px");
