@@ -265,6 +265,8 @@ PaymentHandlerWebFlowViewController::GetHeaderBackground(
   auto default_header_background =
       PaymentRequestSheetController::GetHeaderBackground(header_view);
   if (web_contents() && header_view->GetWidget()) {
+    // Make sure the color is actually set before using it.
+    default_header_background->OnViewThemeChanged(header_view);
     return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
         web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
         default_header_background->get_color()));
