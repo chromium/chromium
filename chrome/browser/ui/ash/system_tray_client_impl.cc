@@ -414,14 +414,8 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
 }
 
 void SystemTrayClientImpl::ShowDarkModeSettings() {
-  if (ash::features::IsPersonalizationHubEnabled()) {
-    ash::NewWindowDelegate* primary_delegate =
-        ash::NewWindowDelegate::GetPrimary();
-    primary_delegate->OpenPersonalizationHub();
-    return;
-  }
-  ShowSettingsSubPageForActiveUser(
-      chromeos::settings::mojom::kDarkModeSubpagePath);
+  DCHECK(ash::features::IsPersonalizationHubEnabled());
+  ash::NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
 }
 
 void SystemTrayClientImpl::ShowStorageSettings() {

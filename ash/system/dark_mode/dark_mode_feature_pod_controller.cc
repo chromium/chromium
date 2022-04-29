@@ -59,9 +59,7 @@ void DarkModeFeaturePodController::OnIconPressed() {
 }
 
 void DarkModeFeaturePodController::OnLabelPressed() {
-  // TODO(crbug.com/1279850): Link to Personalization Hub instead of Chrome
-  // settings page.
-  if (TrayPopupUtils::CanOpenWebUISettings())
+  if (ash::features::IsPersonalizationHubEnabled())
     Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
 }
 
