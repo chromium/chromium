@@ -74,12 +74,18 @@ namespace internal {
 
 namespace {
 
-// Cache of the state of the kRemoveCanceledTasksInTaskQueue and
-// kSweepCancelledTasks features. This avoids the need to constantly query their
-// enabled state through FeatureList::IsEnabled().
+// Cache of the state of the kRemoveCanceledTasksInTaskQueue,
+// kSweepCancelledTasks and kExplicitHighResolutionTimerWin features. This
+// avoids the need to constantly query their enabled state through
+// FeatureList::IsEnabled().
 bool g_is_remove_canceled_tasks_in_task_queue_enabled = false;
 bool g_is_sweep_cancelled_tasks_enabled =
     kSweepCancelledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT;
+#if BUILDFLAG(IS_WIN)
+// An atomic is used here because the flag is queried from other threads when
+// tasks are posted cross-thread, which can race with its initialization.
+std::atomic_bool g_explicit_high_resolution_timer_win{false};
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -199,6 +205,11 @@ void TaskQueueImpl::InitializeFeatures() {
   ApplyRemoveCanceledTasksInTaskQueue();
   g_is_sweep_cancelled_tasks_enabled =
       FeatureList::IsEnabled(kSweepCancelledTasks);
+#if BUILDFLAG(IS_WIN)
+  g_explicit_high_resolution_timer_win.store(
+      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin),
+      std::memory_order_relaxed);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // static
@@ -1078,21 +1089,32 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
   EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
   base::TimeDelta delay;
   WakeUpResolution resolution = WakeUpResolution::kLow;
+#if BUILDFLAG(IS_WIN)
+  const bool explicit_high_resolution_timer_win =
+      g_explicit_high_resolution_timer_win.load(std::memory_order_relaxed);
+#endif  // BUILDFLAG(IS_WIN)
   if (absl::holds_alternative<base::TimeDelta>(
           delayed_task.delay_or_delayed_run_time)) {
     delay = absl::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
     delayed_task.delay_or_delayed_run_time = lazy_now->Now() + delay;
   }
 #if BUILDFLAG(IS_WIN)
-  else {
+  else if (!explicit_high_resolution_timer_win) {
     delay = absl::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
             lazy_now->Now();
   }
-  // We consider the task needs a high resolution timer if the delay is more
-  // than 0 and less than 32ms. This caps the relative error to less than 50% :
-  // a 33ms wait can wake at 48ms since the default resolution on Windows is
-  // between 10 and 15ms.
-  if (delay < (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
+  if (explicit_high_resolution_timer_win) {
+    resolution =
+        delayed_task.delay_policy == base::subtle::DelayPolicy::kPrecise
+            ? WakeUpResolution::kHigh
+            : WakeUpResolution::kLow;
+  } else if (delay <
+             (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
+    // Outside the kExplicitHighResolutionTimerWin experiment, We consider the
+    // task needs a high resolution timer if the delay is more than 0 and less
+    // than 32ms. This caps the relative error to less than 50% : a 33ms wait
+    // can wake at 48ms since the default resolution on Windows is between 10
+    // and 15ms.
     resolution = WakeUpResolution::kHigh;
   }
 #endif  // BUILDFLAG(IS_WIN)

@@ -80,6 +80,10 @@ extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 // DelayPolicy.
 extern const BASE_EXPORT base::Feature kAlignWakeUps;
 
+// Under this feature, tasks that need high resolution timer are determined
+// based on explicit DelayPolicy rather than based on a threshold.
+extern const BASE_EXPORT base::Feature kExplicitHighResolutionTimerWin;
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_
