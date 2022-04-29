@@ -1712,6 +1712,7 @@ if (!is_android) {
       "../browser/geolocation/geolocation_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
       "../browser/headless/headless_mode_browsertest.cc",
+      "../browser/headless/headless_mode_browsertest.h",
       "../browser/heavy_ad_intervention/heavy_ad_helper_browsertest.cc",
       "../browser/history/history_browsertest.cc",
       "../browser/history/redirect_browsertest.cc",
