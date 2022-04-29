@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/clamped_math.h"
@@ -16,7 +18,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
@@ -28,32 +32,69 @@ const int kMaxOldFolders = 100;
 // and index number. For instance, if the arguments are "/foo", "bar" and 5, it
 // will return "/foo/old_bar_005".
 base::FilePath GetPrefixedName(const base::FilePath& path,
-                               const std::string& name,
+                               const base::SafeBaseName& basename,
                                int index) {
-  std::string tmp = base::StringPrintf("%s%s_%03d", "old_",
-                                       name.c_str(), index);
-  return path.AppendASCII(tmp);
+  const base::FilePath::StringType filename =
+      base::StringPrintf(FILE_PATH_LITERAL("old_%" PRFilePath "_%03d"),
+                         basename.path().value().c_str(), index);
+  return path.Append(filename);
 }
 
-// This is a simple callback to cleanup old caches.
-void CleanupCallback(const base::FilePath& path, const std::string& name) {
-  for (int i = 0; i < kMaxOldFolders; i++) {
-    base::FilePath to_delete = GetPrefixedName(path, name, i);
-    disk_cache::DeleteCache(to_delete, true);
-  }
-}
-
-// Returns a full path to rename the current cache, in order to delete it. path
-// is the current folder location, and name is the current folder name.
-base::FilePath GetTempCacheName(const base::FilePath& path,
-                                const std::string& name) {
+base::FilePath GetTempCacheName(const base::FilePath& dirname,
+                                const base::SafeBaseName& basename) {
   // We'll attempt to have up to kMaxOldFolders folders for deletion.
   for (int i = 0; i < kMaxOldFolders; i++) {
-    base::FilePath to_delete = GetPrefixedName(path, name, i);
+    base::FilePath to_delete = GetPrefixedName(dirname, basename, i);
     if (!base::PathExists(to_delete))
       return to_delete;
   }
   return base::FilePath();
+}
+
+void CleanupTemporaryDirectories(const base::FilePath& path) {
+  const base::FilePath dirname = path.DirName();
+  const absl::optional<base::SafeBaseName> basename =
+      base::SafeBaseName::Create(path);
+  if (!basename.has_value()) {
+    return;
+  }
+  for (int i = 0; i < kMaxOldFolders; i++) {
+    base::FilePath to_delete = GetPrefixedName(dirname, *basename, i);
+    disk_cache::DeleteCache(to_delete, /*remove_folder=*/true);
+  }
+}
+
+bool MoveDirectoryToTemporaryDirectory(const base::FilePath& path) {
+  const base::FilePath dirname = path.DirName();
+  const absl::optional<base::SafeBaseName> basename =
+      base::SafeBaseName::Create(path);
+  if (!basename.has_value()) {
+    return false;
+  }
+  const base::FilePath destination = GetTempCacheName(dirname, *basename);
+  if (destination.empty()) {
+    return false;
+  }
+  return disk_cache::MoveCache(path, destination);
+}
+
+// In order to process a potentially large number of files, we'll rename the
+// cache directory to old_ + original_name + number, (located on the same parent
+// directory), and use a worker thread to delete all the files on all the stale
+// cache directories. The whole process can still fail if we are not able to
+// rename the cache directory (for instance due to a sharing violation), and in
+// that case a cache for this profile (on the desired path) cannot be created.
+bool CleanupDirectoryInternal(const base::FilePath& path) {
+  const base::FilePath path_to_pass = path.StripTrailingSeparators();
+  bool result = MoveDirectoryToTemporaryDirectory(path_to_pass);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&CleanupTemporaryDirectories, path_to_pass));
+
+  return result;
 }
 
 int64_t PreferredCacheSizeInternal(int64_t available) {
@@ -110,48 +151,21 @@ void DeleteCache(const base::FilePath& path, bool remove_folder) {
   }
 }
 
-// In order to process a potentially large number of files, we'll rename the
-// cache directory to old_ + original_name + number, (located on the same parent
-// directory), and use a worker thread to delete all the files on all the stale
-// cache directories. The whole process can still fail if we are not able to
-// rename the cache directory (for instance due to a sharing violation), and in
-// that case a cache for this profile (on the desired path) cannot be created.
-bool DelayedCacheCleanup(const base::FilePath& full_path) {
-  // GetTempCacheName() and MoveCache() use synchronous file operations.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
+void CleanupDirectory(const base::FilePath& path,
+                      base::OnceCallback<void(bool)> callback) {
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  // We can exit early if nothing was done/the directory is empty.
-  if (base::IsDirectoryEmpty(full_path))
-    return true;
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(CleanupDirectoryInternal, path),
+      std::move(callback));
+}
 
-  base::FilePath current_path = full_path.StripTrailingSeparators();
+bool CleanupDirectorySync(const base::FilePath& path) {
+  base::ScopedAllowBlocking allow_blocking;
 
-  base::FilePath path = current_path.DirName();
-  base::FilePath name = current_path.BaseName();
-#if BUILDFLAG(IS_WIN)
-  // We created this file so it should only contain ASCII.
-  std::string name_str = base::WideToASCII(name.value());
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  std::string name_str = name.value();
-#endif
-
-  base::FilePath to_delete = GetTempCacheName(path, name_str);
-  if (to_delete.empty()) {
-    LOG(ERROR) << "Unable to get another cache folder";
-    return false;
-  }
-
-  if (!disk_cache::MoveCache(full_path, to_delete)) {
-    LOG(ERROR) << "Unable to move cache folder " << full_path.value() << " to "
-               << to_delete.value();
-    return false;
-  }
-
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             base::BindOnce(&CleanupCallback, path, name_str));
-  return true;
+  return CleanupDirectoryInternal(path);
 }
 
 // Returns the preferred maximum number of bytes for the cache given the
