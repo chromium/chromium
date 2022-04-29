@@ -56,6 +56,13 @@ public class InstalledWebappBridge {
         InstalledWebappBridgeJni.get().notifyPermissionResult(callback, allow);
     }
 
+    public static void runPermissionCallback(
+            long callback, @ContentSettingValues int settingValue) {
+        if (callback == 0) return;
+
+        InstalledWebappBridgeJni.get().runPermissionCallback(callback, settingValue);
+    }
+
     @CalledByNative
     private static void setInstalledWebappProvider(long provider) {
         sNativeInstalledWebappProvider = provider;
@@ -86,9 +93,30 @@ public class InstalledWebappBridge {
         PermissionUpdater.get().getLocationPermission(origin, callback);
     }
 
+    @CalledByNative
+    private static void decidePermissionSetting(
+            @ContentSettingsType int type, String url, long callback) {
+        Origin origin = Origin.create(Uri.parse(url));
+        if (origin == null) {
+            runPermissionCallback(callback, ContentSettingValues.BLOCK);
+            return;
+        }
+        switch (type) {
+            case ContentSettingsType.GEOLOCATION:
+                PermissionUpdater.get().getLocationPermission(origin, callback);
+                break;
+            case ContentSettingsType.NOTIFICATIONS:
+                PermissionUpdater.get().requestNotificationPermission(origin, callback);
+                break;
+            default:
+                throw new IllegalStateException("Unsupported permission type.");
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void notifyPermissionsChange(long provider, int type);
         void notifyPermissionResult(long callback, boolean allow);
+        void runPermissionCallback(long callback, @ContentSettingValues int settingValue);
     }
 }

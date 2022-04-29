@@ -40,7 +40,7 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
     content::RenderFrameHost* const render_frame_host =
         content::RenderFrameHost::FromID(id.render_process_id(),
                                          id.render_frame_id());
-    InstalledWebappBridge::PermissionResponseCallback permission_callback =
+    InstalledWebappBridge::PermissionCallback permission_callback =
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
             context->GetWeakPtr(), id, requesting_origin,

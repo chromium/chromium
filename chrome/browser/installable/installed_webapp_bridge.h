@@ -14,20 +14,24 @@ class GURL;
 
 class InstalledWebappBridge {
  public:
-  using PermissionResponseCallback =
-      base::OnceCallback<void(ContentSetting, bool)>;
+  using PermissionCallback =
+      base::OnceCallback<void(ContentSetting setting, bool is_one_time)>;
 
   InstalledWebappBridge() = delete;
   InstalledWebappBridge(const InstalledWebappBridge&) = delete;
   InstalledWebappBridge& operator=(const InstalledWebappBridge&) = delete;
 
   static InstalledWebappProvider::RuleList GetInstalledWebappPermissions(
-      ContentSettingsType content_type);
+      ContentSettingsType type);
 
   static void SetProviderInstance(InstalledWebappProvider* provider);
 
   static void DecidePermission(const GURL& origin_url,
-                               PermissionResponseCallback callback);
+                               PermissionCallback callback);
+
+  static void DecidePermission(ContentSettingsType type,
+                               const GURL& origin_url,
+                               PermissionCallback callback);
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
