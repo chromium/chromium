@@ -6,6 +6,11 @@ import SwiftUI
 
 // Adds easy SwiftUI access to the Chrome color palette.
 extension Color {
+  /// The background color.
+  public static var cr_background: Color {
+    return Color(kBackgroundColor)
+  }
+
   /// The primary text color.
   public static var cr_textPrimaryColor: Color {
     return Color(kTextPrimaryColor)
@@ -69,5 +74,10 @@ extension Color {
   /// The table row view highlight color.
   public static var cr_tableRowViewHighlight: Color {
     return Color(kTableViewRowHighlightColor)
+  }
+
+  /// The table view sseparator color.
+  public static var cr_separator: Color {
+    return Color(kSeparatorColor)
   }
 }
