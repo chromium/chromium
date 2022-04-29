@@ -10,6 +10,9 @@
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) NSString* subtitle;
 @property(nonatomic, readonly) void (^action)(void);
+/// This is actually an `Int`-casted `OmniboxPedalId`, but that C++ `enum class`
+/// can't be used due to swift interop.
+@property(nonatomic, readonly, assign) NSInteger type;
 
 @end
 

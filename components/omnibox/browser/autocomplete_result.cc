@@ -58,6 +58,18 @@ void RotateMatchToFront(ACMatches::iterator it, ACMatches* matches) {
   std::rotate(matches->begin(), it, next);
 }
 
+#if BUILDFLAG(IS_IOS)
+// Maximum number of pedals to show.
+// On iOS, the UI for pedals gets too visually cluttered with too many pedals.
+constexpr size_t kMaxPedalCount = 1;
+// Maximum index of a match in a result for which the pedal should be displayed.
+// On iOS, the UI for pedals gets too visually cluttered with too many pedals.
+constexpr size_t kMaxPedalMatchIndex = 3;
+#else
+constexpr size_t kMaxPedalCount = std::numeric_limits<size_t>::max();
+constexpr size_t kMaxPedalMatchIndex = std::numeric_limits<size_t>::max();
+#endif
+
 }  // namespace
 
 struct MatchGURLHash {
@@ -483,7 +495,11 @@ void AutocompleteResult::AttachPedalsToMatches(
 
   provider->set_field_trial_triggered(false);
 
-  for (auto& match : matches_) {
+  const size_t max_index = std::min(kMaxPedalMatchIndex, matches_.size());
+
+  for (size_t i = 0; i < max_index && pedals_found.size() < kMaxPedalCount;
+       i++) {
+    AutocompleteMatch& match = matches_[i];
     // Skip matches that have already detected their Pedal, and avoid attaching
     // to matches with types that don't mix well with Pedals (e.g. entities).
     if (match.action ||

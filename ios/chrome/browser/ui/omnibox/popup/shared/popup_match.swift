@@ -129,7 +129,7 @@ extension PopupMatch {
       detailText: "letter ع many times, and a single ل in the end",
       pedal: OmniboxPedalData(
         title: "Click here", subtitle: "PAR → NYC",
-        accessibilityHint: "a11y hint", imageName: "pedal_dino", incognito: false,
+        accessibilityHint: "a11y hint", imageName: "pedal_dino", type: 123, incognito: false,
         action: { print("dino pedal clicked") })))
   static let pedal = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
@@ -137,7 +137,7 @@ extension PopupMatch {
       detailText: "no pedal button in current design",
       pedal: OmniboxPedalData(
         title: "Click here", subtitle: "PAR → NYC",
-        accessibilityHint: "a11y hint", imageName: "pedal_dino",
+        accessibilityHint: "a11y hint", imageName: "pedal_dino", type: 123,
         incognito: false,
         action: { print("dino pedal clicked") })))
   static let appendable = PopupMatch(
@@ -154,7 +154,8 @@ extension PopupMatch {
       text: "New Match",
       pedal: OmniboxPedalData(
         title: "Click here", subtitle: "NYC → PAR",
-        accessibilityHint: "a11y hint", imageName: "pedal_dino", incognito: false, action: {})))
+        accessibilityHint: "a11y hint", imageName: "pedal_dino", type: 123, incognito: false,
+        action: {})))
   static let supportsDeletion = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "supports deletion",

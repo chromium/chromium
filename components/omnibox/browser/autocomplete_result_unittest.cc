@@ -2150,6 +2150,8 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
           : AutocompleteMatchTestData{url, type}, contents(contents) {}
     };
     const TestData data[] = {
+        {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
+         "clear history"},
         {"http://search-what-you-typed/",
          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "search what you typed"},
         {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY,
@@ -2166,8 +2168,6 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
          "bookmark title"},
         {"http://entity-clear-history/",
          AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "clear history"},
-        {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
-         "clear history"},
     };
     PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
     for (size_t i = 0; i < std::size(data); i++) {
@@ -2181,10 +2181,10 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
 
   // Ensure the entity suggestion doesn't get a pedal even though its contents
   // form a concept match.
-  EXPECT_EQ(nullptr, std::prev(std::prev(result.end()))->action);
+  EXPECT_EQ(nullptr, std::prev(result.end())->action);
 
   // The same concept-matching contents on a non-entity suggestion gets a pedal.
-  EXPECT_NE(nullptr, std::prev(result.end())->action);
+  EXPECT_NE(nullptr, result.begin()->action);
 }
 
 TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {

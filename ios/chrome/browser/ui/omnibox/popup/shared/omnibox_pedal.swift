@@ -19,16 +19,19 @@ import UIKit
   public let incognito: Bool
   /// Action to run when the pedal is executed.
   public let action: () -> Void
+  /// Action type for metrics collection. Int-casted OmniboxPedalId
+  public let type: Int
 
   public init(
     title: String, subtitle: String,
-    accessibilityHint: String, imageName: String, incognito: Bool,
+    accessibilityHint: String, imageName: String, type: Int, incognito: Bool,
     action: @escaping () -> Void
   ) {
     self.title = title
     self.subtitle = subtitle
     self.hint = accessibilityHint
     self.imageName = imageName
+    self.type = type
     self.incognito = incognito
     self.action = action
   }

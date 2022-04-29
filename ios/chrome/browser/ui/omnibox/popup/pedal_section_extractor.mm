@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal.h"
@@ -14,19 +16,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// How many pedals can be shown at once. This number will be displayed in a
-// separate section, the rest are ignored.
-const NSUInteger kMaxPedalCount = 1;
-
-// Only this many suggestions are considered when extracting pedals. E.g. if
-// there is 100 suggestions with pedals, only the first kMaxPedalExtractionRow
-// are used to extract pedals.
-const NSUInteger kMaxPedalExtractionRow = 3;
-
-}  // namespace
 
 @interface PedalSectionExtractor ()
 
@@ -59,8 +48,7 @@ const NSUInteger kMaxPedalExtractionRow = 3;
   self.originalResult = result;
 
   for (id<AutocompleteSuggestionGroup> group in result) {
-    for (NSUInteger i = 0;
-         i < group.suggestions.count && i < kMaxPedalExtractionRow; i++) {
+    for (NSUInteger i = 0; i < group.suggestions.count; i++) {
       id<AutocompleteSuggestion> suggestion = group.suggestions[i];
 
       if (suggestion.pedal != nil) {
@@ -74,10 +62,6 @@ const NSUInteger kMaxPedalExtractionRow = 3;
         preselectedMatchGroupIndex:groupIndex
                      withAnimation:animation];
     return;
-  }
-
-  while (self.extractedPedals.count > kMaxPedalCount) {
-    [self.extractedPedals removeLastObject];
   }
 
   NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
@@ -149,6 +133,16 @@ const NSUInteger kMaxPedalExtractionRow = 3;
     if (section == 0) {
       id<OmniboxPedal> pedal = self.extractedPedals[row];
       if (pedal.action) {
+        for (id<OmniboxPedal> displayedPedal in self.extractedPedals) {
+          base::UmaHistogramEnumeration(
+              "Omnibox.PedalShown",
+              static_cast<OmniboxPedalId>(displayedPedal.type),
+              OmniboxPedalId::TOTAL_COUNT);
+        }
+
+        base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
+                                      static_cast<OmniboxPedalId>(pedal.type),
+                                      OmniboxPedalId::TOTAL_COUNT);
         pedal.action();
       }
       return;
