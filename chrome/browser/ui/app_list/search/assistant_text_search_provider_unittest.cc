@@ -40,12 +40,6 @@ class AssistantTextSearchProviderTest
   ~AssistantTextSearchProviderTest() override = default;
 
   void SendText(const std::string& text) {
-    bool productivity_launcher_enabled = GetParam();
-    if (productivity_launcher_enabled) {
-      // Simulate SearchControllerImplNew, which clears results when starting a
-      // query.
-      search_controller_.SetResults(&search_provider_, {});
-    }
     search_provider_.Start(base::UTF8ToUTF16(text));
   }
 
@@ -91,6 +85,8 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
 
 // Tests -----------------------------------------------------------------------
 
+// TODO(crbug.com/1258415): Remove this test when the productivity launcher is
+// enabled.
 TEST_P(AssistantTextSearchProviderTest, ShouldNotProvideResultForEmptyQuery) {
   EXPECT_TRUE(LastResults().empty());
 
@@ -99,9 +95,15 @@ TEST_P(AssistantTextSearchProviderTest, ShouldNotProvideResultForEmptyQuery) {
   EXPECT_EQ(LastResults().size(), 1u);
   VerifyResultAt(0, "testing");
 
-  SendText("");
-  // Should have no search results.
-  EXPECT_TRUE(LastResults().empty());
+  // If the productivity launcher is enabled, search_provider_.Start() is
+  // guaranteed to be called with a non-empty query. So this test only applies
+  // to the classic launcher.
+  bool productivity_launcher_enabled = GetParam();
+  if (!productivity_launcher_enabled) {
+    SendText("");
+    // Should have no search results.
+    EXPECT_TRUE(LastResults().empty());
+  }
 }
 
 TEST_P(AssistantTextSearchProviderTest,
