@@ -123,6 +123,11 @@ class ScopedSharedMemoryPtr {
                                 : scoped_mapped_ptr_->offset();
   }
 
+  bool valid() {
+    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->valid()
+                                : scoped_mapped_ptr_->valid();
+  }
+
   void* address() {
     return scoped_transfer_ptr_ ? scoped_transfer_ptr_->address()
                                 : scoped_mapped_ptr_->address();
@@ -1276,6 +1281,12 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
   std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
                                               mapped_memory_.get(), helper());
+
+  if (!scoped_shared_memory->valid()) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
+    return;
+  }
+
   GLint shm_id = scoped_shared_memory->shm_id();
   GLuint shm_offset = scoped_shared_memory->offset();
   void* address = scoped_shared_memory->address();
