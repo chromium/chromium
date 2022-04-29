@@ -180,6 +180,10 @@ class Surface final : public ui::PropertyHandler {
   void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
+  // Sets the background color that shall be associated with the next buffer
+  // commit.
+  void SetBackgroundColor(absl::optional<SkColor> background_color);
+
   // This sets the surface viewport for scaling.
   void SetViewport(const gfx::SizeF& viewport);
 
@@ -428,6 +432,9 @@ class Surface final : public ui::PropertyHandler {
     gfx::Vector2d offset;
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
     bool is_tracking_occlusion = false;
+    // Represents optional background color that must be associated with the
+    // next buffer commit.
+    absl::optional<SkColor> background_color;
   };
   class BufferAttachment {
    public:

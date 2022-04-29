@@ -543,6 +543,11 @@ void Surface::SetOverlayPriorityHint(OverlayPriority hint) {
   pending_state_.overlay_priority_hint = hint;
 }
 
+void Surface::SetBackgroundColor(absl::optional<SkColor> background_color) {
+  TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
+  pending_state_.basic_state.background_color = background_color;
+}
+
 void Surface::SetViewport(const gfx::SizeF& viewport) {
   TRACE_EVENT1("exo", "Surface::SetViewport", "viewport", viewport.ToString());
 
@@ -1416,7 +1421,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     }
 
     SkColor background_color = SK_ColorTRANSPARENT;
-    if (current_resource_has_alpha_ && are_contents_opaque)
+    if (state_.basic_state.background_color.has_value())
+      background_color = state_.basic_state.background_color.value();
+    else if (current_resource_has_alpha_ && are_contents_opaque)
       background_color = SK_ColorBLACK;  // Avoid writing alpha < 1
 
     // If this surface is being replaced by a SurfaceId emit a SurfaceDrawQuad.

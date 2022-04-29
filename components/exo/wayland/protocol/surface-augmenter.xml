@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="2">
+  <interface name="surface_augmenter" version="3">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="2">
+  <interface name="augmented_surface" version="3">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -154,6 +154,21 @@
       <arg name="top_right" type="fixed" summary="top right corner"/>
       <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
       <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
+
+    <!-- Version 3 additions -->
+
+    <request name="set_background_color" since="3">
+      <description summary="sets a background color of this surface">
+        Sets a background color of a this surface. This information will be
+        associated with the next buffer commit. Please note this is different
+        from solid color buffers, which creates a new buffer instance, and
+        rather provides additional information how the buffer should be
+        composited. Passing empty array means the background color is reset.
+        The default value is determined by the Wayland compositor then.
+      </description>
+      <arg name="color" type="array"
+           summary="overlay color represented by a SkColor4f"/>
     </request>
   </interface>
 

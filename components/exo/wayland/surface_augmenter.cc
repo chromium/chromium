@@ -66,6 +66,10 @@ class AugmentedSurface : public SurfaceObserver {
     surface_->SetViewport(gfx::SizeF(width, height));
   }
 
+  void SetBackgroundColor(absl::optional<SkColor> background_color) {
+    surface_->SetBackgroundColor(background_color);
+  }
+
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override {
     surface->RemoveSurfaceObserver(this);
@@ -130,10 +134,25 @@ void augmented_surface_set_rounded_corners_bounds(wl_client* client,
       wl_fixed_to_double(bottom_left));
 }
 
+void augmented_surface_set_background_color(wl_client* client,
+                                            wl_resource* resource,
+                                            wl_array* color_data) {
+  absl::optional<SkColor> sk_color;
+  // Empty data means no color.
+  if (color_data->size) {
+    float* data = reinterpret_cast<float*>(color_data->data);
+    SkColor4f color = {data[0], data[1], data[2], data[3]};
+    sk_color = color.toSkColor();
+  }
+
+  GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);
+}
+
 const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_destroy, augmented_surface_set_corners_DEPRECATED,
     augmented_surface_set_destination_size,
-    augmented_surface_set_rounded_corners_bounds};
+    augmented_surface_set_rounded_corners_bounds,
+    augmented_surface_set_background_color};
 
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_sub_surface_interface:

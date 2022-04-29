@@ -12,7 +12,7 @@ struct wl_client;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kSurfaceAugmenterVersion = 2;
+constexpr uint32_t kSurfaceAugmenterVersion = 3;
 
 void bind_surface_augmenter(wl_client* client,
                             void* data,
