@@ -7,9 +7,12 @@
 
 #include "base/callback.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
+using OptionalMetricCallback =
+    base::OnceCallback<void(absl::optional<MetricData>)>;
 using MetricCallback = base::OnceCallback<void(MetricData)>;
 using MetricRepeatingCallback = base::RepeatingCallback<void(MetricData)>;
 
@@ -27,7 +30,10 @@ using MetricRepeatingCallback = base::RepeatingCallback<void(MetricData)>;
 class Sampler {
  public:
   virtual ~Sampler() = default;
+  // TODO(b/209638899): Remove after all samplers are migrated to
+  // |MaybeCollect|.
   virtual void Collect(MetricCallback callback) = 0;
+  virtual void MaybeCollect(OptionalMetricCallback callback);
 };
 
 // A `MetricEventObserver` object should observe events and report them using

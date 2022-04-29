@@ -7,27 +7,30 @@
 
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {
 
 class FakeSampler : public Sampler {
  public:
-  FakeSampler() = default;
+  FakeSampler();
 
   FakeSampler(const FakeSampler& other) = delete;
   FakeSampler& operator=(const FakeSampler& other) = delete;
 
-  ~FakeSampler() override = default;
+  ~FakeSampler() override;
 
   void Collect(MetricCallback cb) override;
 
-  void SetMetricData(MetricData metric_data);
+  void MaybeCollect(OptionalMetricCallback cb) override;
+
+  void SetMetricData(absl::optional<MetricData> metric_data);
 
   int GetNumCollectCalls() const;
 
  private:
-  MetricData metric_data_;
+  absl::optional<MetricData> metric_data_;
 
   int num_calls_ = 0;
 };

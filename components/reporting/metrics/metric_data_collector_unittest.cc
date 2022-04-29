@@ -118,6 +118,28 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyEnabled) {
   EXPECT_TRUE(metric_data_reported[0].has_info_data());
 }
 
+TEST_F(MetricDataCollectorTest, OneShotCollector_NoMetricData) {
+  settings_->SetBoolean(kEnableSettingPath, true);
+
+  sampler_->SetMetricData(absl::nullopt);
+  bool callback_called = false;
+
+  OneShotCollector collector(sampler_.get(), metric_report_queue_.get(),
+                             settings_.get(), kEnableSettingPath,
+                             /*setting_enabled_default_value=*/false,
+                             base::BindLambdaForTesting([&callback_called]() {
+                               callback_called = true;
+                             }));
+
+  // Setting is initially enabled, data is being collected.
+  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  FlushTasks();
+  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+
+  ASSERT_TRUE(metric_data_reported.empty());
+  EXPECT_FALSE(callback_called);
+}
+
 TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyDisabled) {
   settings_->SetBoolean(kEnableSettingPath, false);
 
@@ -265,6 +287,26 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyEnabled) {
     EXPECT_EQ(metric_data_reported[i].has_event_data(),
               metric_data[i].has_event_data());
   }
+}
+
+TEST_F(MetricDataCollectorTest, PeriodicCollector_NoMetricData) {
+  constexpr int interval = 10000;
+  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetInteger(kRateSettingPath, interval);
+
+  sampler_->SetMetricData(absl::nullopt);
+
+  PeriodicCollector collector(
+      sampler_.get(), metric_report_queue_.get(), settings_.get(),
+      kEnableSettingPath, /*setting_enabled_default_value=*/false,
+      kRateSettingPath, base::Milliseconds(interval / 2));
+
+  // One initial collection at startup.
+  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  FlushTasks();
+  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+
+  ASSERT_TRUE(metric_data_reported.empty());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyDisabled) {
@@ -456,6 +498,8 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
     additional_samplers[i].SetMetricData(additional_metric_data[i]);
     additional_sampler_ptrs.emplace_back(additional_samplers + i);
   }
+  test::FakeSampler empty_additional_sampler;
+  additional_sampler_ptrs.emplace_back(&empty_additional_sampler);
 
   auto event_detector = std::make_unique<test::FakeEventDetector>();
 

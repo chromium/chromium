@@ -31,8 +31,8 @@ void CollectorBase::Collect() {
 
   auto on_collected_cb = base::BindOnce(&CollectorBase::OnMetricDataCollected,
                                         weak_ptr_factory_.GetWeakPtr());
-  sampler_->Collect(base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                       std::move(on_collected_cb)));
+  sampler_->MaybeCollect(base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
 }
 
 void CollectorBase::ReportMetricData(const MetricData& metric_data,
@@ -75,12 +75,16 @@ void OneShotCollector::Collect() {
   CollectorBase::Collect();
 }
 
-void OneShotCollector::OnMetricDataCollected(MetricData metric_data) {
+void OneShotCollector::OnMetricDataCollected(
+    absl::optional<MetricData> metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(on_data_reported_);
+  if (!metric_data.has_value()) {
+    return;
+  }
 
-  metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_data, std::move(on_data_reported_));
+  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
+  ReportMetricData(metric_data.value(), std::move(on_data_reported_));
 }
 
 PeriodicCollector::PeriodicCollector(Sampler* sampler,
@@ -110,11 +114,15 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
 
 PeriodicCollector::~PeriodicCollector() = default;
 
-void PeriodicCollector::OnMetricDataCollected(MetricData metric_data) {
+void PeriodicCollector::OnMetricDataCollected(
+    absl::optional<MetricData> metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metric_data.has_value()) {
+    return;
+  }
 
-  metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_data);
+  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
+  ReportMetricData(metric_data.value());
 }
 
 void PeriodicCollector::StartPeriodicCollection() {
@@ -139,23 +147,25 @@ AdditionalSamplersCollector::~AdditionalSamplersCollector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AdditionalSamplersCollector::CollectAll(MetricCallback on_all_collected_cb,
-                                             MetricData metric_data) const {
-  MetricData empty_metric_data;
+void AdditionalSamplersCollector::CollectAll(
+    OptionalMetricCallback on_all_collected_cb,
+    MetricData metric_data) const {
   CollectAdditionalMetricData(
       /*sampler_index=*/0, std::move(on_all_collected_cb),
-      std::move(metric_data), std::move(empty_metric_data));
+      std::move(metric_data), /*new_metric_data=*/absl::nullopt);
 }
 
 void AdditionalSamplersCollector::CollectAdditionalMetricData(
     uint64_t sampler_index,
-    MetricCallback on_all_collected_cb,
+    OptionalMetricCallback on_all_collected_cb,
     MetricData metric_data,
-    MetricData new_metric_data) const {
+    absl::optional<MetricData> new_metric_data) const {
   CHECK(base::SequencedTaskRunnerHandle::IsSet());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  metric_data.CheckTypeAndMergeFrom(new_metric_data);
+  if (new_metric_data.has_value()) {
+    metric_data.CheckTypeAndMergeFrom(new_metric_data.value());
+  }
   if (sampler_index == samplers_.size()) {
     std::move(on_all_collected_cb).Run(std::move(metric_data));
     return;
@@ -165,7 +175,7 @@ void AdditionalSamplersCollector::CollectAdditionalMetricData(
       base::BindOnce(&AdditionalSamplersCollector::CollectAdditionalMetricData,
                      weak_ptr_factory_.GetWeakPtr(), sampler_index + 1,
                      std::move(on_all_collected_cb), std::move(metric_data));
-  samplers_[sampler_index]->Collect(base::BindPostTask(
+  samplers_[sampler_index]->MaybeCollect(base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
 }
 
@@ -195,13 +205,17 @@ PeriodicEventCollector::PeriodicEventCollector(
 
 PeriodicEventCollector::~PeriodicEventCollector() = default;
 
-void PeriodicEventCollector::OnMetricDataCollected(MetricData metric_data) {
+void PeriodicEventCollector::OnMetricDataCollected(
+    absl::optional<MetricData> metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metric_data.has_value()) {
+    return;
+  }
 
-  metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
+  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
   absl::optional<MetricEventType> event =
-      event_detector_->DetectEvent(last_collected_data_, metric_data);
-  last_collected_data_ = std::move(metric_data);
+      event_detector_->DetectEvent(last_collected_data_, metric_data.value());
+  last_collected_data_ = std::move(metric_data.value());
   if (!event.has_value()) {
     return;
   }
@@ -214,9 +228,14 @@ void PeriodicEventCollector::OnMetricDataCollected(MetricData metric_data) {
 }
 
 void PeriodicEventCollector::OnAdditionalMetricDataCollected(
-    MetricData metric_data) {
+    absl::optional<MetricData> metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metric_data.has_value()) {
+    NOTREACHED() << "Metric data is unexpectedly empty after additional metric "
+                 << "collection.";
+    return;
+  }
 
-  ReportMetricData(metric_data);
+  ReportMetricData(metric_data.value());
 }
 }  // namespace reporting

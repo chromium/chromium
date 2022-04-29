@@ -24,6 +24,7 @@
 #include "components/reporting/metrics/sampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -84,7 +85,7 @@ class FakeCollector : public CollectorBase {
   ~FakeCollector() override { --(*collector_count_); }
 
  protected:
-  void OnMetricDataCollected(MetricData) override {}
+  void OnMetricDataCollected(absl::optional<MetricData>) override {}
 
  private:
   raw_ptr<int> collector_count_;

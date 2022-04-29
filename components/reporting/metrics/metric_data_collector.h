@@ -40,7 +40,8 @@ class CollectorBase {
  protected:
   virtual void Collect();
 
-  virtual void OnMetricDataCollected(MetricData metric_data) = 0;
+  virtual void OnMetricDataCollected(
+      absl::optional<MetricData> metric_data) = 0;
 
   virtual void ReportMetricData(
       const MetricData& metric_data,
@@ -74,7 +75,7 @@ class OneShotCollector : public CollectorBase {
  protected:
   void Collect() override;
 
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
   std::unique_ptr<MetricReportingController> reporting_controller_;
@@ -103,7 +104,7 @@ class PeriodicCollector : public CollectorBase {
   ~PeriodicCollector() override;
 
  protected:
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
   virtual void StartPeriodicCollection();
@@ -139,14 +140,15 @@ class AdditionalSamplersCollector {
 
   ~AdditionalSamplersCollector();
 
-  void CollectAll(MetricCallback on_all_collected_cb,
+  void CollectAll(OptionalMetricCallback on_all_collected_cb,
                   MetricData metric_data) const;
 
  private:
-  void CollectAdditionalMetricData(uint64_t sampler_index,
-                                   MetricCallback on_all_collected_cb,
-                                   MetricData metric_data,
-                                   MetricData new_metric_data) const;
+  void CollectAdditionalMetricData(
+      uint64_t sampler_index,
+      OptionalMetricCallback on_all_collected_cb,
+      MetricData metric_data,
+      absl::optional<MetricData> new_metric_data) const;
 
   const std::vector<Sampler*> samplers_;
 
@@ -177,10 +179,10 @@ class PeriodicEventCollector : public PeriodicCollector {
   ~PeriodicEventCollector() override;
 
  protected:
-  void OnMetricDataCollected(MetricData metric_data) override;
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
-  void OnAdditionalMetricDataCollected(MetricData metric_data);
+  void OnAdditionalMetricDataCollected(absl::optional<MetricData> metric_data);
 
   const std::unique_ptr<EventDetector> event_detector_;
 

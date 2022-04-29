@@ -17,7 +17,9 @@
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -142,30 +144,31 @@ TEST_F(MetricEventObserverManagerTest, AdditionalSamplers) {
   additional_metric_data.mutable_telemetry_data();
 
   test::FakeSampler additional_sampler;
+  test::FakeSampler empty_additional_sampler;
 
   MetricEventObserverManager event_manager(
       std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
       kEnableSettingPath, /*setting_enabled_default_value=*/false,
-      {&additional_sampler});
+      {&additional_sampler, &empty_additional_sampler});
 
   MetricData metric_data;
   metric_data.mutable_event_data();
 
   ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
-  for (size_t i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
-    additional_sampler.SetMetricData(additional_metric_data);
-    event_observer_ptr->RunCallback(metric_data);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
-    run_loop.Run();
 
-    auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
-    ASSERT_EQ(metric_data_reported.size(), i + 1);
-    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
-    EXPECT_TRUE(metric_data_reported[i].has_event_data());
-    EXPECT_TRUE(metric_data_reported[i].has_telemetry_data());
-  }
+  additional_sampler.SetMetricData(additional_metric_data);
+  empty_additional_sampler.SetMetricData(absl::nullopt);
+  event_observer_ptr->RunCallback(metric_data);
+  task_environment_.RunUntilIdle();
+
+  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+
+  ASSERT_EQ(additional_sampler.GetNumCollectCalls(), 1);
+  EXPECT_EQ(empty_additional_sampler.GetNumCollectCalls(), 1);
+  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
 }
 
 }  // namespace

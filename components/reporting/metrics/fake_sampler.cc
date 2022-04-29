@@ -14,12 +14,22 @@
 namespace reporting {
 namespace test {
 
+FakeSampler::FakeSampler() = default;
+
+FakeSampler::~FakeSampler() = default;
+
 void FakeSampler::Collect(MetricCallback cb) {
+  ASSERT_TRUE(metric_data_.has_value());
+  num_calls_++;
+  std::move(cb).Run(metric_data_.value());
+}
+
+void FakeSampler::MaybeCollect(OptionalMetricCallback cb) {
   num_calls_++;
   std::move(cb).Run(metric_data_);
 }
 
-void FakeSampler::SetMetricData(MetricData metric_data) {
+void FakeSampler::SetMetricData(absl::optional<MetricData> metric_data) {
   metric_data_ = std::move(metric_data);
 }
 

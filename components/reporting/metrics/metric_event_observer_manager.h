@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -46,7 +47,7 @@ class MetricEventObserverManager {
 
   void OnEventObserved(MetricData metric_data);
 
-  void Report(MetricData metric_data);
+  void Report(absl::optional<MetricData> metric_data);
 
   const std::unique_ptr<MetricEventObserver> event_observer_;
 

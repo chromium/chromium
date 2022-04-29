@@ -73,8 +73,13 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
       std::move(metric_data));
 }
 
-void MetricEventObserverManager::Report(MetricData metric_data) {
+void MetricEventObserverManager::Report(
+    absl::optional<MetricData> metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metric_data.has_value()) {
+    NOTREACHED() << "Reporting requested for empty metric data.";
+    return;
+  }
 
   auto enqueue_cb = base::BindOnce([](Status status) {
     if (!status.ok()) {
@@ -83,6 +88,6 @@ void MetricEventObserverManager::Report(MetricData metric_data) {
           << status;
     }
   });
-  metric_report_queue_->Enqueue(metric_data, std::move(enqueue_cb));
+  metric_report_queue_->Enqueue(metric_data.value(), std::move(enqueue_cb));
 }
 }  // namespace reporting
