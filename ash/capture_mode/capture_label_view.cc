@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -33,6 +34,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -182,6 +184,12 @@ CaptureLabelView::CaptureLabelView(
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
   UpdateIconAndText();
+
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCaptureLabelRadius, views::HighlightBorder::Type::kHighlightBorder2,
+        /*use_light_colors=*/false));
+  }
 }
 
 CaptureLabelView::~CaptureLabelView() = default;
