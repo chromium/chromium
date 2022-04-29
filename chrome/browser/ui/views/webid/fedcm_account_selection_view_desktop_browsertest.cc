@@ -96,3 +96,18 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   ASSERT_TRUE(GetBubble());
   EXPECT_TRUE(GetBubble()->IsVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
+  Show();
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  EXPECT_FALSE(GetBubble());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
+                       DetachForInsertion) {
+  Show();
+  browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  // TODO(npm): it would be better if the bubble actually moves with the
+  // corresponding tab, instead of being altogether deleted.
+  EXPECT_FALSE(GetBubble());
+}

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -14,7 +15,8 @@
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
 // account chooser to the user.
 class FedCmAccountSelectionView : public AccountSelectionView,
-                                  content::WebContentsObserver {
+                                  content::WebContentsObserver,
+                                  TabStripModelObserver {
  public:
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
   ~FedCmAccountSelectionView() override;
@@ -29,8 +31,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
+  // TabStripModelObserver
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
