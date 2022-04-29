@@ -23,9 +23,6 @@ namespace chromeos {
 
 namespace {
 HermesEuiccClient* g_instance = nullptr;
-
-// TODO(b/198205364): Remove when method name is added in dbus-constants.
-const char kRefreshInstalledProfiles[] = "RefreshInstalledProfiles";
 }  // namespace
 
 HermesEuiccClient::Properties::Properties(
@@ -106,7 +103,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                                 bool restore_slot,
                                 HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 kRefreshInstalledProfiles);
+                                 hermes::euicc::kRefreshInstalledProfiles);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(restore_slot);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;

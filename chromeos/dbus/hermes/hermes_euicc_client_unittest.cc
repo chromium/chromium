@@ -30,9 +30,6 @@ const char kTestConfirmationCode[] = "def456";
 const char kTestEuiccPath[] = "/org/chromium/hermes/Euicc/1";
 const char kTestCarrierProfilePath[] = "/org/chromium/hermes/Profile/1";
 
-// TODO(b/198205364): Remove when method name is added in dbus-constants.
-const char kRefreshInstalledProfiles[] = "RefreshInstalledProfiles";
-
 // Matches dbus::MethodCall for UninstallProfile call with given path.
 MATCHER_P(MatchUninstallProfileCall, expected_profile_path, "") {
   dbus::MessageReader reader(arg);
@@ -63,7 +60,7 @@ MATCHER_P(MatchRequestPendingProfilesCall, expected_root_smds, "") {
 MATCHER_P(MatchRefreshPendingProfilesCall, expected_restore_slot, "") {
   dbus::MessageReader reader(arg);
   bool restore_slot;
-  if (arg->GetMember() != kRefreshInstalledProfiles ||
+  if (arg->GetMember() != hermes::euicc::kRefreshInstalledProfiles ||
       !reader.PopBool(&restore_slot) || restore_slot != expected_restore_slot) {
     *result_listener << "has method_name=" << arg->GetMember()
                      << " restore_slot=" << restore_slot;
@@ -285,7 +282,7 @@ TEST_F(HermesEuiccClientTest, TestInstallPendingProfile) {
 TEST_F(HermesEuiccClientTest, TestRefreshInstalledProfiles) {
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                               kRefreshInstalledProfiles);
+                               hermes::euicc::kRefreshInstalledProfiles);
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(), DoCallMethodWithErrorResponse(
                                  MatchRefreshPendingProfilesCall(
