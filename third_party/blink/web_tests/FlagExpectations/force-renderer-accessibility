@@ -1,5 +1,4 @@
 # tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
-# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # Expectations for --force-renderer-accessibility
@@ -7,6 +6,7 @@
 
 # Crashes
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
+virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
 
 # Slow
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Timeout ]
@@ -34,6 +34,9 @@ virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Failure ]
 crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Failure ]
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Failure ]
+
+# Unintentional failure
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Skip ]
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
