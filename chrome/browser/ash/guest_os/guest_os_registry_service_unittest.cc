@@ -27,12 +27,6 @@ using testing::_;
 using vm_tools::apps::App;
 using vm_tools::apps::ApplicationList;
 
-constexpr char kCrostiniAppsInstalledHistogram[] =
-    "Crostini.AppsInstalledAtLogin";
-
-constexpr char kPluginVmAppsInstalledHistogram[] =
-    "PluginVm.AppsInstalledAtLogin";
-
 namespace guest_os {
 
 class GuestOsRegistryServiceTest : public testing::Test {
@@ -247,9 +241,6 @@ TEST_F(GuestOsRegistryServiceTest, ZeroAppsInstalledHistogram) {
   base::HistogramTester histogram_tester;
 
   RecreateService();
-
-  // Check that there are no apps installed.
-  histogram_tester.ExpectUniqueSample(kCrostiniAppsInstalledHistogram, 0, 1);
 }
 
 TEST_F(GuestOsRegistryServiceTest, NAppsInstalledHistogram) {
@@ -278,8 +269,6 @@ TEST_F(GuestOsRegistryServiceTest, NAppsInstalledHistogram) {
   service()->UpdateApplicationList(app_list);
 
   RecreateService();
-
-  histogram_tester.ExpectUniqueSample(kCrostiniAppsInstalledHistogram, 4, 1);
 }
 
 TEST_F(GuestOsRegistryServiceTest, PluginVmAppsInstalledHistogram) {
@@ -290,7 +279,6 @@ TEST_F(GuestOsRegistryServiceTest, PluginVmAppsInstalledHistogram) {
 
   // Plugin VM needs to be enabled before we start counting.
   RecreateService();
-  histogram_tester.ExpectTotalCount(kPluginVmAppsInstalledHistogram, 0);
 
   test_helper.EnablePluginVm();
   // Set up an app list with the expected number of apps.
@@ -301,8 +289,6 @@ TEST_F(GuestOsRegistryServiceTest, PluginVmAppsInstalledHistogram) {
   service()->UpdateApplicationList(app_list);
 
   RecreateService();
-
-  histogram_tester.ExpectUniqueSample(kPluginVmAppsInstalledHistogram, 2, 1);
 }
 
 TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {

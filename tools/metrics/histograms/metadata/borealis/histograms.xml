@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Borealis.AppsInstalledAtLogin" units="apps"
-    expires_after="2023-02-01">
-  <owner>joelhockey@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Records the number of Broealis apps in the registry at login time. This only
-    logs if Borealis has already benn enabled for the current user.
-  </summary>
-</histogram>
-
 <histogram name="Borealis.Disk.Client.AvailableSpaceAtRequest" units="MB"
     expires_after="2023-02-01">
   <owner>danielng@google.com</owner>

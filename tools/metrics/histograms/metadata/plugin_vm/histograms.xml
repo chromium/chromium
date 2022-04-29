@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="PluginVm.AppsInstalledAtLogin" units="apps"
-    expires_after="2023-01-14">
-  <owner>timloh@google.com</owner>
-  <owner>joelhockey@google.com</owner>
-  <summary>
-    Records the number of Plugin VM apps in the registry at login time. This
-    only logs if Plugin VM has already benn enabled for the current user.
-  </summary>
-</histogram>
-
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
     expires_after="2023-01-14">
   <owner>kimjae@google.com</owner>

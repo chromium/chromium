@@ -58,15 +58,6 @@ constexpr char kCrostiniAppIdPrefix[] = "crostini:";
 
 constexpr char kCrostiniIconFolder[] = "crostini.icons";
 
-constexpr char kCrostiniAppsInstalledHistogram[] =
-    "Crostini.AppsInstalledAtLogin";
-
-constexpr char kPluginVmAppsInstalledHistogram[] =
-    "PluginVm.AppsInstalledAtLogin";
-
-constexpr char kBorealisAppsInstalledHistogram[] =
-    "Borealis.AppsInstalledAtLogin";
-
 base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   base::Value result(base::Value::Type::DICTIONARY);
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
@@ -688,23 +679,6 @@ void GuestOsRegistryService::RecordStartupMetrics() {
     int vm_type =
         item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0);
     num_apps[vm_type]++;
-  }
-
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    UMA_HISTOGRAM_COUNTS_1000(kCrostiniAppsInstalledHistogram,
-                              num_apps[VmType::ApplicationList_VmType_TERMINA]);
-  }
-  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        kPluginVmAppsInstalledHistogram,
-        num_apps[VmType::ApplicationList_VmType_PLUGIN_VM]);
-  }
-  if (borealis::BorealisService::GetForProfile(profile_)
-          ->Features()
-          .IsEnabled()) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        kBorealisAppsInstalledHistogram,
-        num_apps[VmType::ApplicationList_VmType_BOREALIS]);
   }
 }
 
