@@ -31,6 +31,7 @@ static_library("minidump_uploader") {
 android_library("minidump_uploader_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/crash/android:anr_collector_java",
     "//net/android:net_java",

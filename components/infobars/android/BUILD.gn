@@ -70,6 +70,7 @@ android_library("java") {
     ":infobar_android_enums_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",

@@ -75,6 +75,7 @@ android_library("ar_java_base") {
     ":ar_java_interfaces",
     ":webxr_android_enums_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

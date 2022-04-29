@@ -39,6 +39,7 @@ android_library("java") {
     ":constants_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
     "//content/public/android:content_full_java",

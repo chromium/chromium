@@ -11,6 +11,7 @@ android_library("internal_java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/favicon/android:java",
 

@@ -19,6 +19,7 @@ android_library("java") {
     ":public_dependencies_java",
     ":public_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android:prefeditor_autofill_java",

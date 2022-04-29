@@ -28,6 +28,7 @@ if (is_android) {
       ":java_resources",
       ":jni_headers",
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/flags:java",

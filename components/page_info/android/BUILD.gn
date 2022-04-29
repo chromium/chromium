@@ -92,6 +92,7 @@ android_library("java") {
     ":java_resources",
     ":page_info_action_enum_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",

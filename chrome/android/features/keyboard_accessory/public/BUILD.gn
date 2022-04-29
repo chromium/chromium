@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("public_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_java",

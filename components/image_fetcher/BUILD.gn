@@ -15,6 +15,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:simple_factory_key_java",
@@ -63,6 +64,7 @@ java_library("junit") {
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:simple_factory_key_java",
     "//third_party/android_deps:robolectric_all_java",

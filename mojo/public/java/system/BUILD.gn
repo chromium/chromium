@@ -60,6 +60,7 @@ android_library("system_impl_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//mojo/public/java:system_java",
   ]
@@ -72,6 +73,7 @@ android_library("test_support_java") {
   sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
@@ -120,6 +122,7 @@ android_library("mojo_javatests") {
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import2_java",

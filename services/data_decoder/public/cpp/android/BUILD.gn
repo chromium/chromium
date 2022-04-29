@@ -15,6 +15,7 @@ if (current_toolchain == default_toolchain) {
   android_library("safe_json_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

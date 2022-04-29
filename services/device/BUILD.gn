@@ -446,6 +446,7 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//mojo/public/java/system:system_impl_java",

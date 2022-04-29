@@ -23,6 +23,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/password_entry_edit/android:java",

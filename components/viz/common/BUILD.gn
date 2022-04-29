@@ -460,6 +460,7 @@ if (is_android) {
   android_library("common_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
     ]
     sources = [

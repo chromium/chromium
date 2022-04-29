@@ -39,6 +39,7 @@ android_library("autofill_assistant_java_test_support") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/autofill_assistant/android:java",
     "//components/autofill_assistant/browser:proto_java",

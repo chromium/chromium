@@ -363,6 +363,7 @@ android_library("ui_no_recycler_view_java") {
     ":ui_java_resources",
     ":ui_utils_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -511,6 +512,7 @@ junit_binary("ui_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//base/test:test_support_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -573,6 +575,7 @@ android_library("clipboard_java_test_support") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
   ]
 }

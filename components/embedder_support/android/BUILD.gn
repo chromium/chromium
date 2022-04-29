@@ -21,7 +21,10 @@ android_library("browser_context_java") {
 
 android_library("simple_factory_key_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+  ]
 }
 
 generate_jni("simple_factory_key_jni_headers") {
@@ -63,6 +66,7 @@ android_library("util_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
@@ -146,6 +150,7 @@ android_library("content_view_java") {
 android_library("view_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -208,6 +213,7 @@ android_library("web_contents_delegate_java") {
   deps = [
     ":web_contents_delegate_java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -259,6 +265,7 @@ generate_jni("context_menu_jni_headers") {
 android_library("context_menu_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
@@ -274,6 +281,7 @@ android_library("native_java_unittests_java") {
   deps = [
     ":util_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/junit",
   ]

@@ -53,6 +53,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//net/android:net_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

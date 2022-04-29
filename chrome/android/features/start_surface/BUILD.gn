@@ -15,6 +15,7 @@ android_library("public_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

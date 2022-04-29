@@ -48,6 +48,7 @@ android_library("native_main_runner_java") {
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
   ]
 }
@@ -58,6 +59,7 @@ android_library("native_test_java") {
     ":native_main_runner_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//testing/android/reporter:reporter_java",

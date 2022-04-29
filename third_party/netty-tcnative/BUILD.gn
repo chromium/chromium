@@ -45,6 +45,7 @@ android_library("netty-tcnative_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
   ]
 }

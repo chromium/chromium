@@ -119,6 +119,7 @@ android_library("java") {
     ":core_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -143,6 +144,7 @@ android_library("core_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

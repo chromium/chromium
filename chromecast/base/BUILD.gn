@@ -354,6 +354,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
@@ -401,6 +402,7 @@ if (is_android) {
       ":cast_base_test_utils_java",
       "//base:base_java",
       "//base:base_junit_test_support",
+      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/hamcrest:hamcrest_java",
     ]

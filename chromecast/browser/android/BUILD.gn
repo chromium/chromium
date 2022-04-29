@@ -96,6 +96,7 @@ android_library("cast_audio_manager_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -123,6 +124,7 @@ android_library("reactive_android_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
@@ -138,6 +140,7 @@ common_android_library_deps = [
   ":cast_intents_java",
   ":reactive_android_java",
   "//base:base_java",
+  "//base:jni_java",
   "//build/android:build_java",
   "//chromecast/base:base_java",
   "//chromecast/media/cma/backend/android:audio_track_java",
@@ -262,6 +265,7 @@ junit_binary("cast_shell_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//chromecast/base:cast_base_test_utils_java",

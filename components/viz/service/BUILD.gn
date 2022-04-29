@@ -728,6 +728,7 @@ if (is_android) {
   android_library("service_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//ui/android:ui_no_recycler_view_java",
     ]

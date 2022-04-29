@@ -78,6 +78,7 @@ android_library("java") {
     ":file_provider_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/offline_pages/android:java",

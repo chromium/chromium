@@ -16,6 +16,7 @@ commerce_subscriptions_junit_test_deps = [
   "//base:base_java",
   "//base:base_java_test_support",
   "//base:base_junit_test_support",
+  "//base:jni_java",
   "//chrome/android:base_module_java",
   "//chrome/browser/android/lifecycle:java",
   "//chrome/browser/flags:java",
@@ -45,6 +46,7 @@ commerce_subscriptions_java_test_sources = [
 commerce_subscriptions_java_test_deps = [
   "//base:base_java",
   "//base:base_java_test_support",
+  "//base:jni_java",
   "//build/android:build_java",
   "//chrome/android:base_module_java",
   "//chrome/browser/android/lifecycle:java",

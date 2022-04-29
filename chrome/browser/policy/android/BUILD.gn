@@ -9,6 +9,7 @@ android_library("util_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/browser/preferences:java",
     "//components/policy/android:policy_java",
   ]
@@ -24,6 +25,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/policy/android:policy_java",

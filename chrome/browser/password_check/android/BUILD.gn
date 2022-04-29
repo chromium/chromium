@@ -69,6 +69,7 @@ android_library("public_java") {
 android_library("public_ui_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//url:gurl_java",
   ]
   sources = [

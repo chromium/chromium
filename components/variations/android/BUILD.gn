@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("variations_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/variations:variations_java",
     "//components/variations/proto:proto_java",

@@ -40,6 +40,7 @@ android_library("java") {
     ":constants_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/dom_distiller/core/android:dom_distiller_core_java",

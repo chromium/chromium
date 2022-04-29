@@ -85,6 +85,7 @@ android_library("java") {
     ":settings_interface_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",

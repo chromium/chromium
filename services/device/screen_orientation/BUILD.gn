@@ -43,6 +43,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/device/screen_orientation/ScreenOrientationListener.java" ]
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }

@@ -90,6 +90,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

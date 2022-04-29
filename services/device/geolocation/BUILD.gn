@@ -168,6 +168,7 @@ if (is_android) {
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",

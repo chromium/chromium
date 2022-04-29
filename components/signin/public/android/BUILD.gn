@@ -5,6 +5,7 @@ android_library("java") {
     "$google_play_services_package:google_play_services_auth_base_java",
     "$google_play_services_package:google_play_services_base_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
     "//net/android:net_java",

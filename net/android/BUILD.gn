@@ -32,6 +32,7 @@ android_library("net_java") {
   deps = [
     ":net_thread_stats_uid_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -78,6 +79,7 @@ android_library("net_java_test_support") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -102,6 +104,7 @@ android_library("net_java_test_support_provider") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
   ]
 
@@ -190,6 +193,7 @@ android_library("net_javatests") {
     ":net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:rules_java",

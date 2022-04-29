@@ -19,6 +19,7 @@ android_library("java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/webauthn/android:java_resources",
     "//components/webauthn/android:java",

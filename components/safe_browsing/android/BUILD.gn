@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

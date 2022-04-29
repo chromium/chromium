@@ -10,6 +10,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/locale/LocaleManager.java" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -75,6 +76,7 @@ android_library("util_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

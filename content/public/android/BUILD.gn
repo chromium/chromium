@@ -82,6 +82,7 @@ android_library("content_main_dex_java") {
   deps = [
     ":content_java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -141,6 +142,7 @@ android_library("content_full_java") {
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build:chromeos_buildflags",
     "//build/android:build_java",
     "//components/download/public/common:public_java",

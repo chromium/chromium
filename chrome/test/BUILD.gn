@@ -73,6 +73,7 @@ if (is_android) {
     testonly = true
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//chrome/android:chrome_all_java",
       "//components/autofill/android:autofill_java",
       "//components/payments/content/android:java",
@@ -9475,6 +9476,7 @@ if (is_android) {
     testonly = true
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",

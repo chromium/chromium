@@ -72,6 +72,7 @@ if (is_android) {
       ":jni_headers",
       ":proto_java",
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/util:java",
       "//components/browser_ui/util/android:java",
@@ -160,6 +161,7 @@ if (is_android) {
     deps = [
       ":test_support_jni_headers",
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
     ]
 

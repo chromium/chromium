@@ -650,6 +650,7 @@ android_library("browser_java") {
     "//android_webview/nonembedded:system_webview_manifest",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//components/android_autofill/browser:java",
     "//components/autofill/android:autofill_java",
@@ -754,6 +755,7 @@ android_library("common_crash_java") {
   deps = [
     ":common_java",
     "//base:base_java",
+    "//base:jni_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -789,6 +791,7 @@ android_library("common_java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//cc/base:cc_base_java",
     "//components/autofill/android:autofill_features_java",

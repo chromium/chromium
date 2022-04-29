@@ -2607,6 +2607,7 @@ android_library("base_module_java") {
     "$google_play_services_package:google_firebase_firebase_messaging_java",
     "$google_play_services_package:google_play_services_gcm_java",
     "//base:base_java",
+    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/flags:java",

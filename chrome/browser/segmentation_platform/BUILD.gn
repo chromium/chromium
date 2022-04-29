@@ -13,6 +13,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//components/segmentation_platform/public:public_java",
