@@ -280,8 +280,8 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::Label* title_view() {
     return notification_view_->title_row_->title_view_;
   }
-  views::FlexLayoutView* expand_button_container() {
-    return notification_view_->expand_button_container_;
+  AshNotificationExpandButton* expand_button() {
+    return notification_view_->expand_button_;
   }
   views::LabelButton* turn_off_notifications_button() {
     return notification_view_->turn_off_notifications_button_;
@@ -602,23 +602,19 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
   notification_view()->UpdateWithNotification(*notification);
 
   // Make sure that app icon and expand button is vertically aligned in
-  // collapsed mode. Also, the padding of them should be the same.
+  // collapsed mode.
   notification_view()->SetExpanded(false);
   EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
-            expand_button_container()->GetBoundsInScreen().y());
-  EXPECT_EQ(app_icon_view()->GetContentsBounds().y(),
-            expand_button_container()->GetInteriorMargin().top());
+            expand_button()->GetBoundsInScreen().y());
 
   // Make sure that app icon, expand button, and also header row is vertically
-  // aligned in collapsed mode. Also check the padding for app icon and expand
-  // button again.
+  // aligned in expanded mode.
   notification_view()->SetExpanded(true);
   EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
-            expand_button_container()->GetBoundsInScreen().y());
+            expand_button()->GetBoundsInScreen().y());
   EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
             GetHeaderRow(notification_view())->GetBoundsInScreen().y());
-  EXPECT_EQ(app_icon_view()->GetContentsBounds().y(),
-            expand_button_container()->GetInteriorMargin().top());
+
 }
 
 TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {

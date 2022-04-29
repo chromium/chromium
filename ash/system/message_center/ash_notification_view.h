@@ -21,7 +21,6 @@ class Notification;
 
 namespace views {
 class BoxLayout;
-class FlexLayoutView;
 class LabelButton;
 class View;
 }  // namespace views
@@ -236,8 +235,6 @@ class ASH_EXPORT AshNotificationView
   views::View* main_right_view_ = nullptr;
   RoundedImageView* app_icon_view_ = nullptr;
   AshNotificationExpandButton* expand_button_ = nullptr;
-  views::FlexLayoutView* expand_button_container_ = nullptr;
-  views::View* control_buttons_container_ = nullptr;
   views::View* left_content_ = nullptr;
   views::Label* message_label_in_expanded_state_ = nullptr;
   views::ScrollView* grouped_notifications_scroll_view_ = nullptr;

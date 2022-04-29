@@ -79,23 +79,26 @@
 
 namespace {
 
-constexpr auto kNotificationViewPadding = gfx::Insets::TLBR(0, 16, 18, 6);
-constexpr auto kMainRightViewPadding = gfx::Insets::TLBR(0, 0, 0, 10);
+constexpr auto kNotificationViewPadding = gfx::Insets(4);
 constexpr int kMainRightViewVerticalSpacing = 4;
 
 // This padding is applied to all the children of `main_right_view_` except the
 // action buttons.
 constexpr auto kMainRightViewChildPadding = gfx::Insets::TLBR(0, 14, 0, 0);
 
-constexpr auto kImageContainerPadding = gfx::Insets::TLBR(12, 14, 0, 0);
+constexpr auto kImageContainerPadding = gfx::Insets::TLBR(12, 14, 12, 12);
 
-constexpr auto kActionButtonsRowPadding = gfx::Insets::TLBR(16, 22, 0, 4);
+constexpr auto kActionButtonsRowPadding = gfx::Insets::TLBR(4, 38, 12, 4);
 constexpr int kActionsRowHorizontalSpacing = 8;
 
-constexpr int kContentRowHorizontalSpacing = 16;
-constexpr int kHeaderLeftContentContainerVerticalSpacing = 8;
+constexpr auto kContentRowPadding = gfx::Insets::TLBR(16, 0, 0, 0);
+
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
+
+constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(4, 0, 8, 0);
+constexpr auto kHeaderRowCollapsedPadding = gfx::Insets::TLBR(0, 0, 8, 0);
+constexpr auto kRightContentPadding = gfx::Insets::TLBR(12, 16, 0, 0);
 
 // Bullet character. The divider symbol between the title and the timestamp.
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
@@ -144,8 +147,7 @@ views::Builder<views::View> CreateMainRightViewBuilder() {
   layout_manager
       ->SetDefault(views::kMarginsKey,
                    gfx::Insets::TLBR(0, 0, kMainRightViewVerticalSpacing, 0))
-      .SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(kMainRightViewPadding);
+      .SetOrientation(views::LayoutOrientation::kVertical);
 
   return views::Builder<views::View>()
       .SetID(message_center::NotificationViewBase::ViewId::kMainRightView)
@@ -353,11 +355,10 @@ AshNotificationView::AshNotificationView(
       CreateContentRowBuilder()
           .SetLayoutManager(std::move(content_row_layout))
           .AddChild(
-              views::Builder<views::BoxLayoutView>()
+              views::Builder<views::FlexLayoutView>()
                   .SetID(kHeaderLeftContent)
-                  .SetOrientation(Orientation::kVertical)
-                  .SetBetweenChildSpacing(
-                      kHeaderLeftContentContainerVerticalSpacing)
+                  .SetOrientation(views::LayoutOrientation::kVertical)
+                  .SetInteriorMargin(kContentRowPadding)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
@@ -374,20 +375,34 @@ AshNotificationView::AshNotificationView(
                           .CopyAddressTo(&left_content_)
                           .SetBetweenChildSpacing(kLeftContentVerticalSpacing)))
           .AddChild(
-              views::Builder<views::BoxLayoutView>()
-                  .SetMainAxisAlignment(MainAxisAlignment::kEnd)
-                  .SetInsideBorderInsets(
-                      gfx::Insets::TLBR(0, kContentRowHorizontalSpacing, 0, 0))
-                  .SetBetweenChildSpacing(kContentRowHorizontalSpacing)
+              views::Builder<views::FlexLayoutView>()
+                  .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kUnbounded))
-                  .AddChild(CreateRightContentBuilder())
+                  .AddChild(CreateRightContentBuilder().SetProperty(
+                      views::kMarginsKey, kRightContentPadding))
                   .AddChild(
                       views::Builder<views::FlexLayoutView>()
-                          .CopyAddressTo(&expand_button_container_)
-                          .SetOrientation(views::LayoutOrientation::kHorizontal)
+                          .SetOrientation(views::LayoutOrientation::kVertical)
+                          .AddChild(
+                              views::Builder<views::BoxLayoutView>()
+                                  .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+                                  .SetMinimumCrossAxisSize(
+                                      kControlButtonsContainerMinimumHeight)
+                                  .AddChild(
+                                      CreateControlButtonsBuilder()
+                                          .CopyAddressTo(&control_buttons_view_)
+                                          .SetProperty(
+                                              views::kCrossAxisAlignmentKey,
+                                              views::LayoutAlignment::kEnd)
+                                          .SetButtonIconColors(
+                                              AshColorProvider::Get()
+                                                  ->GetContentLayerColor(
+                                                      AshColorProvider::
+                                                          ContentLayerType::
+                                                              kIconColorPrimary))))
                           .AddChild(
                               views::Builder<AshNotificationExpandButton>()
                                   .CopyAddressTo(&expand_button_)
@@ -420,25 +435,11 @@ AshNotificationView::AshNotificationView(
                   // consider making changes to this code when the bug is fixed.
                   .SetMaximumWidth(GetExpandedMessageLabelWidth()))
           .AddChild(CreateInlineSettingsBuilder())
-          .AddChild(CreateImageContainerBuilder().SetBorder(
-              views::CreateEmptyBorder(kImageContainerPadding)));
+          .AddChild(CreateImageContainerBuilder().SetProperty(
+              views::kMarginsKey, kImageContainerPadding));
 
   ConfigureLabelStyle(message_label_in_expanded_state_, kMessageLabelSize,
                       false);
-
-  AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .CopyAddressTo(&control_buttons_container_)
-          .SetMainAxisAlignment(MainAxisAlignment::kEnd)
-          .SetMinimumCrossAxisSize(kControlButtonsContainerMinimumHeight)
-          .SetVisible(!notification.group_child())
-          .AddChild(CreateControlButtonsBuilder()
-                        .CopyAddressTo(&control_buttons_view_)
-                        .SetButtonIconColors(
-                            AshColorProvider::Get()->GetContentLayerColor(
-                                AshColorProvider::ContentLayerType::
-                                    kIconColorPrimary)))
-          .Build());
 
   AddChildView(
       views::Builder<views::FlexLayoutView>()
@@ -533,7 +534,6 @@ AshNotificationView::~AshNotificationView() = default;
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
   main_view_->SetVisible(expanded);
-  control_buttons_container_->SetVisible(expanded);
 }
 
 void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
@@ -733,10 +733,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   // Grouped parent views should always use the expanded paddings, even if they
   // are collapsed.
   bool use_expanded_padding = expanded || is_grouped_parent_view_;
-  static_cast<views::BoxLayout*>(control_buttons_container_->GetLayoutManager())
-      ->set_inside_border_insets(
-          use_expanded_padding ? kControlButtonsContainerExpandedPadding
-                               : kControlButtonsContainerCollapsedPadding);
 
   bool is_single_expanded_notification =
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
@@ -757,12 +753,15 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
   // Custom padding for app icon and expand button. These 2 views should always
   // use the same padding value so that they are vertical aligned.
-  app_icon_view_->SetBorder(views::CreateEmptyBorder(
-      use_expanded_padding ? gfx::Insets()
-                           : kAppIconExpandButtonCollapsedPadding));
-  expand_button_container_->SetInteriorMargin(
-      use_expanded_padding ? gfx::Insets()
-                           : kAppIconExpandButtonCollapsedPadding);
+  app_icon_view_->SetProperty(views::kMarginsKey,
+                              use_expanded_padding ? kAppIconExpandedPadding
+                                                   : kAppIconCollapsedPadding);
+  expand_button_->SetProperty(
+      views::kMarginsKey, use_expanded_padding ? kExpandButtonExpandedPadding
+                                               : kExpandButtonCollapsedPadding);
+  header_row()->SetProperty(views::kMarginsKey,
+                            use_expanded_padding ? kHeaderRowExpandedPadding
+                                                 : kHeaderRowCollapsedPadding);
 
   expand_button_->SetExpanded(expanded);
 
@@ -795,6 +794,13 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     }
   }
   NotificationViewBase::UpdateViewForExpandedState(expanded);
+
+  message_label_in_expanded_state_->SetProperty(
+      views::kMarginsKey,
+      (actions_row()->GetVisible() || image_container_view()->GetVisible() ||
+               is_grouped_child_view_
+           ? kMessageLabelInExpandedStatePadding
+           : kMessageLabelInExpandedStateExtendedPadding));
 }
 
 void AshNotificationView::UpdateWithNotification(
@@ -903,7 +909,7 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
   }
 
   inline_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+      views::BoxLayout::Orientation::kHorizontal));
   auto turn_off_notifications_button = GenerateNotificationLabelButton(
       base::BindRepeating(&AshNotificationView::DisableNotification,
                           base::Unretained(this)),
@@ -1037,8 +1043,7 @@ gfx::Size AshNotificationView::GetIconViewSize() const {
 
 int AshNotificationView::GetLargeImageViewMaxWidth() const {
   return message_center::kNotificationWidth - kNotificationViewPadding.width() -
-         kAppIconViewSize - kMainRightViewPadding.width() -
-         kMainRightViewChildPadding.width();
+         kAppIconViewSize - kMainRightViewChildPadding.width();
 }
 
 void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
@@ -1204,8 +1209,8 @@ int AshNotificationView::GetExpandedMessageLabelWidth() {
                                            : kNotificationInMessageCenterWidth;
 
   return notification_width - kNotificationViewPadding.width() -
-         kAppIconViewSize - kMainRightViewPadding.width() -
-         kMainRightViewChildPadding.width();
+         kAppIconViewSize - kMainRightViewChildPadding.width() -
+         kMessageLabelInExpandedStatePadding.width();
 }
 
 void AshNotificationView::DisableNotification() {
@@ -1546,9 +1551,8 @@ int AshNotificationView::CalculateMaxHeightForGroupedNotifications() {
   const int vertical_margin = 2 * message_center::kMarginBetweenPopups +
                               kNotificationViewPadding.height();
 
-  return free_space_height_above_anchor -
-         control_buttons_container_->bounds().height() -
-         main_view_->bounds().height() - vertical_margin;
+  return free_space_height_above_anchor - main_view_->bounds().height() -
+         vertical_margin;
 }
 
 bool AshNotificationView::IsMessageLabelTruncated() {

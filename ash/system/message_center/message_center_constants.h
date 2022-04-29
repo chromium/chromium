@@ -13,14 +13,14 @@ namespace ash {
 constexpr int kGroupedCollapsedSummaryLabelSpacing = 6;
 constexpr int kGroupedCollapsedSummaryTitleLength = 150;
 constexpr int kGroupedCollapsedSummaryMessageLength = 250;
-constexpr auto kGroupedCollapsedSummaryInsets = gfx::Insets::TLBR(0, 40, 0, 16);
+constexpr auto kGroupedCollapsedSummaryInsets = gfx::Insets::TLBR(0, 50, 0, 16);
 
-constexpr int kGroupedNotificationsExpandedSpacing = 18;
+constexpr int kGroupedNotificationsExpandedSpacing = 16;
 constexpr int kGroupedNotificationsCollapsedSpacing = 12;
 constexpr auto kGroupedNotificationContainerCollapsedInsets =
-    gfx::Insets::TLBR(10, 0, 10, 0);
+    gfx::Insets::TLBR(0, 0, 20, 0);
 constexpr auto kGroupedNotificationContainerExpandedInsets =
-    gfx::Insets::TLBR(4, 0, 8, 0);
+    gfx::Insets::TLBR(2, 0, 8, 0);
 
 constexpr int kMessagePopupCornerRadius = 16;
 
@@ -50,8 +50,16 @@ constexpr int kNotificationExpandButtonCornerRadius = 12;
 constexpr int kNotificationExpandButtonChevronIconSize = 16;
 constexpr int kNotificationExpandButtonLabelFontSize = 12;
 
-constexpr auto kAppIconExpandButtonCollapsedPadding =
-    gfx::Insets::TLBR(10, 0, 0, 0);
+constexpr auto kAppIconCollapsedPadding = gfx::Insets::TLBR(24, 12, 24, 0);
+constexpr auto kAppIconExpandedPadding = gfx::Insets::TLBR(20, 12, 0, 0);
+
+constexpr auto kExpandButtonCollapsedPadding = gfx::Insets::TLBR(4, 16, 0, 12);
+constexpr auto kExpandButtonExpandedPadding = gfx::Insets::TLBR(0, 16, 0, 12);
+
+constexpr auto kMessageLabelInExpandedStatePadding =
+    gfx::Insets::TLBR(0, 0, 4, 12);
+constexpr auto kMessageLabelInExpandedStateExtendedPadding =
+    gfx::Insets::TLBR(0, 0, 20, 12);
 
 constexpr int kControlButtonsContainerMinimumHeight = 20;
 constexpr auto kControlButtonsContainerExpandedPadding =
