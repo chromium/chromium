@@ -259,9 +259,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // engine, and updates the accessibility information.
   void OnGeometryChanged(double old_zoom, float old_device_scale);
 
-  // Returns the plugin-specific image data buffer.
-  virtual SkBitmap GetPluginImageData() const;
-
   // Updates the geometry of the plugin and its image data if the plugin rect
   // or the device scale has changed. `new_plugin_rect` must be in device
   // pixels (with the device scale applied).

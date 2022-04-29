@@ -53,13 +53,8 @@ sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
   return surface;
 }
 
-SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
-  sk_sp<SkImage> snapshot =
-      CreateSkiaSurfaceForTesting(size, color)->makeImageSnapshot();
-
-  SkBitmap bitmap;
-  snapshot->asLegacyBitmap(&bitmap);
-  return bitmap;
+sk_sp<SkImage> CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
+  return CreateSkiaSurfaceForTesting(size, color)->makeImageSnapshot();
 }
 
 }  // namespace chrome_pdf

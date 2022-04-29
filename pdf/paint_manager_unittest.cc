@@ -142,15 +142,12 @@ class PaintManagerTest : public testing::Test {
         1, 1, plugin_size.width() - 1, plugin_size.height() - 2));
     initial_surface->getCanvas()->clear(SK_ColorGREEN);
 
-    SkBitmap initial_bitmap;
-    ASSERT_TRUE(
-        initial_surface->makeImageSnapshot()->asLegacyBitmap(&initial_bitmap));
-
     paint_manager_.Invalidate();
-    ASSERT_TRUE(
-        WaitForFlush(/*expected_paint_rects=*/{gfx::Rect(plugin_size)},
-                     /*fake_ready=*/{{gfx::Rect(plugin_size), initial_bitmap}},
-                     /*fake_pending=*/{}));
+    ASSERT_TRUE(WaitForFlush(
+        /*expected_paint_rects=*/{gfx::Rect(plugin_size)},
+        /*fake_ready=*/
+        {{gfx::Rect(plugin_size), initial_surface->makeImageSnapshot()}},
+        /*fake_pending=*/{}));
 
     // Scroll by `scroll_amount`, painting `expected_paint_rect` magenta.
     paint_manager_.ScrollRect(gfx::Rect(plugin_size), scroll_amount);

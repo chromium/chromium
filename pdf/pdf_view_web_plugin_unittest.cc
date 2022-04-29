@@ -431,10 +431,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     canvas_.DrawColor(kDefaultColor);
 
     // Paint the plugin with `kPaintColor`.
-    plugin_->UpdateSnapshot(
-        CreateSkiaImageForTesting(plugin_->GetPluginRectForTesting().size(),
-                                  kPaintColor)
-            .asImage());
+    plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
+        plugin_->GetPluginRectForTesting().size(), kPaintColor));
     plugin_->Paint(canvas_.sk_canvas(), paint_rect);
 
     // Expect the clipped area on canvas to be filled with `kPaintColor`.

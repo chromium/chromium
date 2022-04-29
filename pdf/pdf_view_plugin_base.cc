@@ -59,7 +59,9 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -856,10 +858,6 @@ void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
   OnGeometryChanged(zoom_, old_device_scale);
 }
 
-SkBitmap PdfViewPluginBase::GetPluginImageData() const {
-  return image_data_;
-}
-
 void PdfViewPluginBase::RecalculateAreas(double old_zoom,
                                          float old_device_scale) {
   if (zoom_ != old_zoom || device_scale_ != old_device_scale)
@@ -1391,6 +1389,13 @@ void PdfViewPluginBase::SaveToFile(const std::string& token) {
   SaveAs();
 }
 
+// TODO(crbug.com/1263614): Minimize inefficient `SkBitmap::asImage()` calls
+// (which copy the underlying pixel memory) by only creating the `SkImage` after
+// making all changes to `image_data_` first.
+//
+// We probably can reduce this further by writing pixels directly into the
+// `SkSurface` in `PaintManager`, rather than using an intermediate `SkBitmap`
+// and `SkImage`.
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {
@@ -1422,9 +1427,10 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
       engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
+      sk_sp<SkImage> painted_image = image_data_.asImage();
       for (gfx::Rect& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area_.OffsetFromOrigin());
-        ready.push_back(PaintReadyRect(ready_rect, GetPluginImageData()));
+        ready.emplace_back(ready_rect, painted_image);
       }
       for (gfx::Rect& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area_.OffsetFromOrigin());
@@ -1439,7 +1445,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_rect_.width(), first_page_ypos)));
-      ready.push_back(PaintReadyRect(region, GetPluginImageData()));
+      ready.emplace_back(region, image_data_.asImage());
       image_data_.erase(background_color_, gfx::RectToSkIRect(region));
     }
 
@@ -1450,7 +1456,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       if (!intersection.IsEmpty()) {
         image_data_.erase(background_part.color,
                           gfx::RectToSkIRect(intersection));
-        ready.push_back(PaintReadyRect(intersection, GetPluginImageData()));
+        ready.emplace_back(intersection, image_data_.asImage());
       }
     }
   }
@@ -1468,9 +1474,8 @@ void PdfViewPluginBase::PrepareForFirstPaint(
   // Fill the image data buffer with the background color.
   first_paint_ = false;
   image_data_.eraseColor(background_color_);
-  gfx::Rect rect(gfx::SkISizeToSize(image_data_.dimensions()));
-  ready.push_back(
-      PaintReadyRect(rect, GetPluginImageData(), /*flush_now=*/true));
+  ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
+                     image_data_.asImage(), /*flush_now=*/true);
 }
 
 void PdfViewPluginBase::ClearDeferredInvalidates() {

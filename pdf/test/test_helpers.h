@@ -10,7 +10,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-class SkBitmap;
 class SkImage;
 class SkSurface;
 
@@ -35,7 +34,7 @@ sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
                                              SkColor color);
 
 // Creates a Skia image with dimensions `size` and filled with `color`.
-SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
+sk_sp<SkImage> CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
 
 }  // namespace chrome_pdf
 

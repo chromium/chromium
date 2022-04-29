@@ -20,7 +20,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -287,11 +286,10 @@ void PaintManager::DoPaint() {
   }
 
   for (const auto& ready_rect : ready_now) {
-    // TODO(crbug.com/1284255): Avoid inefficient `SkBitmap::asImage()`.
     SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
     surface_->getCanvas()->drawImageRect(
-        ready_rect.image().asImage(), skia_rect, skia_rect, SkSamplingOptions(),
-        nullptr, SkCanvas::kStrict_SrcRectConstraint);
+        &ready_rect.image(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
+        SkCanvas::kStrict_SrcRectConstraint);
   }
 
   Flush();
