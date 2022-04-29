@@ -48,7 +48,8 @@ class GetCloudPolicyClientTest : public ::testing::TestWithParam<bool> {
     // Because we haven't set up the test environment, client can be
     // either OK or error. Ensure this is called on the UI thread.
     ASSERT_TRUE(
-        content::GetUIThreadTaskRunner({})->RunsTasksInCurrentSequence());
+        content::GetUIThreadTaskRunner({})->RunsTasksInCurrentSequence())
+        << "Callback is not called on the UI thread.";
     ++called_count_;
   }
 
@@ -56,13 +57,9 @@ class GetCloudPolicyClientTest : public ::testing::TestWithParam<bool> {
   bool called_on_ui_thread() const { return GetParam(); }
 
  protected:
-  void SetUp() override {
-    // reset called_count_
-    called_count_ = 0;
-  }
   content::BrowserTaskEnvironment task_environment_;
   // Number of times callback being called in a test.
-  std::atomic<uint64_t> called_count_;
+  std::atomic<uint64_t> called_count_{0};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Without setting up install attributes, browser_policy_connector_ash()
   // call inside GetCloudPolicyClient will fail a check.
@@ -85,10 +82,15 @@ TEST_P(GetCloudPolicyClientTest, CallbackThreadAndCount) {
       FROM_HERE,
       base::BindOnce(
           [](GetCloudPolicyClientTest* test) {
-            // The posting thread is or is not the UI thread
+            // Sanity check: the posting thread is or is not the UI
+            // thread
             ASSERT_EQ(content::GetUIThreadTaskRunner({})
                           ->RunsTasksInCurrentSequence(),
-                      test->called_on_ui_thread());
+                      test->called_on_ui_thread())
+                << "In this test case, GetCloudPolicyClient is intended to be "
+                   "called "
+                << (test->called_on_ui_thread() ? "" : "not ")
+                << "on the UI thread but the opposite is true.";
             GetCloudPolicyClientCb().Run(base::BindOnce(
                 &GetCloudPolicyClientTest::Callback, base::Unretained(test)));
           },
@@ -96,7 +98,9 @@ TEST_P(GetCloudPolicyClientTest, CallbackThreadAndCount) {
   task_environment_.RunUntilIdle();
 
   // Callback is called exactly once
-  ASSERT_EQ(called_count_, 1U);
+  ASSERT_EQ(called_count_, 1U)
+      << "Callback is called " << called_count_
+      << " times, but it should be called exactly once.";
 }
 
 INSTANTIATE_TEST_SUITE_P(CalledOnOrNotOnUIThread,
