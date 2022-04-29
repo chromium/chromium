@@ -30,6 +30,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/quic/crypto_test_utils_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service_defaults.h"
@@ -159,7 +160,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     server_config_.SetInitialSessionFlowControlWindowToSend(
         quic::test::kInitialSessionFlowControlWindowForTest);
     server_ = std::make_unique<QuicSimpleServer>(
-        quic::test::crypto_test_utils::ProofSourceForTesting(), server_config_,
+        net::test::ProofSourceForTestingChromium(), server_config_,
         server_config_options_, quic::AllSupportedVersions(),
         &memory_cache_backend_);
     server_->Listen(server_address_);

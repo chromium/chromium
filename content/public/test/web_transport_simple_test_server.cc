@@ -12,7 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/common/content_switches.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/quic/crypto_test_utils_chromium.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -66,8 +66,8 @@ void WebTransportSimpleTestServer::Start() {
         backend_ = std::make_unique<quic::test::QuicTestBackend>();
         backend_->set_enable_webtransport(true);
         server_ = std::make_unique<net::QuicSimpleServer>(
-            quic::test::crypto_test_utils::ProofSourceForTesting(),
-            quic::QuicConfig(), quic::QuicCryptoServerConfig::ConfigOptions(),
+            net::test::ProofSourceForTestingChromium(), quic::QuicConfig(),
+            quic::QuicCryptoServerConfig::ConfigOptions(),
             quic::AllSupportedVersions(), backend_.get());
         bool result = server_->CreateUDPSocketAndListen(quic::QuicSocketAddress(
             quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0)));

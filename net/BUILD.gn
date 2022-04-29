@@ -2539,6 +2539,7 @@ source_set("quic_test_tools") {
   testonly = true
   sources = [
     "quic/crypto_test_utils_chromium.cc",
+    "quic/crypto_test_utils_chromium.h",
     "quic/mock_crypto_client_stream.cc",
     "quic/mock_crypto_client_stream.h",
     "quic/mock_crypto_client_stream_factory.cc",

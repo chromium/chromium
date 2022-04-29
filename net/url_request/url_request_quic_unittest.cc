@@ -26,7 +26,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log_util.h"
-#include "net/quic/crypto/proof_source_chromium.h"
+#include "net/quic/crypto_test_utils_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
@@ -239,17 +239,10 @@ class URLRequestQuicTest
         {push_info1, push_info2});
     quic::QuicConfig config;
     // Set up server certs.
-    std::unique_ptr<net::ProofSourceChromium> proof_source(
-        new net::ProofSourceChromium());
-    base::FilePath directory = GetTestCertsDirectory();
-    CHECK(proof_source->Initialize(
-        directory.Append(FILE_PATH_LITERAL("quic-chain.pem")),
-        directory.Append(FILE_PATH_LITERAL("quic-leaf-cert.key")),
-        base::FilePath()));
-    server_.reset(new QuicSimpleServer(
-        quic::test::crypto_test_utils::ProofSourceForTesting(), config,
-        quic::QuicCryptoServerConfig::ConfigOptions(), {version},
-        &memory_cache_backend_));
+    server_ = std::make_unique<QuicSimpleServer>(
+        net::test::ProofSourceForTestingChromium(), config,
+        quic::QuicCryptoServerConfig::ConfigOptions(),
+        quic::ParsedQuicVersionVector{version}, &memory_cache_backend_);
     int rv =
         server_->Listen(net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0));
     EXPECT_GE(rv, 0) << "Quic server fails to start";
