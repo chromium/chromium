@@ -50,8 +50,12 @@ OptimizationGuideService::OptimizationGuideService(
     : pref_service_(pref_service), off_the_record_(off_the_record) {
   DCHECK(optimization_guide::features::IsOptimizationHintsEnabled());
 
-  DCHECK(!off_the_record_ ||
-         (hint_store && prediction_model_and_features_store));
+  // In off the record profile, the stores of normal profile should be
+  // passed to the constructor. In normal profile, they will be created.
+  DCHECK(!off_the_record_ || hint_store);
+  DCHECK(
+      !off_the_record_ || prediction_model_and_features_store ||
+      !optimization_guide::features::IsOptimizationTargetPredictionEnabled());
   if (!off_the_record_) {
     // Only create a top host provider from the command line if provided.
     top_host_provider_ =
