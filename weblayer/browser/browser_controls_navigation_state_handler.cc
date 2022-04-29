@@ -52,9 +52,6 @@ bool BrowserControlsNavigationStateHandler::IsRendererControllingOffsets() {
 void BrowserControlsNavigationStateHandler::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   is_crashed_ = false;
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     forced_show_during_load_timer_.Stop();
@@ -64,9 +61,6 @@ void BrowserControlsNavigationStateHandler::DidStartNavigation(
 
 void BrowserControlsNavigationStateHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame()) {
     if (!navigation_handle->HasCommitted()) {
       // There will be no DidFinishLoad or DidFailLoad, so hide the topview
