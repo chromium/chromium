@@ -67,6 +67,15 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::PORTRAIT);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(actual_client_context.platform_type(),
+              ClientContextProto::PLATFORM_TYPE_ANDROID);
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_THAT(actual_client_context.platform_type(),
+              ClientContextProto::PLATFORM_TYPE_DESKTOP);
+#endif
 
   auto actual_device_context = actual_client_context.device_context();
   EXPECT_THAT(actual_device_context.version().sdk_int(), Eq(123));

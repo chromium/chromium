@@ -27,7 +27,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
-// Next ID: 20
+// Next ID: 21
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -125,6 +125,16 @@ message ClientContextProto {
     LANDSCAPE = 2;
   }
   optional ScreenOrientation screen_orientation = 16;
+
+  // The type of platform the device is running on, e.g. Android, Desktop, or
+  // iOS.
+  enum PlatformType {
+    PLATFORM_TYPE_UNDEFINED = 0;
+    PLATFORM_TYPE_ANDROID = 1;
+    PLATFORM_TYPE_IOS = 2;
+    PLATFORM_TYPE_DESKTOP = 3;
+  }
+  optional PlatformType platform_type = 20;
 
   reserved 19;
 }
