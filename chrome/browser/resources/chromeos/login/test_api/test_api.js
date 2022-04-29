@@ -137,6 +137,18 @@ class HIDDetectionScreenTester extends ScreenElementApi {
     return keyboardTickIcon.isVisible();
   }
 
+  getKeyboardNotDetectedText() {
+    return loadTimeData.getString('hidDetectionKeyboardSearching');
+  }
+
+  getMouseNotDetectedText() {
+    return loadTimeData.getString('hidDetectionMouseSearching');
+  }
+
+  getUsbKeyboardDetectedText() {
+    return loadTimeData.getString('hidDetectionUSBKeyboardConnected');
+  }
+
   getNextButtonName() {
     return loadTimeData.getString('hidDetectionContinue');
   }
