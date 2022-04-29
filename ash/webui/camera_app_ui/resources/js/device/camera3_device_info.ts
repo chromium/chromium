@@ -20,17 +20,9 @@ import {
  */
 function groupResolutionRatio(resolutions: Resolution[]):
     Map<number, Resolution[]> {
-  function toSupportedPreviewRatio(r: Resolution): number {
-    // Special aspect ratio mapping rule, see http://b/147986763.
-    if (r.width === 848 && r.height === 480) {
-      return (new Resolution(16, 9)).aspectRatio;
-    }
-    return r.aspectRatio;
-  }
-
   const result = new Map<number, ResolutionList>();
   for (const r of resolutions) {
-    const ratio = toSupportedPreviewRatio(r);
+    const ratio = r.aspectRatio;
     const ratios = result.get(ratio) ?? [];
     ratios.push(r);
     result.set(ratio, ratios);

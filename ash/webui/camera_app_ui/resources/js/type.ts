@@ -30,6 +30,10 @@ export class Resolution {
    * Aspect ratio calculates from width divided by height.
    */
   get aspectRatio(): number {
+    // Special aspect ratio mapping rule, see http://b/147986763.
+    if (this.width === 848 && this.height === 480) {
+      return (new Resolution(16, 9)).aspectRatio;
+    }
     // Approximate to 4 decimal places to prevent precision error during
     // comparing.
     return parseFloat((this.width / this.height).toFixed(4));
@@ -72,7 +76,7 @@ export class Resolution {
    * @return Whether aspect ratio of resolutions are equal.
    */
   aspectRatioEquals(resolution: Resolution): boolean {
-    return this.width * resolution.height === this.height * resolution.width;
+    return this.aspectRatio === resolution.aspectRatio;
   }
 
   /**
