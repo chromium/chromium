@@ -7,6 +7,7 @@
 #include <set>
 
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,6 +19,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -128,7 +131,11 @@ void HoldingSpaceTrayChildBubble::Init() {
       kHoldingSpaceChildBubblePadding, kHoldingSpaceChildBubbleChildSpacing));
 
   // Layer.
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  // TODO(crbug/1313073): In dark light mode, since we have changed to use a
+  // textured layer instead of a solid color layer, we need to remove all the
+  // layer set up in the children of this view to remove layer redundancy.
+  SetPaintToLayer(features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
+                                                     : ui::LAYER_SOLID_COLOR);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -278,8 +285,19 @@ bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
 
 void HoldingSpaceTrayChildBubble::OnThemeChanged() {
   views::View::OnThemeChanged();
-  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
+
+  if (!features::IsDarkLightModeEnabled()) {
+    layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80));
+    return;
+  }
+
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBubbleCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 }
 
 void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {
