@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
 #include "base/bind.h"
@@ -261,38 +262,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     return embedded_test_server()->GetURL("/direct_sockets/open.html");
   }
 
-  void IPRoutableTest(const std::string& address,
-                      const DirectSocketsServiceImpl::ProtocolType protocol) {
-    EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-    const char kExampleHostname[] = "mail.example.com";
-    const std::string mapping_rules =
-        base::StringPrintf("MAP %s %s", kExampleHostname, address.c_str());
-
-    MockOpenNetworkContext mock_network_context(net::OK);
-    mock_network_context.set_host_mapping_rules(mapping_rules);
-    DirectSocketsServiceImpl::SetNetworkContextForTesting(
-        &mock_network_context);
-    const std::string type =
-        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
-                                                                 : "Udp";
-    const std::string expected_result = base::StringPrintf(
-        "open%s failed: NetworkError: Network Error.", type.c_str());
-
-    base::HistogramTester histogram_tester;
-    histogram_tester.ExpectBucketCount(
-        kPermissionDeniedHistogramName,
-        blink::mojom::DirectSocketFailureType::kResolvingToNonPublic, 0);
-
-    const std::string script =
-        base::StringPrintf("open%s('%s', 993)", type.c_str(), kExampleHostname);
-
-    EXPECT_EQ(expected_result, EvalJs(shell(), script));
-    histogram_tester.ExpectBucketCount(
-        kPermissionDeniedHistogramName,
-        blink::mojom::DirectSocketFailureType::kResolvingToNonPublic, 1);
-  }
-
  protected:
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
@@ -368,29 +337,80 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
           "keepAliveDelay must not be set when keepAlive = false or missing"));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_CannotConnectNonPublic) {
-  const auto protocol = DirectSocketsServiceImpl::ProtocolType::kTcp;
-  // Tests for the reserved IPv4 ranges. The reserved ranges are tested by
-  // checking the first and last address of each range. These tests cover the
-  // entire IPv4 address range, as well as this range mapped to IPv6.
-  for (const auto& test : kIPv4_tests) {
-    IPRoutableTest(test, protocol);
+using ProtocolType = DirectSocketsServiceImpl::ProtocolType;
 
-    // Check these IPv4 addresses when mapped to IPv6.
-    net::IPAddress address;
-    EXPECT_TRUE(address.AssignFromIPLiteral(test));
-    net::IPAddress mapped_address = net::ConvertIPv4ToIPv4MappedIPv6(address);
-    IPRoutableTest(base::StrCat({"[", mapped_address.ToString(), "]"}),
-                   protocol);
+class DirectSocketsOpenCannotConnectBrowserTest
+    : public DirectSocketsOpenBrowserTest,
+      public testing::WithParamInterface<ProtocolType> {
+  // std::tuple<std::string, ProtocolType>> {
+ public:
+  static std::vector<std::string> ProduceAllTestParams() {
+    std::vector<std::string> params;
+    std::copy(std::begin(kIPv4_tests), std::end(kIPv4_tests),
+              std::back_inserter(params));
+    std::transform(std::begin(kIPv4_tests), std::end(kIPv4_tests),
+                   std::back_inserter(params),
+                   [](const std::string& ip_address) {
+                     net::IPAddress address;
+                     EXPECT_TRUE(address.AssignFromIPLiteral(ip_address));
+                     net::IPAddress mapped_address =
+                         net::ConvertIPv4ToIPv4MappedIPv6(address);
+                     return base::StrCat({"[", mapped_address.ToString(), "]"});
+                   });
+    std::transform(std::begin(kIPv6_tests), std::end(kIPv6_tests),
+                   std::back_inserter(params),
+                   [](const std::string& ip_address) {
+                     return base::StrCat({"[", ip_address, "]"});
+                   });
+    return params;
   }
 
-  // Tests for the reserved IPv6 ranges. The reserved ranges are tested by
-  // checking the first and last address of each range. These tests cover the
-  // entire IPv6 address range.
-  for (const auto& test : kIPv6_tests)
-    IPRoutableTest(base::StrCat({"[", test, "]"}), protocol);
+  void RunTest() {
+    EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+    const auto protocol = GetParam();
+    const std::string type =
+        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
+                                                                 : "Udp";
+    const std::string expected_result = base::StringPrintf(
+        "open%s failed: NetworkError: Network Error.", type.c_str());
+
+    const std::string example_hostname = "mail.example.com";
+    const std::string script = base::StringPrintf(
+        "open%s('%s', 993)", type.c_str(), example_hostname.c_str());
+
+    for (const auto& address : ProduceAllTestParams()) {
+      const std::string mapping_rules = base::StringPrintf(
+          "MAP %s %s", example_hostname.c_str(), address.c_str());
+
+      MockOpenNetworkContext mock_network_context(net::OK);
+      mock_network_context.set_host_mapping_rules(mapping_rules);
+      DirectSocketsServiceImpl::SetNetworkContextForTesting(
+          &mock_network_context);
+
+      base::HistogramTester histogram_tester;
+      histogram_tester.ExpectBucketCount(
+          kPermissionDeniedHistogramName,
+          blink::mojom::DirectSocketFailureType::kResolvingToNonPublic, 0);
+
+      EXPECT_EQ(expected_result, EvalJs(shell(), script));
+
+      histogram_tester.ExpectBucketCount(
+          kPermissionDeniedHistogramName,
+          blink::mojom::DirectSocketFailureType::kResolvingToNonPublic, 1);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCannotConnectBrowserTest,
+                       Open_CannotConnectNonPublic) {
+  RunTest();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /*empty*/,
+    DirectSocketsOpenCannotConnectBrowserTest,
+    testing::Values(ProtocolType::kTcp, ProtocolType::kUdp));
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
@@ -545,30 +565,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
               ::testing::HasSubstr("NetworkError"));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_CannotConnectNonPublic) {
-  const auto protocol = DirectSocketsServiceImpl::ProtocolType::kUdp;
-  // Tests for the reserved IPv4 ranges. The reserved ranges are tested by
-  // checking the first and last address of each range. These tests cover the
-  // entire IPv4 address range, as well as this range mapped to IPv6.
-  for (const auto& test : kIPv4_tests) {
-    IPRoutableTest(test, protocol);
-
-    // Check these IPv4 addresses when mapped to IPv6.
-    net::IPAddress address;
-    EXPECT_TRUE(address.AssignFromIPLiteral(test));
-    net::IPAddress mapped_address = net::ConvertIPv4ToIPv4MappedIPv6(address);
-    IPRoutableTest(base::StrCat({"[", mapped_address.ToString(), "]"}),
-                   protocol);
-  }
-
-  // Tests for the reserved IPv6 ranges. The reserved ranges are tested by
-  // checking the first and last address of each range. These tests cover the
-  // entire IPv6 address range.
-  for (const auto& test : kIPv6_tests)
-    IPRoutableTest(base::StrCat({"[", test, "]"}), protocol);
-}
-
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
@@ -703,8 +699,8 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
 
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-  // HTTPS uses port 443. We cannot really start a server on port 443, therefore
-  // we mock the behavior.
+  // HTTPS uses port 443. We cannot really start a server on port 443,
+  // therefore we mock the behavior.
   ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
 
   base::HistogramTester histogram_tester;
@@ -738,8 +734,8 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  // HTTPS uses port 443. We cannot really start a server on port 443, therefore
-  // we mock the behavior.
+  // HTTPS uses port 443. We cannot really start a server on port 443,
+  // therefore we mock the behavior.
   ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
 
   base::HistogramTester histogram_tester;
