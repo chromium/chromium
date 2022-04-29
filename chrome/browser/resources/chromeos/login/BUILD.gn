@@ -145,6 +145,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
   in_files = [
     "cr_ui.html",
     "display_manager.html",
+    "i18n_setup.html",
     "i18n_setup.js",
     "keyboard_utils.html",
     "login_ui_tools.html",
@@ -153,7 +154,6 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "oobe_popup_overlay.css",
     "oobe_screen.css",
     "screens.js",
-    "components/behaviors/i18n_setup.html",
     "components/behaviors/login_screen_behavior.html",
     "components/behaviors/login_screen_behavior.js",
     "components/behaviors/multi_step_behavior.html",
@@ -543,7 +543,6 @@ js_library("cr_ui.m") {
     ":demo_mode_test_helper.m",
     ":display_manager.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_template_no_process.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]

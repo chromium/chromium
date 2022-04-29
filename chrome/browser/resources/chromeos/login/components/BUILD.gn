@@ -109,6 +109,7 @@ js_library("gaia_dialog.m") {
     "./buttons:oobe_text_button.m",
     "./dialogs:oobe_content_dialog.m",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":gaia_dialog_module" ]
 }

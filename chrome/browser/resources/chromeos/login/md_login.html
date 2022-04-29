@@ -1,12 +1,9 @@
 <!doctype html>
-<html i18n-values="dir:textdirection;
-                   build:buildType;
-                   highlight:highlightStrength;
-                   lang:language">
+<html build="$i18n{buildType}">
 <head>
 <meta charset="utf-8">
 <meta name="google" value="notranslate">
-<title i18n-content="title"></title>
+<title>$i18n{title}</title>
 <script src="chrome://resources/polymer/v1_0/html-imports/html-imports.min.js"></script>
 <!-- This must be the first import in all login pages. -->
 <link rel="import" href="chrome://resources/html/polymer.html">
@@ -54,13 +51,12 @@
 
 <script src="chrome://oobe/keyboard_utils.js"></script>
 
-<link rel="import" href="/components/behaviors/i18n_setup.html">
+<link rel="import" href="./i18n_setup.html">
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <script src="chrome://oobe/components/test_util.js"></script>
 <script src="chrome://oobe/login.js"></script>
 </head>
-<body i18n-values=".style.fontFamily:fontfamily;" class="chromeos">
+<body style="font-family:$i18n{fontfamily}" class="chromeos">
   <include src="md_screen_container.html">
-  <script src="chrome://resources/js/i18n_template_no_process.js"></script>
 </body>
 </html>

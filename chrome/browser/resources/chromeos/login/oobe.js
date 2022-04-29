@@ -37,7 +37,8 @@ disableTextSelectAndDrag(function(e) {
 // <include src="components/web_view_loader.js">
 
 HTMLImports.whenReady(() => {
-  i18nTemplate.process(document, loadTimeData);
+  // Update localized strings at the document level.
+  Oobe.updateDocumentLocalizedStrings();
 
   // <include src="oobe_initialization.js">
 });

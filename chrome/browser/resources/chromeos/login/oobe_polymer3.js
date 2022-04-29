@@ -11,7 +11,6 @@ import {invokePolymerMethod} from './display_manager.m.js';
 import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
 import 'chrome://oobe/test_api/test_api.m.js';
-import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from 'chrome://oobe/screens.js';
 import {MultiTapDetector} from './multi_tap_detector.m.js';
 // clang-format on
@@ -113,7 +112,9 @@ function initializeOobe() {
 }
 
 (function (root) {
-    i18nTemplate.process(document, loadTimeData);
+    // Update localized strings at the document level.
+    Oobe.updateDocumentLocalizedStrings();
+
     prepareGlobalValues(window);
 
     // Add screens to the document.
