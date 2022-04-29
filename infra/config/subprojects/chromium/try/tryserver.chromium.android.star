@@ -259,6 +259,10 @@ try_.builder(
 try_.builder(
     name = "android-oreo-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Oreo Phone Tester",
+    ],
 )
 
 try_.builder(
@@ -283,6 +287,10 @@ try_.builder(
             ".+/[+]/third_party/arcore-android-sdk-client/.+",
         ],
     ),
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/android-pie-arm64-dbg",
+    ],
 )
 
 # TODO(crbug/1182468) Remove when experiment is done.
@@ -379,18 +387,34 @@ try_.builder(
 
 try_.builder(
     name = "android-webview-marshmallow-arm64-dbg",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Android WebView M (dbg)",
+    ],
 )
 
 try_.builder(
     name = "android-webview-nougat-arm64-dbg",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Android WebView N (dbg)",
+    ],
 )
 
 try_.builder(
     name = "android-webview-oreo-arm64-dbg",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Android WebView O (dbg)",
+    ],
 )
 
 try_.builder(
     name = "android-webview-pie-arm64-dbg",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Android WebView P (dbg)",
+    ],
 )
 
 try_.builder(
@@ -404,6 +428,13 @@ try_.builder(
 try_.builder(
     name = "android_arm64_dbg_recipe",
     goma_jobs = goma.jobs.J300,
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
 )
 
 try_.builder(
@@ -483,10 +514,18 @@ try_.builder(
 
 try_.builder(
     name = "android_n5x_swarming_dbg",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Marshmallow 64 bit Tester",
+    ],
 )
 
 try_.builder(
     name = "android_unswarmed_pixel_aosp",
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Android WebView N (dbg)",
+    ],
 )
 
 try_.builder(
@@ -504,6 +543,10 @@ try_.builder(
 try_.builder(
     name = "try-nougat-phone-tester",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/Nougat Phone Tester",
+    ],
 )
 
 try_.gpu.optional_tests_builder(
