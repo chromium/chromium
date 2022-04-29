@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.Toast;
 
@@ -461,6 +462,14 @@ public class StatusView extends LinearLayout {
         }
         touchDelegateBounds.left -= isRtl ? mTouchDelegateEndOffset : mTouchDelegateStartOffset;
         touchDelegateBounds.right += isRtl ? mTouchDelegateStartOffset : mTouchDelegateEndOffset;
+        // Increase the delegate area height for tablets to satisfy minimum size requirements.
+        // Ideally, we want to address crbug.com/1320384 to satisfy minimum size requirements.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            touchDelegateBounds.top -= getResources().getDimensionPixelSize(
+                    R.dimen.modern_toolbar_background_vertical_offset);
+            touchDelegateBounds.bottom += getResources().getDimensionPixelSize(
+                    R.dimen.modern_toolbar_background_vertical_offset);
+        }
 
         // If our rect and rtl-ness hasn't changed, there's no need to recreate the TouchDelegate.
         if (mTouchDelegate != null && touchDelegateBounds.equals(mLastTouchDelegateRect)

@@ -71,9 +71,13 @@
 
     <!-- Modern toolbar dimensions -->
     <dimen name="modern_toolbar_background_size">40dp</dimen>
+    <dimen name="modern_toolbar_tablet_background_size">48dp</dimen>
     <!-- Sometimes the modern toolbar is shown at 48dp so a corner radius of
          24dp is needed to completely round the corners. -->
     <dimen name="modern_toolbar_background_corner_radius">24dp</dimen>
+    <!-- The offset is required for the background drawable used by the
+         location bar on tablets. -->
+    <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
     <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Promo cards dimensions -->
