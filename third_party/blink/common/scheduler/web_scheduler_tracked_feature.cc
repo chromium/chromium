@@ -4,12 +4,15 @@
 
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
+#include <atomic>
 #include <map>
 
 namespace blink {
 namespace scheduler {
 
 namespace {
+
+std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
   std::string short_name;
@@ -193,6 +196,16 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
       WebSchedulerTrackedFeature::kDummy);
   return features;
+}
+
+// static
+void DisableAlignWakeUpsForProcess() {
+  disable_align_wake_ups.store(true, std::memory_order_relaxed);
+}
+
+// static
+bool IsAlignWakeUpsDisabledForProcess() {
+  return disable_align_wake_ups.load(std::memory_order_relaxed);
 }
 
 }  // namespace scheduler

@@ -953,7 +953,8 @@ void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          SchedulingPolicy::DisableAggressiveThrottling());
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()});
 }
 
 void MediaStreamTrackImpl::AddObserver(MediaStreamTrack::Observer* observer) {

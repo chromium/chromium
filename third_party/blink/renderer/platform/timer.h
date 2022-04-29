@@ -29,6 +29,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -57,17 +58,25 @@ class PLATFORM_EXPORT TimerBase {
   TimerBase& operator=(const TimerBase&) = delete;
   virtual ~TimerBase();
 
+  // If |precise|, the task is scheduled with a precise delay policy to run
+  // preferably as close as possible to the specified delay.
   void Start(base::TimeDelta next_fire_interval,
              base::TimeDelta repeat_interval,
-             const base::Location&);
+             const base::Location&,
+             bool precise = false);
 
+  // If |precise|, the task is scheduled with a precise delay policy to run
+  // preferably as close as possible to the specified delay.
   void StartRepeating(base::TimeDelta repeat_interval,
-                      const base::Location& caller) {
-    Start(repeat_interval, repeat_interval, caller);
+                      const base::Location& caller,
+                      bool precise = false) {
+    Start(repeat_interval, repeat_interval, caller, precise);
   }
 
-  void StartOneShot(base::TimeDelta interval, const base::Location& caller) {
-    Start(interval, base::TimeDelta(), caller);
+  void StartOneShot(base::TimeDelta interval,
+                    const base::Location& caller,
+                    bool precise = false) {
+    Start(interval, base::TimeDelta(), caller, precise);
   }
 
   // Timer cancellation is fast enough that you shouldn't have to worry
@@ -111,6 +120,7 @@ class PLATFORM_EXPORT TimerBase {
   scoped_refptr<base::SingleThreadTaskRunner> web_task_runner_;
   // The tick clock used to calculate the run time for scheduled tasks.
   const base::TickClock* tick_clock_ = nullptr;
+  base::subtle::DelayPolicy delay_policy_;
 
 #if DCHECK_IS_ON()
   base::PlatformThreadId thread_;

@@ -685,6 +685,8 @@ void FrameSchedulerImpl::OnStartedUsingFeature(
     OnAddedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache)
     back_forward_cache_disabling_feature_tracker_.Add(feature);
+  if (policy.disable_align_wake_ups)
+    DisableAlignWakeUpsForProcess();
 }
 
 void FrameSchedulerImpl::OnStoppedUsingFeature(

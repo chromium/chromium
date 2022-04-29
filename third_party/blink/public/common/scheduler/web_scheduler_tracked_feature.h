@@ -144,6 +144,11 @@ BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 // All the sticky features.
 BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
 
+// Disables wake up alignment permanently for the process. This is called when a
+// feature that is incompatible with wake up alignment is used. Thread-safe.
+BLINK_COMMON_EXPORT void DisableAlignWakeUpsForProcess();
+BLINK_COMMON_EXPORT bool IsAlignWakeUpsDisabledForProcess();
+
 }  // namespace scheduler
 }  // namespace blink
 

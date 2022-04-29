@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 
 namespace blink {
 
@@ -67,6 +68,7 @@ void DOMTimer::RemoveByID(ExecutionContext* context, int timeout_id) {
   if (timer)
     timer->SetExecutionContext(nullptr);
 }
+
 DOMTimer::DOMTimer(ExecutionContext* context,
                    ScheduledAction* action,
                    base::TimeDelta timeout,
@@ -115,10 +117,11 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled())
     timeout = std::max(timeout, base::Milliseconds(1));
 
+  bool precise = scheduler::IsAlignWakeUpsDisabledForProcess();
   if (single_shot)
-    StartOneShot(timeout, FROM_HERE);
+    StartOneShot(timeout, FROM_HERE, precise);
   else
-    StartRepeating(timeout, FROM_HERE);
+    StartRepeating(timeout, FROM_HERE, precise);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "TimerInstall", inspector_timer_install_event::Data, context, timeout_id,

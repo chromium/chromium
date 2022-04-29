@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
+#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
@@ -278,6 +279,9 @@ WorkerSchedulerImpl::ThrottleableTaskQueue() {
 void WorkerSchedulerImpl::OnStartedUsingFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy) {
+  if (policy.disable_align_wake_ups)
+    scheduler::DisableAlignWakeUpsForProcess();
+
   if (!policy.disable_back_forward_cache) {
     return;
   }

@@ -52,13 +52,16 @@ TimerBase::~TimerBase() {
 
 void TimerBase::Start(base::TimeDelta next_fire_interval,
                       base::TimeDelta repeat_interval,
-                      const base::Location& caller) {
+                      const base::Location& caller,
+                      bool precise) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(thread_, CurrentThread());
 #endif
 
   location_ = caller;
   repeat_interval_ = repeat_interval;
+  delay_policy_ = precise ? base::subtle::DelayPolicy::kPrecise
+                          : base::subtle::DelayPolicy::kFlexibleNoSooner;
   SetNextFireTime(next_fire_interval.is_zero()
                       ? base::TimeTicks()
                       : TimerCurrentTimeTicks() + next_fire_interval);
@@ -127,7 +130,7 @@ void TimerBase::SetNextFireTime(base::TimeTicks next_fire_time) {
 
     delayed_task_handle_ = web_task_runner_->PostCancelableDelayedTaskAt(
         base::subtle::PostDelayedTaskPassKey(), location_, BindTimerClosure(),
-        next_fire_time_, base::subtle::DelayPolicy::kFlexibleNoSooner);
+        next_fire_time_, delay_policy_);
   }
 }
 
