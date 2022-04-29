@@ -889,14 +889,9 @@
     },
     {
       name: "DigitalGoodsV2_1",
-      status: {
-        "Android": "stable",
-        "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
-        // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
-        // so enable the API on all platforms for testing.
-        "default": "test"
-      },
+      // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
+      // so enable the API on all platforms for testing.
+      status: "test",
     },
     {
       name: "DirectSockets",
