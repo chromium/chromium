@@ -5667,34 +5667,6 @@
             ]
         }
     ],
-    "PartitionNetworkStateByDoubleKey": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2",
-                    "enable_features": [
-                        "ForceIsolationInfoFrameOriginToTopLevelFrame",
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey",
-                        "PartitionExpectCTStateByNetworkIsolationKey",
-                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
-                        "PartitionNelAndReportingByNetworkIsolationKey",
-                        "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionedCookies": [
         {
             "platforms": [
