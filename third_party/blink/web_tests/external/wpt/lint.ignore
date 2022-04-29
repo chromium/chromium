@@ -153,6 +153,8 @@ SET TIMEOUT: css/selectors/selector-required-type-change-002.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
+SET TIMEOUT: fetch/metadata/resources/helper.sub.js
+SET TIMEOUT: fetch/metadata/resources/message-opener.html
 SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-outer.sub.html
 SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-middle.sub.html
 SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-outer.sub.html

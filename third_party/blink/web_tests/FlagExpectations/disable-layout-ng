@@ -13,6 +13,16 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-replaced-vrl-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-039.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-multicol/column-fill-balance-orthog-block-001.html [ Failure ]

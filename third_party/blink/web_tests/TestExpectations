@@ -81,9 +81,6 @@ crbug.com/1207373 [ Linux ] external/wpt/uievents/order-of-events/mouse-events/m
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
 
-# Favicon is not supported by run_web_tests.
-external/wpt/fetch/metadata/favicon.https.sub.html [ Skip ]
-
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
 # The following tests need to remove the assumption that user activation is
@@ -3385,6 +3382,36 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Skip Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
