@@ -72,7 +72,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
 
   /// Background color for the icon.
   func backgroundColor(configuration: Configuration) -> Color {
-    return configuration.isPressed ? Color(.systemGray4) : .cr_groupedSecondaryBackground
+    return configuration.isPressed ? Color(.systemGray4) : .groupedSecondaryBackground
   }
 
   /// View representing the background of the icon.
@@ -103,7 +103,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
             )
             // Pad the color circle by 0.5, otherwise the color shows up faintly
             // around the border.
-            .background(Circle().foregroundColor(.cr_blue500).padding(0.5))
+            .background(Circle().foregroundColor(.blue500).padding(0.5))
             .frame(width: Dimensions.badgeWidth, height: Dimensions.badgeWidth)
             .offset(x: Dimensions.iconWidth / 2, y: -Dimensions.iconWidth / 2)
         }

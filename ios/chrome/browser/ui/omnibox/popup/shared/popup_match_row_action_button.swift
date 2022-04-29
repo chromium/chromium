@@ -7,7 +7,7 @@ import SwiftUI
 /// A button view to trigger the pedal/action associated with an Omnibox popup row.
 struct PopupMatchRowActionButton: View {
   enum Colors {
-    static let foregroundColor = Color.cr_blue
+    static let foregroundColor = Color.chromeBlue
     static let backgroundColor = Color(red: 0.933, green: 0.933, blue: 0.941)
   }
 

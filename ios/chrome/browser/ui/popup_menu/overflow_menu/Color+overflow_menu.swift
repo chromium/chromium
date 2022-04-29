@@ -5,7 +5,7 @@
 import SwiftUI
 
 extension Color {
-  static var overflowMenuSeparatorColor: Color {
+  static var overflowMenuSeparator: Color {
     let uiColor = UIColor { traitCollection in
       let color =
         traitCollection.userInterfaceStyle == .dark

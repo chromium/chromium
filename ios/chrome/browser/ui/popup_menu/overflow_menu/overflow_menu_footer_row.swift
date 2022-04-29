@@ -31,13 +31,13 @@ struct OverflowMenuFooterRow: View {
         spacing: Dimensions.iconLineSpacing
       ) {
         Rectangle()
-          .foregroundColor(.overflowMenuSeparatorColor)
+          .foregroundColor(.overflowMenuSeparator)
           .frame(height: Dimensions.iconLineDividerHeight)
         footer.image
           .fixedSize()
-          .foregroundColor(.cr_grey500)
+          .foregroundColor(.grey500)
         Rectangle()
-          .foregroundColor(.overflowMenuSeparatorColor)
+          .foregroundColor(.overflowMenuSeparator)
           .frame(height: Dimensions.iconLineDividerHeight)
       }
       .padding([.top], Dimensions.iconLineExtraVerticalSpacing)
@@ -46,7 +46,7 @@ struct OverflowMenuFooterRow: View {
         .font(.footnote)
       Text(footer.link)
         .font(.caption2)
-        .foregroundColor(.cr_blue)
+        .foregroundColor(.chromeBlue)
         .onTapGesture(perform: footer.handler)
         .accessibilityIdentifier(footer.accessibilityIdentifier)
     }

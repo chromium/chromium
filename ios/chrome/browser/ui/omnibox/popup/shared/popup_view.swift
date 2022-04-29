@@ -271,7 +271,7 @@ struct PopupView: View {
         } else if index == 1 {
           // Spacing and separator below the top (pedal) section is inserted as
           // a header in the second section.
-          let separatorColor = (colorScheme == .dark) ? Color.cr_grey700 : Color.cr_grey200
+          let separatorColor = (colorScheme == .dark) ? Color.grey700 : Color.grey200
           let pedalSectionSeparator =
             separatorColor
             .frame(width: geometry.size.width, height: 0.5)
@@ -327,7 +327,7 @@ struct PopupView: View {
       case .one:
         backgroundColor = Color(toolbarConfiguration.backgroundColor)
       case .two:
-        backgroundColor = .cr_groupedPrimaryBackground
+        backgroundColor = .groupedPrimaryBackground
       }
     } else {
       switch popupUIVariation {

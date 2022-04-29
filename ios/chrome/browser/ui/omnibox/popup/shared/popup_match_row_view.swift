@@ -68,7 +68,7 @@ struct PopupMatchRowView: View {
   /// Enable this to tell the row it should display its own custom separator at the bottom.
   let shouldDisplayCustomSeparator: Bool
   var customSeparatorColor: Color {
-    uiVariation == .one ? .cr_separator : .cr_grey700
+    uiVariation == .one ? .separator : .grey700
   }
   @ViewBuilder
   var customSeparator: some View {
@@ -93,7 +93,7 @@ struct PopupMatchRowView: View {
       if isHighlighted {
         LinearGradient(gradient: Colors.highlightingGradient, startPoint: .top, endPoint: .bottom)
       } else if self.isPressed {
-        Color.cr_tableRowViewHighlight
+        Color.tableRowViewHighlight
       }
 
       button
@@ -142,7 +142,7 @@ struct PopupMatchRowView: View {
         Spacer()
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
-            .foregroundColor(isHighlighted ? foregroundColorPrimary : .cr_blue)
+            .foregroundColor(isHighlighted ? foregroundColorPrimary : .chromeBlue)
         }
       }
       .padding(Dimensions.padding)
@@ -155,7 +155,7 @@ struct PopupMatchRowView: View {
     case .one:
       return Color(toolbarConfiguration.backgroundColor)
     case .two:
-      return .cr_groupedSecondaryBackground
+      return .groupedSecondaryBackground
     }
   }
 

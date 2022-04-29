@@ -24,7 +24,11 @@ public class OmniboxPopupAccessibilityIdentifierHelper {
   }
 }
 
+// These constants are needed for the previews project, but named in C++ code,
+// so they shouldn't be linted.
+// swift-format-ignore: AlwaysUseLowerCamelCase
 let IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB = 1
+// swift-format-ignore: AlwaysUseLowerCamelCase
 let IDS_IOS_OMNIBOX_POPUP_APPEND = 2
 
 public class L10NUtils {

@@ -17,11 +17,11 @@
   "respectsExistingLineBreaks" : true,
   "rules" : {
     "AllPublicDeclarationsHaveDocumentation" : false,
-    "AlwaysUseLowerCamelCase" : false,
+    "AlwaysUseLowerCamelCase" : true,
     "AmbiguousTrailingClosureOverload" : true,
     "BeginDocumentationCommentWithOneLineSummary" : false,
     "DoNotUseSemicolons" : true,
-    "DontRepeatTypeInStaticProperties" : false,
+    "DontRepeatTypeInStaticProperties" : true,
     "FileScopedDeclarationPrivacy" : true,
     "FullyIndirectEnum" : true,
     "GroupNumericLiterals" : true,

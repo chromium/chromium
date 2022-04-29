@@ -8,7 +8,7 @@ import SwiftUI
 struct PopupMatchImageView: View {
   enum Dimension {
     /// The width and height of all images.
-    static let imageDimension: CGFloat = 30
+    static let image: CGFloat = 30
   }
 
   /// The image model object for this view.
@@ -34,7 +34,7 @@ struct PopupMatchImageView: View {
         image.iconImage?.foregroundColor(image.iconImageTintColor)
       }
     }
-    .frame(width: Dimension.imageDimension, height: Dimension.imageDimension)
+    .frame(width: Dimension.image, height: Dimension.image)
   }
 }
 
