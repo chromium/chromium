@@ -70,10 +70,12 @@ def _CommonChecks(input_api, output_api):
                                                       output_api,
                                                       '.',
                                                       [r'^.+_unittest\.py$'],
+                                                      run_on_python2=False,
+                                                      run_on_python3=True,
                                                       skip_shebang_check=True))
 
   # Validate the format of the mb_config.pyl file.
-  cmd = [input_api.python_executable, 'mb.py', 'validate']
+  cmd = [input_api.python3_executable, 'mb.py', 'validate']
   kwargs = {'cwd': input_api.PresubmitLocalPath()}
   results.extend(input_api.RunTests([
       input_api.Command(name='mb_validate',

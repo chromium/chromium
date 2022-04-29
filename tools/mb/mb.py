@@ -881,6 +881,11 @@ class MetaBuildWrapper(object):
       if not validation.CheckExpectations(self, jsonish_blob, expectations_dir):
         raise MBErr("Expectations out of date. Please run 'mb.py train'.")
 
+    validation.CheckKeyOrdering(errs, self.builder_groups, self.configs,
+                                self.mixins)
+    if errs:
+      raise MBErr('mb config file not sorted:\n' + '\n'.join(errs))
+
     if print_ok:
       self.Print('mb config file %s looks ok.' % self.args.config_file)
     return 0

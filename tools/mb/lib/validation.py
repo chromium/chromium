@@ -5,6 +5,7 @@
 
 import ast
 import collections
+import difflib
 import json
 import os
 import re
@@ -180,3 +181,35 @@ def CheckExpectations(mbw, jsonish_blob, expectations_dir):
     if builders_json != expectation:
       return False  # Builders' expectation out of sync.
   return True
+
+
+def CheckKeyOrdering(errs, groups, configs, mixins):
+  # Check ordering of groups within "builder_groups".
+  group_names = list(groups.keys())
+  sorted_group_names = sorted(group_names)
+  if group_names != sorted_group_names:
+    errs.append('\nThe keys in "builder_groups" are not sorted:')
+    errs.extend(difflib.context_diff(group_names, sorted_group_names))
+
+  # Check ordering of builders within each group.
+  for group, builders in groups.items():
+    builder_names = list(builders.keys())
+    sorted_builder_names = sorted(builder_names)
+    if builder_names != sorted_builder_names:
+      errs.append('\nThe builders in group "%s" are not sorted:' % group)
+      errs.extend(difflib.context_diff(builder_names, sorted_builder_names))
+
+  # Check ordering of configs names, but don't bother checking the ordering
+  # of mixins within a config.
+  config_names = list(configs.keys())
+  sorted_config_names = sorted(config_names)
+  if config_names != sorted_config_names:
+    errs.append('\nThe config names are not sorted:')
+    errs.extend(difflib.context_diff(config_names, sorted_config_names))
+
+  # Check ordering of mixin names.
+  mixin_names = list(mixins.keys())
+  sorted_mixin_names = sorted(mixin_names)
+  if mixin_names != sorted_mixin_names:
+    errs.append('\nThe mixin names are not sorted:')
+    errs.extend(difflib.context_diff(mixin_names, sorted_mixin_names))

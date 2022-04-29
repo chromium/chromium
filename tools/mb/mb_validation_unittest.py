@@ -92,6 +92,61 @@ TEST_UNKNOWN_NESTED_MIXIN_CONFIG = """\
 }
 """
 
+TEST_CONFIG_UNSORTED_GROUPS = """\
+{
+  'builder_groups': {
+    'groupB': {},
+    'groupA': {},
+    'groupC': {},
+  },
+  'configs': {
+  },
+  'mixins': {
+  },
+}
+"""
+
+TEST_CONFIG_UNSORTED_BUILDERNAMES = """\
+{
+  'builder_groups': {
+    'group': {
+      'builderB': '',
+      'builderA': ''
+    },
+  },
+  'configs': {
+  },
+  'mixins': {
+  },
+}
+"""
+
+TEST_CONFIG_UNSORTED_CONFIGS = """\
+{
+  'builder_groups': {
+  },
+  'configs': {
+    'configB': {},
+    'configA': {},
+  },
+  'mixins': {
+  },
+}
+"""
+
+TEST_CONFIG_UNSORTED_MIXINS = """\
+{
+  'builder_groups': {
+  },
+  'configs': {
+  },
+  'mixins': {
+    'mixinB': {},
+    'mixinA': {},
+  },
+}
+"""
+
 
 class UnitTest(unittest.TestCase):
   def test_GetAllConfigs(self):
@@ -209,6 +264,38 @@ class UnitTest(unittest.TestCase):
         'following configs are all equivalent: \'some_config\', '
         '\'some_other_config\'. Please consolidate these configs '
         'into only one unique name per configuration value.', errs)
+
+  def test_CheckKeyOrderingOK(self):
+    mb_config = ast.literal_eval(mb_unittest.TEST_CONFIG)
+    errs = []
+    validation.CheckKeyOrdering(errs, mb_config['builder_groups'],
+                                mb_config['configs'], mb_config['mixins'])
+    self.assertEqual(errs, [])
+
+  def test_CheckKeyOrderingBad(self):
+    mb_config = ast.literal_eval(TEST_CONFIG_UNSORTED_GROUPS)
+    errs = []
+    validation.CheckKeyOrdering(errs, mb_config['builder_groups'],
+                                mb_config['configs'], mb_config['mixins'])
+    self.assertIn('\nThe keys in "builder_groups" are not sorted:', errs)
+
+    mb_config = ast.literal_eval(TEST_CONFIG_UNSORTED_BUILDERNAMES)
+    errs = []
+    validation.CheckKeyOrdering(errs, mb_config['builder_groups'],
+                                mb_config['configs'], mb_config['mixins'])
+    self.assertIn('\nThe builders in group "group" are not sorted:', errs)
+
+    mb_config = ast.literal_eval(TEST_CONFIG_UNSORTED_CONFIGS)
+    errs = []
+    validation.CheckKeyOrdering(errs, mb_config['builder_groups'],
+                                mb_config['configs'], mb_config['mixins'])
+    self.assertIn('\nThe config names are not sorted:', errs)
+
+    mb_config = ast.literal_eval(TEST_CONFIG_UNSORTED_MIXINS)
+    errs = []
+    validation.CheckKeyOrdering(errs, mb_config['builder_groups'],
+                                mb_config['configs'], mb_config['mixins'])
+    self.assertIn('\nThe mixin names are not sorted:', errs)
 
 
 if __name__ == '__main__':

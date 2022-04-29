@@ -158,24 +158,27 @@ TEST_CONFIG = """\
   'builder_groups': {
     'chromium': {},
     'fake_builder_group': {
+      'fake_args_bot': 'fake_args_bot',
+      'fake_args_file': 'args_file_goma',
       'fake_builder': 'rel_bot',
       'fake_debug_builder': 'debug_goma',
-      'fake_args_bot': 'fake_args_bot',
-      'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
-      'fake_args_file': 'args_file_goma',
       'fake_ios_error': 'ios_error',
+      'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
     },
   },
   'configs': {
     'args_file_goma': ['fake_args_bot', 'goma'],
-    'fake_args_bot': ['fake_args_bot'],
-    'rel_bot': ['rel', 'goma', 'fake_feature1'],
     'debug_goma': ['debug', 'goma'],
+    'fake_args_bot': ['fake_args_bot'],
+    'ios_error': ['error'],
     'phase_1': ['rel', 'phase_1'],
     'phase_2': ['rel', 'phase_2'],
-    'ios_error': ['error'],
+    'rel_bot': ['rel', 'goma', 'fake_feature1'],
   },
   'mixins': {
+    'debug': {
+      'gn_args': 'is_debug=true',
+    },
     'error': {
       'gn_args': 'error',
     },
@@ -196,9 +199,6 @@ TEST_CONFIG = """\
     },
     'rel': {
       'gn_args': 'is_debug=false dcheck_always_on=false',
-    },
-    'debug': {
-      'gn_args': 'is_debug=true',
     },
   },
 }
