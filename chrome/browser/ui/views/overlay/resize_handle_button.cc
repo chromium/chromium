@@ -27,12 +27,15 @@ ResizeHandleButton::ResizeHandleButton(PressedCallback callback)
     : views::ImageButton(std::move(callback)) {
   SetSize(gfx::Size(kResizeHandleButtonSize, kResizeHandleButtonSize));
 
+  // The ResizeHandleButton has no action and is just for display to hint to the
+  // user that the window can be dragged. It should not be focusable.
+  SetFocusBehavior(FocusBehavior::NEVER);
+
   // Accessibility.
   const std::u16string resize_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT));
   SetAccessibleName(resize_button_label);
   SetTooltipText(resize_button_label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 ResizeHandleButton::~ResizeHandleButton() = default;
