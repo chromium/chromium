@@ -313,17 +313,6 @@ chromium-metrics-reviews@google.com.
   <summary>The reason that a forced-close of a backing store occurred.</summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.Database.OutstandingTransactionCount"
-    units="transactions" expires_after="2022-08-01">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwnall@chromium.org</owner>
-  <owner>storage-dev@chromium.org</owner>
-  <summary>
-    Number of outstanding transactions (running, blocked) in database when a new
-    transaction is created.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.ErrorDuringForceCloseAborts"
     enum="LevelDBStatus" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
