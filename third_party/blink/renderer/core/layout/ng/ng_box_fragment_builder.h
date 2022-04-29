@@ -370,8 +370,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Report space shortage, i.e. how much more space would have been sufficient
   // to prevent some piece of content from breaking. This information may be
   // used by the column balancer to stretch columns.
-  void PropagateSpaceShortage(LayoutUnit space_shortage) {
-    DCHECK_GT(space_shortage, LayoutUnit());
+  void PropagateSpaceShortage(absl::optional<LayoutUnit> space_shortage) {
+    if (!space_shortage || *space_shortage <= LayoutUnit())
+      return;
 
     // Space shortage should only be reported when we already have a tentative
     // fragmentainer block-size. It's meaningless to talk about space shortage
@@ -379,11 +380,18 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     // fragmentainer block-size at all, so who's to tell what's too short or
     // not?
     DCHECK(!IsInitialColumnBalancingPass());
-
-    if (minimal_space_shortage_ > space_shortage)
-      minimal_space_shortage_ = space_shortage;
+    if (minimal_space_shortage_ == kIndefiniteSize) {
+      minimal_space_shortage_ = *space_shortage;
+    } else {
+      minimal_space_shortage_ =
+          std::min(minimal_space_shortage_, *space_shortage);
+    }
   }
-  LayoutUnit MinimalSpaceShortage() const { return minimal_space_shortage_; }
+  absl::optional<LayoutUnit> MinimalSpaceShortage() const {
+    if (minimal_space_shortage_ == kIndefiniteSize)
+      return absl::nullopt;
+    return minimal_space_shortage_;
+  }
 
   void PropagateTallestUnbreakableBlockSize(LayoutUnit unbreakable_block_size) {
     // We should only calculate the block-size of the tallest piece of
@@ -673,7 +681,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   void SetHasForcedBreak() {
     has_forced_break_ = true;
-    minimal_space_shortage_ = LayoutUnit::Max();
+    minimal_space_shortage_ = kIndefiniteSize;
   }
 
   bool HasForcedBreak() const { return has_forced_break_; }
@@ -738,7 +746,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool disable_simplified_layout = false;
   LayoutUnit block_offset_for_additional_columns_;
 
-  LayoutUnit minimal_space_shortage_ = LayoutUnit::Max();
+  LayoutUnit minimal_space_shortage_ = kIndefiniteSize;
   LayoutUnit tallest_unbreakable_block_size_ = LayoutUnit::Min();
   LayoutUnit block_size_for_fragmentation_;
 

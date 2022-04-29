@@ -264,9 +264,9 @@ class CORE_EXPORT NGLayoutResult final
     return data ? data->clearance_after_line : LayoutUnit();
   }
 
-  LayoutUnit MinimalSpaceShortage() const {
+  absl::optional<LayoutUnit> MinimalSpaceShortage() const {
     if (!HasRareData() || rare_data_->minimal_space_shortage == kIndefiniteSize)
-      return LayoutUnit::Max();
+      return absl::nullopt;
     return rare_data_->minimal_space_shortage;
   }
 

@@ -79,8 +79,8 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
 
       // This field shares storage with "minimal space shortage", so both
       // cannot be set at the same time.
-      DCHECK_EQ(builder->minimal_space_shortage_, LayoutUnit::Max());
-    } else if (builder->minimal_space_shortage_ != LayoutUnit::Max()) {
+      DCHECK_EQ(builder->minimal_space_shortage_, kIndefiniteSize);
+    } else if (builder->minimal_space_shortage_ != kIndefiniteSize) {
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
@@ -334,7 +334,7 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
   // this may change (even if the size of the fragment remains the same).
 
   DCHECK(EndMarginStrut() == other.EndMarginStrut());
-  DCHECK_EQ(MinimalSpaceShortage(), other.MinimalSpaceShortage());
+  DCHECK(MinimalSpaceShortage() == other.MinimalSpaceShortage());
   DCHECK_EQ(TableColumnCount(), other.TableColumnCount());
 
   DCHECK_EQ(bitfields_.has_forced_break, other.bitfields_.has_forced_break);

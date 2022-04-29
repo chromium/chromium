@@ -712,7 +712,7 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
   if (block_size_override) {
     space_shortage = fragmentainer_block_offset + block_size_override.value() -
                      space.FragmentainerBlockSize();
-  } else if (layout_result->MinimalSpaceShortage() == LayoutUnit::Max()) {
+  } else if (!layout_result->MinimalSpaceShortage()) {
     // Calculate space shortage: Figure out how much more space would have been
     // sufficient to make the child fragment fit right here in the current
     // fragmentainer. If layout aborted, though, we can't propagate anything.
@@ -726,7 +726,7 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
     // However, if space shortage was reported inside the child, use that. If we
     // broke inside the child, we didn't complete layout, so calculating space
     // shortage for the child as a whole would be impossible and pointless.
-    space_shortage = layout_result->MinimalSpaceShortage();
+    space_shortage = *layout_result->MinimalSpaceShortage();
   }
 
   // TODO(mstensho): Turn this into a DCHECK, when the engine is ready for
