@@ -147,48 +147,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-fyi-arm64-dbg",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|a64",
-            short_name = "dbg",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "a64-dbg",
-        ),
-    ],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_arm64",
-                "fuchsia_arm64_host",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
-    ),
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
     name = "fuchsia-fyi-arm64-emu-arg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -238,86 +196,6 @@ ci.builder(
             short_name = "a64",
         ),
     ],
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
-    name = "fuchsia-fyi-x64-asan",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "asan",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "asan",
-        ),
-    ],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
-    ),
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
-    name = "fuchsia-fyi-x64-dbg",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "dbg",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "x64-dbg",
-        ),
-    ],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
-    ),
     notifies = ["cr-fuchsia"],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )

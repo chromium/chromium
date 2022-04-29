@@ -1,0 +1,33 @@
+{
+  "fuchsia-fyi-arm64-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "fuchsia-fyi-x64-asan": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-fyi-x64-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  }
+}

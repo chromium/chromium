@@ -169,6 +169,7 @@ def _rotation(name):
 sheriff_rotations = struct(
     ANDROID = _rotation("android"),
     CHROMIUM = _rotation("chromium"),
+    FUCHSIA = _rotation("fuchsia"),
     CHROMIUM_CLANG = _rotation("chromium.clang"),
     CHROMIUM_GPU = _rotation("chromium.gpu"),
     IOS = _rotation("ios"),

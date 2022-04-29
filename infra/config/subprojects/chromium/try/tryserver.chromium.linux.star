@@ -121,17 +121,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-fyi-arm64-dbg",
-    mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
-)
-
-try_.builder(
     name = "fuchsia-fyi-arm64-rel",
-)
-
-try_.builder(
-    name = "fuchsia-fyi-x64-dbg",
-    mirrors = ["ci/fuchsia-fyi-x64-dbg"],
 )
 
 try_.builder(

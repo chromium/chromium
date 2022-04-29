@@ -340,6 +340,7 @@ HEADER = headers.header(
             console_ids = [
                 "chromium/chromium.android",
                 "chrome/chrome.perf",
+                "chromium/chromium.fuchsia.fyi",
                 "chromium/chromium.gpu.fyi",
                 "chromium/chromium.angle",
                 "chromium/chromium.swangle",
