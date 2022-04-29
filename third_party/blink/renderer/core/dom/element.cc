@@ -2554,14 +2554,14 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   if (!start_node)
     return nullptr;
   // We need to walk up from the start node to see if there is a parent popup,
-  // or the anchor for a popup, or an invoking element (which has the
-  // "togglepopup" attribute). There can be multiple popups for a single anchor
-  // element, and an anchor for one popup can also be an invoker for a different
-  // popup. We need to stop on the highest such popup in the popup stack.
-  // Additionally, if start_node is inside an element that has an invoking
-  // attribute (e.g. togglepopup) but wasn't *used* to invoke that popup, we
-  // still need to stop on that popup, so that a click on that invoking element
-  // doesn't immediately light-dismiss its target.
+  // or the anchor for a popup, or an invoking element (which has one of the
+  // togglepopup/showpopup/hidepopup attribute). There can be multiple popups
+  // for a single anchor element, and an anchor for one popup can also be an
+  // invoker for a different popup. We need to stop on the highest such popup in
+  // the popup stack. Additionally, if start_node is inside an element that has
+  // an invoking attribute (e.g. togglepopup) but wasn't *used* to invoke that
+  // popup, we still need to stop on that popup, so that a click on that
+  // invoking element doesn't immediately light-dismiss its target.
 
   // |anchors_and_invokers| is a map from anchors/invokers to their popups, for
   // all open popups.

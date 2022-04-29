@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -109,10 +110,15 @@ void HTMLButtonElement::ParseAttribute(
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    if (Element* popupElement = togglePopupElement()) {
-      if (popupElement->popupOpen()) {
+    PopupTriggerAction action;
+    if (Element* popupElement = togglePopupElement(action)) {
+      DCHECK_NE(action, PopupTriggerAction::kNone);
+      if (popupElement->popupOpen() && (action == PopupTriggerAction::kToggle ||
+                                        action == PopupTriggerAction::kHide)) {
         popupElement->hidePopup(ASSERT_NO_EXCEPTION);
-      } else {
+      } else if (!popupElement->popupOpen() &&
+                 (action == PopupTriggerAction::kToggle ||
+                  action == PopupTriggerAction::kShow)) {
         popupElement->InvokePopup(this);
       }
     }
@@ -134,19 +140,51 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
   HTMLFormControlElement::DefaultEventHandler(event);
 }
 
-Element* HTMLButtonElement::togglePopupElement() const {
+// The element returned if that element a) exists, and b) is a valid Popup
+// element. If multiple toggle attributes are present:
+//  1. Only one idref will ever be used, if multiple attributes are present.
+//  2. If 'togglepopup' is present, its IDREF will be used.
+//  3. If 'showpopup' is present and 'togglepopup' isn't, its IDREF will be
+//  used.
+//  4. If both 'showpopup' and 'hidepopup' are present, the behavior is to
+//  toggle.
+Element* HTMLButtonElement::togglePopupElement(
+    PopupTriggerAction& action) const {
+  action = PopupTriggerAction::kNone;
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
-    return nullptr;
-  const AtomicString& toggle_id =
-      FastGetAttribute(html_names::kTogglepopupAttr);
-  if (toggle_id.IsNull())
     return nullptr;
   if (!IsInTreeScope())
     return nullptr;
-  Element* popup_element = GetTreeScope().getElementById(toggle_id);
-  if (!popup_element || !popup_element->HasValidPopupAttribute())
+  AtomicString idref;
+  if (FastHasAttribute(html_names::kTogglepopupAttr)) {
+    idref = FastGetAttribute(html_names::kTogglepopupAttr);
+    action = PopupTriggerAction::kToggle;
+  } else if (FastHasAttribute(html_names::kShowpopupAttr)) {
+    idref = FastGetAttribute(html_names::kShowpopupAttr);
+    action = PopupTriggerAction::kShow;
+  }
+  if (FastHasAttribute(html_names::kHidepopupAttr)) {
+    if (idref.IsNull()) {
+      idref = FastGetAttribute(html_names::kHidepopupAttr);
+      action = PopupTriggerAction::kHide;
+    } else if (FastGetAttribute(html_names::kHidepopupAttr) == idref) {
+      action = PopupTriggerAction::kToggle;
+    }
+  }
+  if (idref.IsNull()) {
+    DCHECK_EQ(action, PopupTriggerAction::kNone);
     return nullptr;
+  }
+  Element* popup_element = GetTreeScope().getElementById(idref);
+  if (!popup_element || !popup_element->HasValidPopupAttribute()) {
+    action = PopupTriggerAction::kNone;
+    return nullptr;
+  }
   return popup_element;
+}
+Element* HTMLButtonElement::togglePopupElement() const {
+  PopupTriggerAction action;
+  return togglePopupElement(action);
 }
 
 bool HTMLButtonElement::HasActivationBehavior() const {

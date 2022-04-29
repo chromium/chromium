@@ -166,6 +166,13 @@ constexpr const char* kPopupTypeValuePopup = "popup";
 constexpr const char* kPopupTypeValueHint = "hint";
 constexpr const char* kPopupTypeValueAsync = "async";
 
+enum class PopupTriggerAction {
+  kNone,
+  kToggle,
+  kShow,
+  kHide,
+};
+
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
