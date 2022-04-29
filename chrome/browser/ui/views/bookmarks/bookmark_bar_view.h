@@ -222,6 +222,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void SavedTabGroupRemoved(int index) override;
   void SavedTabGroupUpdated(const SavedTabGroup& group, int index) override;
   void SavedTabGroupMoved(const SavedTabGroup& group) override;
+  void SavedTabGroupClosed(int index) override;
 
   void SavedTabGroupAddedImpl(const SavedTabGroup& group, int index);
   void SavedTabGroupRemovedImpl(int index);

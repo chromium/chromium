@@ -47,6 +47,8 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_group_.emplace_back(group);
   }
 
+  void SavedTabGroupClosed(int index) override { retrieved_index_ = index; }
+
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title) {
     return SavedTabGroupTab(GURL(base_path_ + url), title,
@@ -373,4 +375,22 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
   CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
             retrieved_index_);
+}
+
+// Verify that SavedTabGroupModel::GroupClosed passes the correct index.
+TEST_F(SavedTabGroupModelObserverTest, GroupClosed) {
+  SavedTabGroup group_4 = CreateTestSavedTabGroup();
+  saved_tab_group_model_->Add(group_4);
+  const int index = saved_tab_group_model_->GetIndexOf(group_4.group_id);
+  ASSERT_GE(index, 0);
+
+  // Expect the group that was closed has the same index in our model.
+  saved_tab_group_model_->GroupClosed(group_4.group_id);
+  EXPECT_EQ(index, retrieved_index_);
+
+  // Expect the removal of group_4 does not return a valid index.
+  saved_tab_group_model_->Remove(group_4.group_id);
+  saved_tab_group_model_->GroupClosed(group_4.group_id);
+  EXPECT_NE(index, retrieved_index_);
+  EXPECT_EQ(-1, retrieved_index_);
 }

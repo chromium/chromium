@@ -27,6 +27,9 @@ class SavedTabGroupModelObserver {
   // Called when the order of saved tab groups in the bookmark bar are changed
   virtual void SavedTabGroupMoved(const SavedTabGroup& group) = 0;
 
+  // Called when a saved tab group is removed from a tabstrip.
+  virtual void SavedTabGroupClosed(int index) = 0;
+
  protected:
   SavedTabGroupModelObserver() = default;
   virtual ~SavedTabGroupModelObserver() = default;

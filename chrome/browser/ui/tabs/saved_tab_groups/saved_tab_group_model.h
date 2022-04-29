@@ -50,6 +50,9 @@ class SavedTabGroupModel {
   void Remove(const tab_groups::TabGroupId tab_group_id);
   void Add(const SavedTabGroup& saved_group);
 
+  // Notify Observers that a saved tab group was removed from the tabstrip.
+  void GroupClosed(tab_groups::TabGroupId tab_group_id);
+
   void AddObserver(SavedTabGroupModelObserver* observer);
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 

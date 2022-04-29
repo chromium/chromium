@@ -23,6 +23,7 @@ class SavedTabGroupButton : public views::MenuButton {
   SavedTabGroupButton(
       PressedCallback callback,
       const std::u16string& title,
+      bool is_group_in_tabstrip,
       tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey,
       bool animations_enabled = true);
 
@@ -41,12 +42,18 @@ class SavedTabGroupButton : public views::MenuButton {
 
   void OnThemeChanged() override;
 
+  void RemoveButtonOutline();
+  bool HasButtonOutline() const;
+
  private:
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 
   // The color of the TabGroup this button is associated with.
   tab_groups::TabGroupColorId tab_group_color_id_;
+
+  // Denotes if the tabgroup is currently open in the tabstrip.
+  bool is_group_in_tabstrip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BUTTON_H_

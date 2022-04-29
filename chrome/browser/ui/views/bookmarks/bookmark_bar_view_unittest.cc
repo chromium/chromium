@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -46,6 +47,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
@@ -327,6 +329,36 @@ TEST_F(BookmarkBarViewTest, RemoveTabGroupButton) {
   EXPECT_EQ(2u, test_helper_->GetTabGroupButtonCount());
   EXPECT_EQ(u"First Group", test_helper_->GetTabGroupButton(0)->GetText());
   EXPECT_EQ(u"The Third Group", test_helper_->GetTabGroupButton(1)->GetText());
+}
+
+// Verify that Closing a group affects a tab group buttons outline.
+TEST_F(BookmarkBarViewTest, TabGroupButtonOutline) {
+  // Adds 3 buttons to our model.
+  AddGroupsToSTGModel();
+
+  // Expect all buttons to hide outlines.
+  SavedTabGroupButton* button1 = views::AsViewClass<SavedTabGroupButton>(
+      test_helper_->GetTabGroupButton(0));
+  SavedTabGroupButton* button2 = views::AsViewClass<SavedTabGroupButton>(
+      test_helper_->GetTabGroupButton(1));
+  SavedTabGroupButton* button3 = views::AsViewClass<SavedTabGroupButton>(
+      test_helper_->GetTabGroupButton(2));
+  ASSERT_NE(button1, nullptr);
+  ASSERT_NE(button2, nullptr);
+  ASSERT_NE(button3, nullptr);
+
+  EXPECT_FALSE(button1->HasButtonOutline());
+  EXPECT_FALSE(button2->HasButtonOutline());
+  EXPECT_FALSE(button3->HasButtonOutline());
+
+  // Notify that the the second tab group button has been removed from all
+  // tabstrips.
+  stg_model()->GroupClosed(id_2_);
+
+  // Verify all buttons still have no button outlines.
+  EXPECT_FALSE(button1->HasButtonOutline());
+  EXPECT_FALSE(button2->HasButtonOutline());
+  EXPECT_FALSE(button3->HasButtonOutline());
 }
 
 // Verify that in instant extended mode the visibility of the apps shortcut

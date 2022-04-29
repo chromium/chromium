@@ -75,6 +75,12 @@ void SavedTabGroupModel::Update(
     observer.SavedTabGroupUpdated(saved_group, index);
 }
 
+void SavedTabGroupModel::GroupClosed(tab_groups::TabGroupId tab_group_id) {
+  const int index = GetIndexOf(tab_group_id);
+  for (auto& observer : observers_)
+    observer.SavedTabGroupClosed(index);
+}
+
 void SavedTabGroupModel::AddObserver(SavedTabGroupModelObserver* observer) {
   observers_.AddObserver(observer);
 }

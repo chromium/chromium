@@ -15,12 +15,14 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -133,6 +135,7 @@
 #include "ui/views/drag_utils.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_constants.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -1295,6 +1298,17 @@ void BookmarkBarView::SavedTabGroupMoved(const SavedTabGroup& group) {
   NOTIMPLEMENTED();
 }
 
+void BookmarkBarView::SavedTabGroupClosed(int index) {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(static_cast<size_t>(index), tab_group_buttons_.size());
+
+  SavedTabGroupButton* button =
+      views::AsViewClass<SavedTabGroupButton>(tab_group_buttons_[index]);
+  DCHECK(button);
+  button->RemoveButtonOutline();
+  SchedulePaint();
+}
+
 void BookmarkBarView::SavedTabGroupAddedImpl(const SavedTabGroup& group,
                                              int index) {
   InsertButtonAtIndex(CreateTabGroupButton(group, index), index);
@@ -1636,11 +1650,16 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
 std::unique_ptr<views::View> BookmarkBarView::CreateTabGroupButton(
     const SavedTabGroup& group,
     const size_t index) {
+  TabStripModel* model = SavedTabGroupServiceFactory::GetForProfile(
+                             saved_tab_group_model_->profile())
+                             ->listener()
+                             ->GetTabStripModelWithTabGroupId(group.group_id);
   std::unique_ptr<views::LabelButton> button;
   button = std::make_unique<SavedTabGroupButton>(
       base::BindRepeating(&BookmarkBarView::OnTabGroupButtonPressed,
                           base::Unretained(this), group.group_id),
-      group.title, group.color, animations_enabled);
+      group.title, /*is_group_in_tabstrip=*/!!model, group.color,
+      animations_enabled);
   tab_group_buttons_.insert(tab_group_buttons_.begin() + index, button.get());
   return button;
 }

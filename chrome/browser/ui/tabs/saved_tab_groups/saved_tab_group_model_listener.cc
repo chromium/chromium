@@ -99,7 +99,7 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
     }
     // Called when the last tab in the groups is removed.
     case TabGroupChange::kClosed: {
-      NOTIMPLEMENTED();
+      model_->GroupClosed(change.group);
       return;
     }
   }

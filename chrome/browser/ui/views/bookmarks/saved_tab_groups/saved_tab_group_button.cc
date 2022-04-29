@@ -26,13 +26,17 @@
 namespace {
 constexpr float kBorderRadius = 4.5f;
 constexpr float kButtonRadius = 5.0f;
+constexpr float kBorderThickness = 2.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(PressedCallback callback,
                                          const std::u16string& title,
+                                         bool is_group_in_tabstrip,
                                          tab_groups::TabGroupColorId color,
                                          bool animations_enabled)
-    : MenuButton(std::move(callback), title), tab_group_color_id_(color) {
+    : MenuButton(std::move(callback), title),
+      tab_group_color_id_(color),
+      is_group_in_tabstrip_(is_group_in_tabstrip) {
   SetText(title);
   SetAccessibleName(title);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
@@ -86,23 +90,13 @@ void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
   const ui::ThemeProvider* const tp = GetThemeProvider();
   gfx::RectF rect_f = gfx::RectF(width(), height());
   rect_f.Inset(1.0f);
-  float border_thickness_ = 2.0f;
 
   // Relies on logic in theme_helper.cc to determine dark/light palette.
-  // Sets border color to be same as background color.
   SkColor background_color =
       tp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
-  SkColor border_color = background_color;
-  SkColor text_color =
+  SkColor text_and_outline_color =
       tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
-  SetEnabledTextColors(text_color);
-
-  // Show 2px border on hover.
-  if (GetState() == STATE_HOVERED || GetState() == STATE_PRESSED) {
-    border_color = tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
-    border_thickness_ = 2.0f;
-    rect_f.Inset(border_thickness_ / 2);
-  }
+  SetEnabledTextColors(text_and_outline_color);
 
   // Draw background.
   cc::PaintFlags flags;
@@ -111,11 +105,18 @@ void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
   flags.setColor(background_color);
   canvas->DrawRoundRect(rect_f, kButtonRadius, flags);
 
-  // Draw border.
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setColor(border_color);
-  flags.setStrokeWidth(SkIntToScalar(border_thickness_));
-  canvas->DrawRoundRect(rect_f, kBorderRadius, flags);
+  if (is_group_in_tabstrip_) {
+    // Draw border.
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setColor(text_and_outline_color);
+    flags.setStrokeWidth(kBorderThickness);
+    canvas->DrawRoundRect(rect_f, kBorderRadius, flags);
+  }
+
+  if (GetState() == STATE_HOVERED) {
+    // TODO: Draw a box shadow on hover.
+    return;
+  }
 }
 
 std::unique_ptr<views::LabelButtonBorder>
@@ -140,6 +141,14 @@ void SavedTabGroupButton::OnThemeChanged() {
         text_color, background_color,
         color_utils::kMinimumReadableContrastRatio);
   }
+}
+
+void SavedTabGroupButton::RemoveButtonOutline() {
+  is_group_in_tabstrip_ = false;
+}
+
+bool SavedTabGroupButton::HasButtonOutline() const {
+  return is_group_in_tabstrip_;
 }
 
 BEGIN_METADATA(SavedTabGroupButton, MenuButton)
