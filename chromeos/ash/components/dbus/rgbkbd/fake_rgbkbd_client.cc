@@ -17,4 +17,8 @@ void FakeRgbkbdClient::GetRgbKeyboardCapabilities(
   std::move(callback).Run(capabilities_);
 }
 
+void FakeRgbkbdClient::SetCapsLockState(bool enabled) {
+  caps_lock_state_ = enabled;
+}
+
 }  // namespace ash

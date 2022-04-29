@@ -41,6 +41,19 @@ class RgbkbdClientImpl : public RgbkbdClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetCapsLockState(bool enabled) override {
+    VLOG(1) << "rgbkbd: SetCapsLockState called with: "
+            << (enabled ? "True" : "False");
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kSetCapsLockState);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(&method_call,
+                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                              base::DoNothing());
+  }
+
  private:
   void GetRgbKeyboardCapabilitiesCallback(
       GetRgbKeyboardCapabilitiesCallback callback,

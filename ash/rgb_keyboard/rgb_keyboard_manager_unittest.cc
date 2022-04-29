@@ -119,20 +119,11 @@ TEST_F(RgbKeyboardManagerTest, StaticResetRainbowMode) {
   EXPECT_FALSE(manager_->is_rainbow_mode_set());
 }
 
-TEST_F(RgbKeyboardManagerTest, SetCapsLockState) {
-  EXPECT_FALSE(manager_->is_caps_lock_set());
-  manager_->SetCapsLockState(/*is_caps_lock_set=*/true);
-  EXPECT_TRUE(manager_->is_caps_lock_set());
-  manager_->SetCapsLockState(/*is_caps_lock_set=*/false);
-  EXPECT_FALSE(manager_->is_caps_lock_set());
-}
-
 TEST_F(RgbKeyboardManagerTest, OnCapsLockChanged) {
-  EXPECT_FALSE(manager_->is_caps_lock_set());
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
-  EXPECT_TRUE(manager_->is_caps_lock_set());
+  EXPECT_TRUE(client_->get_caps_lock_state());
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/false);
-  EXPECT_FALSE(manager_->is_caps_lock_set());
+  EXPECT_FALSE(client_->get_caps_lock_state());
 }
 
 TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
@@ -142,7 +133,6 @@ TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
   // Simulate RgbKeyboardManager starting up on login.
   manager_.reset();
   manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
-  EXPECT_TRUE(manager_->is_caps_lock_set());
+  EXPECT_TRUE(client_->get_caps_lock_state());
 }
-
 }  // namespace ash

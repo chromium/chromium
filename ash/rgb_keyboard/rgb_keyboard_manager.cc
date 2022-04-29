@@ -31,8 +31,6 @@ RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
   g_instance = this;
 
   ime_controller_raw_ptr_->AddObserver(this);
-  // Upon login, CapsLock may already be enabled.
-  SetCapsLockState(ime_controller_raw_ptr_->IsCapsLockEnabled());
 
   FetchRgbKeyboardSupport();
 }
@@ -78,12 +76,10 @@ void RgbKeyboardManager::SetRainbowMode() {
   recently_sent_rgb_for_testing_[2] = 0u;
 }
 
-void RgbKeyboardManager::SetCapsLockState(bool is_caps_lock_set) {
-  is_caps_lock_set_ = is_caps_lock_set;
-}
-
 void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
-  SetCapsLockState(enabled);
+  if (IsRgbKeyboardSupported()) {
+    RgbkbdClient::Get()->SetCapsLockState(enabled);
+  }
 }
 
 // static
@@ -98,6 +94,12 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
     return;
   }
   capabilities_ = reply.value();
+
+  // Upon login, CapsLock may already be enabled.
+  if (IsRgbKeyboardSupported()) {
+    RgbkbdClient::Get()->SetCapsLockState(
+        ime_controller_raw_ptr_->IsCapsLockEnabled());
+  }
 }
 
 }  // namespace ash

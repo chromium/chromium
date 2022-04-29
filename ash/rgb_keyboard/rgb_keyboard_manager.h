@@ -30,7 +30,6 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   rgbkbd::RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
   void SetRainbowMode();
-  void SetCapsLockState(bool is_caps_lock_set);
 
   // Returns the global instance if initialized. May return null.
   static RgbKeyboardManager* Get();
@@ -41,7 +40,9 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
 
   bool is_rainbow_mode_set() const { return is_rainbow_mode_set_for_testing_; }
 
-  bool is_caps_lock_set() const { return is_caps_lock_set_; }
+  bool IsRgbKeyboardSupported() const {
+    return capabilities_ != rgbkbd::RgbKeyboardCapabilities::kNone;
+  }
 
  private:
   // ImeControllerImpl::Observer:
@@ -57,7 +58,6 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   // available.
   std::vector<uint8_t> recently_sent_rgb_for_testing_;
   bool is_rainbow_mode_set_for_testing_ = false;
-  bool is_caps_lock_set_ = false;
   rgbkbd::RgbKeyboardCapabilities capabilities_ =
       rgbkbd::RgbKeyboardCapabilities::kNone;
 

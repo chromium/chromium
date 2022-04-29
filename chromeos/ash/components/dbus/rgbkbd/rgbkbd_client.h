@@ -40,6 +40,8 @@ class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
   virtual void GetRgbKeyboardCapabilities(
       GetRgbKeyboardCapabilitiesCallback callback) = 0;
 
+  virtual void SetCapsLockState(bool enabled) = 0;
+
  protected:
   // Initialize/Shutdown should be used instead.
   RgbkbdClient();
