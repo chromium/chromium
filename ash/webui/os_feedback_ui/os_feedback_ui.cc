@@ -14,6 +14,7 @@
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -36,6 +37,17 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+}
+
+void AddLocalizedStrings(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"continueButtonLabel", IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL},
+      {"descriptionLabel", IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL},
+      {"pageTitle", IDS_FEEDBACK_TOOL_PAGE_TITLE},
+  };
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
 }
 
 }  // namespace
@@ -65,6 +77,7 @@ OSFeedbackUI::OSFeedbackUI(
   const auto resources =
       base::make_span(kAshOsFeedbackResources, kAshOsFeedbackResourcesSize);
   SetUpWebUIDataSource(source, resources, IDR_ASH_OS_FEEDBACK_INDEX_HTML);
+  AddLocalizedStrings(source);
 
   // Register common permissions for chrome-untrusted:// pages.
   // TODO(https://crbug.com/1113568): Remove this after common permissions are

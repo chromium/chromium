@@ -8,7 +8,8 @@ import './os_feedback_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackFlowState} from './feedback_flow.js';
 import {HelpContentList, HelpContentProviderInterface, SearchRequest, SearchResponse, SearchResult} from './feedback_types.js';
@@ -38,7 +39,16 @@ export const OS_FEEDBACK_UNTRUSTED_ORIGIN = 'chrome-untrusted://os-feedback';
  * 'search-page' is the first step of the feedback tool. It displays live help
  *  contents relevant to the text entered by the user.
  */
-export class SearchPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SearchPageElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class SearchPageElement extends SearchPageElementBase {
   static get is() {
     return 'search-page';
   }

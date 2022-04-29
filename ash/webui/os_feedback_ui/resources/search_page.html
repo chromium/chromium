@@ -21,11 +21,11 @@
 <!--TODO(xiangdongkong): use localized strings -->
 <div id="container">
   <div id="header">
-    <h1 id="title">Send feedback</h1>
+    <h1 id="title">[[i18n('pageTitle')]]</h1>
   </div>
   <div id="content">
     <div id="descriptionPane">
-      <p id="descriptionTitle">Description</p>
+      <p id="descriptionTitle">[[i18n('descriptionLabel')]]</p>
       <textarea id="descriptionText" aria-labelledby="descriptionTitle"
           aria-required="true" on-input="handleInputChanged_">
       </textarea>
@@ -40,7 +40,7 @@
   <div id="navButtons">
     <cr-button id="buttonContinue" class="action-button"
         on-click="handleContinueButtonClicked_">
-      Continue
+      [[i18n('continueButtonLabel')]]
     </cr-button>
   </div>
 </div>

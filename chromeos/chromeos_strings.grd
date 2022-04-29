@@ -3274,6 +3274,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
       </message>
+
+      <!-- Feedback Tool-->
+      <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" translateable="false" desc="Label of the continue button.">
+        Continue
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL" translateable="false" desc="Label of the text box where users can describe a problem they are having">
+        Description
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" translateable="false" desc="Label showing the title of the feedback tool before a report has been sent">
+        Send feedback
+      </message>
+      <!-- End of Feedback Tool -->
     </messages>
   </release>
 </grit>

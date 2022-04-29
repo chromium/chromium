@@ -6,6 +6,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './confirmation_page.js';
 import './search_page.js';
 import './share_data_page.js';
+import './strings.m.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
