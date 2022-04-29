@@ -21,15 +21,25 @@ using base::StartsWith;
 
 // Test params:
 //  - bool : when true, the test is setup for users that sync their passwords.
+//  - bool : when true, the unified password manager branding feature is
+//  enabled.
 class PasswordBubbleBrowserTest
     : public SupportsTestDialog<ManagePasswordsTest>,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  PasswordBubbleBrowserTest() = default;
+  PasswordBubbleBrowserTest() {
+    if (std::get<1>(GetParam())) {
+      scoped_feature_list_.InitAndEnableFeature(
+          password_manager::features::kUnifiedPasswordManagerDesktop);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          password_manager::features::kUnifiedPasswordManagerDesktop);
+    }
+  }
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
-    ConfigurePasswordSync(GetParam());
+    ConfigurePasswordSync(std::get<0>(GetParam()));
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
       SetupPendingPassword();
@@ -67,6 +77,9 @@ class PasswordBubbleBrowserTest
       return;
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
@@ -99,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_MoveToAccountStoreBubble) {
   // This test isn't relevant for sync'ing users.
-  if (GetParam())
+  if (std::get<0>(GetParam()))
     return;
   ShowAndVerifyUi();
 }
@@ -114,4 +127,6 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PasswordBubbleBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
