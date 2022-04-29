@@ -107,7 +107,7 @@ AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     const std::string& directive) {
   if (directive == "@NO-LOAD-EXPECTED")
     return kNoLoadExpected;
-  if (directive == "@WAIT-FOR")
+  if (directive == "@WAIT-FOR" || directive == directive_prefix + "WAIT-FOR")
     return kWaitFor;
   if (directive == "@EXECUTE-AND-WAIT-FOR")
     return kExecuteAndWaitFor;

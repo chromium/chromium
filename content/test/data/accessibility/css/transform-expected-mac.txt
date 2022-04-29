@@ -1,0 +1,4 @@
+AXWebArea LocalPosition={x: 0, y: 0}
+++AXGroup LocalPosition={x: 0, y: 50}
+++++AXGroup LocalPosition={x: 0, y: 50}
+++++++AXStaticText AXValue='content' LocalPosition={x: 0, y: 50}
