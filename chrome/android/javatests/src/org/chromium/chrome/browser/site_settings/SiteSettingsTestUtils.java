@@ -11,6 +11,7 @@ import android.support.test.InstrumentationRegistry;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
@@ -50,6 +51,18 @@ public class SiteSettingsTestUtils {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
                 InstrumentationRegistry.getTargetContext(), SingleWebsiteSettings.class.getName(),
+                fragmentArgs);
+        return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
+                intent);
+    }
+
+    public static SettingsActivity startAllSitesSettings(@SiteSettingsCategory.Type int type) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putString(
+                AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        Intent intent = settingsLauncher.createSettingsActivityIntent(
+                InstrumentationRegistry.getTargetContext(), AllSiteSettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
