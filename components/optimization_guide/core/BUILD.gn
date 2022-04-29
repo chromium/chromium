@@ -5,7 +5,9 @@
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
+import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
+import("//third_party/tflite/features.gni")
 
 static_library("bloomfilter") {
   sources = [
@@ -84,6 +86,7 @@ if (build_with_tflite_lib) {
       "tflite_op_resolver.h",
     ]
     deps = [
+      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
     ]

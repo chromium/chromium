@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("pthreadpool_config") {
+  include_dirs = [ "src/include" ]
+}
+
+source_set("pthreadpool") {
+  public = [ "src/include/pthreadpool.h" ]
+
+  sources = [
+    "src/src/memory.c",
+    "src/src/portable-api.c",
+    "src/src/pthreads.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_disable" ]
+
+  public_configs = [ ":pthreadpool_config" ]
+
+  deps = [ "//third_party/fxdiv" ]
+}

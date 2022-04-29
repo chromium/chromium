@@ -1,0 +1,104 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("cpuinfo_config") {
+  include_dirs = [
+    "src/include",
+    "src/src",
+    "src/deps/clog/include",
+  ]
+
+  defines = [
+    # Required for CPU_SETSIZE to be available.
+    "_GNU_SOURCE",
+  ]
+}
+
+source_set("cpuinfo") {
+  public = [ "src/include/cpuinfo.h" ]
+
+  sources = [
+    "src/deps/clog/src/clog.c",
+    "src/include/cpuinfo.h",
+    "src/src/api.c",
+    "src/src/cache.c",
+    "src/src/cpuinfo/common.h",
+    "src/src/cpuinfo/internal-api.h",
+    "src/src/cpuinfo/log.h",
+    "src/src/cpuinfo/utils.h",
+    "src/src/init.c",
+  ]
+
+  deps = [
+    ":cache_x86",
+    ":linux",
+    ":linux_x86",
+    ":x86",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":cpuinfo_config" ]
+}
+
+source_set("x86") {
+  sources = [
+    "src/src/x86/api.h",
+    "src/src/x86/cpuid.h",
+    "src/src/x86/info.c",
+    "src/src/x86/init.c",
+    "src/src/x86/isa.c",
+    "src/src/x86/name.c",
+    "src/src/x86/topology.c",
+    "src/src/x86/uarch.c",
+    "src/src/x86/vendor.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":cpuinfo_config" ]
+}
+
+source_set("linux") {
+  sources = [
+    "src/src/linux/cpulist.c",
+    "src/src/linux/multiline.c",
+    "src/src/linux/processors.c",
+    "src/src/linux/smallfile.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  public_configs = [ ":cpuinfo_config" ]
+}
+
+source_set("linux_x86") {
+  sources = [
+    "src/src/x86/linux/api.h",
+    "src/src/x86/linux/cpuinfo.c",
+    "src/src/x86/linux/init.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":cpuinfo_config" ]
+}
+
+source_set("cache_x86") {
+  sources = [
+    "src/src/x86/cache/descriptor.c",
+    "src/src/x86/cache/deterministic.c",
+    "src/src/x86/cache/init.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":cpuinfo_config" ]
+}

@@ -1,0 +1,813 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#     THIS FILE IS AUTO-GENERATED. DO NOT EDIT.
+#
+#     See //third_party/xnnpack/generate_build_gn.py
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+config("xnnpack_config") {
+  include_dirs = [
+    "src/deps/clog/include",
+    "src/include",
+    "src/src",
+  ]
+
+  defines = [
+    # Don't enable this without first talking to Chrome Security!
+    # XNNPACK runs in the browser process. The hardening and fuzzing needed
+    # to ensure JIT can be used safely is not in place yet.
+    "XNN_ENABLE_JIT=0",
+
+    "XNN_ENABLE_ASSEMBLY=1",
+    "XNN_ENABLE_MEMOPT=1",
+    "XNN_ENABLE_SPARSE=1",
+    "XNN_LOG_LEVEL=0",
+  ]
+}
+source_set("xnnpack") {
+  public = [ "src/include/xnnpack.h" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  sources = [
+    "src/src/allocator.c",
+    "src/src/cache.c",
+    "src/src/datatype-strings.c",
+    "src/src/indirection.c",
+    "src/src/init.c",
+    "src/src/memory-planner.c",
+    "src/src/memory.c",
+    "src/src/mutex.c",
+    "src/src/node-type.c",
+    "src/src/normalization.c",
+    "src/src/operator-delete.c",
+    "src/src/operator-run.c",
+    "src/src/operator-strings.c",
+    "src/src/operator-utils.c",
+    "src/src/packing.c",
+    "src/src/params-init.c",
+    "src/src/params.c",
+    "src/src/runtime.c",
+    "src/src/subgraph.c",
+    "src/src/tensor.c",
+    "src/src/ukernel-strings.c",
+  ]
+
+  deps = [
+    ":amalgam_avx",
+    ":amalgam_avx512f",
+    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
+    ":amalgam_f16c",
+    ":amalgam_f16c-fma",
+    ":amalgam_f16c-fma-avx2",
+    ":amalgam_sse2",
+    ":amalgam_sse4.1",
+    ":amalgam_ssse3",
+    ":jit",
+    ":operators",
+    ":qc8-dwconv_xop",
+    ":qc8-gemm_xop",
+    ":qc8-igemm_xop",
+    ":qs8-dwconv_xop",
+    ":qs8-gemm_xop",
+    ":qs8-igemm_xop",
+    ":qs8-vadd_xop",
+    ":qs8-vaddc_xop",
+    ":qu8-dwconv_xop",
+    ":qu8-gemm_xop",
+    ":qu8-igemm_xop",
+    ":qu8-vadd_xop",
+    ":qu8-vaddc_xop",
+    ":subgraph",
+    ":tables",
+    ":u8-lut32norm",
+    ":x32-depthtospace2d-chw2hwc",
+    ":x8-lut",
+    ":xx-copy",
+    ":xx-transpose",
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_avx") {
+  cflags = [ "-mavx" ]
+
+  sources = [ "src/src/amalgam/avx.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_avx512f") {
+  cflags = [ "-mavx512f" ]
+
+  sources = [ "src/src/amalgam/avx512f.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
+  cflags = [
+    "-mavx512bw",
+    "-mavx512cd",
+    "-mavx512dq",
+    "-mavx512f",
+    "-mavx512vl",
+  ]
+
+  sources = [ "src/src/amalgam/avx512skx.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_f16c") {
+  cflags = [ "-mf16c" ]
+
+  sources = [ "src/src/amalgam/f16c.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_f16c-fma") {
+  cflags = [
+    "-mf16c",
+    "-mfma",
+  ]
+
+  sources = [ "src/src/amalgam/fma3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_f16c-fma-avx2") {
+  cflags = [
+    "-mavx2",
+    "-mf16c",
+    "-mfma",
+  ]
+
+  sources = [ "src/src/amalgam/avx2.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_sse2") {
+  cflags = [ "-msse2" ]
+
+  sources = [
+    "src/src/amalgam/sse.c",
+    "src/src/amalgam/sse2.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_sse4.1") {
+  cflags = [ "-msse4.1" ]
+
+  sources = [ "src/src/amalgam/sse41.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("amalgam_ssse3") {
+  cflags = [ "-mssse3" ]
+
+  sources = [ "src/src/amalgam/ssse3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("jit") {
+  cflags = []
+
+  sources = [
+    "src/src/jit/aarch32-assembler.cc",
+    "src/src/jit/aarch64-assembler.cc",
+    "src/src/jit/assembler.cc",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("operators") {
+  cflags = []
+
+  sources = [
+    "src/src/operators/argmax-pooling-nhwc.c",
+    "src/src/operators/average-pooling-nhwc.c",
+    "src/src/operators/binary-elementwise-nd.c",
+    "src/src/operators/channel-shuffle-nc.c",
+    "src/src/operators/constant-pad-nd.c",
+    "src/src/operators/convolution-nchw.c",
+    "src/src/operators/convolution-nhwc.c",
+    "src/src/operators/deconvolution-nhwc.c",
+    "src/src/operators/depth-to-space-nchw2nhwc.c",
+    "src/src/operators/depth-to-space-nhwc.c",
+    "src/src/operators/fully-connected-nc.c",
+    "src/src/operators/global-average-pooling-ncw.c",
+    "src/src/operators/global-average-pooling-nwc.c",
+    "src/src/operators/lut-elementwise-nc.c",
+    "src/src/operators/max-pooling-nhwc.c",
+    "src/src/operators/prelu-nc.c",
+    "src/src/operators/resize-bilinear-nchw.c",
+    "src/src/operators/resize-bilinear-nhwc.c",
+    "src/src/operators/softmax-nc.c",
+    "src/src/operators/transpose-nd.c",
+    "src/src/operators/unary-elementwise-nc.c",
+    "src/src/operators/unpooling-nhwc.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qc8-dwconv_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qc8-dwconv/gen/up16x25-minmax-fp32-xop-mul16-add16.c",
+    "src/src/qc8-dwconv/gen/up16x3-minmax-fp32-xop-mul16-add16.c",
+    "src/src/qc8-dwconv/gen/up16x9-minmax-fp32-xop-mul16-add16.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qc8-gemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qc8-gemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qc8-gemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qc8-igemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qc8-igemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qc8-igemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qs8-dwconv_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qs8-dwconv/gen/up16x25-minmax-fp32-xop-mul16-add16.c",
+    "src/src/qs8-dwconv/gen/up16x9-minmax-fp32-xop-mul16-add16.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qs8-gemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qs8-gemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qs8-gemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qs8-igemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qs8-igemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qs8-igemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qs8-vadd_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [ "src/src/qs8-vadd/gen/minmax-xop-mul32-ld32-x8.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qs8-vaddc_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [ "src/src/qs8-vaddc/gen/minmax-xop-mul32-ld32-x8.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qu8-dwconv_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qu8-dwconv/gen/up16x25-minmax-fp32-xop-mul32.c",
+    "src/src/qu8-dwconv/gen/up16x9-minmax-fp32-xop-mul32.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qu8-gemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qu8-gemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qu8-gemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qu8-igemm_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [
+    "src/src/qu8-igemm/gen/1x4c8-minmax-fp32-xop-ld64.c",
+    "src/src/qu8-igemm/gen/2x4c8-minmax-fp32-xop-ld64.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qu8-vadd_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [ "src/src/qu8-vadd/gen/minmax-xop-mul32-ld32-x8.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("qu8-vaddc_xop") {
+  cflags = [ "-mxop" ]
+
+  sources = [ "src/src/qu8-vaddc/gen/minmax-xop-mul32-ld32-x8.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("subgraph") {
+  cflags = []
+
+  sources = [
+    "src/src/subgraph/abs.c",
+    "src/src/subgraph/add2.c",
+    "src/src/subgraph/argmax-pooling-2d.c",
+    "src/src/subgraph/average-pooling-2d.c",
+    "src/src/subgraph/bankers-rounding.c",
+    "src/src/subgraph/ceiling.c",
+    "src/src/subgraph/clamp.c",
+    "src/src/subgraph/concatenate.c",
+    "src/src/subgraph/convert.c",
+    "src/src/subgraph/convolution-2d.c",
+    "src/src/subgraph/deconvolution-2d.c",
+    "src/src/subgraph/depth-to-space.c",
+    "src/src/subgraph/depthwise-convolution-2d.c",
+    "src/src/subgraph/divide.c",
+    "src/src/subgraph/elu.c",
+    "src/src/subgraph/even-split.c",
+    "src/src/subgraph/floor.c",
+    "src/src/subgraph/fully-connected.c",
+    "src/src/subgraph/global-average-pooling-2d.c",
+    "src/src/subgraph/hardswish.c",
+    "src/src/subgraph/leaky-relu.c",
+    "src/src/subgraph/max-pooling-2d.c",
+    "src/src/subgraph/maximum2.c",
+    "src/src/subgraph/minimum2.c",
+    "src/src/subgraph/multiply2.c",
+    "src/src/subgraph/negate.c",
+    "src/src/subgraph/prelu.c",
+    "src/src/subgraph/sigmoid.c",
+    "src/src/subgraph/softmax.c",
+    "src/src/subgraph/square-root.c",
+    "src/src/subgraph/square.c",
+    "src/src/subgraph/squared-difference.c",
+    "src/src/subgraph/static-constant-pad.c",
+    "src/src/subgraph/static-reshape.c",
+    "src/src/subgraph/static-resize-bilinear-2d.c",
+    "src/src/subgraph/subtract.c",
+    "src/src/subgraph/unpooling-2d.c",
+    "src/src/subgraph/validation.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("tables") {
+  cflags = []
+
+  sources = [
+    "src/src/tables/exp2-k-over-2048.c",
+    "src/src/tables/exp2-k-over-64.c",
+    "src/src/tables/exp2minus-k-over-16.c",
+    "src/src/tables/exp2minus-k-over-2048.c",
+    "src/src/tables/exp2minus-k-over-4.c",
+    "src/src/tables/exp2minus-k-over-64.c",
+    "src/src/tables/exp2minus-k-over-8.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("u8-lut32norm") {
+  cflags = []
+
+  sources = [ "src/src/u8-lut32norm/scalar.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("x32-depthtospace2d-chw2hwc") {
+  cflags = []
+
+  sources = [ "src/src/x32-depthtospace2d-chw2hwc/scalar.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("x8-lut") {
+  cflags = []
+
+  sources = [ "src/src/x8-lut/gen/lut-scalar-x4.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("xx-copy") {
+  cflags = []
+
+  sources = [ "src/src/xx-copy/memcpy.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+source_set("xx-transpose") {
+  cflags = []
+
+  sources = [ "src/src/xx-transpose/1x1-memcpy.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
