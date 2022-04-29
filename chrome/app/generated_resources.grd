@@ -4895,11 +4895,11 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON" desc="The text of the request acces button that appears on the toolbar when an extension requests access to the site">
           Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>3</ex></ph>?
         </message>
-        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION" desc="The tooltip text of the request acces button that appears on the toolbar when an extension requests access to the site">
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION" desc="The tooltip text of the request access button that appears on the toolbar when an extension requests access to the site">
           <ph name="EXTENSIONS_REQUESTING_ACCESS">$1<ex>Extension A</ex></ph> is requesting to read and change <ph name="ORIGIN">$2<ex>google.com</ex></ph>
         </message>
-        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS" desc="The tooltip text of the request acces button that appears on the toolbar when an extension requests access to the site">
-          Requesting to read and change <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>google.com</ex></ph>:
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS" desc="The tooltip text of the request access button that appears on the toolbar when an extension requests access to the site">
+          Requesting to read and change <ph name="ORIGIN">$1<ex>google.com</ex></ph>:
         </message>
         <if expr="not use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE" desc="The label in an extension's context menu indicating the extension cannot access the current page. (sentence case)">
