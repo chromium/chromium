@@ -78,7 +78,12 @@ source_set("util") {
 
 swift_source_set("util_swift") {
   bridge_header = "util_swift_bridge.h"
-  sources = [ "UIView+WindowObserving.swift" ]
+  sources = [
+    "UIView+WindowCoordinates.swift",
+    "UIView+WindowObserving.swift",
+    "frame_layout_guide.swift",
+    "layout_guide_center.swift",
+  ]
   deps = [ ":crbug_1316061" ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -125,12 +130,15 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "force_touch_long_press_gesture_recognizer_unittest.mm",
+    "frame_layout_guide_unittest.mm",
+    "layout_guide_center_unittest.mm",
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
     "pasteboard_util_unittest.mm",
     "terms_util_unittest.mm",
     "ui_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
+    "uiview_window_coordinates_unittest.mm",
     "uiview_window_observing_unittest.mm",
   ]
   deps = [
