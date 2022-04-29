@@ -19,7 +19,7 @@ struct PopupMatchRowView: View {
     static let actionButtonOuterPadding = EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0)
     static let leadingSpacing: CGFloat = 60
     static let minHeight: CGFloat = 58
-    static let maxHeight: CGFloat = 98
+    static let maxHeight: CGFloat = 320
     static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
   }
 
@@ -147,7 +147,7 @@ struct PopupMatchRowView: View {
       }
       .padding(Dimensions.padding)
     }
-    .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
+    .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight, maxHeight: Dimensions.maxHeight)
   }
 
   var backgroundColor: Color {
