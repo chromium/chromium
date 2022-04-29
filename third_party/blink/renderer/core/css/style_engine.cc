@@ -213,11 +213,9 @@ void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
           origin == WebCssOrigin::kUser ? injected_user_style_sheets_
                                         : injected_author_style_sheets_;
   // Remove the last sheet that matches.
-  const auto& it = std::find_if(injected_style_sheets.rbegin(),
-                                injected_style_sheets.rend(),
-                                [&key](const auto& item) {
-                                  return item.first == key;
-                                });
+  const auto& it =
+      std::find_if(injected_style_sheets.rbegin(), injected_style_sheets.rend(),
+                   [&key](const auto& item) { return item.first == key; });
   if (it != injected_style_sheets.rend()) {
     injected_style_sheets.erase(std::next(it).base());
     if (origin == WebCssOrigin::kUser)
@@ -2373,11 +2371,16 @@ void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
 
 void StyleEngine::CollectMatchingUserRules(
     ElementRuleCollector& collector) const {
-  for (unsigned i = 0; i < active_user_style_sheets_.size(); ++i) {
-    DCHECK(active_user_style_sheets_[i].second);
-    collector.CollectMatchingRules(
-        MatchRequest(active_user_style_sheets_[i].second, nullptr,
-                     active_user_style_sheets_[i].first, i));
+  MatchRequest match_request;
+  for (const ActiveStyleSheet& style_sheet : active_user_style_sheets_) {
+    match_request.AddRuleset(style_sheet.second, style_sheet.first);
+    if (match_request.IsFull()) {
+      collector.CollectMatchingRules(match_request);
+      match_request.ClearAfterMatching();
+    }
+  }
+  if (!match_request.IsEmpty()) {
+    collector.CollectMatchingRules(match_request);
   }
 }
 

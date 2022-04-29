@@ -94,6 +94,9 @@ class CORE_EXPORT ScopedStyleResolver final
   void Trace(Visitor*) const;
 
  private:
+  template <class Func>
+  void ForAllStylesheets(const Func& func);
+
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);

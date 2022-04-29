@@ -196,6 +196,9 @@ class CORE_EXPORT ElementRuleCollector {
   template <typename RuleDataListType>
   void CollectMatchingRulesForList(const RuleDataListType*,
                                    const MatchRequest&,
+                                   const RuleSet*,
+                                   const CSSStyleSheet*,
+                                   int,
                                    const SelectorChecker&,
                                    PartRequest* = nullptr);
 
@@ -206,7 +209,8 @@ class CORE_EXPORT ElementRuleCollector {
                     unsigned layer_order,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
-                    const MatchRequest&);
+                    const CSSStyleSheet* style_sheet,
+                    int style_sheet_index);
 
   template <class CSSRuleCollection>
   CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
