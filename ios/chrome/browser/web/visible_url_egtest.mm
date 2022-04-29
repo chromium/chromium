@@ -352,6 +352,14 @@ class PausableResponseProvider : public HtmlResponseProvider {
 // Tests that visible URL is always the same as last pending URL during go
 // navigations initiated with JS.
 - (void)testJSGoNavigation {
+  // TODO(crbug.com/1321095): The testJSGoNavigationWithCacheRestoreDisabled
+  // variant fails very often on iphone-device bot.
+  if (![ChromeEarlGrey isIPadIdiom] &&
+      [NSStringFromSelector(_cmd)
+          isEqualToString:@"testJSGoNavigationWithCacheRestoreDisabled"]) {
+    EARL_GREY_TEST_DISABLED(@"This test is very flaky on iphone-device.");
+  }
+
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
