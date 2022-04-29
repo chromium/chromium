@@ -273,11 +273,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'refs/heads/chromium/5033',
+  'v8_revision': '21fc9cd3b07f8d59dc554681ac1d51a6c6033ba0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'refs/heads/chromium/5033',
+  'angle_revision': '2d3ad8ec6f09bcf6ceeb88d99bdd72b5253305c9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -285,7 +285,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'refs/heads/chromium/5033',
+  'pdfium_revision': '85ec8cd41de474be90540e6b1e07828e787f5d3b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -380,7 +380,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'refs/heads/chromium/5033',
+  'dawn_revision': '9432887ce845063ff1ffa5b6c90fb3e5ac94a3ba',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1694,7 +1694,7 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@refs/heads/chromium/5033',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@c9e605688988f5de4499ee2fabeb93f00ee97dda',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'ebe84bec02c041d28f902da0214bf442743fc907',
@@ -1733,7 +1733,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'db30f93b2d006d46832a4809813e5f1e0fc880cd',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/5033',
+    Var('webrtc_git') + '/src.git' + '@' + '8b8d0b5eacc08384664094285d559cc13b73467c',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1803,7 +1803,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@refs/heads/chromium/5033',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@efe0cdd475fbe739c5841e3d0e7eca10ecfaf0fa',
     'condition': 'checkout_src_internal',
   },
 
