@@ -676,13 +676,13 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   EventRouter* event_router =
       event_name ? EventRouter::Get(browser_context) : nullptr;
   if (event_router) {
-    std::unique_ptr<base::ListValue> value(new base::ListValue());
+    std::vector<base::Value> event_args;
     std::unique_ptr<api::permissions::Permissions> permissions =
         PackPermissionSet(*changed);
-    value->Append(permissions->ToValue());
-    auto event = std::make_unique<Event>(histogram_value, event_name,
-                                         std::move(*value).TakeListDeprecated(),
-                                         browser_context);
+    event_args.emplace_back(
+        base::Value::FromUniquePtrValue(permissions->ToValue()));
+    auto event = std::make_unique<Event>(
+        histogram_value, event_name, std::move(event_args), browser_context);
     event_router->DispatchEventToExtension(extension->id(), std::move(event));
   }
 
