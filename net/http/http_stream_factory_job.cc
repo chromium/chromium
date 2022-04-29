@@ -308,6 +308,12 @@ void HttpStreamFactory::Job::SetPriority(RequestPriority priority) {
   // TODO(akalin): Maybe Propagate this to the preconnect state.
 }
 
+bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
+  return !using_quic_ && CanUseExistingSpdySession() &&
+         session_->spdy_session_pool()->HasAvailableSession(spdy_session_key_,
+                                                            is_websocket_);
+}
+
 bool HttpStreamFactory::Job::was_alpn_negotiated() const {
   return was_alpn_negotiated_;
 }

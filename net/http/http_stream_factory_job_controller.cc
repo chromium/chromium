@@ -601,6 +601,14 @@ void HttpStreamFactory::JobController::MaybeSetWaitTimeForMainJob(
   if (main_job_is_blocked_) {
     main_job_wait_time_ =
         std::min(delay, base::Seconds(kMaxDelayTimeForMainJobSecs));
+    if (main_job_->HasAvailableSpdySession()) {
+      UMA_HISTOGRAM_TIMES("Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession",
+                          main_job_wait_time_);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "Net.HttpJob.MainJobWaitTimeWithoutAvailableSpdySession",
+          main_job_wait_time_);
+    }
   }
 }
 

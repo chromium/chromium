@@ -234,6 +234,13 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
   return base::WeakPtr<SpdySession>();
 }
 
+bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
+                                          bool is_websocket) const {
+  const auto it = available_sessions_.find(key);
+  return it != available_sessions_.end() &&
+         (!is_websocket || it->second->support_websocket());
+}
+
 base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
     const SpdySessionKey& key,
     bool enable_ip_based_pooling,

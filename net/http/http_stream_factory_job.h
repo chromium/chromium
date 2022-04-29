@@ -191,6 +191,10 @@ class HttpStreamFactory::Job
 
   void SetPriority(RequestPriority priority);
 
+  // Returns true if the current request can be immediately sent on a existing
+  // spdy session.
+  bool HasAvailableSpdySession() const;
+
   const GURL& origin_url() const { return origin_url_; }
   RequestPriority priority() const { return priority_; }
   bool was_alpn_negotiated() const;

@@ -204,6 +204,9 @@ class NET_EXPORT SpdySessionPool
       bool is_websocket,
       const NetLogWithSource& net_log);
 
+  // Returns true if there is an available session for |key|.
+  bool HasAvailableSession(const SpdySessionKey& key, bool is_websocket) const;
+
   // Just like FindAvailableSession.
   //
   // Additionally, if it returns nullptr, populates |spdy_session_request| with

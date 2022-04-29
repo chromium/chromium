@@ -5416,6 +5416,8 @@ TEST_F(SpdyNetworkTransactionTest, GracefulGoaway) {
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  EXPECT_TRUE(
+      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
   base::WeakPtr<SpdySession> spdy_session =
       spdy_session_pool->FindAvailableSession(
           key, /* enable_ip_based_pooling = */ true,
@@ -5451,6 +5453,8 @@ TEST_F(SpdyNetworkTransactionTest, GracefulGoaway) {
   EXPECT_EQ("hello!", response_data);
 
   // Graceful GOAWAY was received, SpdySession should be unavailable.
+  EXPECT_FALSE(
+      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
   spdy_session = spdy_session_pool->FindAvailableSession(
       key, /* enable_ip_based_pooling = */ true,
       /* is_websocket = */ false, log_);
@@ -9325,6 +9329,8 @@ TEST_F(SpdyNetworkTransactionTest,
                       ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
+      key1, /* is_websocket = */ false));
   base::WeakPtr<SpdySession> spdy_session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,
@@ -9340,6 +9346,8 @@ TEST_F(SpdyNetworkTransactionTest,
                       ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
+      key2, /* is_websocket = */ true));
   base::WeakPtr<SpdySession> spdy_session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,
