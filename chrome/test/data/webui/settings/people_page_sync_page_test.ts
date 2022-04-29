@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrInputElement, SettingsSyncEncryptionOptionsElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not chromeos_ash">
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
 
@@ -17,7 +17,7 @@ import {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement, PageStatus, 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
@@ -40,6 +40,7 @@ suite('SyncSettingsTests', function() {
   let encryptWithPassphrase: CrRadioButtonElement;
 
   function setupSyncPage() {
+    loadTimeData.overrideValues({nonSyncingProfilesEnabled: true});
     document.body.innerHTML = '';
     syncPage = document.createElement('settings-sync-page');
     const router = Router.getInstance();
@@ -699,9 +700,6 @@ suite('SyncSettingsTests', function() {
     assertFalse(abort);
   });
 
-  // On Lacros, turning off sync is not supported yet.
-  // TODO(https://crbug.com/1217645): Enable these tests after adding support.
-  // <if expr="not chromeos_lacros">
   test('SyncSetupLeavePage', async function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
@@ -841,7 +839,6 @@ suite('SyncSettingsTests', function() {
             '#setupCancelDialog');
     assertFalse(!!setupCancelDialog);
   });
-  // </if>
 
   test('SyncSetupSearchSettings', async function() {
     syncPage.syncStatus = {

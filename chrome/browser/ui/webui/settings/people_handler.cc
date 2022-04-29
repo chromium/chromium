@@ -794,9 +794,15 @@ void PeopleHandler::CloseSyncSetup() {
           sync_service->StopAndClear();
 // ChromeOS ash doesn't support signing out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-          // Sign out the user on desktop Chrome if they click cancel during
-          // initial setup.
-          if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+          bool should_revoke_sync_consent =
+              !sync_service->GetUserSettings()->IsFirstSetupComplete();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          should_revoke_sync_consent &=
+              base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles);
+#endif
+          // Revoke sync consent on desktop Chrome if they click cancel during
+          // initial setup or close sync setup without confirming sync.
+          if (should_revoke_sync_consent) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(
