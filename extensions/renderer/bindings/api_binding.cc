@@ -210,7 +210,7 @@ APIBinding::APIBinding(const std::string& api_name,
   // construction.
 
   if (function_definitions) {
-    for (const auto& func : function_definitions->GetListDeprecated()) {
+    for (const auto& func : function_definitions->GetList()) {
       const base::DictionaryValue* func_dict = nullptr;
       CHECK(func.GetAsDictionary(&func_dict));
       std::string name;
@@ -227,7 +227,7 @@ APIBinding::APIBinding(const std::string& api_name,
   }
 
   if (type_definitions) {
-    for (const auto& type : type_definitions->GetListDeprecated()) {
+    for (const auto& type : type_definitions->GetList()) {
       const base::DictionaryValue* type_dict = nullptr;
       CHECK(type.GetAsDictionary(&type_dict));
       std::string id;
@@ -252,7 +252,7 @@ APIBinding::APIBinding(const std::string& api_name,
       // them. Cache the function signatures in the type map.
       const base::ListValue* type_functions = nullptr;
       if (type_dict->GetList("functions", &type_functions)) {
-        for (const auto& func : type_functions->GetListDeprecated()) {
+        for (const auto& func : type_functions->GetList()) {
           const base::DictionaryValue* func_dict = nullptr;
           CHECK(func.GetAsDictionary(&func_dict));
           std::string function_name;
@@ -270,8 +270,8 @@ APIBinding::APIBinding(const std::string& api_name,
   }
 
   if (event_definitions) {
-    events_.reserve(event_definitions->GetListDeprecated().size());
-    for (const auto& event : event_definitions->GetListDeprecated()) {
+    events_.reserve(event_definitions->GetList().size());
+    for (const auto& event : event_definitions->GetList()) {
       const base::DictionaryValue* event_dict = nullptr;
       CHECK(event.GetAsDictionary(&event_dict));
       std::string name;
@@ -280,7 +280,7 @@ APIBinding::APIBinding(const std::string& api_name,
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
       const base::ListValue* filters = nullptr;
       bool supports_filters = event_dict->GetList("filters", &filters) &&
-                              !filters->GetListDeprecated().empty();
+                              !filters->GetList().empty();
 
       std::vector<std::string> rule_actions;
       std::vector<std::string> rule_conditions;
@@ -306,7 +306,7 @@ APIBinding::APIBinding(const std::string& api_name,
                                       std::vector<std::string>* out_value) {
             const base::ListValue* list = nullptr;
             CHECK(options->GetList(name, &list));
-            for (const auto& entry : list->GetListDeprecated()) {
+            for (const auto& entry : list->GetList()) {
               DCHECK(entry.is_string());
               out_value->push_back(entry.GetString());
             }
@@ -464,8 +464,7 @@ void APIBinding::DecorateTemplateWithProperties(
       auto is_this_platform = [&this_platform](const base::Value& platform) {
         return platform.is_string() && platform.GetString() == this_platform;
       };
-      if (base::ranges::none_of(platforms->GetListDeprecated(),
-                                is_this_platform))
+      if (base::ranges::none_of(platforms->GetList(), is_this_platform))
         continue;
     }
 

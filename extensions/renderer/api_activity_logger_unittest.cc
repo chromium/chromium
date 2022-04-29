@@ -67,9 +67,9 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
       .WillOnce([&](const ExtensionId& extension_id, const ActivityLogCallType,
                     const ExtensionHostMsg_APIActionOrEvent_Params& params) {
         EXPECT_EQ("someApiMethod", params.api_call);
-        ASSERT_EQ(1u, params.arguments.GetListDeprecated().size());
+        ASSERT_EQ(1u, params.arguments.GetList().size());
         EXPECT_EQ(base::Value::Type::NONE,
-                  params.arguments.GetListDeprecated()[0].type());
+                  params.arguments.GetList()[0].type());
       });
 
   APIActivityLogger::LogAPICall(ipc_sender.get(), context, "someApiMethod",
