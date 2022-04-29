@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -26,14 +28,41 @@ std::vector<std::string> SplitGroup(base::StringPiece group) {
                      base::SPLIT_WANT_NONEMPTY);
 }
 
-std::vector<absl::optional<DnsOverHttpsServerConfig>> ParseServers(
-    std::vector<std::string> servers) {
+std::vector<absl::optional<DnsOverHttpsServerConfig>> ParseTemplates(
+    std::vector<std::string> templates) {
   std::vector<absl::optional<DnsOverHttpsServerConfig>> parsed;
-  parsed.reserve(servers.size());
-  base::ranges::transform(servers, std::back_inserter(parsed), [](auto& s) {
+  parsed.reserve(templates.size());
+  base::ranges::transform(templates, std::back_inserter(parsed), [](auto& s) {
     return DnsOverHttpsServerConfig::FromString(std::move(s));
   });
   return parsed;
+}
+
+constexpr base::StringPiece kJsonKeyServers("servers");
+
+absl::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
+  base::Value::List* servers_value = value.FindList(kJsonKeyServers);
+  if (!servers_value)
+    return absl::nullopt;
+  std::vector<DnsOverHttpsServerConfig> servers;
+  servers.reserve(servers_value->size());
+  for (base::Value& elt : *servers_value) {
+    base::Value::Dict* dict = elt.GetIfDict();
+    if (!dict)
+      return absl::nullopt;
+    auto parsed = DnsOverHttpsServerConfig::FromValue(std::move(*dict));
+    if (!parsed.has_value())
+      return absl::nullopt;
+    servers.push_back(std::move(*parsed));
+  }
+  return DnsOverHttpsConfig(servers);
+}
+
+absl::optional<DnsOverHttpsConfig> FromJson(base::StringPiece json) {
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  if (!value || !value->is_dict())
+    return absl::nullopt;
+  return FromValue(std::move(value->GetDict()));
 }
 
 }  // namespace
@@ -53,11 +82,11 @@ DnsOverHttpsConfig::DnsOverHttpsConfig(
     : servers_(std::move(servers)) {}
 
 // static
-absl::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromStrings(
-    std::vector<std::string> server_strings) {
+absl::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromTemplates(
+    std::vector<std::string> server_templates) {
   // All templates must be valid for the group to be considered valid.
   std::vector<DnsOverHttpsServerConfig> servers;
-  for (auto& server_config : ParseServers(server_strings)) {
+  for (auto& server_config : ParseTemplates(server_templates)) {
     if (!server_config)
       return absl::nullopt;
     servers.push_back(std::move(*server_config));
@@ -66,19 +95,29 @@ absl::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromStrings(
 }
 
 // static
+absl::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromTemplatesForTesting(
+    std::vector<std::string> server_templates) {
+  return FromTemplates(std::move(server_templates));
+}
+
+// static
 absl::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromString(
     base::StringPiece doh_config) {
-  // TODO(crbug.com/1200908): Also accept JSON-formatted input.
-  std::vector<std::string> server_strings = SplitGroup(doh_config);
-  if (server_strings.empty())
+  absl::optional<DnsOverHttpsConfig> parsed = FromJson(doh_config);
+  if (parsed && !parsed->servers().empty())
+    return parsed;
+  std::vector<std::string> server_templates = SplitGroup(doh_config);
+  if (server_templates.empty())
     return absl::nullopt;  // `doh_config` must contain at least one server.
-  return FromStrings(std::move(server_strings));
+  return FromTemplates(std::move(server_templates));
 }
 
 // static
 DnsOverHttpsConfig DnsOverHttpsConfig::FromStringLax(
     base::StringPiece doh_config) {
-  auto parsed = ParseServers(SplitGroup(doh_config));
+  if (absl::optional<DnsOverHttpsConfig> parsed = FromJson(doh_config))
+    return *parsed;
+  auto parsed = ParseTemplates(SplitGroup(doh_config));
   std::vector<DnsOverHttpsServerConfig> servers;
   for (auto& server_config : parsed) {
     if (server_config)
@@ -91,25 +130,32 @@ bool DnsOverHttpsConfig::operator==(const DnsOverHttpsConfig& other) const {
   return servers() == other.servers();
 }
 
-std::vector<base::StringPiece> DnsOverHttpsConfig::ToStrings() const {
-  std::vector<base::StringPiece> strings;
-  strings.reserve(servers().size());
-  base::ranges::transform(servers(), std::back_inserter(strings),
-                          &DnsOverHttpsServerConfig::server_template_piece);
-  return strings;
-}
-
 std::string DnsOverHttpsConfig::ToString() const {
-  // TODO(crbug.com/1200908): Return JSON for complex configurations.
-  return base::JoinString(ToStrings(), "\n");
+  if (base::ranges::all_of(servers(), &DnsOverHttpsServerConfig::IsSimple)) {
+    // Return the templates on separate lines.
+    std::vector<base::StringPiece> strings;
+    strings.reserve(servers().size());
+    base::ranges::transform(servers(), std::back_inserter(strings),
+                            &DnsOverHttpsServerConfig::server_template_piece);
+    return base::JoinString(std::move(strings), "\n");
+  }
+  std::string json;
+  CHECK(base::JSONWriter::WriteWithOptions(
+      ToValue(), base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
+  // Remove the trailing newline from pretty-print output.
+  base::TrimWhitespaceASCII(json, base::TRIM_TRAILING, &json);
+  return json;
 }
 
-base::Value DnsOverHttpsConfig::ToValue() const {
-  base::Value::ListStorage list;
+base::Value::Dict DnsOverHttpsConfig::ToValue() const {
+  base::Value::List list;
   list.reserve(servers().size());
-  base::ranges::transform(servers(), std::back_inserter(list),
-                          &DnsOverHttpsServerConfig::ToValue);
-  return base::Value(std::move(list));
+  for (const auto& server : servers()) {
+    list.Append(server.ToValue());
+  }
+  base::Value::Dict dict;
+  dict.Set(kJsonKeyServers, std::move(list));
+  return dict;
 }
 
 }  // namespace net

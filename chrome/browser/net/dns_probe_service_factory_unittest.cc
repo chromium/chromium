@@ -343,9 +343,10 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
 
   EXPECT_THAT(overrides.secure_dns_mode,
               testing::Optional(net::SecureDnsMode::kSecure));
-  EXPECT_THAT(overrides.dns_over_https_config,
-              testing::Optional(*net::DnsOverHttpsConfig::FromStrings(
-                  {kDohTemplateGet, kDohTemplatePost})));
+  EXPECT_THAT(
+      overrides.dns_over_https_config,
+      testing::Optional(*net::DnsOverHttpsConfig::FromTemplatesForTesting(
+          {kDohTemplateGet, kDohTemplatePost})));
 }
 
 }  // namespace

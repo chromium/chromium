@@ -8303,7 +8303,7 @@ TEST_F(HostResolverManagerDnsTest, DohMapping) {
 
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  auto expected_doh_config = *DnsOverHttpsConfig::FromStrings(
+  auto expected_doh_config = *DnsOverHttpsConfig::FromTemplatesForTesting(
       {"https://chrome.cloudflare-dns.com/dns-query",
        "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
        "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
@@ -8462,7 +8462,7 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithAutomaticDot) {
 
   const DnsConfig* fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_EQ(original_config.nameservers, fetched_config->nameservers);
-  auto expected_doh_config = *DnsOverHttpsConfig::FromStrings(
+  auto expected_doh_config = *DnsOverHttpsConfig::FromTemplatesForTesting(
       {"https://chrome.cloudflare-dns.com/dns-query",
        "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
        "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});

@@ -53,8 +53,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
     // Build a DoH config that points to our one DoH server and pass the config
     // into the network service.
     absl::optional<net::DnsOverHttpsConfig> doh_config =
-        net::DnsOverHttpsConfig::FromStrings(
-            /*servers=*/{doh_server_->GetTemplate()});
+        net::DnsOverHttpsConfig::FromString(doh_server_->GetTemplate());
     ASSERT_TRUE(doh_config.has_value());
 
     // When the network service runs out-of-process, use `BrowserTestBase`

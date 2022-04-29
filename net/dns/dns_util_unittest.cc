@@ -501,7 +501,7 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
   EXPECT_EQ(0u, doh_servers.size());
 
   doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
-  auto expected_config = *DnsOverHttpsConfig::FromStrings(
+  auto expected_config = *DnsOverHttpsConfig::FromTemplatesForTesting(
       {"https://chrome.cloudflare-dns.com/dns-query",
        "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
        "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});

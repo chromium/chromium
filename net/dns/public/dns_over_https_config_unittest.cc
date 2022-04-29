@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "net/dns/public/dns_over_https_server_config.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -21,8 +21,10 @@ TEST(DnsOverHttpsConfigTest, SingleValue) {
   DnsOverHttpsConfig config({kServerConfig1});
   EXPECT_THAT(config.servers(), testing::ElementsAre(kServerConfig1));
 
-  base::Value expected_value(base::Value::Type::LIST);
-  expected_value.Append(kServerConfig1.ToValue());
+  base::Value::List expected_servers;
+  expected_servers.Append(kServerConfig1.ToValue());
+  base::Value::Dict expected_value;
+  expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
 
   EXPECT_EQ(config, config);
@@ -33,16 +35,15 @@ TEST(DnsOverHttpsConfigTest, MultiValue) {
   DnsOverHttpsConfig config(servers);
   EXPECT_EQ(servers, config.servers());
 
-  EXPECT_THAT(config.ToStrings(),
-              testing::ElementsAre(kServerConfig1.server_template(),
-                                   kServerConfig2.server_template()));
   EXPECT_EQ(kServerConfig1.server_template() + "\n" +
                 kServerConfig2.server_template(),
             config.ToString());
 
-  base::Value expected_value(base::Value::Type::LIST);
-  expected_value.Append(kServerConfig1.ToValue());
-  expected_value.Append(kServerConfig2.ToValue());
+  base::Value::List expected_servers;
+  expected_servers.Append(kServerConfig1.ToValue());
+  expected_servers.Append(kServerConfig2.ToValue());
+  base::Value::Dict expected_value;
+  expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
 
   EXPECT_EQ(config, config);
@@ -85,18 +86,6 @@ TEST(DnsOverHttpsConfigTest, FromStringMultiValue) {
       testing::Optional(DnsOverHttpsConfig({kServerConfig1, kServerConfig2})));
 }
 
-TEST(DnsOverHttpsConfigTest, FromStrings) {
-  EXPECT_THAT(DnsOverHttpsConfig::FromStrings({}),
-              testing::Optional(DnsOverHttpsConfig()));
-  EXPECT_THAT(
-      DnsOverHttpsConfig::FromStrings({kServerConfig1.server_template()}),
-      testing::Optional(DnsOverHttpsConfig({kServerConfig1})));
-  EXPECT_THAT(
-      DnsOverHttpsConfig::FromStrings(
-          {kServerConfig1.server_template(), kServerConfig2.server_template()}),
-      testing::Optional(DnsOverHttpsConfig({kServerConfig1, kServerConfig2})));
-}
-
 TEST(DnsOverHttpsConfigTest, FromStringExtraWhitespace) {
   auto config = DnsOverHttpsConfig::FromString(
       "  \t" + kServerConfig1.server_template() + "    " +
@@ -118,24 +107,113 @@ TEST(DnsOverHttpsConfigTest, FromStringEmpty) {
 
 TEST(DnsOverHttpsConfigTest, FromStringAllInvalid) {
   EXPECT_FALSE(DnsOverHttpsConfig::FromString("foo"));
-  EXPECT_FALSE(DnsOverHttpsConfig::FromStrings({"foo"}));
   EXPECT_EQ(DnsOverHttpsConfig(), DnsOverHttpsConfig::FromStringLax("foo"));
 
   EXPECT_FALSE(DnsOverHttpsConfig::FromString("foo bar"));
-  EXPECT_FALSE(DnsOverHttpsConfig::FromStrings({"foo", "bar"}));
   EXPECT_EQ(DnsOverHttpsConfig(), DnsOverHttpsConfig::FromStringLax("foo bar"));
 }
 
 TEST(DnsOverHttpsConfigTest, FromStringSomeInvalid) {
-  EXPECT_FALSE(DnsOverHttpsConfig::FromStrings(
-      {"foo", kServerConfig1.server_template(), "bar"}));
-
   std::string some_invalid = "foo " + kServerConfig1.server_template() +
                              " bar " + kServerConfig2.server_template() +
                              " baz";
   EXPECT_FALSE(DnsOverHttpsConfig::FromString(some_invalid));
   EXPECT_EQ(DnsOverHttpsConfig({kServerConfig1, kServerConfig2}),
             DnsOverHttpsConfig::FromStringLax(some_invalid));
+}
+
+TEST(DnsOverHttpsConfigTest, Json) {
+  auto parsed = DnsOverHttpsConfig::FromString(R"(
+    {
+      "servers": [{
+        "template": "https://dnsserver.example.net/dns-query{?dns}",
+        "endpoints": [{
+          "ips": ["192.0.2.1", "2001:db8::1"]
+        }, {
+          "ips": ["192.0.2.2", "2001:db8::2"]
+        }]
+      }]
+    }
+  )");
+
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(1u, parsed->servers().size());
+
+  auto parsed2 = DnsOverHttpsConfig::FromString(parsed->ToString());
+  EXPECT_EQ(parsed, parsed2);
+}
+
+TEST(DnsOverHttpsConfigTest, JsonWithUnknownKey) {
+  auto parsed = DnsOverHttpsConfig::FromString(R"(
+    {
+      "servers": [{
+        "template": "https://dnsserver.example.net/dns-query{?dns}"
+      }],
+      "unknown key": "value is ignored"
+    }
+  )");
+
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(1u, parsed->servers().size());
+
+  auto parsed2 = DnsOverHttpsConfig::FromString(parsed->ToString());
+  EXPECT_EQ(parsed, parsed2);
+}
+
+TEST(DnsOverHttpsConfigTest, BadJson) {
+  // Not JSON
+  EXPECT_FALSE(DnsOverHttpsConfig::FromString("{"));
+
+  // No servers
+  EXPECT_FALSE(DnsOverHttpsConfig::FromString("{}"));
+
+  // Not a Dict
+  EXPECT_FALSE(DnsOverHttpsConfig::FromString("[]"));
+
+  // Wrong type for "servers"
+  EXPECT_FALSE(DnsOverHttpsConfig::FromString("{\"servers\": 12345}"));
+
+  // One bad server
+  EXPECT_FALSE(DnsOverHttpsConfig::FromString(R"(
+    {
+      "servers": [{
+        "template": "https://dnsserver.example.net/dns-query{?dns}",
+      }, {
+        "template": "not a valid template"
+      }]
+    }
+  )"));
+}
+
+TEST(DnsOverHttpsConfigTest, JsonLax) {
+  // Valid JSON is allowed
+  auto parsed = *DnsOverHttpsConfig::FromString(R"(
+    {
+      "servers": [{
+        "template": "https://dnsserver.example.net/dns-query{?dns}",
+        "endpoints": [{
+          "ips": ["192.0.2.1", "2001:db8::1"]
+        }, {
+          "ips": ["192.0.2.2", "2001:db8::2"]
+        }]
+      }]
+    }
+  )");
+  DnsOverHttpsConfig reparsed =
+      DnsOverHttpsConfig::FromStringLax(parsed.ToString());
+  EXPECT_EQ(parsed, reparsed);
+
+  // Lax parsing does not accept bad servers in JSON.
+  DnsOverHttpsConfig from_bad = DnsOverHttpsConfig::FromStringLax(R"(
+    {
+      "servers": [{
+        "template": "https://dnsserver.example.net/dns-query{?dns}",
+      }, {
+        "template": "not a valid template"
+      }]
+    }
+  )");
+  EXPECT_THAT(from_bad.servers(), testing::IsEmpty());
 }
 
 }  // namespace

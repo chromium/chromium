@@ -107,7 +107,7 @@ base::Value DnsConfig::ToValue() const {
   dict.SetBoolKey("rotate", rotate);
   dict.SetBoolKey("use_local_ipv6", use_local_ipv6);
   dict.SetIntKey("num_hosts", hosts.size());
-  dict.SetKey("doh_config", doh_config.ToValue());
+  dict.SetKey("doh_config", base::Value(doh_config.ToValue()));
   dict.SetIntKey("secure_dns_mode", static_cast<int>(secure_dns_mode));
   dict.SetBoolKey("allow_dns_over_https_upgrade", allow_dns_over_https_upgrade);
 

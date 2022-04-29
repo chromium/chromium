@@ -636,7 +636,8 @@ class DnsTransactionTestBase : public testing::Test {
                               base::StringPrintf("doh_test_%zu", i)) +
                           (use_post ? "" : "{?dns}"));
     }
-    config_.doh_config = *DnsOverHttpsConfig::FromStrings(std::move(templates));
+    config_.doh_config =
+        *DnsOverHttpsConfig::FromTemplatesForTesting(std::move(templates));
     ConfigureFactory();
 
     if (make_available) {

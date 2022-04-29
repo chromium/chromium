@@ -17,7 +17,8 @@
 namespace net {
 
 // Represents a collection of DnsOverHttpsServerConfig.  The string
-// representation is a whitespace-separated list of DoH URI templates.
+// representation is either a JSON object or a whitespace-separated
+// list of DoH URI templates.
 // The Value representation is a list of dictionaries.
 class NET_EXPORT DnsOverHttpsConfig {
  public:
@@ -30,9 +31,9 @@ class NET_EXPORT DnsOverHttpsConfig {
 
   explicit DnsOverHttpsConfig(std::vector<DnsOverHttpsServerConfig> servers);
 
-  // Constructs a Config from textual representations of zero or more servers.
+  // Constructs a Config from URI templates of zero or more servers.
   // Returns `nullopt` if any string is invalid.
-  static absl::optional<DnsOverHttpsConfig> FromStrings(
+  static absl::optional<DnsOverHttpsConfig> FromTemplatesForTesting(
       std::vector<std::string> servers);
 
   // Constructs a Config from its text form if valid.  Returns `nullopt` if the
@@ -41,7 +42,7 @@ class NET_EXPORT DnsOverHttpsConfig {
       base::StringPiece doh_config);
 
   // Constructs a DnsOverHttpsConfig from its text form, skipping any invalid
-  // templates.  The result may be empty.
+  // templates in the whitespace-separated form.  The result may be empty.
   static DnsOverHttpsConfig FromStringLax(base::StringPiece doh_config);
 
   bool operator==(const DnsOverHttpsConfig& other) const;
@@ -51,17 +52,18 @@ class NET_EXPORT DnsOverHttpsConfig {
     return servers_;
   }
 
-  // Returns string representations of the individual DnsOverHttpsServerConfigs.
-  // The return value will be invalidated if this object is destroyed or moved.
-  std::vector<base::StringPiece> ToStrings() const;
-
-  // Inverse of FromString().
+  // Inverse of FromString().  Uses the JSON representation if necessary.
   std::string ToString() const;
 
-  // Encodes the config as a Value.  Currently only used for NetLog.
-  base::Value ToValue() const;
+  // Encodes the config as a Value.  Used to produce the JSON representation.
+  base::Value::Dict ToValue() const;
 
  private:
+  // Constructs a Config from URI templates of zero or more servers.
+  // Returns `nullopt` if any string is invalid.
+  static absl::optional<DnsOverHttpsConfig> FromTemplates(
+      std::vector<std::string> servers);
+
   std::vector<DnsOverHttpsServerConfig> servers_;
 };
 

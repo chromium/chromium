@@ -23,6 +23,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -280,6 +281,35 @@ TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
   EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
   EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+}
+
+TEST_F(DnsClientTest, GetPresetAddrs) {
+  DnsConfig config;
+  config.doh_config = *net::DnsOverHttpsConfig::FromString(R"(
+    {
+      "servers": [{
+        "template": "https://www.doh.com/",
+        "endpoints": [{
+          "ips": ["4.3.2.1"]
+        }, {
+          "ips": ["4.3.2.2"]
+        }]
+      }]
+    }
+  )");
+  client_->SetSystemConfig(config);
+
+  EXPECT_FALSE(client_->GetPresetAddrs(
+      url::SchemeHostPort("https", "otherdomain.com", 443)));
+  EXPECT_FALSE(
+      client_->GetPresetAddrs(url::SchemeHostPort("http", "www.doh.com", 443)));
+  EXPECT_FALSE(client_->GetPresetAddrs(
+      url::SchemeHostPort("https", "www.doh.com", 9999)));
+
+  AddressList expected({{{4, 3, 2, 1}, 443}, {{4, 3, 2, 2}, 443}});
+  EXPECT_THAT(
+      client_->GetPresetAddrs(url::SchemeHostPort("https", "www.doh.com", 443)),
+      testing::Optional(expected));
 }
 
 TEST_F(DnsClientTest, Override) {

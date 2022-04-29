@@ -19,6 +19,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
@@ -36,12 +37,28 @@ absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     network::mojom::OptionalSecureDnsMode mode);
 
 template <>
+class StructTraits<network::mojom::DnsOverHttpsServerConfigDataView,
+                   net::DnsOverHttpsServerConfig> {
+ public:
+  static base::StringPiece server_template(
+      const net::DnsOverHttpsServerConfig& server) {
+    return server.server_template();
+  }
+  static const net::DnsOverHttpsServerConfig::Endpoints& endpoints(
+      const net::DnsOverHttpsServerConfig& server) {
+    return server.endpoints();
+  }
+  static bool Read(network::mojom::DnsOverHttpsServerConfigDataView data,
+                   net::DnsOverHttpsServerConfig* out_config);
+};
+
+template <>
 class StructTraits<network::mojom::DnsOverHttpsConfigDataView,
                    net::DnsOverHttpsConfig> {
  public:
-  static std::vector<base::StringPiece> servers(
+  static const std::vector<net::DnsOverHttpsServerConfig>& servers(
       const net::DnsOverHttpsConfig& doh_config) {
-    return doh_config.ToStrings();
+    return doh_config.servers();
   }
   static bool Read(network::mojom::DnsOverHttpsConfigDataView data,
                    net::DnsOverHttpsConfig* out_config);

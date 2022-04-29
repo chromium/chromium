@@ -6,15 +6,20 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 
+struct DnsOverHttpsServerConfig {
+  string server_template;
+  array<array<network.mojom.IPAddress>> endpoints;
+};
+
 // The DNS over HTTPS configuration, containing zero or more servers.
 struct DnsOverHttpsConfig {
-  // String representation of each server.
-  array<string> servers;
+  array<DnsOverHttpsServerConfig> servers;
 };
 
 // The secure DNS mode specifies what types of lookups (secure/insecure) should

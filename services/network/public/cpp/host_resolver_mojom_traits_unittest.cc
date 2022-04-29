@@ -6,8 +6,10 @@
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -70,6 +72,23 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverrides_OnlyDnsOverHttpsServers) {
   net::DnsConfigOverrides deserialized;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DnsConfigOverrides>(
       original, deserialized));
+
+  EXPECT_EQ(original, deserialized);
+}
+
+TEST(HostResolverMojomTraitsTest, DnsOverHttpsServerConfig_Roundtrip) {
+  net::DnsOverHttpsServerConfig::Endpoints endpoints{
+      {{192, 0, 2, 1},
+       {0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+      {{192, 0, 2, 2},
+       {0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}}};
+  auto original = *net::DnsOverHttpsServerConfig::FromString(
+      "https://example.com/", endpoints);
+
+  net::DnsOverHttpsServerConfig deserialized;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::DnsOverHttpsServerConfig>(
+          original, deserialized));
 
   EXPECT_EQ(original, deserialized);
 }

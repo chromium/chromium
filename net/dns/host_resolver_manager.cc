@@ -1275,10 +1275,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     DCHECK(client_);
     DCHECK(delegate_);
 
-    if (secure_)
-      DCHECK(client_->CanUseSecureDnsTransactions());
-    else
+    if (!secure_) {
       DCHECK(client_->CanUseInsecureDnsTransactions());
+    }
 
     PushTransactionsNeeded(MaybeDisableAdditionalQueries(query_types));
   }

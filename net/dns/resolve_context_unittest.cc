@@ -74,7 +74,8 @@ DnsConfig CreateDnsConfig(int num_servers, int num_doh_servers) {
     templates.push_back(
         base::StringPrintf("https://mock.http/doh_test_%d{?dns}", i));
   }
-  config.doh_config = *DnsOverHttpsConfig::FromStrings(std::move(templates));
+  config.doh_config =
+      *DnsOverHttpsConfig::FromTemplatesForTesting(std::move(templates));
 
   return config;
 }
