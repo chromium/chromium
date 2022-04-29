@@ -92,9 +92,6 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          ControlsLayerType::kFocusRingColor));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kUnifiedFeaturePodHoverCornerRadius);
 }
@@ -156,6 +153,10 @@ const char* FeaturePodLabelButton::GetClassName() const {
 void FeaturePodLabelButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   OnEnabledChanged();
+
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          ControlsLayerType::kFocusRingColor));
 }
 
 void FeaturePodLabelButton::SetLabel(const std::u16string& label) {

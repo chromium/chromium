@@ -50,6 +50,9 @@ class UserAvatarButton : public views::Button {
   UserAvatarButton& operator=(const UserAvatarButton&) = delete;
 
   ~UserAvatarButton() override = default;
+
+  // views::Button:
+  void OnThemeChanged() override;
 };
 
 UserAvatarButton::UserAvatarButton(PressedCallback callback)
@@ -63,6 +66,10 @@ UserAvatarButton::UserAvatarButton(PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
 
   views::InstallCircleHighlightPathGenerator(this);
+}
+
+void UserAvatarButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));
