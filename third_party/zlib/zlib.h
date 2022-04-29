@@ -1,7 +1,7 @@
 /* zlib.h -- interface of the 'zlib' general purpose compression library
-  version 1.2.11, January 15th, 2017
+  version 1.2.12, March 11th, 2022
 
-  Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+  Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -37,12 +37,12 @@
 extern "C" {
 #endif
 
-#define ZLIB_VERSION "1.2.11.1-motley"
-#define ZLIB_VERNUM 0x12b1
+#define ZLIB_VERSION "1.2.12"
+#define ZLIB_VERNUM 0x12c0
 #define ZLIB_VER_MAJOR 1
 #define ZLIB_VER_MINOR 2
-#define ZLIB_VER_REVISION 11
-#define ZLIB_VER_SUBREVISION 1
+#define ZLIB_VER_REVISION 12
+#define ZLIB_VER_SUBREVISION 0
 
 /*
     The 'zlib' compression library provides in-memory compression and
@@ -1875,7 +1875,7 @@ ZEXTERN int ZEXPORT gzgetc_ OF((gzFile file));  /* backward compatibility */
 #    define z_gzoffset z_gzoffset64
 #    define z_adler32_combine z_adler32_combine64
 #    define z_crc32_combine z_crc32_combine64
-#    define z_crc32_combine_gen z_crc32_combine64_gen
+#    define z_crc32_combine_gen z_crc32_combine_gen64
 #  else
 #    ifdef gzopen
 #      undef gzopen

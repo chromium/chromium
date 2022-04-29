@@ -1,5 +1,5 @@
 /* crc32.c -- compute the CRC-32 of a data stream
- * Copyright (C) 1995-2006, 2010, 2011, 2012, 2016, 2018 Mark Adler
+ * Copyright (C) 1995-2022 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  *
  * This interleaved implementation of a CRC makes use of pipelined multiple
@@ -107,11 +107,42 @@
 /* Local functions. */
 local z_crc_t multmodp OF((z_crc_t a, z_crc_t b));
 local z_crc_t x2nmodp OF((z_off64_t n, unsigned k));
-#ifdef W
-   local z_word_t byte_swap OF((z_word_t word));
-   local z_crc_t crc_word OF((z_word_t data));
-   local z_word_t crc_word_big OF((z_word_t data));
-#endif /* W */
+
+/* If available, use the ARM processor CRC32 instruction. */
+#if defined(__aarch64__) && defined(__ARM_FEATURE_CRC32) && W == 8 \
+    && defined(USE_CANONICAL_ARMV8_CRC32)
+#  define ARMCRC32_CANONICAL_ZLIB
+#endif
+
+#if defined(W) && (!defined(ARMCRC32_CANONICAL_ZLIB) || defined(DYNAMIC_CRC_TABLE))
+/*
+  Swap the bytes in a z_word_t to convert between little and big endian. Any
+  self-respecting compiler will optimize this to a single machine byte-swap
+  instruction, if one is available. This assumes that word_t is either 32 bits
+  or 64 bits.
+ */
+local z_word_t byte_swap(word)
+    z_word_t word;
+{
+#  if W == 8
+    return
+        (word & 0xff00000000000000) >> 56 |
+        (word & 0xff000000000000) >> 40 |
+        (word & 0xff0000000000) >> 24 |
+        (word & 0xff00000000) >> 8 |
+        (word & 0xff000000) << 8 |
+        (word & 0xff0000) << 24 |
+        (word & 0xff00) << 40 |
+        (word & 0xff) << 56;
+#  else   /* W == 4 */
+    return
+        (word & 0xff000000) >> 24 |
+        (word & 0xff0000) >> 8 |
+        (word & 0xff00) << 8 |
+        (word & 0xff) << 24;
+#  endif
+}
+#endif
 
 /* CRC polynomial. */
 #define POLY 0xedb88320         /* p(x) reflected, with x^32 implied */
@@ -554,62 +585,6 @@ local z_crc_t x2nmodp(n, k)
     return p;
 }
 
-#ifdef W
-
-/*
-  Swap the bytes in a z_word_t to convert between little and big endian. Any
-  self-respecting compiler will optimize this to a single machine byte-swap
-  instruction, if one is available. This assumes that word_t is either 32 bits
-  or 64 bits.
- */
-local z_word_t byte_swap(word)
-    z_word_t word;
-{
-#if W == 8
-    return
-        (word & 0xff00000000000000) >> 56 |
-        (word & 0xff000000000000) >> 40 |
-        (word & 0xff0000000000) >> 24 |
-        (word & 0xff00000000) >> 8 |
-        (word & 0xff000000) << 8 |
-        (word & 0xff0000) << 24 |
-        (word & 0xff00) << 40 |
-        (word & 0xff) << 56;
-#else   /* W == 4 */
-    return
-        (word & 0xff000000) >> 24 |
-        (word & 0xff0000) >> 8 |
-        (word & 0xff00) << 8 |
-        (word & 0xff) << 24;
-#endif
-}
-
-/*
-  Return the CRC of the W bytes in the word_t data, taking the
-  least-significant byte of the word as the first byte of data, without any pre
-  or post conditioning. This is used to combine the CRCs of each braid.
- */
-local z_crc_t crc_word(data)
-    z_word_t data;
-{
-    int k;
-    for (k = 0; k < W; k++)
-        data = (data >> 8) ^ crc_table[data & 0xff];
-    return (z_crc_t)data;
-}
-
-local z_word_t crc_word_big(data)
-    z_word_t data;
-{
-    int k;
-    for (k = 0; k < W; k++)
-        data = (data << 8) ^
-            crc_big_table[(data >> ((W - 1) << 3)) & 0xff];
-    return data;
-}
-
-#endif /* W */
-
 /* =========================================================================
  * This function can be used by asm versions of crc32(), and to force the
  * generation of the CRC tables in a threaded application.
@@ -631,8 +606,7 @@ const z_crc_t FAR * ZEXPORT get_crc_table()
  * -march=armv8-a+crc, or -march=native if the compile machine has the crc32
  * instructions.
  */
-#if defined(__aarch64__) && defined(__ARM_FEATURE_CRC32) && W == 8 \
-    && defined(USE_CANONICAL_ARMV8_CRC32)
+#if ARMCRC32_CANONICAL_ZLIB
 
 /*
    Constants empirically determined to maximize speed. These values are from
@@ -662,7 +636,7 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
 #endif /* DYNAMIC_CRC_TABLE */
 
     /* Pre-condition the CRC */
-    crc ^= 0xffffffff;
+    crc = (~crc) & 0xffffffff;
 
     /* Compute the CRC up to a word boundary. */
     while (len && ((z_size_t)buf & 7) != 0) {
@@ -739,6 +713,34 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
 
 #else
 
+#ifdef W
+
+/*
+  Return the CRC of the W bytes in the word_t data, taking the
+  least-significant byte of the word as the first byte of data, without any pre
+  or post conditioning. This is used to combine the CRCs of each braid.
+ */
+local z_crc_t crc_word(data)
+    z_word_t data;
+{
+    int k;
+    for (k = 0; k < W; k++)
+        data = (data >> 8) ^ crc_table[data & 0xff];
+    return (z_crc_t)data;
+}
+
+local z_word_t crc_word_big(data)
+    z_word_t data;
+{
+    int k;
+    for (k = 0; k < W; k++)
+        data = (data << 8) ^
+            crc_big_table[(data >> ((W - 1) << 3)) & 0xff];
+    return data;
+}
+
+#endif
+
 /* ========================================================================= */
 unsigned long ZEXPORT crc32_z(crc, buf, len)
     unsigned long crc;
@@ -783,7 +785,7 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
     once(&made, make_crc_table);
 #endif /* DYNAMIC_CRC_TABLE */
     /* Pre-condition the CRC */
-    crc ^= 0xffffffff;
+    crc = (~crc) & 0xffffffff;
 
 #ifdef W
 
@@ -1129,7 +1131,7 @@ uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
 #ifdef DYNAMIC_CRC_TABLE
     once(&made, make_crc_table);
 #endif /* DYNAMIC_CRC_TABLE */
-    return multmodp(x2nmodp(len2, 3), crc1) ^ crc2;
+    return multmodp(x2nmodp(len2, 3), crc1) ^ (crc2 & 0xffffffff);
 }
 
 /* ========================================================================= */
@@ -1163,7 +1165,7 @@ uLong ZEXPORT crc32_combine_op(crc1, crc2, op)
     uLong crc2;
     uLong op;
 {
-    return multmodp(op, crc1) ^ crc2;
+    return multmodp(op, crc1) ^ (crc2 & 0xffffffff);
 }
 
 ZLIB_INTERNAL void crc_reset(deflate_state *const s)
