@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8-context.h"
@@ -89,7 +88,7 @@ void RegisterAdBeaconBindings::RegisterAdBeacon(
     std::string url_string =
         gin::V8ToString(isolate, obj->Get(context, key).ToLocalChecked());
     GURL url(url_string);
-    if (!url.is_valid() || !network::IsUrlPotentiallyTrustworthy(url)) {
+    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
       isolate->ThrowException(
           v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
               base::StrCat({"registerAdBeacon invalid reporting url for key '",

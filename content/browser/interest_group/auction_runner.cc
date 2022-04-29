@@ -1261,9 +1261,18 @@ void AuctionRunner::Auction::OnReportSellerResultComplete(
   // an error if it crashes at this point, failing the auction unnecessarily.
   seller_worklet_handle_.reset();
 
-  if (!seller_ad_beacon_map.empty())
+  if (!seller_ad_beacon_map.empty()) {
+    for (const auto& element : seller_ad_beacon_map) {
+      if (!IsUrlValid(element.second)) {
+        mojo::ReportBadMessage(base::StrCat(
+            {"Invalid seller beacon URL for '", element.first, "'"}));
+        OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
+        return;
+      }
+    }
     ad_beacon_map_.metadata[ReportingDestination::kSeller] =
         seller_ad_beacon_map;
+  }
 
   if (seller_report_url) {
     if (!IsUrlValid(*seller_report_url)) {
@@ -1344,9 +1353,18 @@ void AuctionRunner::Auction::OnReportBidWinComplete(
   // fatal error notification.
   top_bid_->bid->bid_state->worklet_handle.reset();
 
-  if (!bidder_ad_beacon_map.empty())
+  if (!bidder_ad_beacon_map.empty()) {
+    for (const auto& element : bidder_ad_beacon_map) {
+      if (!IsUrlValid(element.second)) {
+        mojo::ReportBadMessage(base::StrCat(
+            {"Invalid bidder beacon URL for '", element.first, "'"}));
+        OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
+        return;
+      }
+    }
     ad_beacon_map_.metadata[ReportingDestination::kBuyer] =
         bidder_ad_beacon_map;
+  }
 
   if (bidder_report_url) {
     if (!IsUrlValid(*bidder_report_url)) {

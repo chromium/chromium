@@ -924,10 +924,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void InvokeReportWinCallback(
-      absl::optional<GURL> report_url = absl::nullopt) {
+      absl::optional<GURL> report_url = absl::nullopt,
+      base::flat_map<std::string, GURL> ad_beacon_map = {}) {
     DCHECK(report_win_callback_);
     std::move(report_win_callback_)
-        .Run(report_url, /*ad_beacon_map=*/{},
+        .Run(report_url, ad_beacon_map,
              /*errors=*/std::vector<std::string>());
   }
 
@@ -1085,11 +1086,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   // the provided score. WaitForReportResult() must have been invoked first.
   void InvokeReportResultCallback(
       absl::optional<GURL> report_url = absl::nullopt,
+      base::flat_map<std::string, GURL> ad_beacon_map = {},
       std::vector<std::string> errors = {}) {
     DCHECK(report_result_callback_);
     std::move(report_result_callback_)
         .Run(/*signals_for_winner=*/absl::nullopt, std::move(report_url),
-             /*ad_beacon_map=*/{}, errors);
+             ad_beacon_map, errors);
   }
 
   void Flush() { receiver_.FlushForTesting(); }
@@ -5555,7 +5557,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
       const char kScriptError[] = "Script error";
 
       component_seller_worklet->InvokeReportResultCallback(
-          /*report_url=*/absl::nullopt, {kScriptError});
+          /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{}, {kScriptError});
 
       // Winning bidder worklet should be reloaded and ReportWin() invoked.
       mock_auction_process_manager_->WaitForWinningBidderReload();
@@ -6107,7 +6109,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
   }
 }
 
-// Test cases where bad a report URL is received over Mojo from the seller
+// Test cases where a bad report URL is received over Mojo from the seller
 // worklet. Bad report URLs should be rejected in the Mojo process, so these are
 // treated as security errors.
 TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
@@ -6161,7 +6163,63 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
                   /*expected_sellers=*/1);
 }
 
-// Test cases where bad a report URL is received over Mojo from the winning
+// Test cases where a bad report URL is received over Mojo from the seller
+// worklet. Bad report URLs should be rejected in the Mojo process, so these are
+// treated as security errors.
+TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // Only Bidder1 bids, to keep things simple.
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
+                                             GURL("https://ad1.com/"));
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+  // Bidder1 never gets to report anything, since the seller providing a bad
+  // report URL aborts the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback(
+      /*report_url=*/absl::nullopt,
+      {{"click", GURL("http://not.https.test/")}});
+  auction_run_loop_->Run();
+
+  EXPECT_EQ("Invalid seller beacon URL for 'click'", TakeBadMessage());
+
+  // No bidder won.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_TRUE(result_.ad_component_urls.empty());
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
+}
+
+// Test cases where a bad report URL is received over Mojo from the winning
 // component seller worklet. Bad report URLs should be rejected in the Mojo
 // process, so these are treated as security errors.
 TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
@@ -6247,7 +6305,7 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
                   /*expected_sellers=*/2);
 }
 
-// Test cases where bad a report URL is received over Mojo from the bidder
+// Test cases where a bad report URL is received over Mojo from the bidder
 // worklet. Bad report URLs should be rejected in the Mojo process, so these are
 // treated as security errors.
 TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
@@ -6288,6 +6346,66 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   auction_run_loop_->Run();
 
   EXPECT_EQ("Invalid bidder report URL", TakeBadMessage());
+
+  // No bidder won.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_TRUE(result_.ad_component_urls.empty());
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/1);
+}
+
+// Test cases where a bad URL is present in the beacon mapping received over
+// Mojo from the bidder worklet. Bad report URLs should be rejected in the Mojo
+// process, so these are treated as security errors.
+TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // Only Bidder1 bids, to keep things simple.
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/5,
+                                             GURL("https://ad1.com/"));
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
+
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback(
+      GURL("https://valid.url.that.is.thrown.out.test/"));
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback(
+      /*report_url=*/absl::nullopt,
+      {{"click", GURL("http://not.https.test/")}});
+  auction_run_loop_->Run();
+
+  EXPECT_EQ("Invalid bidder beacon URL for 'click'", TakeBadMessage());
 
   // No bidder won.
   EXPECT_FALSE(result_.winning_group_id);
