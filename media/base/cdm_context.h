@@ -13,6 +13,10 @@
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "media/base/win/media_foundation_cdm_proxy.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
 class ChromeOsCdmContext;
@@ -27,10 +31,6 @@ class MediaCryptoContext;
 
 #if BUILDFLAG(IS_FUCHSIA)
 class FuchsiaCdmContext;
-#endif
-
-#if BUILDFLAG(IS_WIN)
-class MediaFoundationCdmProxy;
 #endif
 
 // An interface representing the context that a media player needs from a
@@ -101,17 +101,10 @@ class MEDIA_EXPORT CdmContext {
   // a sync call called in the render process to setup the media pipeline.
   virtual bool RequiresMediaFoundationRenderer();
 
-  using GetMediaFoundationCdmProxyCB =
-      base::OnceCallback<void(scoped_refptr<MediaFoundationCdmProxy>)>;
-  // This allows a CdmContext to expose an IMFTrustedInput instance for use in
-  // a Media Foundation rendering pipeline. This method is asynchronous because
-  // the underlying MF-based CDM might not have a native session created yet.
-  // When the return value is true, the callback might also not be invoked
-  // if the application has never caused the MF-based CDM to create its
-  // native session.
-  // NOTE: the callback should always be fired asynchronously.
-  virtual bool GetMediaFoundationCdmProxy(
-      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb);
+  // Returns a MediaFoundationCdmProxy to expose an IMFTrustedInput instance for
+  // use in a Media Foundation rendering pipeline. Returns nullptr if the CDM is
+  // in an invalid state or if MediaFoundationCdmProxy is not available.
+  virtual scoped_refptr<MediaFoundationCdmProxy> GetMediaFoundationCdmProxy();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
