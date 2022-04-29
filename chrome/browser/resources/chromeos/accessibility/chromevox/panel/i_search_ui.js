@@ -5,8 +5,8 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {ISearch} from '/chromevox/background/panel/i_search.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
+import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
@@ -19,10 +19,12 @@ export class ISearchUI {
     /** @private {ChromeVoxState} */
     this.background_ =
         chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-    this.iSearch_ = new ISearch(this.background_.currentRange.start);
+    const panelBackground =
+        chrome.extension.getBackgroundPage().panelBackground;
+    panelBackground.createNewISearch();
+    panelBackground.setISearchHandler(this);
     this.input_ = input;
     this.dir_ = Dir.FORWARD;
-    this.iSearch_.handler = this;
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onTextInput = this.onTextInput.bind(this);
@@ -67,21 +69,16 @@ export class ISearchUI {
         PanelInterface.instance.closeMenusAndRestoreFocus();
         return false;
       case 'Enter':
-        PanelInterface.instance.setPendingCallback(function() {
-          const node = this.iSearch_.cursor.node;
-          if (!node) {
-            return;
-          }
-          chrome.extension.getBackgroundPage()
-              .ChromeVoxState.instance['navigateToRange'](
-                  cursors.Range.fromNode(node));
-        }.bind(this));
+        PanelInterface.instance.setPendingCallback(
+            () => chrome.extension.getBackgroundPage()
+                      .panelBackground.setRangeToISearchNode());
         PanelInterface.instance.closeMenusAndRestoreFocus();
         return false;
       default:
         return false;
     }
-    this.iSearch_.search(this.input_.value, this.dir_, true);
+    chrome.extension.getBackgroundPage().panelBackground.incrementalSearch(
+        this.input_.value, this.dir_, true);
     evt.preventDefault();
     evt.stopPropagation();
     return false;
@@ -94,8 +91,8 @@ export class ISearchUI {
    */
   onTextInput(evt) {
     const searchStr = evt.target.value + evt.data;
-    this.iSearch_.clear();
-    this.iSearch_.search(searchStr, this.dir_);
+    chrome.extension.getBackgroundPage().panelBackground.incrementalSearch(
+        searchStr, this.dir_);
     return true;
   }
 
@@ -137,8 +134,7 @@ export class ISearchUI {
 
   /** Unregisters event handlers. */
   destroy() {
-    this.iSearch_.handler = null;
-    this.iSearch_ = null;
+    chrome.extension.getBackgroundPage().panelBackground.destroyISearch();
     const input = this.input_;
     this.input_ = null;
     input.removeEventListener('keydown', this.onKeyDown, true);

@@ -116,6 +116,7 @@ chromevox_es6_modules = [
   "background/page_load_sound_handler.js",
   "background/panel/i_search.js",
   "background/panel/i_search_handler.js",
+  "background/panel/panel_background.js",
   "background/pointer_handler.js",
   "background/prefs.js",
   "background/range_automation_handler.js",

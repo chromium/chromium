@@ -17,6 +17,7 @@ import {LiveRegions} from '/chromevox/background/live_regions.js';
 import {MathHandler} from '/chromevox/background/math_handler.js';
 import {MediaAutomationHandler} from '/chromevox/background/media_automation_handler.js';
 import {PageLoadSoundHandler} from '/chromevox/background/page_load_sound_handler.js';
+import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
 import {InstanceChecker} from '/common/instance_checker.js';
 
@@ -99,6 +100,7 @@ export class Background extends ChromeVoxState {
     FindHandler.init();
     DownloadHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
+    PanelBackground.init();
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
         (announceText) => {
