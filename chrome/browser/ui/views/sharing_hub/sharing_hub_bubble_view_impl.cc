@@ -41,8 +41,9 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(SharingHubBubbleController::CreateOrGetFromWebContents(
-          web_contents)) {
+      controller_(
+          SharingHubBubbleController::CreateOrGetFromWebContents(web_contents)
+              ->AsWeakPtr()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
