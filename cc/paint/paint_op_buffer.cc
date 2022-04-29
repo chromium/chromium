@@ -108,6 +108,18 @@ void DrawImageRect(SkCanvas* canvas,
   canvas->drawImageRect(image, src, dst, options, paint, constraint);
 }
 
+bool GrSlugAreEqual(sk_sp<GrSlug> left, sk_sp<GrSlug> right) {
+  if (!left && !right) {
+    return true;
+  }
+  if (left && right) {
+    auto left_data = left->serialize();
+    auto right_data = right->serialize();
+    return left_data->equals(right_data.get());
+  }
+  return false;
+}
+
 }  // namespace
 
 #define TYPES(M)      \
@@ -374,8 +386,7 @@ PlaybackParams::PlaybackParams(ImageProvider* image_provider,
     : image_provider(image_provider),
       original_ctm(original_ctm),
       custom_callback(custom_callback),
-      did_draw_op_callback(did_draw_op_callback),
-      raw_draw_analysis(false) {}
+      did_draw_op_callback(did_draw_op_callback) {}
 
 PlaybackParams::~PlaybackParams() {}
 
@@ -392,8 +403,7 @@ PaintOp::SerializeOptions::SerializeOptions(
     SkottieSerializationHistory* skottie_serialization_history,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
-    int max_texture_size,
-    bool raw_draw)
+    int max_texture_size)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -403,8 +413,7 @@ PaintOp::SerializeOptions::SerializeOptions(
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
-      max_texture_size(max_texture_size),
-      raw_draw(raw_draw) {}
+      max_texture_size(max_texture_size) {}
 
 PaintOp::SerializeOptions::SerializeOptions() = default;
 PaintOp::SerializeOptions::SerializeOptions(const SerializeOptions&) = default;
@@ -813,15 +822,11 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x);
   helper.Write(op->y);
-  unsigned int count = options.raw_draw ? (op->extra_slugs.size() + 1) : 0;
+  unsigned int count = op->extra_slugs.size() + 1;
   helper.Write(count);
-  if (options.raw_draw) {
-    helper.Write(op->slug);
-    for (const auto& slug : op->extra_slugs) {
-      helper.Write(slug);
-    }
-  } else {
-    helper.Write(op->blob);
+  helper.Write(op->slug);
+  for (const auto& slug : op->extra_slugs) {
+    helper.Write(slug);
   }
   return helper.size();
 }
@@ -1388,14 +1393,10 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   deserializer.Read(&deserializer->y);
   unsigned int count = 0;
   deserializer.Read(&count);
-  if (count) {
-    deserializer.Read(&deserializer->slug);
-    deserializer->extra_slugs.resize(count - 1);
-    for (auto& slug : deserializer->extra_slugs) {
-      deserializer.Read(&slug);
-    }
-  } else {
-    deserializer.Read(&deserializer->blob);
+  deserializer.Read(&deserializer->slug);
+  deserializer->extra_slugs.resize(count - 1);
+  for (auto& slug : deserializer->extra_slugs) {
+    deserializer.Read(&slug);
   }
   return deserializer.FinalizeOp();
 }
@@ -1849,7 +1850,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   // The PaintOpBuffer could be rasterized with different global matrix. It is
   // used for over scall on Android. So we cannot reuse slugs, they have to be
   // recreated.
-  if (params.raw_draw_analysis) {
+  if (params.is_analyzing) {
     const_cast<DrawTextBlobOp*>(op)->slug.reset();
     const_cast<DrawTextBlobOp*>(op)->extra_slugs.clear();
   }
@@ -1860,7 +1861,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
     if (op->blob) {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-      if (params.raw_draw_analysis) {
+      if (params.is_analyzing) {
         auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
         if (i == 0) {
           const_cast<DrawTextBlobOp*>(op)->slug = std::move(s);
@@ -1869,7 +1870,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
         }
       }
     } else if (i < 1 + op->extra_slugs.size()) {
-      DCHECK(!params.raw_draw_analysis);
+      DCHECK(!params.is_analyzing);
       const auto& draw_slug = i == 0 ? op->slug : op->extra_slugs[i - 1];
       if (draw_slug)
         draw_slug->draw(c);
@@ -2334,10 +2335,7 @@ bool DrawTextBlobOp::AreEqual(const PaintOp* base_left,
     return false;
   if (left->node_id != right->node_id)
     return false;
-
-  SkSerialProcs default_procs;
-  return left->blob->serialize(default_procs)
-      ->equals(right->blob->serialize(default_procs).get());
+  return GrSlugAreEqual(left->slug, right->slug);
 }
 
 bool NoopOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
@@ -3132,6 +3130,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
                             params.did_draw_op_callback);
   new_params.save_layer_alpha_should_preserve_lcd_text =
       save_layer_alpha_should_preserve_lcd_text;
+  new_params.is_analyzing = params.is_analyzing;
   for (PlaybackFoldingIterator iter(this, offsets); iter; ++iter) {
     const PaintOp* op = *iter;
 

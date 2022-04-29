@@ -1419,7 +1419,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
           raster_properties_->color_space, &skottie_serialization_history_,
           raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
-          capabilities().max_texture_size, /*raw_draw=*/true));
+          capabilities().max_texture_size));
   if (preserve_recording) {
     serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
                          preamble);

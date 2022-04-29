@@ -35,8 +35,6 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkSize.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
-#include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -423,43 +421,6 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
       return;
     }
   }
-  *size_memory = bytes_written;
-  memory_ += bytes_written;
-  remaining_bytes_ -= bytes_written;
-}
-
-void PaintOpWriter::Write(const sk_sp<SkTextBlob>& blob) {
-  DCHECK(blob);
-  if (!valid_)
-    return;
-
-  AlignMemory(4);
-  uint32_t blob_id = blob->uniqueID();
-  Write(blob_id);
-  uint64_t* size_memory = WriteSize(0u);
-  if (!valid_)
-    return;
-
-  if (options_.paint_cache->Get(PaintCacheDataType::kTextBlob, blob_id))
-    return;
-
-  auto encodeTypeface = [](SkTypeface* tf, void* ctx) -> sk_sp<SkData> {
-    return static_cast<SkStrikeServer*>(ctx)->serializeTypeface(tf);
-  };
-  DCHECK(options_.strike_server);
-  SkSerialProcs procs;
-  procs.fTypefaceProc = encodeTypeface;
-  procs.fTypefaceCtx = options_.strike_server;
-
-  size_t bytes_written = blob->serialize(
-      procs, memory_, base::bits::AlignDown(remaining_bytes_, kSkiaAlignment));
-  if (bytes_written == 0u) {
-    valid_ = false;
-    return;
-  }
-
-  options_.paint_cache->Put(PaintCacheDataType::kTextBlob, blob_id,
-                            bytes_written);
   *size_memory = bytes_written;
   memory_ += bytes_written;
   remaining_bytes_ -= bytes_written;

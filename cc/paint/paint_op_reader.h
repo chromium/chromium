@@ -67,7 +67,6 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(PaintFlags* flags);
   void Read(PaintImage* image);
   void Read(sk_sp<SkData>* data);
-  void Read(sk_sp<SkTextBlob>* blob);
   void Read(sk_sp<GrSlug>* slug);
   void Read(sk_sp<PaintFilter>* filter);
   void Read(sk_sp<PaintShader>* shader);
@@ -142,7 +141,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientRemainingBytes_Read_SkData = 9,
     kInsufficientRemainingBytes_Read_SkPath = 10,
     kInsufficientRemainingBytes_Read_SkRegion = 11,
-    kInsufficientRemainingBytes_Read_SkTextBlob = 12,
+    kInsufficientRemainingBytes_Read_GrSlug = 12,
     kInsufficientRemainingBytes_ReadData = 13,
     kInsufficientRemainingBytes_ReadFlattenable = 14,
     kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter = 15,
@@ -173,7 +172,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSkPathEffectUnflattenFailure = 40,
     kSkPathReadFromMemoryFailure = 41,
     kSkRegionReadFromMemoryFailure = 42,
-    kSkTextBlobDeserializeFailure = 43,
+    kGrSlugDeserializeFailure = 43,
     kUnexpectedPaintShaderType = 44,
     kUnexpectedSerializedImageType = 45,
     kZeroMailbox = 46,

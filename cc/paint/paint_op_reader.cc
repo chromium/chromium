@@ -36,7 +36,6 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
@@ -51,24 +50,6 @@ bool IsValidPaintShaderType(PaintShader::Type type) {
 bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
   return behavior == PaintShader::ScalingBehavior::kRasterAtScale ||
          behavior == PaintShader::ScalingBehavior::kFixedScale;
-}
-
-struct TypefaceCtx {
-  explicit TypefaceCtx(SkStrikeClient* client) : client(client) {}
-  bool invalid_typeface = false;
-  raw_ptr<SkStrikeClient> client = nullptr;
-};
-
-sk_sp<SkTypeface> DeserializeTypeface(const void* data,
-                                      size_t length,
-                                      void* ctx) {
-  auto* typeface_ctx = static_cast<TypefaceCtx*>(ctx);
-  auto tf = typeface_ctx->client->deserializeTypeface(data, length);
-  if (tf)
-    return tf;
-
-  typeface_ctx->invalid_typeface = true;
-  return nullptr;
 }
 
 }  // namespace
@@ -476,6 +457,7 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
   memory_ += size;
   remaining_bytes_ -= size;
 }
+
 void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
   AlignMemory(4);
 
@@ -486,65 +468,21 @@ void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
     *slug = nullptr;
     return;
   }
-  if (remaining_bytes_ < data_bytes)
-    SetInvalid(
-        DeserializationError::kInsufficientRemainingBytes_Read_SkTextBlob);
-  if (!valid_)
+
+  if (remaining_bytes_ < data_bytes) {
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_Read_GrSlug);
     return;
+  }
 
   *slug = GrSlug::Deserialize(const_cast<const char*>(memory_), data_bytes,
                               options_.strike_client);
   memory_ += data_bytes;
   remaining_bytes_ -= data_bytes;
-}
 
-void PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
-  AlignMemory(4);
-  uint32_t blob_id = 0u;
-  Read(&blob_id);
-  if (!valid_)
-    return;
-
-  size_t data_bytes = 0u;
-  ReadSize(&data_bytes);
-  if (remaining_bytes_ < data_bytes)
-    SetInvalid(
-        DeserializationError::kInsufficientRemainingBytes_Read_SkTextBlob);
-  if (!valid_)
-    return;
-
-  if (data_bytes == 0u) {
-    auto cached_blob = options_.paint_cache->GetTextBlob(blob_id);
-    if (!cached_blob) {
-      SetInvalid(DeserializationError::kMissingPaintCacheTextBlobEntry);
-      return;
-    }
-
-    *blob = std::move(cached_blob);
+  if (!*slug) {
+    SetInvalid(DeserializationError::kGrSlugDeserializeFailure);
     return;
   }
-
-  DCHECK(options_.strike_client);
-  SkDeserialProcs procs;
-  TypefaceCtx typeface_ctx(options_.strike_client);
-  procs.fTypefaceProc = &DeserializeTypeface;
-  procs.fTypefaceCtx = &typeface_ctx;
-  auto* scratch = CopyScratchSpace(data_bytes);
-  sk_sp<SkTextBlob> deserialized_blob =
-      SkTextBlob::Deserialize(scratch, data_bytes, procs);
-  if (!deserialized_blob) {
-    SetInvalid(DeserializationError::kSkTextBlobDeserializeFailure);
-    return;
-  }
-  if (typeface_ctx.invalid_typeface) {
-    SetInvalid(DeserializationError::kInvalidTypeface);
-    return;
-  }
-  options_.paint_cache->PutTextBlob(blob_id, deserialized_blob);
-
-  *blob = std::move(deserialized_blob);
-  memory_ += data_bytes;
-  remaining_bytes_ -= data_bytes;
 }
 
 void PaintOpReader::Read(sk_sp<PaintShader>* shader) {

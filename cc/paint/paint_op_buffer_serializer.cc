@@ -20,11 +20,11 @@
 namespace cc {
 namespace {
 
-PlaybackParams MakeParams(const SkCanvas* canvas, bool raw_draw) {
+PlaybackParams MakeParams(const SkCanvas* canvas) {
   // We don't use an ImageProvider here since the ops are played onto a no-draw
   // canvas for state tracking and don't need decoded images.
   PlaybackParams params(nullptr, canvas->getLocalToDevice());
-  params.raw_draw_analysis = raw_draw;
+  params.is_analyzing = true;
   return params;
 }
 
@@ -64,7 +64,7 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
   // only used for serializing the preamble and the initial save / final restore
   // SerializeBuffer will create its own PlaybackParams based on the
   // post-preamble canvas.
-  PlaybackParams params = MakeParams(canvas.get(), options_.raw_draw);
+  PlaybackParams params = MakeParams(canvas.get());
 
   int saveCount = canvas->getSaveCount();
   Save(canvas.get(), params);
@@ -83,7 +83,7 @@ void PaintOpBufferSerializer::SerializeAndDestroy(
   // only used for serializing the preamble and the initial save / final restore
   // SerializeBuffer will create its own PlaybackParams based on the
   // post-preamble canvas.
-  PlaybackParams params = MakeParams(canvas.get(), options_.raw_draw);
+  PlaybackParams params = MakeParams(canvas.get());
 
   int saveCount = canvas->getSaveCount();
   Save(canvas.get(), params);
@@ -102,7 +102,7 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
                                         const gfx::SizeF& post_scale) {
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
 
-  PlaybackParams params = MakeParams(canvas.get(), options_.raw_draw);
+  PlaybackParams params = MakeParams(canvas.get());
 
   // TODO(khushalsagar): remove this clip rect if it's not needed.
   if (!playback_rect.IsEmpty()) {
@@ -277,7 +277,7 @@ void PaintOpBufferSerializer::SerializeBuffer(
   DCHECK(buffer);
   // This updates the original_ctm to reflect the canvas transformation at
   // start of this call to SerializeBuffer.
-  PlaybackParams params = MakeParams(canvas, options_.raw_draw);
+  PlaybackParams params = MakeParams(canvas);
 
   for (PaintOpBuffer::PlaybackFoldingIterator iter(buffer, offsets); iter;
        ++iter) {
@@ -295,7 +295,7 @@ void PaintOpBufferSerializer::SerializeBufferAndDestroy(
   DCHECK(buffer);
   // This updates the original_ctm to reflect the canvas transformation at
   // start of this call to SerializeBuffer.
-  PlaybackParams params = MakeParams(canvas, options_.raw_draw);
+  PlaybackParams params = MakeParams(canvas);
   bool destroy_op_only = false;
 
   for (PaintOpBuffer::PlaybackFoldingIterator iter(buffer, offsets); iter;

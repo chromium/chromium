@@ -151,7 +151,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
-  bool raw_draw_analysis;
+  bool is_analyzing = false;
 };
 
 class CC_PAINT_EXPORT PaintOp {
@@ -184,8 +184,7 @@ class CC_PAINT_EXPORT PaintOp {
                      SkottieSerializationHistory* skottie_serialization_history,
                      bool can_use_lcd_text,
                      bool context_supports_distance_field_text,
-                     int max_texture_size,
-                     bool raw_draw = false);
+                     int max_texture_size);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -201,7 +200,6 @@ class CC_PAINT_EXPORT PaintOp {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
-    bool raw_draw = false;
 
     // TODO(crbug.com/1096123): Cleanup after study completion.
     //
