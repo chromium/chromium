@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -33,6 +34,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/test_utils.h"
 
 using base::ASCIIToUTF16;
@@ -79,6 +81,13 @@ void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
                     base::BindRepeating(&password_manager::BuildPasswordStore<
                                         content::BrowserContext,
                                         password_manager::TestPasswordStore>));
+
+                SyncServiceFactory::GetInstance()->SetTestingFactory(
+                    context,
+                    base::BindRepeating([](content::BrowserContext*)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<syncer::TestSyncService>();
+                    }));
               }));
 }
 
@@ -165,11 +174,6 @@ void ManagePasswordsTest::SetupMoreToFixState() {
 }
 
 void ManagePasswordsTest::SetupMovingPasswords() {
-  // The move bubble is shown only to signed in users. Make sure there is one.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
-  AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
   auto form_manager = std::make_unique<
       testing::NiceMock<password_manager::MockPasswordFormManagerForUI>>();
   password_manager::MockPasswordFormManagerForUI* form_manager_ptr =
@@ -187,6 +191,32 @@ void ManagePasswordsTest::SetupMovingPasswords() {
   // Clearing the mock here ensures that |GetBestMatches| won't be called with a
   // reference to |best_matches|.
   testing::Mock::VerifyAndClear(form_manager_ptr);
+}
+
+void ManagePasswordsTest::ConfigurePasswordSync(bool is_enabled) {
+  // Some tests (such as move password to account) require a signed in users.
+  // Make sure there is always one.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@email.com",
+      is_enabled ? signin::ConsentLevel::kSync : signin::ConsentLevel::kSignin);
+
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(browser()->profile()));
+  sync_service->SetAccountInfo(info);
+  sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+
+  if (is_enabled) {
+    sync_service->SetHasSyncConsent(true);
+    sync_service->SetDisableReasons({});
+    sync_service->SetActiveDataTypes({syncer::ModelTypeSet(syncer::PASSWORDS)});
+  } else {
+    sync_service->SetHasSyncConsent(false);
+    sync_service->SetDisableReasons(
+        syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+    sync_service->SetActiveDataTypes({});
+  }
 }
 
 std::unique_ptr<base::HistogramSamples> ManagePasswordsTest::GetSamples(

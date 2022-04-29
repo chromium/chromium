@@ -64,6 +64,10 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   // Put the controller, icon, and bubble into a moving-password state.
   void SetupMovingPasswords();
 
+  // Always configures a signed-in user, and when |is_enabled| is true, it also
+  // configures the Sync service to sync passwords.
+  void ConfigurePasswordSync(bool is_enabled);
+
   // Get samples for |histogram|.
   std::unique_ptr<base::HistogramSamples> GetSamples(const char* histogram);
 
