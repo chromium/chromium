@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -39,7 +40,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -110,15 +110,15 @@ public class FreUMADialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1295406")
     public void testTurningOnAllowCrashUploadWhenCrashUploadByNotAllowedDefault() {
         showFreUMADialog(/*allowCrashUpload=*/false);
 
         onView(withId(R.id.fre_uma_dialog_switch))
+                .inRoot(isDialog())
                 .check(matches(not(isChecked())))
                 .perform(click());
+        onView(withText(org.chromium.chrome.R.string.done)).inRoot(isDialog()).perform(click());
 
-        onView(withText(org.chromium.chrome.R.string.done)).perform(click());
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
         verify(mListenerMock).onAllowCrashUploadChecked(true);
     }
