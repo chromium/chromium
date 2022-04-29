@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+#include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
 namespace ash {
 
@@ -19,6 +20,19 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
   void GetRgbKeyboardCapabilities(
       GetRgbKeyboardCapabilitiesCallback callback) override;
+
+  void set_rgb_keyboard_capabilities(
+      absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities) {
+    capabilities_ = capabilities;
+  }
+
+  int get_rgb_keyboard_capabilities_call_count() const {
+    return get_rgb_keyboard_capabilities_call_count_;
+  }
+
+ private:
+  absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities_;
+  int get_rgb_keyboard_capabilities_call_count_ = 0;
 };
 
 }  // namespace ash

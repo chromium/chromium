@@ -11,6 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -19,20 +21,30 @@ class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kRgbKeyboard);
-
-    // ImeControllerImpl must be initializezd before RgbKeyboardManager.
+    // ImeControllerImpl must be initialized before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();
+    // This is instantiating a global instance that will be deallocated in
+    // the destructor of RgbKeyboardManagerTest.
+    RgbkbdClient::InitializeFake();
+    client_ = static_cast<FakeRgbkbdClient*>(RgbkbdClient::Get());
+    // Default capabilities to 'RgbKeyboardCapabilities::kIndividualKey'
+    client_->set_rgb_keyboard_capabilities(
+        rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
     manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   }
 
   RgbKeyboardManagerTest(const RgbKeyboardManagerTest&) = delete;
   RgbKeyboardManagerTest& operator=(const RgbKeyboardManagerTest&) = delete;
-  ~RgbKeyboardManagerTest() override = default;
+  ~RgbKeyboardManagerTest() override {
+    // Destroy the global instance.
+    RgbkbdClient::Shutdown();
+  };
 
  protected:
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
+  FakeRgbkbdClient* client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -40,7 +52,8 @@ class RgbKeyboardManagerTest : public testing::Test {
 
 TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {
   EXPECT_EQ(manager_->GetRgbKeyboardCapabilities(),
-            RgbKeyboardCapabilities::kNone);
+            rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+  EXPECT_EQ(1, client_->get_rgb_keyboard_capabilities_call_count());
 }
 
 TEST_F(RgbKeyboardManagerTest, SetStaticRgbValues) {

@@ -7,8 +7,6 @@ import("//build/config/ui.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("rgbkbd") {
-  output_name = "chromeos_dbus_rgbkbd"
-
   defines = [ "IS_RGBKBD_CLIENT_IMPL" ]
 
   deps = [

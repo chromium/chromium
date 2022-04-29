@@ -10,15 +10,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+#include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
 namespace ash {
-
-// TODO(jimmyxgong): Determine if this enum can be rolled from Dbus constants.
-enum class RgbKeyboardCapabilities {
-  kNone,
-  kFiveZone,
-  kIndividualKey,
-};
 
 // RgbKeyboardManager is singleton class that provides clients access to
 // RGB keyboard-related API's. Clients should interact with this class instead
@@ -32,7 +27,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   RgbKeyboardManager& operator=(const RgbKeyboardManager&) = delete;
   virtual ~RgbKeyboardManager();
 
-  RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
+  rgbkbd::RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
   void SetRainbowMode();
   void SetCapsLockState(bool is_caps_lock_set);
@@ -53,13 +48,24 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 
+  void FetchRgbKeyboardSupport();
+
+  void OnGetRgbKeyboardCapabilities(
+      absl::optional<rgbkbd::RgbKeyboardCapabilities> reply);
+
   // TODO(jimmyxgong): Remove the following members after DBus client is
   // available.
   std::vector<uint8_t> recently_sent_rgb_for_testing_;
   bool is_rainbow_mode_set_for_testing_ = false;
   bool is_caps_lock_set_ = false;
+  rgbkbd::RgbKeyboardCapabilities capabilities_ =
+      rgbkbd::RgbKeyboardCapabilities::kNone;
 
   ImeControllerImpl* ime_controller_raw_ptr_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<RgbKeyboardManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

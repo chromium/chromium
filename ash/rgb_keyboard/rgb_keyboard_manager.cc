@@ -10,6 +10,8 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/logging.h"
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 
 namespace ash {
 
@@ -31,6 +33,8 @@ RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
   ime_controller_raw_ptr_->AddObserver(this);
   // Upon login, CapsLock may already be enabled.
   SetCapsLockState(ime_controller_raw_ptr_->IsCapsLockEnabled());
+
+  FetchRgbKeyboardSupport();
 }
 
 RgbKeyboardManager::~RgbKeyboardManager() {
@@ -40,9 +44,16 @@ RgbKeyboardManager::~RgbKeyboardManager() {
   g_instance = nullptr;
 }
 
-// TODO(jimmyxgong): This is a stub implementation, replace with real impl.
-RgbKeyboardCapabilities RgbKeyboardManager::GetRgbKeyboardCapabilities() const {
-  return RgbKeyboardCapabilities::kNone;
+void RgbKeyboardManager::FetchRgbKeyboardSupport() {
+  DCHECK(RgbkbdClient::Get());
+  RgbkbdClient::Get()->GetRgbKeyboardCapabilities(
+      base::BindOnce(&RgbKeyboardManager::OnGetRgbKeyboardCapabilities,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+rgbkbd::RgbKeyboardCapabilities RgbKeyboardManager::GetRgbKeyboardCapabilities()
+    const {
+  return capabilities_;
 }
 
 // TODO(jimmyxgong): This is a stub implementation, replace with real impl.
@@ -78,6 +89,15 @@ void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
 // static
 RgbKeyboardManager* RgbKeyboardManager::Get() {
   return g_instance;
+}
+
+void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
+    absl::optional<rgbkbd::RgbKeyboardCapabilities> reply) {
+  if (!reply.has_value()) {
+    LOG(ERROR) << "rgbkbd: No response received for GetRgbKeyboardCapabilities";
+    return;
+  }
+  capabilities_ = reply.value();
 }
 
 }  // namespace ash

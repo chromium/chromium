@@ -4,12 +4,17 @@
 
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 
+#include <utility>
+
 namespace ash {
 
 FakeRgbkbdClient::FakeRgbkbdClient() = default;
 FakeRgbkbdClient::~FakeRgbkbdClient() = default;
 
 void FakeRgbkbdClient::GetRgbKeyboardCapabilities(
-    GetRgbKeyboardCapabilitiesCallback callback) {}
+    GetRgbKeyboardCapabilitiesCallback callback) {
+  get_rgb_keyboard_capabilities_call_count_++;
+  std::move(callback).Run(capabilities_);
+}
 
 }  // namespace ash
