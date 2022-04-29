@@ -7,15 +7,31 @@
     width: 100%;
   }
 
+  :host([equal-panes]) #leftPane {
+    width: 50%;
+  }
+
+  :host([equal-panes]) #rightPane {
+    width: 50%;
+  }
+
+  :host([left-pane-only]) #leftPane {
+    margin-inline-end: 0;
+    width: 100%;
+  }
+
+  :host([left-pane-only]) #rightPane {
+    width: 0;
+  }
+
   #leftPane {
     box-sizing: border-box;
-    padding-inline-end: 32px;
+    margin-inline-end: 80px;
     width: 40%;
   }
 
   #rightPane {
     box-sizing: border-box;
-    padding-inline-start: 48px;
     width: 60%;
   }
 
