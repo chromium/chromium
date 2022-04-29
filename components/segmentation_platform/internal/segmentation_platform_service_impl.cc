@@ -87,11 +87,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
                                                  all_segment_ids_.end());
 
   // Construct signal processors.
-  signal_handler_.Initialize(
-      storage_service_->signal_database(),
-      storage_service_->segment_info_database(),
-      storage_service_->ukm_data_manager(), init_params->history_service,
-      storage_service_->default_model_manager(), segment_id_vec);
+  signal_handler_.Initialize(storage_service_.get(),
+                             init_params->history_service, segment_id_vec);
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =

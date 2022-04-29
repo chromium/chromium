@@ -9,6 +9,9 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
@@ -16,6 +19,7 @@
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/history_service_observer.h"
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +28,7 @@
 using testing::_;
 using testing::Contains;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::SaveArg;
 
 namespace segmentation_platform {
@@ -43,6 +48,14 @@ class MockUserActionSignalHandler : public UserActionSignalHandler {
   MockUserActionSignalHandler() : UserActionSignalHandler(nullptr) {}
   MOCK_METHOD(void, SetRelevantUserActions, (std::set<uint64_t>));
   MOCK_METHOD(void, EnableMetrics, (bool));
+};
+
+class MockHistoryObserver : public HistoryServiceObserver {
+ public:
+  MOCK_METHOD1(
+      SetHistoryBasedSegments,
+      void(base::flat_set<optimization_guide::proto::OptimizationTarget>&&
+               history_based_segments));
 };
 
 // Noop version. For database calls, just passes the calls to the DB.
@@ -95,25 +108,32 @@ class SignalFilterProcessorTest : public testing::Test {
     std::vector<OptimizationTarget> segment_ids(
         {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
          OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE});
-    segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     user_action_signal_handler_ =
         std::make_unique<MockUserActionSignalHandler>();
     histogram_signal_handler_ = std::make_unique<MockHistogramSignalHandler>();
+    history_observer_ = std::make_unique<MockHistoryObserver>();
+
+    auto moved_segment_database =
+        std::make_unique<test::TestSegmentInfoDatabase>();
+    segment_database_ = moved_segment_database.get();
     ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
-    default_model_manager_ = std::make_unique<TestDefaultModelManager>();
+    storage_service_ = std::make_unique<StorageService>(
+        std::move(moved_segment_database), nullptr, nullptr,
+        std::make_unique<TestDefaultModelManager>(), ukm_data_manager_.get());
+
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
-        segment_database_.get(), user_action_signal_handler_.get(),
-        histogram_signal_handler_.get(), ukm_data_manager_.get(),
-        default_model_manager_.get(), segment_ids);
+        storage_service_.get(), user_action_signal_handler_.get(),
+        histogram_signal_handler_.get(), history_observer_.get(), segment_ids);
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockUserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<MockHistogramSignalHandler> histogram_signal_handler_;
-  std::unique_ptr<TestDefaultModelManager> default_model_manager_;
   std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
+  std::unique_ptr<MockHistoryObserver> history_observer_;
   std::unique_ptr<MockUkmDataManager> ukm_data_manager_;
+  std::unique_ptr<StorageService> storage_service_;
+  raw_ptr<test::TestSegmentInfoDatabase> segment_database_;
 };
 
 TEST_F(SignalFilterProcessorTest, UserActionRegistrationFlow) {
@@ -168,6 +188,8 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
 }
 
 TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
+  const OptimizationTarget kSegmentId =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   EXPECT_CALL(*histogram_signal_handler_,
               SetRelevantHistograms(
                   std::set<std::pair<std::string, proto::SignalType>>()))
@@ -181,6 +203,7 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
       .WillOnce(Invoke([](const UkmConfig& actual_config) {
         EXPECT_EQ(actual_config, UkmConfig());
       }));
+  EXPECT_CALL(*history_observer_, SetHistoryBasedSegments(IsEmpty()));
   signal_filter_processor_->OnSignalListUpdated();
 
   UkmConfig config1;
@@ -188,15 +211,11 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
                    {TestMetric(100), TestMetric(101), TestMetric(102)});
   config1.AddEvent(TestEvent(11),
                    {TestMetric(103), TestMetric(104), TestMetric(105)});
-  segment_database_->AddSqlFeature(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, "",
-      config1);
+  segment_database_->AddSqlFeature(kSegmentId, "", config1);
   UkmConfig config2;
   config2.AddEvent(TestEvent(10),
                    {TestMetric(100), TestMetric(104), TestMetric(105)});
-  segment_database_->AddSqlFeature(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, "",
-      config2);
+  segment_database_->AddSqlFeature(kSegmentId, "", config2);
 
   config2.Merge(config1);
   UkmConfig actual_config;
@@ -206,6 +225,9 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
       .WillOnce(Invoke([&config2](const UkmConfig& actual_config) {
         EXPECT_EQ(actual_config, config2);
       }));
+  EXPECT_CALL(*history_observer_,
+              SetHistoryBasedSegments(
+                  base::flat_set<OptimizationTarget>({kSegmentId})));
   signal_filter_processor_->OnSignalListUpdated();
 }
 

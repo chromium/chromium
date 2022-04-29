@@ -15,13 +15,10 @@ class HistoryService;
 
 namespace segmentation_platform {
 
-class DefaultModelManager;
 class HistogramSignalHandler;
 class HistoryServiceObserver;
-class SegmentInfoDatabase;
-class SignalDatabase;
 class SignalFilterProcessor;
-class UkmDataManager;
+class StorageService;
 class UserActionSignalHandler;
 
 // Finds and observes the right signals needed for the models, and stores to the
@@ -36,11 +33,8 @@ class SignalHandler {
   SignalHandler& operator=(SignalHandler&) = delete;
 
   void Initialize(
-      SignalDatabase* signal_database,
-      SegmentInfoDatabase* segment_info_database,
-      UkmDataManager* ukm_data_manager,
+      StorageService* storage_service,
       history::HistoryService* history_service,
-      DefaultModelManager* default_model_manager,
       const std::vector<optimization_guide::proto::OptimizationTarget>&
           segment_ids);
 
@@ -68,6 +62,7 @@ class SignalHandler {
   std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
   std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
+  // Can be null when UKM engine is disabled.
   std::unique_ptr<HistoryServiceObserver> history_service_observer_;
 };
 

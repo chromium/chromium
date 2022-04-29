@@ -5,22 +5,28 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_SERVICE_OBSERVER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_SERVICE_OBSERVER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
 class HistoryDelegateImpl;
+class StorageService;
 class UrlSignalHandler;
 
 // Observes history service for visits.
 class HistoryServiceObserver : public history::HistoryServiceObserver {
  public:
   HistoryServiceObserver(history::HistoryService* history_service,
-                         UrlSignalHandler* url_signal_handler);
+                         StorageService* storage_service);
+  // For tests.
+  HistoryServiceObserver();
   ~HistoryServiceObserver() override;
 
   HistoryServiceObserver(HistoryServiceObserver&) = delete;
@@ -35,8 +41,23 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
+  // Sets the list of segment IDs that are based on history data.
+  virtual void SetHistoryBasedSegments(
+      base::flat_set<optimization_guide::proto::OptimizationTarget>&&
+          history_based_segments);
+
  private:
-  raw_ptr<UrlSignalHandler> url_signal_handler_;
+  void DeleteResultsForHistoryBasedSegments();
+
+  const raw_ptr<StorageService> storage_service_;
+  const raw_ptr<UrlSignalHandler> url_signal_handler_;
+
+  // List of segment IDs that depend on history data, that will be cleared when
+  // history is deleted.
+  absl::optional<base::flat_set<optimization_guide::proto::OptimizationTarget>>
+      history_based_segments_;
+  bool pending_deletion_based_on_history_based_segments_ = false;
+
   std::unique_ptr<HistoryDelegateImpl> history_delegate_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

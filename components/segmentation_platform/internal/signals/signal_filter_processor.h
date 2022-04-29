@@ -15,20 +15,19 @@ using optimization_guide::proto::OptimizationTarget;
 namespace segmentation_platform {
 
 class HistogramSignalHandler;
-class SegmentInfoDatabase;
+class HistoryServiceObserver;
+class StorageService;
 class UserActionSignalHandler;
-class UkmDataManager;
 
 // Responsible for listening to the metadata updates for the models and
 // registers various signal handlers for the relevant UMA signals specified in
 // the metadata.
 class SignalFilterProcessor {
  public:
-  SignalFilterProcessor(SegmentInfoDatabase* segment_database,
+  SignalFilterProcessor(StorageService* storage_service,
                         UserActionSignalHandler* user_action_signal_handler,
                         HistogramSignalHandler* histogram_signal_handler,
-                        UkmDataManager* ukm_data_manager,
-                        DefaultModelManager* default_model_manager,
+                        HistoryServiceObserver* history_observer,
                         const std::vector<OptimizationTarget>& segment_ids);
   ~SignalFilterProcessor();
 
@@ -50,11 +49,10 @@ class SignalFilterProcessor {
  private:
   void FilterSignals(DefaultModelManager::SegmentInfoList segment_infos);
 
-  raw_ptr<SegmentInfoDatabase> segment_database_;
-  raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
-  raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  raw_ptr<UkmDataManager> ukm_data_manager_;
-  raw_ptr<DefaultModelManager> default_model_manager_;
+  const raw_ptr<StorageService> storage_service_;
+  const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
+  const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  const raw_ptr<HistoryServiceObserver> history_observer_;
   std::vector<OptimizationTarget> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};

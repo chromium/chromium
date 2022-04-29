@@ -9,10 +9,13 @@
 #include "base/logging.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/history_service_observer.h"
+#include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -29,13 +32,16 @@ class FilterExtractor {
       const proto::SegmentInfo& segment_info = info->segment_info;
       const auto& metadata = segment_info.model_metadata();
       AddUmaFeatures(metadata);
-      AddUkmFeatures(metadata);
+      if (AddUkmFeatures(metadata)) {
+        history_based_segments.insert(segment_info.segment_id());
+      }
     }
   }
 
   std::set<uint64_t> user_actions;
   std::set<std::pair<std::string, proto::SignalType>> histograms;
   UkmConfig ukm_config;
+  base::flat_set<OptimizationTarget> history_based_segments;
 
  private:
   void AddUmaFeatures(const proto::SegmentationModelMetadata& metadata) {
@@ -64,7 +70,8 @@ class FilterExtractor {
     }
   }
 
-  void AddUkmFeatures(const proto::SegmentationModelMetadata& metadata) {
+  bool AddUkmFeatures(const proto::SegmentationModelMetadata& metadata) {
+    bool has_ukm_features = false;
     for (const auto& feature : metadata.input_features()) {
       for (const auto& ukm_event :
            feature.sql_feature().signal_filter().ukm_events()) {
@@ -73,32 +80,32 @@ class FilterExtractor {
           metrics.insert(UkmMetricHash::FromUnsafeValue(metric));
         ukm_config.AddEvent(
             UkmEventHash::FromUnsafeValue(ukm_event.event_hash()), metrics);
+        has_ukm_features = true;
       }
     }
+    return has_ukm_features;
   }
 };
 
 }  // namespace
 
 SignalFilterProcessor::SignalFilterProcessor(
-    SegmentInfoDatabase* segment_database,
+    StorageService* storage_service,
     UserActionSignalHandler* user_action_signal_handler,
     HistogramSignalHandler* histogram_signal_handler,
-    UkmDataManager* ukm_data_manager,
-    DefaultModelManager* default_model_manager,
+    HistoryServiceObserver* history_observer,
     const std::vector<OptimizationTarget>& segment_ids)
-    : segment_database_(segment_database),
+    : storage_service_(storage_service),
       user_action_signal_handler_(user_action_signal_handler),
       histogram_signal_handler_(histogram_signal_handler),
-      ukm_data_manager_(ukm_data_manager),
-      default_model_manager_(default_model_manager),
+      history_observer_(history_observer),
       segment_ids_(segment_ids) {}
 
 SignalFilterProcessor::~SignalFilterProcessor() = default;
 
 void SignalFilterProcessor::OnSignalListUpdated() {
-  default_model_manager_->GetAllSegmentInfoFromBothModels(
-      segment_ids_, segment_database_,
+  storage_service_->default_model_manager()->GetAllSegmentInfoFromBothModels(
+      segment_ids_, storage_service_->segment_info_database(),
       base::BindOnce(&SignalFilterProcessor::FilterSignals,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -113,13 +120,19 @@ void SignalFilterProcessor::FilterSignals(
   user_action_signal_handler_->SetRelevantUserActions(
       std::move(extractor.user_actions));
   histogram_signal_handler_->SetRelevantHistograms(extractor.histograms);
-  ukm_data_manager_->StartObservingUkm(extractor.ukm_config);
+  storage_service_->ukm_data_manager()->StartObservingUkm(extractor.ukm_config);
+
+  if (history_observer_) {
+    history_observer_->SetHistoryBasedSegments(
+        std::move(extractor.history_based_segments));
+  }
 }
 
 void SignalFilterProcessor::EnableMetrics(bool enable_metrics) {
   user_action_signal_handler_->EnableMetrics(enable_metrics);
   histogram_signal_handler_->EnableMetrics(enable_metrics);
-  ukm_data_manager_->PauseOrResumeObservation(/*pause=*/!enable_metrics);
+  storage_service_->ukm_data_manager()->PauseOrResumeObservation(
+      /*pause=*/!enable_metrics);
 }
 
 }  // namespace segmentation_platform

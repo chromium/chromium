@@ -4,22 +4,30 @@
 
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 
+#include "base/metrics/user_metrics.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/signals/history_delegate_impl.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 
 namespace segmentation_platform {
 
 HistoryServiceObserver::HistoryServiceObserver(
     history::HistoryService* history_service,
-    UrlSignalHandler* url_signal_handler)
-    : url_signal_handler_(url_signal_handler),
+    StorageService* storage_service)
+    : storage_service_(storage_service),
+      url_signal_handler_(
+          storage_service->ukm_data_manager()->GetOrCreateUrlHandler()),
       history_delegate_(
           std::make_unique<HistoryDelegateImpl>(history_service,
-                                                url_signal_handler)) {
+                                                url_signal_handler_)) {
   history_observation_.Observe(history_service);
 }
+HistoryServiceObserver::HistoryServiceObserver()
+    : storage_service_(nullptr), url_signal_handler_(nullptr) {}
 
 HistoryServiceObserver::~HistoryServiceObserver() = default;
 
@@ -36,6 +44,15 @@ void HistoryServiceObserver::OnURLVisited(
 void HistoryServiceObserver::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  // If the history deletion was not from expiration or if the whole history
+  // database was removed, delete the segment results computed based on URL
+  // data.
+  if (deletion_info.IsAllHistory() || !deletion_info.is_from_expiration()) {
+    base::RecordAction(
+        base::UserMetricsAction("SegmentationPurgeTriggeredByHistoryDelete"));
+    DeleteResultsForHistoryBasedSegments();
+  }
+
   if (deletion_info.IsAllHistory()) {
     url_signal_handler_->OnUrlsRemovedFromHistory({}, /*all_urls=*/true);
     return;
@@ -45,6 +62,33 @@ void HistoryServiceObserver::OnURLsDeleted(
     urls.push_back(info.url());
   url_signal_handler_->OnUrlsRemovedFromHistory(urls, /*all_urls=*/false);
   history_delegate_->OnUrlRemoved(urls);
+}
+
+void HistoryServiceObserver::SetHistoryBasedSegments(
+    base::flat_set<optimization_guide::proto::OptimizationTarget>&&
+        history_based_segments) {
+  history_based_segments_ = std::move(history_based_segments);
+  // If a delete is pending, clear the results now.
+  if (pending_deletion_based_on_history_based_segments_) {
+    DeleteResultsForHistoryBasedSegments();
+
+    // Only clear results once on first init. This method can be called multiple
+    // times during the session when model updates.
+    pending_deletion_based_on_history_based_segments_ = false;
+  }
+}
+
+void HistoryServiceObserver::DeleteResultsForHistoryBasedSegments() {
+  if (!history_based_segments_) {
+    // Set the delete flag to clear the history based results when
+    // SetHistoryBasedSegments() is called.
+    pending_deletion_based_on_history_based_segments_ = true;
+    return;
+  }
+  for (const auto segment_id : *history_based_segments_) {
+    storage_service_->segment_info_database()->SaveSegmentResult(
+        segment_id, absl::nullopt, base::DoNothing());
+  }
 }
 
 }  // namespace segmentation_platform

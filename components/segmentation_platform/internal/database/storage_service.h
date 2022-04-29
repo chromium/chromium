@@ -69,6 +69,7 @@ class StorageService {
                      all_segment_ids,
                  ModelProviderFactory* model_provider_factory);
 
+  // For tests:
   StorageService(
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
           segment_db,
@@ -81,6 +82,13 @@ class StorageService {
       base::flat_set<optimization_guide::proto::OptimizationTarget>
           all_segment_ids,
       ModelProviderFactory* model_provider_factory);
+
+  // For tests:
+  StorageService(std::unique_ptr<SegmentInfoDatabase> segment_info_database,
+                 std::unique_ptr<SignalDatabase> signal_database,
+                 std::unique_ptr<SignalStorageConfig> signal_storage_config,
+                 std::unique_ptr<DefaultModelManager> default_model_manager,
+                 UkmDataManager* ukm_data_manager);
 
   ~StorageService();
 

@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
@@ -127,6 +128,28 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
     return *segmentation_platform_service_impl_;
   }
 
+  void SaveSegmentResult(OptimizationTarget segment_id,
+                         absl::optional<proto::PredictionResult> result) {
+    const std::string key = base::NumberToString(static_cast<int>(segment_id));
+    auto& segment_info = segment_db_entries_[key];
+    // Assume that test already created the segment info, this method only
+    // writes result.
+    ASSERT_EQ(segment_info.segment_id(), segment_id);
+    if (result) {
+      *segment_info.mutable_prediction_result() = std::move(*result);
+    } else {
+      segment_info.clear_prediction_result();
+    }
+  }
+
+  bool HasSegmentResult(OptimizationTarget segment_id) {
+    const std::string key = base::NumberToString(static_cast<int>(segment_id));
+    const auto it = segment_db_entries_.find(key);
+    if (it == segment_db_entries_.end())
+      return false;
+    return it->second.has_prediction_result();
+  }
+
   base::ScopedTempDir profile_dir;
   std::unique_ptr<history::HistoryService> history_service;
 };
@@ -195,8 +218,16 @@ MATCHER_P(HasEventHash, event_hash, "") {
 
 TEST_F(UkmDataManagerImplTest, HistoryNotification) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
+  const OptimizationTarget kSegmentId =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 
   TestServicesForPlatform& platform1 = CreatePlatform();
+  platform1.AddModel(PageLoadModelMetadata());
+  proto::PredictionResult prediction_result;
+  prediction_result.set_result(10);
+  prediction_result.set_timestamp_us(1000);
+  platform1.SaveSegmentResult(kSegmentId, prediction_result);
+  EXPECT_TRUE(platform1.HasSegmentResult(kSegmentId));
 
   // Add a page to history and check that the notification is sent to
   // UkmDatabase. All notifications should be sent.
@@ -215,6 +246,14 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
       .WillOnce(
           [&wait_for_remove1]() { wait_for_remove1.QuitClosure().Run(); });
   wait_for_remove1.Run();
+
+  // Run segment info callbacks that were posted to remove results.
+  platform1.segment_db().GetCallback(true);
+  platform1.segment_db().UpdateCallback(true);
+
+  // History based segment results should be removed.
+  EXPECT_FALSE(platform1.HasSegmentResult(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   RemovePlatform(&platform1);
 }
