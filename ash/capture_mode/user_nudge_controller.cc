@@ -88,10 +88,12 @@ UserNudgeController::UserNudgeController(views::View* view_to_be_highlighted)
 
   // Rings are created initially with 0 opacity. Calling SetVisible() will
   // animate them towards their correct state.
-  base_ring_.SetColor(SK_ColorWHITE);
+  const SkColor ring_color =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first;
+  base_ring_.SetColor(ring_color);
   base_ring_.SetFillsBoundsOpaquely(false);
   base_ring_.SetOpacity(0);
-  ripple_ring_.SetColor(SK_ColorWHITE);
+  ripple_ring_.SetColor(ring_color);
   ripple_ring_.SetFillsBoundsOpaquely(false);
   ripple_ring_.SetOpacity(0);
 

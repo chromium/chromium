@@ -479,6 +479,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kProgressBarColorForeground:
       return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kProgressBarColorBackground:
+    case ContentLayerType::kCaptureRegionColor:
       return SkColorSetA(
           use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, 0x4C);
     case ContentLayerType::kSwitchTrackColorActive:

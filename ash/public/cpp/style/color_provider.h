@@ -139,7 +139,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kBatterySystemInfoBackgroundColor,
 
     // Color for the battery icon in the system info view.
-    kBatterySystemInfoIconColor
+    kBatterySystemInfoIconColor,
+
+    // Color of the capture region in the capture session.
+    kCaptureRegionColor,
   };
 
   static ColorProvider* Get();

@@ -108,8 +108,11 @@ constexpr int kSizeLabelBorderRadius = 4;
 
 constexpr int kSizeLabelHorizontalPadding = 8;
 
-// Blue300 at 30%.
-constexpr SkColor kCaptureRegionColor = SkColorSetA(gfx::kGoogleBlue300, 77);
+// Dimming shield color in the capture session. It is set to be the same color
+// in both dark and light mode. We will investigate whether to do this kind of
+// change to ShieldLayer globally.
+// Grey900 at 40%.
+constexpr SkColor kDimmingShieldColor = SkColorSetA(gfx::kGoogleGrey900, 102);
 
 // Values for the shadows of the capture region components.
 constexpr int kRegionAffordanceCircleShadow2Blur = 6;
@@ -1014,11 +1017,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   }
 
   ui::PaintRecorder recorder(context, layer()->size());
-
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor dimming_color = color_provider->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield40);
-  recorder.canvas()->DrawColor(dimming_color);
+  recorder.canvas()->DrawColor(kDimmingShieldColor);
 
   PaintCaptureRegion(recorder.canvas());
 }
@@ -1628,7 +1627,9 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
   if (!adjustable_region) {
     canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
-    canvas->FillRect(region, kCaptureRegionColor);
+    canvas->FillRect(
+        region, AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kCaptureRegionColor));
     return;
   }
 
