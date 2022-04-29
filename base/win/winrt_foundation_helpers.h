@@ -8,6 +8,7 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/win/hstring_compare.h"
