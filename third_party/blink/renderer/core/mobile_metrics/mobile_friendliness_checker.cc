@@ -203,7 +203,8 @@ bool AddElement(const LayoutObject* object,
       return false;
 
     const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
-    if (!rect.IsEmpty()) {
+    if (!rect.IsEmpty() && !isnan(rect.x()) && !isnan(rect.y()) &&
+        !isnan(rect.right()) && !isnan(rect.bottom())) {
       // Expand each corner by the size of fingertips.
       const int top = ClampTo<int>(rect.y() - finger_radius);
       const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
