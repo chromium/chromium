@@ -16,6 +16,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
@@ -476,7 +477,7 @@ int32_t ComputeH264ReorderWindow(const H264SPS* sps) {
   int max_dpb_frames =
       max_dpb_mbs / ((sps->pic_width_in_mbs_minus1 + 1) *
                      (sps->pic_height_in_map_units_minus1 + 1));
-  max_dpb_frames = std::clamp(max_dpb_frames, 0, 16);
+  max_dpb_frames = base::clamp(max_dpb_frames, 0, 16);
 
   // See AVC spec section E.2.1 definition of |max_num_reorder_frames|.
   if (sps->vui_parameters_present_flag && sps->bitstream_restriction_flag) {
