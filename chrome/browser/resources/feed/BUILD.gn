@@ -3,17 +3,38 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android)
+
+preprocess_folder = "preprocessed"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "feed.ts",
+    "feed_side_panel_handler.ts",
+  ]
+}
+
+copy("copy_mojom") {
+  deps = [ "//chrome/browser/ui/webui/feed:mojo_bindings_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed/feed.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
 
 grit("resources") {
   # This argument is needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
 
   source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
+  deps = [
+    ":build_grd",
+    "//chrome/browser/ui/webui/feed:mojo_bindings_js",
+  ]
   outputs = [
     "grit/feed_resources.h",
     "grit/feed_resources_map.cc",
@@ -33,7 +54,17 @@ generate_grd("build_grd") {
 }
 
 ts_library("build_ts") {
-  root_dir = "."
+  root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
-  in_files = [ "feed.ts" ]
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+  in_files = [
+    "feed.ts",
+    "feed_side_panel_handler.ts",
+    "feed.mojom-webui.js",
+  ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess",
+  ]
 }

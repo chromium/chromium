@@ -73,9 +73,28 @@ FeedUI::FeedUI(content::WebUI* web_ui) : ui::MojoBubbleWebUIController(web_ui) {
   // Configurable javascript for prototyping purposes.
   source->AddString("scriptUrl", kWebUiScriptFetchUrl.Get());
 
+  source->AddResourcePath("feed.mojom-webui.js", IDR_FEED_FEED_MOJOM_WEBUI_JS);
+
   // Register the URLDataSource
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source);
+}
+
+FeedUI::~FeedUI() = default;
+
+void FeedUI::BindInterface(
+    mojo::PendingReceiver<feed::mojom::FeedSidePanelHandlerFactory> factory) {
+  if (side_panel_handler_factory_.is_bound())
+    side_panel_handler_factory_.reset();
+  side_panel_handler_factory_.Bind(std::move(factory));
+}
+
+void FeedUI::CreateFeedSidePanelHandler(
+    mojo::PendingReceiver<feed::mojom::FeedSidePanelHandler> handler,
+    mojo::PendingRemote<feed::mojom::FeedSidePanel> side_panel) {
+  DCHECK(side_panel.is_valid());
+  side_panel_handler_ =
+      std::make_unique<FeedHandler>(std::move(handler), std::move(side_panel));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FeedUI)

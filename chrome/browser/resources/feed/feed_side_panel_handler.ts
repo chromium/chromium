@@ -1,0 +1,12 @@
+
+import {FeedSidePanelCallbackRouter, FeedSidePanelHandlerFactory, FeedSidePanelHandlerRemote} from './feed.mojom-webui.js';
+
+// Used to make calls on the remote PageHandler interface. Singleton that client
+// modules can use directly.
+export const feedSidePanelHandler = new FeedSidePanelHandlerRemote();
+export const feedSidePanelCallbackRouter = new FeedSidePanelCallbackRouter();
+// Use PageHandlerFactory to create a connection to PageHandler.
+const factoryRemote = FeedSidePanelHandlerFactory.getRemote();
+factoryRemote.createFeedSidePanelHandler(
+    feedSidePanelHandler.$.bindNewPipeAndPassReceiver(),
+    feedSidePanelCallbackRouter.$.bindNewPipeAndPassRemote());

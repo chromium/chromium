@@ -5,20 +5,36 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEED_FEED_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_FEED_FEED_UI_H_
 
+#include <memory>
+
+#include "chrome/browser/ui/webui/feed/feed.mojom.h"
+#include "chrome/browser/ui/webui/feed/feed_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace feed {
 
-// TODO(jianli): implement untrusted version of MojoBubbleWebUIController.
-class FeedUI : public ui::MojoBubbleWebUIController {
+class FeedUI : public ui::MojoBubbleWebUIController,
+               public feed::mojom::FeedSidePanelHandlerFactory {
  public:
   explicit FeedUI(content::WebUI* web_ui);
 
   FeedUI(const FeedUI&) = delete;
   FeedUI& operator=(const FeedUI&) = delete;
-  ~FeedUI() override = default;
+  ~FeedUI() override;
+  void BindInterface(
+      mojo::PendingReceiver<feed::mojom::FeedSidePanelHandlerFactory> factory);
 
  private:
+  void CreateFeedSidePanelHandler(
+      mojo::PendingReceiver<feed::mojom::FeedSidePanelHandler> handler,
+      mojo::PendingRemote<feed::mojom::FeedSidePanel> side_panel) override;
+  mojo::Receiver<feed::mojom::FeedSidePanelHandlerFactory>
+      side_panel_handler_factory_{this};
+  std::unique_ptr<FeedHandler> side_panel_handler_;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
