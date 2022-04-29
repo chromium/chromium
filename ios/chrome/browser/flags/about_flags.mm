@@ -76,6 +76,7 @@
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -881,6 +882,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncInvalidationsWalletAndOfferDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidationsForWalletAndOffer)},
+    {"suggestions-scrolling-ipad",
+     flag_descriptions::kEnableSuggestionsScrollingOnIPadName,
+     flag_descriptions::kEnableSuggestionsScrollingOnIPadDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableSuggestionsScrollingOnIPad)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

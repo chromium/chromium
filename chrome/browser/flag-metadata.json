@@ -5556,6 +5556,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "suggestions-scrolling-ipad",
+    "owners": [ "christianxu", "bling-flags@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "suppress-toolbar-captures",
     "owners": [ "pnoland@google.com" ],
     "expiry_milestone": 104

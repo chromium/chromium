@@ -295,3 +295,12 @@ bundle_data("resources_unit_tests") {
   outputs = [ "{{bundle_resources_dir}}/" +
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
 }
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "omnibox_ui_features.cc",
+    "omnibox_ui_features.h",
+  ]
+  public_deps = [ "//base" ]
+}

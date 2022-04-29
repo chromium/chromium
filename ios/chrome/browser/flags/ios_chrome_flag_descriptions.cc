@@ -242,6 +242,12 @@ const char kEnableShortenedPasswordAutoFillInstructionDescription[] =
     "When enabled, the instructions to turn on Password AutoFill will have "
     "shorter steps and come with a button that links the user to iOS Settings.";
 
+const char kEnableSuggestionsScrollingOnIPadName[] =
+    "Enable omnibox suggestions scrolling on iPad";
+const char kEnableSuggestionsScrollingOnIPadDescription[] =
+    "Enable omnibox suggestions scrolling on iPad and disable suggestions "
+    "hiding on keyboard dismissal.";
+
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "

@@ -214,6 +214,11 @@ extern const char kEnableNewDownloadAPIDescription[];
 extern const char kEnableShortenedPasswordAutoFillInstructionName[];
 extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
 
+// Title and description for the flag to enable omnibox suggestions scrolling on
+// iPad.
+extern const char kEnableSuggestionsScrollingOnIPadName[];
+extern const char kEnableSuggestionsScrollingOnIPadDescription[];
+
 // Title and description for the flag to introduce following web channels on
 // Chrome iOS.
 extern const char kEnableWebChannelsName[];
