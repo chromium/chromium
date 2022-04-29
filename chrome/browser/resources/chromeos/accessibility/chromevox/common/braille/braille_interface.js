@@ -17,8 +17,6 @@ goog.require('NavBraille');
 
 /** @interface */
 BrailleInterface = class {
-  constructor() {}
-
   /**
    * Sends the given params to the Braille display for output.
    * @param {!NavBraille} params Parameters to send to the

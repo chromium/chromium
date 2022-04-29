@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 
 /**
  * Test fixture for braille_command_data.js.
@@ -13,7 +13,8 @@ ChromeVoxBrailleCommandDataTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'BrailleCommandData', '/chromevox/common/braille_command_data.js');
+        'BrailleCommandData',
+        '/chromevox/common/braille/braille_command_data.js');
   }
 };
 

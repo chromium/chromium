@@ -15,7 +15,7 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'BrailleTable', '/chromevox/background/braille/braille_table.js');
+        'BrailleTable', '/chromevox/common/braille/braille_table.js');
   }
 
   createLiblouis() {

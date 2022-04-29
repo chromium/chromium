@@ -6,7 +6,7 @@
  * @fileoverview ChromeVox braille commands.
  */
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
-import {BrailleCommandData} from '/chromevox/common/braille_command_data.js';
+import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
 import {EventGenerator} from '/common/event_generator.js';
 
 const RoleType = chrome.automation.RoleType;

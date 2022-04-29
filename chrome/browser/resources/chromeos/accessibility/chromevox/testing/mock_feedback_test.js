@@ -40,7 +40,7 @@ MockFeedbackUnitTest.prototype.extraLibraries = [
   '../background/braille/nav_braille.js',
   '../background/chromevox.js',
   '../common/abstract_earcons.js',
-  '../common/braille_interface.js',
+  '../common/braille/braille_interface.js',
   '../common/spannable.js',
   '../common/tts_interface.js',
   'mock_feedback.js',
