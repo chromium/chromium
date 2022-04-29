@@ -65,6 +65,8 @@ enum ProfileSignout : int {
   USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS = 16,
   // User clicked to signout from the settings page.
   USER_CLICKED_SIGNOUT_PROFILE_MENU = 17,
+  // User retriggered signin from the Android web sign-in bottomsheet.
+  SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN = 18,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

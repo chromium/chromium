@@ -261,6 +261,7 @@ bool IsSignoutDisallowedByPolicy(
         AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN:
     case signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT:
     case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
+    case signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN:
       return true;
     case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
     case signin_metrics::ProfileSignout::
@@ -429,7 +430,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
         IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
     signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
     signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU,
-
+    signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN,
 };
 static_assert(std::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
