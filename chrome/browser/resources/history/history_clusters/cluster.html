@@ -31,6 +31,7 @@
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
+    min-height: 40px;
     min-width: 0;
     padding-inline-start: var(--cluster-padding-horizontal);
     user-select: none;
@@ -38,6 +39,7 @@
 
   #label {
     color: var(--cr-secondary-text-color);
+    font-size: 1rem;  /* 16px */
     font-weight: 500;
   }
 
@@ -99,9 +101,8 @@
   <div id="label-row" hidden="[[!cluster.label]]">
     <div id="label"></div>
     <div class="timestamp-and-menu">
-      <div class="timestamp">[[cluster.visit.relativeDate]]</div>
-      <menu-container is-top-menu is-cluster-menu visit="[[cluster.visit]]">
-      </menu-container>
+      <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
+      <menu-container is-top-menu is-cluster-menu></menu-container>
     </div>
   </div>
   <template is="dom-repeat" items="[[visibleVisits_]]">
