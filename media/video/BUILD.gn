@@ -151,7 +151,10 @@ source_set("unit_tests") {
   if (enable_platform_hevc) {
     sources += [ "h265_nalu_parser_unittest.cc" ]
     if (enable_platform_hevc_decoding) {
-      sources += [ "h265_parser_unittest.cc" ]
+      sources += [
+        "h265_parser_unittest.cc",
+        "h265_poc_unittest.cc",
+      ]
     }
   }
 
