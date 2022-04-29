@@ -20,8 +20,8 @@ namespace {
 // This is an ECDSA prime256v1 named-curve key.
 constexpr int kKeyVersion = 11;
 constexpr char kKeyPubBytesBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgH30WRJf4g6I2C1FKsBQF3qHANLw"
-    "thwYsNt2PWTDQBS0ufSRE83piOPoJQcePzTkMfbghjnZerDjLJhBsDkfFg==";
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK2TXDqsaUceOfIJldE1T+RENfPZk848Se+"
+    "8ODrfNFfIW4CK5qwgoCdE2xbJPkgivLHNnm1nk6LQM7mP6FgsOGg==";
 
 absl::optional<std::string> GetKey(const std::string& key_bytes_base64) {
   std::string result;
