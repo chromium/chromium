@@ -22,7 +22,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TOSCoordinator ()
+@interface TOSCoordinator () <UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, strong) TOSViewController* viewController;
 
@@ -38,6 +38,7 @@
                   handler:handler];
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];
+  navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
@@ -91,6 +92,15 @@
   [webView setOpaque:NO];
 
   return webView;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  id<TOSCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
+  [handler hideTOSPage];
 }
 
 @end
