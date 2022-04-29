@@ -965,7 +965,7 @@
     {
       name: "EarlyHintsPreloadForNavigationOptIn",
       origin_trial_feature_name: "EarlyHintsPreloadForNavigation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EditContext",
