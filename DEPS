@@ -1694,7 +1694,7 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@c9e605688988f5de4499ee2fabeb93f00ee97dda',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@7b51f5f85aadd257f6692e093372e71647feb76b',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'ebe84bec02c041d28f902da0214bf442743fc907',
