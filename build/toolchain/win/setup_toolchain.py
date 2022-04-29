@@ -58,6 +58,15 @@ def _ExtractImportantEnvironment(output_of_set):
           # path. Add the path to this python here so that if it's not in the
           # path when ninja is run later, python will still be found.
           setting = os.path.dirname(sys.executable) + os.pathsep + setting
+        if envvar in ['include', 'lib']:
+          # Make sure that the include and lib paths point to directories that
+          # exist. This ensures a (relatively) clear error message if the
+          # required SDK is not installed.
+          for part in setting.split(';'):
+            if not os.path.exists(part):
+              raise Exception(
+                  'Path "%s" from environment variable "%s" does not exist. '
+                  'Make sure the necessary SDK is installed.' % (part, envvar))
         env[var.upper()] = setting
         break
   if sys.platform in ('win32', 'cygwin'):
