@@ -48,7 +48,6 @@ class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
 class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceWiFiAllowedHandler;
-struct EnrollmentConfig;
 class MinimumVersionPolicyHandler;
 class MinimumVersionPolicyHandlerDelegateImpl;
 class ProxyPolicyProvider;
@@ -144,11 +143,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   // Delegates to `ash::InstallAttributes::Get()`.
   ash::InstallAttributes* GetInstallAttributes() const;
-
-  // Get the enrollment configuration for the device as decided by various
-  // factors. See DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
-  // for details.
-  EnrollmentConfig GetPrescribedEnrollmentConfig() const;
 
   // May be nullptr, e.g. for devices managed by Active Directory.
   DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {

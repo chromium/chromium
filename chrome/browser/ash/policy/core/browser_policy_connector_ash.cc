@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/external_data/device_policy_cloud_external_data_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_print_servers_external_data_handler.h"
@@ -492,14 +491,6 @@ ash::InstallAttributes* BrowserPolicyConnectorAsh::GetInstallAttributes()
   return ash::InstallAttributes::Get();
 }
 
-EnrollmentConfig BrowserPolicyConnectorAsh::GetPrescribedEnrollmentConfig()
-    const {
-  if (device_cloud_policy_initializer_)
-    return device_cloud_policy_initializer_->GetPrescribedEnrollmentConfig();
-
-  return EnrollmentConfig();
-}
-
 MarketSegment BrowserPolicyConnectorAsh::GetEnterpriseMarketSegment() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_market_segment())
@@ -592,8 +583,8 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
 void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
-          local_state_, device_management_service(),
-          ash::InstallAttributes::Get(), state_keys_broker_.get(),
+          device_management_service(), ash::InstallAttributes::Get(),
+          state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
           device_cloud_policy_manager_,
           chromeos::system::StatisticsProvider::GetInstance());

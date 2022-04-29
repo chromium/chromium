@@ -49,9 +49,8 @@ PackagedLicenseScreen::~PackagedLicenseScreen() {
 }
 
 bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
-  policy::EnrollmentConfig config = g_browser_process->platform_part()
-                                        ->browser_policy_connector_ash()
-                                        ->GetPrescribedEnrollmentConfig();
+  policy::EnrollmentConfig config =
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   // License screen should be shown when device packed with license and other
   // enrollment flows are not triggered by the device state.
   if (config.is_license_packaged_with_device && !config.should_enroll()) {

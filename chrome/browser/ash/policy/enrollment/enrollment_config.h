@@ -9,6 +9,18 @@
 
 #include "base/files/file_path.h"
 
+class PrefService;
+
+namespace ash {
+class InstallAttributes;
+}
+
+namespace chromeos {
+namespace system {
+class StatisticsProvider;
+}
+}  // namespace chromeos
+
 namespace policy {
 
 // An enumeration of different enrollment licenses.
@@ -84,6 +96,21 @@ struct EnrollmentConfig {
     // that requires the least user interaction).
     AUTH_MECHANISM_BEST_AVAILABLE,
   };
+
+  // Get the enrollment configuration that has been set up via signals such as
+  // device requisition, OEM manifest, pre-existing installation-time attributes
+  // or server-backed state retrieval. The configuration is stored in |config|,
+  // |config.mode| will be MODE_NONE if there is no prescribed configuration.
+  // |config.management_domain| will contain the domain the device is supposed
+  // to be enrolled to as decided by factors such as forced re-enrollment,
+  // enrollment recovery, or already-present install attributes. Note that
+  // |config.management_domain| may be non-empty even if |config.mode| is
+  // MODE_NONE.
+  static EnrollmentConfig GetPrescribedEnrollmentConfig();
+  static EnrollmentConfig GetPrescribedEnrollmentConfig(
+      PrefService* local_state,
+      ash::InstallAttributes* install_attributes,
+      chromeos::system::StatisticsProvider* statistics_provider);
 
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);

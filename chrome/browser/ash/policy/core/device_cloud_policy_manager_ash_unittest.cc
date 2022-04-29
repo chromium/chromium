@@ -286,7 +286,7 @@ class DeviceCloudPolicyManagerAshTest
     manager_->Initialize(&local_state_);
     EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
-        &local_state_, &device_management_service_, install_attributes_.get(),
+        &device_management_service_, install_attributes_.get(),
         &state_keys_broker_, store_, manager_.get(),
         &fake_statistics_provider_);
     initializer_->SetSystemURLLoaderFactoryForTesting(

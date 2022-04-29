@@ -1195,9 +1195,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
 
   // Check whether we need to execute OOBE flow.
   const policy::EnrollmentConfig enrollment_config =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetPrescribedEnrollmentConfig();
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   if (enrollment_config.should_enroll() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().

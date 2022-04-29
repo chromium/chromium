@@ -34,17 +34,9 @@ struct ZeroTouchParam {
         auth_mechanism_after_oobe(auth_after_oobe) {}
 };
 
-class DeviceCloudPolicyInitializerTest
-    : public testing::TestWithParam<ZeroTouchParam> {
+class EnrollmentConfigTest : public testing::TestWithParam<ZeroTouchParam> {
  protected:
-  DeviceCloudPolicyInitializerTest()
-      : device_cloud_policy_initializer_(&local_state_,
-                                         nullptr,
-                                         &install_attributes_,
-                                         nullptr,
-                                         nullptr,
-                                         nullptr,
-                                         &statistics_provider_) {
+  EnrollmentConfigTest() {
     RegisterLocalState(local_state_.registry());
     statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake-serial");
@@ -57,10 +49,9 @@ class DeviceCloudPolicyInitializerTest
   chromeos::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
-  DeviceCloudPolicyInitializer device_cloud_policy_initializer_;
 };
 
-void DeviceCloudPolicyInitializerTest::SetupZeroTouchFlag() {
+void EnrollmentConfigTest::SetupZeroTouchFlag() {
   const ZeroTouchParam& param = GetParam();
   if (param.enable_zero_touch_flag != nullptr) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -69,13 +60,12 @@ void DeviceCloudPolicyInitializerTest::SetupZeroTouchFlag() {
   }
 }
 
-TEST_P(DeviceCloudPolicyInitializerTest,
-       GetPrescribedEnrollmentConfigDuringOOBE) {
+TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   SetupZeroTouchFlag();
 
   // Default configuration is empty.
-  EnrollmentConfig config =
-      device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -85,7 +75,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   // OEM manifest: advertised enrollment.
   statistics_provider_.SetMachineFlag(
       chromeos::system::kOemIsEnterpriseManagedKey, true);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -96,7 +87,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   statistics_provider_.ClearMachineFlag(
       chromeos::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -107,7 +99,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
                           kDeviceStateRestoreModeReEnrollmentRequested);
   state_dict.SetStringKey(kDeviceStateManagementDomain, "example.com");
   local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -117,7 +110,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
       chromeos::system::kOemIsEnterpriseManagedKey, true);
   statistics_provider_.SetMachineFlag(
       chromeos::system::kOemCanExitEnterpriseEnrollmentKey, false);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -128,7 +122,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   statistics_provider_.ClearMachineFlag(
       chromeos::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentCanExit, false);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
@@ -137,21 +132,21 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   state_dict.SetStringKey(kDeviceStateMode,
                           kDeviceStateRestoreModeReEnrollmentEnforced);
   local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 }
 
-TEST_P(DeviceCloudPolicyInitializerTest,
-       GetPrescribedEnrollmentConfigAfterOOBE) {
+TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   SetupZeroTouchFlag();
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
   local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
-  EnrollmentConfig config =
-      device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -160,7 +155,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
   statistics_provider_.SetMachineFlag(
       chromeos::system::kOemIsEnterpriseManagedKey, true);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_TRUE(config.management_domain.empty());
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -168,14 +164,16 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   // If the device is enterprise-managed, the management domain gets pulled from
   // install attributes.
   install_attributes_.SetCloudManaged("example.com", "fake-id");
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
 
   // If enrollment recovery is on, this is signaled in |config.mode|.
   local_state_.SetBoolean(prefs::kEnrollmentRecoveryRequired, true);
-  config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
+  config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, &install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
   EXPECT_EQ("example.com", config.management_domain);
   EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
@@ -183,7 +181,7 @@ TEST_P(DeviceCloudPolicyInitializerTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ZeroTouchFlag,
-    DeviceCloudPolicyInitializerTest,
+    EnrollmentConfigTest,
     ::testing::Values(
         ZeroTouchParam(nullptr,  // No flag set.
                        EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,

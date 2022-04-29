@@ -19,8 +19,6 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class PrefService;
-
 namespace ash {
 class InstallAttributes;
 }
@@ -34,7 +32,6 @@ class StatisticsProvider;
 namespace policy {
 class DeviceCloudPolicyStoreAsh;
 class DeviceManagementService;
-struct EnrollmentConfig;
 
 // The |DeviceCloudPolicyInitializer| is a helper class which calls
 // `DeviceCloudPolicyManager::StartConnection` with a new `CloudPolicyClient`
@@ -51,7 +48,6 @@ class DeviceCloudPolicyInitializer
       public DeviceCloudPolicyManagerAsh::Observer {
  public:
   DeviceCloudPolicyInitializer(
-      PrefService* local_state,
       DeviceManagementService* enterprise_service,
       ash::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
@@ -67,18 +63,6 @@ class DeviceCloudPolicyInitializer
 
   virtual void Init();
   virtual void Shutdown();
-
-  // Get the enrollment configuration that has been set up via signals such as
-  // device requisition, OEM manifest, pre-existing installation-time attributes
-  // or server-backed state retrieval. The configuration is stored in |config|,
-  // |config.mode| will be MODE_NONE if there is no prescribed configuration.
-  // |config.management_domain| will contain the domain the device is supposed
-  // to be enrolled to as decided by factors such as forced re-enrollment,
-  // enrollment recovery, or already-present install attributes. Note that
-  // |config.management_domain| may be non-empty even if |config.mode| is
-  // MODE_NONE.
-  // TODO(crbug.com/1236174): Remove EnrollmentConfig from initializer.
-  EnrollmentConfig GetPrescribedEnrollmentConfig() const;
 
   // CloudPolicyStore::Observer:
   void OnStoreLoaded(CloudPolicyStore* store) override;
@@ -100,11 +84,8 @@ class DeviceCloudPolicyInitializer
   void TryToStartConnection();
   void StartConnection(std::unique_ptr<CloudPolicyClient> client);
 
-  // Get a machine flag from |statistics_provider_|, returning the given
-  // |default_value| if not present.
   bool GetMachineFlag(const std::string& key, bool default_value) const;
 
-  PrefService* local_state_;
   DeviceManagementService* enterprise_service_;
   ash::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;

@@ -407,9 +407,8 @@ void WizardController::Init(OobeScreenId first_screen) {
   DCHECK(!is_initialized());
   is_initialized_ = true;
 
-  prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->GetPrescribedEnrollmentConfig();
+  prescribed_enrollment_config_ =
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
 
   VLOG(1) << "Starting OOBE wizard with screen: " << first_screen;
 
@@ -857,9 +856,8 @@ void WizardController::ShowEulaScreen() {
 
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
-  prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->GetPrescribedEnrollmentConfig();
+  prescribed_enrollment_config_ =
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
 }
 
@@ -1855,9 +1853,8 @@ void WizardController::OnOobeFlowFinished() {
 }
 
 void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
-  prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->GetPrescribedEnrollmentConfig();
+  prescribed_enrollment_config_ =
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
 
   bool configuration_forced_enrollment = false;
   auto* start_enrollment_value = wizard_context_->configuration.FindKeyOfType(
