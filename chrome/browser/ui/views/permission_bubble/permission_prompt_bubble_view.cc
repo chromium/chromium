@@ -246,6 +246,10 @@ void PermissionPromptBubbleView::SetPromptStyle(
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
                        base::Unretained(this)));
+  } else if (prompt_style_ == PermissionPromptStyle::kChip ||
+             prompt_style_ == PermissionPromptStyle::kQuietChip) {
+    // Override the `CloseCallback` if it was set previously.
+    DialogDelegate::SetCloseCallback(base::DoNothing());
   }
 }
 
