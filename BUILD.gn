@@ -1276,7 +1276,7 @@ if (!is_ios) {
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
       "//third_party/blink/perf_tests/",
-      "//third_party/blink/web_tests/SmokeTests",
+      "//third_party/blink/web_tests/SmokeTests/Default.txt",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
       # List all test expectations here
@@ -1390,10 +1390,13 @@ if (!is_ios) {
         data += [ "//third_party/blink/web_tests/platform/linux/" ]
       }
       if (is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/fuchsia/" ]
+        data += [
+          "//third_party/blink/web_tests/platform/fuchsia/",
+        ]
       }
     } else if (is_mac) {
       data += [
+        "//third_party/blink/web_tests/SmokeTests/Mac.txt",
         "//third_party/blink/web_tests/platform/mac/",
         "//third_party/blink/web_tests/platform/mac-mac10.12/",
         "//third_party/blink/web_tests/platform/mac-mac10.13/",

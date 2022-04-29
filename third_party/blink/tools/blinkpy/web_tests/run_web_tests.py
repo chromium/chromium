@@ -737,8 +737,7 @@ def _set_up_derived_options(port, options, args):
 
         if not options.test_list:
             options.test_list = []
-        options.test_list.append(
-            port.host.filesystem.join(port.web_tests_dir(), 'SmokeTests'))
+        options.test_list.append(port.path_to_smoke_tests_file())
         if not options.skipped:
             options.skipped = 'always'
 

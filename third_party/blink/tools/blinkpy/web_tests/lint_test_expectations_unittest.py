@@ -481,11 +481,14 @@ class MainTest(unittest.TestCase):
         self.orig_lint_fn = lint_test_expectations.lint
         self.orig_check_fn = lint_test_expectations.check_virtual_test_suites
         lint_test_expectations.check_virtual_test_suites = lambda host, options: []
+        self.orig_check_smoke = lint_test_expectations.check_smoke_tests
+        lint_test_expectations.check_smoke_tests = lambda host, options: []
         self.stderr = StringIO()
 
     def tearDown(self):
         lint_test_expectations.lint = self.orig_lint_fn
         lint_test_expectations.check_virtual_test_suites = self.orig_check_fn
+        lint_test_expectations.check_smoke_tests = self.orig_check_smoke
 
     def test_success(self):
         lint_test_expectations.lint = lambda host, options: ([], [])

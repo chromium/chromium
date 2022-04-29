@@ -361,30 +361,37 @@ def check_virtual_test_suites(host, options):
 
 def check_smoke_tests(host, options):
     port = host.port_factory.get(options=options)
-    smoke_tests_file = host.filesystem.join(port.web_tests_dir(), 'SmokeTests')
+    smoke_tests_files = [
+        host.filesystem.join(port.web_tests_dir(), 'SmokeTests',
+                             'Default.txt'),
+        host.filesystem.join(port.web_tests_dir(), 'SmokeTests', 'Mac.txt')
+    ]
     failures = []
-    if not host.filesystem.exists(smoke_tests_file):
-        return failures
-
-    smoke_tests = host.filesystem.read_text_file(smoke_tests_file)
-    line_number = 0
-    parsed_lines = {}
-    for line in smoke_tests.split('\n'):
-        line_number += 1
-        line = line.split('#')[0].strip()
-        if not line:
-            continue
-        failure = ''
-        if line in parsed_lines:
-            failure = '%s:%d duplicate with line %d: %s' % \
-                (smoke_tests_file, line_number, parsed_lines[line], line)
-        elif not port.test_exists(line):
-            failure = '%s:%d Test does not exist: %s' % (smoke_tests_file,
-                                                         line_number, line)
-        if failure:
-            _log.error(failure)
+    for smoke_tests_file in smoke_tests_files:
+        if not host.filesystem.exists(smoke_tests_file):
+            failure = 'Smoke test file does not exist: %s' % smoke_tests_file
             failures.append(failure)
-        parsed_lines[line] = line_number
+            continue
+
+        smoke_tests = host.filesystem.read_text_file(smoke_tests_file)
+        line_number = 0
+        parsed_lines = {}
+        for line in smoke_tests.split('\n'):
+            line_number += 1
+            line = line.split('#')[0].strip()
+            if not line:
+                continue
+            failure = ''
+            if line in parsed_lines:
+                failure = '%s:%d duplicate with line %d: %s' % \
+                    (smoke_tests_file, line_number, parsed_lines[line], line)
+            elif not port.test_exists(line):
+                failure = '%s:%d Test does not exist: %s' % (smoke_tests_file,
+                                                             line_number, line)
+            if failure:
+                _log.error(failure)
+                failures.append(failure)
+            parsed_lines[line] = line_number
     if failures:
         _log.error('')
     return failures

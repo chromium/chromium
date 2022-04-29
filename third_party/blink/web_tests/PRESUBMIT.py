@@ -196,7 +196,8 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
                     break
                 if len(line.split('/')) > 1:
                     dirs_from_build_gn.append(line.split('/')[-2])
-        dirs_from_build_gn.extend(['platform', 'FlagExpectations', 'flag-specific'])
+        dirs_from_build_gn.extend(
+            ['platform', 'FlagExpectations', 'flag-specific', 'SmokeTests'])
 
         new_dirs = [x for x in possible_new_dirs if x not in dirs_from_build_gn]
         if new_dirs:

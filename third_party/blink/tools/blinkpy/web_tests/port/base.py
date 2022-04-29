@@ -999,7 +999,7 @@ class Port(object):
         # When collecting test cases, skip these directories.
         skipped_directories = set([
             'platform', 'resources', 'support', 'script-tests', 'reference',
-            'reftest'
+            'reftest', 'SmokeTests'
         ])
         # Also ignore all WPT directories. Note that this is only an
         # optimization; is_non_wpt_test_file should skip WPT regardless.
@@ -1291,7 +1291,10 @@ class Port(object):
         return test not in smoke_tests
 
     def path_to_smoke_tests_file(self):
-        return self._filesystem.join(self.web_tests_dir(), 'SmokeTests')
+        # Historically we only have one smoke tests list. That one now becomes
+        # the default
+        return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
+                                     'Default.txt')
 
     def skipped_in_never_fix_tests(self, test):
         """Checks if the test is marked as Skip in NeverFixTests for this port.

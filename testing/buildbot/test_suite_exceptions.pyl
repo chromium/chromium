@@ -481,20 +481,17 @@
       },
       'mac10.12-blink-rel-dummy': {
         'swarming': {
-          'shards': 20,
+          'shards': 2,
         },
       },
       'mac10.13-blink-rel-dummy': {
         'swarming': {
-          'shards': 20,
+          'shards': 2,
         },
       },
       'mac10.14-blink-rel-dummy': {
         'swarming': {
-          # Increase timeout and reduce shards.
-          # See https://crbug.com/1203565.
-          'shards': 12,
-          'hard_timeout': 1800,
+          'shards': 2,
         },
       },
       'mac10.15-blink-rel-dummy': {
