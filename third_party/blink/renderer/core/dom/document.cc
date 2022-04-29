@@ -6881,9 +6881,6 @@ void Document::ColorSchemeMetaChanged() {
 }
 
 void Document::SupportsReducedMotionMetaChanged() {
-  if (!IsInOutermostMainFrame())
-    return;
-
   auto* root_element = documentElement();
   if (!root_element)
     return;

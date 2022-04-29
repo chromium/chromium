@@ -81,10 +81,14 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
     const PropertyHandle& property) const {
   using ApplicableTypesMap =
       HashMap<PropertyHandle, std::unique_ptr<const InterpolationTypes>>;
-  // TODO(iclelland): Combine these two hashmaps into a single map on
-  // std::pair<bool,property>
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, all_applicable_types_map, ());
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, composited_applicable_types_map, ());
+
+  // Reduce motion currently allows no interpolation. When some properties are
+  // allowed to interpolate we may need to support the combination of
+  // reduce_motion && !allow_all_animations_ separately.
+  DEFINE_STATIC_LOCAL(ApplicableTypesMap, reduce_motion_applicable_types_map,
+                      ());
 
   // Custom property interpolation types may change over time so don't trust the
   // applicable_types_map without checking the registry. Also since the static
@@ -94,10 +98,12 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
     if (const auto* registration = GetRegistration(registry_, property))
       return registration->GetInterpolationTypes();
   }
+  bool reduce_motion = document_.ShouldForceReduceMotion();
 
   ApplicableTypesMap& applicable_types_map =
-      allow_all_animations_ ? all_applicable_types_map
-                            : composited_applicable_types_map;
+      reduce_motion ? reduce_motion_applicable_types_map
+                    : (allow_all_animations_ ? all_applicable_types_map
+                                             : composited_applicable_types_map);
 
   auto entry = applicable_types_map.find(property);
   if (entry != applicable_types_map.end())
@@ -113,8 +119,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   // equivalents when interpolating.
   PropertyHandle used_property =
       property.IsCSSProperty() ? property : PropertyHandle(css_property);
-
-  bool reduce_motion = document_.ShouldForceReduceMotion();
 
   // TODO(crbug.com/838263): Support site-defined list of acceptable properties
   // through permissions policy declarations.
