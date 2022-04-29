@@ -110,12 +110,15 @@ HelpAppResult::HelpAppResult(Profile* profile,
                              const std::string& id,
                              DisplayType display_type,
                              const std::u16string& title,
+                             const std::u16string& details,
                              const gfx::ImageSkia& icon)
     : profile_(profile) {
   DCHECK(profile_);
   set_id(id);
   SetCategory(Category::kHelp);
   SetTitle(title);
+  if (!details.empty())
+    SetDetails(details);
   // Show this in the first position, in front of any other chips that may be
   // also claiming the first slot.
   SetDisplayIndex(DisplayIndex::kFirstIndex);
@@ -278,7 +281,7 @@ void HelpAppProvider::StartZeroState() {
     search_results.emplace_back(std::make_unique<HelpAppResult>(
         profile_, kHelpAppDiscoverResult, DisplayType::kChip,
         l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
-        icon_));
+        /*details=*/u"", icon_));
   } else if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
     // With productivity launcher enabled, release notes are shown in continue
     // section.
@@ -295,13 +298,15 @@ void HelpAppProvider::StartZeroState() {
                                 app_list::kSystemIconDimension, icon_color);
       search_results.emplace_back(std::make_unique<HelpAppResult>(
           profile_, kHelpAppUpdatesResult, DisplayType::kContinue,
-          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
+          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_DETAILS),
           icon));
     } else {
       search_results.emplace_back(std::make_unique<HelpAppResult>(
           profile_, kHelpAppUpdatesResult, DisplayType::kChip,
           l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
-          icon_));
+          /*details=*/u"", icon_));
     }
   }
 

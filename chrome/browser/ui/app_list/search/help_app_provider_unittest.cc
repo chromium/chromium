@@ -41,10 +41,10 @@ void ExpectDiscoverTabChip(ChromeSearchResult* result) {
 }
 
 void ExpectReleaseNotesChip(ChromeSearchResult* result,
+                            int title_id,
                             ash::SearchResultDisplayType display_type) {
   EXPECT_EQ(kReleaseNotesResultId, result->id());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
-            result->title());
+  EXPECT_EQ(l10n_util::GetStringUTF16(title_id), result->title());
   EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
   EXPECT_EQ(display_type, result->display_type());
 }
@@ -91,6 +91,11 @@ class HelpAppProviderTest : public AppListTestBase,
   ash::SearchResultDisplayType GetExpectedReleaseNotesDisplayType() {
     return GetParam() ? ash::SearchResultDisplayType::kContinue
                       : ash::SearchResultDisplayType::kChip;
+  }
+
+  int GetExpectedReleaseNotesTitleStringId() {
+    return GetParam() ? IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE
+                      : IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP;
   }
 
   const app_list::Results& GetLatestResults() {
@@ -162,7 +167,8 @@ TEST_P(HelpAppProviderTest,
 
   ASSERT_EQ(1u, GetLatestResults().size());
   ChromeSearchResult* result = GetLatestResults().at(0).get();
-  ExpectReleaseNotesChip(result, GetExpectedReleaseNotesDisplayType());
+  ExpectReleaseNotesChip(result, GetExpectedReleaseNotesTitleStringId(),
+                         GetExpectedReleaseNotesDisplayType());
 }
 
 TEST_P(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
@@ -177,7 +183,8 @@ TEST_P(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
 
   ChromeSearchResult* result = GetLatestResults().at(0).get();
   if (GetParam()) {
-    ExpectReleaseNotesChip(result, GetExpectedReleaseNotesDisplayType());
+    ExpectReleaseNotesChip(result, GetExpectedReleaseNotesTitleStringId(),
+                           GetExpectedReleaseNotesDisplayType());
   } else {
     ExpectDiscoverTabChip(result);
   }
@@ -226,7 +233,8 @@ TEST_P(HelpAppProviderTest,
   ASSERT_EQ(1u, GetLatestResults().size());
 
   ChromeSearchResult* result = GetLatestResults().at(0).get();
-  ExpectReleaseNotesChip(result, GetExpectedReleaseNotesDisplayType());
+  ExpectReleaseNotesChip(result, GetExpectedReleaseNotesTitleStringId(),
+                         GetExpectedReleaseNotesDisplayType());
 
   app_list_controller()->ShowAppList();
   EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(

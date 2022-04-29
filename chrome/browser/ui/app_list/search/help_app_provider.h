@@ -43,6 +43,7 @@ class HelpAppResult : public ChromeSearchResult {
                 const std::string& id,
                 DisplayType display_type,
                 const std::u16string& title,
+                const std::u16string& details,
                 const gfx::ImageSkia& icon);
   // Constructor for a list result.
   HelpAppResult(const float& relevance,

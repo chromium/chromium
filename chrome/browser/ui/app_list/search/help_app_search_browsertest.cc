@@ -191,7 +191,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
   auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
   EXPECT_EQ(result->title(),
-            l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP));
+            GetParam() ? l10n_util::GetStringUTF16(
+                             IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE)
+                       : l10n_util::GetStringUTF16(
+                             IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP));
   EXPECT_EQ(result->metrics_type(), ash::HELP_APP_UPDATES);
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
