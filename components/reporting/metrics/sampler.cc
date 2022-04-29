@@ -10,6 +10,10 @@
 
 namespace reporting {
 
+void Sampler::Collect(MetricCallback callback) {
+  NOTREACHED() << "Base Collect method should not be called directly.";
+}
+
 void Sampler::MaybeCollect(OptionalMetricCallback callback) {
   Collect(base::BindOnce(
       [](OptionalMetricCallback callback, MetricData metric_data) {

@@ -27,8 +27,8 @@ class CrosHealthdMetricSampler : public Sampler {
 
   ~CrosHealthdMetricSampler() override;
 
-  // Collect is called to invoke the healthd probing process.
-  void Collect(MetricCallback callback) override;
+  // |MaybeCollect| is called to invoke the healthd probing process.
+  void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:
   // probe_category is the category to probe from the health daemon.

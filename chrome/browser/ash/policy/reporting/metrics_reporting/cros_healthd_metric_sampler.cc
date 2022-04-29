@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cros_healthd = chromeos::cros_healthd::mojom;
 
@@ -62,11 +63,10 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
   NOTREACHED();
 }
 
-void HandleBusResult(MetricCallback callback,
+void HandleBusResult(OptionalMetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
                      cros_healthd::TelemetryInfoPtr result) {
-  bool anything_reported = false;
-  MetricData metric_data;
+  absl::optional<MetricData> metric_data;
   const auto& bus_result = result->bus_result;
 
   if (!bus_result.is_null()) {
@@ -82,11 +82,13 @@ void HandleBusResult(MetricCallback callback,
           const auto& bus_info = bus_device->bus_info;
           if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
             if (bus_info->is_thunderbolt_bus_info()) {
+              if (!metric_data.has_value()) {
+                metric_data = absl::make_optional<MetricData>();
+              }
               auto* const thunderbolt_info_out =
-                  metric_data.mutable_info_data()
+                  metric_data->mutable_info_data()
                       ->mutable_bus_device_info()
                       ->add_thunderbolt_info();
-              anything_reported = true;
               thunderbolt_info_out->set_security_level(
                   TranslateThunderboltSecurityLevel(
                       bus_info->get_thunderbolt_bus_info()->security_level));
@@ -94,11 +96,13 @@ void HandleBusResult(MetricCallback callback,
           } else if (metric_type ==
                      CrosHealthdMetricSampler::MetricType::kTelemetry) {
             if (bus_info->is_usb_bus_info()) {
+              if (!metric_data.has_value()) {
+                metric_data = absl::make_optional<MetricData>();
+              }
               auto* const usb_telemetry_out =
-                  metric_data.mutable_telemetry_data()
+                  metric_data->mutable_telemetry_data()
                       ->mutable_peripherals_telemetry()
                       ->add_usb_telemetry();
-              anything_reported = true;
               usb_telemetry_out->set_vid(
                   bus_info->get_usb_bus_info()->vendor_id);
               usb_telemetry_out->set_pid(
@@ -117,16 +121,13 @@ void HandleBusResult(MetricCallback callback,
     }
   }
 
-  if (anything_reported) {
-    std::move(callback).Run(std::move(metric_data));
-  }
+  std::move(callback).Run(std::move(metric_data));
 }
 
-void HandleCpuResult(MetricCallback callback,
+void HandleCpuResult(OptionalMetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
                      cros_healthd::TelemetryInfoPtr result) {
-  bool anything_reported = false;
-  MetricData metric_data;
+  absl::optional<MetricData> metric_data;
   const auto& cpu_result = result->cpu_result;
 
   if (!cpu_result.is_null()) {
@@ -146,7 +147,8 @@ void HandleCpuResult(MetricCallback callback,
 
         // Gather keylocker info.
         if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
-          auto* const keylocker_info_out = metric_data.mutable_info_data()
+          metric_data = absl::make_optional<MetricData>();
+          auto* const keylocker_info_out = metric_data->mutable_info_data()
                                                ->mutable_cpu_info()
                                                ->mutable_keylocker_info();
           const auto* const keylocker_info = cpu_info->keylocker_info.get();
@@ -159,26 +161,21 @@ void HandleCpuResult(MetricCallback callback,
             keylocker_info_out->set_supported(false);
             keylocker_info_out->set_configured(false);
           }
-          anything_reported = true;
         }
         break;
       }
     }
   }
 
-  if (anything_reported) {
-    std::move(callback).Run(std::move(metric_data));
-  }
+  std::move(callback).Run(std::move(metric_data));
 }
 
 void HandleBootPerformanceResult(
-    MetricCallback callback,
+    OptionalMetricCallback callback,
     CrosHealthdMetricSampler::MetricType metric_type,
     chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
   const std::string kShutdownReasonNotApplicable = "N/A";
-  MetricData metric_data;
-  auto* const boot_info_out = metric_data.mutable_telemetry_data()
-                                  ->mutable_boot_performance_telemetry();
+  absl::optional<MetricData> metric_data;
 
   const auto& boot_performance_result = result->boot_performance_result;
   if (!boot_performance_result.is_null()) {
@@ -198,6 +195,9 @@ void HandleBootPerformanceResult(
           break;
         }
 
+        metric_data = absl::make_optional<MetricData>();
+        auto* const boot_info_out = metric_data->mutable_telemetry_data()
+                                        ->mutable_boot_performance_telemetry();
         // Gather boot performance info.
         boot_info_out->set_boot_up_seconds(
             (int64_t)boot_performance_info->boot_up_seconds);
@@ -212,22 +212,18 @@ void HandleBootPerformanceResult(
         }
         boot_info_out->set_shutdown_reason(
             boot_performance_info->shutdown_reason);
-
-        std::move(callback).Run(metric_data);
-
         break;
       }
     }
   }
+
+  std::move(callback).Run(metric_data);
 }
 
-void HandleAudioResult(MetricCallback callback,
+void HandleAudioResult(OptionalMetricCallback callback,
                        CrosHealthdMetricSampler::MetricType metric_type,
                        chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
-  bool anything_reported = false;
-  MetricData metric_data;
-  auto* const audio_info_out =
-      metric_data.mutable_telemetry_data()->mutable_audio_telemetry();
+  absl::optional<MetricData> metric_data;
   const auto& audio_result = result->audio_result;
 
   if (!audio_result.is_null()) {
@@ -246,6 +242,9 @@ void HandleAudioResult(MetricCallback callback,
         }
 
         if (metric_type == CrosHealthdMetricSampler::MetricType::kTelemetry) {
+          metric_data = absl::make_optional<MetricData>();
+          auto* const audio_info_out =
+              metric_data->mutable_telemetry_data()->mutable_audio_telemetry();
           audio_info_out->set_output_mute(audio_info->output_mute);
           audio_info_out->set_input_mute(audio_info->input_mute);
           audio_info_out->set_output_volume(audio_info->output_volume);
@@ -253,23 +252,19 @@ void HandleAudioResult(MetricCallback callback,
               audio_info->output_device_name);
           audio_info_out->set_input_gain(audio_info->input_gain);
           audio_info_out->set_input_device_name(audio_info->input_device_name);
-          anything_reported = true;
         }
         break;
       }
     }
   }
 
-  if (anything_reported) {
-    std::move(callback).Run(std::move(metric_data));
-  }
+  std::move(callback).Run(std::move(metric_data));
 }
 
-void HandleMemoryResult(MetricCallback callback,
+void HandleMemoryResult(OptionalMetricCallback callback,
                         CrosHealthdMetricSampler::MetricType metric_type,
                         cros_healthd::TelemetryInfoPtr result) {
-  bool anything_reported = false;
-  MetricData metric_data;
+  absl::optional<MetricData> metric_data;
   const auto& memory_result = result->memory_result;
 
   if (!memory_result.is_null()) {
@@ -289,8 +284,9 @@ void HandleMemoryResult(MetricCallback callback,
 
         // Gather memory info.
         if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+          metric_data = absl::make_optional<MetricData>();
           auto* const memory_encryption_info_out =
-              metric_data.mutable_info_data()
+              metric_data->mutable_info_data()
                   ->mutable_memory_info()
                   ->mutable_tme_info();
           const auto* const memory_encryption_info =
@@ -312,19 +308,16 @@ void HandleMemoryResult(MetricCallback callback,
             memory_encryption_info_out->set_encryption_state(
                 MEMORY_ENCRYPTION_STATE_DISABLED);
           }
-          anything_reported = true;
         }
         break;
       }
     }
   }
 
-  if (anything_reported) {
-    std::move(callback).Run(std::move(metric_data));
-  }
+  std::move(callback).Run(std::move(metric_data));
 }
 
-void OnHealthdInfoReceived(MetricCallback callback,
+void OnHealthdInfoReceived(OptionalMetricCallback callback,
                            cros_healthd::ProbeCategoryEnum probe_category,
                            CrosHealthdMetricSampler::MetricType metric_type,
                            cros_healthd::TelemetryInfoPtr result) {
@@ -366,7 +359,7 @@ CrosHealthdMetricSampler::CrosHealthdMetricSampler(
 
 CrosHealthdMetricSampler::~CrosHealthdMetricSampler() = default;
 
-void CrosHealthdMetricSampler::Collect(MetricCallback callback) {
+void CrosHealthdMetricSampler::MaybeCollect(OptionalMetricCallback callback) {
   auto healthd_callback =
       base::BindOnce(OnHealthdInfoReceived, std::move(callback),
                      probe_category_, metric_type_);

@@ -32,7 +32,7 @@ class Sampler {
   virtual ~Sampler() = default;
   // TODO(b/209638899): Remove after all samplers are migrated to
   // |MaybeCollect|.
-  virtual void Collect(MetricCallback callback) = 0;
+  virtual void Collect(MetricCallback callback);
   virtual void MaybeCollect(OptionalMetricCallback callback);
 };
 

@@ -10,6 +10,7 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cros_healthd = chromeos::cros_healthd::mojom;
 using ::testing::Eq;
@@ -148,32 +149,17 @@ cros_healthd::TelemetryInfoPtr CreateBootPerformanceResult(
   return telemetry_info;
 }
 
-MetricData CollectData(cros_healthd::TelemetryInfoPtr telemetry_info,
-                       cros_healthd::ProbeCategoryEnum probe_category,
-                       CrosHealthdMetricSampler::MetricType metric_type) {
+absl::optional<MetricData> CollectData(
+    cros_healthd::TelemetryInfoPtr telemetry_info,
+    cros_healthd::ProbeCategoryEnum probe_category,
+    CrosHealthdMetricSampler::MetricType metric_type) {
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   CrosHealthdMetricSampler sampler(probe_category, metric_type);
-  test::TestEvent<MetricData> metric_collect_event;
+  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
 
-  sampler.Collect(metric_collect_event.cb());
+  sampler.MaybeCollect(metric_collect_event.cb());
   return metric_collect_event.result();
-}
-
-MetricData CollectError(cros_healthd::TelemetryInfoPtr telemetry_info,
-                        cros_healthd::ProbeCategoryEnum probe_category,
-                        CrosHealthdMetricSampler::MetricType metric_type) {
-  MetricData data;
-  base::RunLoop run_loop;
-  ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
-  CrosHealthdMetricSampler sampler(probe_category, metric_type);
-
-  sampler.Collect(base::BindLambdaForTesting(
-      [&data](MetricData metric_data) { data = std::move(metric_data); }));
-  run_loop.RunUntilIdle();
-
-  return data;
 }
 
 class CrosHealthdMetricSamplerTest : public testing::Test {
@@ -241,10 +227,13 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   usb_devices.push_back(std::move(usb_device_first));
   usb_devices.push_back(std::move(usb_device_second));
 
-  MetricData result =
+  const absl::optional<MetricData> optional_result =
       CollectData(CreateUsbBusResult(std::move(usb_devices)),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_peripherals_telemetry());
@@ -298,10 +287,13 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   std::vector<cros_healthd::BusDevicePtr> usb_devices;
   usb_devices.push_back(std::move(usb_device));
 
-  MetricData result =
+  const absl::optional<MetricData> optional_result =
       CollectData(CreateUsbBusResult(std::move(usb_devices)),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_EQ(
@@ -323,12 +315,15 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
 TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
        TestMemoryEncryptionReporting) {
   const MemoryEncryptionTestCase& test_case = GetParam();
-  MetricData result = CollectData(
+  const absl::optional<MetricData> optional_result = CollectData(
       CreateMemoryResult(CreateMemoryEncryptionInfo(
           test_case.healthd_encryption_state, test_case.max_keys,
           test_case.key_length, test_case.healthd_encryption_algorithm)),
       cros_healthd::ProbeCategoryEnum::kMemory,
       CrosHealthdMetricSampler::MetricType::kInfo);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_memory_info());
@@ -344,10 +339,14 @@ TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
 
 TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
   const TbtTestCase& test_case = GetParam();
-  MetricData result =
+  const absl::optional<MetricData> optional_result =
       CollectData(CreateThunderboltBusResult(test_case.healthd_security_levels),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kInfo);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
+
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_bus_device_info());
   ASSERT_EQ(test_case.healthd_security_levels.size(),
@@ -362,9 +361,13 @@ TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
-  MetricData result = CollectData(CreateCpuResult(CreateKeylockerInfo(true)),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  const absl::optional<MetricData> optional_result =
+      CollectData(CreateCpuResult(CreateKeylockerInfo(true)),
+                  cros_healthd::ProbeCategoryEnum::kCpu,
+                  CrosHealthdMetricSampler::MetricType::kInfo);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -374,9 +377,13 @@ TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnconfigured) {
-  MetricData result = CollectData(CreateCpuResult(CreateKeylockerInfo(false)),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  const absl::optional<MetricData> optional_result =
+      CollectData(CreateCpuResult(CreateKeylockerInfo(false)),
+                  cros_healthd::ProbeCategoryEnum::kCpu,
+                  CrosHealthdMetricSampler::MetricType::kInfo);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -386,9 +393,12 @@ TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnconfigured) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerUnsupported) {
-  MetricData result = CollectData(CreateCpuResult(nullptr),
-                                  cros_healthd::ProbeCategoryEnum::kCpu,
-                                  CrosHealthdMetricSampler::MetricType::kInfo);
+  const absl::optional<MetricData> optional_result = CollectData(
+      CreateCpuResult(nullptr), cros_healthd::ProbeCategoryEnum::kCpu,
+      CrosHealthdMetricSampler::MetricType::kInfo);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_cpu_info());
@@ -402,44 +412,44 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->cpu_result =
       cros_healthd::CpuResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const auto& cpu_data = CollectError(
+  const absl::optional<MetricData> cpu_data = CollectData(
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kCpu,
       CrosHealthdMetricSampler::MetricType::kInfo);
-  ASSERT_FALSE(cpu_data.has_info_data());
+  EXPECT_FALSE(cpu_data.has_value());
 
   telemetry_info = cros_healthd::TelemetryInfo::New();
   telemetry_info->bus_result =
       cros_healthd::BusResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const auto& bus_data = CollectError(
+  const absl::optional<MetricData> bus_data = CollectData(
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kCpu,
       CrosHealthdMetricSampler::MetricType::kInfo);
 
-  ASSERT_FALSE(bus_data.has_info_data());
+  EXPECT_FALSE(bus_data.has_value());
 
   telemetry_info = cros_healthd::TelemetryInfo::New();
   telemetry_info->audio_result =
       cros_healthd::AudioResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const auto& audio_data = CollectError(
+  const absl::optional<MetricData> audio_data = CollectData(
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
-  ASSERT_FALSE(audio_data.has_telemetry_data());
+  EXPECT_FALSE(audio_data.has_value());
 
   telemetry_info = cros_healthd::TelemetryInfo::New();
   telemetry_info->boot_performance_result =
       cros_healthd::BootPerformanceResult::NewError(
           cros_healthd::ProbeError::New(cros_healthd::ErrorType::kFileReadError,
                                         ""));
-  const auto& boot_performance_data =
-      CollectError(std::move(telemetry_info),
-                   cros_healthd::ProbeCategoryEnum::kBootPerformance,
-                   CrosHealthdMetricSampler::MetricType::kTelemetry);
-  ASSERT_FALSE(boot_performance_data.has_telemetry_data());
+  const absl::optional<MetricData> boot_performance_data =
+      CollectData(std::move(telemetry_info),
+                  cros_healthd::ProbeCategoryEnum::kBootPerformance,
+                  CrosHealthdMetricSampler::MetricType::kTelemetry);
+  EXPECT_FALSE(boot_performance_data.has_value());
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
-  MetricData result = CollectData(
+  const absl::optional<MetricData> optional_result = CollectData(
       CreateAudioResult(CreateAudioInfo(
           /*output_mute=*/true,
           /*input_mute=*/true, /*output_volume=*/25,
@@ -449,6 +459,9 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
       cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
 
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
+
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
   ASSERT_TRUE(result.telemetry_data().audio_telemetry().output_mute());
@@ -457,7 +470,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
-  MetricData result = CollectData(
+  const absl::optional<MetricData> optional_result = CollectData(
       CreateAudioResult(CreateAudioInfo(
           /*output_mute=*/false,
           /*input_mute=*/false, /*output_volume=*/0,
@@ -467,6 +480,9 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
       cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
 
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
+
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_audio_telemetry());
   ASSERT_FALSE(result.telemetry_data().audio_telemetry().output_mute());
@@ -475,12 +491,15 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
-  MetricData result =
+  const absl::optional<MetricData> optional_result =
       CollectData(CreateBootPerformanceResult(
                       kBootUpSeconds, kBootUpTimestampSeconds, kShutdownSeconds,
                       kShutdownTimestampSeconds, kShutdownReason),
                   cros_healthd::ProbeCategoryEnum::kBootPerformance,
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
@@ -504,12 +523,15 @@ TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceShutdownReasonNA) {
-  MetricData result =
+  const absl::optional<MetricData> optional_result =
       CollectData(CreateBootPerformanceResult(
                       kBootUpSeconds, kBootUpTimestampSeconds, kShutdownSeconds,
                       kShutdownTimestampSeconds, kShutdownReasonNotApplicable),
                   cros_healthd::ProbeCategoryEnum::kBootPerformance,
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(optional_result.has_value());
+  const MetricData& result = optional_result.value();
 
   ASSERT_TRUE(result.has_telemetry_data());
   ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
