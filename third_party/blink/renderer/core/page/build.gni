@@ -54,8 +54,6 @@ blink_core_sources_page = [
   "page_popup_controller.h",
   "page_visibility_observer.cc",
   "page_visibility_observer.h",
-  "page_widget_delegate.cc",
-  "page_widget_delegate.h",
   "plugin_data.cc",
   "plugin_data.h",
   "plugin_script_forbidden_scope.cc",

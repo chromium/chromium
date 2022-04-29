@@ -1117,6 +1117,28 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
   }
 }
 
+void Page::Animate(base::TimeTicks monotonic_frame_begin_time) {
+  GetAutoscrollController().Animate();
+  Animator().ServiceScriptedAnimations(monotonic_frame_begin_time);
+  // The ValidationMessage overlay manages its own internal Page that isn't
+  // hooked up the normal BeginMainFrame flow, so we manually tick its
+  // animations here.
+  GetValidationMessageClient().ServiceScriptedAnimations(
+      monotonic_frame_begin_time);
+}
+
+void Page::UpdateLifecycle(LocalFrame& root,
+                           WebLifecycleUpdate requested_update,
+                           DocumentUpdateReason reason) {
+  if (requested_update == WebLifecycleUpdate::kLayout) {
+    Animator().UpdateLifecycleToLayoutClean(root, reason);
+  } else if (requested_update == WebLifecycleUpdate::kPrePaint) {
+    Animator().UpdateLifecycleToPrePaintClean(root, reason);
+  } else {
+    Animator().UpdateAllLifecyclePhases(root, reason);
+  }
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 
 const char InternalSettingsPageSupplementBase::kSupplementName[] =

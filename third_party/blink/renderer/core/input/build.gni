@@ -33,4 +33,6 @@ blink_core_sources_input = [
   "touch_event_manager.h",
   "touch_list.cc",
   "touch_list.h",
+  "widget_event_handler.cc",
+  "widget_event_handler.h",
 ]

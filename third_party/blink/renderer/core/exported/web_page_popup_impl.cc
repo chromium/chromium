@@ -636,8 +636,8 @@ void WebPagePopupImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
     return;
   // Popups always update their lifecycle in the context of the containing
   // document's lifecycle, so explicitly override the reason.
-  PageWidgetDelegate::UpdateLifecycle(*page_, MainFrame(), requested_update,
-                                      DocumentUpdateReason::kPagePopup);
+  page_->UpdateLifecycle(MainFrame(), requested_update,
+                         DocumentUpdateReason::kPagePopup);
 }
 
 void WebPagePopupImpl::Resize(const gfx::Size& new_size_in_viewport) {
@@ -690,7 +690,7 @@ void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
     return;
   // FIXME: This should use lastFrameTimeMonotonic but doing so
   // breaks tests.
-  PageWidgetDelegate::Animate(*page_, base::TimeTicks::Now());
+  page_->Animate(base::TimeTicks::Now());
 }
 
 void WebPagePopupImpl::WillHandleGestureEvent(const WebGestureEvent& event,
@@ -777,7 +777,7 @@ void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupMouseDownExceedsOwnerWindowBounds);
-    PageWidgetEventHandler::HandleMouseDown(main_frame, event);
+    WidgetEventHandler::HandleMouseDown(main_frame, event);
   } else {
     Cancel();
   }
@@ -791,7 +791,7 @@ WebInputEventResult WebPagePopupImpl::HandleMouseWheel(
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupMouseWheelExceedsOwnerWindowBounds);
-    return PageWidgetEventHandler::HandleMouseWheel(main_frame, event);
+    return WidgetEventHandler::HandleMouseWheel(main_frame, event);
   }
   Cancel();
   return WebInputEventResult::kNotHandled;
@@ -867,7 +867,7 @@ WebInputEventResult WebPagePopupImpl::HandleInputEvent(
   if (closing_)
     return WebInputEventResult::kNotHandled;
   DCHECK(!WebInputEvent::IsTouchEventType(event.Event().GetType()));
-  return PageWidgetDelegate::HandleInputEvent(*this, event, &MainFrame());
+  return WidgetEventHandler::HandleInputEvent(event, &MainFrame());
 }
 
 void WebPagePopupImpl::FocusChanged(mojom::blink::FocusState focus_state) {

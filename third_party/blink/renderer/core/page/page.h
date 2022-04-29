@@ -27,6 +27,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
@@ -170,6 +172,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   LocalFrame* DeprecatedLocalMainFrame() const;
 
   void DocumentDetached(Document*);
+
+  void Animate(base::TimeTicks monotonic_frame_begin_time);
+
+  // The |root| argument indicates a root LocalFrame from which to start
+  // performing the operation. See comment on WebWidget::UpdateLifecycle.
+  void UpdateLifecycle(LocalFrame& root,
+                       WebLifecycleUpdate requested_update,
+                       DocumentUpdateReason reason);
 
   bool OpenedByDOM() const;
   void SetOpenedByDOM();
