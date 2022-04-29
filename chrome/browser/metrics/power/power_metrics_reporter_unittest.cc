@@ -35,6 +35,9 @@ constexpr const char* kBatteryDischargeModeHistogramName =
 
 constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
     base::Seconds(120);
+constexpr double kTolerableTimeElapsedRatio = 0.10;
+constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
+constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
 
 performance_monitor::ProcessMonitor::Metrics GetFakeProcessMetrics() {
   performance_monitor::ProcessMonitor::Metrics metrics;
@@ -235,6 +238,80 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
       {{"PerformanceMonitor.ResourceCoalition.CPUTime2", 500}});
 }
 #endif
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
+  // Pretend that the battery has dropped by 2%.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.48, true, base::TimeTicks::Now()});
+
+  const base::TimeDelta kTooEarly =
+      kExpectedMetricsCollectionInterval * kTolerableNegativeDrift -
+      base::Microseconds(1);
+  task_environment_.FastForwardBy(kTooEarly);
+
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kInvalidInterval,
+                                       1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
+  // Pretend that the battery has dropped by 2%.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.48, true, base::TimeTicks::Now()});
+
+  const base::TimeDelta kEarly =
+      kExpectedMetricsCollectionInterval * kTolerableNegativeDrift +
+      base::Microseconds(1);
+  task_environment_.FastForwardBy(kEarly);
+
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kDischarging, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
+  // Pretend that the battery has dropped by 2%.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.48, true, base::TimeTicks::Now()});
+
+  const base::TimeDelta kTooLate =
+      kExpectedMetricsCollectionInterval * kTolerablePositiveDrift +
+      base::Microseconds(1);
+  task_environment_.FastForwardBy(kTooLate);
+
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kInvalidInterval,
+                                       1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
+  // Pretend that the battery has dropped by 2%.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.48, true, base::TimeTicks::Now()});
+
+  const base::TimeDelta kLate =
+      kExpectedMetricsCollectionInterval * kTolerablePositiveDrift -
+      base::Microseconds(1);
+  task_environment_.FastForwardBy(kLate);
+
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
+                                       BatteryDischargeMode::kDischarging, 1);
+}
 
 TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   UsageScenarioDataStore::IntervalData fake_interval_data;

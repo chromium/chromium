@@ -14,17 +14,6 @@
 
 namespace {
 
-constexpr const char* kBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate2";
-constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode";
-
-constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
-    base::Seconds(120);
-constexpr double kTolerableTimeElapsedRatio = 0.10;
-constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
-constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
-
 #if BUILDFLAG(IS_MAC)
 power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
   power_metrics::CoalitionResourceUsageRate rate;
@@ -113,66 +102,6 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
         {"PerformanceMonitor.EnergyImpact.Total", 10},
 #endif
   });
-}
-
-TEST(PowerMetricsTest, BatteryDischargeCaptureIsTooEarly) {
-  base::HistogramTester histogram_tester;
-  std::vector<const char*> suffixes = {""};
-
-  ReportBatteryHistograms(
-      (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
-          base::Seconds(1),
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500}, suffixes);
-
-  histogram_tester.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                      BatteryDischargeMode::kInvalidInterval,
-                                      1);
-}
-
-TEST(PowerMetricsTest, BatteryDischargeCaptureIsEarly) {
-  base::HistogramTester histogram_tester;
-  std::vector<const char*> suffixes = {""};
-
-  ReportBatteryHistograms(
-      (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
-          base::Seconds(1),
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500}, suffixes);
-
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                      BatteryDischargeMode::kDischarging, 1);
-}
-
-TEST(PowerMetricsTest, BatteryDischargeCaptureIsTooLate) {
-  base::HistogramTester histogram_tester;
-  std::vector<const char*> suffixes = {""};
-
-  ReportBatteryHistograms(
-      (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
-          base::Seconds(1),
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500}, suffixes);
-
-  histogram_tester.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                      BatteryDischargeMode::kInvalidInterval,
-                                      1);
-}
-
-TEST(PowerMetricsTest, BatteryDischargeCaptureIsLate) {
-  base::HistogramTester histogram_tester;
-  std::vector<const char*> suffixes = {""};
-
-  ReportBatteryHistograms(
-      (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
-          base::Seconds(1),
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500}, suffixes);
-
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
-                                      BatteryDischargeMode::kDischarging, 1);
 }
 
 #if BUILDFLAG(IS_MAC)

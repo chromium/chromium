@@ -45,6 +45,12 @@ int64_t GetBucketForSample(base::TimeDelta value) {
       kOverflowBucket);
 }
 
+bool IsWithinTolerance(base::TimeDelta value,
+                       base::TimeDelta expected,
+                       base::TimeDelta tolerance) {
+  return (value - expected).magnitude() < tolerance;
+}
+
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
@@ -151,6 +157,16 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
                                            suffixes);
 
+  // Ratio by which the time elapsed can deviate from
+  // |ProcessMonitor::kGatherInterval| without invalidating this sample.
+  constexpr double kTolerableTimeElapsedRatio = 0.10;
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
+      !IsWithinTolerance(interval_duration,
+                         performance_monitor::ProcessMonitor::kGatherInterval,
+                         performance_monitor::ProcessMonitor::kGatherInterval *
+                             kTolerableTimeElapsedRatio)) {
+    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
+  }
   ReportBatteryHistograms(interval_duration, battery_discharge, suffixes);
 #if BUILDFLAG(IS_MAC)
   if (coalition_resource_usage_rate.has_value()) {
@@ -194,7 +210,7 @@ void PowerMetricsReporter::OnFirstBatteryStateSampled(
 void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeTicks battery_sample_begin_time,
-    const BatteryLevelProvider::BatteryState& battery_state) {
+    const BatteryLevelProvider::BatteryState& new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -208,8 +224,10 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   interval_begin_ = now;
 
   // Evaluate battery discharge mode and rate.
-  auto battery_discharge =
-      GetBatteryDischargeDuringInterval(battery_state, interval_duration);
+  auto previous_battery_state =
+      std::exchange(battery_state_, new_battery_state);
+  auto battery_discharge = GetBatteryDischargeDuringInterval(
+      previous_battery_state, new_battery_state, interval_duration);
 
   // Get usage scenario data.
   auto long_interval_data =
@@ -324,49 +342,6 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetDeviceSleptDuringInterval(interval_data.sleep_events);
 
   builder.Record(ukm_recorder);
-}
-
-BatteryDischarge PowerMetricsReporter::GetBatteryDischargeDuringInterval(
-    const BatteryLevelProvider::BatteryState& new_battery_state,
-    base::TimeDelta interval_duration) {
-  auto previous_battery_state =
-      std::exchange(battery_state_, new_battery_state);
-
-  if (previous_battery_state.battery_count == 0 ||
-      battery_state_.battery_count == 0) {
-    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
-  }
-  if (!previous_battery_state.on_battery && !battery_state_.on_battery) {
-    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
-  }
-  if (previous_battery_state.on_battery != battery_state_.on_battery) {
-    return {BatteryDischargeMode::kStateChanged, absl::nullopt};
-  }
-  if (!previous_battery_state.charge_level.has_value() ||
-      !battery_state_.charge_level.has_value()) {
-    return {BatteryDischargeMode::kChargeLevelUnavailable, absl::nullopt};
-  }
-
-  // The battery discharge rate is reported per minute with 1/10000 of full
-  // charge resolution.
-  static const int64_t kDischargeRateFactor =
-      10000 * base::Minutes(1).InSecondsF();
-
-#if BUILDFLAG(IS_MAC)
-  // On MacOS, empirical evidence has shown that right after a full charge, the
-  // current capacity stays equal to the maximum capacity for several minutes,
-  // despite the fact that power was definitely consumed. Reporting a zero
-  // discharge rate for this duration would be misleading.
-  if (previous_battery_state.charge_level.value() == 1.0)
-    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
-#endif
-
-  auto discharge_rate = (previous_battery_state.charge_level.value() -
-                         battery_state_.charge_level.value()) *
-                        kDischargeRateFactor / interval_duration.InSeconds();
-  if (discharge_rate < 0)
-    return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
-  return {BatteryDischargeMode::kDischarging, discharge_rate};
 }
 
 #if BUILDFLAG(IS_MAC)

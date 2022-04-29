@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -42,6 +43,14 @@ struct BatteryDischarge {
   // Discharge rate in 1/10000 of full capacity per minute.
   absl::optional<int64_t> rate;
 };
+
+// Computes and returns the battery discharge mode and rate during the interval.
+// If the discharge rate isn't valid, the returned rate is nullopt and the
+// reason is indicated per BatteryDischargeMode.
+BatteryDischarge GetBatteryDischargeDuringInterval(
+    const BatteryLevelProvider::BatteryState& previous_battery_state,
+    const BatteryLevelProvider::BatteryState& new_battery_state,
+    base::TimeDelta interval_duration);
 
 // Report battery metrics to histograms with |suffixes|.
 void ReportBatteryHistograms(base::TimeDelta interval_duration,

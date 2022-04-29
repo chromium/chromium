@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -63,31 +62,50 @@ void ReportAggregatedProcessMetricsHistograms(
   }
 }
 
+BatteryDischarge GetBatteryDischargeDuringInterval(
+    const BatteryLevelProvider::BatteryState& previous_battery_state,
+    const BatteryLevelProvider::BatteryState& new_battery_state,
+    base::TimeDelta interval_duration) {
+  if (previous_battery_state.battery_count == 0 ||
+      new_battery_state.battery_count == 0) {
+    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
+  }
+  if (!previous_battery_state.on_battery && !new_battery_state.on_battery) {
+    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
+  }
+  if (previous_battery_state.on_battery != new_battery_state.on_battery) {
+    return {BatteryDischargeMode::kStateChanged, absl::nullopt};
+  }
+  if (!previous_battery_state.charge_level.has_value() ||
+      !new_battery_state.charge_level.has_value()) {
+    return {BatteryDischargeMode::kChargeLevelUnavailable, absl::nullopt};
+  }
+
+  // The battery discharge rate is reported per minute with 1/10000 of full
+  // charge resolution.
+  static constexpr int64_t kDischargeRateFactor =
+      10000 * base::Minutes(1).InSecondsF();
+
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, empirical evidence has shown that right after a full charge, the
+  // current capacity stays equal to the maximum capacity for several minutes,
+  // despite the fact that power was definitely consumed. Reporting a zero
+  // discharge rate for this duration would be misleading.
+  if (previous_battery_state.charge_level.value() == 1.0)
+    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
+#endif
+
+  auto discharge_rate = (previous_battery_state.charge_level.value() -
+                         new_battery_state.charge_level.value()) *
+                        kDischargeRateFactor / interval_duration.InSeconds();
+  if (discharge_rate < 0)
+    return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
+  return {BatteryDischargeMode::kDischarging, discharge_rate};
+}
+
 void ReportBatteryHistograms(base::TimeDelta interval_duration,
                              BatteryDischarge battery_discharge,
                              const std::vector<const char*>& suffixes) {
-  // Ratio by which the time elapsed can deviate from
-  // |ProcessMonitor::kGatherInterval| without invalidating this sample.
-  constexpr double kTolerableTimeElapsedRatio = 0.10;
-  constexpr double kTolerablePositiveDrift = (1. + kTolerableTimeElapsedRatio);
-  constexpr double kTolerableNegativeDrift = (1. - kTolerableTimeElapsedRatio);
-
-  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      interval_duration > performance_monitor::ProcessMonitor::kGatherInterval *
-                              kTolerablePositiveDrift) {
-    // Too much time passed since the last record. Either the task took
-    // too long to get executed or system sleep took place.
-    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
-  }
-
-  if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      interval_duration < performance_monitor::ProcessMonitor::kGatherInterval *
-                              kTolerableNegativeDrift) {
-    // The recording task executed too early after the previous one, possibly
-    // because the previous task took too long to execute.
-    battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
-  }
-
   for (const char* suffix : suffixes) {
     base::UmaHistogramEnumeration(
         base::StrCat({kBatteryDischargeModeHistogramName, suffix}),

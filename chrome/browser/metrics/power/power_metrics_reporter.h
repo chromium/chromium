@@ -122,7 +122,7 @@ class PowerMetricsReporter
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeTicks battery_sample_begin_time,
-      const BatteryLevelProvider::BatteryState& battery_state);
+      const BatteryLevelProvider::BatteryState& new_battery_state);
 
   // Report the UKMs for the past interval.
   static void ReportUKMs(
@@ -130,14 +130,6 @@ class PowerMetricsReporter
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       BatteryDischarge battery_discharge);
-
-  // Computes and returns the battery discharge mode and rate during the
-  // interval, and reset |battery_state_| to the current state. If the discharge
-  // rate isn't valid, the returned value is nullopt and the reason is indicated
-  // per BatteryDischargeMode.
-  BatteryDischarge GetBatteryDischargeDuringInterval(
-      const BatteryLevelProvider::BatteryState& new_battery_state,
-      base::TimeDelta interval_duration);
 
 #if BUILDFLAG(IS_MAC)
   // Invoked at the beginning of a "short" interval (~10 seconds before
