@@ -56,7 +56,12 @@ class CookiesTreeModelTest : public testing::Test {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     special_storage_policy_ = nullptr;
 #endif
+    // TODO(arthursonzogni): Consider removing this line, or at least explain
+    // why it is needed.
+    base::RunLoop().RunUntilIdle();
     profile_.reset();
+    // TODO(arthursonzogni): Consider removing this line, or at least explain
+    // why it is needed.
     base::RunLoop().RunUntilIdle();
   }
 

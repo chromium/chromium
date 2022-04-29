@@ -539,15 +539,6 @@ TestingProfile::~TestingProfile() {
   // Shutdown storage partitions before we post a task to delete
   // the resource context.
   ShutdownStoragePartitions();
-
-  // Failing a post == leaks == heapcheck failure. Make that an immediate test
-  // failure.
-  if (resource_context_) {
-    CHECK(BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE,
-                                    resource_context_.get()));
-    resource_context_ = nullptr;
-    content::RunAllPendingInMessageLoop(BrowserThread::IO);
-  }
 }
 
 void TestingProfile::CreateWebDataService() {
@@ -815,9 +806,16 @@ TestingProfile::GetURLLoaderFactory() {
 }
 
 content::ResourceContext* TestingProfile::GetResourceContext() {
-  if (!resource_context_)
-    resource_context_ = new content::MockResourceContext();
-  return resource_context_;
+  // TODO(arthursonzogni): This should only be called on the IO thread. Consider
+  // adding a DCHECK_CURRENTLY_ON(content::BrowserThread::IO) after fixing the
+  // non compliant tests: SpellingMenuObserverTest.SuggestionsForceTopSeparator
+  if (!resource_context_) {
+    resource_context_ =
+        std::unique_ptr<content::MockResourceContext,
+                        content::BrowserThread::DeleteOnIOThread>(
+            new content::MockResourceContext);
+  }
+  return resource_context_.get();
 }
 
 content::BrowserPluginGuestManager* TestingProfile::GetGuestManager() {

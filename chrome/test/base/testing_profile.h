@@ -29,7 +29,6 @@
 #include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/cookies/cookie_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,10 +50,6 @@ namespace chromeos {
 class ScopedLacrosServiceTestHelper;
 }  // namespace chromeos
 #endif
-
-namespace net {
-class CookieStore;
-}
 
 namespace policy {
 class PolicyService;
@@ -457,9 +452,6 @@ class TestingProfile : public Profile {
   // Creates a ProfilePolicyConnector.
   void CreateProfilePolicyConnector();
 
-  std::unique_ptr<net::CookieStore, content::BrowserThread::DeleteOnIOThread>
-      extensions_cookie_store_;
-
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
   raw_ptr<TestingProfile> original_profile_ = nullptr;
 
@@ -499,9 +491,10 @@ class TestingProfile : public Profile {
   raw_ptr<BrowserContextDependencyManager> browser_context_dependency_manager_{
       BrowserContextDependencyManager::GetInstance()};
 
-  // Owned, but must be deleted on the IO thread so not placing in a
-  // std::unique_ptr<>.
-  raw_ptr<content::MockResourceContext> resource_context_ = nullptr;
+  // Live on the IO thread:
+  std::unique_ptr<content::MockResourceContext,
+                  content::BrowserThread::DeleteOnIOThread>
+      resource_context_;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
