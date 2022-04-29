@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -82,6 +83,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
     GTEST_SKIP() << "Ash version not supported";
   }
 
+  base::HistogramTester histogram_tester;
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
   apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
@@ -96,6 +98,13 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   ASSERT_TRUE(
       app_service_proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(
           test_web_app_id()));
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,

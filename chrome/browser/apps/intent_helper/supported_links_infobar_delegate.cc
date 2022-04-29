@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,6 +125,12 @@ bool SupportedLinksInfoBarDelegate::Accept() {
   action_taken_ = true;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
   proxy->SetSupportedLinksPreference(app_id_);
+
+  // The support links infobar only shows for webapps so we record the metrics
+  // event under kWeb.
+  IntentHandlingMetrics::RecordLinkCapturingEvent(
+      PickerEntryType::kWeb,
+      IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);
   return true;
 }
 
