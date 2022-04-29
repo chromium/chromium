@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS CSS generated text is observable as a LargestContentfulPaint candidate
+PASS Text generated with CSS using content:attr() is observable as a LargestContentfulPaint candidate
+FAIL CSS generated text on a inline element is observable as a LargestContentfulPaint candidate assert_equals: ID should match expected ID expected "css-generated-text-inline-elem" but got ""
+Harness: the test ran to completion.
+
