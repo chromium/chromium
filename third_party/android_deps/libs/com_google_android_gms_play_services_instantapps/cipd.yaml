@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@17.0.0.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@18.0.1.cr1
 package: chromium/third_party/android_deps/libs/com_google_android_gms_play_services_instantapps
 description: "play-services-instantapps"
 data:
-- file: play-services-instantapps-17.0.0.aar
+- file: play-services-instantapps-18.0.1.aar

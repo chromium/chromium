@@ -4,9 +4,11 @@
 
 package org.chromium.testing.local;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
 /**
  * A custom Robolectric Junit4 Test Runner with minimal Chromium-specific settings. Most test cases
@@ -33,6 +35,17 @@ public class LocalRobolectricTestRunner extends RobolectricTestRunner {
                 .setSdk(DEFAULT_SDK)
                 // Shadows to fix robolectric shortcomings.
                 .setShadows(new Class[] {CustomShadowApplicationPackageManager.class})
+                .build();
+    }
+
+    /**
+     * This is to avoid a bug in robolectric's shadows-playservices - this workaround is from
+     * https://github.com/robolectric/robolectric/issues/7269.
+     */
+    @Override
+    protected InstrumentationConfiguration createClassLoaderConfig(FrameworkMethod method) {
+        return new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method))
+                .doNotInstrumentClass("com.google.android.gms.common.api.ApiException")
                 .build();
     }
 }

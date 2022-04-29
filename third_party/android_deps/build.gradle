@@ -54,21 +54,26 @@ dependencies {
     // Play services libraries
     // See https://developers.google.com/android/guides/releases for updates
     // Starting from 15.0.0 these libraries are allowed to update independently
-    String gmsVersion = '17.0.0'
-    compile "com.google.android.gms:play-services-basement:${gmsVersion}"
-    compile "com.google.android.gms:play-services-tasks:${gmsVersion}"
-    compile "com.google.android.gms:play-services-base:${gmsVersion}"
-    compile "com.google.android.gms:play-services-auth-base:${gmsVersion}"
-    compile 'com.google.android.gms:play-services-auth-api-phone:17.5.0'
-    compile "com.google.android.gms:play-services-auth:${gmsVersion}"
-    compile "com.google.android.gms:play-services-cast:${gmsVersion}"
-    compile "com.google.android.gms:play-services-cast-framework:${gmsVersion}"
-    compile "com.google.android.gms:play-services-iid:${gmsVersion}"
-    compile "com.google.android.gms:play-services-instantapps:${gmsVersion}"
-    compile "com.google.android.gms:play-services-gcm:${gmsVersion}"
-    compile "com.google.android.gms:play-services-location:${gmsVersion}"
-    compile 'com.google.android.gms:play-services-vision-common:18.0.0'
-    compile 'com.google.android.gms:play-services-vision:18.0.0'
+    String baseGmsVersion = '18.0.1'
+    // GCM is old and deprecated - nothing newer is available.
+    String gcmGmsVersion = '17.0.0'
+    // Attemped to roll cast with everything else, but it caused a missing class error, and we had
+    // no other versions available on CIPD - see crbug.com/1310799.
+    String castGmsVersion = '17.0.0'
+    compile "com.google.android.gms:play-services-basement:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-tasks:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-base:${baseGmsVersion}"
+    compile 'com.google.android.gms:play-services-auth-base:18.0.2'
+    compile "com.google.android.gms:play-services-auth-api-phone:${baseGmsVersion}"
+    compile 'com.google.android.gms:play-services-auth:20.1.0'
+    compile "com.google.android.gms:play-services-cast:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-cast-framework:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-iid:${gcmGmsVersion}"
+    compile "com.google.android.gms:play-services-instantapps:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-gcm:${gcmGmsVersion}"
+    compile 'com.google.android.gms:play-services-location:19.0.1'
+    compile 'com.google.android.gms:play-services-vision-common:19.1.3'
+    compile 'com.google.android.gms:play-services-vision:20.1.3'
     compile 'com.google.android.gms:play-services-fido:19.0.0-beta'
 
     // TODO (bjoyce): Remove after androidx migration crbug.com/896775
