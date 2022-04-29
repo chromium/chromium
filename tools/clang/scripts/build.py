@@ -392,16 +392,19 @@ def DownloadPinnedClang():
   # The update.py in this current revision may have a patched revision while
   # building new clang packages. Get update.py off HEAD~ to pull the current
   # pinned clang.
-  with tempfile.NamedTemporaryFile() as f:
+  if not os.path.exists(PINNED_CLANG_DIR):
+    os.mkdir(os.path.join(PINNED_CLANG_DIR))
+
+  script_path = os.path.join(PINNED_CLANG_DIR, 'update.py')
+
+  with open(script_path, 'w') as f:
     subprocess.check_call(
         ['git', 'show', 'HEAD~:tools/clang/scripts/update.py'],
         stdout=f,
         cwd=CHROMIUM_DIR)
-    print("Running update.py")
-    # Without the flush, the subprocess call below doesn't work.
-    f.flush()
-    subprocess.check_call(
-        [sys.executable, f.name, '--output-dir=' + PINNED_CLANG_DIR])
+  print("Running pinned update.py")
+  subprocess.check_call(
+      [sys.executable, script_path, '--output-dir=' + PINNED_CLANG_DIR])
 
 
 # TODO(crbug.com/929645): Remove once we don't need gcc's libstdc++.
@@ -660,17 +663,31 @@ def main():
       '-DLIBCLANG_BUILD_STATIC=ON',
   ]
 
-  if sys.platform.startswith('linux'):
-    MaybeDownloadHostGcc(args)
-    DownloadPinnedClang()
+  DownloadPinnedClang()
+  if sys.platform == 'win32':
+    cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
+    cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
+    lld = os.path.join(PINNED_CLANG_DIR, 'bin', 'lld-link.exe')
+    # CMake has a hard time with backslashes in compiler paths:
+    # https://stackoverflow.com/questions/13050827
+    cc = cc.replace('\\', '/')
+    cxx = cxx.replace('\\', '/')
+    lld = lld.replace('\\', '/')
+  else:
     cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang')
     cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
+
+  if sys.platform != 'darwin':
+    # The host clang has lld, but self-hosting with lld is still slightly
+    # broken on mac.
+    base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
+
+  if sys.platform.startswith('linux'):
+    MaybeDownloadHostGcc(args)
     # Use the libraries in the specified gcc installation for building.
     cflags.append('--gcc-toolchain=' + args.gcc_toolchain)
     cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
     base_cmake_args += [
-        # The host clang has lld.
-        '-DLLVM_ENABLE_LLD=ON',
         '-DLLVM_STATIC_LINK_CXX_STDLIB=ON',
         # Force compiler-rt tests to use our gcc toolchain
         # because the one on the host may be too old.
