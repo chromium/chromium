@@ -251,16 +251,6 @@ interface PaymentRequest {
 
   // Shows the user interface with the payment details.
   //
-  // DEPRECATED: Use Show(bool wait_for_updated_details) instead.
-  //
-  // |wait_for_updated_details|: It's true when merchant passed in a promise
-  // into PaymentRequest.show(), so Chrome should disregard the initial payment
-  // details and show a spinner until the promise resolves with the correct
-  // payment details. The payment details will be updated with UpdateWith().
-  ShowNew(bool wait_for_updated_details);
-
-  // Shows the user interface with the payment details.
-  //
   // |wait_for_updated_details|: It's true when merchant passed in a promise
   // into PaymentRequest.show(), so Chrome should disregard the initial payment
   // details and show a spinner until the promise resolves with the correct

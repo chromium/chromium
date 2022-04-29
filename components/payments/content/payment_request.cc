@@ -276,10 +276,6 @@ void PaymentRequest::Init(
 }
 
 void PaymentRequest::Show(bool wait_for_updated_details) {
-  ShowNew(wait_for_updated_details);
-}
-
-void PaymentRequest::ShowNew(bool wait_for_updated_details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
     ResetAndDeleteThis();

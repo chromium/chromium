@@ -95,7 +95,6 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
             mojom::PaymentDetailsPtr details,
             mojom::PaymentOptionsPtr options) override;
   void Show(bool wait_for_updated_details) override;
-  void ShowNew(bool wait_for_updated_details) override;
   void Retry(mojom::PaymentValidationErrorsPtr errors) override;
   void UpdateWith(mojom::PaymentDetailsPtr details) override;
   void OnPaymentDetailsNotUpdated() override;
