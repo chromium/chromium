@@ -3587,6 +3587,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.PeakWebMediaPlayerCount" units="players"
     expires_after="M100">
+  <obsolete>
+    Removed 04/2022 due to lack of further need for this data.
+  </obsolete>
   <owner>dalecurtis@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

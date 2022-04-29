@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/render_view.h"
@@ -199,20 +198,6 @@ TEST_F(RendererWebMediaPlayerDelegateTest, IdleDelegatesAreSuspended) {
     tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
     RunLoopOnce();
   }
-}
-
-TEST_F(RendererWebMediaPlayerDelegateTest, PeakPlayerHistogram) {
-  NiceMock<MockWebMediaPlayerDelegateObserver> observer;
-  NiceMock<MockWebMediaPlayerDelegateObserver> observer2;
-  delegate_manager_->AddObserver(&observer);
-  delegate_manager_->AddObserver(&observer2);
-
-  base::HistogramTester histogram_tester;
-
-  constexpr char kHistogramName[] = "Media.PeakWebMediaPlayerCount";
-  histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  delegate_manager_.reset();
-  histogram_tester.ExpectUniqueSample(kHistogramName, 2, 1);
 }
 
 }  // namespace media
