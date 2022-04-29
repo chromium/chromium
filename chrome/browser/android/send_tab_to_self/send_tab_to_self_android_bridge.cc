@@ -8,7 +8,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -112,17 +111,15 @@ static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_title,
-    jlong j_navigation_time,
     const JavaParamRef<jstring>& j_target_device_sync_cache_guid) {
   const std::string url = ConvertJavaStringToUTF8(env, j_url);
   const std::string title = ConvertJavaStringToUTF8(env, j_title);
   const std::string target_device_sync_cache_guid =
       ConvertJavaStringToUTF8(env, j_target_device_sync_cache_guid);
-  base::Time navigation_time = base::Time::FromJavaTime(j_navigation_time);
 
   SendTabToSelfModel* model = GetModel(j_profile);
-  return model->IsReady() && model->AddEntry(GURL(url), title, navigation_time,
-                                             target_device_sync_cache_guid);
+  return model->IsReady() &&
+         model->AddEntry(GURL(url), title, target_device_sync_cache_guid);
 }
 
 // Deletes the entry associated with the passed in GUID.

@@ -296,7 +296,6 @@ const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
 const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const GURL& url,
     const std::string& title,
-    base::Time navigation_time,
     const std::string& target_device_cache_guid) {
   if (!change_processor()->IsTrackingMetadata()) {
     // TODO(crbug.com/940512) handle failure case.
@@ -329,8 +328,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   }
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, trimmed_title, shared_time, navigation_time,
-      local_device_name_, target_device_cache_guid);
+      guid, url, trimmed_title, shared_time, local_device_name_,
+      target_device_cache_guid);
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();

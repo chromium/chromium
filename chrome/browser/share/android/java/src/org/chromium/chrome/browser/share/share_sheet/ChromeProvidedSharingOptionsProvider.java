@@ -439,24 +439,9 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.send_tab, R.string.send_tab_to_self_share_activity_title)
                 .setFeatureNameForMetrics("SharingHubAndroid.SendTabToSelfSelected")
                 .setOnClickCallback((view) -> {
-                    // Prefer tab navigation time but fallback to the share time when unavailable.
-                    // This timestamp is used to throttle sending the same link multiple times
-                    // within the same timeframe. In the worst case, the share time will be used
-                    // and the user will not be throttled, but this is ok given the upsides (STTS
-                    // being available).
-                    long timestamp;
-                    if (mTabProvider.hasValue()) {
-                        timestamp = mTabProvider.get()
-                                            .getWebContents()
-                                            .getNavigationController()
-                                            .getVisibleEntry()
-                                            .getTimestamp();
-                    } else {
-                        timestamp = mShareStartTime;
-                    }
                     SendTabToSelfCoordinator sttsCoordinator =
                             new SendTabToSelfCoordinator(mActivity, mWindowAndroid, mUrl,
-                                    mShareParams.getTitle(), mBottomSheetController, timestamp);
+                                    mShareParams.getTitle(), mBottomSheetController);
                     sttsCoordinator.show();
                 })
                 .build();

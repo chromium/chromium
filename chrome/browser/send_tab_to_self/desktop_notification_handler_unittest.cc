@@ -152,7 +152,7 @@ TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
 
   SendTabToSelfEntry entry(kDesktopNotificationGuid, url,
                            kDesktopNotificationTitle, base::Time::Now(),
-                           base::Time::Now(), kDesktopNotificationDeviceInfo,
+                           kDesktopNotificationDeviceInfo,
                            kDesktopNotificationTargetDeviceSyncCacheGuid);
   std::vector<const SendTabToSelfEntry*> entries;
   entries.push_back(&entry);

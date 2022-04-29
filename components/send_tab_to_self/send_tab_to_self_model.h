@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "url/gurl.h"
@@ -47,7 +46,6 @@ class SendTabToSelfModel {
   virtual const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      base::Time navigation_time,
       const std::string& target_device_cache_guid) = 0;
 
   // Remove entry with |guid| from entries. Allows clients to modify the state

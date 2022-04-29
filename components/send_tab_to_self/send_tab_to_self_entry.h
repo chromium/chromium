@@ -30,13 +30,10 @@ class SendTabToSelfEntry {
   // entry.
   // |now| is used to fill the |creation_time_us_| and all the update timestamp
   // fields.
-  // TODO(crbug.com/1319413): Remove |unused_original_navigation_time| and the
-  // plumbing to fill it.
   SendTabToSelfEntry(const std::string& guid,
                      const GURL& url,
                      const std::string& title,
                      base::Time shared_time,
-                     base::Time unused_original_navigation_time,
                      const std::string& device_name,
                      const std::string& target_device_sync_cache_guid);
 

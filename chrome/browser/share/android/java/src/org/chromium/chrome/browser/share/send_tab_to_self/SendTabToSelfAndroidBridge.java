@@ -61,15 +61,14 @@ public class SendTabToSelfAndroidBridge {
      * @param profile Profile of the user to add entry for.
      * @param url URL to be shared
      * @param title Title of the page
-     * @param navigationTime Time the user navigated to the page
      * @return If the persistent entry in the bridge was created.
      */
-    public static boolean addEntry(Profile profile, String url, String title, long navigationTime,
-            String targetDeviceSyncCacheGuid) {
+    public static boolean addEntry(
+            Profile profile, String url, String title, String targetDeviceSyncCacheGuid) {
         // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
         // place. assert mIsNativeSendTabToSelfModelLoaded;
         return SendTabToSelfAndroidBridgeJni.get().addEntry(
-                profile, url, title, navigationTime, targetDeviceSyncCacheGuid);
+                profile, url, title, targetDeviceSyncCacheGuid);
     }
 
     /**
@@ -146,8 +145,8 @@ public class SendTabToSelfAndroidBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean addEntry(Profile profile, String url, String title, long navigationTime,
-                String targetDeviceSyncCacheGuid);
+        boolean addEntry(
+                Profile profile, String url, String title, String targetDeviceSyncCacheGuid);
 
         void getAllGuids(Profile profile, List<String> guids);
 

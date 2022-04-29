@@ -62,10 +62,9 @@ void SendTabToSelfBrowserAgent::SendCurrentTabToDevice(
 
   GURL url = current_item->GetURL();
   std::string title = base::UTF16ToUTF8(current_item->GetTitle());
-  base::Time navigation_time = current_item->GetTimestamp();
   std::string target_device = base::SysNSStringToUTF8(target_device_id);
 
-  model_->AddEntry(url, title, navigation_time, target_device);
+  model_->AddEntry(url, title, target_device);
 }
 
 void SendTabToSelfBrowserAgent::SendTabToSelfModelLoaded() {

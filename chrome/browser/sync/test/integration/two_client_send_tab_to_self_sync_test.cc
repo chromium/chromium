@@ -48,7 +48,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const base::Time kHistoryEntryTime = base::Time::Now();
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
-  const base::Time kTime = base::Time::FromDoubleT(1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -65,8 +64,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));
@@ -79,17 +77,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
                        ModelsMatchAfterAddWhenBothClientsAlreadySyncing) {
   const GURL kGurl0("https://www.example0.com");
   const std::string kTitle0("example0");
-  const base::Time kTime0 = base::Time::FromDoubleT(1);
   const std::string kTargetDeviceSyncCacheGuid0("target0");
 
   const GURL kGurl1("https://www.example1.com");
   const std::string kTitle1("example1");
-  const base::Time kTime1 = base::Time::FromDoubleT(2);
   const std::string kTargetDeviceSyncCacheGuid1("target1");
 
   const GURL kGurl2("https://www.example2.com");
   const std::string kTitle2("example2");
-  const base::Time kTime2 = base::Time::FromDoubleT(3);
   const std::string kTargetDeviceSyncCacheGuid2("target2");
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -98,16 +93,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kGurl0, kTitle0, kTime0, kTargetDeviceSyncCacheGuid0));
+  ASSERT_TRUE(model0->AddEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0));
 
-  ASSERT_TRUE(
-      model0->AddEntry(kGurl1, kTitle1, kTime1, kTargetDeviceSyncCacheGuid1));
+  ASSERT_TRUE(model0->AddEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1));
 
-  ASSERT_TRUE(
-      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetSendTabToSelfModel()
-          ->AddEntry(kGurl2, kTitle2, kTime2, kTargetDeviceSyncCacheGuid2));
+  ASSERT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->AddEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2));
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfModelEqualityChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1)),
@@ -214,7 +206,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const base::Time kHistoryEntryTime = base::Time::Now();
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
-  const base::Time kTime = base::Time::FromDoubleT(1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -233,8 +224,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   send_tab_to_self::SendTabToSelfModel* model0 =
       service0->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));

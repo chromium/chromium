@@ -36,7 +36,6 @@ SendTabToSelfEntry::SendTabToSelfEntry(
     const GURL& url,
     const std::string& title,
     base::Time shared_time,
-    base::Time unused_original_navigation_time,
     const std::string& device_name,
     const std::string& target_device_sync_cache_guid)
     : guid_(guid),
@@ -144,8 +143,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
 
   // Protobuf parsing enforces utf8 encoding for all strings.
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, title, shared_time,
-      /*unused_original_navigation_time=*/base::Time(), device_name,
+      guid, url, title, shared_time, device_name,
       target_device_sync_cache_guid);
 
   if (pb_entry.opened()) {
@@ -178,8 +176,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromRequiredFields(
   if (guid.empty() || !url.is_valid()) {
     return nullptr;
   }
-  return std::make_unique<SendTabToSelfEntry>(guid, url, "", base::Time(),
-                                              base::Time(), "",
+  return std::make_unique<SendTabToSelfEntry>(guid, url, "", base::Time(), "",
                                               target_device_sync_cache_guid);
 }
 

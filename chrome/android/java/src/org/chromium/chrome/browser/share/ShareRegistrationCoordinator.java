@@ -114,9 +114,8 @@ public class ShareRegistrationCoordinator {
     void doSendTabToSelfShare(@NonNull Context context, @NonNull WindowAndroid windowAndroid,
             @Nullable NavigationEntry entry, @NonNull BottomSheetController bottomSheetController) {
         if (entry == null) return;
-        SendTabToSelfCoordinator coordinator =
-                new SendTabToSelfCoordinator(context, windowAndroid, entry.getUrl().getSpec(),
-                        entry.getTitle(), bottomSheetController, entry.getTimestamp());
+        SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(context, windowAndroid,
+                entry.getUrl().getSpec(), entry.getTitle(), bottomSheetController);
         coordinator.show();
     }
 }

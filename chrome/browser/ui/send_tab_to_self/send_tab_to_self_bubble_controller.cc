@@ -122,7 +122,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
 
   model->AddEntry(navigation_entry->GetURL(),
                   base::UTF16ToUTF8(navigation_entry->GetTitle()),
-                  navigation_entry->GetTimestamp(), target_device_guid);
+                  target_device_guid);
   // Show confirmation message.
   show_message_ = true;
   UpdateIcon();

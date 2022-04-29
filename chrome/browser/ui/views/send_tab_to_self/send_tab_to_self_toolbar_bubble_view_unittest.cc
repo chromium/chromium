@@ -24,7 +24,7 @@ class SendTabToSelfToolbarBubbleViewTest : public ChromeViewsTestBase {};
 TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
   GURL url("https://www.example.com");
   SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           base::Time::Now(), "Example Device", "sync_guid");
+                           "Example Device", "sync_guid");
   SendTabToSelfToolbarBubbleView bubble(
       nullptr, nullptr, entry,
       base::BindLambdaForTesting([&](NavigateParams* params) {

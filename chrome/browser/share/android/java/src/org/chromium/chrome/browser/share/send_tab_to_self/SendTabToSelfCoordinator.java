@@ -99,16 +99,14 @@ public class SendTabToSelfCoordinator {
     private final String mUrl;
     private final String mTitle;
     private final BottomSheetController mController;
-    private final long mNavigationTime;
 
     public SendTabToSelfCoordinator(Context context, WindowAndroid windowAndroid, String url,
-            String title, BottomSheetController controller, long navigationTime) {
+            String title, BottomSheetController controller) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mUrl = url;
         mTitle = title;
         mController = controller;
-        mNavigationTime = navigationTime;
     }
 
     public void show() {
@@ -127,9 +125,8 @@ public class SendTabToSelfCoordinator {
     }
 
     private void showDeviceList() {
-        mController.requestShowContent(new DevicePickerBottomSheetContent(mContext, mUrl, mTitle,
-                                               mNavigationTime, mController),
-                true);
+        mController.requestShowContent(
+                new DevicePickerBottomSheetContent(mContext, mUrl, mTitle, mController), true);
     }
 
     private boolean shouldOfferSignInPromo() {

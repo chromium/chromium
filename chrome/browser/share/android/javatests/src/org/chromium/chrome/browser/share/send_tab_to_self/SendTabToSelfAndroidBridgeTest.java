@@ -49,7 +49,6 @@ public class SendTabToSelfAndroidBridgeTest {
     private static final String TITLE = "Come try Tanya's famous tacos";
     private static final String DEVICE_NAME = "Macbook Pro";
     private static final String TARGET_DEVICE_SYNC_CACHE_GUID = "randomguid2";
-    private static final long NAVIGATION_TIME_MS = 123L;
     private static final long SHARE_TIME_MS = 456L;
 
     @Before
@@ -61,11 +60,9 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     @SmallTest
     public void testAddEntry() {
-        SendTabToSelfAndroidBridge.addEntry(
-                mProfile, URL, TITLE, NAVIGATION_TIME_MS, TARGET_DEVICE_SYNC_CACHE_GUID);
+        SendTabToSelfAndroidBridge.addEntry(mProfile, URL, TITLE, TARGET_DEVICE_SYNC_CACHE_GUID);
         verify(mNativeMock)
-                .addEntry(eq(mProfile), eq(URL), eq(TITLE), eq(NAVIGATION_TIME_MS),
-                        eq(TARGET_DEVICE_SYNC_CACHE_GUID));
+                .addEntry(eq(mProfile), eq(URL), eq(TITLE), eq(TARGET_DEVICE_SYNC_CACHE_GUID));
     }
 
     @Test
