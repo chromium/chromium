@@ -1527,6 +1527,7 @@ to valid getter return types:
 | `handle<message_pipe>`       | `mojo::ScopedMessagePipeHandle`
 | `handle<data_pipe_consumer>` | `mojo::ScopedDataPipeConsumerHandle`
 | `handle<data_pipe_producer>` | `mojo::ScopedDataPipeProducerHandle`
+| `handle<platform>`           | `mojo::PlatformHandle`
 | `handle<shared_buffer>`      | `mojo::ScopedSharedBufferHandle`
 | `pending_remote<Foo>`        | `mojo::PendingRemote<Foo>`
 | `pending_receiver<Foo>`      | `mojo::PendingReceiver<Foo>`
