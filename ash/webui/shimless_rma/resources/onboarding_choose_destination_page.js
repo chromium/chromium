@@ -79,7 +79,9 @@ export class OnboardingChooseDestinationPageElement extends
   onNextButtonClick() {
     if (this.destinationOwner_ === 'originalOwner') {
       return this.shimlessRmaService_.setSameOwner();
-    } else if (this.destinationOwner_ === 'newOwner') {
+    } else if (
+        this.destinationOwner_ === 'newOwner' ||
+        this.destinationOwner_ === 'notSureOwner') {
       return this.shimlessRmaService_.setDifferentOwner();
     } else {
       return Promise.reject(new Error('No destination selected'));

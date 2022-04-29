@@ -2766,6 +2766,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_NEW_OWNER_DESCRIPTION" desc="Detailed description of when to choose return to a new owner.">
         Select this option if the device is being restocked or refurbished for distribution to a new customer.
       </message>
+      <message name="IDS_SHIMLESS_RMA_NOT_SURE_OWNER" translateable="false" desc="Text shown next to the radio button for when the technician is not sure whether the device goes to the same owner or a different owner.">
+        Not sure
+      </message>
       <!-- Choose write protect disable method page -->
       <message name="IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
         Select how you would like to disable write-protect
