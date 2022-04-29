@@ -90,6 +90,10 @@ TEST_F(MetadataUtilsTest, MetadataUmaFeatureValidation) {
   EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
             metadata_utils::ValidateMetadataUmaFeature(feature));
 
+  feature.set_type(proto::SignalType::UKM_EVENT);
+  EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
+            metadata_utils::ValidateMetadataUmaFeature(feature));
+
   // name not required for USER_ACTION.
   feature.set_type(proto::SignalType::USER_ACTION);
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashNotFound,

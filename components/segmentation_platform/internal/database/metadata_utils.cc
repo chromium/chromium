@@ -106,7 +106,8 @@ ValidationResult ValidateMetadata(
 }
 
 ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature) {
-  if (feature.type() == proto::SignalType::UNKNOWN_SIGNAL_TYPE)
+  if (feature.type() == proto::SignalType::UNKNOWN_SIGNAL_TYPE ||
+      feature.type() == proto::SignalType::UKM_EVENT)
     return ValidationResult::kSignalTypeInvalid;
 
   if ((feature.type() == proto::SignalType::HISTOGRAM_ENUM ||
@@ -295,6 +296,7 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
       return SignalKey::Kind::HISTOGRAM_ENUM;
     case proto::SignalType::HISTOGRAM_VALUE:
       return SignalKey::Kind::HISTOGRAM_VALUE;
+    case proto::SignalType::UKM_EVENT:
     case proto::SignalType::UNKNOWN_SIGNAL_TYPE:
       return SignalKey::Kind::UNKNOWN;
   }

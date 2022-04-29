@@ -47,6 +47,8 @@ enum TimeUnit {
 
 message UMAFeature {
   // The type of signal this feature refers to.
+  // Note: SignalType::UKM_EVENT type is only used for SignalStorageConfig and
+  // should not be used as uma feature's signal type.
   optional SignalType type = 1;
 
   // The human readable name of the histogram or user action.

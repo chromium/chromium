@@ -13,4 +13,5 @@ enum SignalType {
   USER_ACTION = 1;
   HISTOGRAM_ENUM = 2;
   HISTOGRAM_VALUE = 3;
+  UKM_EVENT = 4;
 }
