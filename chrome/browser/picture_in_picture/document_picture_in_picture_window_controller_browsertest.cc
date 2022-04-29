@@ -152,7 +152,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 // Checks the creation of the window controller, as well as basic window
 // creation, visibility and activation.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CreationAndVisibilityAndActivation) {
+                       DISABLED_CreationAndVisibilityAndActivation) {
   LoadTabAndEnterPictureInPicture(browser());
 
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // window twice in a row should work, closing the old window before opening the
 // new one.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CreateTwice) {
+                       DISABLED_CreateTwice) {
   LoadTabAndEnterPictureInPicture(browser());
 
   gfx::NativeWindow native_window_1 = GetOverlayWindow()->GetNativeWindow();
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Tests closing the document picture-in-picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CloseWindow) {
+                       DISABLED_CloseWindow) {
   LoadTabAndEnterPictureInPicture(browser());
 
   window_controller()->Close(/*should_pause_video=*/true);
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Tests navigating the opener closes the picture in picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       ClosePictureInPictureWhenOpenerNavigates) {
+                       DISABLED_ClosePictureInPictureWhenOpenerNavigates) {
   LoadTabAndEnterPictureInPicture(browser());
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -211,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Navigation by the pip window to a new document should close the pip window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CloseOnPictureInPictureNavigationToNewDocument) {
+IN_PROC_BROWSER_TEST_F(
+    DocumentPictureInPictureWindowControllerBrowserTest,
+    DISABLED_CloseOnPictureInPictureNavigationToNewDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
@@ -225,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Navigation within the pip window's document should not close the pip window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DoNotCloseOnPictureInPictureNavigationInsideDocument) {
+IN_PROC_BROWSER_TEST_F(
+    DocumentPictureInPictureWindowControllerBrowserTest,
+    DISABLED_DoNotCloseOnPictureInPictureNavigationInsideDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
@@ -238,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       RequiresSecureContext) {
+                       DISABLED_RequiresSecureContext) {
   GURL test_page_url("http://media/picture-in-picture/blank.html");
   ASSERT_FALSE(network::IsUrlPotentiallyTrustworthy(test_page_url));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));

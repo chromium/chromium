@@ -95,8 +95,12 @@ void BrowserFrame::InitBrowserFrame() {
   params.delegate = browser_view_;
   params.headless_mode = headless::IsChromeNativeHeadless();
 
+  Browser* browser = browser_view_->browser();
+  if (browser->is_type_picture_in_picture()) {
+    params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  }
+
   if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
-    Browser* browser = browser_view_->browser();
     if (browser->is_type_normal() || browser->is_type_devtools() ||
         browser->is_type_app()) {
       // Typed panel/popup can only return a size once the widget has been

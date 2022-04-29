@@ -2918,6 +2918,21 @@ bool Browser::CustomTabBrowserSupportsWindowFeature(
 }
 #endif
 
+bool Browser::PictureInPictureBrowserSupportsWindowFeature(
+    WindowFeature feature,
+    bool check_can_support) const {
+  switch (feature) {
+    case FEATURE_TITLEBAR:
+      return true;
+    case FEATURE_LOCATIONBAR:
+    case FEATURE_TABSTRIP:
+    case FEATURE_TOOLBAR:
+    case FEATURE_BOOKMARKBAR:
+    case FEATURE_NONE:
+      return false;
+  }
+}
+
 bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
                                         bool check_can_support) const {
   switch (type_) {
@@ -2937,6 +2952,9 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
     case TYPE_CUSTOM_TAB:
       return CustomTabBrowserSupportsWindowFeature(feature);
 #endif
+    case TYPE_PICTURE_IN_PICTURE:
+      return PictureInPictureBrowserSupportsWindowFeature(feature,
+                                                          check_can_support);
   }
 }
 

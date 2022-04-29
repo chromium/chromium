@@ -13,6 +13,9 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
       return sessions::SessionWindow::TYPE_NORMAL;
     case Browser::TYPE_POPUP:
       return sessions::SessionWindow::TYPE_POPUP;
+    case Browser::TYPE_PICTURE_IN_PICTURE:
+      // For now, picture in picture windows can be treated like popups.
+      return sessions::SessionWindow::TYPE_POPUP;
     case Browser::TYPE_APP:
       return sessions::SessionWindow::TYPE_APP;
     case Browser::TYPE_DEVTOOLS:

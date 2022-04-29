@@ -812,6 +812,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // `create_params` to enable/disable specific size controls.
   if (chrome::IsRunningInForcedAppMode()) {
     SetHasWindowSizeControls(false);
+  } else if (GetIsPictureInPictureType()) {
+    // Picture in picture windows must always have a title, can never minimize,
+    // and can never maximize regardless of what the params say.
+    SetShowTitle(true);
+    SetCanMinimize(false);
+    SetCanMaximize(false);
+    SetCanResize(true);
   } else {
     SetCanResize(browser_->create_params().can_resize);
     SetCanMaximize(browser_->create_params().can_maximize);
@@ -1163,6 +1170,10 @@ bool BrowserView::GetIsNormalType() const {
 
 bool BrowserView::GetIsWebAppType() const {
   return web_app::AppBrowserController::IsWebApp(browser_.get());
+}
+
+bool BrowserView::GetIsPictureInPictureType() const {
+  return browser_->is_type_picture_in_picture();
 }
 
 bool BrowserView::GetTopControlsSlideBehaviorEnabled() const {

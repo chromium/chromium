@@ -313,6 +313,10 @@ class BrowserView : public BrowserWindow,
   // for an installed web app.
   bool GetIsWebAppType() const;
 
+  // Returns true if the Browser object associated with this BrowserView is for
+  // a Picture in Picture window.
+  bool GetIsPictureInPictureType() const;
+
   // Returns true if the top browser controls (a.k.a. top-chrome UIs) are
   // allowed to slide up and down with the gesture scrolls on the current tab's
   // page.

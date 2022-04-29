@@ -150,6 +150,10 @@ class Browser : public TabStripModelObserver,
     // CustomTabToolbarview.
     TYPE_CUSTOM_TAB,
 #endif
+    // Document picture-in-picture browser.  It's mostly the same as a
+    // TYPE_POPUP, except that it floats above other windows.  It also has some
+    // additional restrictions, like it cannot navigated, to prevent misuse.
+    TYPE_PICTURE_IN_PICTURE,
     // If you add a new type, consider updating the test
     // BrowserTest.StartMaximized.
   };
@@ -698,6 +702,9 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_type_custom_tab() const { return type_ == TYPE_CUSTOM_TAB; }
 #endif
+  bool is_type_picture_in_picture() const {
+    return type_ == TYPE_PICTURE_IN_PICTURE;
+  }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;
@@ -1073,6 +1080,10 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool CustomTabBrowserSupportsWindowFeature(WindowFeature feature) const;
 #endif
+
+  bool PictureInPictureBrowserSupportsWindowFeature(
+      WindowFeature feature,
+      bool check_can_support) const;
 
   // Implementation of SupportsWindowFeature and CanSupportWindowFeature. If
   // |check_fullscreen| is true, the set of features reflect the actual state of

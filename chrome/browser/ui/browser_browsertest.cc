@@ -1517,13 +1517,20 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 // set_show_state(ui::SHOW_STATE_MAXIMIZED) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   Browser::CreateParams params[] = {
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
-      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->profile(), true),
-      Browser::CreateParams::CreateForDevTools(browser()->profile()),
-      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true)};
+    Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
+    Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
+    Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
+                                        browser()->profile(), true),
+    Browser::CreateParams::CreateForDevTools(browser()->profile()),
+    Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
+                                             browser()->profile(), true),
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Picture in picture v2 is not supported yet.
+    // See crbug.com/1320453 .
+    Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                          browser()->profile(), true),
+#endif
+  };
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
@@ -1534,13 +1541,19 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
 // set_show_state(ui::SHOW_STATE_MINIMIZED) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
   Browser::CreateParams params[] = {
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
-      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->profile(), true),
-      Browser::CreateParams::CreateForDevTools(browser()->profile()),
-      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true)};
+    Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
+    Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
+    Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
+                                        browser()->profile(), true),
+    Browser::CreateParams::CreateForDevTools(browser()->profile()),
+    Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
+                                             browser()->profile(), true),
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Picture in picture v2 is not supported yet.
+    Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                          browser()->profile(), true),
+#endif  // !IS_CHROMEOS_LACROS
+  };
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
@@ -2947,3 +2960,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(back_observer.has_committed());
   EXPECT_FALSE(back_observer.was_same_document());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
+  Browser* popup_browser = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_PICTURE_IN_PICTURE, browser()->profile(), true));
+  ASSERT_TRUE(popup_browser->is_type_picture_in_picture());
+}
+#endif  // !IS_CHROMEOS_LACROS
