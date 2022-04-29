@@ -105,22 +105,6 @@ class CONTENT_EXPORT AttributionTrigger {
                      std::vector<EventTriggerData> event_triggers,
                      AttributionAggregatableTrigger aggregatable_trigger);
 
-  // Should only be created with values that the browser process has already
-  // validated. |trigger_data| and |event_source_trigger_data| will be sanitized
-  // to a lower entropy by the `AttributionStorageDelegate` before storage.
-  // |conversion_destination| should be filled by a navigation origin known by
-  // the browser process.
-  //
-  // TODO(apaseltiner): Remove this constructor once the old
-  // trigger-registration API surface is removed.
-  AttributionTrigger(uint64_t trigger_data,
-                     url::Origin destination_origin,
-                     url::Origin reporting_origin,
-                     uint64_t event_source_trigger_data,
-                     int64_t priority,
-                     absl::optional<uint64_t> dedup_key,
-                     absl::optional<uint64_t> debug_key,
-                     AttributionAggregatableTrigger aggregatable_trigger);
   AttributionTrigger(const AttributionTrigger& other);
   AttributionTrigger& operator=(const AttributionTrigger& other);
   AttributionTrigger(AttributionTrigger&& other);

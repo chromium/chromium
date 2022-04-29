@@ -493,8 +493,7 @@ SourceBuilder& SourceBuilder::SetFilterData(AttributionFilterData filter_data) {
 }
 
 SourceBuilder& SourceBuilder::SetDefaultFilterData() {
-  filter_data_ = AttributionFilterData::CreateForTesting(
-      {{"source_type", {AttributionSourceTypeToString(source_type_)}}});
+  filter_data_ = AttributionFilterData::ForSourceType(source_type_);
   return *this;
 }
 
@@ -615,10 +614,23 @@ TriggerBuilder& TriggerBuilder::SetAggregatableTrigger(
 }
 
 AttributionTrigger TriggerBuilder::Build() const {
-  return AttributionTrigger(trigger_data_, destination_origin_,
-                            reporting_origin_, event_source_trigger_data_,
-                            priority_, dedup_key_, debug_key_,
-                            aggregatable_trigger_);
+  std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+
+  event_triggers.emplace_back(
+      trigger_data_, priority_, dedup_key_,
+      /*filters=*/
+      AttributionFilterData::ForSourceType(AttributionSourceType::kNavigation),
+      /*not_filters=*/AttributionFilterData());
+
+  event_triggers.emplace_back(
+      event_source_trigger_data_, priority_, dedup_key_,
+      /*filters=*/
+      AttributionFilterData::ForSourceType(AttributionSourceType::kEvent),
+      /*not_filters=*/AttributionFilterData());
+
+  return AttributionTrigger(destination_origin_, reporting_origin_,
+                            AttributionFilterData(), debug_key_,
+                            std::move(event_triggers), aggregatable_trigger_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(StoredSource source)
