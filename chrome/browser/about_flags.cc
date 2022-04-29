@@ -2456,6 +2456,19 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// The variations of --password-domain-capabilities-fetching.
+const FeatureEntry::FeatureParam
+    kPasswordDomainCapabilitiesFetchingVariationLiveExperiment[] = {
+        {password_manager::features::kPasswordChangeLiveExperimentParam.name,
+         "true"}};
+
+const FeatureEntry::FeatureVariation
+    kPasswordDomainCapabilitiesFetchingFeatureVariations[] = {
+        {"Live experiment",
+         kPasswordDomainCapabilitiesFetchingVariationLiveExperiment,
+         std::size(kPasswordDomainCapabilitiesFetchingVariationLiveExperiment),
+         nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 // The variations of --password-change-in-settings.
 const FeatureEntry::FeatureParam
@@ -2470,19 +2483,6 @@ const FeatureEntry::FeatureVariation
          kPasswordChangeInSettingsVariationWithForcedWarningForEverySite,
          std::size(
              kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
-         nullptr}};
-
-// The variations of --password-domain-capabilities-fetching.
-const FeatureEntry::FeatureParam
-    kPasswordDomainCapabilitiesFetchingVariationLiveExperiment[] = {
-        {password_manager::features::kPasswordChangeLiveExperimentParam.name,
-         "true"}};
-
-const FeatureEntry::FeatureVariation
-    kPasswordDomainCapabilitiesFetchingFeatureVariations[] = {
-        {"Live experiment",
-         kPasswordDomainCapabilitiesFetchingVariationLiveExperiment,
-         std::size(kPasswordDomainCapabilitiesFetchingVariationLiveExperiment),
          nullptr}};
 
 // The variations of --password-change-support.
@@ -6801,6 +6801,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDoubleBufferCompositing)},
 
+    {"password-domain-capabilities-fetching",
+     flag_descriptions::kPasswordDomainCapabilitiesFetchingName,
+     flag_descriptions::kPasswordDomainCapabilitiesFetchingDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kPasswordDomainCapabilitiesFetching,
+         kPasswordDomainCapabilitiesFetchingFeatureVariations,
+         "PasswordDomainCapabilitiesFetchingFeatureVariations")},
+    {"force-enable-password-domain-capabilities",
+     flag_descriptions::kForceEnablePasswordDomainCapabilitiesName,
+     flag_descriptions::kForceEnablePasswordDomainCapabilitiesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kForceEnablePasswordDomainCapabilities)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"password-change-in-settings",
      flag_descriptions::kPasswordChangeInSettingsName,
@@ -6809,14 +6823,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordChangeInSettings,
          kPasswordChangeInSettingsFeatureVariations,
          "PasswordChangeInSettingsFeatureVariations")},
-    {"password-domain-capabilities-fetching",
-     flag_descriptions::kPasswordDomainCapabilitiesFetchingName,
-     flag_descriptions::kPasswordDomainCapabilitiesFetchingDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kPasswordDomainCapabilitiesFetching,
-         kPasswordDomainCapabilitiesFetchingFeatureVariations,
-         "PasswordDomainCapabilitiesFetchingFeatureVariations")},
     {"password-scripts-fetching",
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
@@ -6826,12 +6832,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
                                     kPasswordChangeFeatureVariations,
                                     "PasswordChangeFeatureVariations")},
-    {"force-enable-password-domain-capabilities",
-     flag_descriptions::kForceEnablePasswordDomainCapabilitiesName,
-     flag_descriptions::kForceEnablePasswordDomainCapabilitiesDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kForceEnablePasswordDomainCapabilities)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
