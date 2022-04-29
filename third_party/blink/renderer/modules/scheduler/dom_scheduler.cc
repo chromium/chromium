@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_task_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/modules/scheduler/dom_task.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
@@ -67,8 +70,10 @@ ScriptPromise DOMScheduler::postTask(
     return ScriptPromise();
   }
   if (options->hasSignal() && options->signal()->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "The task was aborted");
+    exception_state.RethrowV8Exception(
+        ToV8Traits<IDLAny>::ToV8(script_state,
+                                 options->signal()->reason(script_state))
+            .ToLocalChecked());
     return ScriptPromise();
   }
 
