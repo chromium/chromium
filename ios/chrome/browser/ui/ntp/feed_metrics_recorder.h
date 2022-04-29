@@ -126,6 +126,12 @@ enum class BrokenNTPHierarchyRelationship {
 // Records an unknown |commandID| performed by the Feed.
 - (void)recordCommandID:(int)commandID;
 
+// Records that a card was shown at |index|.
+- (void)recordCardShownAtIndex:(int)index;
+
+// Records that a card was opened at |index|.
+- (void)recordCardTappedAtIndex:(int)index;
+
 // Records if a notice card was presented at the time the feed was initially
 // loaded. e.g. Launch time, user refreshes, and account switches.
 - (void)recordNoticeCardShown:(BOOL)shown;

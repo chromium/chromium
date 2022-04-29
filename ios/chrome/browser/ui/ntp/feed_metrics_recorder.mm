@@ -144,6 +144,14 @@ const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
 
+// Histogram name for a feed card shown at index.
+const char kDiscoverFeedCardShownAtIndex[] =
+    "NewTabPage.ContentSuggestions.Shown";
+
+// Histogram name for a feed card tapped at index.
+const char kDiscoverFeedCardOpenedAtIndex[] =
+    "NewTabPage.ContentSuggestions.Opened";
+
 // Histogram name to capture Feed Notice card impressions.
 const char kDiscoverFeedNoticeCardFulfilled[] =
     "ContentSuggestions.Feed.NoticeCardFulfilled2";
@@ -202,6 +210,9 @@ const int kMinScrollThreshold = 160;
 
 // Time between two metrics recorded to consider it a new session.
 const int kMinutesBetweenSessions = 5;
+
+// The max amount of cards in the Discover Feed.
+const int kMaxCardsInFeed = 50;
 }  // namespace
 
 @interface FeedMetricsRecorder ()
@@ -422,6 +433,16 @@ const int kMinutesBetweenSessions = 5;
 
 - (void)recordCommandID:(int)commandID {
   base::UmaHistogramSparse(kDiscoverFeedUserActionCommandHistogram, commandID);
+}
+
+- (void)recordCardShownAtIndex:(int)index {
+  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardShownAtIndex, index,
+                             kMaxCardsInFeed);
+}
+
+- (void)recordCardTappedAtIndex:(int)index {
+  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardOpenedAtIndex, index,
+                             kMaxCardsInFeed);
 }
 
 - (void)recordNoticeCardShown:(BOOL)shown {
