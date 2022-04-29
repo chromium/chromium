@@ -90,18 +90,7 @@ class DawnObjectBase {
   void FlushNow();
 
   // GPUObjectBase mixin implementation
-  const ScriptValue label(ScriptState* script_state,
-                          ExceptionState& exception_state) const {
-    if (label_.IsNull()) {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      return ScriptValue(isolate, v8::Undefined(isolate));
-    }
-    return ScriptValue::From(script_state, label_);
-  }
-  void setLabel(ScriptState* script_state,
-                const ScriptValue value,
-                ExceptionState& exception_state);
-
+  const String& label() const { return label_; }
   void setLabel(const String& value);
 
   virtual void setLabelImpl(const String& value){};

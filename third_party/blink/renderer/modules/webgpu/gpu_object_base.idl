@@ -5,9 +5,5 @@
 // https://gpuweb.github.io/gpuweb/
 
 interface mixin GPUObjectBase {
-  // TODO: The type should be (USVString or undefined) but
-  // the bindings can't handle it now although it should be valid type.
-  // As a workaround we make the type any and do custom handling in Blink
-  // until the bindings supports it. Refer to crbug.com/1293259.
-  [CallWith=ScriptState, RaisesException] attribute any label;
+  attribute USVString label;
 };
