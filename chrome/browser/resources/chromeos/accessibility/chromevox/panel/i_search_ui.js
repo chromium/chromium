@@ -5,10 +5,9 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {ISearch} from '../background/panel/i_search.js';
-import {ISearchHandler} from '../background/panel/i_search_handler.js';
-
-import {PanelInterface} from './panel_interface.js';
+import {ISearch} from '/chromevox/background/panel/i_search.js';
+import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
+import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;

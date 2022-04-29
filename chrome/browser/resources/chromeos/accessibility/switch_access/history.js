@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SACache} from './cache.js';
-import {Navigator} from './navigator.js';
-import {DesktopNode} from './nodes/desktop_node.js';
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
-import {SwitchAccessPredicate} from './switch_access_predicate.js';
+import {SACache} from '/switch_access/cache.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {DesktopNode} from '/switch_access/nodes/desktop_node.js';
+import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {SwitchAccessPredicate} from '/switch_access/switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

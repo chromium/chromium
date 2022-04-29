@@ -7,8 +7,8 @@
  * text and converting it into a macro.
  */
 
-import {InputController} from './../input_controller.js';
-import {Macro} from './../macros/macro.js';
+import {InputController} from '/accessibility_common/dictation/input_controller.js';
+import {Macro} from '/accessibility_common/dictation/macros/macro.js';
 
 /**
  * Represents a strategy for parsing speech input and converting it into a

@@ -5,10 +5,9 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
-import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
-
-import {MathHandler} from './math_handler.js';
-import {ChromeVoxPrefs} from './prefs.js';
+import {MathHandler} from '/chromevox/background/math_handler.js';
+import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
+import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
 
 /**
  * @enum {string}

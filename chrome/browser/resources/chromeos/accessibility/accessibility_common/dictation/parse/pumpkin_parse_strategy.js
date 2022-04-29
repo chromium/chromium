@@ -7,17 +7,17 @@
  * semantic parser.
  */
 
-import {InputController} from './../input_controller.js';
-import {InputTextViewMacro} from './../macros/input_text_view_macro.js';
-import {ListCommandsMacro} from './../macros/list_commands_macro.js';
-import {Macro} from './../macros/macro.js';
-import {MacroName} from './../macros/macro_names.js';
-import * as RepeatableKeyPressMacro from './../macros/repeatable_key_press_macro.js';
-import {ParseStrategy} from './parse_strategy.js';
+import {InputController} from '/accessibility_common/dictation/input_controller.js';
+import {InputTextViewMacro} from '/accessibility_common/dictation/macros/input_text_view_macro.js';
+import {ListCommandsMacro} from '/accessibility_common/dictation/macros/list_commands_macro.js';
+import {Macro} from '/accessibility_common/dictation/macros/macro.js';
+import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
+import * as RepeatableKeyPressMacro from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
+import {ParseStrategy} from '/accessibility_common/dictation/parse/parse_strategy.js';
 // PumpkinAvailability is based on the gn argument enable_pumpkin_for_dictation,
 // and pumpkin_availability.js is copied from either include_pumpkin.js
 // or exclude_pumpkin.js in the BUILD rule.
-import {PumpkinAvailability} from './pumpkin/pumpkin_availability.js';
+import {PumpkinAvailability} from '/accessibility_common/dictation/parse/pumpkin/pumpkin_availability.js';
 
 /** A parsing strategy that utilizes the Pumpkin semantic parser. */
 export class PumpkinParseStrategy extends ParseStrategy {

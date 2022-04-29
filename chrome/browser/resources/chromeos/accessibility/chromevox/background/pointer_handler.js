@@ -6,11 +6,10 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
-import {EventGenerator} from '../../common/event_generator.js';
-
-import {BaseAutomationHandler} from './base_automation_handler.js';
-import {CustomAutomationEvent} from './custom_automation_event.js';
-import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
+import {CustomAutomationEvent} from '/chromevox/background/custom_automation_event.js';
+import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {EventGenerator} from '/common/event_generator.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;

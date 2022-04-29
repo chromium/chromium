@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../../common/event_generator.js';
-
-import {Macro, MacroError} from './macro.js';
-import {MacroName} from './macro_names.js';
+import {Macro, MacroError} from '/accessibility_common/dictation/macros/macro.js';
+import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
+import {EventGenerator} from '/common/event_generator.js';
 
 /**
  * Abstract class that executes a macro using a key press which can optionally

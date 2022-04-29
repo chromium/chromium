@@ -7,7 +7,7 @@
  * auditory cues.
  */
 
-import {EarconEngine} from './earcon_engine.js';
+import {EarconEngine} from '/chromevox/background/earcon_engine.js';
 
 export class Earcons extends AbstractEarcons {
   constructor() {

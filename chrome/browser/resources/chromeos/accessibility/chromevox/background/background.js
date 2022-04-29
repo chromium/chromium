@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InstanceChecker} from '../../common/instance_checker.js';
-
-import {BrailleCommandHandler} from './braille/braille_command_handler.js';
-import {ChromeVoxBackground} from './classic_background.js';
-import {CommandHandler} from './command_handler.js';
-import {DesktopAutomationHandler} from './desktop_automation_handler.js';
-import {DesktopAutomationInterface} from './desktop_automation_interface.js';
-import {DownloadHandler} from './download_handler.js';
-import {Earcons} from './earcons.js';
-import {FindHandler} from './find_handler.js';
-import {FocusAutomationHandler} from './focus_automation_handler.js';
-import {GestureCommandHandler} from './gesture_command_handler.js';
-import {BackgroundKeyboardHandler} from './keyboard_handler.js';
-import {LiveRegions} from './live_regions.js';
-import {MathHandler} from './math_handler.js';
-import {MediaAutomationHandler} from './media_automation_handler.js';
-import {PageLoadSoundHandler} from './page_load_sound_handler.js';
-import {RangeAutomationHandler} from './range_automation_handler.js';
+import {BrailleCommandHandler} from '/chromevox/background/braille/braille_command_handler.js';
+import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
+import {CommandHandler} from '/chromevox/background/command_handler.js';
+import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
+import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {DownloadHandler} from '/chromevox/background/download_handler.js';
+import {Earcons} from '/chromevox/background/earcons.js';
+import {FindHandler} from '/chromevox/background/find_handler.js';
+import {FocusAutomationHandler} from '/chromevox/background/focus_automation_handler.js';
+import {GestureCommandHandler} from '/chromevox/background/gesture_command_handler.js';
+import {BackgroundKeyboardHandler} from '/chromevox/background/keyboard_handler.js';
+import {LiveRegions} from '/chromevox/background/live_regions.js';
+import {MathHandler} from '/chromevox/background/math_handler.js';
+import {MediaAutomationHandler} from '/chromevox/background/media_automation_handler.js';
+import {PageLoadSoundHandler} from '/chromevox/background/page_load_sound_handler.js';
+import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
+import {InstanceChecker} from '/common/instance_checker.js';
 
 /**
  * @fileoverview The entry point for all ChromeVox related code for the

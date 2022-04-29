@@ -5,10 +5,10 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
-import {AutoScrollHandler} from './auto_scroll_handler.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from './custom_automation_event.js';
-import {DesktopAutomationInterface} from './desktop_automation_interface.js';
-import {TextEditHandler} from './editing/editing.js';
+import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/background/custom_automation_event.js';
+import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {TextEditHandler} from '/chromevox/background/editing/editing.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;

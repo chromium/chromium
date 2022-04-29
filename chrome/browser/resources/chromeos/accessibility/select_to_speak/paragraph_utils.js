@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WordUtils} from './word_utils.js';
+import {WordUtils} from '/select_to_speak/word_utils.js';
 
 var AutomationNode = chrome.automation.AutomationNode;
 var RoleType = chrome.automation.RoleType;

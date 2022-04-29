@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InputHandler} from './input_handler.js';
-import {MetricsUtils} from './metrics_utils.js';
-import {NodeNavigationUtils} from './node_navigation_utils.js';
-import {NodeUtils} from './node_utils.js';
-import {ParagraphUtils} from './paragraph_utils.js';
-import {PrefsManager} from './prefs_manager.js';
-import {SelectToSpeakConstants} from './select_to_speak_constants.js';
-import {TtsManager} from './tts_manager.js';
-import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
-import {WordUtils} from './word_utils.js';
+import {InputHandler} from '/select_to_speak/input_handler.js';
+import {MetricsUtils} from '/select_to_speak/metrics_utils.js';
+import {NodeNavigationUtils} from '/select_to_speak/node_navigation_utils.js';
+import {NodeUtils} from '/select_to_speak/node_utils.js';
+import {ParagraphUtils} from '/select_to_speak/paragraph_utils.js';
+import {PrefsManager} from '/select_to_speak/prefs_manager.js';
+import {SelectToSpeakConstants} from '/select_to_speak/select_to_speak_constants.js';
+import {TtsManager} from '/select_to_speak/tts_manager.js';
+import {SelectToSpeakUiListener, UiManager} from '/select_to_speak/ui_manager.js';
+import {WordUtils} from '/select_to_speak/word_utils.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;

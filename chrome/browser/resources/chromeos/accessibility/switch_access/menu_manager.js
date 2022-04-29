@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionManager} from './action_manager.js';
-import {Navigator} from './navigator.js';
-import {SwitchAccess} from './switch_access.js';
-import {SwitchAccessMenuAction} from './switch_access_constants.js';
+import {ActionManager} from '/switch_access/action_manager.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SwitchAccessMenuAction} from '/switch_access/switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

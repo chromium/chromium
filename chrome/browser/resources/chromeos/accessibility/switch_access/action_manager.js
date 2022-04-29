@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FocusRingManager} from './focus_ring_manager.js';
-import {MenuManager} from './menu_manager.js';
-import {SwitchAccessMetrics} from './metrics.js';
-import {Navigator} from './navigator.js';
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
-import {SwitchAccess} from './switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+import {FocusRingManager} from '/switch_access/focus_ring_manager.js';
+import {MenuManager} from '/switch_access/menu_manager.js';
+import {SwitchAccessMetrics} from '/switch_access/metrics.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '/switch_access/switch_access_constants.js';
 
 /**
  * Class to handle performing actions with Switch Access, including determining

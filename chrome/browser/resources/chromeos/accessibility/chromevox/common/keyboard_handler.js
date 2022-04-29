@@ -5,8 +5,8 @@
 /**
  * @fileoverview Handles user keyboard input events.
  */
-import {KeyMap} from './key_map.js';
-import {KeyUtil} from './key_util.js';
+import {KeyMap} from '/chromevox/common/key_map.js';
+import {KeyUtil} from '/chromevox/common/key_util.js';
 
 export const ChromeVoxKbHandler = {};
 

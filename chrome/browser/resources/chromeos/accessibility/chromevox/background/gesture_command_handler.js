@@ -5,12 +5,10 @@
 /**
  * @fileoverview Handles gesture-based commands.
  */
-import {EventGenerator} from '../../common/event_generator.js';
-
-import {GestureCommandData, GestureGranularity} from '../common/gesture_command_data.js';
-
-import {GestureInterface} from './gesture_interface.js';
-import {PointerHandler} from './pointer_handler.js';
+import {GestureInterface} from '/chromevox/background/gesture_interface.js';
+import {PointerHandler} from '/chromevox/background/pointer_handler.js';
+import {GestureCommandData, GestureGranularity} from '/chromevox/common/gesture_command_data.js';
+import {EventGenerator} from '/common/event_generator.js';
 
 const RoleType = chrome.automation.RoleType;
 const Gesture = chrome.accessibilityPrivate.Gesture;

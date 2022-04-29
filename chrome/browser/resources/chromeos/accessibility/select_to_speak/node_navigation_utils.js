@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NodeUtils} from './node_utils.js';
-import {ParagraphUtils} from './paragraph_utils.js';
-import {SentenceUtils} from './sentence_utils.js';
+import {NodeUtils} from '/select_to_speak/node_utils.js';
+import {ParagraphUtils} from '/select_to_speak/paragraph_utils.js';
+import {SentenceUtils} from '/select_to_speak/sentence_utils.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;

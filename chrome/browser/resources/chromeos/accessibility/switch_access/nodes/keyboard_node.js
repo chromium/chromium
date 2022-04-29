@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../common/event_generator.js';
-
-import {AutoScanManager} from '../auto_scan_manager.js';
-import {Navigator} from '../navigator.js';
-import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
-import {SwitchAccessPredicate} from '../switch_access_predicate.js';
-
-import {BackButtonNode} from './back_button_node.js';
-import {BasicNode, BasicRootNode} from './basic_node.js';
-import {GroupNode} from './group_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {AutoScanManager} from '/switch_access/auto_scan_manager.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {BackButtonNode} from '/switch_access/nodes/back_button_node.js';
+import {BasicNode, BasicRootNode} from '/switch_access/nodes/basic_node.js';
+import {GroupNode} from '/switch_access/nodes/group_node.js';
+import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '/switch_access/switch_access_constants.js';
+import {SwitchAccessPredicate} from '/switch_access/switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

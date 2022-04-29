@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../common/event_generator.js';
-
-import {ActionManager} from './action_manager.js';
-import {AutoScanManager} from './auto_scan_manager.js';
-import {FocusRingManager} from './focus_ring_manager.js';
-import {FocusData, FocusHistory} from './history.js';
-import {MenuManager} from './menu_manager.js';
-import {Navigator} from './navigator.js';
-import {ItemNavigatorInterface} from './navigator_interface.js';
-import {BackButtonNode} from './nodes/back_button_node.js';
-import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
-import {DesktopNode} from './nodes/desktop_node.js';
-import {EditableTextNode} from './nodes/editable_text_node.js';
-import {KeyboardRootNode} from './nodes/keyboard_node.js';
-import {ModalDialogRootNode} from './nodes/modal_dialog_node.js';
-import {SliderNode} from './nodes/slider_node.js';
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
-import {TabNode} from './nodes/tab_node.js';
-import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
-import {SwitchAccessPredicate} from './switch_access_predicate.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {ActionManager} from '/switch_access/action_manager.js';
+import {AutoScanManager} from '/switch_access/auto_scan_manager.js';
+import {FocusRingManager} from '/switch_access/focus_ring_manager.js';
+import {FocusData, FocusHistory} from '/switch_access/history.js';
+import {MenuManager} from '/switch_access/menu_manager.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {ItemNavigatorInterface} from '/switch_access/navigator_interface.js';
+import {BackButtonNode} from '/switch_access/nodes/back_button_node.js';
+import {BasicNode, BasicRootNode} from '/switch_access/nodes/basic_node.js';
+import {DesktopNode} from '/switch_access/nodes/desktop_node.js';
+import {EditableTextNode} from '/switch_access/nodes/editable_text_node.js';
+import {KeyboardRootNode} from '/switch_access/nodes/keyboard_node.js';
+import {ModalDialogRootNode} from '/switch_access/nodes/modal_dialog_node.js';
+import {SliderNode} from '/switch_access/nodes/slider_node.js';
+import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {TabNode} from '/switch_access/nodes/tab_node.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SAConstants} from '/switch_access/switch_access_constants.js';
+import {SwitchAccessPredicate} from '/switch_access/switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

@@ -153,6 +153,7 @@ js2gtest("accessibility_common_extjs_tests") {
 
 js_type_check("closure_compile") {
   deps = [ ":accessibility_common" ]
+  closure_flags = [ "js_module_root=../" ]
 }
 
 js_library("accessibility_common") {

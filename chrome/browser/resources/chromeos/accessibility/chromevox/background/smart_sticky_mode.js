@@ -7,7 +7,7 @@
  * when the current range is over an editable; restores sticky mode when not on
  * an editable.
  */
-import {ChromeVoxBackground} from './classic_background.js';
+import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 
 /** @implements {ChromeVoxStateObserver} */
 export class SmartStickyMode {

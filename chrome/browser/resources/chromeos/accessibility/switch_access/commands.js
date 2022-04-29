@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionManager} from './action_manager.js';
-import {AutoScanManager} from './auto_scan_manager.js';
-import {Navigator} from './navigator.js';
+import {ActionManager} from '/switch_access/action_manager.js';
+import {AutoScanManager} from '/switch_access/auto_scan_manager.js';
+import {Navigator} from '/switch_access/navigator.js';
 
 const SwitchAccessCommand = chrome.accessibilityPrivate.SwitchAccessCommand;
 

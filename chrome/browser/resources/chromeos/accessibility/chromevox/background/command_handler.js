@@ -5,24 +5,22 @@
 /**
  * @fileoverview ChromeVox commands.
  */
-import {EventGenerator} from '../../common/event_generator.js';
-
-import {AbstractTts} from '../common/abstract_tts.js';
-import {CommandStore} from '../common/command_store.js';
-import {TypingEcho} from '../common/editable_text_base.js';
-import {GestureGranularity} from '../common/gesture_command_data.js';
-import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
-
-import {AutoScrollHandler} from './auto_scroll_handler.js';
-import {BrailleBackground} from './braille/braille_background.js';
-import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
-import {ChromeVoxBackground} from './classic_background.js';
-import {Color} from './color.js';
-import {CustomAutomationEvent} from './custom_automation_event.js';
-import {DesktopAutomationInterface} from './desktop_automation_interface.js';
-import {GestureInterface} from './gesture_interface.js';
-import {ChromeVoxPrefs} from './prefs.js';
-import {SmartStickyMode} from './smart_sticky_mode.js';
+import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
+import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
+import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
+import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
+import {Color} from '/chromevox/background/color.js';
+import {CustomAutomationEvent} from '/chromevox/background/custom_automation_event.js';
+import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {GestureInterface} from '/chromevox/background/gesture_interface.js';
+import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
+import {SmartStickyMode} from '/chromevox/background/smart_sticky_mode.js';
+import {AbstractTts} from '/chromevox/common/abstract_tts.js';
+import {CommandStore} from '/chromevox/common/command_store.js';
+import {TypingEcho} from '/chromevox/common/editable_text_base.js';
+import {GestureGranularity} from '/chromevox/common/gesture_command_data.js';
+import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
+import {EventGenerator} from '/common/event_generator.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;

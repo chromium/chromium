@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SACache} from '../cache.js';
-import {FocusRingManager} from '../focus_ring_manager.js';
-import {Navigator} from '../navigator.js';
-import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
-import {SwitchAccessPredicate} from '../switch_access_predicate.js';
-
-import {BackButtonNode} from './back_button_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import {SACache} from '/switch_access/cache.js';
+import {FocusRingManager} from '/switch_access/focus_ring_manager.js';
+import {Navigator} from '/switch_access/navigator.js';
+import {BackButtonNode} from '/switch_access/nodes/back_button_node.js';
+import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '/switch_access/switch_access_constants.js';
+import {SwitchAccessPredicate} from '/switch_access/switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

@@ -5,10 +5,10 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
-import {BrailleCaptionsBackground} from './braille_captions_background.js';
-import {BrailleTranslatorManager} from './braille_translator_manager.js';
-import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
-import {PanStrategy} from './pan_strategy.js';
+import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
+import {BrailleTranslatorManager} from '/chromevox/background/braille/braille_translator_manager.js';
+import {ExpandingBrailleTranslator} from '/chromevox/background/braille/expanding_braille_translator.js';
+import {PanStrategy} from '/chromevox/background/braille/pan_strategy.js';
 
 export class BrailleDisplayManager {
   /**

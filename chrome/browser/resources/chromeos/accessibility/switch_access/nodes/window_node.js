@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SwitchAccessPredicate} from '../switch_access_predicate.js';
-
-import {BasicNode, BasicRootNode} from './basic_node.js';
+import {BasicNode, BasicRootNode} from '/switch_access/nodes/basic_node.js';
+import {SwitchAccessPredicate} from '/switch_access/switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ParagraphUtils} from './paragraph_utils.js';
-import {PrefsManager} from './prefs_manager.js';
+import {ParagraphUtils} from '/select_to_speak/paragraph_utils.js';
+import {PrefsManager} from '/select_to_speak/prefs_manager.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

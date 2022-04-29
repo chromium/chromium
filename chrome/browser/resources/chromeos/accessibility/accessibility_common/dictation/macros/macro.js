@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MacroName} from './macro_names.js';
+import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
 
 /**
  * Reasons that canTryAction in CheckContextResult might be false.

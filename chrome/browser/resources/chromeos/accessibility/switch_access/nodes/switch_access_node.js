@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FocusRingManager} from '../focus_ring_manager.js';
-import {SwitchAccess} from '../switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+import {FocusRingManager} from '/switch_access/focus_ring_manager.js';
+import {SwitchAccess} from '/switch_access/switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '/switch_access/switch_access_constants.js';
 
 
 const AutomationNode = chrome.automation.AutomationNode;
