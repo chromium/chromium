@@ -105,12 +105,12 @@ class UkmDatabaseBackendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
-  void ExpectQueryResult(const UkmDatabase::QueryList& queries,
+  void ExpectQueryResult(UkmDatabase::QueryList&& queries,
                          bool expect_success,
                          const processing::IndexedTensors& expected_values) {
     base::RunLoop wait_for_query3;
     backend_->RunReadonlyQueries(
-        queries,
+        std::move(queries),
         base::BindOnce(
             [](base::OnceClosure quit, bool expect_success,
                const processing::IndexedTensors& expected_values, bool success,
@@ -400,7 +400,7 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
   queries.emplace(0, UkmDatabase::CustomSqlQuery(
                          "SELECT AVG(metric_value) FROM metrics",
                          std::vector<processing::ProcessedValue>()));
-  ExpectQueryResult(queries, true,
+  ExpectQueryResult(std::move(queries), true,
                     {{0, {processing::ProcessedValue(101.00f)}}});
 
   constexpr char kBindValuesQuery[] =
@@ -424,37 +424,41 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
       processing::ProcessedValue(
           static_cast<int64_t>(kUrlId2.GetUnsafeValue())),
       processing::ProcessedValue(after1)};
-  queries.emplace(
+  UkmDatabase::QueryList queries2;
+  queries2.emplace(0, UkmDatabase::CustomSqlQuery(
+                          "SELECT AVG(metric_value) FROM metrics",
+                          std::vector<processing::ProcessedValue>()));
+  queries2.emplace(
       1, UkmDatabase::CustomSqlQuery(kBindValuesQuery, std::move(bind_values)));
 
-  ExpectQueryResult(queries, true,
+  ExpectQueryResult(std::move(queries2), true,
                     {{0, {processing::ProcessedValue(101.00f)}},
                      {1, {processing::ProcessedValue(100.00f)}}});
 
-  queries.clear();
-  queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
-  ExpectQueryResult(queries, false, {});
+  UkmDatabase::QueryList queries3;
+  queries3.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
+  ExpectQueryResult(std::move(queries3), false, {});
 
-  queries.clear();
-  queries.emplace(
+  UkmDatabase::QueryList queries4;
+  queries4.emplace(
       0, UkmDatabase::CustomSqlQuery(
              "SELECT metric_value FROM metrics WHERE metric_hash=?", {}));
-  ExpectQueryResult(queries, false, {});
+  ExpectQueryResult(std::move(queries4), false, {});
 
-  queries.clear();
-  queries.emplace(0, UkmDatabase::CustomSqlQuery("DROP TABLE metrics", {}));
-  ExpectQueryResult(queries, false, {});
+  UkmDatabase::QueryList queries5;
+  queries5.emplace(0, UkmDatabase::CustomSqlQuery("DROP TABLE metrics", {}));
+  ExpectQueryResult(std::move(queries5), false, {});
 
   // Database should not have changed.
   DatabaseStats stats = GetDatabaseStats(backend_->db());
   EXPECT_EQ(12, stats.total_metrics);
   EXPECT_EQ(4u, stats.metric_count_for_event_id.size());
 
-  queries.clear();
-  queries.emplace(
+  UkmDatabase::QueryList queries6;
+  queries6.emplace(
       0, UkmDatabase::CustomSqlQuery(
              "INSERT INTO urls(url_id, url) VALUES(1,'not_added')", {}));
-  ExpectQueryResult(queries, false, {});
+  ExpectQueryResult(std::move(queries6), false, {});
 
   // Database should not have changed.
   DatabaseStats stats1 = GetDatabaseStats(backend_->db());
@@ -494,7 +498,7 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
 
   UkmDatabase::QueryList queries;
   queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
-  ExpectQueryResult(queries, false, {});
+  ExpectQueryResult(std::move(queries), false, {});
 }
 
 }  // namespace segmentation_platform

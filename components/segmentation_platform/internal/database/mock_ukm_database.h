@@ -30,7 +30,7 @@ class MockUkmDatabase : public UkmDatabase {
   MOCK_METHOD1(RemoveUrls, void(const std::vector<GURL>& urls));
 
   MOCK_METHOD2(RunReadonlyQueries,
-               void(const QueryList& queries, QueryCallback callback));
+               void(QueryList&& queries, QueryCallback callback));
 
   MOCK_METHOD1(DeleteEntriesOlderThan, void(base::Time time));
 };

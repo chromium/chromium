@@ -193,7 +193,7 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
   metrics_table_.DeleteEventsForUrls(url_ids);
 }
 
-void UkmDatabaseBackend::RunReadonlyQueries(const QueryList& queries,
+void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
                                             QueryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {

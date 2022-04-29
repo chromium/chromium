@@ -61,10 +61,13 @@ void UkmDatabaseImpl::RemoveUrls(const std::vector<GURL>& urls) {
                                                 backend_->GetWeakPtr(), urls));
 }
 
-void UkmDatabaseImpl::RunReadonlyQueries(const QueryList& queries,
+void UkmDatabaseImpl::RunReadonlyQueries(QueryList&& queries,
                                          QueryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(haileywang): Implement.
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::RunReadonlyQueries,
+                                backend_->GetWeakPtr(), std::move(queries),
+                                std::move(callback)));
 }
 
 void UkmDatabaseImpl::DeleteEntriesOlderThan(base::Time time) {

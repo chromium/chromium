@@ -84,7 +84,7 @@ class UkmDatabase {
 
   // Called to query data from the ukm database. The result is returned in the
   // |callback| as a mapping of indexed vectors of processing::ProcessedValue.
-  virtual void RunReadonlyQueries(const QueryList& queries,
+  virtual void RunReadonlyQueries(QueryList&& queries,
                                   QueryCallback callback) = 0;
 
   // Removes metrics older than the given time from the database. URLs are

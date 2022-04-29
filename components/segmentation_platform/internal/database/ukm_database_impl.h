@@ -36,8 +36,7 @@ class UkmDatabaseImpl : public UkmDatabase {
                              bool is_validated) override;
   void OnUrlValidated(const GURL& url) override;
   void RemoveUrls(const std::vector<GURL>& urls) override;
-  void RunReadonlyQueries(const QueryList& queries,
-                          QueryCallback callback) override;
+  void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
 
  private:
