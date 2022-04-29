@@ -677,6 +677,10 @@ void Scrollbar::InjectScrollGesture(WebInputEvent::Type gesture_type,
                                     ui::ScrollGranularity granularity) {
   DCHECK(scrollable_area_);
 
+  // Speculative fix for crash reports (crbug.com/1307510).
+  if (!scrollable_area_)
+    return;
+
   if (gesture_type == WebInputEvent::Type::kGestureScrollEnd &&
       !injected_gesture_scroll_begin_)
     return;
