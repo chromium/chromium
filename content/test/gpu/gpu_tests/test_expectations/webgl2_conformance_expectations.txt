@@ -284,8 +284,6 @@ crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectan
 crbug.com/1297265 [ win7 passthrough amd-0x6613 angle-d3d11 ] conformance2/renderbuffers/multisampled-stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 crbug.com/1298096 [ win7 passthrough amd-0x6613 angle-d3d11 ] conformance2/textures/canvas_sub_rectangle/tex-3d-r16f-red-half_float.html [ RetryOnFailure ]
 
-# Test regression and potential driver bug on AMD RX 5500 XT with recent BlendState refactoring
-crbug.com/angleproject/7200 [ win amd-0x7340 angle-d3d11 ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
 
 # Recent AMD drivers seem to have a regression with 3D textures.
 # (Some of these tests seem to occasionally pass unexpectedly.)
