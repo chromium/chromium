@@ -107,3 +107,10 @@
 -identifiernamestring class * {
     @org.chromium.base.annotations.IdentifierNameString *;
 }
+
+# -identifiernamestring doesn't keep the module impl around, we have to
+# explicitly keep it.
+-if @org.chromium.components.module_installer.builder.ModuleInterface interface *
+-keep,allowobfuscation,allowaccessmodification class * extends <1> {
+  <init>();
+}

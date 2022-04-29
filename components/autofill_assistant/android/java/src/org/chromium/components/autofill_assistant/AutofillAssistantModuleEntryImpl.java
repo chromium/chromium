@@ -7,7 +7,6 @@ package org.chromium.components.autofill_assistant;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -17,7 +16,6 @@ import org.chromium.content_public.browser.WebContents;
  * Implementation of {@link AutofillAssistantModuleEntry}. This is the entry point into the
  * assistant DFM.
  */
-@UsedByReflection("AutofillAssistantModuleEntryProvider.java")
 public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModuleEntry {
     @Override
     public AssistantOnboardingHelper createOnboardingHelper(

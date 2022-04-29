@@ -6,7 +6,6 @@ package org.chromium.chrome.modules.cablev2_authenticator;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorUI;
 
 /**
@@ -14,7 +13,6 @@ import org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorUI;
  * never be accessed directly, only by the module infrastructure machinery. (It's required to be
  * public for that machinery to function.)
  */
-@UsedByReflection("Cablev2AuthenticatorModule")
 public class ModuleImpl implements Module {
     @Override
     public Fragment getFragment() {

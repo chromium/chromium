@@ -4,8 +4,5 @@
 
 package org.chromium.chrome.features.dev_ui;
 
-import org.chromium.base.annotations.UsedByReflection;
-
 /** Implementation for the DevUI DFM. */
-@UsedByReflection("DevUiModule")
 public class DevUiImpl implements DevUi {}

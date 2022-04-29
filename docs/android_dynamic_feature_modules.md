@@ -277,9 +277,7 @@ Next, define an implementation that goes into the module in the new file
 package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {
@@ -713,10 +711,8 @@ package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.foo.R;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {

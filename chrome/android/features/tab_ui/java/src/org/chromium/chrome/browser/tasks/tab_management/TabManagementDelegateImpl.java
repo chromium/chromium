@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.SysUtils;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -55,7 +54,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 /**
  * Impl class that will resolve components for tab management.
  */
-@UsedByReflection("TabManagementModule")
 public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public TabSwitcher createGridTabSwitcher(@NonNull Activity activity,

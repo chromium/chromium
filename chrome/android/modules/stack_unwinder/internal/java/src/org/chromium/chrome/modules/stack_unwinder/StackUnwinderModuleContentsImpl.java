@@ -6,12 +6,10 @@ package org.chromium.chrome.modules.stack_unwinder;
 
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
 
 /**
  * Provides access to the stack unwinder native code functions within the dynamic feature module.
  */
-@UsedByReflection("StackUnwinderModule")
 @MainDex
 public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleContents {
     /**
