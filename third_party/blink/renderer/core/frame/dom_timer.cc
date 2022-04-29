@@ -97,6 +97,13 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   int max_nesting_level = features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
                               ? features::GetMaxUnthrottledTimeoutNestingLevel()
                               : kMaxTimerNestingLevel;
+  // Under AlignWakeUps experiment, avoid timer alignment if the original delay
+  // is small, to avoid being affected by ongoing experiments on delay clamping
+  // MaxUnthrottledTimeoutNestingLevel and SetTimeoutZeroWithoutClamping.
+  // TODO(1153139) Remove this logic one experiments have shipped.
+  bool precise = (timeout < kMinimumInterval) ||
+                 scheduler::IsAlignWakeUpsDisabledForProcess();
+
   if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval)
     timeout = kMinimumInterval;
 
@@ -117,7 +124,6 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled())
     timeout = std::max(timeout, base::Milliseconds(1));
 
-  bool precise = scheduler::IsAlignWakeUpsDisabledForProcess();
   if (single_shot)
     StartOneShot(timeout, FROM_HERE, precise);
   else
