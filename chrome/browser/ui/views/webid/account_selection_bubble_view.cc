@@ -76,7 +76,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     TabStripModel* tab_strip_model)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::Arrow::TOP_RIGHT),
-      idp_etld_plus_one_(base::ASCIIToUTF16(idp_etld_plus_one)),
+      idp_etld_plus_one_(base::UTF8ToUTF16(idp_etld_plus_one)),
       brand_text_color_(idp_metadata.brand_text_color),
       brand_background_color_(idp_metadata.brand_background_color),
       tab_strip_model_(tab_strip_model),
@@ -90,7 +90,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   set_close_on_deactivate(false);
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-      base::ASCIIToUTF16(rp_etld_plus_one), idp_etld_plus_one_));
+      base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_));
   auto imageSkia = gfx::ImageSkia::CreateFrom1xBitmap(idp_metadata.brand_icon);
   SetIcon(imageSkia);
   SetShowIcon(true);
@@ -128,7 +128,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       base::BindRepeating(&AccountSelectionBubbleView::OnAccountSelected,
                           weak_ptr_factory_.GetWeakPtr(), account),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
-                                 base::ASCIIToUTF16(display_name)));
+                                 base::UTF8ToUTF16(display_name)));
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   if (brand_background_color_) {
     button->SetBackground(views::CreateRoundedRectBackground(
@@ -227,8 +227,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&AccountSelectionBubbleView::OnSingleAccountPicked,
                             weak_ptr_factory_.GetWeakPtr(), account),
-        std::move(image_view), base::ASCIIToUTF16(account.name),
-        base::ASCIIToUTF16(account.email));
+        std::move(image_view), base::UTF8ToUTF16(account.name),
+        base::UTF8ToUTF16(account.email));
     row->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     return row;
   }
@@ -240,11 +240,11 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
       views::BoxLayout::Orientation::kVertical));
   text_column
       ->AddChildView(
-          std::make_unique<views::Label>(base::ASCIIToUTF16(account.name)))
+          std::make_unique<views::Label>(base::UTF8ToUTF16(account.name)))
       ->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   text_column
       ->AddChildView(
-          std::make_unique<views::Label>(base::ASCIIToUTF16(account.email)))
+          std::make_unique<views::Label>(base::UTF8ToUTF16(account.email)))
       ->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
   text_column->SetBorder(
