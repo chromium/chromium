@@ -12,9 +12,10 @@ TEST(CookieAccessFilter, NoAccesses) {
   GURL url2("http://google.com");
   CookieAccessFilter filter;
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre());
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kNone,
+                                           CookieAccessType::kNone));
 }
 
 TEST(CookieAccessFilter, OneRead_Former) {
@@ -23,9 +24,10 @@ TEST(CookieAccessFilter, OneRead_Former) {
   CookieAccessFilter filter;
   filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre(0));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kRead,
+                                           CookieAccessType::kNone));
 }
 
 TEST(CookieAccessFilter, OneRead_Latter) {
@@ -34,9 +36,10 @@ TEST(CookieAccessFilter, OneRead_Latter) {
   CookieAccessFilter filter;
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre(1));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kNone,
+                                           CookieAccessType::kRead));
 }
 
 TEST(CookieAccessFilter, OneWrite) {
@@ -45,9 +48,10 @@ TEST(CookieAccessFilter, OneWrite) {
   CookieAccessFilter filter;
   filter.AddAccess(url2, CookieAccessFilter::Type::kChange);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre(1));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kNone,
+                                           CookieAccessType::kWrite));
 }
 
 TEST(CookieAccessFilter, UnexpectedURL) {
@@ -56,8 +60,9 @@ TEST(CookieAccessFilter, UnexpectedURL) {
   CookieAccessFilter filter;
   filter.AddAccess(GURL("http://other.com"), CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
-  ASSERT_FALSE(filter.Filter({url1, url2}, &result));
+  std::vector<CookieAccessType> result;
+  EXPECT_FALSE(filter.Filter({url1, url2}, &result));
+  EXPECT_EQ(2u, result.size());
 }
 
 TEST(CookieAccessFilter, TwoReads) {
@@ -67,9 +72,10 @@ TEST(CookieAccessFilter, TwoReads) {
   filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre(0, 1));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kRead,
+                                           CookieAccessType::kRead));
 }
 
 TEST(CookieAccessFilter, CoalesceReadAndWrite) {
@@ -80,9 +86,10 @@ TEST(CookieAccessFilter, CoalesceReadAndWrite) {
   filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
-  EXPECT_THAT(result, testing::ElementsAre(0, 1));
+  EXPECT_THAT(result, testing::ElementsAre(CookieAccessType::kReadWrite,
+                                           CookieAccessType::kRead));
 }
 
 TEST(CookieAccessFilter, CantCoalesceMultipleWrites) {
@@ -93,7 +100,7 @@ TEST(CookieAccessFilter, CantCoalesceMultipleWrites) {
   filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_FALSE(filter.Filter({url1, url2}, &result));
 }
 
@@ -105,7 +112,7 @@ TEST(CookieAccessFilter, CantCoalesceMultipleReads) {
   filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_FALSE(filter.Filter({url1, url2}, &result));
 }
 
@@ -117,6 +124,6 @@ TEST(CookieAccessFilter, CantCoalesceWriteBeforeRead) {
   filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
   filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
 
-  std::vector<size_t> result;
+  std::vector<CookieAccessType> result;
   ASSERT_FALSE(filter.Filter({url1, url2}, &result));
 }

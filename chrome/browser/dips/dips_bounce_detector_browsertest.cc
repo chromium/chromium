@@ -183,8 +183,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 void AppendRedirectURL(std::vector<std::string>* urls,
                        const GURL& prev_url,
                        NavigationHandle* navigation_handle,
-                       int i) {
-  urls->push_back(FormatURL(navigation_handle->GetRedirectChain()[i]));
+                       int i,
+                       CookieAccessType access) {
+  if (access != CookieAccessType::kNone)
+    urls->push_back(
+        base::StrCat({FormatURL(navigation_handle->GetRedirectChain()[i]), " (",
+                      CookieAccessTypeToString(access), ")"}));
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
@@ -216,11 +220,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
   // was not a redirect.
-  EXPECT_THAT(stateful_redirects,
-              testing::ElementsAre(
-                  ("a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
-                   "cross-site/d.test/title1.html"),
-                  "b.test/cross-site/c.test/cross-site/d.test/title1.html"));
+  EXPECT_THAT(
+      stateful_redirects,
+      testing::ElementsAre(
+          ("a.test/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/"
+           "d.test/title1.html (ReadWrite)"),
+          ("b.test/cross-site/c.test/cross-site/d.test/title1.html (Read)")));
 }
 
 // An EmbeddedTestServer request handler for
@@ -293,10 +298,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 void AppendRedirect(std::vector<std::string>* redirects,
                     const GURL& prev_url,
                     const GURL& url,
-                    const GURL& next_url) {
-  redirects->push_back(
-      base::StrCat({FormatURL(prev_url), " -> ", FormatURL(url), " -> ",
-                    FormatURL(next_url)}));
+                    const GURL& next_url,
+                    CookieAccessType access) {
+  if (access != CookieAccessType::kNone)
+    redirects->push_back(
+        base::StrCat({FormatURL(prev_url), " -> ", FormatURL(url), " -> ",
+                      FormatURL(next_url)}));
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,

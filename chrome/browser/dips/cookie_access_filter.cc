@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dips/cookie_access_filter.h"
 
+#include "base/strings/string_piece.h"
+
 // CookieAccessFilter depends on two important assumptions:
 // 1. If a redirect both reads and writes cookies, then AddAccess() will be
 //    called with kRead before kChange. This is the order that
@@ -32,24 +34,27 @@ CookieAccessFilter::~CookieAccessFilter() = default;
 
 void CookieAccessFilter::AddAccess(const GURL& url, Type type) {
   if (type == Type::kChange && !accesses_.empty() &&
-      !accesses_.back().changed && accesses_.back().url == url) {
+      accesses_.back().type == CookieAccessType::kRead &&
+      accesses_.back().url == url) {
     // If this access is a write for the same url that was just read, coalesce
     // them.
-    accesses_.back().changed = true;
+    accesses_.back().type = CookieAccessType::kReadWrite;
     return;
   }
-  accesses_.push_back({url, /*changed=*/type == Type::kChange});
+  accesses_.push_back({url, type == Type::kChange ? CookieAccessType::kWrite
+                                                  : CookieAccessType::kRead});
 }
 
 bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
-                                std::vector<size_t>* result) const {
+                                std::vector<CookieAccessType>* result) const {
   result->clear();
+  result->resize(urls.size(), CookieAccessType::kNone);
 
   size_t access_idx = 0;
   for (size_t url_idx = 0;
        access_idx < accesses_.size() && url_idx < urls.size(); url_idx++) {
     if (urls[url_idx] == accesses_[access_idx].url) {
-      result->push_back(url_idx);
+      (*result)[url_idx] = accesses_[access_idx].type;
       ++access_idx;
     }
   }
@@ -57,4 +62,17 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   // Return true iff we consumed all the cookie accesses recorded by calls to
   // AddAccess().
   return access_idx == accesses_.size();
+}
+
+base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
+  switch (type) {
+    case CookieAccessType::kNone:
+      return "None";
+    case CookieAccessType::kRead:
+      return "Read";
+    case CookieAccessType::kWrite:
+      return "Write";
+    case CookieAccessType::kReadWrite:
+      return "ReadWrite";
+  }
 }

@@ -48,7 +48,8 @@ DIPSBounceDetector::~DIPSBounceDetector() = default;
 
 void DIPSBounceDetector::HandleStatefulRedirect(const GURL& prev_url,
                                                 const GURL& url,
-                                                const GURL& next_url) {
+                                                const GURL& next_url,
+                                                CookieAccessType access) {
   double score = site_engagement_service_->GetScore(url);
   (void)score;
   // TODO: fire UKM metric
@@ -57,14 +58,15 @@ void DIPSBounceDetector::HandleStatefulRedirect(const GURL& prev_url,
 void DIPSBounceDetector::HandleStatefulServerRedirect(
     const GURL& prev_url,
     content::NavigationHandle* navigation_handle,
-    int redirect_index) {
+    int redirect_index,
+    CookieAccessType access) {
   const auto& redirect_chain = navigation_handle->GetRedirectChain();
   const GURL& url = redirect_chain[redirect_index];
   // We are called from DidFinishNavigation() so GetURL() returns the final URL.
   // XXX For 204 No Content responses, should we actually use `prev_url`, since
   // it's what the user actually sees?
   const GURL& next_url = navigation_handle->GetURL();
-  stateful_redirect_handler_.Run(prev_url, url, next_url);
+  stateful_redirect_handler_.Run(prev_url, url, next_url, access);
 }
 
 void DIPSBounceDetector::DidStartNavigation(
@@ -103,21 +105,17 @@ void DIPSBounceDetector::DidFinishNavigation(
   auto* state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
   if (state && !state->filter.is_empty()) {
-    std::vector<size_t> accessor_idxs;
+    std::vector<CookieAccessType> access_types;
     if (!state->filter.Filter(navigation_handle->GetRedirectChain(),
-                              &accessor_idxs)) {
+                              &access_types)) {
       // We failed to map all the OnCookiesAccessed calls to the redirect chain.
       // TODO(rtarpine): report metrics to see if this happens in practice
       return;
     }
-    for (size_t accessor_idx : accessor_idxs) {
-      if (accessor_idx == navigation_handle->GetRedirectChain().size() - 1) {
-        // the last entry in GetRedirectChain() is the final URL, not actually a
-        // redirect.
-        continue;
-      }
-      stateful_server_redirect_handler_.Run(state->initial_url,
-                                            navigation_handle, accessor_idx);
+
+    for (size_t i = 0; i < access_types.size() - 1; i++) {
+      stateful_server_redirect_handler_.Run(
+          state->initial_url, navigation_handle, i, access_types[i]);
     }
   }
 }

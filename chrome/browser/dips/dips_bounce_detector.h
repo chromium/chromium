@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/dips/cookie_access_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -23,10 +24,10 @@ class DIPSBounceDetector
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
   using ServerRedirectHandler = base::RepeatingCallback<
-      void(const GURL&, content::NavigationHandle*, int)>;
+      void(const GURL&, content::NavigationHandle*, int, CookieAccessType)>;
 
-  using RedirectHandler =
-      base::RepeatingCallback<void(const GURL&, const GURL&, const GURL&)>;
+  using RedirectHandler = base::RepeatingCallback<
+      void(const GURL&, const GURL&, const GURL&, CookieAccessType)>;
 
   void SetStatefulServerRedirectHandlerForTesting(
       ServerRedirectHandler handler) {
@@ -49,11 +50,13 @@ class DIPSBounceDetector
   // `next_url` is the final URL after the chain of redirects completes.
   void HandleStatefulRedirect(const GURL& prev_url,
                               const GURL& url,
-                              const GURL& next_url);
+                              const GURL& next_url,
+                              CookieAccessType access);
   void HandleStatefulServerRedirect(
       const GURL& prev_url,
       content::NavigationHandle* navigation_handle,
-      int redirect_index);
+      int redirect_index,
+      CookieAccessType access);
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

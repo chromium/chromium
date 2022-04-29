@@ -383,6 +383,7 @@ static_library("browser") {
     "device_reauth/chrome_biometric_authenticator_factory.h",
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
+    "dips/cookie_access_type.h",
     "dips/dips_bounce_detector.cc",
     "dips/dips_bounce_detector.h",
     "dips/dips_helper.cc",
