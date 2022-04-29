@@ -32,6 +32,21 @@ suite('PinSettingsTest', function() {
     flush();
   });
 
+  // Pin settings observes |state| which may change
+  // regardless of pin availability, When the pin printing enforced by policy
+  // the checkbox will be true and the initial pin is empty which is invalid
+  // In this scenario setSettingValid assert will fail because the input is
+  // invalid and the pin printing is unavailable. This test make sure there is
+  // check for avaiablity before calling setSettingValid
+  // Regression test for https://crbug.com/1321118
+  test('pin settings unavailable with invalid input', async () => {
+    pinSection.state = State.NOT_READY;
+    model.set('settings.pin.available', false);
+    model.set('settings.pin.value', true);
+    model.set('settings.pinValue.available', false);
+    pinSection.state = State.READY;
+  });
+
   // Tests that checking the box or entering the pin value updates the
   // setting.
   test('enter valid pin value', async () => {
