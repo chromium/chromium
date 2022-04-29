@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -32,7 +33,8 @@ class ScriptState;
 // full instance.
 class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
  public:
-  explicit TransferredMediaStreamTrack(const TransferredValues& data);
+  TransferredMediaStreamTrack(ExecutionContext* execution_context,
+                              const TransferredValues& data);
 
   // MediaStreamTrack.idl
   String kind() const override;
@@ -101,8 +103,24 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void Trace(Visitor*) const override;
 
  private:
+  // Helper class to register as an event listener on the underlying
+  // MediaStreamTrack and re-dispatch any fired events on the wrapping
+  // TransferredMediaStreamTrack.
+  class EventPropagator : public NativeEventListener {
+   public:
+    EventPropagator(MediaStreamTrack* underlying_track,
+                    TransferredMediaStreamTrack* transferred_track);
+    void Invoke(ExecutionContext*, Event* event) override;
+    void Trace(Visitor*) const override;
+
+   private:
+    Member<TransferredMediaStreamTrack> transferred_track_;
+  };
+
   Member<MediaStreamTrack> track_;
+  WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
+  Member<EventPropagator> event_propagator_;
 };
 
 }  // namespace blink

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -52,8 +53,9 @@
 namespace blink {
 
 TransferredMediaStreamTrack::TransferredMediaStreamTrack(
+    ExecutionContext* execution_context,
     const TransferredValues& data)
-    : data_(data) {}
+    : execution_context_(execution_context), data_(data) {}
 
 String TransferredMediaStreamTrack::kind() const {
   if (track_) {
@@ -185,9 +187,11 @@ ScriptPromise TransferredMediaStreamTrack::applyConstraints(
 void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   track_ = track;
   // TODO(https://crbug.com/1288839): Replay mutations which have happened
-  // before this point. Also set up plumbing so that events fired by the
-  // implementation track are propagated to anything listening to events on this
-  // object.
+  // before this point.
+
+  // Set up an EventPropagator helper to forward any events fired on track so
+  // that they're re-dispatched to anything that's listening on this.
+  event_propagator_ = MakeGarbageCollected<EventPropagator>(track, this);
 }
 
 void TransferredMediaStreamTrack::SetConstraints(
@@ -244,11 +248,7 @@ const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
 }
 
 ExecutionContext* TransferredMediaStreamTrack::GetExecutionContext() const {
-  if (track_) {
-    return track_->GetExecutionContext();
-  }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return nullptr;
+  return execution_context_;
 }
 
 void TransferredMediaStreamTrack::AddedEventListener(
@@ -312,9 +312,35 @@ void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
   // initialized.
 }
 
+TransferredMediaStreamTrack::EventPropagator::EventPropagator(
+    MediaStreamTrack* underlying_track,
+    TransferredMediaStreamTrack* transferred_track)
+    : transferred_track_(transferred_track) {
+  DCHECK(underlying_track);
+  DCHECK(transferred_track);
+  underlying_track->addEventListener(event_type_names::kMute, this);
+  underlying_track->addEventListener(event_type_names::kUnmute, this);
+  underlying_track->addEventListener(event_type_names::kEnded, this);
+  underlying_track->addEventListener(event_type_names::kCapturehandlechange,
+                                     this);
+}
+
+void TransferredMediaStreamTrack::EventPropagator::Invoke(ExecutionContext*,
+                                                          Event* event) {
+  transferred_track_->DispatchEvent(*event);
+}
+
+void TransferredMediaStreamTrack::EventPropagator::Trace(
+    Visitor* visitor) const {
+  NativeEventListener::Trace(visitor);
+  visitor->Trace(transferred_track_);
+}
+
 void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   MediaStreamTrack::Trace(visitor);
   visitor->Trace(track_);
+  visitor->Trace(execution_context_);
+  visitor->Trace(event_propagator_);
 }
 
 }  // namespace blink

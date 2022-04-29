@@ -82,7 +82,8 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
   // operations when needed (or support these behaviors in some other way).
   TransferredMediaStreamTrack* transferred_media_stream_track =
-      MakeGarbageCollected<TransferredMediaStreamTrack>(data);
+      MakeGarbageCollected<TransferredMediaStreamTrack>(
+          ExecutionContext::From(script_state), data);
 
   request->SetTransferData(data.session_id, transferred_media_stream_track);
   request->Start();

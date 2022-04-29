@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
 
@@ -75,7 +76,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   const AtomicString& InterfaceName() const override;
 
-  ExecutionContext* GetExecutionContext() const override { return nullptr; };
+  ExecutionContext* GetExecutionContext() const override { return context_; };
+  void SetExecutionContext(ExecutionContext* context) { context_ = context; };
 
   bool HasPendingActivity() const override { return false; }
 
@@ -118,6 +120,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
     visitor->Trace(settings_);
     visitor->Trace(capture_handle_);
     visitor->Trace(component_);
+    visitor->Trace(context_);
   }
 
  private:
@@ -136,6 +139,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   Member<MediaStreamComponent> component_;
   bool ended_;
   absl::optional<base::UnguessableToken> serializable_session_id_;
+  WeakMember<ExecutionContext> context_;
 };
 
 }  // namespace blink
