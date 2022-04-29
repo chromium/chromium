@@ -25,10 +25,11 @@ MediaStream* CreateMediaStream(V8TestingScope* scope) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
       "video source id", MediaStreamSource::kTypeVideo, "video source name",
       false /* remote */, std::move(native_source));
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(source);
-  component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
-      native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
-      true /* enabled */));
+  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+      source,
+      std::make_unique<MediaStreamVideoTrack>(
+          native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
+          true /* enabled */));
   auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope->GetExecutionContext(), component);
   return MediaStream::Create(scope->GetExecutionContext(),

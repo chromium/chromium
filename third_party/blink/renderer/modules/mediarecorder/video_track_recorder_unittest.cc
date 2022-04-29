@@ -121,12 +121,12 @@ class VideoTrackRecorderTest
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
         .Times(testing::AnyNumber());
-    component_ = MakeGarbageCollected<MediaStreamComponent>(source_);
-
-    track_ = new MediaStreamVideoTrack(
+    auto platform_track = std::make_unique<MediaStreamVideoTrack>(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true /* enabled */);
-    component_->SetPlatformTrack(base::WrapUnique(track_));
+    track_ = platform_track.get();
+    component_ = MakeGarbageCollected<MediaStreamComponent>(
+        source_, std::move(platform_track));
 
     // Paranoia checks.
     EXPECT_EQ(component_->Source()->GetPlatformSource(),
@@ -545,12 +545,11 @@ class VideoTrackRecorderPassthroughTest
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
         base::WrapUnique(mock_source_));
-    component_ = MakeGarbageCollected<MediaStreamComponent>(source_);
-
-    track_ = new MediaStreamVideoTrack(
-        mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
-        true /* enabled */);
-    component_->SetPlatformTrack(base::WrapUnique(track_));
+    component_ = MakeGarbageCollected<MediaStreamComponent>(
+        source_, std::make_unique<MediaStreamVideoTrack>(
+                     mock_source_,
+                     WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+                     true /* enabled */));
 
     // Paranoia checks.
     EXPECT_EQ(component_->Source()->GetPlatformSource(),
@@ -586,10 +585,9 @@ class VideoTrackRecorderPassthroughTest
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   // All members are non-const due to the series of initialize() calls needed.
-  // |mock_source_| is owned by |source_|, |track_| by |component_|.
+  // |mock_source_| is owned by |source_|.
   MockMediaStreamVideoSource* mock_source_;
   Persistent<MediaStreamSource> source_;
-  MediaStreamVideoTrack* track_;
   Persistent<MediaStreamComponent> component_;
 
   std::unique_ptr<VideoTrackRecorderPassthrough> video_track_recorder_;
