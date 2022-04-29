@@ -88,14 +88,26 @@ void GetNameAndAbbreviationViaAlternativeStateNameMap(
   }
 }
 
-std::string ApplyChunkReplacement(
-    const google::protobuf::Map<std::string, std::string>& replacements,
-    const std::string& value) {
-  const auto& it = replacements.find(value);
-  if (it != replacements.end()) {
-    return it->second;
+std::string ApplyChunkReplacement(const ValueExpression::Chunk& chunk,
+                                  const std::string& value) {
+  std::string result = value;
+  const auto& it = chunk.replacements().find(value);
+  if (it != chunk.replacements().end()) {
+    result = it->second;
   }
-  return value;
+  for (const auto& regexp_replacement : chunk.regexp_replacements()) {
+    re2::RE2::Options options;
+    options.set_case_sensitive(
+        regexp_replacement.text_filter().case_sensitive());
+    re2::RE2 regexp(regexp_replacement.text_filter().re2(), options);
+
+    if (regexp_replacement.global()) {
+      RE2::GlobalReplace(&result, regexp, regexp_replacement.replacement());
+    } else {
+      RE2::Replace(&result, regexp, regexp_replacement.replacement());
+    }
+  }
+  return result;
 }
 
 std::string GetMaybeQuotedChunk(const std::string& value, bool quote_meta) {
@@ -190,7 +202,7 @@ ClientStatus FormatExpression(const ValueExpression& value_expression,
       case ValueExpression::Chunk::CHUNK_NOT_SET:
         return ClientStatus(INVALID_ACTION);
     }
-    out_value->append(ApplyChunkReplacement(chunk.replacements(), chunk_value));
+    out_value->append(ApplyChunkReplacement(chunk, chunk_value));
   }
 
   return OkClientStatus();

@@ -18,6 +18,14 @@ message AutofillProfile {
 
 // A value expression.
 message ValueExpression {
+  message RegexpReplacement {
+    // If the text filter matches ...
+    optional TextFilter text_filter = 1;
+    // ... replace by this value.
+    optional string replacement = 2;
+    // If true, replaces all occurrences, otherwise the first one only.
+    optional bool global = 3;
+  }
   message Chunk {
     oneof chunk {
       // An integer representation to resolve a piece of Autofill information.
@@ -35,10 +43,16 @@ message ValueExpression {
       string memory_key = 4;
     }
 
-    // If the chunk fully matches the key, it will be replaced. When used
-    // in a regular expression context, the key needs to be quoted. Similarly,
-    // the replacement will be substituted as is, without being quoted.
+    // If the chunk fully matches the key (case sensitive), it will be
+    // replaced. When used in a regular expression context, the key needs to be
+    // quoted. Similarly, the replacement will be substituted as is, without
+    // being quoted.
     map<string, string> replacements = 3;
+    // If any of the replacements match, apply them. While not explicitly
+    // forbidden it should not be required to use this in combination with
+    // the map replacements. In case they are chained, the map replacements are
+    // applied first.
+    repeated RegexpReplacement regexp_replacements = 5;
   }
   repeated Chunk chunk = 1;
 }

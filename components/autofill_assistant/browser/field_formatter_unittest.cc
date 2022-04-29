@@ -439,6 +439,78 @@ TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
   EXPECT_EQ("\\+0041", result);
 }
 
+TEST(FieldFormatterTest, FormatExpressionWithRegexpReplacement) {
+  base::flat_map<Key, std::string> mappings = {
+      {Key(1), "AA"}, {Key(2), "Bb"}, {Key(3), "Cc"}, {Key(4), "DD"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  // AA -> rA
+  chunk->set_key(1);
+  auto* case_insensitive_local = chunk->add_regexp_replacements();
+  case_insensitive_local->mutable_text_filter()->set_re2("a");
+  case_insensitive_local->mutable_text_filter()->set_case_sensitive(false);
+  case_insensitive_local->set_global(false);
+  case_insensitive_local->set_replacement("r");
+  // Bb -> Br
+  chunk = value_expression.add_chunk();
+  chunk->set_key(2);
+  auto* case_sensitive_local = chunk->add_regexp_replacements();
+  case_sensitive_local->mutable_text_filter()->set_re2("b");
+  case_sensitive_local->mutable_text_filter()->set_case_sensitive(true);
+  case_sensitive_local->set_global(false);
+  case_sensitive_local->set_replacement("r");
+  // Cc -> rr
+  chunk = value_expression.add_chunk();
+  chunk->set_key(3);
+  auto* case_insensitive_global = chunk->add_regexp_replacements();
+  case_insensitive_global->mutable_text_filter()->set_re2("c");
+  case_insensitive_global->mutable_text_filter()->set_case_sensitive(false);
+  case_insensitive_global->set_global(true);
+  case_insensitive_global->set_replacement("r");
+  // DD -> rr
+  chunk = value_expression.add_chunk();
+  chunk->set_key(4);
+  auto* case_insensitive_local_first = chunk->add_regexp_replacements();
+  case_insensitive_local_first->mutable_text_filter()->set_re2("d");
+  case_insensitive_local_first->mutable_text_filter()->set_case_sensitive(
+      false);
+  case_insensitive_local_first->set_global(false);
+  case_insensitive_local_first->set_replacement("r");
+  auto* case_insensitive_local_second = chunk->add_regexp_replacements();
+  case_insensitive_local_second->mutable_text_filter()->set_re2("d");
+  case_insensitive_local_second->mutable_text_filter()->set_case_sensitive(
+      false);
+  case_insensitive_local_second->set_global(false);
+  case_insensitive_local_second->set_replacement("r");
+
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("rABrrrrr", result);
+}
+
+TEST(FieldFormatterTest, FormatExpressionWithInvalidRegexpReplacement) {
+  base::flat_map<Key, std::string> mappings = {{Key(1), "AA"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  // AA -> ?
+  chunk->set_key(1);
+  auto* case_insensitive_local = chunk->add_regexp_replacements();
+  case_insensitive_local->mutable_text_filter()->set_re2("^*");
+  case_insensitive_local->mutable_text_filter()->set_case_sensitive(false);
+  case_insensitive_local->set_global(false);
+  case_insensitive_local->set_replacement("");
+
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("AA", result);
+}
+
 TEST(FieldFormatterTest, FormatExpressionWithMemoryKey) {
   base::flat_map<Key, std::string> mappings = {{Key("_var0"), "valueA"},
                                                {Key("_var1"), "val.ueB"}};
