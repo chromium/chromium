@@ -1022,7 +1022,9 @@
     ],
     "isolated_scripts": [
       {
-        "args": [],
+        "args": [
+          "--arch=amd64"
+        ],
         "isolate_name": "resource_sizes_lacros_chrome",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"

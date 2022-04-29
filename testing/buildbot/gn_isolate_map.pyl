@@ -1577,7 +1577,7 @@
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
     "type": "generated_script",
   },
-  'resource_sizes_lacros_chrome': {
+  "resource_sizes_lacros_chrome": {
     "label": "//chromeos/lacros:resource_sizes_lacros_chrome",
     "type": "generated_script",
   },

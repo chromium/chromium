@@ -1074,6 +1074,9 @@ BUILDERS = {
                 'resultdb': {
                     'has_native_resultdb_integration': True,
                 },
+                'extra_args': [
+                    '--arch=amd64',
+                ],
             },
         ],
         'dimension': {
