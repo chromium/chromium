@@ -318,9 +318,21 @@ bool HidChooserController::DisplayDevice(
         base::StringPrintf(
             "Chooser dialog is not displaying a device blocked by "
             "the HID blocklist: vendorId=%d, "
-            "productId=%d, name='%s', serial='%s'",
+            "productId=%d, name='%s', serial='%s', numberOfCollections=%zu, "
+            "numberOfProtectedInputReports=%zu, "
+            "numberOfProtectedOutputReports=%zu, "
+            "numberOfProtectedFeatureReports=%zu",
             device.vendor_id, device.product_id, device.product_name.c_str(),
-            device.serial_number.c_str()));
+            device.serial_number.c_str(), device.collections.size(),
+            device.protected_input_report_ids
+                ? device.protected_input_report_ids->size()
+                : 0,
+            device.protected_output_report_ids
+                ? device.protected_output_report_ids->size()
+                : 0,
+            device.protected_feature_report_ids
+                ? device.protected_feature_report_ids->size()
+                : 0));
     return false;
   }
 
