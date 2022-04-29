@@ -786,15 +786,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
             @Override
             public void signOutComplete() {
-                // TODO(crbug.com/1313527): there is a narrow window condition in which this code
-                // path is executed after the activity showing the dialog has been dismissed.
-                // This leads to a crash.  See crrev.com/820503003 for background.
-                // To fix this, the code should be proteced by an isAdded() check, but with in a
-                // way that also copes with the signOut completing before the dialog has been added
-                // (we need to dismiss the dialog).
-                // The solution should be common across the users of the signOutComplete()
-                // callback.
-                clearDataProgressDialog.dismissAllowingStateLoss();
+                // TODO(crbug.com/1313527): deal with both the following edge cases (currently
+                // this code only deals with 1):
+                //
+                // 1) The parent activity showing the dialog is dismissed before signout completes.
+                // 2) The signout completes before the dialog is added.
+                if (clearDataProgressDialog.isAdded()) {
+                    clearDataProgressDialog.dismissAllowingStateLoss();
+                }
             }
         };
 
