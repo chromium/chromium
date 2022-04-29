@@ -4,7 +4,7 @@
   }
 
   cr-input {
-    --cr-input-error-display: none;
+    font-family: var(--shimless-hint-font-family);
   }
 
   #inputValidationLabel {
@@ -65,7 +65,8 @@
           on-keydown="onKeyDown_"
           maxlength="[[rsuCodeExpectedLength_]]"
           invalid="[[rsuCodeInvalid_]]"
-          disabled="[[allButtonsDisabled]]">
+          disabled="[[allButtonsDisabled]]"
+          error-message="[[i18n('rsuCodeErrorLabelText')]]">
       </cr-input>
     </div>
   </div>

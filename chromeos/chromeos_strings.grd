@@ -2792,6 +2792,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" desc="Label for the RSU code input box.">
         Enter the 8-character unlock code
       </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_CODE_ERROR_LABEL" desc="Label shown for an incorrect RSU code.">
+        Incorrect code
+      </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog that shows the RSU challenge code link.">
         Go to this link for your RSU unlock code
       </message>
