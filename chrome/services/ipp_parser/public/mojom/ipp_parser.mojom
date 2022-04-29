@@ -10,15 +10,6 @@ module ipp_parser.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 
-[Extensible] enum ValueType {
-  BOOLEAN,
-  DATE,
-  INTEGER,
-  STRING,
-  OCTET,
-  RESOLUTION,
-};
-
 struct Resolution {
   int32 xres;
   int32 yres;
@@ -41,7 +32,6 @@ struct IppAttribute {
   string name;
   int64 group_tag;
   int64 value_tag;
-  ValueType type;
   IppAttributeValue value;
 };
 

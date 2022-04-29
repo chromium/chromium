@@ -31,10 +31,11 @@ enum ValidateAttributeResult {
 // - a single-value attribute cannot have more than one value
 // - a set-of-values attribute cannot be empty
 // Returns kFatalError <=> at least one of the constraints has been violated.
-ValidateAttributeResult ValidateAttribute(ipp_op_t ipp_oper_id,
-                                          const std::string& name,
-                                          ipp_parser::mojom::ValueType type,
-                                          size_t values_count);
+ValidateAttributeResult ValidateAttribute(
+    ipp_op_t ipp_oper_id,
+    const std::string& name,
+    ipp_parser::mojom::IppAttributeValue::Tag type,
+    size_t values_count);
 
 }  // namespace cups_proxy
 

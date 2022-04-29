@@ -24,7 +24,6 @@ namespace {
 using ipp_parser::mojom::IppAttributePtr;
 using ipp_parser::mojom::IppMessagePtr;
 using ipp_parser::mojom::IppRequestPtr;
-using ipp_parser::mojom::ValueType;
 
 using Printer = chromeos::Printer;
 
@@ -84,7 +83,6 @@ IppAttributePtr BuildAttributePtr(std::string name,
   ret->name = name;
   ret->group_tag = group_tag;
   ret->value_tag = value_tag;
-  ret->value = ipp_parser::mojom::IppAttributeValue::New();
   return ret;
 }
 
@@ -117,13 +115,13 @@ IppRequestPtr GetBasicIppRequest() {
   // Setup each attribute.
   IppAttributePtr attr_charset = BuildAttributePtr(
       "attributes-charset", IPP_TAG_OPERATION, IPP_TAG_CHARSET);
-  attr_charset->type = ValueType::STRING;
-  attr_charset->value->set_strings({"utf-8"});
+  attr_charset->value =
+      ipp_parser::mojom::IppAttributeValue::NewStrings({"utf-8"});
 
   IppAttributePtr attr_natlang = BuildAttributePtr(
       "attributes-natural-language", IPP_TAG_OPERATION, IPP_TAG_LANGUAGE);
-  attr_natlang->type = ValueType::STRING;
-  attr_natlang->value->set_strings({"en"});
+  attr_natlang->value =
+      ipp_parser::mojom::IppAttributeValue::NewStrings({"en"});
 
   ipp_message->attributes.push_back(std::move(attr_charset));
   ipp_message->attributes.push_back(std::move(attr_natlang));
@@ -187,8 +185,8 @@ TEST_F(IppValidatorTest, UnknownAttribute) {
   std::string fake_attr_name = "fake-attribute-name";
   IppAttributePtr fake_attr =
       BuildAttributePtr(fake_attr_name, IPP_TAG_OPERATION, IPP_TAG_TEXT);
-  fake_attr->type = ValueType::STRING;
-  fake_attr->value->set_strings({"fake_attribute_value"});
+  fake_attr->value = ipp_parser::mojom::IppAttributeValue::NewStrings(
+      {"fake_attribute_value"});
   request->ipp->attributes.push_back(std::move(fake_attr));
 
   auto result = RunValidateIppRequest(request);

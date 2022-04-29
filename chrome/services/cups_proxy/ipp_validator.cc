@@ -27,7 +27,7 @@
 namespace cups_proxy {
 namespace {
 
-using ValueType = ipp_parser::mojom::ValueType;
+using ValueType = ipp_parser::mojom::IppAttributeValue::Tag;
 
 // Initial version only supports english lcoales.
 // TODO(crbug.com/945409): Extending to supporting arbitrary locales.
@@ -71,31 +71,23 @@ std::array<std::vector<int>, 2> ConvertResolutions(
 // Depending on |type|, returns the number of values associated with |attr|.
 size_t GetAttributeValuesSize(const ipp_parser::mojom::IppAttributePtr& attr) {
   const auto& attr_value = attr->value;
-  switch (attr->type) {
-    case ValueType::DATE:
+  switch (attr->value->which()) {
+    case ValueType::kDate:
       return 1;
 
-    case ValueType::BOOLEAN:
-      DCHECK(attr_value->is_bools());
+    case ValueType::kBools:
       return attr_value->get_bools().size();
-    case ValueType::INTEGER:
-      DCHECK(attr_value->is_ints());
+    case ValueType::kInts:
       return attr_value->get_ints().size();
-    case ValueType::STRING:
-      DCHECK(attr_value->is_strings());
+    case ValueType::kStrings:
       return attr_value->get_strings().size();
-    case ValueType::OCTET:
-      DCHECK(attr_value->is_octets());
+    case ValueType::kOctets:
       return attr_value->get_octets().size();
-    case ValueType::RESOLUTION:
-      DCHECK(attr_value->is_resolutions());
+    case ValueType::kResolutions:
       return attr_value->get_resolutions().size();
-
-    default:
-      break;
   }
 
-  DVLOG(1) << "Unknown CupsIppParser ValueType " << attr->type;
+  NOTREACHED();
   return 0;
 }
 
@@ -198,8 +190,8 @@ ipp_t* IppValidator::ValidateIppMessage(
       return nullptr;
     }
 
-    auto ret = ValidateAttribute(ipp_oper_id, attribute->name, attribute->type,
-                                 num_values);
+    auto ret = ValidateAttribute(ipp_oper_id, attribute->name,
+                                 attribute->value->which(), num_values);
     if (ret == ValidateAttributeResult::kFatalError) {
       return nullptr;
     }
@@ -210,9 +202,8 @@ ipp_t* IppValidator::ValidateIppMessage(
       continue;
     }
 
-    switch (attribute->type) {
-      case ValueType::BOOLEAN: {
-        DCHECK(attribute->value->is_bools());
+    switch (attribute->value->which()) {
+      case ValueType::kBools: {
         std::vector<char> values =
             ConvertBooleans(attribute->value->get_bools());
 
@@ -224,8 +215,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::DATE: {
-        DCHECK(attribute->value->is_date());
+      case ValueType::kDate: {
         std::vector<uint8_t> date = attribute->value->get_date();
 
         // Per RFC2910, ipp_uchar_t is defined as an OCTET, so below
@@ -239,8 +229,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::INTEGER: {
-        DCHECK(attribute->value->is_ints());
+      case ValueType::kInts: {
         std::vector<int> values = attribute->value->get_ints();
 
         auto* attr = ippAddIntegers(
@@ -252,9 +241,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::STRING: {
-        DCHECK(attribute->value->is_strings());
-
+      case ValueType::kStrings: {
         // Note: cstrings_values references attribute->value's strings, i.e.
         // attribute->value MUST outlive cstrings_values.
         std::vector<const char*> cstrings_values =
@@ -270,8 +257,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::OCTET: {
-        DCHECK(attribute->value->is_octets());
+      case ValueType::kOctets: {
         size_t num = attribute->value->get_octets().size();
         if (num != 1) {
           LOG(ERROR) << "CUPS API only supports adding a single octet string "
@@ -293,8 +279,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::RESOLUTION: {
-        DCHECK(attribute->value->is_resolutions());
+      case ValueType::kResolutions: {
         std::array<std::vector<int>, 2> res =
             ConvertResolutions(attribute->value->get_resolutions());
         auto* attr = ippAddResolutions(

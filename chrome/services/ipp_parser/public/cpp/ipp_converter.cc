@@ -19,7 +19,7 @@
 namespace ipp_converter {
 namespace {
 
-using ValueType = ipp_parser::mojom::ValueType;
+using IppAttributeValue = ipp_parser::mojom::IppAttributeValue;
 
 const char kStatusDelimiter[] = " ";
 const char kHeaderDelimiter[] = ": ";
@@ -85,15 +85,15 @@ absl::optional<HttpHeader> ParseHeader(base::StringPiece header) {
 }
 
 // Converts |value_tag| to corresponding mojom type for marshalling.
-absl::optional<ValueType> ValueTagToType(const int value_tag) {
+absl::optional<IppAttributeValue::Tag> ValueTagToType(const int value_tag) {
   switch (value_tag) {
     case IPP_TAG_BOOLEAN:
-      return ValueType::BOOLEAN;
+      return IppAttributeValue::Tag::kBools;
     case IPP_TAG_DATE:
-      return ValueType::DATE;
+      return IppAttributeValue::Tag::kDate;
     case IPP_TAG_INTEGER:
     case IPP_TAG_ENUM:
-      return ValueType::INTEGER;
+      return IppAttributeValue::Tag::kInts;
 
     // Below string cases take from libCUPS ippAttributeString API
     case IPP_TAG_TEXT:
@@ -106,14 +106,14 @@ absl::optional<ValueType> ValueTagToType(const int value_tag) {
     case IPP_TAG_LANGUAGE:
     case IPP_TAG_TEXTLANG:
     case IPP_TAG_NAMELANG:
-      return ValueType::STRING;
+      return IppAttributeValue::Tag::kStrings;
 
     // Octet (binary) string
     case IPP_TAG_STRING:
-      return ValueType::OCTET;
+      return IppAttributeValue::Tag::kOctets;
 
     case IPP_TAG_RESOLUTION:
-      return ValueType::RESOLUTION;
+      return IppAttributeValue::Tag::kResolutions;
 
     default:
       break;
@@ -410,59 +410,62 @@ ipp_parser::mojom::IppMessagePtr ConvertIppToMojo(ipp_t* ipp) {
     if (!type) {
       return nullptr;
     }
-    attrptr->type = type.value();
 
-    attrptr->value = ipp_parser::mojom::IppAttributeValue::New();
-    switch (attrptr->type) {
-      case ValueType::BOOLEAN: {
-        attrptr->value->set_bools(IppGetBools(attr));
+    switch (*type) {
+      case IppAttributeValue::Tag::kBools: {
+        attrptr->value =
+            ipp_parser::mojom::IppAttributeValue::NewBools(IppGetBools(attr));
         break;
       }
-      case ValueType::DATE: {
+      case IppAttributeValue::Tag::kDate: {
         // Note: We expect date-attributes to be single-valued.
         const uint8_t* v =
             reinterpret_cast<const uint8_t*>(ippGetDate(attr, 0));
         if (!v) {
           return nullptr;
         }
-        attrptr->value->set_date(std::vector<uint8_t>(v, v + kIppDateSize));
+        attrptr->value = ipp_parser::mojom::IppAttributeValue::NewDate(
+            std::vector<uint8_t>(v, v + kIppDateSize));
         break;
       }
-      case ValueType::INTEGER: {
+      case IppAttributeValue::Tag::kInts: {
         auto vals = IppGetInts(attr);
         if (!vals.has_value()) {
           return nullptr;
         }
-        attrptr->value->set_ints(*vals);
+        attrptr->value = ipp_parser::mojom::IppAttributeValue::NewInts(*vals);
         break;
       }
-      case ValueType::STRING: {
+      case IppAttributeValue::Tag::kStrings: {
         auto vals = IppGetStrings(attr);
         if (!vals.has_value()) {
           return nullptr;
         }
-        attrptr->value->set_strings(*vals);
+        attrptr->value =
+            ipp_parser::mojom::IppAttributeValue::NewStrings(*vals);
         break;
       }
-      case ValueType::OCTET: {
+      case IppAttributeValue::Tag::kOctets: {
         auto vals = IppGetOctets(attr);
         if (!vals.has_value()) {
           return nullptr;
         }
-        attrptr->value->set_octets(*vals);
+        attrptr->value = ipp_parser::mojom::IppAttributeValue::NewOctets(*vals);
         break;
       }
-      case ValueType::RESOLUTION: {
+      case IppAttributeValue::Tag::kResolutions: {
         auto vals = IppGetResolutions(attr);
         if (!vals.has_value()) {
           return nullptr;
         }
-        attrptr->value->set_resolutions(std::move(*vals));
+        attrptr->value = ipp_parser::mojom::IppAttributeValue::NewResolutions(
+            std::move(*vals));
         break;
       }
-      default:
-        NOTREACHED();
     }
+
+    if (!attrptr->value)
+      NOTREACHED();
 
     attributes.push_back(std::move(attrptr));
   }
