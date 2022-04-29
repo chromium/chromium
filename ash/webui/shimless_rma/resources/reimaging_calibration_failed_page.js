@@ -142,8 +142,6 @@ export class ReimagingCalibrationFailedPage extends
     });
   }
 
-  // TODO(swifton): Implement onNextButtonClick. It should retry calibration.
-
   /**
    * @return {!Promise<!StateResult>}
    * @private
@@ -159,12 +157,9 @@ export class ReimagingCalibrationFailedPage extends
     return this.shimlessRmaService_.startCalibration(skippedComponents);
   }
 
-  /** @private */
-  onRetryCalibrationButtonClicked_() {
-    executeThenTransitionState(
-        this,
-        () => this.shimlessRmaService_.startCalibration(
-            this.getComponentsList_()));
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.startCalibration(this.getComponentsList_());
   }
 
   /**

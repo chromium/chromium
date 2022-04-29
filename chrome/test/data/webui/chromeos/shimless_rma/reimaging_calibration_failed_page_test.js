@@ -77,15 +77,6 @@ export function reimagingCalibrationFailedPageTest() {
     return flushTasks();
   }
 
-  /** @return {!Promise} */
-  function clickRetryCalibrationButton() {
-    const retryButton =
-        component.shadowRoot.querySelector('#retryCalibrationButton');
-    assertFalse(retryButton.disabled);
-    retryButton.click();
-    return flushTasks();
-  }
-
   /**
    * Get getComponentsList_ private member for testing.
    * @suppress {visibility} // access private member
@@ -176,7 +167,7 @@ export function reimagingCalibrationFailedPageTest() {
     assertDeepEquals(savedResult, expectedResult);
   });
 
-  test('RetryButtonTriggersCalibration', async () => {
+  test('NextButtonTriggersCalibration', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
@@ -198,8 +189,15 @@ export function reimagingCalibrationFailedPageTest() {
       return resolver.promise;
     };
 
-    await clickRetryCalibrationButton();
+    const expectedResult = {foo: 'bar'};
+    let savedResult;
+    component.onNextButtonClick().then((result) => savedResult = result);
+    // Resolve to a distinct result to confirm it was not modified.
+    resolver.resolve(expectedResult);
+    await flushTasks();
+
     assertEquals(1, startCalibrationCalls);
+    assertDeepEquals(savedResult, expectedResult);
   });
 
   test('ComponentChipAllButtonsDisabled', async () => {
@@ -211,16 +209,6 @@ export function reimagingCalibrationFailedPageTest() {
     assertFalse(lidAccelerometerComponent.disabled);
     component.allButtonsDisabled = true;
     assertTrue(lidAccelerometerComponent.disabled);
-  });
-
-  test('RetryCalibrationAllButtonsDisabled', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryCalibrationButton');
-    assertFalse(retryButton.disabled);
-    component.allButtonsDisabled = true;
-    assertTrue(retryButton.disabled);
   });
 
   test('SkipCalibrationWithFailedComponents', async () => {
