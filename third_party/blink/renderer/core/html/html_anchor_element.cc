@@ -539,7 +539,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
           FastGetAttribute(html_names::kAttributionsrcAttr);
       if (!attribution_src_value.IsNull()) {
         impression = frame->GetAttributionSrcLoader()->RegisterNavigation(
-            GetDocument().CompleteURL(attribution_src_value));
+            GetDocument().CompleteURL(attribution_src_value), this);
       }
     } else if (HasImpression()) {
       impression = GetImpressionForAnchor(this);

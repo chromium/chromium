@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -165,8 +165,7 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_);
 }
 
-void AttributionSrcLoader::Register(const KURL& src_url,
-                                    HTMLImageElement* element) {
+void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
   RegisterResult result;
   CreateAndSendRequest(src_url, element, SrcType::kUndetermined,
                        /*associated_with_navigation=*/false, result);
@@ -181,12 +180,13 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::RegisterSources(
 }
 
 absl::optional<WebImpression> AttributionSrcLoader::RegisterNavigation(
-    const KURL& src_url) {
+    const KURL& src_url,
+    HTMLElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
   RegisterResult result;
   ResourceClient* client =
-      CreateAndSendRequest(src_url, nullptr, SrcType::kSource,
+      CreateAndSendRequest(src_url, element, SrcType::kSource,
                            /*associated_with_navigation=*/true, result);
   if (!client)
     return absl::nullopt;

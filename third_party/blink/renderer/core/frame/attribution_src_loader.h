@@ -19,7 +19,6 @@
 namespace blink {
 
 class HTMLElement;
-class HTMLImageElement;
 class KURL;
 class LocalFrame;
 class ResourceRequest;
@@ -48,7 +47,7 @@ class CORE_EXPORT AttributionSrcLoader
   // Registers an attributionsrc. This method handles fetching the attribution
   // src and notifying the browser process to begin tracking it. It is a no-op
   // if the frame is not attached.
-  void Register(const KURL& attribution_src, HTMLImageElement* element);
+  void Register(const KURL& attribution_src, HTMLElement* element);
 
   // Like `Register()`, but only allows sources to be registered.
   RegisterResult RegisterSources(const KURL& attribution_src);
@@ -60,7 +59,9 @@ class CORE_EXPORT AttributionSrcLoader
   // navigation, for example a click on an anchor tag. Returns a WebImpression
   // which identifies the attributionsrc request and notifies the browser to
   // begin tracking it.
-  absl::optional<WebImpression> RegisterNavigation(const KURL& attribution_src);
+  absl::optional<WebImpression> RegisterNavigation(
+      const KURL& attribution_src,
+      HTMLElement* element = nullptr);
 
   void Trace(Visitor* visitor) const;
 
