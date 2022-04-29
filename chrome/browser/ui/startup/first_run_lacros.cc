@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -56,28 +57,9 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
     std::move(post_first_run_callback).Run();
 }
 
-void OpenPrimaryProfileFirstRunIfNeededWithProfile(
-    ResumeTaskCallback& callback,
-    Profile* profile,
-    Profile::CreateStatus create_status) {
-  if (create_status != Profile::CreateStatus::CREATE_STATUS_INITIALIZED)
-    return;
-
-  DCHECK(callback);
-  DCHECK(profile->IsMainProfile());
-
-  if (TryMarkFirstRunAlreadyFinished(profile)) {
-    std::move(callback).Run(/*proceed=*/true);
-    return;
-  }
-
-  ProfilePicker::Show(ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
-      base::BindOnce(&OnFirstRunHasExited, std::move(callback))));
-}
-
 }  // namespace
 
-bool ShouldOpenPrimaryProfileFirstRun() {
+bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
   if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
     // Sync is already always forced, no point showing the FRE to ask the user
     // to sync.
@@ -89,14 +71,25 @@ bool ShouldOpenPrimaryProfileFirstRun() {
   if (command_line->HasSwitch(switches::kNoFirstRun))
     return false;
 
+  if (profiles::IsKioskSession() || profiles::IsPublicSession())
+    return false;
+
+  // Having secondary profiles implies that the user already used Chrome and so
+  // should not have to see the FRE. So we never want to run it for these.
+  if (!profile->IsMainProfile())
+    return false;
+
+  // Don't show the FRE if we are in a Guest user pod or in a Guest profile.
+  if (profile->IsGuestSession())
+    return false;
+
   const PrefService* const pref_service = g_browser_process->local_state();
   return !pref_service->GetBoolean(
       lacros_prefs::kPrimaryProfileFirstRunFinished);
 }
 
 bool TryMarkFirstRunAlreadyFinished(Profile* profile) {
-  DCHECK(ShouldOpenPrimaryProfileFirstRun());  // Should not have been called.
-  DCHECK(profile->IsMainProfile());
+  DCHECK(ShouldOpenPrimaryProfileFirstRun(profile));  // Caller should check.
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -124,8 +117,15 @@ bool TryMarkFirstRunAlreadyFinished(Profile* profile) {
 void OpenPrimaryProfileFirstRunIfNeeded(ResumeTaskCallback callback) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  profile_manager->CreateProfileAsync(
-      profile_manager->GetPrimaryUserProfilePath(),
-      base::BindRepeating(&OpenPrimaryProfileFirstRunIfNeededWithProfile,
-                          base::OwnedRef(std::move(callback))));
+  Profile* primary_profile = profile_manager->GetProfileByPath(
+      profile_manager->GetPrimaryUserProfilePath());
+  DCHECK(primary_profile);
+
+  if (TryMarkFirstRunAlreadyFinished(primary_profile)) {
+    std::move(callback).Run(/*proceed=*/true);
+    return;
+  }
+
+  ProfilePicker::Show(ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
+      base::BindOnce(&OnFirstRunHasExited, std::move(callback))));
 }

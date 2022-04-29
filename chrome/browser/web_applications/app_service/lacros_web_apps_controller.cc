@@ -215,7 +215,7 @@ void LacrosWebAppsController::ExecuteContextMenuCommand(
       base::BindOnce(&LacrosWebAppsController::ReturnLaunchResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(mojo_callback));
 
-  if (!ShouldOpenPrimaryProfileFirstRun()) {
+  if (!ShouldOpenPrimaryProfileFirstRun(profile_)) {
     ExecuteContextMenuCommandInternal(app_id, id,
                                       std::move(execution_finished_callback));
     return;
@@ -265,7 +265,7 @@ void LacrosWebAppsController::Launch(
       base::BindOnce(&LacrosWebAppsController::ReturnLaunchResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(mojo_callback));
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);
-  if (!ShouldOpenPrimaryProfileFirstRun()) {
+  if (!ShouldOpenPrimaryProfileFirstRun(profile_)) {
     LaunchInternal(launch_params->app_id, std::move(params),
                    std::move(launch_finished_callback));
     return;

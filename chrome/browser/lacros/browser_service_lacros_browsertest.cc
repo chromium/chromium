@@ -482,7 +482,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
   base::RunLoop run_loop;
@@ -502,7 +504,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun_UiClose) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
   base::RunLoop run_loop;
@@ -522,7 +526,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewTab_OpensFirstRun) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
   base::RunLoop run_loop;

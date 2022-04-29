@@ -1640,7 +1640,7 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Check if we should turn Sync on from the background and skip the FRE.
-  if (ShouldOpenPrimaryProfileFirstRun() && profile->IsMainProfile()) {
+  if (ShouldOpenPrimaryProfileFirstRun(profile)) {
     // If we don't manage to set it, we will just have to defer silent or visual
     // handling of the FRE to when the user attempts to open a browser UI.
     TryMarkFirstRunAlreadyFinished(profile);
@@ -2383,7 +2383,7 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // No browser should be opened before the FRE is finished.
-  DCHECK(!ShouldOpenPrimaryProfileFirstRun());
+  DCHECK(!ShouldOpenPrimaryProfileFirstRun(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (!profile->IsOffTheRecord() && !IsEphemeral(profile) &&

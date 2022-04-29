@@ -21,7 +21,7 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 
 // Returns whether the primary (main) profile first run experience (including
 // sync promo) should be opened on startup.
-bool ShouldOpenPrimaryProfileFirstRun();
+bool ShouldOpenPrimaryProfileFirstRun(Profile* profile);
 
 // Assuming that the primary profile first run experience needs to be opened on
 // startup, attempts to complete it silently, in case collecting consent is not

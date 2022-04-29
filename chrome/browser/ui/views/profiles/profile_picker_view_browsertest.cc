@@ -1804,7 +1804,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest,
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
 
   // The profile picker should be open on start to show the FRE.
   ASSERT_EQ(0u, BrowserList::GetInstance()->size());
@@ -1821,12 +1824,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
   // No browser window should open because we closed the FRE UI early.
   WaitForPickerClosed();
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, QuitEarly) {
   // On the second run, the FRE is still not marked finished and we should
   // reopen it.
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
@@ -1837,7 +1842,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest,
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
 
   // The profile picker should be open on start to show the FRE.
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
@@ -1859,12 +1867,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
   WaitForPickerClosed();
 
   // Because we quit, we should also quit chrome, but mark the FRE finished.
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, QuitAtEnd) {
   // On the second run, the FRE is marked finished and we should skip it.
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
@@ -1875,7 +1885,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_PRE_OptIn) {
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
 
   // The profile picker should be open on start to show the FRE.
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
@@ -1893,21 +1906,20 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
   WaitForLoadStop(GetSyncConfirmationURL(absl::optional<SkColor>()));
 
   // Opt-in to sync
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profiles::testing::CreateProfileSync(
-      profile_manager, profile_manager->GetPrimaryUserProfilePath());
   LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
       LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 
   // The FRE should close and a browser should open.
   WaitForPickerClosed();
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun());
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, OptIn) {
   // On the second run, the FRE is marked finished and we should skip it.
-  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
+      profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
