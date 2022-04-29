@@ -160,8 +160,9 @@
       }
 
       #oobe-progress ::slotted(paper-progress) {
-        --paper-progress-active-color: var(--google-blue-500);
-        --paper-progress-container-color: var(--google-blue-100);
+        /* TODO(https://crbug.com/1320715) Revise the colors */
+        --paper-progress-active-color: var(--cros-slider-color-active);
+        --paper-progress-container-color: var(--cros-slider-track-color-active);
         height: 4px;
         margin-top: 32px;
         width: 100%;
@@ -213,7 +214,7 @@
       #oobe-icon-div ::slotted(iron-icon) {
         --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
         --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
-        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-fill-color: var(--cros-icon-color-blue);
       }
     </style>
     <cr-lazy-render id="lazy">

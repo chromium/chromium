@@ -97,7 +97,7 @@
       }
 
       .slider-dot {
-        background: var(--google-grey-200);
+        background: var(--cros-color-primary-inverted);
         border-radius: 5px;
         cursor: pointer;
         height: 10px;
@@ -107,15 +107,17 @@
         width: 10px;
       }
       .slider-dot[active] {
-        background: var(--google-blue-600);
+        background: var(--cros-icon-color-blue);
       }
       .slider-dot:focus {
-        box-shadow: 0 0 7px 1px rgba(var(--google-blue-600-rgb), .75);
+        /* TODO(https://crbug.com/1320715) Revise the color */
+        box-shadow: 0 0 7px 1px rgba(var(--cros-icon-color-blue-rgb), .75);
         outline: none;
       }
 
       .arrow-button {
-        --cr-icon-button-fill-color: var(--google-grey-400);
+        /* TODO(https://crbug.com/1320715) Revise the color */
+        --cr-icon-button-fill-color: var(--cros-app-shield-color);
       }
     </style>
     <div id="container">

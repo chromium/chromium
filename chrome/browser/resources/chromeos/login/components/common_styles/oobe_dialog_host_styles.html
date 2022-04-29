@@ -32,9 +32,10 @@
         }
 
         .oobe-tos-webview {
-          border: 1px solid rgb(218, 220, 224); /* #DADCE0 */
+          /* TODO(https://crbug.com/1320715) Revise the colors */
+          border: 1px solid var(--cros-app-shield-color);
           border-radius: 4px;
-          box-shadow: inset 0 0 4px 4px rgba(241, 243, 244, 0.5); /* #F1F3F4 */
+          box-shadow: inset 0 0 4px 4px rgba(var(--cros-textfield-background-color-disabled-rgb), 0.5);
           padding: 13px 0;
         }
 

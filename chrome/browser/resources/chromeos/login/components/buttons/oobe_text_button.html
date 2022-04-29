@@ -42,7 +42,10 @@
   <template>
     <style include="cr-shared-style oobe-common-styles">
       cr-button {
-        --border-color: var(--google-grey-300);
+        /*
+          TODO(https://crbug.com/1320715) Revise the color
+          --border-color: var(--oobe-button-border-color);
+        */
         --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
