@@ -587,27 +587,27 @@ void StyleResolver::MatchPseudoPartRulesForUAHost(
                        /* for_shadow_pseudo */ true);
 }
 
-void StyleResolver::MatchPseudoPartRules(const Element& element,
+void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
                                          ElementRuleCollector& collector,
                                          bool for_shadow_pseudo) {
   if (!for_shadow_pseudo)
-    MatchPseudoPartRulesForUAHost(element, collector);
-  DOMTokenList* part = element.GetPart();
-  if (!part)
+    MatchPseudoPartRulesForUAHost(part_matching_element, collector);
+
+  DOMTokenList* part = part_matching_element.GetPart();
+  if (!part || !part->length() || !part_matching_element.IsInShadowTree())
     return;
 
   PartNames current_names(part->TokenSet());
 
-  // ::part selectors in the shadow host's scope and above can match this
-  // element.
-  Element* host = element.OwnerShadowHost();
-  if (!host)
-    return;
-
-  while (current_names.size()) {
-    TreeScope& tree_scope = host->GetTreeScope();
+  // Consider ::part rules in this element’s tree scope or above. Rules in this
+  // element’s tree scope will only match if preceded by a :host or :host() that
+  // matches one of its containing shadow hosts (see MatchForRelation).
+  for (const Element* element = &part_matching_element; element;
+       element = element->OwnerShadowHost()) {
+    TreeScope& tree_scope = element->GetTreeScope();
     if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
-      ElementRuleCollector::PartRulesScope scope(collector, *host);
+      ElementRuleCollector::PartRulesScope scope(
+          collector, const_cast<Element&>(*element));
       collector.ClearMatchedRules();
       resolver->CollectMatchingPartPseudoRules(collector, current_names,
                                                for_shadow_pseudo);
@@ -615,17 +615,12 @@ void StyleResolver::MatchPseudoPartRules(const Element& element,
       collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
     }
 
-    // If the host doesn't forward any parts using partmap= then the element is
-    // unreachable from any scope further above and we can stop.
-    const NamesMap* part_map = host->PartNamesMap();
-    if (!part_map)
+    // If the host doesn't forward any parts using exportparts= then the element
+    // is unreachable from any scope further above and we can stop.
+    if (element->HasPartNamesMap())
+      current_names.PushMap(*element->PartNamesMap());
+    else if (element != &part_matching_element)
       return;
-
-    // We have reached the top-level document.
-    if (!(host = host->OwnerShadowHost()))
-      return;
-
-    current_names.PushMap(*part_map);
   }
 }
 

@@ -440,8 +440,15 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         if (!next_context.element)
           return kSelectorFailsCompletely;
 
-        if (next_context.element->GetTreeScope() ==
-            context.scope->GetTreeScope())
+        // Generally a ::part() rule needs to be in the host’s tree scope, but
+        // if (and only if) we are preceded by :host or :host(), then the rule
+        // could also be in the same scope as the subject.
+        TreeScope& host_tree_scope =
+            next_context.selector->IsHostPseudoClass()
+                ? *context.scope->GetTreeScope().ParentTreeScope()
+                : context.scope->GetTreeScope();
+
+        if (next_context.element->GetTreeScope() == host_tree_scope)
           return MatchSelector(next_context, result);
       }
       return kSelectorFailsCompletely;
