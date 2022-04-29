@@ -43,31 +43,36 @@ class PreprocessIfExprTest(unittest.TestCase):
       self.assertMultiLineEqual(expected, actual)
 
   def testPreprocess(self):
-    self._run_test(['-D', 'foo', '-D', 'bar'], 'test_with_ifexpr.js',
-                   'test_with_ifexpr_expected.js')
+    self._run_test(
+        ['-D', 'foo', '-D', 'bar', '-D', 'apple=false', '-D', 'orange=false'],
+        'test_with_ifexpr.js', 'test_with_ifexpr_expected.js')
 
   def testPreprocessWithComments(self):
-    self._run_test(['-D', 'foo', '-D', 'bar', '--enable_removal_comments'],
-                   'test_with_ifexpr.js',
-                   'test_with_ifexpr_expected_comments.js')
+    self._run_test([
+        '-D', 'foo', '-D', 'bar', '-D', 'apple=false', '-D', 'orange=false',
+        '--enable_removal_comments'
+    ], 'test_with_ifexpr.js', 'test_with_ifexpr_expected_comments.js')
 
   def testPreprocessTypescriptWithComments(self):
-    self._run_test(['-D', 'foo', '-D', 'bar', '--enable_removal_comments'],
-                   'test_with_ifexpr.ts', 'test_with_ifexpr_expected.ts')
+    self._run_test([
+        '-D', 'foo', '-D', 'bar', '-D', 'orange=false',
+        '--enable_removal_comments'
+    ], 'test_with_ifexpr.ts', 'test_with_ifexpr_expected.ts')
 
   def testPreprocessHtmlWithComments(self):
-    self._run_test(['-D', 'foo', '--enable_removal_comments'],
-                   'test_with_ifexpr.html', 'test_with_ifexpr_expected.html')
+    self._run_test(
+        ['-D', 'foo', '-D', 'orange=false', '--enable_removal_comments'],
+        'test_with_ifexpr.html', 'test_with_ifexpr_expected.html')
 
   def testPreprocessJavaScriptHtmlTemplateWithComments(self):
-    self._run_test(['-D', 'foo', '--enable_removal_comments'],
-                   'test_with_ifexpr.html.js',
-                   'test_with_ifexpr_expected.html.js')
+    self._run_test(
+        ['-D', 'foo', '-D', 'bar=false', '--enable_removal_comments'],
+        'test_with_ifexpr.html.js', 'test_with_ifexpr_expected.html.js')
 
   def testPreprocessTypeScriptHtmlTemplateWithComments(self):
-    self._run_test(['-D', 'foo', '--enable_removal_comments'],
-                   'test_with_ifexpr.html.ts',
-                   'test_with_ifexpr_expected.html.ts')
+    self._run_test(
+        ['-D', 'foo', '-D', 'bar=false', '--enable_removal_comments'],
+        'test_with_ifexpr.html.ts', 'test_with_ifexpr_expected.html.ts')
 
 
 if __name__ == '__main__':

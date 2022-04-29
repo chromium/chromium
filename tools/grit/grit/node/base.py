@@ -493,14 +493,6 @@ class Node(object):
     # Set values only for variables that are needed to eval the expression.
     variable_map = {}
     for name in variables_in_expr:
-
-      # TODO(crbug.com/1230488): Remove the following check after a few days.
-      # This is needed to ensure that no occurrences of |chromeos| or |lacros|
-      # are missed (Grit does not normally catch undefined vars, see
-      # crbug.com/1316544)
-      if name == 'chromeos' or name == 'lacros':
-        assert False, 'chromeos/lacros variables found, use chromeos_ash/chromeos_lacros instead.'
-
       if name == 'os':
         value = target_platform
       elif name == 'defs':
@@ -538,8 +530,9 @@ class Node(object):
       elif name in extra_variables:
         value = extra_variables[name]
       else:
-        # Undefined variables default to False.
-        value = False
+        # Undefined variables are disallowed. All variables appearing in
+        # <if expr> conditions need to be defined.
+        assert False, 'undefined Grit variable found: ' + name
 
       variable_map[name] = value
 

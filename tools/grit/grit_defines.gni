@@ -33,75 +33,53 @@ if (!is_android) {
 
 # Mac and iOS want Title Case strings.
 use_titlecase_in_grd_files = is_apple
-if (use_titlecase_in_grd_files) {
-  grit_defines += [
-    "-D",
-    "use_titlecase",
-  ]
-}
+
+grit_defines += [
+  "-D",
+  "use_titlecase=${use_titlecase_in_grd_files}",
+  "-D",
+  "_google_chrome=${is_chrome_branded}",
+]
 
 if (is_chrome_branded) {
   grit_defines += [
-    "-D",
-    "_google_chrome",
     "-E",
     "CHROMIUM_BUILD=google_chrome",
   ]
 } else {
   grit_defines += [
-    "-D",
-    "_chromium",
     "-E",
     "CHROMIUM_BUILD=chromium",
   ]
 }
 
-if (is_chromeos_ash) {
-  grit_defines += [
-    "-D",
-    "chromeos_ash",
-  ]
-}
+grit_defines += [
+  "-D",
+  "chromeos_ash=${is_chromeos_ash}",
+  "-D",
+  "chromeos_lacros=${is_chromeos_lacros}",
 
-if (is_chromeos_lacros) {
-  grit_defines += [
-    "-D",
-    "chromeos_lacros",
-  ]
-}
-
-# This is related to Chrome OS.
-if (is_reven) {
-  grit_defines += [
-    "-D",
-    "reven",
-  ]
-}
+  # This is related to Chrome OS.
+  "-D",
+  "reven=${is_reven}",
+]
 
 # Prefer using this (and excluding specific platforms) when a resource applies
 # to (most) desktop platforms.
 assert(toolkit_views == (is_chromeos_ash || is_chromeos_lacros || is_fuchsia ||
                          is_linux || is_mac || is_win))
-if (toolkit_views) {
-  grit_defines += [
-    "-D",
-    "toolkit_views",
-  ]
-}
+grit_defines += [
+  "-D",
+  "toolkit_views=${toolkit_views}",
+  "-D",
+  "use_aura=${use_aura}",
+  "-D",
+  "use_ozone=${use_ozone}",
 
-if (use_aura) {
-  grit_defines += [
-    "-D",
-    "use_aura",
-  ]
-}
-
-if (use_ozone) {
-  grit_defines += [
-    "-D",
-    "use_ozone",
-  ]
-}
+  # TODO(crbug.com/1317459): Remove after bug fixed.
+  "-D",
+  "desktop_linux=false",
+]
 
 if (is_android) {
   grit_defines += [

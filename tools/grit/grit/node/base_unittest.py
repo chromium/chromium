@@ -218,7 +218,7 @@ class NodeUnittest(unittest.TestCase):
     # test the actual conditions for Chrome OS.
     AssertExpr(True, "is_linux", {'chromeos_ash': True}, 'linux', {})
     AssertExpr(True, "is_linux", {'chromeos_lacros': True}, 'linux', {})
-    AssertExpr(False, "is_chromeos", {}, 'linux', {})
+    AssertExpr(False, "is_chromeos", {'is_chromeos': False}, 'linux', {})
     AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux', {})
     AssertExpr(False, "is_fuchsia", {}, 'linux', {})
     AssertExpr(False, "is_linux", {}, 'win32', {})
@@ -248,13 +248,12 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "pp_if('foo')", {'bar': True}, 'win32', {})
     AssertExpr(True, "foo", {'foo': True}, 'win32', {})
     AssertExpr(False, "foo", {'foo': False}, 'win32', {})
-    AssertExpr(False, "foo", {'bar': True}, 'win32', {})
+    AssertExpr(False, "foo", {'bar': True, 'foo': False}, 'win32', {})
     AssertExpr(True, "foo == 'baz'", {'foo': 'baz'}, 'win32', {})
     AssertExpr(False, "foo == 'baz'", {'foo': True}, 'win32', {})
-    AssertExpr(False, "foo == 'baz'", {}, 'win32', {})
+    AssertExpr(False, "foo == 'baz'", {'foo': True, 'baz': False}, 'win32', {})
     AssertExpr(True, "lang == 'de'", {}, 'win32', {'lang': 'de'})
     AssertExpr(False, "lang == 'de'", {}, 'win32', {'lang': 'fr'})
-    AssertExpr(False, "lang == 'de'", {}, 'win32', {})
 
     # Test a couple more complex expressions for good measure.
     AssertExpr(True, "is_ios and (lang in ['de', 'fr'] or foo)",
@@ -264,14 +263,36 @@ class NodeUnittest(unittest.TestCase):
                    'lang': 'fr',
                    'context': 'today'
                })
-    AssertExpr(False, "is_ios and (lang in ['de', 'fr'] or foo)",
-               {'baz': 'bar'}, 'ios', {'lang': 'he', 'context': 'today'})
-    AssertExpr(True, "foo == 'bar' or not baz",
-               {'foo': 'bar', 'fun': True}, 'ios', {'lang': 'en'})
-    AssertExpr(True, "foo == 'bar' or not baz",
-               {}, 'ios', {'lang': 'en', 'context': 'java'})
+    AssertExpr(False, "is_ios and (lang in ['de', 'fr'] or foo)", {
+        'baz': 'bar',
+        'is_ios': True,
+        'foo': False
+    }, 'ios', {
+        'lang': 'he',
+        'context': 'today'
+    })
+    AssertExpr(True, "foo == 'bar' or not baz", {
+        'foo': 'bar',
+        'baz': True
+    }, 'ios', {
+        'lang': 'en',
+        'context': 'java'
+    })
     AssertExpr(False, "foo == 'bar' or not baz",
                {'foo': 'ruz', 'baz': True}, 'ios', {'lang': 'en'})
+
+  def testEvaluateExpressionWithUndefinedVariables(self):
+    def AssertThrows(expr, defs):
+      with self.assertRaises(AssertionError) as cm:
+        base.Node.EvaluateExpression(expr, defs, 'linux', {})
+      self.assertTrue(
+          str(cm.exception).startswith('undefined Grit variable found:'))
+
+    AssertThrows("is_chromeos", {})
+    AssertThrows("foo == 'baz'", {})
+    AssertThrows("is_chromeos", {'is_macosx': True})
+    AssertThrows("foo == 'bar' or not baz", {'foo': 'bar', 'fun': True})
+
 
 if __name__ == '__main__':
   unittest.main()
