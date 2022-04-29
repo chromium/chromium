@@ -147,7 +147,7 @@ struct PopupMatchRowView: View {
       }
       .padding(Dimensions.padding)
     }
-    .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight, maxHeight: Dimensions.maxHeight)
+    .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
   }
 
   var backgroundColor: Color {
