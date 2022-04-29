@@ -26,10 +26,6 @@ class Notification;
 
 namespace ash {
 
-namespace app_restore {
-class LacrosWindowHandler;
-}
-
 namespace full_restore {
 
 class FullRestoreAppLaunchHandler;
@@ -174,8 +170,6 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
 
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
-
-  std::unique_ptr<app_restore::LacrosWindowHandler> lacros_window_handler_;
 
   std::unique_ptr<message_center::Notification> notification_;
 

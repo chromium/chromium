@@ -78,6 +78,10 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
         window_id == app_restore::kParentToHiddenContainer) {
       observed_windows_.AddObservation(window);
     }
+
+    if (lacros_read_handler_)
+      lacros_read_handler_->OnWindowInitialized(window);
+
     return;
   }
 
@@ -162,15 +166,6 @@ void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
 void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
   if (arc_read_handler_)
     arc_read_handler_->OnTaskDestroyed(task_id);
-}
-
-void FullRestoreReadHandler::OnLacrosBrowserWindowAdded(
-    aura::Window* const window,
-    uint32_t restored_browser_session_id) {
-  if (lacros_read_handler_) {
-    lacros_read_handler_->OnLacrosBrowserWindowAdded(
-        window, restored_browser_session_id);
-  }
 }
 
 void FullRestoreReadHandler::OnLacrosChromeAppWindowAdded(

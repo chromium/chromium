@@ -21,16 +21,13 @@ LacrosReadHandler::LacrosReadHandler(const base::FilePath& profile_path)
 
 LacrosReadHandler::~LacrosReadHandler() = default;
 
-void LacrosReadHandler::AddRestoreData(const std::string& app_id,
-                                       int32_t window_id) {
-  restore_window_id_to_app_id_[window_id] = app_id;
-}
-
-void LacrosReadHandler::OnLacrosBrowserWindowAdded(
-    aura::Window* const window,
-    int32_t restored_browser_session_id) {
+void LacrosReadHandler::OnWindowInitialized(aura::Window* window) {
+  // TODO(sophiewen): Test this in full_restore_read_and_save_unittest.
   if (!IsLacrosWindow(window))
     return;
+
+  int32_t restored_browser_session_id =
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   auto it = window_to_window_data_.find(window);
   if (it != window_to_window_data_.end() &&
@@ -52,6 +49,11 @@ void LacrosReadHandler::OnLacrosBrowserWindowAdded(
   // and remove `window` from the hidden container.
   if (base::Contains(window_candidates_, window))
     UpdateWindow(window);
+}
+
+void LacrosReadHandler::AddRestoreData(const std::string& app_id,
+                                       int32_t window_id) {
+  restore_window_id_to_app_id_[window_id] = app_id;
 }
 
 void LacrosReadHandler::OnAppWindowAdded(const std::string& app_id,

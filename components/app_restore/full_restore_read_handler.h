@@ -95,11 +95,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
 
-  // Invoked when Lacros window is created. `restored_browser_session_id` is the
-  // restored browser session id.
-  void OnLacrosBrowserWindowAdded(aura::Window* const window,
-                                  uint32_t restored_browser_session_id);
-
   // Invoked when an Chrome app Lacros window is created. `app_id` is the
   // AppService id, and `window_id` is the wayland app_id property for the
   // window.

@@ -10,15 +10,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/ash/app_restore/lacros_window_handler.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -139,14 +135,6 @@ FullRestoreService::FullRestoreService(Profile* profile)
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     ::full_restore::FullRestoreSaveHandler::GetInstance()
         ->SetPrimaryProfilePath(profile_->GetPath());
-
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    if (proxy && proxy->BrowserAppInstanceRegistry() &&
-        ::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-      lacros_window_handler_ =
-          std::make_unique<app_restore::LacrosWindowHandler>(
-              *proxy->BrowserAppInstanceRegistry());
-    }
 
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.

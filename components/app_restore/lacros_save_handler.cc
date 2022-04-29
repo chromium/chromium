@@ -24,19 +24,12 @@ LacrosSaveHandler::~LacrosSaveHandler() = default;
 void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
   const std::string lacros_window_id = app_restore::GetLacrosWindowId(window);
 
-  // If `window` has been saved by OnBrowserWindowAdded, we don't need to save
-  // again.
-  if (base::Contains(window_candidates_, lacros_window_id))
-    return;
-
   std::string app_id;
   int32_t window_id = ++window_id_;
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info;
 
   auto it = lacros_window_id_to_app_id_.find(lacros_window_id);
   if (it != lacros_window_id_to_app_id_.end()) {
-    // For Chrome app windows, get the app launch info and set the Chrome app
-    // id.
     app_id = it->second;
     app_launch_info = FullRestoreSaveHandler::GetInstance()->FetchAppLaunchInfo(
         profile_path_, app_id);
@@ -51,6 +44,15 @@ void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
 
   window_candidates_[lacros_window_id].app_id = app_id;
   window_candidates_[lacros_window_id].window_id = window_id;
+
+  // Don't overwrite window info if `window_id` was already saved by
+  // OnAppWindowAdded.
+  if (it == lacros_window_id_to_app_id_.end()) {
+    // TODO(sophiewen): Move logic to OnWindowInitialized instead of calling
+    // OnBrowserWindowAdded.
+    OnBrowserWindowAdded(window, false);
+    return;
+  }
 
   FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
       profile_path_, std::move(app_launch_info));
@@ -70,15 +72,15 @@ void LacrosSaveHandler::OnWindowDestroyed(aura::Window* window) {
   window_candidates_.erase(it);
 }
 
-void LacrosSaveHandler::OnBrowserWindowAdded(
-    aura::Window* const window,
-    uint32_t browser_session_id,
-    uint32_t restored_browser_session_id,
-    bool is_browser_app) {
+void LacrosSaveHandler::OnBrowserWindowAdded(aura::Window* const window,
+                                             bool is_browser_app) {
   const std::string lacros_window_id = app_restore::GetLacrosWindowId(window);
   std::unique_ptr<app_restore::WindowInfo> window_info;
   auto* save_handler = FullRestoreSaveHandler::GetInstance();
   DCHECK(save_handler);
+
+  uint32_t browser_session_id =
+      static_cast<uint32_t>(window->GetProperty(app_restore::kWindowIdKey));
 
   auto it = window_candidates_.find(lacros_window_id);
   if (it != window_candidates_.end() &&
@@ -95,13 +97,6 @@ void LacrosSaveHandler::OnBrowserWindowAdded(
 
   window_candidates_[lacros_window_id].app_id = app_constants::kLacrosAppId;
   window_candidates_[lacros_window_id].window_id = browser_session_id;
-
-  // TODO(xdai): Remove this once crbug.com/1291799 is fixed. These two window
-  // properties are supposed to be set correctly before the widnow is created.
-  window->SetProperty(app_restore::kWindowIdKey,
-                      static_cast<int32_t>(browser_session_id));
-  window->SetProperty(app_restore::kRestoreWindowIdKey,
-                      static_cast<int32_t>(restored_browser_session_id));
 
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_constants::kLacrosAppId,

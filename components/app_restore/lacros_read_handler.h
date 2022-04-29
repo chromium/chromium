@@ -48,14 +48,12 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
   LacrosReadHandler& operator=(const LacrosReadHandler&) = delete;
   ~LacrosReadHandler();
 
+  // Invoked when `window` is initialized.
+  void OnWindowInitialized(aura::Window* window);
+
   // Sets `app_id` and `window_id` to `restore_window_id_to_app_id_` to record
   // that there is a restore data for `app_id` and `window_id`.
   void AddRestoreData(const std::string& app_id, int32_t window_id);
-
-  // Invoked when Lacros window is created. `restored_browser_session_id` is the
-  // restored browser session id.
-  void OnLacrosBrowserWindowAdded(aura::Window* const window,
-                                  int32_t restored_browser_session_id);
 
   // Invoked when an Chrome app Lacros window is created. `app_id` is the
   // AppService id, and `window_id` is the wayland app_id property for the

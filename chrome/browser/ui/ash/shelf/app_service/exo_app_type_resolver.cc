@@ -50,8 +50,6 @@ void ExoAppTypeResolver::PopulateProperties(
                                          params.app_id);
     const int32_t restore_window_id =
         app_restore::GetLacrosRestoreWindowId(params.app_id);
-    out_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
-                                         restore_window_id);
     out_properties_container.SetProperty(
         app_restore::kParentToHiddenContainerKey,
         restore_window_id == app_restore::kParentToHiddenContainer);
