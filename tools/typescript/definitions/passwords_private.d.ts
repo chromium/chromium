@@ -149,6 +149,8 @@ declare global {
           credential: InsecureCredential, callback?: () => void): void;
       export function unmuteInsecureCredential(
           credential: InsecureCredential, callback?: () => void): void;
+      export function recordChangePasswordFlowStarted(
+          credential: InsecureCredential, isManualFlow: boolean): void;
       export function startPasswordCheck(callback?: () => void): void;
       export function stopPasswordCheck(callback?: () => void): void;
       export function getPasswordCheckStatus(

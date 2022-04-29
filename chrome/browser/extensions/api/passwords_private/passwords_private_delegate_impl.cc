@@ -560,6 +560,13 @@ bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
   return password_check_delegate_.UnmuteInsecureCredential(credential);
 }
 
+void PasswordsPrivateDelegateImpl::RecordChangePasswordFlowStarted(
+    const api::passwords_private::InsecureCredential& credential,
+    bool is_manual_flow) {
+  password_check_delegate_.RecordChangePasswordFlowStarted(credential,
+                                                           is_manual_flow);
+}
+
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   password_check_delegate_.StartPasswordCheck(std::move(callback));

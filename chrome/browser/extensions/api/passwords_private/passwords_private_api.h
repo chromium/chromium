@@ -340,6 +340,19 @@ class PasswordsPrivateUnmuteInsecureCredentialFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateRecordChangePasswordFlowStartedFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.recordChangePasswordFlowStarted",
+                             PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED)
+
+ protected:
+  ~PasswordsPrivateRecordChangePasswordFlowStartedFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateStartPasswordCheckFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startPasswordCheck",

@@ -31,11 +31,13 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -59,6 +61,7 @@ using password_manager::CanonicalizeUsername;
 using password_manager::CredentialWithPassword;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::LeakCheckCredential;
+using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordForm;
 using ui::TimeFormat;
 
@@ -355,6 +358,27 @@ bool PasswordCheckDelegate::UnmuteInsecureCredential(
   return insecure_credentials_manager_.UnmuteCredential(*insecure_credential);
 }
 
+// Records that a change password flow was started for |credential| and
+// whether |is_manual_flow| applies to the flow.
+void PasswordCheckDelegate::RecordChangePasswordFlowStarted(
+    const api::passwords_private::InsecureCredential& credential,
+    bool is_manual_flow) {
+  // If the |credential| does not have a |change_password_url|, skip it.
+  if (!credential.change_password_url)
+    return;
+
+  if (is_manual_flow) {
+    GetPasswordChangeSuccessTracker()->OnManualChangePasswordFlowStarted(
+        GURL(*credential.change_password_url), credential.username,
+        PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
+  } else {
+    GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
+        GURL(*credential.change_password_url), credential.username,
+        PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+        PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
+  }
+}
+
 void PasswordCheckDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   // If the delegate isn't initialized yet, enqueue the callback and return
@@ -611,6 +635,12 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   api_credential.username = base::UTF16ToUTF8(credential.username);
 
   return api_credential;
+}
+
+PasswordChangeSuccessTracker*
+PasswordCheckDelegate::GetPasswordChangeSuccessTracker() {
+  return password_manager::PasswordChangeSuccessTrackerFactory::
+      GetForBrowserContext(profile_);
 }
 
 }  // namespace extensions

@@ -841,6 +841,7 @@ static_library("extensions") {
     "//components/no_state_prefetch/browser",
     "//components/onc",
     "//components/page_load_metrics/browser:browser",
+    "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/browser/leak_detection",

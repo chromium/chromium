@@ -28,9 +28,12 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -81,6 +84,9 @@ using password_manager::InsecurityMetadata;
 using password_manager::IsLeaked;
 using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
+using password_manager::MockPasswordChangeSuccessTracker;
+using password_manager::PasswordChangeSuccessTracker;
+using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
@@ -121,6 +127,17 @@ EventRouter* CreateAndUseEventRouter(Profile* profile) {
             return std::unique_ptr<KeyedService>(
                 std::make_unique<EventRouter>(context, nullptr));
           })));
+}
+
+MockPasswordChangeSuccessTracker* CreateAndUsePasswordChangeSuccessTracker(
+    Profile* profile) {
+  return static_cast<MockPasswordChangeSuccessTracker*>(
+      PasswordChangeSuccessTrackerFactory::GetInstance()
+          ->SetTestingSubclassFactoryAndUse(
+              profile, base::BindRepeating([](content::BrowserContext*) {
+                return std::make_unique<
+                    testing::StrictMock<MockPasswordChangeSuccessTracker>>();
+              })));
 }
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
@@ -243,6 +260,9 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   TestingProfile& profile() { return profile_; }
   TestPasswordStore& store() { return *store_; }
   BulkLeakCheckService* service() { return bulk_leak_check_service_; }
+  MockPasswordChangeSuccessTracker& password_change_success_tracker() {
+    return *password_change_success_tracker_;
+  }
   SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
 
@@ -260,6 +280,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
+  raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
+      CreateAndUsePasswordChangeSuccessTracker(&profile_);
   SavedPasswordsPresenter presenter_{store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_};
 };
@@ -856,6 +878,94 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialIdMismatch) {
   credential.id = 1;
 
   EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+}
+
+TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedManual) {
+  // Create an insecure credential.
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
+
+  EXPECT_CALL(
+      password_change_success_tracker(),
+      OnManualChangePasswordFlowStarted(
+          GURL(*credential.change_password_url), credential.username,
+          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
+
+  delegate().RecordChangePasswordFlowStarted(credential,
+                                             /*is_manual_flow=*/true);
+}
+
+TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedAutomated) {
+  // Create an insecure credential.
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
+
+  EXPECT_CALL(
+      password_change_success_tracker(),
+      OnChangePasswordFlowStarted(
+          GURL(*credential.change_password_url), credential.username,
+          PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
+
+  delegate().RecordChangePasswordFlowStarted(credential,
+                                             /*is_manual_flow=*/false);
+}
+
+TEST_F(PasswordCheckDelegateTest,
+       RecordChangePasswordFlowStartedForAppWithWebRealm) {
+  // Create an insecure credential.
+  PasswordForm form = MakeSavedAndroidPassword(kExampleApp, kUsername2,
+                                               "Example App", kExampleCom);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  ASSERT_EQ(base::UTF16ToASCII(kUsername2), credential.username);
+
+  EXPECT_CALL(
+      password_change_success_tracker(),
+      OnManualChangePasswordFlowStarted(
+          GURL(*credential.change_password_url), credential.username,
+          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
+
+  delegate().RecordChangePasswordFlowStarted(credential,
+                                             /*is_manual_flow=*/true);
+}
+
+TEST_F(PasswordCheckDelegateTest,
+       RecordChangePasswordFlowStartedForAppWithoutWebRealm) {
+  // Create an insecure credential.
+  PasswordForm form =
+      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
+
+  // Since no password change link exists, we expect no call to the tracker.
+  EXPECT_CALL(password_change_success_tracker(),
+              OnManualChangePasswordFlowStarted)
+      .Times(0);
+
+  delegate().RecordChangePasswordFlowStarted(credential,
+                                             /*is_manual_flow=*/true);
 }
 
 // Tests that we don't create an entry in the database if there is no matching

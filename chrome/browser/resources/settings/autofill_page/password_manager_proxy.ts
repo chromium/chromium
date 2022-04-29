@@ -256,6 +256,14 @@ export interface PasswordManagerProxy {
       insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
 
   /**
+   * Records the state of a change password flow for |insecureCredential|
+   * and notes it is a manual flow via |isManualFlow|.
+   */
+  recordChangePasswordFlowStarted(
+      insecureCredential: chrome.passwordsPrivate.InsecureCredential,
+      isManualFlow: boolean): void;
+
+  /**
    * Add an observer to the compromised passwords change.
    */
   addCompromisedCredentialsListener(listener: CredentialsChangedListener): void;
@@ -564,6 +572,13 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   unmuteInsecureCredential(insecureCredential:
                                chrome.passwordsPrivate.InsecureCredential) {
     chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
+  }
+
+  recordChangePasswordFlowStarted(
+      insecureCredential: chrome.passwordsPrivate.InsecureCredential,
+      isManualFlow: boolean) {
+    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
+        insecureCredential, isManualFlow);
   }
 
   addCompromisedCredentialsListener(listener: CredentialsChangedListener) {

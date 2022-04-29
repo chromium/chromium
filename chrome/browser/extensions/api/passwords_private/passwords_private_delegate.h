@@ -191,6 +191,12 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool UnmuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) = 0;
 
+  // Records that a change password flow was started for |credential| and
+  // whether |is_manual_flow| applies to the flow.
+  virtual void RecordChangePasswordFlowStarted(
+      const api::passwords_private::InsecureCredential& credential,
+      bool is_manual_flow) = 0;
+
   // Requests to start a check for insecure passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().
   virtual void StartPasswordCheck(StartPasswordCheckCallback callback) = 0;

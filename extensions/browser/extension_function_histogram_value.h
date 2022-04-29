@@ -1710,6 +1710,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNLANCONNECTIVITYROUTINE = 1647,
   LOGIN_REQUESTEXTERNALLOGOUT = 1648,
   LOGIN_NOTIFYEXTERNALLOGOUTDONE = 1649,
+  PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED = 1650,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

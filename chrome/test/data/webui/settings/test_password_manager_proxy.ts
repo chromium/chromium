@@ -111,6 +111,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'addPassword',
       'muteInsecureCredential',
       'unmuteInsecureCredential',
+      'recordChangePasswordFlowStarted',
     ]);
 
     /** @private {!PasswordManagerExpectations} */
@@ -392,6 +393,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   unmuteInsecureCredential(insecureCredential:
                                chrome.passwordsPrivate.InsecureCredential) {
     this.methodCalled('unmuteInsecureCredential', insecureCredential);
+  }
+
+  recordChangePasswordFlowStarted(
+      insecureCredential: chrome.passwordsPrivate.InsecureCredential,
+      isManualFlow: boolean) {
+    this.methodCalled(
+        'recordChangePasswordFlowStarted', insecureCredential, isManualFlow);
   }
 
   cancelExportPasswords() {}

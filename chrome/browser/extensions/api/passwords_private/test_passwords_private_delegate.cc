@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace extensions {
@@ -286,6 +287,13 @@ bool TestPasswordsPrivateDelegate::MuteInsecureCredential(
 bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) {
   return IsCredentialPresentInInsecureCredentialsList(credential);
+}
+
+void TestPasswordsPrivateDelegate::RecordChangePasswordFlowStarted(
+    const api::passwords_private::InsecureCredential& credential,
+    bool is_manual_flow) {
+  last_change_flow_url_ =
+      credential.change_password_url ? *credential.change_password_url : "";
 }
 
 void TestPasswordsPrivateDelegate::StartPasswordCheck(

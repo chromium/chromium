@@ -140,7 +140,8 @@ export class PasswordCheckListItemElement extends
 
     assert(this.item.changePasswordUrl);
     OpenWindowProxyImpl.getInstance().openURL(this.item.changePasswordUrl);
-
+    PasswordManagerImpl.getInstance().recordChangePasswordFlowStarted(
+        this.item, /*is_manual_flow=*/ true);
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.CHANGE_PASSWORD);
   }

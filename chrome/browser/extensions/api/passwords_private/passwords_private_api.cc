@@ -389,6 +389,22 @@ ResponseAction PasswordsPrivateUnmuteInsecureCredentialFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateRecordChangePasswordFlowStartedFunction:
+PasswordsPrivateRecordChangePasswordFlowStartedFunction::
+    ~PasswordsPrivateRecordChangePasswordFlowStartedFunction() = default;
+
+ResponseAction PasswordsPrivateRecordChangePasswordFlowStartedFunction::Run() {
+  auto parameters =
+      api::passwords_private::RecordChangePasswordFlowStarted::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  GetDelegate(browser_context())
+      ->RecordChangePasswordFlowStarted(parameters->credential,
+                                        parameters->is_manual_flow);
+  return RespondNow(NoArguments());
+}
+
 // PasswordsPrivateStartPasswordCheckFunction:
 PasswordsPrivateStartPasswordCheckFunction::
     ~PasswordsPrivateStartPasswordCheckFunction() = default;

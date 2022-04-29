@@ -26,6 +26,10 @@
 
 class Profile;
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
+
 namespace extensions {
 
 extern const char kPasswordCheckDataKey[];
@@ -84,6 +88,12 @@ class PasswordCheckDelegate
   // the unmute succeeded.
   bool UnmuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
+
+  // Records that a change password flow was started for |credential| and
+  // whether |is_manual_flow| applies to the flow.
+  void RecordChangePasswordFlowStarted(
+      const api::passwords_private::InsecureCredential& credential,
+      bool is_manual_flow);
 
   // Requests to start a check for insecure passwords. Invokes |callback| once a
   // check is running or the request was stopped via StopPasswordCheck().
@@ -150,6 +160,11 @@ class PasswordCheckDelegate
   // Constructs |InsecureCredential| from |CredentialWithPassword|.
   api::passwords_private::InsecureCredential ConstructInsecureCredential(
       const password_manager::CredentialWithPassword& credential);
+
+  // Obtain a raw pointer to the |PasswordChangeSuccessTracker| associated
+  // with |profile_|.
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker();
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;

@@ -688,6 +688,74 @@ var availableTests = [
         });
   },
 
+  function recordChangePasswordFlowStartedManual() {
+    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
+        {
+          id: 0,
+          formattedOrigin: 'example.com',
+          detailedOrigin: 'https://example.com',
+          isAndroidCredential: false,
+          signonRealm: 'https://example.com',
+          username: 'alice',
+          changePasswordUrl: 'https://example.com/.well-known/change-password',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: false,
+          },
+        },
+        true, () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+
+  function recordChangePasswordFlowStartedAutomated() {
+    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
+        {
+          id: 0,
+          formattedOrigin: 'example.com',
+          detailedOrigin: 'https://example.com',
+          isAndroidCredential: false,
+          signonRealm: 'https://example.com',
+          username: 'alice',
+          changePasswordUrl: 'https://example.com/.well-known/change-password',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: false,
+          },
+        },
+        false, () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+
+  function recordChangePasswordFlowStartedAppNoUrl() {
+    chrome.passwordsPrivate.recordChangePasswordFlowStarted(
+        {
+          id: 0,
+          formattedOrigin: 'App (com.example.app)',
+          detailedOrigin: 'com.example.app',
+          isAndroidCredential: true,
+          signonRealm: '',
+          username: 'alice',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: false,
+          },
+        },
+        true, () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+
   function startPasswordCheck() {
     chrome.passwordsPrivate.startPasswordCheck(() => {
       chrome.test.assertNoLastError();
