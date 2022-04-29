@@ -44,8 +44,7 @@ AshWindowTreeHostMirroringUnified::GetRootTransformForLocalEventCoordinates()
 }
 
 void AshWindowTreeHostMirroringUnified::ConvertDIPToPixels(
-    gfx::Point* point) const {
-  auto point_3f = gfx::Point3F(gfx::PointF(*point));
+    gfx::PointF* point) const {
   // GetRootTransform() returns a transform that takes a point from the
   // *unified* host coordinates to the *mirroring* host's pixel coordinates.
   // ConvertDIPToPixels() and ConvertDIPToScreenInPixels() are called on local
@@ -54,15 +53,12 @@ void AshWindowTreeHostMirroringUnified::ConvertDIPToPixels(
   // defined above, which only scales those local points to the right size, and
   // leaves the translation to be done by the MirroringScreenPositionClient
   // functions.
-  GetRootTransformForLocalEventCoordinates().TransformPoint(&point_3f);
-  *point = gfx::ToFlooredPoint(point_3f.AsPointF());
+  GetRootTransformForLocalEventCoordinates().TransformPoint(point);
 }
 
 void AshWindowTreeHostMirroringUnified::ConvertPixelsToDIP(
-    gfx::Point* point) const {
-  auto point_3f = gfx::Point3F(gfx::PointF(*point));
-  GetInverseRootTransformForLocalEventCoordinates().TransformPoint(&point_3f);
-  *point = gfx::ToFlooredPoint(point_3f.AsPointF());
+    gfx::PointF* point) const {
+  GetInverseRootTransformForLocalEventCoordinates().TransformPoint(point);
 }
 
 void AshWindowTreeHostMirroringUnified::PrepareForShutdown() {

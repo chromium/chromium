@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -124,13 +125,11 @@ class InputInjectorChromeos::Core {
  private:
   void SetLockStates(uint32_t states);
 
+  void InjectMouseMove(const MouseEvent& event);
+
   bool hide_cursor_on_disconnect_ = false;
   std::unique_ptr<ui::SystemInputInjector> delegate_;
   std::unique_ptr<Clipboard> clipboard_;
-
-  // Used to rotate the input coordinates appropriately based on the current
-  // display rotation settings.
-  std::unique_ptr<PointTransformer> point_transformer_;
 };
 
 InputInjectorChromeos::Core::Core() = default;
@@ -214,10 +213,18 @@ void InputInjectorChromeos::Core::InjectMouseEvent(const MouseEvent& event) {
   } else if (event.has_wheel_delta_y() || event.has_wheel_delta_x()) {
     delegate_->InjectMouseWheel(event.wheel_delta_x(), event.wheel_delta_y());
   } else {
-    DCHECK(event.has_x() && event.has_y());
-    delegate_->MoveCursorTo(point_transformer_->ToScreenCoordinates(
-        gfx::PointF(event.x(), event.y())));
+    InjectMouseMove(event);
   }
+}
+
+void InputInjectorChromeos::Core::InjectMouseMove(const MouseEvent& event) {
+  DCHECK(event.has_x() && event.has_y());
+  gfx::PointF location_in_screen_in_dip = gfx::PointF(event.x(), event.y());
+  gfx::PointF location_in_screen_in_pixels =
+      PointTransformer::ConvertScreenInDipToScreenInPixel(
+          location_in_screen_in_dip);
+
+  delegate_->MoveCursorTo(location_in_screen_in_pixels);
 }
 
 void InputInjectorChromeos::Core::Start(
@@ -238,7 +245,6 @@ void InputInjectorChromeos::Core::Start(
   // Implemented by remoting::ClipboardAura.
   clipboard_ = Clipboard::Create();
   clipboard_->Start(std::move(client_clipboard));
-  point_transformer_ = std::make_unique<PointTransformer>();
 
   // If the cursor was hidden before we start injecting input then we should try
   // to restore its state when the remote user disconnects.  The main scenario

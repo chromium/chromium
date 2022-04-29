@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
@@ -15,6 +16,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_target.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -66,10 +68,6 @@ class LocalPointerInputMonitorChromeos : public LocalPointerInputMonitor {
     // Used to send pointer event notifications.
     // Must be called on the |caller_task_runner_|.
     LocalInputMonitor::PointerMoveCallback on_pointer_move_;
-
-    // Used to rotate the local pointer positions appropriately based on the
-    // current display rotation settings.
-    std::unique_ptr<PointTransformer> point_transformer_;
   };
 
   // Task runner on which ui::events are received.
@@ -103,7 +101,6 @@ void LocalPointerInputMonitorChromeos::Core::Start() {
   // EventMatchers. (And if that doesn't work, maybe a PointerObserver.)
   if (ui::PlatformEventSource::GetInstance())
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
-  point_transformer_ = std::make_unique<PointTransformer>();
 }
 
 LocalPointerInputMonitorChromeos::Core::~Core() {
@@ -132,13 +129,30 @@ void LocalPointerInputMonitorChromeos::Core::DidProcessEvent(
 void LocalPointerInputMonitorChromeos::Core::HandlePointerMove(
     const ui::PlatformEvent& event,
     ui::EventType type) {
-  auto position = gfx::PointF(ui::EventLocationFromNative(event));
-  position = point_transformer_->FromScreenCoordinates(position);
+  ui::LocatedEvent* located_event = event->AsLocatedEvent();
+  // The event we received has the location of the mouse in pixels
+  // *within the current display*. The event itself does not tell us what
+  // display the mouse is on (so the top-left of every display has coordinates
+  // 0x0 in the event).
+  // Luckily the cursor manager remembers the display the mouse is on.
+  const display::Display& current_display =
+      ash::Shell::Get()->cursor_manager()->GetDisplay();
+  const aura::Window* window =
+      ash::Shell::Get()->GetRootWindowForDisplayId(current_display.id());
+
+  gfx::PointF location_in_window_in_pixels = located_event->location_f();
+
+  gfx::PointF location_in_screen_in_dip =
+      PointTransformer::ConvertWindowInPixelToScreenInDip(
+          window, location_in_window_in_pixels);
+
+  gfx::Point pointer_position = gfx::ToRoundedPoint(location_in_screen_in_dip);
 
   caller_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_pointer_move_,
-                     webrtc::DesktopVector(position.x(), position.y()), type));
+      FROM_HERE, base::BindOnce(on_pointer_move_,
+                                webrtc::DesktopVector(pointer_position.x(),
+                                                      pointer_position.y()),
+                                type));
 }
 
 }  // namespace

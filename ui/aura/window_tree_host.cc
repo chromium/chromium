@@ -296,15 +296,23 @@ void WindowTreeHost::ConvertScreenInPixelsToDIP(gfx::Point* point) const {
 }
 
 void WindowTreeHost::ConvertDIPToPixels(gfx::Point* point) const {
-  auto point_3f = gfx::Point3F(gfx::PointF(*point));
-  GetRootTransform().TransformPoint(&point_3f);
-  *point = gfx::ToFlooredPoint(point_3f.AsPointF());
+  gfx::PointF point_f{*point};
+  ConvertDIPToPixels(&point_f);
+  *point = gfx::ToFlooredPoint(point_f);
+}
+
+void WindowTreeHost::ConvertDIPToPixels(gfx::PointF* point) const {
+  GetRootTransform().TransformPoint(point);
 }
 
 void WindowTreeHost::ConvertPixelsToDIP(gfx::Point* point) const {
-  auto point_3f = gfx::Point3F(gfx::PointF(*point));
-  GetInverseRootTransform().TransformPoint(&point_3f);
-  *point = gfx::ToFlooredPoint(point_3f.AsPointF());
+  gfx::PointF point_f{*point};
+  ConvertPixelsToDIP(&point_f);
+  *point = gfx::ToFlooredPoint(point_f);
+}
+
+void WindowTreeHost::ConvertPixelsToDIP(gfx::PointF* point) const {
+  GetInverseRootTransform().TransformPoint(point);
 }
 
 void WindowTreeHost::SetCursor(gfx::NativeCursor cursor) {
@@ -589,7 +597,7 @@ void WindowTreeHost::DestroyDispatcher() {
   // ~Window, but by that time any calls to virtual methods overriden here (such
   // as GetRootWindow()) result in Window's implementation. By destroying here
   // we ensure GetRootWindow() still returns this.
-  //window()->RemoveOrDestroyChildren();
+  // window()->RemoveOrDestroyChildren();
 }
 
 void WindowTreeHost::OnAcceleratedWidgetMadeVisible(bool value) {

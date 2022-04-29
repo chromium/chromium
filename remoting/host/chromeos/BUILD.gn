@@ -45,6 +45,7 @@ source_set("chromeos") {
     "//ui/aura/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/manager",
+    "//ui/wm",
   ]
 }
 

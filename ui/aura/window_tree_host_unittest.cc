@@ -32,6 +32,38 @@
 
 namespace aura {
 
+namespace {
+
+// A convenient wrapper that makes it easy to invoke this method inside an
+// EXPECT_EQ statement.
+gfx::Point ConvertDIPToPixels(const WindowTreeHost* host, gfx::Point point) {
+  host->ConvertDIPToPixels(&point);
+  return point;
+}
+
+// A convenient wrapper that makes it easy to invoke this method inside an
+// EXPECT_EQ statement.
+gfx::PointF ConvertDIPToPixels(const WindowTreeHost* host, gfx::PointF point) {
+  host->ConvertDIPToPixels(&point);
+  return point;
+}
+
+// A convenient wrapper that makes it easy to invoke this method inside an
+// EXPECT_EQ statement.
+gfx::Point ConvertPixelsToDIP(const WindowTreeHost* host, gfx::Point point) {
+  host->ConvertPixelsToDIP(&point);
+  return point;
+}
+
+// A convenient wrapper that makes it easy to invoke this method inside an
+// EXPECT_EQ statement.
+gfx::PointF ConvertPixelsToDIP(const WindowTreeHost* host, gfx::PointF point) {
+  host->ConvertPixelsToDIP(&point);
+  return point;
+}
+
+}  // namespace
+
 using WindowTreeHostTest = test::AuraTestBase;
 
 TEST_F(WindowTreeHostTest, DPIWindowSize) {
@@ -164,6 +196,103 @@ TEST_F(WindowTreeHostTest, NoRewritesPostIME) {
   EXPECT_EQ(0, event_rewriter.events_seen());
 
   host()->RemoveEventRewriter(&event_rewriter);
+}
+
+TEST_F(WindowTreeHostTest, ConvertDIPToPixelsShouldRespectScaleFactor) {
+  const int width_in_pixels = 400;
+  const int height_in_pixels = 300;
+  const int width_in_dip = 200;
+  const int height_in_dip = 150;
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, width_in_pixels, height_in_pixels));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_0);
+
+  test_screen()->SetDeviceScaleFactor(2.f);
+
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(0, 0)), gfx::Point(0, 0));
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(width_in_dip, 0)),
+            gfx::Point(width_in_pixels, 0));
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(0, height_in_dip)),
+            gfx::Point(0, height_in_pixels));
+}
+
+TEST_F(WindowTreeHostTest, ConvertDIPToPixelsShouldRespectRotation) {
+  const int width_in_pixels = 400;
+  const int height_in_pixels = 300;
+  const int width_in_dip = 300;
+  const int height_in_dip = 400;
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, width_in_pixels, height_in_pixels));
+  test_screen()->SetDeviceScaleFactor(1.f);
+
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_90);
+
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(0, 0)),
+            gfx::Point(width_in_pixels, 0));
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(width_in_dip, 0)),
+            gfx::Point(width_in_pixels, height_in_pixels));
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(width_in_dip, height_in_dip)),
+            gfx::Point(0, height_in_pixels));
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::Point(0, height_in_dip)),
+            gfx::Point(0, 0));
+}
+
+TEST_F(WindowTreeHostTest, ConvertDIPToPixelsShouldWorkWithPointF) {
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 400));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_0);
+  test_screen()->SetDeviceScaleFactor(2.f);
+
+  EXPECT_EQ(ConvertDIPToPixels(host(), gfx::PointF(5.3f, 0)),
+            gfx::PointF(10.6f, 0));
+}
+
+TEST_F(WindowTreeHostTest, ConvertPixelsToDIPShouldRespectScaleFactor) {
+  const int width_in_pixels = 400;
+  const int height_in_pixels = 300;
+  const int width_in_dip = 200;
+  const int height_in_dip = 150;
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, width_in_pixels, height_in_pixels));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_0);
+
+  test_screen()->SetDeviceScaleFactor(2.f);
+
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(0, 0)), gfx::Point(0, 0));
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(width_in_pixels, 0)),
+            gfx::Point(width_in_dip, 0));
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(0, height_in_pixels)),
+            gfx::Point(0, height_in_dip));
+}
+
+TEST_F(WindowTreeHostTest, ConvertPixelsToDIPShouldRespectRotation) {
+  const int width_in_pixels = 400;
+  const int height_in_pixels = 300;
+  const int width_in_dip = 300;
+  const int height_in_dip = 400;
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, width_in_pixels, height_in_pixels));
+  test_screen()->SetDeviceScaleFactor(1.f);
+
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_90);
+
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(0, 0)),
+            gfx::Point(0, height_in_dip));
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(width_in_pixels, 0)),
+            gfx::Point(0, 0));
+  EXPECT_EQ(
+      ConvertPixelsToDIP(host(), gfx::Point(width_in_pixels, height_in_pixels)),
+      gfx::Point(width_in_dip, 0));
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::Point(0, height_in_pixels)),
+            gfx::Point(width_in_dip, height_in_dip));
+}
+
+TEST_F(WindowTreeHostTest, ConvertPixelsToDIPShouldWorkWithPointF) {
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 400));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_0);
+  test_screen()->SetDeviceScaleFactor(2.f);
+
+  EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::PointF(10.6f, 0)),
+            gfx::PointF(5.3f, 0));
 }
 
 class TestWindow : public ui::StubWindow {

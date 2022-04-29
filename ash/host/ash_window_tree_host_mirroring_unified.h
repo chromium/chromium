@@ -29,8 +29,8 @@ class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
 
   // aura::WindowTreeHost:
   gfx::Transform GetRootTransformForLocalEventCoordinates() const override;
-  void ConvertDIPToPixels(gfx::Point* point) const override;
-  void ConvertPixelsToDIP(gfx::Point* point) const override;
+  void ConvertDIPToPixels(gfx::PointF* point) const override;
+  void ConvertPixelsToDIP(gfx::PointF* point) const override;
 
   // ash::AshWindowTreeHostPlatform:
   void PrepareForShutdown() override;

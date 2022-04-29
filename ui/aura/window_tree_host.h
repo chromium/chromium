@@ -35,7 +35,7 @@ class Point;
 class Rect;
 class Size;
 class Transform;
-}
+}  // namespace gfx
 
 namespace ui {
 class Compositor;
@@ -44,7 +44,7 @@ class EventSink;
 class InputMethod;
 class ViewProp;
 struct PlatformWindowInitProperties;
-}
+}  // namespace ui
 
 namespace viz {
 class FrameSinkId;
@@ -151,11 +151,13 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Converts |point| from the root window's coordinate system to the
   // host window's.
-  virtual void ConvertDIPToPixels(gfx::Point* point) const;
+  void ConvertDIPToPixels(gfx::Point* point) const;
+  virtual void ConvertDIPToPixels(gfx::PointF* point) const;
 
   // Converts |point| from the host window's coordinate system to the
   // root window's.
-  virtual void ConvertPixelsToDIP(gfx::Point* point) const;
+  void ConvertPixelsToDIP(gfx::Point* point) const;
+  virtual void ConvertPixelsToDIP(gfx::PointF* point) const;
 
   // Sets the currently-displayed cursor. If the cursor was previously hidden
   // via ShowCursor(false), it will remain hidden until ShowCursor(true) is

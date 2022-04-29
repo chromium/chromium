@@ -840,8 +840,14 @@ std::unique_ptr<protocol::ClipboardStub> ClientSession::CreateClipboardProxy() {
 void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
   UpdateMouseClampingFilterOffset();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS uses Screen DIP coordinates to uniquely position all displays.
+  mouse_clamping_filter_.set_output_size(size.WidthAsDips(),
+                                         size.HeightAsDips());
+#else
   mouse_clamping_filter_.set_output_size(size.WidthAsPixels(),
                                          size.HeightAsPixels());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   switch (connection_->session()->config().protocol()) {
     case protocol::SessionConfig::Protocol::ICE:
