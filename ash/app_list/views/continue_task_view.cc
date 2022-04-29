@@ -196,7 +196,7 @@ void ContinueTaskView::UpdateIcon() {
           ? icon
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()),
-      result()->result_type() == AppListSearchResultType::kHelpApp
+      result()->result_type() == AppListSearchResultType::kZeroStateHelpApp
           ? ColorProvider::ControlsLayerType::kControlBackgroundColorActive
           : ColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
 }

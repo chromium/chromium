@@ -75,7 +75,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
 
   void ShowAppListAndWaitForHelpAppZeroStateResults() {
     ShowAppListAndWaitForZeroStateResults(
-        {ash::AppListSearchResultType::kHelpApp});
+        {ash::AppListSearchResultType::kZeroStateHelpApp});
   }
 
   void ShowAppListAndWaitForZeroStateResults(
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(
 
   SearchResultsChangedWaiter results_waiter(
       GetClient()->search_controller(),
-      {ash::AppListSearchResultType::kHelpApp});
+      {ash::AppListSearchResultType::kZeroStateHelpApp});
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   // Minimize the browser window to show home screen.
   browser()->window()->Minimize();
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
   ShowAppListAndWaitForZeroStateResults(
-      {ash::AppListSearchResultType::kHelpApp,
+      {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kInstalledApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   const web_app::AppId app_id = web_app::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(
-      {ash::AppListSearchResultType::kHelpApp,
+      {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kInstalledApp});
 
   auto* result = FindResult(web_app::kHelpAppId);

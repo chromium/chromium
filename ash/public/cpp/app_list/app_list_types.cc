@@ -37,6 +37,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInternalPrivacyInfo:
     case AppListSearchResultType::kAssistantText:
     case AppListSearchResultType::kHelpApp:
+    case AppListSearchResultType::kZeroStateHelpApp:
     case AppListSearchResultType::kFileSearch:
     case AppListSearchResultType::kDriveSearch:
     case AppListSearchResultType::kKeyboardShortcut:

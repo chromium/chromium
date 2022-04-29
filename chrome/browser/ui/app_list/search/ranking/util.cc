@@ -53,6 +53,7 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kPersonalization:
       return Category::kSettings;
     case ResultType::kHelpApp:
+    case ResultType::kZeroStateHelpApp:
     case ResultType::kKeyboardShortcut:
       return Category::kHelp;
     case ResultType::kPlayStoreReinstallApp:

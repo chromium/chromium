@@ -39,6 +39,7 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kPersonalization:
     // Types that are only shown in the productivity launcher:
     case ash::AppListSearchResultType::kHelpApp:
+    case ash::AppListSearchResultType::kZeroStateHelpApp:
     case ash::AppListSearchResultType::kKeyboardShortcut:
     case ash::AppListSearchResultType::kOpenTab:
       // NOTE: We don't rank results of type kAssistantChip, kAssistantText

@@ -46,6 +46,7 @@ bool IsPartOfContinueSection(ProviderType type) {
   switch (type) {
     case ash::AppListSearchResultType::kZeroStateFile:
     case ash::AppListSearchResultType::kZeroStateDrive:
+    case ash::AppListSearchResultType::kZeroStateHelpApp:
       return true;
     case ash::AppListSearchResultType::kUnknown:
     case ash::AppListSearchResultType::kInstalledApp:

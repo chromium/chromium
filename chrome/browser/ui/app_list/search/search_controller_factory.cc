@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
+#include "chrome/browser/ui/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
@@ -188,7 +189,13 @@ std::unique_ptr<SearchController> CreateSearchController(
 
   size_t help_app_group_id = controller->AddGroup(kGenericMaxResults);
   controller->AddProvider(help_app_group_id,
-                          std::make_unique<HelpAppProvider>(profile, notifier));
+                          std::make_unique<HelpAppProvider>(profile));
+
+  size_t help_app_zero_state_group_id =
+      controller->AddGroup(kGenericMaxResults);
+  controller->AddProvider(
+      help_app_zero_state_group_id,
+      std::make_unique<HelpAppZeroStateProvider>(profile, notifier));
 
   if (search_features::IsLauncherGameSearchEnabled()) {
     size_t games_group_id = controller->AddGroup(kGenericMaxResults);

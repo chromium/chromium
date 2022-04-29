@@ -409,7 +409,7 @@ TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
 }
 
 TEST_P(ContinueSectionViewTest, ShowsHelpAppResults) {
-  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateHelpApp);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
   AddSearchResult("id3", AppListSearchResultType::kZeroStateFile);
   AddSearchResult("id4", AppListSearchResultType::kZeroStateDrive);
@@ -427,7 +427,7 @@ TEST_P(ContinueSectionViewTest, ShowsHelpAppResults) {
 }
 
 TEST_P(ContinueSectionViewTest, HelpAppResultNotShownWithoutEnoughOtherFiles) {
-  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateHelpApp);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
@@ -439,7 +439,7 @@ TEST_P(ContinueSectionViewTest, HelpAppResultNotShownWithoutEnoughOtherFiles) {
 }
 
 TEST_P(ContinueSectionViewTest, HelpAppShownInTabletModeWith2FileResults) {
-  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateHelpApp);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateFile);
 

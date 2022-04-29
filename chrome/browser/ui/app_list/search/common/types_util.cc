@@ -48,6 +48,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Assistant text";
     case ash::AppListSearchResultType::kHelpApp:
       return "Help app";
+    case ash::AppListSearchResultType::kZeroStateHelpApp:
+      return "Help app - zero state";
     case ash::AppListSearchResultType::kFileSearch:
       return "File search";
     case ash::AppListSearchResultType::kDriveSearch:

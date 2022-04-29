@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/help_app_provider.h"
+#include "chrome/browser/ui/app_list/search/help_app_zero_state_provider.h"
 
 #include <memory>
 #include <string>
@@ -36,7 +36,8 @@ void ExpectDiscoverTabChip(ChromeSearchResult* result) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
       result->title());
-  EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
+  EXPECT_EQ(ash::AppListSearchResultType::kZeroStateHelpApp,
+            result->result_type());
   EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
 }
 
@@ -45,17 +46,19 @@ void ExpectReleaseNotesChip(ChromeSearchResult* result,
                             ash::SearchResultDisplayType display_type) {
   EXPECT_EQ(kReleaseNotesResultId, result->id());
   EXPECT_EQ(l10n_util::GetStringUTF16(title_id), result->title());
-  EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
+  EXPECT_EQ(ash::AppListSearchResultType::kZeroStateHelpApp,
+            result->result_type());
   EXPECT_EQ(display_type, result->display_type());
 }
 
 }  // namespace
 
 // Parameterized by whether ProductivityLauncher feature is enabled.
-class HelpAppProviderTest : public AppListTestBase,
-                            public ::testing::WithParamInterface<bool> {
+class HelpAppZeroStateProviderTest
+    : public AppListTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
-  HelpAppProviderTest() {
+  HelpAppZeroStateProviderTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kHelpAppDiscoverTab,
@@ -70,7 +73,7 @@ class HelpAppProviderTest : public AppListTestBase,
           /*disabled_features=*/{ash::features::kProductivityLauncher});
     }
   }
-  ~HelpAppProviderTest() override = default;
+  ~HelpAppZeroStateProviderTest() override = default;
 
   void SetUp() override {
     AppListTestBase::SetUp();
@@ -83,8 +86,8 @@ class HelpAppProviderTest : public AppListTestBase,
           std::make_unique<AppListNotifierImplOld>(&app_list_controller_);
     }
 
-    provider_ =
-        std::make_unique<HelpAppProvider>(profile(), app_list_notifier_.get());
+    provider_ = std::make_unique<HelpAppZeroStateProvider>(
+        profile(), app_list_notifier_.get());
     provider_->set_controller(&search_controller_);
   }
 
@@ -113,22 +116,23 @@ class HelpAppProviderTest : public AppListTestBase,
 
   ash::AppListNotifier* app_list_notifier() { return app_list_notifier_.get(); }
 
-  HelpAppProvider* provider() { return provider_.get(); }
+  HelpAppZeroStateProvider* provider() { return provider_.get(); }
 
  private:
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
-  std::unique_ptr<HelpAppProvider> provider_;
+  std::unique_ptr<HelpAppZeroStateProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         HelpAppProviderTest,
+                         HelpAppZeroStateProviderTest,
                          testing::Bool());
 
 // Test for empty query.
-TEST_P(HelpAppProviderTest, HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
+TEST_P(HelpAppZeroStateProviderTest,
+       HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
   profile()->GetPrefs()->SetInteger(
@@ -139,7 +143,7 @@ TEST_P(HelpAppProviderTest, HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
   EXPECT_TRUE(GetLatestResults().empty());
 }
 
-TEST_P(HelpAppProviderTest,
+TEST_P(HelpAppZeroStateProviderTest,
        ReturnsDiscoverTabChipForEmptyQueryIfTimesLeftIsPositive) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
@@ -156,7 +160,7 @@ TEST_P(HelpAppProviderTest,
   ExpectDiscoverTabChip(result);
 }
 
-TEST_P(HelpAppProviderTest,
+TEST_P(HelpAppZeroStateProviderTest,
        ReturnsReleaseNotesChipForEmptyQueryIfTimesLeftIsPositive) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
@@ -171,7 +175,7 @@ TEST_P(HelpAppProviderTest,
                          GetExpectedReleaseNotesDisplayType());
 }
 
-TEST_P(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
+TEST_P(HelpAppZeroStateProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
   profile()->GetPrefs()->SetInteger(
@@ -190,7 +194,7 @@ TEST_P(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
   }
 }
 
-TEST_P(HelpAppProviderTest,
+TEST_P(HelpAppZeroStateProviderTest,
        DecrementsTimesLeftToShowDiscoverTabChipUponShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
@@ -223,7 +227,7 @@ TEST_P(HelpAppProviderTest,
                    prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 }
 
-TEST_P(HelpAppProviderTest,
+TEST_P(HelpAppZeroStateProviderTest,
        DecrementsTimesLeftToShowReleaseNotesChipUponShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
@@ -262,7 +266,8 @@ TEST_P(HelpAppProviderTest,
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
 }
 
-TEST_P(HelpAppProviderTest, ClickingDiscoverTabChipStopsItFromShowing) {
+TEST_P(HelpAppZeroStateProviderTest,
+       ClickingDiscoverTabChipStopsItFromShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
@@ -281,7 +286,8 @@ TEST_P(HelpAppProviderTest, ClickingDiscoverTabChipStopsItFromShowing) {
                    prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 }
 
-TEST_P(HelpAppProviderTest, ClickingReleaseNotesChipStopsItFromShowing) {
+TEST_P(HelpAppZeroStateProviderTest,
+       ClickingReleaseNotesChipStopsItFromShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
@@ -294,24 +300,25 @@ TEST_P(HelpAppProviderTest, ClickingReleaseNotesChipStopsItFromShowing) {
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
 }
 
-class HelpAppProviderWithDiscoverTabDisabledTest : public HelpAppProviderTest {
+class HelpAppZeroStateProviderWithDiscoverTabDisabledTest
+    : public HelpAppZeroStateProviderTest {
  public:
-  HelpAppProviderWithDiscoverTabDisabledTest() {
+  HelpAppZeroStateProviderWithDiscoverTabDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{chromeos::features::kHelpAppDiscoverTab});
   }
-  ~HelpAppProviderWithDiscoverTabDisabledTest() override = default;
+  ~HelpAppZeroStateProviderWithDiscoverTabDisabledTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         HelpAppProviderWithDiscoverTabDisabledTest,
+                         HelpAppZeroStateProviderWithDiscoverTabDisabledTest,
                          testing::Bool());
 
-TEST_P(HelpAppProviderWithDiscoverTabDisabledTest,
+TEST_P(HelpAppZeroStateProviderWithDiscoverTabDisabledTest,
        DoesNotReturnDiscoverTabChipForEmptyQuery) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);

@@ -375,8 +375,9 @@ enum class AppListSearchResultType {
   kOpenTab,                // Open tab search results.
   kGames,                  // Game sarch results.
   kPersonalization,        // Personalization search results.
+  kZeroStateHelpApp,       // Help App (aka Explore) results for zero-state.
   // Add new values here.
-  kMaxValue = kPersonalization,
+  kMaxValue = kZeroStateHelpApp,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
@@ -549,7 +550,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kHide,     // Completely hide this text item when there is not enough space.
   };
 
-  SearchResultTextItem(SearchResultTextItemType type);
+  explicit SearchResultTextItem(SearchResultTextItemType type);
   SearchResultTextItem(const SearchResultTextItem&);
   SearchResultTextItem& operator=(const SearchResultTextItem&);
   ~SearchResultTextItem();
