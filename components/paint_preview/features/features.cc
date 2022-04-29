@@ -12,6 +12,6 @@ const base::Feature kPaintPreviewDemo{"PaintPreviewDemo",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPaintPreviewShowOnStartup{
-    "PaintPreviewShowOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PaintPreviewShowOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace paint_preview
