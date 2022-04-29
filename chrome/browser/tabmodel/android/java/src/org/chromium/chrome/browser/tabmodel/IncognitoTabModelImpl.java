@@ -137,8 +137,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id) {
-        return mDelegateModel.getNextTabIfClosed(id);
+    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+        return mDelegateModel.getNextTabIfClosed(id, uponExit);
     }
 
     @Override

@@ -2327,12 +2327,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
             // won't be closed (crbug.com/587565).
             mHandler.postDelayed(() -> {
-                boolean hasNextTab =
-                        getCurrentTabModel().getNextTabIfClosed(tabToClose.getId()) != null;
-                getCurrentTabModel().closeTab(tabToClose, false, true, false);
+                boolean uponExit = ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.MOST_RECENT_TAB_ON_BACKGROUND_CLOSE_TAB);
+                Tab nextTab = getCurrentTabModel().getNextTabIfClosed(
+                        tabToClose.getId(), /*uponExit=*/uponExit);
+                getCurrentTabModel().closeTab(tabToClose, nextTab, false, true, false);
 
                 // If there is no next tab to open, enter overview mode.
-                if (!hasNextTab) showOverview(StartSurfaceState.SHOWING_START);
+                if (nextTab == null) showOverview(StartSurfaceState.SHOWING_START);
             }, CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
     }
