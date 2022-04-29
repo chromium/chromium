@@ -415,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, PolicyCorrupted) {
 
   reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_FALSE(reasons & disable_reason::DISABLE_CORRUPTED);
+  system->management_policy()->UnregisterProvider(&policy);
 }
 
 // Tests the case when an extension is first manually installed, then it gets
