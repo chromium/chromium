@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -28,6 +29,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
@@ -120,6 +122,7 @@ EcheTray::EcheTray(Shelf* shelf)
   shelf_observation_.Observe(shelf);
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shell_observer_.Observe(Shell::Get());
+  keyboard_observation_.Observe(keyboard::KeyboardUIController::Get());
 }
 
 EcheTray::~EcheTray() {
@@ -178,6 +181,15 @@ void EcheTray::ShowBubble() {
   bubble_->bubble_view()->SetVisible(true);
   SetIsActive(true);
   web_view_->GetInitiallyFocusedView()->RequestFocus();
+
+  aura::Window* window = bubble_->GetBubbleWidget()->GetNativeWindow();
+  if (!window)
+    return;
+  window = window->GetToplevelWindow();
+  WindowState* window_state = WindowState::Get(window);
+  // We need this as `WorkspaceLayoutManager` conflicts with our resizing.
+  // See b/229111865#comment5
+  window_state->set_ignore_keyboard_bounds_change(true);
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {
@@ -230,6 +242,18 @@ void EcheTray::OnStreamStatusChanged(eche_app::mojom::StreamStatus status) {
 void EcheTray::OnLockStateChanged(bool locked) {
   if (bubble_ && locked)
     PurgeAndClose();
+}
+
+void EcheTray::OnKeyboardUIDestroyed() {
+  if (!bubble_ || !bubble_->bubble_view()->GetVisible())
+    return;
+  UpdateBubbleBounds();
+}
+
+void EcheTray::OnKeyboardVisibilityChanged(bool visible) {
+  if (visible || !bubble_ || !bubble_->bubble_view()->GetVisible())
+    return;
+  UpdateBubbleBounds();
 }
 
 void EcheTray::SetUrl(const GURL& url) {

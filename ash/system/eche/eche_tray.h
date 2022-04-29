@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -60,6 +62,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
                             public ScreenLayoutObserver,
                             public ShelfObserver,
                             public TabletModeObserver,
+                            public KeyboardControllerObserver,
                             ShellObserver {
  public:
   METADATA_HEADER(EcheTray);
@@ -94,6 +97,10 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
+
+  // KeyboardControllerObserver:
+  void OnKeyboardUIDestroyed() override;
+  void OnKeyboardVisibilityChanged(bool visible) override;
 
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.
@@ -243,6 +250,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
                           &Shell::AddShellObserver,
                           &Shell::RemoveShellObserver>
       shell_observer_{this};
+  base::ScopedObservation<keyboard::KeyboardUIController,
+                          ash::KeyboardControllerObserver>
+      keyboard_observation_{this};
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };
