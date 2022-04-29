@@ -120,11 +120,10 @@ message SignalFilterConfig {
   message UkmEvent {
     // Event hash of the UKM event.
     optional uint64 event_hash = 1;
-    // List of metric hashes for the event, to store in the database. If
-    // empty, the database will store all the metrics for the UKM event. It is
-    // is recommended to provide list of necessary metrics, unless it is clear
-    // that the list of metrics of the event is easily trackable and doesn't
-    // grow over time.
+    // List of metric hashes for the event, to store in the database. It is
+    // is required to provide list of necessary metrics.
+    // TODO: Support empty metric hash list, the database will store all the
+    // metrics for the UKM event.
     repeated uint64 metric_hash_filter = 2;
   }
   // List of UKM events to store in the database.

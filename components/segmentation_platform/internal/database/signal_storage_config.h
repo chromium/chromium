@@ -85,7 +85,13 @@ class SignalStorageConfig {
       std::unique_ptr<std::vector<proto::SignalStorageConfigs>> entries);
 
   proto::SignalStorageConfig* FindSignal(uint64_t signal_hash,
+                                         uint64_t event_hash,
                                          proto::SignalType signal_type);
+
+  bool UpdateConfigForSignal(int signal_storage_length,
+                             uint64_t signal_hash,
+                             uint64_t event_hash,
+                             proto::SignalType signal_type);
 
   // Helper method to flush the cached data to the DB. Called whenever the cache
   // is dirty.

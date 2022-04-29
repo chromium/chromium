@@ -12,8 +12,12 @@ import "components/segmentation_platform/internal/proto/types.proto";
 // Contains storage related information about a particular signal useful for
 // determining eligibility for model evaluation and DB cleanups.
 message SignalStorageConfig {
-  // The name (hash) of the user action or histogram.
+  // The name hash of the user action/histogram or the metric hash of the ukm
+  // event.
   optional uint64 name_hash = 1;
+
+  // The event hash of the ukm event. Only filled if signal type is UKM_EVENT.
+  optional uint64 event_hash = 5;
 
   // The type of the signal.
   optional SignalType signal_type = 2;

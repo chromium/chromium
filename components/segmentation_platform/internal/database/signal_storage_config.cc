@@ -63,16 +63,47 @@ void SignalStorageConfig::OnDataLoaded(
 
 proto::SignalStorageConfig* SignalStorageConfig::FindSignal(
     uint64_t signal_hash,
+    uint64_t event_hash,
     proto::SignalType signal_type) {
   // TODO(shaktisahu): May be have an internal map of signals.
   for (int i = 0; i < config_.signals().size(); ++i) {
     auto* signal_config = config_.mutable_signals(i);
     if (signal_config->name_hash() == signal_hash &&
+        signal_config->event_hash() == event_hash &&
         signal_config->signal_type() == signal_type) {
       return signal_config;
     }
   }
   return nullptr;
+}
+
+bool SignalStorageConfig::UpdateConfigForSignal(int signal_storage_length,
+                                                uint64_t signal_hash,
+                                                uint64_t event_hash,
+                                                proto::SignalType signal_type) {
+  proto::SignalStorageConfig* config =
+      FindSignal(signal_hash, event_hash, signal_type);
+  if (config) {
+    if (config->storage_length_s() < signal_storage_length) {
+      // We found a model that has a longer storage length requirement. Update
+      // it to DB.
+      config->set_storage_length_s(signal_storage_length);
+      return true;
+    }
+  } else {
+    // This is the first time we have encountered this signal. Just create an
+    // entry in the DB, and set collection start time.
+    proto::SignalStorageConfig* signal_config = config_.add_signals();
+    signal_config->set_name_hash(signal_hash);
+    if (signal_type == proto::SignalType::UKM_EVENT)
+      signal_config->set_event_hash(event_hash);
+    signal_config->set_signal_type(signal_type);
+    signal_config->set_storage_length_s(signal_storage_length);
+    signal_config->set_collection_start_time_s(
+        clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());
+    return true;
+  }
+  return false;
 }
 
 bool SignalStorageConfig::MeetsSignalCollectionRequirement(
@@ -98,7 +129,7 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
     }
 
     proto::SignalStorageConfig* config =
-        FindSignal(feature.name_hash(), feature.type());
+        FindSignal(feature.name_hash(), 0, feature.type());
     if (!config || config->collection_start_time_s() == 0)
       return false;
 
@@ -107,6 +138,8 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
     if (clock_->Now() - collection_start_time < min_signal_collection_length)
       return false;
   }
+
+  // TODO(haileywang): Handle UKM features.
 
   return true;
 }
@@ -126,26 +159,33 @@ void SignalStorageConfig::OnSignalCollectionStarted(
         metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
-
-    proto::SignalStorageConfig* config =
-        FindSignal(feature.name_hash(), feature.type());
-    if (config) {
-      if (config->storage_length_s() < signal_storage_length) {
-        // We found a model that has a longer storage length requirement. Update
-        // it to DB.
-        config->set_storage_length_s(signal_storage_length);
-        is_dirty = true;
-      }
-    } else {
-      // This is the first time we have encountered this signal. Just create an
-      // entry in the DB, and set collection start time.
-      proto::SignalStorageConfig* signal_config = config_.add_signals();
-      signal_config->set_name_hash(feature.name_hash());
-      signal_config->set_signal_type(feature.type());
-      signal_config->set_storage_length_s(signal_storage_length);
-      signal_config->set_collection_start_time_s(
-          clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());
+    if (UpdateConfigForSignal(signal_storage_length, feature.name_hash(), 0,
+                              feature.type())) {
       is_dirty = true;
+    }
+  }
+
+  // Add signals for sql features.
+  for (auto const& feature : model_metadata.input_features()) {
+    if (!feature.has_sql_feature())
+      continue;
+
+    if (metadata_utils::ValidateMetadataSqlFeature(feature.sql_feature()) !=
+        metadata_utils::ValidationResult::kValidationSuccess) {
+      continue;
+    }
+
+    const proto::SignalFilterConfig& sql_config =
+        feature.sql_feature().signal_filter();
+
+    for (auto const& event : sql_config.ukm_events()) {
+      for (auto const& metric_hash : event.metric_hash_filter()) {
+        if (UpdateConfigForSignal(signal_storage_length, metric_hash,
+                                  event.event_hash(),
+                                  proto::SignalType::UKM_EVENT)) {
+          is_dirty = true;
+        }
+      }
     }
   }
 
@@ -158,6 +198,7 @@ void SignalStorageConfig::GetSignalsForCleanup(
     std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>>& result)
     const {
   // Collect the signals that have longer than required data.
+  // TODO(haileywang): Handle UKM signals.
   for (int i = 0; i < config_.signals_size(); ++i) {
     const auto& signal_config = config_.signals(i);
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -202,7 +243,7 @@ void SignalStorageConfig::UpdateSignalsForCleanup(
     base::Time timestamp = std::get<2>(tuple);
 
     proto::SignalStorageConfig* signal_config =
-        FindSignal(name_hash, signal_type);
+        FindSignal(name_hash, 0, signal_type);
     if (!signal_config)
       continue;
 
