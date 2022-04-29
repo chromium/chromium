@@ -131,11 +131,6 @@ int GetContentsVerticalPadding() {
                                 : DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 }
 
-int GetHorizontalMargin() {
-  return views::MenuConfig::instance().item_horizontal_padding +
-         autofill::AutofillPopupBaseView::GetCornerRadius();
-}
-
 // Builds a column set for |layout| used in the autofill dropdown.
 void BuildColumnSet(views::TableLayoutView* layout_view) {
   const int column_divider = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -745,7 +740,7 @@ void AutofillPopupItemView::CreateContent() {
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(0, GetHorizontalMargin())));
+      gfx::Insets::VH(0, AutofillPopupBaseView::GetHorizontalMargin())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -757,7 +752,7 @@ void AutofillPopupItemView::CreateContent() {
 
   if (icon) {
     AddChildView(std::move(icon));
-    AddSpacerWithSize(GetHorizontalMargin(),
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
                       /*resize=*/false, layout_manager);
   }
 
@@ -810,7 +805,7 @@ void AutofillPopupItemView::CreateContent() {
   std::unique_ptr<views::ImageView> trailing_icon =
       GetTrailingIconImageView(suggestions[GetLineNumber()]);
   if (trailing_icon) {
-    AddSpacerWithSize(GetHorizontalMargin(),
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
                       /*resize=*/true, layout_manager);
     AddChildView(std::move(trailing_icon));
   }
@@ -921,9 +916,11 @@ void AutofillPopupItemView::UpdateLayoutSize(views::BoxLayout* layout_manager,
   // In the case that there are three rows in total, adding extra padding to
   // avoid cramming.
   if (num_subtexts == 2) {
-    layout_manager->set_inside_border_insets(gfx::Insets::TLBR(
-        kAutofillPopupAdditionalPadding, GetHorizontalMargin(),
-        kAutofillPopupAdditionalPadding, GetHorizontalMargin()));
+    layout_manager->set_inside_border_insets(
+        gfx::Insets::TLBR(kAutofillPopupAdditionalPadding,
+                          AutofillPopupBaseView::GetHorizontalMargin(),
+                          kAutofillPopupAdditionalPadding,
+                          AutofillPopupBaseView::GetHorizontalMargin()));
   }
 }
 
@@ -1136,7 +1133,7 @@ void AutofillPopupFooterView::CreateContent() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, GetHorizontalMargin())));
+          gfx::Insets::VH(0, AutofillPopupBaseView::GetHorizontalMargin())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -1150,10 +1147,12 @@ void AutofillPopupFooterView::CreateContent() {
   if (suggestion.is_loading) {
     SetEnabled(false);
     AddChildView(std::make_unique<views::Throbber>())->Start();
-    AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false, layout_manager);
   } else if (icon && use_leading_icon) {
     AddChildView(std::move(icon));
-    AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false, layout_manager);
   }
 
   // GetCornerRadius adds extra height to the footer to account for rounded
@@ -1171,14 +1170,16 @@ void AutofillPopupFooterView::CreateContent() {
   AddSpacerWithSize(0, /*resize=*/true, layout_manager);
 
   if (icon && !use_leading_icon) {
-    AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false, layout_manager);
     AddChildView(std::move(icon));
   }
 
   std::unique_ptr<views::ImageView> trailing_icon =
       GetTrailingIconImageView(suggestion);
   if (trailing_icon) {
-    AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/true, layout_manager);
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/true, layout_manager);
     AddChildView(std::move(trailing_icon));
   }
 }
@@ -1286,7 +1287,7 @@ void AutofillPopupWarningView::CreateContent() {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
 
-  int horizontal_margin = GetHorizontalMargin();
+  int horizontal_margin = AutofillPopupBaseView::GetHorizontalMargin();
   int vertical_margin = AutofillPopupBaseView::GetCornerRadius();
 
   SetUseDefaultFillLayout(true);

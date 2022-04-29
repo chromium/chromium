@@ -71,6 +71,16 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     suggestion_label_->SetBackgroundColor(color);
   }
 
+  void AddSpacerWithSize(int spacer_width,
+                         bool resize,
+                         views::BoxLayout* layout) {
+    auto spacer = std::make_unique<views::View>();
+    spacer->SetPreferredSize(gfx::Size(spacer_width, 1));
+    layout->SetFlexForView(AddChildView(std::move(spacer)),
+                           /*flex=*/resize ? 1 : 0,
+                           /*use_min_size=*/true);
+  }
+
   void reset_controller() { controller_ = nullptr; }
 
  private:
@@ -90,9 +100,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
     base::WeakPtr<PasswordGenerationPopupController> controller) {
   controller_ = controller;
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL)));
+      views::BoxLayout::Orientation::kHorizontal));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   if (base::FeatureList::IsEnabled(
@@ -100,6 +108,8 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
     AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
+    AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false, layout);
   }
 
   suggestion_label_ = AddChildView(std::make_unique<views::Label>(
@@ -108,6 +118,11 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
               PasswordGenerationPopupController::kOfferGeneration
           ? views::style::STYLE_PRIMARY
           : views::style::STYLE_SECONDARY));
+
+  AddSpacerWithSize(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
+      /*resize=*/true, layout);
 
   DCHECK(!password_label_);
   password_label_ = AddChildView(std::make_unique<views::Label>(
