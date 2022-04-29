@@ -2072,10 +2072,12 @@
             ],
             "experiments": [
                 {
-                    "name": "CandidateB_HideStartWithSRP",
+                    "name": "CandidateB_FeedsShowLast7Days_8H",
                     "params": {
-                        "hide_start_when_last_visited_tab_is_srp": "true",
+                        "behavioural_targeting": "feeds",
                         "hide_switch_when_no_incognito_tabs": "true",
+                        "num_days_keep_show_start_at_startup": "4",
+                        "num_days_user_click_below_threshold": "1",
                         "open_ntp_instead_of_start": "true",
                         "show_last_active_tab_only": "true",
                         "signin_promo_NTP_count_limit": "5",
@@ -2084,7 +2086,8 @@
                         "start_surface_variation": "single",
                         "support_accessibility": "true",
                         "tab_count_button_on_start_surface": "true",
-                        "tab_switcher_on_return_time_ms": "28800000"
+                        "tab_switcher_on_return_time_ms": "28800000",
+                        "user_clicks_threshold": "1"
                     },
                     "enable_features": [
                         "StartSurfaceAndroid",
