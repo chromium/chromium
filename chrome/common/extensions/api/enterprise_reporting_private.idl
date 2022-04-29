@@ -41,6 +41,9 @@ namespace enterprise.reportingPrivate {
     DOMString? windowsMachineDomain;
     DOMString? windowsUserDomain;
     DOMString securityPatchLevel;
+
+    // This value is only returned on Windows for now.
+    SettingValue? secureBootEnabled;
   };
 
   // Invoked by <code>getDeviceInfo</code> to return device information.

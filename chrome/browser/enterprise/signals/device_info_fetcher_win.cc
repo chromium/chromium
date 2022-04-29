@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
@@ -36,6 +37,10 @@
 namespace enterprise_signals {
 
 namespace {
+
+constexpr wchar_t kSecureBootRegPath[] =
+    L"SOFTWARE\\CurrentControlSet\\Control\\SecureBoot\\State";
+constexpr wchar_t kSecureBootRegKey[] = L"UEFISecureBootEnabled";
 
 // Possible results of the "System.Volume.BitLockerProtection" shell property.
 // These values are undocumented but were directly validated on a Windows 10
@@ -311,6 +316,25 @@ std::string GetSecurityPatchLevel() {
   return base::NumberToString(gi->version_number().patch);
 }
 
+SettingValue GetSecureBootEnabled() {
+  base::win::RegKey key;
+  auto result = key.Open(HKEY_LOCAL_MACHINE, kSecureBootRegPath,
+                         KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+
+  if (result != ERROR_SUCCESS || !key.Valid()) {
+    return SettingValue::UNKNOWN;
+  }
+
+  DWORD secure_boot_dw;
+  result = key.ReadValueDW(kSecureBootRegKey, &secure_boot_dw);
+
+  if (result != ERROR_SUCCESS) {
+    return SettingValue::UNKNOWN;
+  }
+
+  return secure_boot_dw == 1 ? SettingValue::ENABLED : SettingValue::DISABLED;
+}
+
 }  // namespace
 
 DeviceInfoFetcherWin::DeviceInfoFetcherWin() = default;
@@ -330,6 +354,7 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   device_info.mac_addresses = GetMacAddresses();
   device_info.windows_machine_domain = GetWindowsMachineDomain();
   device_info.windows_user_domain = GetWindowsUserDomain();
+  device_info.secure_boot_enabled = GetSecureBootEnabled();
 
   return device_info;
 }

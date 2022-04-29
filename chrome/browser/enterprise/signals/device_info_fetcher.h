@@ -32,6 +32,7 @@ struct DeviceInfo {
   std::vector<std::string> mac_addresses;
   absl::optional<std::string> windows_machine_domain;
   absl::optional<std::string> windows_user_domain;
+  absl::optional<SettingValue> secure_boot_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getDeviceInfo()

@@ -320,7 +320,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::
 // static
 api::enterprise_reporting_private::DeviceInfo
 EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
-    enterprise_signals::DeviceInfo&& device_signals) {
+    const enterprise_signals::DeviceInfo& device_signals) {
   api::enterprise_reporting_private::DeviceInfo device_info;
 
   device_info.os_name = std::move(device_signals.os_name);
@@ -346,6 +346,10 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
         device_signals.windows_user_domain.value());
   } else {
     device_info.windows_user_domain = nullptr;
+  }
+  if (device_signals.secure_boot_enabled.has_value()) {
+    device_info.secure_boot_enabled =
+        ToInfoSettingValue(device_signals.secure_boot_enabled.value());
   }
 
   return device_info;
@@ -375,9 +379,9 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 }
 
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
-    enterprise_signals::DeviceInfo device_signals) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
-      ToDeviceInfo(std::move(device_signals)).ToValue())));
+    const enterprise_signals::DeviceInfo& device_signals) {
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(ToDeviceInfo(device_signals).ToValue())));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

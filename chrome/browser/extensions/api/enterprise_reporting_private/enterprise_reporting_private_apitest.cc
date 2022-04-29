@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 
     chrome.enterprise.reportingPrivate.getDeviceInfo((deviceInfo) => {
       chrome.test.assertNoLastError();
-      let count = 9;
+      let count = 10;
       if(deviceInfo.windowsUserDomain){
         count++;
         chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "string");
@@ -251,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
       chrome.test.assertEq(typeof deviceInfo.screenLockSecured, 'string');
       chrome.test.assertEq(typeof deviceInfo.diskEncrypted, 'string');
       chrome.test.assertTrue(deviceInfo.macAddresses instanceof Array);
+      chrome.test.assertEq(typeof deviceInfo.secureBootEnabled, 'string');
 
       chrome.test.notifyPass();
     });)";
@@ -276,6 +277,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
       chrome.test.assertTrue(deviceInfo.macAddresses instanceof Array);
       chrome.test.assertEq(typeof deviceInfo.windowsMachineDomain, "undefined");
       chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "undefined");
+      chrome.test.assertEq(typeof deviceInfo.secureBootEnabled, "undefined");
 
       chrome.test.notifyPass();
     });)";

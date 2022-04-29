@@ -140,7 +140,7 @@ class EnterpriseReportingPrivateGetDeviceInfoFunction
 
   // Conversion function for this class to use a DeviceInfoFetcher result.
   static api::enterprise_reporting_private::DeviceInfo ToDeviceInfo(
-      enterprise_signals::DeviceInfo&& device_signals);
+      const enterprise_signals::DeviceInfo& device_signals);
 
  private:
   ~EnterpriseReportingPrivateGetDeviceInfoFunction() override;
@@ -149,7 +149,7 @@ class EnterpriseReportingPrivateGetDeviceInfoFunction
   ExtensionFunction::ResponseAction Run() override;
 
   // Callback once the data was retrieved.
-  void OnDeviceInfoRetrieved(::enterprise_signals::DeviceInfo device_info);
+  void OnDeviceInfoRetrieved(const enterprise_signals::DeviceInfo& device_info);
 };
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
