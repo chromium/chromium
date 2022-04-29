@@ -13,15 +13,13 @@
  *
  */
 
-goog.provide('ExtensionBridge');
-
 /** @enum {number} */
 const BridgeContext = {
   BACKGROUND: 0,
   CONTENT_SCRIPT: 1,
 };
 
-ExtensionBridge = class {
+export class ExtensionBridge {
   /** @private */
   constructor() {
     /** @private {!Array<!function(Object, Port)>} */
@@ -349,7 +347,7 @@ ExtensionBridge = class {
   sendBackgroundToContentScript_(message) {
     this.portCache_.forEach((port) => port.postMessage(message));
   }
-};
+}
 
 // Keep these constants in sync with injected/extension_bridge.js.
 

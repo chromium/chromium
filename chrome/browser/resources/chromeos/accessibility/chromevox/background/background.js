@@ -19,6 +19,7 @@ import {MediaAutomationHandler} from '/chromevox/background/media_automation_han
 import {PageLoadSoundHandler} from '/chromevox/background/page_load_sound_handler.js';
 import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
+import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 import {InstanceChecker} from '/common/instance_checker.js';
 
 /**

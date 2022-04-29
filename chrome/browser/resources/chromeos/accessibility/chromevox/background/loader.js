@@ -22,7 +22,6 @@ goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');
 goog.require('EventSourceState');
 goog.require('EventStreamLogger');
-goog.require('ExtensionBridge');
 goog.require('ExtraCellsSpan');
 goog.require('JaPhoneticMap');
 goog.require('KeyCode');

@@ -11,7 +11,6 @@ goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 goog.require('ChromeVox');
 goog.require('EventStreamLogger');
-goog.require('ExtensionBridge');
 goog.require('ExtraCellsSpan');
 goog.require('LibLouis');
 goog.require('Msgs');

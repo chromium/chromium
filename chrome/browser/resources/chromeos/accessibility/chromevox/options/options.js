@@ -7,6 +7,7 @@
  */
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {BrailleTable} from '/chromevox/common/braille/braille_table.js';
+import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 import {BluetoothBrailleDisplayUI} from '/chromevox/options/bluetooth_braille_display_ui.js';
 
 /** @const {string} */

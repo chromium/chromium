@@ -70,7 +70,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     // Check for loss of focus which results in us invalidating our current
     // range. Note this call is synchronous.
-    chrome.automation.getFocus(function(focusedNode) {
+    chrome.automation.getFocus((focusedNode) => {
       const cur = ChromeVoxState.instance.currentRange;
       if (cur && !cur.isValid()) {
         ChromeVoxState.instance.setCurrentRange(
@@ -377,7 +377,7 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     // Require a current range.
-    if (!ChromeVoxState.instance.currentRange_) {
+    if (!ChromeVoxState.instance.currentRange) {
       if (!ChromeVoxState.instance.talkBackEnabled) {
         new Output()
             .withString(Msgs.getMsg(
@@ -1507,7 +1507,7 @@ export class CommandHandler extends CommandHandlerInterface {
    * Performs global initialization.
    */
   init() {
-    ChromeVoxKbHandler.commandHandler = this.onCommand.bind(this);
+    ChromeVoxKbHandler.commandHandler = (command) => this.onCommand(command);
 
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection', (enabled) => {

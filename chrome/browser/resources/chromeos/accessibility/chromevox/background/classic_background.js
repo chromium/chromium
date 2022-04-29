@@ -14,6 +14,7 @@ import {TtsBackground} from '/chromevox/background/tts_background.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {CompositeTts} from '/chromevox/common/composite_tts.js';
 import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/common/editable_text_base.js';
+import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 
 /**
  * This is the legacy ChromeVox background object.
