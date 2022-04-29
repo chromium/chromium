@@ -2337,10 +2337,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   }
 
   if (params.reason == AttributeModificationReason::kByParser &&
-      name == html_names::kInitiallyopenAttr && HasValidPopupAttribute()) {
+      name == html_names::kDefaultopenAttr && HasValidPopupAttribute()) {
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
     DCHECK(!isConnected());
-    GetPopupData()->setHadInitiallyOpenWhenParsed(true);
+    GetPopupData()->setHadDefaultOpenWhenParsed(true);
   }
 
   if (params.reason == AttributeModificationReason::kDirectly &&
@@ -3006,12 +3006,12 @@ Node::InsertionNotificationRequest Element::InsertedInto(
       CustomElement::TryToUpgrade(*this);
   }
 
-  if (GetPopupData() && GetPopupData()->hadInitiallyOpenWhenParsed()) {
-    // If a Popup element has the `initiallyopen` attribute upon page
+  if (GetPopupData() && GetPopupData()->hadDefaultOpenWhenParsed()) {
+    // If a Popup element has the `defaultopen` attribute upon page
     // load, and it is the *first* such popup, show it.
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
     DCHECK(isConnected());
-    GetPopupData()->setHadInitiallyOpenWhenParsed(false);
+    GetPopupData()->setHadDefaultOpenWhenParsed(false);
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
         ->PostTask(FROM_HERE,

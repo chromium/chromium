@@ -21,11 +21,9 @@ class PopupData final : public GarbageCollected<PopupData> {
   bool open() const { return open_; }
   void setOpen(bool open) { open_ = open; }
 
-  bool hadInitiallyOpenWhenParsed() const {
-    return had_initiallyopen_when_parsed_;
-  }
-  void setHadInitiallyOpenWhenParsed(bool value) {
-    had_initiallyopen_when_parsed_ = value;
+  bool hadDefaultOpenWhenParsed() const { return had_defaultopen_when_parsed_; }
+  void setHadDefaultOpenWhenParsed(bool value) {
+    had_defaultopen_when_parsed_ = value;
   }
 
   PopupValueType type() const { return type_; }
@@ -59,7 +57,7 @@ class PopupData final : public GarbageCollected<PopupData> {
 
  private:
   bool open_ = false;
-  bool had_initiallyopen_when_parsed_ = false;
+  bool had_defaultopen_when_parsed_ = false;
   PopupValueType type_ = PopupValueType::kNone;
   WeakMember<Element> invoker_;
 

@@ -2241,10 +2241,10 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
+    getter defaultOpen
     getter elementTiming
     getter firstElementChild
     getter id
-    getter initiallyOpen
     getter innerHTML
     getter lastElementChild
     getter localName
@@ -2378,9 +2378,9 @@ interface Element : Node
     setter ariaVirtualContent
     setter classList
     setter className
+    setter defaultOpen
     setter elementTiming
     setter id
-    setter initiallyOpen
     setter innerHTML
     setter onbeforecopy
     setter onbeforecut
