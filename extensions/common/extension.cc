@@ -725,8 +725,7 @@ bool Extension::LoadExtent(const char* key,
     *error = base::ASCIIToUTF16(list_error);
     return false;
   }
-  base::Value::ConstListView pattern_list =
-      temp_pattern_value->GetListDeprecated();
+  const base::Value::List& pattern_list = temp_pattern_value->GetList();
   for (size_t i = 0; i < pattern_list.size(); ++i) {
     std::string pattern_string;
     if (pattern_list[i].is_string()) {

@@ -146,7 +146,7 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
 
   auto info = std::make_unique<MimeTypesHandlerInfo>();
   info->handler_.set_extension_id(extension->id());
-  for (const auto& entry : mime_types_value->GetListDeprecated()) {
+  for (const auto& entry : mime_types_value->GetList()) {
     if (!entry.is_string()) {
       *error = errors::kInvalidMIMETypes;
       return false;

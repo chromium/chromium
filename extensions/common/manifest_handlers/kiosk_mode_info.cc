@@ -149,7 +149,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
     const bool allow_enabled_on_launch =
         AllowSecondaryAppEnabledOnLaunch(extension);
 
-    for (const auto& value : secondary_apps_value->GetListDeprecated()) {
+    for (const auto& value : secondary_apps_value->GetList()) {
       std::unique_ptr<KioskSecondaryAppsType> app =
           KioskSecondaryAppsType::FromValue(value, error);
       if (!app) {

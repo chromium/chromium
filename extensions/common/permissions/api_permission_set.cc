@@ -102,11 +102,10 @@ bool ParseChildPermissions(const std::string& base_name,
       return true;
     }
 
-    base::Value::ConstListView list_view =
-        permission_value->GetListDeprecated();
-    for (size_t i = 0; i < list_view.size(); ++i) {
+    const base::Value::List& list = permission_value->GetList();
+    for (size_t i = 0; i < list.size(); ++i) {
       std::string permission_str;
-      if (!list_view[i].is_string()) {
+      if (!list[i].is_string()) {
         // permission should be a string
         if (error) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -118,8 +117,8 @@ bool ParseChildPermissions(const std::string& base_name,
         continue;
       }
 
-      if (!CreateAPIPermission(base_name + '.' + list_view[i].GetString(),
-                               nullptr, source, api_permissions, error,
+      if (!CreateAPIPermission(base_name + '.' + list[i].GetString(), nullptr,
+                               source, api_permissions, error,
                                unhandled_permissions))
         return false;
     }
@@ -160,15 +159,15 @@ bool APIPermissionSet::ParseFromJSON(
     // return true here anyway.
     return true;
   }
-  base::Value::ConstListView list_view = permissions->GetListDeprecated();
-  for (size_t i = 0; i < list_view.size(); ++i) {
+  const base::Value::List& list = permissions->GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
     std::string permission_str;
     const base::Value* permission_value = nullptr;
     // permission should be a string or a single key dict.
-    if (list_view[i].is_string()) {
-      permission_str = list_view[i].GetString();
-    } else if (list_view[i].is_dict() && list_view[i].DictSize() == 1) {
-      auto dict_iter = list_view[i].DictItems().begin();
+    if (list[i].is_string()) {
+      permission_str = list[i].GetString();
+    } else if (list[i].is_dict() && list[i].DictSize() == 1) {
+      auto dict_iter = list[i].DictItems().begin();
       permission_str = dict_iter->first;
       permission_value = &dict_iter->second;
     } else {

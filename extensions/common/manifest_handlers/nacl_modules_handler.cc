@@ -52,15 +52,15 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
   std::unique_ptr<NaClModuleData> nacl_module_data(new NaClModuleData);
 
-  base::Value::ConstListView list_view = list_value->GetListDeprecated();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (!list_view[i].is_dict()) {
+  const base::Value::List& list = list_value->GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!list[i].is_dict()) {
       *error = errors::kInvalidNaClModules;
       return false;
     }
 
     // Get nacl_modules[i].path.
-    const base::Value* path_str = list_view[i].FindKeyOfType(
+    const base::Value* path_str = list[i].FindKeyOfType(
         keys::kNaClModulesPath, base::Value::Type::STRING);
     if (path_str == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -69,7 +69,7 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     // Get nacl_modules[i].mime_type.
-    const base::Value* mime_type = list_view[i].FindKeyOfType(
+    const base::Value* mime_type = list[i].FindKeyOfType(
         keys::kNaClModulesMIMEType, base::Value::Type::STRING);
     if (mime_type == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

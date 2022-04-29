@@ -60,14 +60,14 @@ bool EventMatcher::MatchNonURLCriteria(
 int EventMatcher::GetURLFilterCount() const {
   base::ListValue* url_filters = nullptr;
   if (filter_->GetList(kUrlFiltersKey, &url_filters))
-    return url_filters->GetListDeprecated().size();
+    return url_filters->GetList().size();
   return 0;
 }
 
 const base::Value::Dict* EventMatcher::GetURLFilter(int i) {
   base::ListValue* url_filters = nullptr;
   if (filter_->GetList(kUrlFiltersKey, &url_filters)) {
-    base::Value& dict = url_filters->GetListDeprecated()[i];
+    base::Value& dict = url_filters->GetList()[i];
     return dict.GetIfDict();
   }
   return nullptr;
@@ -94,14 +94,14 @@ int EventMatcher::GetInstanceID() const {
 int EventMatcher::GetWindowTypeCount() const {
   base::ListValue* window_type_filters = nullptr;
   if (filter_->GetList(kWindowTypesKey, &window_type_filters))
-    return window_type_filters->GetListDeprecated().size();
+    return window_type_filters->GetList().size();
   return 0;
 }
 
 bool EventMatcher::GetWindowType(int i, std::string* window_type_out) const {
   base::ListValue* window_types = nullptr;
   if (filter_->GetList(kWindowTypesKey, &window_types)) {
-    base::Value::ConstListView types_list = window_types->GetListDeprecated();
+    const base::Value::List& types_list = window_types->GetList();
     if (i >= 0 && static_cast<size_t>(i) < types_list.size() &&
         types_list[i].is_string()) {
       *window_type_out = types_list[i].GetString();

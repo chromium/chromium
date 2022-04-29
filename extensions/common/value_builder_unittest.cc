@@ -30,11 +30,11 @@ TEST(ValueBuilderTest, Basic) {
   base::ListValue* list_value;
   ASSERT_TRUE(settings->GetList("permissions", &list_value));
 
-  ASSERT_EQ(2U, list_value->GetListDeprecated().size());
-  ASSERT_TRUE(list_value->GetListDeprecated()[0].is_string());
-  ASSERT_EQ(list_value->GetListDeprecated()[0].GetString(), "tabs");
-  ASSERT_TRUE(list_value->GetListDeprecated()[1].is_string());
-  ASSERT_EQ(list_value->GetListDeprecated()[1].GetString(), "history");
+  ASSERT_EQ(list_value->GetList().size(), 2u);
+  ASSERT_TRUE(list_value->GetList()[0].is_string());
+  ASSERT_EQ(list_value->GetList()[0].GetString(), "tabs");
+  ASSERT_TRUE(list_value->GetList()[1].is_string());
+  ASSERT_EQ(list_value->GetList()[1].GetString(), "history");
 }
 
 TEST(ValueBuilderTest, AppendList) {

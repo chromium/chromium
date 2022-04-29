@@ -62,8 +62,7 @@ bool ManifestPermissionSet::ParseFromJSON(
     ManifestPermissionSet* manifest_permissions,
     std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
-  base::Value::ConstListView permissions_list =
-      permissions->GetListDeprecated();
+  const base::Value::List& permissions_list = permissions->GetList();
   for (size_t i = 0; i < permissions_list.size(); ++i) {
     const base::Value& value = permissions_list[i];
     std::string permission_name;

@@ -50,7 +50,7 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   auto info = std::make_unique<ActionHandlersInfo>();
-  for (const base::Value& wrapped_value : entries->GetListDeprecated()) {
+  for (const base::Value& wrapped_value : entries->GetList()) {
     std::string value;
     bool enabled_on_lock_screen = false;
     if (wrapped_value.is_dict()) {

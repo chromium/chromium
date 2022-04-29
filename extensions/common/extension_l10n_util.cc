@@ -124,22 +124,20 @@ bool LocalizeManifestListValue(const std::string& key,
                                const extensions::MessageBundle& messages,
                                base::DictionaryValue* manifest,
                                std::string* error) {
-  base::ListValue* list = NULL;
-  if (!manifest->GetList(key, &list))
+  base::ListValue* list_value = nullptr;
+  if (!manifest->GetList(key, &list_value))
     return true;
 
-  bool ret = true;
-  base::Value::ListView list_view = list->GetListDeprecated();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (list_view[i].is_string()) {
-      std::string result = list_view[i].GetString();
-      if (messages.ReplaceMessages(&result, error))
-        list_view[i] = base::Value(result);
-      else
-        ret = false;
+  for (base::Value& item : list_value->GetList()) {
+    if (item.is_string()) {
+      std::string result = item.GetString();
+      if (!messages.ReplaceMessages(&result, error)) {
+        return false;
+      }
+      item = base::Value(result);
     }
   }
-  return ret;
+  return true;
 }
 
 std::string& GetProcessLocale() {
@@ -270,7 +268,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
 
   base::ListValue* file_handlers = NULL;
   if (manifest->GetList(keys::kFileBrowserHandlers, &file_handlers)) {
-    for (base::Value& handler : file_handlers->GetListDeprecated()) {
+    for (base::Value& handler : file_handlers->GetList()) {
       if (!handler.is_dict()) {
         *error = errors::kInvalidFileBrowserHandler;
         return false;
@@ -284,7 +282,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   // Initialize all input_components
   base::ListValue* input_components = NULL;
   if (manifest->GetList(keys::kInputComponents, &input_components)) {
-    for (base::Value& module : input_components->GetListDeprecated()) {
+    for (base::Value& module : input_components->GetList()) {
       if (!module.is_dict()) {
         *error = errors::kInvalidInputComponents;
         return false;

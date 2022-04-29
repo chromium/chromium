@@ -55,7 +55,7 @@ std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
 const base::DictionaryValue* FindListItem(const base::ListValue* list,
                                           const std::string& property_name,
                                           const std::string& property_value) {
-  for (const base::Value& item_value : list->GetListDeprecated()) {
+  for (const base::Value& item_value : list->GetList()) {
     CHECK(item_value.is_dict()) << property_value << "/" << property_name;
     const base::DictionaryValue* item =
         static_cast<const base::DictionaryValue*>(&item_value);

@@ -131,7 +131,7 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
     return nullptr;
   }
 
-  for (const auto& element : value.GetListDeprecated()) {
+  for (const auto& element : value.GetList()) {
     const base::DictionaryValue* dict = nullptr;
     if (!element.GetAsDictionary(&dict)) {
       error_builder.Append("expected dictionary, got %s",

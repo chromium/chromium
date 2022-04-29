@@ -530,7 +530,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
   base::ListValue* handlers_raw = nullptr;
   manifest.GetList(keys::kFileBrowserHandlers, &handlers_raw);
   base::DictionaryValue* handler_raw = nullptr;
-  handlers_raw->GetListDeprecated()[0].GetAsDictionary(&handler_raw);
+  handlers_raw->GetList()[0].GetAsDictionary(&handler_raw);
   ASSERT_TRUE(handler_raw->GetString(keys::kActionDefaultTitle, &result));
   EXPECT_EQ("file handler title", result);
 
@@ -668,9 +668,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
 
   base::ListValue* startup_pages_raw = nullptr;
   ASSERT_TRUE(manifest.GetList(keys::kOverrideStartupPage, &startup_pages_raw));
-  base::Value::ConstListView startup_pages_raw_list =
-      startup_pages_raw->GetListDeprecated();
-  ASSERT_GT(startup_pages_raw_list.size(), 0u);
+  base::Value::List& startup_pages_raw_list = startup_pages_raw->GetList();
+  ASSERT_FALSE(startup_pages_raw_list.empty());
   ASSERT_TRUE(startup_pages_raw_list[0].is_string());
   EXPECT_EQ("http://www.foo.de", startup_pages_raw_list[0].GetString());
 
