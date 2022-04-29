@@ -204,13 +204,9 @@ class Bus;
 namespace device {
 class UsbContext;
 }
-namespace base {
-class FilePath;
-}
 namespace disk_cache {
 class BackendImpl;
 class InFlightIO;
-bool CleanupDirectorySync(const base::FilePath&);
 }  // namespace disk_cache
 namespace enterprise_connectors {
 class LinuxKeyRotationCommand;
@@ -492,13 +488,11 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class weblayer::ProfileImpl;
   friend class weblayer::WebLayerPathProvider;
 
-  // Sorting with function name (with namespace), ignoring the return type.
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
-  friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
   friend bool PathProviderWin(int, FilePath*);
   friend bool chromeos::system::IsCoreSchedulingAvailable();
   friend int chromeos::system::NumberOfPhysicalCores();
-  friend bool disk_cache::CleanupDirectorySync(const base::FilePath&);
+  friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
