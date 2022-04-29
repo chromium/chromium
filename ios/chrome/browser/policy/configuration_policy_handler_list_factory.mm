@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#include "components/component_updater/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
@@ -54,6 +55,9 @@ namespace {
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kAllowChromeDataInBackups,
     prefs::kAllowChromeDataInBackups,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kComponentUpdatesEnabled,
+    prefs::kComponentUpdatesEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kChromeVariations,
     variations::prefs::kVariationsRestrictionsByPolicy,
