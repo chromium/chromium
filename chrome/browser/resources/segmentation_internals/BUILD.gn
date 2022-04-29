@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -36,12 +35,11 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 }
 
-html_to_js("web_components") {
-  js_files = [ "segmentation_internals.ts" ]
-}
-
-copy("copy_proxy") {
-  sources = [ "segmentation_internals_browser_proxy.ts" ]
+copy("copy_ts") {
+  sources = [
+    "segmentation_internals.ts",
+    "segmentation_internals_browser_proxy.ts",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -63,13 +61,9 @@ ts_library("build_ts") {
     "segmentation_internals_browser_proxy.ts",
     "segmentation_internals.mojom-webui.js",
   ]
-  deps = [
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/js/browser_command:build_ts",
-  ]
+  deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
     ":copy_mojo",
-    ":copy_proxy",
-    ":web_components",
+    ":copy_ts",
   ]
 }

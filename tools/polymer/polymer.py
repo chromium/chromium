@@ -382,9 +382,20 @@ def process_v3_ready(js_file, html_file):
     lines = f.readlines()
 
   HTML_TEMPLATE_REGEX = '{__html_template__}'
+  found = 0
   for i, line in enumerate(lines):
-    line = line.replace(HTML_TEMPLATE_REGEX, html_template)
-    lines[i] = line
+    if HTML_TEMPLATE_REGEX in line:
+      found += 1
+      line = line.replace(HTML_TEMPLATE_REGEX, html_template)
+      lines[i] = line
+
+  if found == 0:
+    raise AssertionError('No HTML placeholder ' + HTML_TEMPLATE_REGEX +
+                         ' found in ' + js_file)
+
+  if found > 1:
+    raise AssertionError('Multiple HTML placeholders ' + HTML_TEMPLATE_REGEX +
+                         ' found in ' + js_file)
 
   out_filename = os.path.basename(js_file)
   return lines, out_filename

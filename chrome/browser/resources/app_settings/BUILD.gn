@@ -13,10 +13,7 @@ assert(is_win || is_mac || is_linux || is_fuchsia)
 preprocess_folder = "preprocessed"
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-web_component_files = [
-  "app.ts",
-  "web_app_settings.ts",
-]
+web_component_files = [ "app.ts" ]
 
 html_to_js("web_components") {
   js_files = web_component_files
@@ -34,7 +31,10 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + [ "app_management.mojom-webui.js" ]
+  in_files = web_component_files + [
+               "app_management.mojom-webui.js",
+               "web_app_settings.ts",
+             ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
@@ -42,8 +42,14 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":copy_mojo",
+    ":copy_ts",
     ":preprocess_web_components",
   ]
+}
+
+copy("copy_ts") {
+  sources = [ "web_app_settings.ts" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
 copy("copy_mojo") {

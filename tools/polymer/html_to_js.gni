@@ -7,7 +7,10 @@ template("html_to_js") {
     script = "//tools/polymer/html_to_js.py"
     forward_variables_from(invoker, [ "visibility" ])
 
-    inputs = []
+    inputs = [
+      # Declare dependencies of html_to_js.py as well.
+      "//tools/polymer/polymer.py",
+    ]
     outputs = []
 
     foreach(js_file, invoker.js_files) {

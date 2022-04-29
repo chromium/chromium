@@ -4,8 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -22,17 +20,19 @@ generate_grd("build_grd") {
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//storage/browser/quota:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/storage/browser/quota/"
-  out_folder = "$target_gen_dir"
-  in_files = [ "quota_internals.mojom-webui.js" ]
+copy("copy_ts") {
+  sources = [
+    "quota_internals.ts",
+    "quota_internals_browser_proxy.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-preprocess_if_expr("preprocess_proxy") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir"
-  in_files = [ "quota_internals_browser_proxy.ts" ]
+copy("copy_mojo") {
+  deps = [ "//storage/browser/quota:mojo_bindings_webui_js" ]
+  mojom_folder = "$root_gen_dir/mojom-webui/storage/browser/quota/"
+  sources = [ "$mojom_folder/quota_internals.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 grit("resources") {
@@ -52,12 +52,8 @@ grit("resources") {
   output_dir = "$root_gen_dir/content"
 }
 
-html_to_js("web_components") {
-  js_files = [ "quota_internals.ts" ]
-}
-
 ts_library("build_ts") {
-  root_dir = "$target_gen_dir"
+  root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
@@ -65,13 +61,9 @@ ts_library("build_ts") {
     "quota_internals_browser_proxy.ts",
     "quota_internals.mojom-webui.js",
   ]
-  deps = [
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/mojo:library",
-  ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
   extra_deps = [
-    ":preprocess_mojo",
-    ":preprocess_proxy",
-    ":web_components",
+    ":copy_mojo",
+    ":copy_ts",
   ]
 }

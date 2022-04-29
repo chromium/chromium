@@ -81,6 +81,7 @@ if (include_polymer) {
     in_files = [
       "cr_auto_img/cr_auto_img.ts",
       "cr_container_shadow_mixin.ts",
+      "cr_menu_selector/cr_menu_selector.ts",
       "cr_search_field/cr_search_field_mixin.ts",
       "cr_splitter/cr_splitter.ts",
       "find_shortcut_mixin.ts",
@@ -219,7 +220,6 @@ preprocess_if_expr("preprocess_generated_ts") {
       "cr_drawer/cr_drawer.ts",
       "cr_grid/cr_grid.ts",
       "cr_link_row/cr_link_row.ts",
-      "cr_menu_selector/cr_menu_selector.ts",
       "cr_nav_menu_item_style.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
@@ -453,7 +453,6 @@ html_to_js("web_components") {
       "cr_drawer/cr_drawer.ts",
       "cr_grid/cr_grid.ts",
       "cr_link_row/cr_link_row.ts",
-      "cr_menu_selector/cr_menu_selector.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_search_field/cr_search_field.ts",
