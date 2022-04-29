@@ -1172,6 +1172,12 @@ const base::Feature kProjectorManagedUserIgnorePolicy(
     "ProjectorManagedUserIgnorePolicy",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to show pseduo transcript that is shorter than the
+// threshold.
+const base::Feature kProjectorShowShortPseudoTranscript(
+    "ProjectorShowShortPseudoTranscript",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2056,6 +2062,10 @@ bool IsProjectorCustomThumbnailEnabled() {
 
 bool IsProjectorManagedUserIgnorePolicyEnabled() {
   return base::FeatureList::IsEnabled(kProjectorManagedUserIgnorePolicy);
+}
+
+bool IsProjectorShowShortPseudoTranscript() {
+  return base::FeatureList::IsEnabled(kProjectorShowShortPseudoTranscript);
 }
 
 bool IsQuickDimEnabled() {

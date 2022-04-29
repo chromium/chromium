@@ -456,6 +456,8 @@ extern const base::Feature kProjectorCustomThumbnail;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorManagedUserIgnorePolicy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProjectorShowShortPseudoTranscript;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickSettingsNetworkRevamp;
@@ -717,6 +719,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorTutorialVideoViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorCustomThumbnailEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorManagedUserIgnorePolicyEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsProjectorShowShortPseudoTranscript();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsQuickSettingsNetworkRevampEnabled();
