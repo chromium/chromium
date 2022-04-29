@@ -3171,11 +3171,23 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   };
 
   HeapVector<ResultAndOffsets> result_and_offsets;
+  HeapVector<GridItemPlacementData*> out_of_fragmentainer_space_item_placement;
   BaselineAccumulator baseline_accumulator;
   LayoutUnit max_row_expansion;
   wtf_size_t expansion_row_set_index;
   wtf_size_t breakpoint_row_set_index;
   bool has_subsequent_children;
+
+  auto UpdateBreakpointRowSetIndex = [&](wtf_size_t row_set_index) {
+    if (row_set_index >= breakpoint_row_set_index)
+      return;
+
+    // We may have inserted a row-breakpoint due to an item running out of
+    // fragmentainer space.
+    // Clear this list if we select a different row-breakpoint.
+    out_of_fragmentainer_space_item_placement.clear();
+    breakpoint_row_set_index = row_set_index;
+  };
 
   LayoutUnit fragmentainer_space =
       FragmentainerSpaceAtBfcStart(ConstraintSpace());
@@ -3188,6 +3200,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   auto PlaceItems = [&]() {
     // Reset our state.
     result_and_offsets.clear();
+    out_of_fragmentainer_space_item_placement.clear();
     baseline_accumulator = BaselineAccumulator();
     max_row_expansion = LayoutUnit();
     expansion_row_set_index = kNotFound;
@@ -3199,7 +3212,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
     for (const auto& grid_item : grid_items.item_data) {
       // Grab the offsets and break-token (if present) for this child.
-      const auto& item_placement_data = *(placement_data_it++);
+      auto& item_placement_data = *(placement_data_it++);
       const NGBlockBreakToken* break_token = nullptr;
       if (child_break_token_it != child_break_tokens.end()) {
         if ((*child_break_token_it)->InputNode() == grid_item.node)
@@ -3256,8 +3269,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // item into the next fragmentainer.
       if (result->Status() != NGLayoutResult::kSuccess) {
         DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
-        breakpoint_row_set_index =
-            std::min(item_row_set_index, breakpoint_row_set_index);
+        UpdateBreakpointRowSetIndex(item_row_set_index);
+        out_of_fragmentainer_space_item_placement.push_back(
+            &item_placement_data);
         continue;
       }
 
@@ -3280,7 +3294,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         // The row may have a forced break, move it to the next fragmentainer.
         if (IsForcedBreakValue(ConstraintSpace(), break_between)) {
           container_builder_.SetHasForcedBreak();
-          breakpoint_row_set_index = item_row_set_index;
+          UpdateBreakpointRowSetIndex(item_row_set_index);
           continue;
         }
 
@@ -3291,7 +3305,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         if (!MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
                                 fragment_relative_block_offset, appeal_before,
                                 /* builder */ nullptr)) {
-          breakpoint_row_set_index = item_row_set_index;
+          UpdateBreakpointRowSetIndex(item_row_set_index);
 
           // We are choosing to add an early breakpoint at a row. Propagate our
           // space shortage to the column balancer.
@@ -3314,7 +3328,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
               // Forced row breaks should have been already handled, accept any
               // row with an "auto" break-between.
               if (row_break_between[index] == EBreakBetween::kAuto) {
-                breakpoint_row_set_index = index;
+                UpdateBreakpointRowSetIndex(index);
                 break;
               }
             }
@@ -3396,10 +3410,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     if (breakpoint_row_set_index == kNotFound)
       return false;
 
-    const LayoutUnit fragment_relative_row_offset =
+    LayoutUnit row_offset =
         layout_data->Rows()->GetSetOffset(breakpoint_row_set_index) +
-        (*row_offset_adjustments)[breakpoint_row_set_index] -
-        previous_consumed_block_size;
+        (*row_offset_adjustments)[breakpoint_row_set_index];
+
+    const LayoutUnit fragment_relative_row_offset =
+        row_offset - previous_consumed_block_size;
 
     // We may be within the initial column-balancing pass (where we have an
     // indefinite fragmentainer size). If we have a forced break, re-run
@@ -3417,12 +3433,20 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     if (row_offset_delta <= LayoutUnit())
       return false;
 
+    row_offset += row_offset_delta;
     *intrinsic_block_size += row_offset_delta;
     AdjustItemOffsets(breakpoint_row_set_index, row_offset_delta);
 
     auto* it = row_offset_adjustments->begin() + breakpoint_row_set_index;
     while (it != row_offset_adjustments->end())
       *(it++) += row_offset_delta;
+
+    // For any items that ran out of fragmentainer-space, make them block-start
+    // aligned (as they may be center/end aligned, and still not have enough
+    // space).
+    for (auto* item_placement_data : out_of_fragmentainer_space_item_placement)
+      item_placement_data->offset.block_offset = row_offset;
+
     return true;
   };
 
