@@ -8906,18 +8906,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.WorkerClientFound" enum="BooleanFound"
-    expires_after="2020-11-30">
-  <owner>pmonette@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Records a boolean indicating if a worker's client frame node could be found
-    when trying to connect the worker to a client frame, given its ID. This is
-    supposed to be always true if the performance manager has perfect coverage
-    of WebContents objects.
-  </summary>
-</histogram>
-
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
