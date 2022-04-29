@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -33,6 +34,7 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -807,6 +809,67 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   EXPECT_FALSE(main_document->IsErrorDocument());
   EXPECT_FALSE(params_capturer.is_error_page());
   EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
+}
+
+class NavigationMhtmlFencedFrameBrowserTest
+    : public NavigationMhtmlBrowserTest,
+      public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
+ public:
+  // Provides meaningful param names instead of /0 and /1.
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM:
+        return "ShadowDOM";
+      case blink::features::FencedFramesImplementationType::kMPArch:
+        return "MPArch";
+    }
+  }
+
+  NavigationMhtmlFencedFrameBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type",
+            GetParam() ==
+                    blink::features::FencedFramesImplementationType::kShadowDOM
+                ? "shadow_dom"
+                : "mparch"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationMhtmlFencedFrameBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &NavigationMhtmlFencedFrameBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(NavigationMhtmlFencedFrameBrowserTest,
+                       MhtmlCannotCreateFencedFrame) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://example.com"),
+      "<fencedframe src=\"http://example.com/found.html\"></fencedframe>");
+  mhtml_archive.AddHtmlDocument(GURL("http://example.com/found.html"),
+                                "<iframe></iframe>");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_document = main_frame_host();
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  // Ensure nothing was created for the fencedframe element. Only a single
+  // RenderFrameHost, the `main_document`, should exist.
+  int num_documents = 0;
+  main_document->ForEachRenderFrameHost(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfh) { num_documents++; }));
+  EXPECT_EQ(1, num_documents);
 }
 
 }  // namespace content
