@@ -57,6 +57,10 @@ class InputDelegateForCompositor {
   virtual void RootLayerStateMayHaveChanged() = 0;
 
   // Called to let the input handler know that a scrollbar for the given
+  // elementId has been added.
+  virtual void DidRegisterScrollbar(ElementId scroll_element_id,
+                                    ScrollbarOrientation orientation) = 0;
+  // Called to let the input handler know that a scrollbar for the given
   // elementId has been removed.
   virtual void DidUnregisterScrollbar(ElementId scroll_element_id,
                                       ScrollbarOrientation orientation) = 0;

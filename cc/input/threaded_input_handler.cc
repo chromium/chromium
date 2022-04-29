@@ -1124,6 +1124,12 @@ void ThreadedInputHandler::RootLayerStateMayHaveChanged() {
   UpdateRootLayerStateForSynchronousInputHandler();
 }
 
+void ThreadedInputHandler::DidRegisterScrollbar(
+    ElementId scroll_element_id,
+    ScrollbarOrientation orientation) {
+  scrollbar_controller_->DidRegisterScrollbar(scroll_element_id, orientation);
+}
+
 void ThreadedInputHandler::DidUnregisterScrollbar(
     ElementId scroll_element_id,
     ScrollbarOrientation orientation) {

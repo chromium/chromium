@@ -4317,6 +4317,13 @@ void LayerTreeHostImpl::RegisterScrollbarAnimationController(
                                                        scrollbar_opacity);
 }
 
+void LayerTreeHostImpl::DidRegisterScrollbarLayer(
+    ElementId scroll_element_id,
+    ScrollbarOrientation orientation) {
+  if (input_delegate_)
+    input_delegate_->DidRegisterScrollbar(scroll_element_id, orientation);
+}
+
 void LayerTreeHostImpl::DidUnregisterScrollbarLayer(
     ElementId scroll_element_id,
     ScrollbarOrientation orientation) {

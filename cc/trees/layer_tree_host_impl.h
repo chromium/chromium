@@ -500,6 +500,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void RegisterScrollbarAnimationController(ElementId scroll_element_id,
                                             float initial_opacity);
+  void DidRegisterScrollbarLayer(ElementId scroll_element_id,
+                                 ScrollbarOrientation orientation);
   void DidUnregisterScrollbarLayer(ElementId scroll_element_id,
                                    ScrollbarOrientation orientation);
   ScrollbarAnimationController* ScrollbarAnimationControllerForElementId(

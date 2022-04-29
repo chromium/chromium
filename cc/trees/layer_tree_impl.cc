@@ -2154,6 +2154,11 @@ void LayerTreeImpl::RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer) {
 
   *scrollbar_layer_id = scrollbar_layer->id();
 
+  if (IsActiveTree()) {
+    host_impl_->DidRegisterScrollbarLayer(scroll_element_id,
+                                          scrollbar_layer->orientation());
+  }
+
   if (IsActiveTree() && scrollbar_layer->is_overlay_scrollbar() &&
       scrollbar_layer->GetScrollbarAnimator() !=
           LayerTreeSettings::NO_ANIMATOR) {

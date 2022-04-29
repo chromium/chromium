@@ -10,6 +10,7 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar.h"
@@ -149,6 +150,8 @@ class CC_EXPORT ScrollbarController {
     return cancelable_autoscroll_task_ != nullptr;
   }
   bool ScrollbarScrollIsActive() const { return scrollbar_scroll_is_active_; }
+  void DidRegisterScrollbar(ElementId element_id,
+                            ScrollbarOrientation orientation);
   void DidUnregisterScrollbar(ElementId element_id,
                               ScrollbarOrientation orientation);
   ScrollbarLayerImplBase* ScrollbarLayer() const;
@@ -161,15 +164,30 @@ class CC_EXPORT ScrollbarController {
                            ThumbDragAfterJumpClick);
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           AutoscrollOnDeletedScrollbar);
 
   // "Autoscroll" here means the continuous scrolling that occurs when the
   // pointer is held down on a hit-testable area of the scrollbar such as an
   // arrows of the track itself.
   enum class AutoScrollDirection { AUTOSCROLL_FORWARD, AUTOSCROLL_BACKWARD };
 
+  enum class AutoScrollStatus {
+    // For when the 250ms delay before an autoscroll starts animating has not
+    // yet elapsed
+    AUTOSCROLL_WAITING,
+    // For when the delay has elapsed, but the autoscroll cannot animate for
+    // some reason (the scrollbar being unregistered)
+    AUTOSCROLL_READY,
+    // For when the autoscroll is animating
+    AUTOSCROLL_SCROLLING
+  };
+
   struct CC_EXPORT AutoScrollState {
     // Can only be either AUTOSCROLL_FORWARD or AUTOSCROLL_BACKWARD.
     AutoScrollDirection direction = AutoScrollDirection::AUTOSCROLL_FORWARD;
+
+    AutoScrollStatus status = AutoScrollStatus::AUTOSCROLL_WAITING;
 
     // Stores the autoscroll velocity. The sign is used to set the "direction".
     float velocity = 0.f;
@@ -209,12 +227,17 @@ class CC_EXPORT ScrollbarController {
     ScrollbarOrientation orientation;
   };
 
-  // "velocity" here is calculated based on the initial scroll delta (See
-  // InitialDeltaToAutoscrollVelocity). This value carries a "sign" which is
-  // needed to determine whether we should set up the autoscrolling in the
-  // forwards or the backwards direction.
-  void StartAutoScrollAnimation(float velocity,
-                                ScrollbarPart pressed_scrollbar_part);
+  // Posts an autoscroll task based on the autoscroll state, with the given
+  // delay
+  void PostAutoscrollTask(const base::TimeDelta delay);
+
+  // Initiates an autoscroll, setting the necessary status and starting the
+  // animation, if possible
+  void StartAutoScroll();
+
+  // Starts/restarts an autoscroll animation based off of the information in
+  // autoscroll_state_
+  void StartAutoScrollAnimation();
 
   // Returns the DSF based on whether use-zoom-for-dsf is enabled.
   float ScreenSpaceScaleFactor() const;
@@ -298,7 +321,7 @@ class CC_EXPORT ScrollbarController {
   absl::optional<CapturedScrollbarMetadata> captured_scrollbar_metadata_;
 
   // Holds information pertaining to autoscrolling. This member is empty if and
-  // only if an autoscroll is *not* in progress.
+  // only if an autoscroll is *not* in progress or scheduled
   absl::optional<AutoScrollState> autoscroll_state_;
 
   // Holds information pertaining to thumb drags. Useful while making decisions

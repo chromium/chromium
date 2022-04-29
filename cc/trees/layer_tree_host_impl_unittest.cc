@@ -13783,12 +13783,45 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
                   ->AutoscrollTaskIsScheduled());
 
   // If a call comes in to delete the scrollbar layer for which the autoscroll
-  // was scheduled, the autoscroll task should be cancelled.
-  host_impl_->DidUnregisterScrollbarLayer(scroll_layer->element_id(),
-                                          ScrollbarOrientation::VERTICAL);
-  EXPECT_FALSE(GetInputHandler()
-                   .scrollbar_controller_for_testing()
-                   ->AutoscrollTaskIsScheduled());
+  // was scheduled, the autoscroll task should set a waiting state instead of
+  // initiating an autoscroll, in case the scrollbar comes back.
+  layer_tree_impl->UnregisterScrollbar(scrollbar);
+
+  EXPECT_TRUE(GetInputHandler()
+                  .scrollbar_controller_for_testing()
+                  ->AutoscrollTaskIsScheduled());
+
+  GetInputHandler()
+      .scrollbar_controller_for_testing()
+      ->cancelable_autoscroll_task_->callback()
+      .Run();
+  GetInputHandler()
+      .scrollbar_controller_for_testing()
+      ->cancelable_autoscroll_task_.reset();
+  EXPECT_EQ(GetInputHandler()
+                .scrollbar_controller_for_testing()
+                ->autoscroll_state_->status,
+            ScrollbarController::AutoScrollStatus::AUTOSCROLL_READY);
+
+  // Re-register the scrollbar. An autoscroll task should be posted that
+  // actually starts a scroll animation
+  layer_tree_impl->RegisterScrollbar(scrollbar);
+
+  EXPECT_TRUE(GetInputHandler()
+                  .scrollbar_controller_for_testing()
+                  ->AutoscrollTaskIsScheduled());
+
+  GetInputHandler()
+      .scrollbar_controller_for_testing()
+      ->cancelable_autoscroll_task_->callback()
+      .Run();
+  GetInputHandler()
+      .scrollbar_controller_for_testing()
+      ->cancelable_autoscroll_task_.reset();
+  EXPECT_EQ(GetInputHandler()
+                .scrollbar_controller_for_testing()
+                ->autoscroll_state_->status,
+            ScrollbarController::AutoScrollStatus::AUTOSCROLL_SCROLLING);
 
   // End the scroll.
   GetInputHandler().MouseUp(gfx::PointF(350, 580));
@@ -14460,10 +14493,16 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     // existing scroll offset animations are aborted and a new autoscroll
     // animation is created. Test passes if unit test doesn't hit any DCHECK
     // failures.
+    GetInputHandler().scrollbar_controller_for_testing()->autoscroll_state_ =
+        ScrollbarController::AutoScrollState();
     GetInputHandler()
         .scrollbar_controller_for_testing()
-        ->StartAutoScrollAnimation(/*scroll_velocity*/ 800,
-                                   ScrollbarPart::FORWARD_TRACK);
+        ->autoscroll_state_->velocity = 800;
+    GetInputHandler()
+        .scrollbar_controller_for_testing()
+        ->autoscroll_state_->pressed_scrollbar_part =
+        ScrollbarPart::FORWARD_TRACK;
+    GetInputHandler().scrollbar_controller_for_testing()->StartAutoScroll();
     EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
   }
 

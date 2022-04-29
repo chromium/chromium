@@ -119,6 +119,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   void DidCommit() override;
   void DidActivatePendingTree() override;
   void RootLayerStateMayHaveChanged() override;
+  void DidRegisterScrollbar(ElementId scroll_element_id,
+                            ScrollbarOrientation orientation) override;
   void DidUnregisterScrollbar(ElementId scroll_element_id,
                               ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished() override;
