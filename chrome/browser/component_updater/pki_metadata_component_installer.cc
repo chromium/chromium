@@ -207,7 +207,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     network_service->SetCtEnforcementEnabled(
         false,
         base::BindOnce(
-            &PKIMetadataComponentInstallerService::NotifyPKIMetadataConfigured,
+            &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
             weak_factory_.GetWeakPtr()));
     return;
   }
@@ -293,7 +293,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
   base::RepeatingClosure done_callback = BarrierClosure(
       /*num_closures=*/2,
       base::BindOnce(
-          &PKIMetadataComponentInstallerService::NotifyPKIMetadataConfigured,
+          &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
           weak_factory_.GetWeakPtr()));
   base::Time update_time =
       base::Time::UnixEpoch() +
@@ -356,10 +356,10 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
   network_service->UpdateKeyPinsList(std::move(pinlist_ptr), update_time);
 }
 
-void PKIMetadataComponentInstallerService::NotifyPKIMetadataConfigured() {
+void PKIMetadataComponentInstallerService::NotifyCTLogListConfigured() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observers_) {
-    observer.OnPKIMetadataConfigured();
+    observer.OnCTLogListConfigured();
   }
 }
 

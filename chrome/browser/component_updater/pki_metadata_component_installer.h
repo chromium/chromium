@@ -23,8 +23,8 @@ class PKIMetadataComponentInstallerService final {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called after the PKI metadata was configured.
-    virtual void OnPKIMetadataConfigured() = 0;
+    // Called after the CT Log list data is configured.
+    virtual void OnCTLogListConfigured() = 0;
   };
 
   // Returns the live server instance, creating it if it does not exist.
@@ -62,8 +62,8 @@ class PKIMetadataComponentInstallerService final {
   // |kp_config_bytes| should be a serialized KPConfig proto message.
   void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
 
-  // Notifies all observers that the PKI metadata has been configured.
-  void NotifyPKIMetadataConfigured();
+  // Notifies all observers that the CT Log list data has been configured.
+  void NotifyCTLogListConfigured();
 
   // The install folder path. An empty path if the component is not ready.
   base::FilePath install_dir_;

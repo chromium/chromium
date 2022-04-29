@@ -91,7 +91,7 @@ class PKIMetadataComponentUpdaterTest
   }
 
  private:
-  void OnPKIMetadataConfigured() override {
+  void OnCTLogListConfigured() override {
     ++pki_metadata_configured_times_;
     if (pki_metadata_config_closure_ &&
         pki_metadata_configured_times_ >=
