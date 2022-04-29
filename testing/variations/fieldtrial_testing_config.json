@@ -6087,7 +6087,7 @@
                     "name": "Enabled",
                     "params": {
                         "FetchBehavior": "background-and-on-demand",
-                        "RandomQueryProbability": "0.0197"
+                        "RandomQueryProbability": "0.0394"
                     },
                     "enable_features": [
                         "NetworkTimeServiceQuerying"
