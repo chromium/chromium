@@ -217,9 +217,11 @@ void ContentRendererClientImpl::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemPropertiesVector key_systems;
 #if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WIDEVINE)
   cdm::AddAndroidWidevine(&key_systems);
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
   cdm::AddAndroidPlatformKeySystems(&key_systems);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   std::move(cb).Run(std::move(key_systems));
 }
 

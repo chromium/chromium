@@ -351,7 +351,7 @@ void OnKeySystemSupportUpdated(
 }  // namespace
 
 void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_WIDEVINE)
   KeySystemPropertiesVector key_systems;
   cdm::AddAndroidWidevine(&key_systems);
   std::move(cb).Run(std::move(key_systems));
