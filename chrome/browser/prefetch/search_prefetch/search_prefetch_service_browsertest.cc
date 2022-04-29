@@ -3148,7 +3148,7 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefetchIsServed) {
+                       DISABLED_NavigationPrefetchIsServed) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
