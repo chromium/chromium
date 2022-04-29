@@ -203,7 +203,8 @@ PaintPreviewRecorderImpl::PaintPreviewRecorderImpl(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       is_painting_preview_(false),
-      is_main_frame_(render_frame->IsMainFrame()) {
+      is_main_frame_(render_frame->IsMainFrame() &&
+                     !render_frame->IsInFencedFrameTree()) {
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
       base::BindRepeating(&PaintPreviewRecorderImpl::BindPaintPreviewRecorder,
                           weak_ptr_factory_.GetWeakPtr()));

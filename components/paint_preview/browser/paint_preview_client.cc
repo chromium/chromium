@@ -371,7 +371,7 @@ void PaintPreviewClient::RenderFrameDeleted(
   if (!maybe_token.has_value())
     return;
 
-  bool is_main_frame = render_frame_host->GetParent() == nullptr;
+  bool is_main_frame = render_frame_host->GetParentOrOuterDocument() == nullptr;
   base::UnguessableToken frame_guid = maybe_token.value();
   auto it = pending_previews_on_subframe_.find(frame_guid);
   if (it == pending_previews_on_subframe_.end())
@@ -467,6 +467,7 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   // If the render frame host navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
   auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
+
   if (!render_frame_host ||
       render_frame_host->GetEmbeddingToken().value_or(
           base::UnguessableToken::Null()) != frame_guid ||
