@@ -410,6 +410,7 @@ bool SharedImageBackingOzone::BeginAccess(
       // Wait on fence only if reading from stream different than current
       // stream.
       if (fence.first != access_stream) {
+        DCHECK(!fence.second.is_null());
         fences->emplace_back(std::move(fence.second));
       }
     }
@@ -461,7 +462,9 @@ void SharedImageBackingOzone::EndAccess(bool readonly,
   }
 
   if (readonly) {
-    read_fences_[access_stream] = std::move(fence);
+    if (!fence.is_null()) {
+      read_fences_[access_stream] = std::move(fence);
+    }
   } else {
     DCHECK(read_fences_.find(access_stream) == read_fences_.end());
     write_fence_ = std::move(fence);
