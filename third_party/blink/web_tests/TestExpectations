@@ -5495,7 +5495,6 @@ crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-f
 crbug.com/1048149 [ Mac ] http/tests/inspector-protocol/emulation/emulation-oopifs.js [ Crash ]
 crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/calendar-picker-appearance.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/calendar-picker-touch-operations.html [ Crash Pass ]
-crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance-step.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-appearance-zoom125.html [ Crash Pass ]
@@ -7716,3 +7715,13 @@ crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-dire
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 crbug.com/1289759 [ Win ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-interval.html [ Failure Pass ]
+
+# Sheriff 2022-04-29
+crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
+crbug.com/1321229 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Skip ]
+crbug.com/1321229 fast/forms/calendar-picker/date-picker-input-change-events.html [ Skip ]
+crbug.com/1321229 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Skip ]
+crbug.com/1321229 fast/forms/month/month-picker-input-change-events.html [ Skip ]
+crbug.com/1321229 fast/forms/time/time-picker-input-change-events.html [ Skip ]
+crbug.com/1321229 fast/forms/week/week-picker-input-change-events.html [ Skip ]
+crbug.com/1321245 paint/invalidation/svg/image-with-clip-path.svg [ Skip ]
