@@ -129,6 +129,7 @@ void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
     const std::string& intercepted_account_level_policy_value) {
@@ -166,6 +167,7 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
          base::EndsWith(intercepted_account_level_policy_value,
                         "keep_existing_data");
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
                                                bool created) {
@@ -176,6 +178,6 @@ void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
       created);
 }
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace signin_util
