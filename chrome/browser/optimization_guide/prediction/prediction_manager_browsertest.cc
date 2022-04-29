@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/component_updater/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -315,11 +316,11 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       RemoteFetchingPrefDisabled) {
+                       ComponentUpdatesPrefDisabled) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
-  browser()->profile()->GetPrefs()->SetBoolean(
-      optimization_guide::prefs::kOptimizationGuideFetchingEnabled, false);
+  g_browser_process->local_state()->SetBoolean(
+      ::prefs::kComponentUpdatesEnabled, false);
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService(&model_file_observer);

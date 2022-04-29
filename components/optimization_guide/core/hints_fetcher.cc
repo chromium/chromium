@@ -94,7 +94,7 @@ HintsFetcher::HintsFetcher(
   CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme) ||
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kOptimizationGuideServiceGetHintsURL));
-  DCHECK(features::IsRemoteFetchingEnabled(pref_service));
+  DCHECK(features::IsRemoteFetchingEnabled());
 }
 
 HintsFetcher::~HintsFetcher() {

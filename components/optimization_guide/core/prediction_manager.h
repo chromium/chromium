@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
@@ -53,8 +54,11 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // BackgroundDownloadService is only available once the profile is fully
   // initialized and that cannot be done as part of |Initialize|. Get a provider
   // to retrieve the service when it is needed.
-  typedef base::OnceCallback<download::BackgroundDownloadService*(void)>
-      BackgroundDownloadServiceProvider;
+  using BackgroundDownloadServiceProvider =
+      base::OnceCallback<download::BackgroundDownloadService*(void)>;
+
+  // Callback to whether component updates are enabled for the browser.
+  using ComponentUpdatesEnabledProvider = base::RepeatingCallback<bool(void)>;
 
   PredictionManager(
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
@@ -64,7 +68,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
       const std::string& application_locale,
       const base::FilePath& models_dir_path,
       OptimizationGuideLogger* optimization_guide_logger,
-      BackgroundDownloadServiceProvider background_dowload_service_provider);
+      BackgroundDownloadServiceProvider background_download_service_provider,
+      ComponentUpdatesEnabledProvider component_updates_enabled_provider);
 
   PredictionManager(const PredictionManager&) = delete;
   PredictionManager& operator=(const PredictionManager&) = delete;
@@ -285,6 +290,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // The repeating callback that will be used to determine if component updates
+  // are enabled.
+  ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
 
   // Time the prediction manager got initialized.
   base::TimeTicks init_time_;

@@ -49,10 +49,6 @@ const char kPendingHintsProcessingVersion[] =
 const char kPreviouslyRegisteredOptimizationTypes[] =
     "optimization_guide.previously_registered_optimization_types";
 
-// A boolean pref that stores whether fetching is enabled. True by default.
-const char kOptimizationGuideFetchingEnabled[] =
-    "optimization_guide.fetching_enabled";
-
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
@@ -76,7 +72,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kPreviouslyRegisteredOptimizationTypes,
                                    PrefRegistry::LOSSY_PREF);
-  registry->RegisterBooleanPref(kOptimizationGuideFetchingEnabled, true);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
 }

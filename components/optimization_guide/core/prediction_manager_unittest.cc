@@ -349,6 +349,7 @@ class TestPredictionManager : public PredictionManager {
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
+      ComponentUpdatesEnabledProvider component_updates_enabled_provider,
       bool off_the_record,
       const std::string& application_locale,
       const base::FilePath& models_dir_path)
@@ -361,7 +362,8 @@ class TestPredictionManager : public PredictionManager {
             models_dir_path,
             &optimization_guide_logger_,
             /*background_download_service_provider=*/
-            base::OnceCallback<download::BackgroundDownloadService*()>()) {}
+            base::OnceCallback<download::BackgroundDownloadService*()>(),
+            component_updates_enabled_provider) {}
 
   ~TestPredictionManager() override = default;
 
@@ -403,7 +405,11 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     model_and_features_store_ = CreateModelAndHostModelFeaturesStore();
     prediction_manager_ = std::make_unique<TestPredictionManager>(
         model_and_features_store_->AsWeakPtr(), url_loader_factory_,
-        pref_service_.get(), false, "en-US", temp_dir());
+        pref_service_.get(),
+        base::BindRepeating(
+            &PredictionManagerTestBase::AreComponentUpdatesEnabled,
+            base::Unretained(this)),
+        false, "en-US", temp_dir());
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
@@ -473,10 +479,11 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  void SetOptimizationGuideFetchingPrefEnabled(bool enabled) {
-    pref_service_->SetBoolean(prefs::kOptimizationGuideFetchingEnabled,
-                              enabled);
+  void SetComponentUpdatesPrefEnabled(bool enabled) {
+    component_updates_enabled_ = enabled;
   }
+
+  bool AreComponentUpdatesEnabled() const { return component_updates_enabled_; }
 
  protected:
   // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
@@ -494,6 +501,8 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
+  bool component_updates_enabled_ = true;
 };
 
 class PredictionManagerRemoteFetchingDisabledTest
@@ -567,7 +576,7 @@ class PredictionManagerTest : public PredictionManagerTestBase {
 };
 
 TEST_F(PredictionManagerTest, RemoteFetchingPrefDisabled) {
-  SetOptimizationGuideFetchingPrefEnabled(false);
+  SetComponentUpdatesPrefEnabled(false);
   CreatePredictionManager();
 
   prediction_manager()->SetPredictionModelFetcherForTesting(

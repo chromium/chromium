@@ -187,6 +187,8 @@ class OptimizationGuideKeyedService
 
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 
+  bool ComponentUpdatesEnabledProvider() const;
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.

@@ -16,10 +16,8 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -266,10 +264,8 @@ bool IsOptimizationHintsEnabled() {
   return base::FeatureList::IsEnabled(kOptimizationHints);
 }
 
-bool IsRemoteFetchingEnabled(PrefService* pref_service) {
-  return base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching) &&
-         pref_service->GetBoolean(
-             optimization_guide::prefs::kOptimizationGuideFetchingEnabled);
+bool IsRemoteFetchingEnabled() {
+  return base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching);
 }
 
 bool IsPushNotificationsEnabled() {

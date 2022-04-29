@@ -40,7 +40,7 @@ bool IsUserPermittedToFetchFromRemoteOptimizationGuide(
     return true;
   }
 
-  if (!features::IsRemoteFetchingEnabled(pref_service))
+  if (!features::IsRemoteFetchingEnabled())
     return false;
 
   if (features::IsRemoteFetchingExplicitlyAllowedForPerformanceInfo())

@@ -5,6 +5,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
+#include "components/component_updater/pref_names.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -16,11 +17,13 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/hashing.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -174,6 +177,11 @@ class PredictionManagerTestBase : public PlatformTest {
     expected_field_trial_name_hashes_ = expected_field_trial_name_hashes;
   }
 
+  void SetComponentUpdatesEnabled(bool enabled) {
+    GetApplicationContext()->GetLocalState()->SetBoolean(
+        ::prefs::kComponentUpdatesEnabled, enabled);
+  }
+
  protected:
   virtual void InitializeFeatureList() = 0;
 
@@ -270,6 +278,7 @@ class PredictionManagerTestBase : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
+  IOSChromeScopedTestingLocalState local_state_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
@@ -297,11 +306,10 @@ class PredictionManagerTest : public PredictionManagerTestBase {
   }
 };
 
-TEST_F(PredictionManagerTest, RemoteFetchingPrefDisabled) {
+TEST_F(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
-  browser_state_->GetPrefs()->SetBoolean(
-      optimization_guide::prefs::kOptimizationGuideFetchingEnabled, false);
+  SetComponentUpdatesEnabled(false);
   base::HistogramTester histogram_tester;
   RegisterWithKeyedService(&model_file_observer);
   task_environment_.RunUntilIdle();

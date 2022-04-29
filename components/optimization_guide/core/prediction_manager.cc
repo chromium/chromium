@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -139,9 +140,9 @@ void RecordLifecycleState(proto::OptimizationTarget optimization_target,
 
 // Returns whether models should be fetched from the
 // remote Optimization Guide Service.
-bool ShouldFetchModels(bool off_the_record, PrefService* pref_service) {
-  return features::IsRemoteFetchingEnabled(pref_service) && !off_the_record &&
-         features::IsModelDownloadingEnabled();
+bool ShouldFetchModels(bool off_the_record, bool component_updates_enabled) {
+  return features::IsRemoteFetchingEnabled() && !off_the_record &&
+         features::IsModelDownloadingEnabled() && component_updates_enabled;
 }
 
 // Returns whether the model metadata proto is on the server allowlist.
@@ -183,12 +184,14 @@ PredictionManager::PredictionManager(
     const std::string& application_locale,
     const base::FilePath& models_dir_path,
     OptimizationGuideLogger* optimization_guide_logger,
-    BackgroundDownloadServiceProvider background_download_service_provider)
+    BackgroundDownloadServiceProvider background_download_service_provider,
+    ComponentUpdatesEnabledProvider component_updates_enabled_provider)
     : prediction_model_download_manager_(nullptr),
       model_and_features_store_(model_and_features_store),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
       pref_service_(pref_service),
+      component_updates_enabled_provider_(component_updates_enabled_provider),
       clock_(base::DefaultClock::GetInstance()),
       off_the_record_(off_the_record),
       application_locale_(application_locale),
@@ -816,7 +819,8 @@ void PredictionManager::StoreLoadedModelInfo(
 }
 
 void PredictionManager::MaybeScheduleFirstModelFetch() {
-  if (!ShouldFetchModels(off_the_record_, pref_service_))
+  if (!ShouldFetchModels(off_the_record_,
+                         component_updates_enabled_provider_.Run()))
     return;
 
   // Add a slight delay to allow the rest of the browser startup process to

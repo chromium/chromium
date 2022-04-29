@@ -67,7 +67,6 @@ source_set("policy") {
     "//components/history/core/common",
     "//components/keyed_service/ios",
     "//components/metrics",
-    "//components/optimization_guide/core",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common",

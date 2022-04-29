@@ -770,6 +770,10 @@ const char kStabilityRendererLaunchCount[] =
 const char kTimeOnOobe[] = "settings.time_on_oobe";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2022.
+const char kOptimizationGuideRemoteFetchingEnabled[] =
+    "optimization_guide.remote_fetching_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1012,6 +1016,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kTimeOnOobe, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
 }
 
 }  // namespace
@@ -1968,6 +1974,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 04/2022
   profile_prefs->ClearPref(kTimeOnOobe);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 04/2022
+  profile_prefs->ClearPref(kOptimizationGuideRemoteFetchingEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -136,13 +136,15 @@ const char kSigninBottomSheetShownCount[] =
 // Deprecated 03/2022
 const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 
-// Depreated 04/2022
-const char kFRETrialGroupPrefName[] = "fre_refactoring.trial_group";
-}
-
 // Deprecated 03/2022
 const char kPrefReadingListMessagesNeverShow[] =
     "reading_list_message_never_show";
+
+// Deprecated 04/2022
+const char kFRETrialGroupPrefName[] = "fre_refactoring.trial_group";
+const char kOptimizationGuideRemoteFetchingEnabled[] =
+    "optimization_guide.fetching_enabled";
+}  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
@@ -325,6 +327,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kSigninAllowedByPolicy, true);
 
   registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
+
+  registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -401,4 +405,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   if (prefs->FindPreference(kPrefReadingListMessagesNeverShow)) {
     prefs->ClearPref(kPrefReadingListMessagesNeverShow);
   }
+
+  // Added 4/2022.
+  prefs->ClearPref(kOptimizationGuideRemoteFetchingEnabled);
 }

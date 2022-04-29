@@ -413,6 +413,9 @@
       }
     ]
   },
+  "OptimizationGuideFetchingEnabled": {
+    "reason_for_missing_test": "Policy was removed"
+  },
   "PasswordManagerEnabled": {
     "os": [
       "ios"
@@ -830,36 +833,6 @@
                 ]
               }
             ]
-          }
-        }
-      }
-    ]
-  },
-
-  "OptimizationGuideFetchingEnabled": {
-    "os": [
-      "ios"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "OptimizationGuideFetchingEnabled": true
-        },
-        "prefs": {
-          "optimization_guide.fetching_enabled": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "OptimizationGuideFetchingEnabled": false
-        },
-        "prefs": {
-          "optimization_guide.fetching_enabled": {
-            "location": "user_profile",
-            "value": false
           }
         }
       }

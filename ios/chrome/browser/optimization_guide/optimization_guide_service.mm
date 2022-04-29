@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
+#import "components/component_updater/pref_names.h"
 #import "components/optimization_guide/core/command_line_top_host_provider.h"
 #import "components/optimization_guide/core/hints_processing_util.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
@@ -21,6 +22,7 @@
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/core/top_host_provider.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -102,7 +104,11 @@ OptimizationGuideService::OptimizationGuideService(
             prediction_model_and_features_store, url_loader_factory,
             pref_service, off_the_record_, application_locale, models_dir,
             optimization_guide_logger_.get(),
-            std::move(background_download_service_provider));
+            std::move(background_download_service_provider),
+            base::BindRepeating([]() {
+              return GetApplicationContext()->GetLocalState()->GetBoolean(
+                  ::prefs::kComponentUpdatesEnabled);
+            }));
   }
 }
 

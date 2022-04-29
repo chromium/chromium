@@ -2163,7 +2163,7 @@
 
       If the policy is left unset, Journeys will be visible at chrome://history/journeys by default and users can change the visibility of Journeys.
 
-      Please note, if <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME">OptimizationGuideFetchingEnabled</ph> policy is set to Disabled, but <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME">HistoryClustersVisible</ph> is set to Enabled or unset, Journeys will still be available at chrome://history/journeys, but may be absent from the omnibox, and less relevant to the user.
+      Please note, if <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph> policy is set to Disabled, but <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME">HistoryClustersVisible</ph> is set to Enabled or unset, Journeys will still be available at chrome://history/journeys, but may be absent from the omnibox, and less relevant to the user.
       ''',
     },
     {
@@ -30636,7 +30636,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'owners': ['file://components/optimization_guide/OWNERS', 'sophiechang@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['android:101-', 'chrome.*:101-', 'chrome_os:101-', 'ios:101-'],
+      'supported_on': ['android:101-103', 'chrome.*:101-103', 'chrome_os:101-103', 'ios:101-103'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -30652,6 +30652,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'default': True,
+      'deprecated': True,
       'example_value': True,
       'id': 963,
       'caption': '''Enable Optimization Guide Fetching''',

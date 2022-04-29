@@ -17,7 +17,6 @@
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -82,9 +81,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { policy::key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,
-    base::Value::Type::BOOLEAN },
-  { policy::key::kOptimizationGuideFetchingEnabled,
-    optimization_guide::prefs::kOptimizationGuideFetchingEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kPolicyRefreshRate,
     policy::policy_prefs::kUserPolicyRefreshRate,

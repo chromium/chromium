@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -21,17 +20,12 @@ class OptimizationGuidePermissionsUtilTest : public testing::Test {
   void SetUp() override {
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_.registry());
-    prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void SetUrlKeyedAnonymizedDataCollectionEnabled(bool enabled) {
     pref_service_.SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
-  }
-
-  void SetOptimizationGuideFetchingPrefEnabled(bool enabled) {
-    pref_service_.SetBoolean(prefs::kOptimizationGuideFetchingEnabled, enabled);
   }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -100,15 +94,6 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
   scoped_feature_list.InitWithFeatures(
       {}, {optimization_guide::features::kRemoteOptimizationGuideFetching});
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-
-  EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
-      /*is_off_the_record=*/false, pref_service()));
-}
-
-TEST_F(OptimizationGuidePermissionsUtilTest,
-       IsUserPermittedToFetchHintsAllFeaturesEnabledButPrefDisabled) {
-  SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  SetOptimizationGuideFetchingPrefEnabled(false);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));
