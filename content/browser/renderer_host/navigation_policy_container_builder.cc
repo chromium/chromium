@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/policy_container_navigation_bundle.h"
+#include "content/browser/renderer_host/navigation_policy_container_builder.h"
 
 #include <utility>
 
@@ -67,7 +67,7 @@ std::unique_ptr<PolicyContainerPolicies> GetHistoryPolicies(
 
 }  // namespace
 
-PolicyContainerNavigationBundle::PolicyContainerNavigationBundle(
+NavigationPolicyContainerBuilder::NavigationPolicyContainerBuilder(
     RenderFrameHostImpl* parent,
     const blink::LocalFrameToken* initiator_frame_token,
     const FrameNavigationEntry* history_entry)
@@ -76,36 +76,36 @@ PolicyContainerNavigationBundle::PolicyContainerNavigationBundle(
       history_policies_(GetHistoryPolicies(history_entry)),
       delivered_policies_(std::make_unique<PolicyContainerPolicies>()) {}
 
-PolicyContainerNavigationBundle::~PolicyContainerNavigationBundle() = default;
+NavigationPolicyContainerBuilder::~NavigationPolicyContainerBuilder() = default;
 
 const PolicyContainerPolicies*
-PolicyContainerNavigationBundle::InitiatorPolicies() const {
+NavigationPolicyContainerBuilder::InitiatorPolicies() const {
   return initiator_policies_.get();
 }
 
-const PolicyContainerPolicies* PolicyContainerNavigationBundle::ParentPolicies()
-    const {
+const PolicyContainerPolicies*
+NavigationPolicyContainerBuilder::ParentPolicies() const {
   return parent_policies_.get();
 }
 
 const PolicyContainerPolicies*
-PolicyContainerNavigationBundle::HistoryPolicies() const {
+NavigationPolicyContainerBuilder::HistoryPolicies() const {
   return history_policies_.get();
 }
 
-void PolicyContainerNavigationBundle::SetIPAddressSpace(
+void NavigationPolicyContainerBuilder::SetIPAddressSpace(
     network::mojom::IPAddressSpace address_space) {
   DCHECK(!HasComputedPolicies());
   delivered_policies_->ip_address_space = address_space;
 }
 
-void PolicyContainerNavigationBundle::SetIsOriginPotentiallyTrustworthy(
+void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
     bool value) {
   DCHECK(!HasComputedPolicies());
   delivered_policies_->is_web_secure_context = value;
 }
 
-void PolicyContainerNavigationBundle::AddContentSecurityPolicy(
+void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(
     network::mojom::ContentSecurityPolicyPtr policy) {
   DCHECK(!HasComputedPolicies());
   DCHECK(policy);
@@ -113,21 +113,21 @@ void PolicyContainerNavigationBundle::AddContentSecurityPolicy(
   delivered_policies_->content_security_policies.push_back(std::move(policy));
 }
 
-void PolicyContainerNavigationBundle::AddContentSecurityPolicies(
+void NavigationPolicyContainerBuilder::AddContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
   DCHECK(!HasComputedPolicies());
 
   delivered_policies_->AddContentSecurityPolicies(std::move(policies));
 }
 
-void PolicyContainerNavigationBundle::SetCrossOriginOpenerPolicy(
+void NavigationPolicyContainerBuilder::SetCrossOriginOpenerPolicy(
     network::CrossOriginOpenerPolicy coop) {
   DCHECK(!HasComputedPolicies());
 
   delivered_policies_->cross_origin_opener_policy = coop;
 }
 
-void PolicyContainerNavigationBundle::SetCrossOriginEmbedderPolicy(
+void NavigationPolicyContainerBuilder::SetCrossOriginEmbedderPolicy(
     network::CrossOriginEmbedderPolicy coep) {
   DCHECK(!HasComputedPolicies());
 
@@ -135,13 +135,13 @@ void PolicyContainerNavigationBundle::SetCrossOriginEmbedderPolicy(
 }
 
 const PolicyContainerPolicies&
-PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
+NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
 
   return *delivered_policies_;
 }
 
-void PolicyContainerNavigationBundle::ComputePoliciesForError(
+void NavigationPolicyContainerBuilder::ComputePoliciesForError(
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags) {
   // The decision to commit an error page can happen after receiving the
@@ -168,7 +168,7 @@ void PolicyContainerNavigationBundle::ComputePoliciesForError(
   DCHECK(HasComputedPolicies());
 }
 
-void PolicyContainerNavigationBundle::ComputeIsWebSecureContext() {
+void NavigationPolicyContainerBuilder::ComputeIsWebSecureContext() {
   DCHECK(!HasComputedPolicies());
 
   if (!parent_policies_) {
@@ -181,7 +181,7 @@ void PolicyContainerNavigationBundle::ComputeIsWebSecureContext() {
       parent_policies_->is_web_secure_context;
 }
 
-void PolicyContainerNavigationBundle::ComputeSandboxFlags(
+void NavigationPolicyContainerBuilder::ComputeSandboxFlags(
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags,
     PolicyContainerPolicies* policies) {
@@ -209,7 +209,7 @@ void PolicyContainerNavigationBundle::ComputeSandboxFlags(
 }
 
 std::unique_ptr<PolicyContainerPolicies>
-PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
+NavigationPolicyContainerBuilder::IncorporateDeliveredPolicies(
     const GURL& url,
     std::unique_ptr<PolicyContainerPolicies> policies) {
   // Delivered content security policies must be appended.
@@ -226,7 +226,7 @@ PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
 }
 
 std::unique_ptr<PolicyContainerPolicies>
-PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
+NavigationPolicyContainerBuilder::ComputeInheritedPolicies(const GURL& url) {
   DCHECK(url.SchemeIsLocal()) << url << " should not inherit policies";
 
   if (url.IsAboutSrcdoc()) {
@@ -243,7 +243,7 @@ PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
 }
 
 std::unique_ptr<PolicyContainerPolicies>
-PolicyContainerNavigationBundle::ComputeFinalPolicies(
+NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     const GURL& url,
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags) {
@@ -269,7 +269,7 @@ PolicyContainerNavigationBundle::ComputeFinalPolicies(
   return policies;
 }
 
-void PolicyContainerNavigationBundle::ComputePolicies(
+void NavigationPolicyContainerBuilder::ComputePolicies(
     const GURL& url,
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags) {
@@ -279,18 +279,18 @@ void PolicyContainerNavigationBundle::ComputePolicies(
       ComputeFinalPolicies(url, is_inside_mhtml, frame_sandbox_flags));
 }
 
-bool PolicyContainerNavigationBundle::HasComputedPolicies() const {
+bool NavigationPolicyContainerBuilder::HasComputedPolicies() const {
   return host_ != nullptr;
 }
 
-void PolicyContainerNavigationBundle::SetFinalPolicies(
+void NavigationPolicyContainerBuilder::SetFinalPolicies(
     std::unique_ptr<PolicyContainerPolicies> policies) {
   DCHECK(!HasComputedPolicies());
 
   host_ = base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
 }
 
-const PolicyContainerPolicies& PolicyContainerNavigationBundle::FinalPolicies()
+const PolicyContainerPolicies& NavigationPolicyContainerBuilder::FinalPolicies()
     const {
   DCHECK(HasComputedPolicies());
 
@@ -298,20 +298,20 @@ const PolicyContainerPolicies& PolicyContainerNavigationBundle::FinalPolicies()
 }
 
 blink::mojom::PolicyContainerPtr
-PolicyContainerNavigationBundle::CreatePolicyContainerForBlink() {
+NavigationPolicyContainerBuilder::CreatePolicyContainerForBlink() {
   DCHECK(HasComputedPolicies());
 
   return host_->CreatePolicyContainerForBlink();
 }
 
 scoped_refptr<PolicyContainerHost>
-PolicyContainerNavigationBundle::TakePolicyContainerHost() && {
+NavigationPolicyContainerBuilder::TakePolicyContainerHost() && {
   DCHECK(HasComputedPolicies());
 
   return std::move(host_);
 }
 
-void PolicyContainerNavigationBundle::ResetForCrossDocumentRestart() {
+void NavigationPolicyContainerBuilder::ResetForCrossDocumentRestart() {
   host_ = nullptr;
   delivered_policies_ = std::make_unique<PolicyContainerPolicies>();
 }
