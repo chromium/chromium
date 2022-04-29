@@ -638,7 +638,9 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
       if (features::kAutofillSharedAutofillRelaxedParam.Get()) {
         return field.origin == triggered_origin ||
-               HasSharedAutofillPermission(renderer_form->host_frame);
+               (HasSharedAutofillPermission(renderer_form->host_frame) &&
+                (field.origin != main_origin ||
+                 field_type != CREDIT_CARD_NUMBER));
       } else {
         return field.origin == triggered_origin ||
                (field.origin == main_origin &&
