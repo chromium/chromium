@@ -651,6 +651,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageMinMagnitudeForVisitNotFound"
+    units="ms" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the magnitude of the visit times between the visit that data is
+    supposed to be stored for and the closest visit for the same URL if the
+    specific visit, as identified by URL and time, was not found when storing
+    the data for a particular visit. This may be recorded multiple times per
+    page load as different pieces of data are stored for a visit separately
+    (i.e. related searches, model annotations, etc.).
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
     enum="OptimizationGuidePageContentAnnotationsStorageStatus"
     expires_after="M106">
