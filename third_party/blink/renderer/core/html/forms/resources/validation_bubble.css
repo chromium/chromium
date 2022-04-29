@@ -15,7 +15,6 @@
   :root {
     --bubble-background:  #3B3B3B;
     --bubble-border-color: #858585;
-    --box-shadow-color: rgba(255, 255, 255, 0.2);
     --submessage-color: #efefef;
   }
 }
