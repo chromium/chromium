@@ -358,6 +358,10 @@ const base::Feature kCrostiniImeSupport{"CrostiniImeSupport",
 const base::Feature kCrostiniVirtualKeyboardSupport{
     "CrostiniVirtualKeyboardSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables generic guest OS installer infrastructure.
+const base::Feature kGuestOSGenericInstaller{"GuestOSGenericInstaller",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables support for third party VMs.
 const base::Feature kBruschetta{"Bruschetta",
                                 base::FEATURE_DISABLED_BY_DEFAULT};

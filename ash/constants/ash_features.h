@@ -145,6 +145,8 @@ extern const base::Feature kCrostiniMultiContainer;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCrostiniImeSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniVirtualKeyboardSupport;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kGuestOSGenericInstaller;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBruschetta;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2AlwaysUseActiveEligibleHosts;
