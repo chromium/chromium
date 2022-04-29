@@ -45,7 +45,7 @@ class TestAggregationServiceImpl : public AggregationServiceStorageContext,
   // TestAggregationService:
   void SetDisablePayloadEncryption(bool should_disable) override;
   void SetPublicKeys(const GURL& url,
-                     const std::string& json_string,
+                     const base::FilePath& json_file,
                      base::OnceCallback<void(bool)> callback) override;
   void AssembleReport(
       AssembleRequest request,

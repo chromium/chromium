@@ -99,24 +99,11 @@ bool AggregationServiceTool::SetPublicKeysFromFile(
   base::FilePath json_file(json_file_path);
 #endif
 
-  if (!base::PathExists(json_file)) {
-    LOG(ERROR) << "aggregation_service_tool failed to open file: "
-               << json_file.value() << ".";
-    return false;
-  }
-
-  std::string json_string;
-  if (!base::ReadFileToString(json_file, &json_string)) {
-    LOG(ERROR) << "aggregation_service_tool failed to read file: "
-               << json_file.value() << ".";
-    return false;
-  }
-
   bool succeeded = false;
 
   base::RunLoop run_loop;
   agg_service_->SetPublicKeys(
-      url, json_string,
+      url, json_file,
       base::BindOnce(
           [](base::OnceClosure quit, bool& succeeded_out, bool succeeded_in) {
             succeeded_out = succeeded_in;

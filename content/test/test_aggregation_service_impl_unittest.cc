@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -54,9 +57,16 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
          })",
       {generated_key.base64_encoded_public_key}, /*offsets=*/nullptr);
 
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath json_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("public_keys.json"));
+
+  ASSERT_TRUE(base::WriteFile(json_file, json_string));
+
   GURL url("https://a.com/keys");
 
-  service_impl_->SetPublicKeys(url, json_string,
+  service_impl_->SetPublicKeys(url, json_file,
                                base::BindLambdaForTesting([&](bool succeeded) {
                                  EXPECT_TRUE(succeeded);
                                }));

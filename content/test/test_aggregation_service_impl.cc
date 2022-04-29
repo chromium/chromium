@@ -4,15 +4,14 @@
 
 #include "content/test/test_aggregation_service_impl.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
@@ -23,9 +22,10 @@
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
-#include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -102,30 +102,20 @@ void TestAggregationServiceImpl::SetDisablePayloadEncryption(
 
 void TestAggregationServiceImpl::SetPublicKeys(
     const GURL& url,
-    const std::string& json_string,
+    const base::FilePath& json_file,
     base::OnceCallback<void(bool)> callback) {
-  JSONStringValueDeserializer deserializer(json_string);
-  std::string error_message;
-  std::unique_ptr<base::Value> value_ptr =
-      deserializer.Deserialize(nullptr, &error_message);
-  if (!value_ptr) {
-    LOG(ERROR) << "Unable to deserialze json string: " << json_string
-               << ", error: " << error_message;
+  std::string error_msg;
+  absl::optional<PublicKeyset> keyset =
+      aggregation_service::ReadAndParsePublicKeys(json_file, clock_.Now(),
+                                                  &error_msg);
+  if (!keyset) {
+    LOG(ERROR) << error_msg;
     std::move(callback).Run(false);
     return;
   }
 
-  std::vector<PublicKey> keys = aggregation_service::GetPublicKeys(*value_ptr);
-  if (keys.empty()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  PublicKeyset keyset(std::move(keys),
-                      /*fetch_time=*/clock_.Now(),
-                      /*expiry_time=*/base::Time::Max());
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-      .WithArgs(url, std::move(keyset))
+      .WithArgs(url, std::move(*keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
 

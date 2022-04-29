@@ -14,14 +14,21 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -231,6 +238,49 @@ TestHpkeKey GenerateKey(std::string key_id) {
   EVP_HPKE_KEY_copy(&hpke_key.full_hpke_key, key.get());
 
   return hpke_key;
+}
+
+absl::optional<PublicKeyset> ReadAndParsePublicKeys(const base::FilePath& file,
+                                                    base::Time now,
+                                                    std::string* error_msg) {
+  if (!base::PathExists(file)) {
+    if (error_msg)
+      *error_msg = base::StrCat({"Failed to open file: ", file.MaybeAsASCII()});
+
+    return absl::nullopt;
+  }
+
+  std::string contents;
+  if (!base::ReadFileToString(file, &contents)) {
+    if (error_msg)
+      *error_msg = base::StrCat({"Failed to read file: ", file.MaybeAsASCII()});
+
+    return absl::nullopt;
+  }
+
+  base::JSONReader::ValueWithError value_with_error =
+      base::JSONReader::ReadAndReturnValueWithError(contents);
+  if (!value_with_error.value) {
+    if (error_msg) {
+      *error_msg =
+          base::StrCat({"Failed to parse \"", contents,
+                        "\" as JSON: ", value_with_error.error_message});
+    }
+    return absl::nullopt;
+  }
+
+  std::vector<PublicKey> keys = GetPublicKeys(*value_with_error.value);
+  if (keys.empty()) {
+    if (error_msg) {
+      *error_msg =
+          base::StrCat({"Failed to parse public keys from \"", contents, "\""});
+    }
+
+    return absl::nullopt;
+  }
+
+  return PublicKeyset(std::move(keys), /*fetch_time=*/now,
+                      /*expiry_time=*/base::Time::Max());
 }
 
 }  // namespace aggregation_service
