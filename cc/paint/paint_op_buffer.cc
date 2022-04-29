@@ -819,9 +819,6 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
   helper.Write(*flags_to_serialize, current_ctm);
-  helper.AlignMemory(alignof(SkScalar));
-  helper.Write(op->x);
-  helper.Write(op->y);
   unsigned int count = op->extra_slugs.size() + 1;
   helper.Write(count);
   helper.Write(op->slug);
@@ -1388,9 +1385,6 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   PaintOpDeserializer<DrawTextBlobOp> deserializer(input, input_size, options,
                                                    new (output) DrawTextBlobOp);
   deserializer.Read(&deserializer->flags);
-  deserializer.AlignMemory(alignof(SkScalar));
-  deserializer.Read(&deserializer->x);
-  deserializer.Read(&deserializer->y);
   unsigned int count = 0;
   deserializer.Read(&count);
   deserializer.Read(&deserializer->slug);
