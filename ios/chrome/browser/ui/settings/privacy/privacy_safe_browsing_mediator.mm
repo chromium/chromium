@@ -70,6 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // policies.
 @property(nonatomic, assign, readonly) PrefService* localPrefService;
 
+// Boolean to check if safe browsing is controlled by enterprise.
 @property(nonatomic, readonly) BOOL enterpriseEnabled;
 
 @end
@@ -249,6 +250,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+// Check if selected row should display enterprise popover.
+- (BOOL)shouldEnterprisePopOverDisplay:(TableViewItem*)item {
+  ItemType type = static_cast<ItemType>(item.type);
+  return self.enterpriseEnabled && (![self shouldItemTypeHaveCheckmark:type] ||
+                                    type == ItemTypeSafeBrowsingNoProtection);
+}
+
 #pragma mark - SafeBrowsingViewControllerDelegate
 
 - (void)didSelectItem:(TableViewItem*)item {
@@ -276,6 +284,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)didTapInfoButton:(UIButton*)button onItem:(TableViewItem*)item {
+  if ([self shouldEnterprisePopOverDisplay:item]) {
+    [self.consumer showEnterprisePopUp:button];
+    return;
+  }
+
+  // Info button tap logic when not in enterprise mode.
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case ItemTypeSafeBrowsingEnhancedProtection:
@@ -283,9 +297,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     case ItemTypeSafeBrowsingStandardProtection:
       [self.handler showSafeBrowsingStandardProtection];
-      break;
-    case ItemTypeSafeBrowsingNoProtection:
-      [self.consumer showEnterprisePopUp:button];
       break;
     default:
       NOTREACHED();
