@@ -9,8 +9,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"  // nogncheck
-#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"  // nogncheck
+#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
