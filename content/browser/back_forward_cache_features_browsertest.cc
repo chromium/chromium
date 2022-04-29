@@ -2087,8 +2087,14 @@ class AppBannerBackForwardCacheBrowserTest
   }
 };
 
+// Disabled on Mac due to flakes; see https://crbug.com/1276864#c8.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestAppBannerCaching DISABLED_TestAppBannerCaching
+#else
+#define MAYBE_TestAppBannerCaching TestAppBannerCaching
+#endif
 IN_PROC_BROWSER_TEST_P(AppBannerBackForwardCacheBrowserTest,
-                       TestAppBannerCaching) {
+                       MAYBE_TestAppBannerCaching) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to A and request a PWA app banner.
