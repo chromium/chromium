@@ -32,7 +32,7 @@
   <div slot="left-pane">
     <h1>[[i18n('welcomeTitleText')]]</h1>
     <div class="instructions">[[i18n('beginRmaWarningText')]]</div>
-    <div id="verificationMessage">
+    <div id="verificationMessage" class="icon-message">
       <paper-spinner-lite id="busyIcon" class="small-spinner"
           hidden$="[[!verificationInProgress_]]" active>
       </paper-spinner-lite>
@@ -43,8 +43,8 @@
       <span hidden$="[[!verificationInProgress_]]" class="instructions">
         [[i18n('validatingComponentsText')]]
       </span>
-      <span hidden$="[[verificationInProgress_]]">
-        <span hidden$="[[!isCompliant_]]" class="instructions">
+      <span hidden$="[[verificationInProgress_]]" class="instructions">
+        <span hidden$="[[!isCompliant_]]">
           [[i18n('validatedComponentsSuccessText')]]
         </span>
         <span inner-h-t-m-l="[[verificationFailedMessage_]]"

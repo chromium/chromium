@@ -3,11 +3,6 @@
     border-color: var(--google-blue-600);
   }
 
-  #updateStatusDiv {
-    align-items: center;
-    display: flex;
-  }
-
   #updateIcon {
     color: var(--cros-icon-color-secondary);
   }
@@ -23,8 +18,9 @@
       <div hidden$="[[!isCompliant_]]" class="instructions">
         [[i18n('osUpdateOutOfDateDescriptionText')]]
       </div>
-      <div id="versionInfo">
-        <iron-icon id="updateIcon" class="small-icon" icon="shimless-icon:info">
+      <div id="versionInfo" class="icon-message">
+        <iron-icon id="updateIcon" class="small-icon"
+            icon="shimless-icon:info">
         </iron-icon>
         <span class="instructions">[[currentVersionText_]]</span>
       </div>
@@ -39,11 +35,10 @@
         </iron-icon>
       </cr-button>
     </div>
-    <div id="updateStatusDiv" class="instructions"
-        hidden$="[[!updateInProgress_]]">
+    <div id="updateStatusDiv" class="icon-message" hidden$="[[!updateInProgress_]]">
        <paper-spinner-lite class="small-spinner" active>
       </paper-spinner-lite>
-      <span>[[i18n('updatingOsVersionText')]]</span>
+      <span class="instructions">[[i18n('updatingOsVersionText')]]</span>
     </div>
   </div>
   <div slot="right-pane">
