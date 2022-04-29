@@ -504,6 +504,12 @@ class HoldingSpaceUiDragAndDropBrowserTest
       public testing::WithParamInterface<
           std::tuple<PerformDragAndDropCallback, StorageLocationFlags>> {
  public:
+  HoldingSpaceUiDragAndDropBrowserTest() {
+    // Drag-and-drop tests will close the browser because browser events
+    // sometimes get in the way of drag-and-drop events, causing test flakiness.
+    set_exit_when_last_browser_closes(false);
+  }
+
   // Asserts expectations that the holding space tray is or isn't a drop target.
   void ExpectTrayIsDropTarget(bool is_drop_target) {
     EXPECT_EQ(
@@ -595,6 +601,11 @@ class HoldingSpaceUiDragAndDropBrowserTest
   void SetUpOnMainThread() override {
     HoldingSpaceUiBrowserTest::SetUpOnMainThread();
 
+    // Close the browser because browser events sometimes get in the way of
+    // drag-and-drop events, causing test flakiness.
+    CloseBrowserSynchronously(browser());
+    content::RunAllTasksUntilIdle();
+
     // Initialize `drop_sender_view_`.
     drop_sender_view_ = DropSenderView::Create(GetRootWindowForNewWindows());
     drop_sender_view_->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -629,9 +640,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
 };
 
 // Verifies that drag-and-drop of holding space items works.
-// Test is flaky - crbug.com/1262973
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
-                       DISABLED_DragAndDrop) {
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
