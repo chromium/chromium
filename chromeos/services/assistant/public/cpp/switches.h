@@ -19,6 +19,16 @@ namespace switches {
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kForceAssistantOnboarding[];
 
+// Redirects libassistant logging to /var/log/chrome/. This is mainly used to
+// help collect logs when running tests.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const char kRedirectLibassistantLogging[];
+
+// Redirects libassistant logging to stdout. This is mainly used to help test
+// locally.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const char kDisableLibAssistantLogfile[];
+
 }  // namespace switches
 }  // namespace assistant
 }  // namespace chromeos

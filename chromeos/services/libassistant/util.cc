@@ -18,6 +18,7 @@
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/switches.h"
 #include "chromeos/services/libassistant/constants.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 
@@ -146,25 +147,16 @@ class V1InteractionBuilder {
 };
 
 bool ShouldPutLogsInHomeDirectory() {
-  // Redirects libassistant logging to /var/log/chrome/. This is mainly used to
-  // help collect logs when running tests.
-  constexpr char kRedirectLibassistantLogging[] =
-      "redirect-libassistant-logging";
-
   const bool redirect_logging =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kRedirectLibassistantLogging);
+          chromeos::assistant::switches::kRedirectLibassistantLogging);
   return !redirect_logging;
 }
 
 bool ShouldLogToFile() {
-  // Redirects libassistant logging to stdout. This is mainly used to help test
-  // locally.
-  constexpr char kDisableLibAssistantLogfile[] = "disable-libassistant-logfile";
-
   const bool disable_logfile =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDisableLibAssistantLogfile);
+          chromeos::assistant::switches::kDisableLibAssistantLogfile);
   return !disable_logfile;
 }
 
@@ -246,7 +238,7 @@ std::string CreateLibAssistantConfig(
     logging.SetKey("output_type", Value(Type::LIST));
     config.SetKey("logging", std::move(logging));
   } else {
-    // Print logs to console if running in desktop mode.
+    // Print logs to console if running in desktop or test mode.
     internal.SetKey("disable_log_files", Value(true));
   }
 

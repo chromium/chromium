@@ -9,6 +9,8 @@ namespace assistant {
 namespace switches {
 
 const char kForceAssistantOnboarding[] = "force-assistant-onboarding";
+const char kRedirectLibassistantLogging[] = "redirect-libassistant-logging";
+const char kDisableLibAssistantLogfile[] = "disable-libassistant-logfile";
 
 }  // namespace switches
 }  // namespace assistant

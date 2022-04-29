@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,6 +14,7 @@
 #include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/switches.h"
 #include "chromeos/services/assistant/service.h"
 #include "content/public/test/browser_test.h"
 
@@ -48,6 +50,11 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
     // TODO(b/190633242): enable sandbox in browser tests.
     feature_list_.InitAndDisableFeature(
         chromeos::assistant::features::kEnableLibAssistantSandbox);
+
+    // Do not log to file in test. Otherwise multiple tests may create/delete
+    // the log file at the same time. See http://crbug.com/1307868.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableLibAssistantLogfile);
   }
 
   AssistantBrowserTest(const AssistantBrowserTest&) = delete;
@@ -135,9 +142,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
   EXPECT_TRUE(tester()->IsVisible());
 }
 
-// TODO(b/184802501): Fix this flaky test.
-IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
-                       DISABLED_ShouldDisplayTextResponse) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayTextResponse) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -152,9 +157,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
   });
 }
 
-// Flaky. See https://crbug.com/1196560.
-IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
-                       DISABLED_ShouldDisplayCardResponse) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayCardResponse) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
