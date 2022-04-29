@@ -34,12 +34,12 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_JS" file="resources\domain_reliability_internals\domain_reliability_internals.js" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_HTML" file="resources\local_state\local_state.html" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_JS" file="${root_gen_dir}\chrome\browser\resources\local_state\local_state.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_MEDIA_DATA_TABLE_JS" file="resources\media\media_data_table.js" type="BINDATA" />
+      <include name="IDR_MEDIA_DATA_TABLE_JS" file="${root_gen_dir}\chrome\browser\resources\media\media_data_table.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_HTML" file="resources\media\media_engagement.html" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_JS" file="resources\media\media_engagement.js" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_SCORE_DETAILS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\media\media_engagement_score_details.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_HISTORY_HTML" file="resources\media\media_history.html" type="BINDATA" allowexternalscript="true" />
-      <include name="IDR_MEDIA_HISTORY_JS" file="resources\media\media_history.js" type="BINDATA" />
+      <include name="IDR_MEDIA_HISTORY_JS" file="${root_gen_dir}\chrome\browser\resources\media\media_history.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_HISTORY_STORE_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\media\history\media_history_store.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_HTML" file="resources\memory_internals\memory_internals.html" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_JS" file="resources\memory_internals\memory_internals.js" type="BINDATA" />

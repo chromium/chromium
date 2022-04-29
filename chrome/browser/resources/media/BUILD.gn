@@ -5,7 +5,41 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/media:mojo_bindings_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  in_files = [
+    "media_history.ts",
+    "media_data_table.ts",
+  ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = target_gen_dir
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "media_history.ts",
+    "media_data_table.ts",
+    "media_history_store.mojom-webui.js",
+  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess_src",
+  ]
+}
 
 generate_grd("build_grd") {
   grd_prefix = "webrtc_logs"
@@ -46,11 +80,7 @@ js_type_check("closure_compile") {
                             "$root_gen_dir/mojom-webui/services/media_session/public/mojom/",
                             root_build_dir),
                   ]
-  deps = [
-    ":media_data_table",
-    ":media_engagement",
-    ":media_history",
-  ]
+  deps = [ ":media_engagement" ]
 }
 
 js_library("media_engagement") {
@@ -60,17 +90,4 @@ js_library("media_engagement") {
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js:util.m",
   ]
-}
-
-js_library("media_history") {
-  deps = [
-    ":media_data_table",
-    "//chrome/browser/media:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("media_data_table") {
 }

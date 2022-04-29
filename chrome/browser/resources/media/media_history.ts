@@ -4,86 +4,82 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {MediaDataTable, MediaDataTableDelegate} from './media_data_table.js';
-import {MediaHistoryStats, MediaHistoryStore} from './media_history_store.mojom-webui.js';
+import {MediaHistoryStats, MediaHistoryStore, MediaHistoryStoreRemote} from './media_history_store.mojom-webui.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated.
-const mediaHistoryPageIsPopulatedResolver = new PromiseResolver();
-window.whenPageIsPopulatedForTest = function() {
+const mediaHistoryPageIsPopulatedResolver = new PromiseResolver<void>();
+const whenPageIsPopulatedForTest = function() {
   return mediaHistoryPageIsPopulatedResolver.promise;
 };
+Object.assign(window, {whenPageIsPopulatedForTest});
 
-let store = null;
-let statsTableBody = null;
-let originsTable = null;
-let playbacksTable = null;
-let sessionsTable = null;
-let delegate = null;
+let store: MediaHistoryStoreRemote|null = null;
+let statsTableBody: HTMLElement|null = null;
+let originsTable: MediaDataTable|null = null;
+let playbacksTable: MediaDataTable|null = null;
+let sessionsTable: MediaDataTable|null = null;
+let delegate: MediaDataTableDelegate|null = null;
 
 /**
  * Creates a single row in the stats table.
- * @param {string} name The name of the table.
- * @param {number} count The row count of the table.
- * @return {!Node}
+ * @param name The name of the table.
+ * @param count The row count of the table.
  */
-function createStatsRow(name, count) {
-  const template = $('stats-row');
+function createStatsRow(name: string, count: number): Node {
+  const template = document.querySelector<HTMLTemplateElement>('#stats-row');
+  assert(template);
   const td = template.content.querySelectorAll('td');
-  td[0].textContent = name;
-  td[1].textContent = count;
+  td[0]!.textContent = name;
+  td[1]!.textContent = count.toString();
   return document.importNode(template.content, true);
 }
 
-/** @implements {MediaDataTableDelegate} */
-class MediaHistoryTableDelegate {
+class MediaHistoryTableDelegate implements MediaDataTableDelegate {
   /**
    * Formats a field to be displayed in the data table and inserts it into the
    * element.
-   * @param {Element} td
-   * @param {?Object} data
-   * @param {string} key
    */
-  insertDataField(td, data, key) {
+  insertDataField(td: HTMLElement, data: unknown, key: string) {
     if (data === undefined || data === null) {
       return;
     }
 
     if (key === 'origin') {
       // Format a mojo origin.
-      const {scheme, host, port} = data;
+      const {scheme, host, port} =
+          data as {scheme: string, host: string, port: number};
       td.textContent = new URL(`${scheme}://${host}:${port}`).origin;
     } else if (key === 'lastUpdatedTime') {
       // Format a JS timestamp.
-      td.textContent = data ? new Date(data).toISOString() : '';
+      td.textContent = data ? new Date(data as number).toISOString() : '';
     } else if (
         key === 'cachedAudioVideoWatchtime' ||
         key === 'actualAudioVideoWatchtime' || key === 'watchtime' ||
         key === 'duration' || key === 'position') {
       // Format a mojo timedelta.
-      const secs = (data.microseconds / 1000000);
+      const secs = ((data as {microseconds: number}).microseconds / 1000000);
       td.textContent =
           secs.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     } else if (key === 'url') {
       // Format a mojo GURL.
-      td.textContent = data.url;
+      td.textContent = (data as {url: string}).url;
     } else if (key === 'hasAudio' || key === 'hasVideo') {
       // Format a boolean.
-      td.textContent = data ? 'Yes' : 'No';
+      td.textContent = data as boolean ? 'Yes' : 'No';
     } else if (
         key === 'title' || key === 'artist' || key === 'album' ||
         key === 'sourceTitle') {
       // Format a mojo string16.
-      td.textContent = decodeString16(
-          /** @type {String16} */ (data));
+      td.textContent = decodeString16(data as String16);
     } else if (key === 'artwork') {
       // Format an array of mojo media images.
-      data.forEach((image) => {
+      (data as Array<{src: {url: string}}>).forEach((image) => {
         const a = document.createElement('a');
         a.href = image.src.url;
         a.textContent = image.src.url;
@@ -92,37 +88,33 @@ class MediaHistoryTableDelegate {
         td.appendChild(document.createElement('br'));
       });
     } else {
-      td.textContent = data;
+      td.textContent = data as string;
     }
   }
 
-  /**
-   * Compares two objects based on |sortKey|.
-   * @param {string} sortKey The name of the property to sort by.
-   * @param {?Object} a The first object to compare.
-   * @param {?Object} b The second object to compare.
-   * @return {number} A negative number if |a| should be ordered
-   *     before |b|, a positive number otherwise.
-   */
-  compareTableItem(sortKey, a, b) {
+  compareTableItem(
+      sortKey: string, a: {[key: string]: any},
+      b: {[key: string]: any}): number {
     const val1 = a[sortKey];
     const val2 = b[sortKey];
 
     // Compare the hosts of the origin ignoring schemes.
     if (sortKey === 'origin') {
-      return val1.host > val2.host ? 1 : -1;
+      return (val1 as {host: string}).host > (val2 as {host: string}).host ? 1 :
+                                                                             -1;
     }
 
     // Compare the url property.
     if (sortKey === 'url') {
-      return val1.url > val2.url ? 1 : -1;
+      return (val1 as {url: string}).url > (val2 as {url: string}).url ? 1 : -1;
     }
 
     // Compare TimeDelta microseconds value.
     if (sortKey === 'cachedAudioVideoWatchtime' ||
         sortKey === 'actualAudioVideoWatchtime' || sortKey === 'watchtime' ||
         sortKey === 'duration' || sortKey === 'position') {
-      return val1.microseconds - val2.microseconds;
+      return (val1 as {microseconds: number}).microseconds -
+          (val2 as {microseconds: number}).microseconds;
     }
 
     if (sortKey.startsWith('metadata.')) {
@@ -131,28 +123,28 @@ class MediaHistoryTableDelegate {
       let nestedB = b;
       const expandedKey = sortKey.split('.');
       expandedKey.forEach((k) => {
-        nestedA = nestedA[k];
-        nestedB = nestedB[k];
+        nestedA = nestedA[k] as {[key: string]: any};
+        nestedB = nestedB[k] as {[key: string]: any};
       });
 
-      return nestedA > nestedB ? 1 : -1;
+      return (nestedA as unknown as number | string) >
+              (nestedB as unknown as number | string) ?
+          1 :
+          -1;
     }
 
     if (sortKey === 'lastUpdatedTime') {
-      return val1 - val2;
+      return (val1 as number) - (val2 as number);
     }
 
     assertNotReached('Unsupported sort key: ' + sortKey);
-    return 0;
   }
 }
 
 /**
  * Parses utf16 coded string.
- * @param {String16} arr
- * @return {string}
  */
-function decodeString16(arr) {
+function decodeString16(arr: String16): string {
   if (!arr) {
     return '';
   }
@@ -162,22 +154,24 @@ function decodeString16(arr) {
 
 /**
  * Regenerates the stats table.
- * @param {!MediaHistoryStats} stats The stats for the Media
+ * @param stats The stats for the Media
  *     History store.
  */
-function renderStatsTable(stats) {
-  statsTableBody.innerHTML = trustedTypes.emptyHTML;
+function renderStatsTable(stats: MediaHistoryStats) {
+  assert(statsTableBody);
+  (statsTableBody.innerHTML as TrustedHTML | string) =
+      window.trustedTypes ? window.trustedTypes.emptyHTML : '';
 
   Object.keys(stats.tableRowCounts).forEach((key) => {
-    statsTableBody.appendChild(createStatsRow(key, stats.tableRowCounts[key]));
+    statsTableBody!.appendChild(createStatsRow(key, stats.tableRowCounts[key]));
   });
 }
 
 /**
- * @param {!string} name The name of the tab to show.
- * @return {Promise}
+ * @param name The name of the tab to show.
  */
-function showTab(name) {
+function showTab(name: string): Promise<void> {
+  assert(store);
   switch (name) {
     case 'stats':
       return store.getMediaHistoryStats().then(response => {
@@ -186,16 +180,19 @@ function showTab(name) {
       });
     case 'origins':
       return store.getMediaHistoryOriginRows().then(response => {
+        assert(originsTable);
         originsTable.setData(response.rows);
         setSelectedTab(name);
       });
     case 'playbacks':
       return store.getMediaHistoryPlaybackRows().then(response => {
+        assert(playbacksTable);
         playbacksTable.setData(response.rows);
         setSelectedTab(name);
       });
     case 'sessions':
       return store.getMediaHistoryPlaybackSessionRows().then(response => {
+        assert(sessionsTable);
         sessionsTable.setData(response.rows);
         setSelectedTab(name);
       });
@@ -205,24 +202,28 @@ function showTab(name) {
   return new Promise(() => {});
 }
 
-/** @param {string} id The id of the tab to set as selected. */
-function setSelectedTab(id) {
-  const tabbox = $('tabbox');
-  const index = Array.from(tabbox.querySelectorAll('div[slot=\'tabs\']'))
-                    .findIndex(tab => tab.id === id);
+function setSelectedTab(id: string) {
+  const tabbox = document.querySelector('cr-tab-box');
+  assert(tabbox);
+  const index =
+      Array.from(tabbox.querySelectorAll<HTMLElement>('div[slot=\'tabs\']'))
+          .findIndex(tab => tab.id === id);
   tabbox.setAttribute('selected-index', `${index}`);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   store = MediaHistoryStore.getRemote();
 
-  statsTableBody = $('stats-table-body');
+  statsTableBody = document.querySelector<HTMLElement>('#stats-table-body');
 
   delegate = new MediaHistoryTableDelegate();
 
-  originsTable = new MediaDataTable($('origins-table'), delegate);
-  playbacksTable = new MediaDataTable($('playbacks-table'), delegate);
-  sessionsTable = new MediaDataTable($('sessions-table'), delegate);
+  originsTable = new MediaDataTable(
+      document.querySelector<HTMLElement>('#origins-table')!, delegate);
+  playbacksTable = new MediaDataTable(
+      document.querySelector<HTMLElement>('#playbacks-table')!, delegate);
+  sessionsTable = new MediaDataTable(
+      document.querySelector<HTMLElement>('#sessions-table')!, delegate);
 
   // Allow tabs to be navigated to by fragment. The fragment with be of the
   // format "#tab-<tab id>".
@@ -230,36 +231,45 @@ document.addEventListener('DOMContentLoaded', function() {
     showTab(window.location.hash.substr(5));
   };
 
+  const tabBox = document.querySelector('cr-tab-box');
+  assert(tabBox);
+
   // Default to the stats tab.
   if (!window.location.hash.substr(5)) {
     window.location.hash = 'tab-stats';
+    // Show the tab box.
+    tabBox.style.display = 'block';
   } else {
-    showTab(window.location.hash.substr(5))
-        .then(mediaHistoryPageIsPopulatedResolver.resolve);
+    showTab(window.location.hash.substr(5)).then(() => {
+      // Show the tab box.
+      tabBox.style.display = 'block';
+      mediaHistoryPageIsPopulatedResolver.resolve();
+    });
   }
 
   // When the tab updates, update the anchor.
-  $('tabbox').addEventListener('selected-index-change', function(e) {
-    const tabbox = $('tabbox');
-    const tabs = tabbox.querySelectorAll('div[slot=\'tabs\']');
-    const selectedTab = tabs[e.detail];
+  tabBox.addEventListener('selected-index-change', function(e) {
+    const tabbox = document.querySelector('cr-tab-box');
+    assert(tabbox);
+    const tabs = tabbox.querySelectorAll<HTMLElement>('div[slot=\'tabs\']');
+    const selectedTab = tabs[(e as CustomEvent<number>).detail];
     window.location.hash = 'tab-' + selectedTab.id;
   }, true);
 
   // Add handler to 'copy all to clipboard' button.
   const copyAllToClipboardButtons =
-      document.querySelectorAll('.copy-all-to-clipboard');
+      document.querySelectorAll<HTMLElement>('.copy-all-to-clipboard');
 
   copyAllToClipboardButtons.forEach((button) => {
-    button.addEventListener('click', (e) => {
+    button.addEventListener('click', () => {
       // Make sure nothing is selected.
-      window.getSelection().removeAllRanges();
+      window.getSelection()!.removeAllRanges();
 
       document.execCommand('selectAll');
       document.execCommand('copy');
 
       // And deselect everything at the end.
-      window.getSelection().removeAllRanges();
+      window.getSelection()!.removeAllRanges();
     });
   });
 });

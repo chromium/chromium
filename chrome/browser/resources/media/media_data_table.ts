@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-  /**
-   * TODO(beccahughes): Description
-   */
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+/**
+ * TODO(beccahughes): Description
+ */
 export class MediaDataTable {
-  /**
-   * @param {HTMLElement} table
-   * @param {!MediaDataTableDelegate} delegate
-   */
-  constructor(table, delegate) {
-    /** @private {HTMLElement} */
+  private table_: HTMLElement;
+  private data_: Array<{[key: string]: any}> = [];
+  private delegate_: MediaDataTableDelegate;
+
+  constructor(table: HTMLElement, delegate: MediaDataTableDelegate) {
     this.table_ = table;
-
-    /** @private {Array<Object>} */
-    this.data_ = [];
-
-    /** @private {MediaDataTableDelegate} */
     this.delegate_ = delegate;
 
     // Set table header sort handlers.
@@ -27,12 +23,16 @@ export class MediaDataTable {
     });
   }
 
-  handleSortClick_(e) {
-    if (e.target.classList.contains('sort-column')) {
-      e.target.toggleAttribute('sort-reverse');
+  private handleSortClick_(e: Event) {
+    const target = e.target as HTMLElement;
+    assert(target);
+    if (target.classList.contains('sort-column')) {
+      target.toggleAttribute('sort-reverse');
     } else {
-      document.querySelector('.sort-column').classList.remove('sort-column');
-      e.target.classList.add('sort-column');
+      const sortColumn = document.querySelector<HTMLElement>('.sort-column');
+      assert(sortColumn);
+      sortColumn.classList.remove('sort-column');
+      target.classList.add('sort-column');
     }
 
     this.render();
@@ -40,8 +40,9 @@ export class MediaDataTable {
 
   render() {
     // Find the body of the table and clear it.
-    const body = this.table_.querySelectorAll('tbody')[0];
-    body.innerHTML = trustedTypes.emptyHTML;
+    const body = this.table_.querySelectorAll('tbody')[0]!;
+    (body.innerHTML as string | TrustedHTML) =
+        window.trustedTypes ? window.trustedTypes.emptyHTML : '';
 
     // Get the sort key from the columns to determine which data should be in
     // which column.
@@ -51,8 +52,8 @@ export class MediaDataTable {
                                           e.getAttribute('data-key');
     });
 
-    const currentSortCol = this.table_.querySelectorAll('.sort-column')[0];
-    const currentSortKey = currentSortCol.getAttribute('sort-key');
+    const currentSortCol = this.table_.querySelectorAll('.sort-column')[0]!;
+    const currentSortKey = currentSortCol.getAttribute('sort-key') || '';
     const currentSortReverse = currentSortCol.hasAttribute('sort-reverse');
 
     // Sort the data based on the current sort key.
@@ -71,47 +72,44 @@ export class MediaDataTable {
 
         // Keys with a period denote nested objects.
         let data = dataRow;
-        const expandedKey = key.split('.');
+        const expandedKey = key!.split('.');
         expandedKey.forEach((k) => {
           data = data[k];
           key = k;
         });
 
-        this.delegate_.insertDataField(td, data, key, dataRow);
+        this.delegate_.insertDataField(td, data, key!, dataRow);
         tr.appendChild(td);
       });
     });
   }
 
   /**
-   * @param {Array} data The data to update
+   * @param data The data to update
    */
-  setData(data) {
+  setData(data: object[]) {
     this.data_ = data;
     this.render();
   }
 }
 
-/** @interface */
-export class MediaDataTableDelegate {
+export interface MediaDataTableDelegate {
   /**
    * Formats a field to be displayed in the data table and inserts it into the
    * element.
-   * @param {Element} td
-   * @param {?Object} data
-   * @param {string} key
-   * @param {Object} dataRow This is the row itself in case we need extra
+   * @param dataRow This is the row itself in case we need extra
    *   data to render the field.
    */
-  insertDataField(td, data, key, dataRow) {}
+  insertDataField(td: Element, data: object, key: string, dataRow: object):
+      void;
 
   /**
    * Compares two objects based on |sortKey|.
-   * @param {string} sortKey The name of the property to sort by.
-   * @param {?Object} a The first object to compare.
-   * @param {?Object} b The second object to compare.
-   * @return {number} A negative number if |a| should be ordered
+   * @param sortKey The name of the property to sort by.
+   * @param a The first object to compare.
+   * @param b The second object to compare.
+   * @return A negative number if |a| should be ordered
    *     before |b|, a positive number otherwise.
    */
-  compareTableItem(sortKey, a, b) {}
+  compareTableItem(sortKey: string, a: object, b: object): number;
 }
