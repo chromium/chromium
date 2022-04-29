@@ -234,8 +234,10 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
   if (!frame)
     return;
 
-  // Record what source was used to find main frame CSP.
-  if (frame->IsMainFrame()) {
+  // Record what source was used to find main frame CSP. Do not record
+  // this for fence frame roots since they will never become an
+  // outermost main frame, but we do wish to record this for portals.
+  if (frame->IsMainFrame() && !frame->IsInFencedFrameTree()) {
     for (const auto& policy : policies) {
       switch (policy->header->source) {
         case network::mojom::ContentSecurityPolicySource::kHTTP:
