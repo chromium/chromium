@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
@@ -24,6 +26,8 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/api/feedback_private/feedback_private_api.h"
+#include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -40,9 +44,19 @@ feedback::FeedbackUploader* GetFeedbackUploaderForContext(
 }  // namespace
 
 using ::ash::os_feedback_ui::mojom::SendReportStatus;
+using extensions::FeedbackParams;
+using extensions::FeedbackPrivateAPI;
 
 ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(Profile* profile)
-    : profile_(profile) {
+    : ChromeOsFeedbackDelegate(profile,
+                               FeedbackPrivateAPI::GetFactoryInstance()
+                                   ->Get(profile)
+                                   ->GetService()) {}
+
+ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(
+    Profile* profile,
+    scoped_refptr<extensions::FeedbackService> feedback_service)
+    : profile_(profile), feedback_service_(feedback_service) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (browser) {
     // Save the last active page url before opening the feedback tool.
@@ -74,18 +88,17 @@ absl::optional<std::string> ChromeOsFeedbackDelegate::GetSignedInUserEmail()
 void ChromeOsFeedbackDelegate::SendReport(
     os_feedback_ui::mojom::ReportPtr report,
     SendReportCallback callback) {
-  base::WeakPtr<feedback::FeedbackUploader> uploader;
-  if (feedback_uploader_for_testing_) {
-    uploader = base::AsWeakPtr(feedback_uploader_for_testing_.get());
-  } else {
-    uploader = base::AsWeakPtr(GetFeedbackUploaderForContext(profile_));
-  }
-  scoped_refptr<feedback::FeedbackData> feedback_data =
+  // Populate feedback_params
+  FeedbackParams feedback_params;
+  feedback_params.form_submit_time = base::TimeTicks::Now();
+  feedback_params.load_system_info = report->include_system_logs_and_histograms;
+  feedback_params.send_histograms = report->include_system_logs_and_histograms;
+
+  base::WeakPtr<feedback::FeedbackUploader> uploader =
+      base::AsWeakPtr(GetFeedbackUploaderForContext(profile_));
+  scoped_refptr<::feedback::FeedbackData> feedback_data =
       base::MakeRefCounted<feedback::FeedbackData>(
           std::move(uploader), ContentTracingManager::Get());
-
-  feedback_data->set_locale(GetApplicationLocale());
-  // TODO(xiangdongkong): Add UserAgent.
 
   feedback_data->set_description(base::UTF16ToUTF8(report->description));
 
@@ -96,21 +109,18 @@ void ChromeOsFeedbackDelegate::SendReport(
   if (feedback_context->page_url.has_value()) {
     feedback_data->set_page_url(feedback_context->page_url.value().spec());
   }
-  // TODO(xiangdongkong): Fetch system logs if needed.
 
-  // Signal the feedback object that the data from the feedback page has been
-  // filled - the object will manage sending of the actual report.
-  feedback_data->OnFeedbackPageDataComplete();
-
-  const SendReportStatus status = net::NetworkChangeNotifier::IsOffline()
-                                      ? SendReportStatus::kDelayed
-                                      : SendReportStatus::kSuccess;
-  std::move(callback).Run(status);
+  feedback_service_->SendFeedback(
+      feedback_params, feedback_data,
+      base::BindOnce(&ChromeOsFeedbackDelegate::OnSendFeedbackDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ChromeOsFeedbackDelegate::SetFeedbackUploaderForTesting(
-    feedback::FeedbackUploader* uploader) {
-  feedback_uploader_for_testing_ = uploader;
+void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
+                                                  bool status) {
+  const SendReportStatus send_status =
+      status ? SendReportStatus::kDelayed : SendReportStatus::kSuccess;
+  std::move(callback).Run(send_status);
 }
 
 }  // namespace ash
