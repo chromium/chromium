@@ -38,9 +38,11 @@ _ACTIVITY_RESULT_OK = -1
 _COMMAND_LINE_PARAMETER = 'cmdlinearg-parameter'
 _DEFAULT_ANNOTATIONS = [
     'SmallTest', 'MediumTest', 'LargeTest', 'EnormousTest', 'IntegrationTest']
+# This annotation is for disabled tests that should not be run in Test Reviver.
+_DO_NOT_REVIVE_ANNOTATIONS = ['DoNotRevive']
 _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS = [
     'DisabledTest', 'FlakyTest', 'Manual']
-_VALID_ANNOTATIONS = set(_DEFAULT_ANNOTATIONS +
+_VALID_ANNOTATIONS = set(_DEFAULT_ANNOTATIONS + _DO_NOT_REVIVE_ANNOTATIONS +
                          _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS)
 
 _TEST_LIST_JUNIT4_RUNNERS = [
@@ -819,7 +821,11 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       self._excluded_annotations = []
 
     requested_annotations = set(a[0] for a in self._annotations)
-    if not args.run_disabled:
+    if args.run_disabled:
+      self._excluded_annotations.extend(
+          annotation_element(a) for a in _DO_NOT_REVIVE_ANNOTATIONS
+          if a not in requested_annotations)
+    else:
       self._excluded_annotations.extend(
           annotation_element(a) for a in _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS
           if a not in requested_annotations)

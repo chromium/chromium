@@ -582,6 +582,79 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
 
     self.assertEqual(actual_tests, expected_tests)
 
+  def testGetTests_excludedDoNotReviveAnnotation(self):
+    o = self.createTestInstance()
+    raw_tests = [{
+        'annotations': {
+            'Feature': {
+                'value': ['Foo']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest',
+        'superclass':
+        'junit.framework.TestCase',
+        'methods': [
+            {
+                'annotations': {
+                    'DisabledTest': None,
+                    'DoNotRevive': {
+                        'reason': 'sample reason'
+                    },
+                },
+                'method': 'testMethod1',
+            },
+            {
+                'annotations': {
+                    'FlakyTest': None,
+                },
+                'method': 'testMethod2',
+            },
+        ],
+    }, {
+        'annotations': {
+            'Feature': {
+                'value': ['Bar']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest2',
+        'superclass':
+        'junit.framework.TestCase',
+        'methods': [
+            {
+                'annotations': {
+                    'FlakyTest': None,
+                    'DoNotRevive': {
+                        'reason': 'sample reason'
+                    },
+                },
+                'method': 'testMethod1',
+            },
+        ],
+    }]
+
+    expected_tests = [
+        {
+            'annotations': {
+                'Feature': {
+                    'value': ['Foo']
+                },
+                'FlakyTest': None,
+            },
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod2',
+        },
+    ]
+
+    o._excluded_annotations = [('DoNotRevive', None)]
+    o._test_jar = 'path/to/test.jar'
+    o._junit4_runner_class = 'J4Runner'
+    actual_tests = o.ProcessRawTests(raw_tests)
+
+    self.assertEqual(actual_tests, expected_tests)
+
   def testGetTests_annotationSimpleValueFilter(self):
     o = self.createTestInstance()
     raw_tests = [
