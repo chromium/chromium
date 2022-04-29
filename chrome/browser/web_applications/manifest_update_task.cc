@@ -572,6 +572,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
                               app_id_changes);
     install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
     install_info_->manifest_icons = web_app->manifest_icons();
+    install_info_->is_generated_icon = web_app->is_generated_icon();
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
@@ -584,6 +585,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     // Icon changes are not supported, revert them and continue.
     install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
     install_info_->manifest_icons = web_app->manifest_icons();
+    install_info_->is_generated_icon = web_app->is_generated_icon();
     icon_change = false;
   }
 
