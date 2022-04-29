@@ -83,7 +83,7 @@ class ManifestItem(metaclass=ManifestItemMeta):
 
     def __repr__(self):
         # type: () -> str
-        return "<%s.%s id=%r, path=%r>" % (self.__module__, self.__class__.__name__, self.id, self.path)
+        return f"<{self.__module__}.{self.__class__.__name__} id={self.id!r}, path={self.path!r}>"
 
     def to_json(self):
         # type: () -> Tuple[Any, ...]

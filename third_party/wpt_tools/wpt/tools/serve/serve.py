@@ -14,7 +14,9 @@ import traceback
 import urllib
 import uuid
 from collections import defaultdict, OrderedDict
+from io import IOBase
 from itertools import chain, product
+from html5lib import html5parser
 from typing import ClassVar, List, Set, Tuple
 
 from localpaths import repo_root  # type: ignore
@@ -24,6 +26,7 @@ from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
 from wptserve.handlers import filesystem_path, wrap_pipeline
+from wptserve.response import ResponseHeaders
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
 
@@ -50,6 +53,42 @@ def domains_are_distinct(a, b):
     slice_index = -1 * min_length
 
     return a_parts[slice_index:] != b_parts[slice_index:]
+
+
+def inject_script(html, script_tag):
+    # Tokenize and find the position of the first content (e.g. after the
+    # doctype, html, and head opening tags if present but before any other tags).
+    token_types = html5parser.tokenTypes
+    after_tags = {"html", "head"}
+    before_tokens = {token_types["EndTag"], token_types["EmptyTag"],
+                     token_types["Characters"]}
+    error_tokens = {token_types["ParseError"]}
+
+    tokenizer = html5parser._tokenizer.HTMLTokenizer(html)
+    stream = tokenizer.stream
+    offset = 0
+    error = False
+    for item in tokenizer:
+        if item["type"] == token_types["StartTag"]:
+            if not item["name"].lower() in after_tags:
+                break
+        elif item["type"] in before_tokens:
+            break
+        elif item["type"] in error_tokens:
+            error = True
+            break
+        offset = stream.chunkOffset
+    else:
+        error = True
+
+    if not error and stream.prevNumCols or stream.prevNumLines:
+        # We're outside the first chunk, so we don't know what to do
+        error = True
+
+    if error:
+        return html
+    else:
+        return html[:offset] + script_tag + html[offset:]
 
 
 class WrapperHandler:
@@ -202,6 +241,31 @@ class HtmlWrapperHandler(WrapperHandler):
             attribute = value.replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
         return None
+
+
+class HtmlScriptInjectorHandlerWrapper:
+    def __init__(self, inject="", wrap=None):
+        self.inject = inject
+        self.wrap = wrap
+
+    def __call__(self, request, response):
+        self.wrap(request, response)
+        # If the response content type isn't html, don't modify it.
+        if not isinstance(response.headers, ResponseHeaders) or response.headers.get("Content-Type")[0] != b"text/html":
+            return response
+
+        # Skip injection on custom streaming responses.
+        if not isinstance(response.content, (bytes, str, IOBase)) and not hasattr(response, "read"):
+            return response
+
+        response.content = inject_script(
+            b"".join(response.iter_content(read_file=True)),
+            b"<script>\n" +
+            self.inject + b"\n" +
+            (b"// Remove the injected script tag from the DOM.\n"
+            b"document.currentScript.remove();\n"
+            b"</script>\n"))
+        return response
 
 
 class WorkersHandler(HtmlWrapperHandler):
@@ -447,7 +511,7 @@ rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl
 
 
 class RoutesBuilder:
-    def __init__(self):
+    def __init__(self, inject_script = None):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
                                     handlers.python_script_handler)]
@@ -458,6 +522,10 @@ class RoutesBuilder:
                           ("*", "/results/", handlers.ErrorHandler(404))]
 
         self.extra = []
+        self.inject_script_data = None
+        if inject_script is not None:
+            with open(inject_script, 'rb') as f:
+                self.inject_script_data = f.read()
 
         self.mountpoint_routes = OrderedDict()
 
@@ -505,10 +573,14 @@ class RoutesBuilder:
         ]
 
         for (method, suffix, handler_cls) in routes:
+            handler = handler_cls(base_path=path, url_base=url_base)
+            if self.inject_script_data is not None:
+                handler = HtmlScriptInjectorHandlerWrapper(inject=self.inject_script_data, wrap=handler)
+
             self.mountpoint_routes[url_base].append(
                 (method,
                  "%s%s" % (url_base if url_base != "/" else "", suffix),
-                 handler_cls(base_path=path, url_base=url_base)))
+                 handler))
 
     def add_file_mount_point(self, file_url, base_path):
         assert file_url.startswith("/")
@@ -517,7 +589,7 @@ class RoutesBuilder:
 
 
 def get_route_builder(logger, aliases, config):
-    builder = RoutesBuilder()
+    builder = RoutesBuilder(config.inject_script)
     for alias in aliases:
         url = alias["url-path"]
         directory = alias["local-dir"]
@@ -1011,6 +1083,8 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if kwargs.get("verbose"):
         rv.log_level = "debug"
 
+    setattr(rv, "inject_script", kwargs.get("inject_script"))
+
     overriding_path_args = [("doc_root", "Document root"),
                             ("ws_doc_root", "WebSockets document root")]
     for key, title in overriding_path_args:
@@ -1035,6 +1109,8 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
+    parser.add_argument("--inject-script", default=None,
+                        help="Path to script file to inject, useful for testing polyfills.")
     parser.add_argument("--alias_file", action="store", dest="alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
     parser.add_argument("--h2", action="store_true", dest="h2", default=None,

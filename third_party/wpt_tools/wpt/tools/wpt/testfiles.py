@@ -121,7 +121,7 @@ def branch_point():
         merge_base = git("merge-base", "HEAD", "origin/master")
         if (branch_point is None or
             (branch_point != merge_base and
-             not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip())):
+             not git("log", "--oneline", f"{merge_base}..{branch_point}").strip())):
             logger.debug("Using merge-base as the branch point")
             branch_point = merge_base
         else:

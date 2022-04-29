@@ -301,7 +301,7 @@ class WebDriverVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart
         return self.webdriver.send_session_command("GET", "webauthn/authenticator/%s/credentials" % authenticator_id)
 
     def remove_credential(self, authenticator_id, credential_id):
-        return self.webdriver.send_session_command("DELETE", "webauthn/authenticator/%s/credentials/%s" % (authenticator_id, credential_id))
+        return self.webdriver.send_session_command("DELETE", f"webauthn/authenticator/{authenticator_id}/credentials/{credential_id}")
 
     def remove_all_credentials(self, authenticator_id):
         return self.webdriver.send_session_command("DELETE", "webauthn/authenticator/%s/credentials" % authenticator_id)

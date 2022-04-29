@@ -853,7 +853,7 @@ def output_errors_text(log, errors):
         pos_string = path
         if line_number:
             pos_string += ":%s" % line_number
-        log("%s: %s (%s)" % (pos_string, description, error_type))
+        log(f"{pos_string}: {description} ({error_type})")
 
 
 def output_errors_markdown(log, errors):
@@ -870,7 +870,7 @@ def output_errors_markdown(log, errors):
         pos_string = path
         if line_number:
             pos_string += ":%s" % line_number
-        log("%s | %s | %s |" % (error_type, pos_string, description))
+        log(f"{error_type} | {pos_string} | {description} |")
 
 
 def output_errors_json(log, errors):
@@ -912,7 +912,7 @@ def output_error_count(error_count):
     count = sum(error_count.values())
     logger.info("")
     if count == 1:
-        logger.info("There was 1 error (%s)" % (by_type,))
+        logger.info(f"There was 1 error ({by_type})")
     else:
         logger.info("There were %d errors (%s)" % (count, by_type))
 

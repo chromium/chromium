@@ -29,7 +29,7 @@ class Result:
         self.stack = stack
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
 class SubtestResult:
@@ -44,7 +44,7 @@ class SubtestResult:
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
 
     def __repr__(self):
-        return "<%s.%s %s %s>" % (self.__module__, self.__class__.__name__, self.name, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.name} {self.status}>"
 
 
 class TestharnessResult(Result):
@@ -446,7 +446,7 @@ class Test:
             return False
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"
 
 
 class TestharnessTest(Test):

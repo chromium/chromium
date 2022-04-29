@@ -240,6 +240,8 @@ scheme host and port.""")
                               help="Do not install additional system fonts on your system")
     config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
+    config_group.add_argument("--inject-script", action="store", dest="inject_script", default=None,
+                              help="Path to script file to inject, useful for testing polyfills.")
     config_group.add_argument("--headless", action="store_true",
                               help="Run browser in headless mode", default=None)
     config_group.add_argument("--no-headless", action="store_false", dest="headless",
@@ -505,11 +507,11 @@ def check_paths(kwargs):
                 path = os.path.dirname(path)
 
             if not os.path.exists(path):
-                print("Fatal: %s path %s does not exist" % (name, path))
+                print(f"Fatal: {name} path {path} does not exist")
                 sys.exit(1)
 
             if not os.path.isdir(path):
-                print("Fatal: %s path %s is not a directory" % (name, path))
+                print(f"Fatal: {name} path {path} is not a directory")
                 sys.exit(1)
 
 

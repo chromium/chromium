@@ -14,6 +14,17 @@ class BrowsingContext(BidiModule):
         return params
 
     @command
+    def create(self, type_hint: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"type": type_hint}
+        return params
+
+    @create.result
+    def _create(self, result: Mapping[str, Any]) -> Any:
+        assert result["context"] is not None
+
+        return result["context"]
+
+    @command
     def get_tree(self,
                  max_depth: Optional[int] = None,
                  root: Optional[str] = None) -> Mapping[str, Any]:

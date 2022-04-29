@@ -24,10 +24,10 @@ class WebDriverException(Exception):
         self.stacktrace = stacktrace
 
     def __repr__(self):
-        return "<%s http_status=%s>" % (self.__class__.__name__, self.http_status)
+        return f"<{self.__class__.__name__} http_status={self.http_status}>"
 
     def __str__(self):
-        message = "%s (%s)" % (self.status_code, self.http_status)
+        message = f"{self.status_code} ({self.http_status})"
 
         if self.message is not None:
             message += ": %s" % self.message

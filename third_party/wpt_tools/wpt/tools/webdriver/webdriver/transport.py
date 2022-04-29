@@ -71,8 +71,8 @@ class Response:
     def __repr__(self):
         cls_name = self.__class__.__name__
         if self.error:
-            return "<%s status=%s error=%s>" % (cls_name, self.status, repr(self.error))
-        return "<% status=%s body=%s>" % (cls_name, self.status, json.dumps(self.body))
+            return f"<{cls_name} status={self.status} error={repr(self.error)}>"
+        return f"<{cls_name: }tatus={self.status} body={json.dumps(self.body)}>"
 
     def __str__(self):
         return json.dumps(self.body, indent=2)

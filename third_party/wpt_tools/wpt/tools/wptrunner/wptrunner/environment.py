@@ -91,7 +91,7 @@ class TestEnvironment:
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_webtransport=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None, inject_script=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -114,6 +114,7 @@ class TestEnvironment:
         self.ssl_config = ssl_config
         self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
+        self.inject_script = inject_script
 
     def __enter__(self):
         server_log_handler = self.server_logging_ctx.__enter__()
@@ -209,7 +210,7 @@ class TestEnvironment:
         return config
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder()
+        route_builder = serve.RoutesBuilder(inject_script=self.inject_script)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),

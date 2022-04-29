@@ -96,7 +96,8 @@ class Response:
             self._status = (int(value), None)
 
     def set_cookie(self, name, value, path="/", domain=None, max_age=None,
-                   expires=None, secure=False, httponly=False, comment=None):
+                   expires=None, samesite=None, secure=False, httponly=False,
+                   comment=None):
         """Set a cookie to be sent with a Set-Cookie header in the
         response
 
@@ -106,6 +107,8 @@ class Response:
                         until the cookie expires
         :param path: String path to which the cookie applies
         :param domain: String domain to which the cookie applies
+        :param samesit: String indicating whether the cookie should be
+                         restricted to same site context
         :param secure: Boolean indicating whether the cookie is marked as secure
         :param httponly: Boolean indicating whether the cookie is marked as
                          HTTP Only
@@ -155,6 +158,7 @@ class Response:
         maybe_set("max-age", max_age)
         maybe_set("secure", secure)
         maybe_set("httponly", httponly)
+        maybe_set("samesite", samesite)
 
         self.headers.append("Set-Cookie", m.OutputString())
 

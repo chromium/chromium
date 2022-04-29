@@ -25,7 +25,7 @@ class ParseError(Exception):
         self.line = line
         self.filename = filename
         self.detail = detail
-        self.message = "%s: %s line %s" % (self.detail, self.filename, self.line)
+        self.message = f"{self.detail}: {self.filename} line {self.line}"
         Exception.__init__(self, self.message)
 
 eol = object

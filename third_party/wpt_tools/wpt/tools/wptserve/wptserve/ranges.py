@@ -9,7 +9,7 @@ class RangeParser:
             raise HTTPException(400, "Non-ASCII range header value")
         prefix = "bytes="
         if not header.startswith(prefix):
-            raise HTTPException(416, message="Unrecognised range type %s" % (header,))
+            raise HTTPException(416, message=f"Unrecognised range type {header}")
 
         parts = header[len(prefix):].split(",")
         ranges = []
@@ -57,7 +57,7 @@ class Range:
             raise ValueError
 
     def __repr__(self):
-        return "<Range %s-%s>" % (self.lower, self.upper)
+        return f"<Range {self.lower}-{self.upper}>"
 
     def __lt__(self, other):
         return self.lower < other.lower

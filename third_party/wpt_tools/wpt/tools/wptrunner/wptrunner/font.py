@@ -111,7 +111,7 @@ class FontInstaller:
         if self.created_dir:
             rmtree(self.font_dir)
         else:
-            os.remove('%s/%s' % (self.font_dir, font_name))
+            os.remove(f'{self.font_dir}/{font_name}')
         try:
             fc_cache_returncode = call('fc-cache')
             return not fc_cache_returncode

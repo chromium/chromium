@@ -37,7 +37,7 @@ class CreateMetadataPatch(Step):
 
         if sync_tree is not None:
             name = "web-platform-tests_update_%s_metadata" % sync_tree.rev
-            message = "Update %s expected data to revision %s" % (state.suite_name, sync_tree.rev)
+            message = f"Update {state.suite_name} expected data to revision {sync_tree.rev}"
         else:
             name = "web-platform-tests_update_metadata"
             message = "Update %s expected data" % state.suite_name

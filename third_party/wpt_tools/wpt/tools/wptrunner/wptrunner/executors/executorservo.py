@@ -43,7 +43,7 @@ def build_servo_command(test, test_url_func, browser, binary, pause_after_test, 
     for stylesheet in browser.user_stylesheets:
         args += ["--user-stylesheet", stylesheet]
     for pref, value in test.environment.get('prefs', {}).items():
-        args += ["--pref", "%s=%s" % (pref, value)]
+        args += ["--pref", f"{pref}={value}"]
     if browser.ca_certificate_path:
         args += ["--certificate-path", browser.ca_certificate_path]
     if extra_args:

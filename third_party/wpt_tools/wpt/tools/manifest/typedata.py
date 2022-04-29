@@ -128,7 +128,7 @@ class TypeData(TypeDataType):
         for i, pathseg in enumerate(key[:-1]):
             node = node.setdefault(pathseg, {})
             if not isinstance(node, dict):
-                raise KeyError("%r is a child of a test (%r)" % (key, key[:i+1]))
+                raise KeyError(f"{key!r} is a child of a test ({key[:i+1]!r})")
         node[key[-1]] = value
 
     def __delitem__(self, key):

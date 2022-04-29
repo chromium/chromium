@@ -55,7 +55,7 @@ def get_capabilities(**kwargs):
         "browserName": browser_name,
         "build": build,
         "disablePopupHandler": True,
-        "name": "%s %s on %s" % (browser_name, version, platform),
+        "name": f"{browser_name} {version} on {platform}",
         "platform": platform,
         "public": "public",
         "selenium-version": "3.3.1",
@@ -73,7 +73,7 @@ def get_sauce_config(**kwargs):
     sauce_user = kwargs["sauce_user"]
     sauce_key = kwargs["sauce_key"]
 
-    hub_url = "%s:%s@localhost:4445" % (sauce_user, sauce_key)
+    hub_url = f"{sauce_user}:{sauce_key}@localhost:4445"
     data = {
         "url": "http://%s/wd/hub" % hub_url,
         "browserName": browser_name,
@@ -193,7 +193,7 @@ class SauceConnect():
 
     def upload_prerun_exec(self, file_name):
         auth = (self.sauce_user, self.sauce_key)
-        url = "https://saucelabs.com/rest/v1/storage/%s/%s?overwrite=true" % (self.sauce_user, file_name)
+        url = f"https://saucelabs.com/rest/v1/storage/{self.sauce_user}/{file_name}?overwrite=true"
 
         with open(os.path.join(here, 'sauce_setup', file_name), 'rb') as f:
             requests.post(url, data=f, auth=auth)

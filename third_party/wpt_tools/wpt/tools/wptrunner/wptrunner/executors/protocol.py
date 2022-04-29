@@ -269,9 +269,9 @@ class SelectorProtocolPart(ProtocolPart):
     def element_by_selector(self, element_selector):
         elements = self.elements_by_selector(element_selector)
         if len(elements) == 0:
-            raise ValueError("Selector '%s' matches no elements" % (element_selector,))
+            raise ValueError(f"Selector '{element_selector}' matches no elements")
         elif len(elements) > 1:
-            raise ValueError("Selector '%s' matches multiple elements" % (element_selector,))
+            raise ValueError(f"Selector '{element_selector}' matches multiple elements")
         return elements[0]
 
     @abstractmethod

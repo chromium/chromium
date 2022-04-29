@@ -232,7 +232,7 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
             pass  # remote hang up before the result is sent
         else:
             msg = traceback.format_exc()
-            self.logger.error("%s %s" % (type(error), error))
+            self.logger.error(f"{type(error)} {error}")
             self.logger.info(msg)
 
 
@@ -259,7 +259,7 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             response.write()
             return
 
-        self.logger.debug("%s %s" % (request.method, request.request_path))
+        self.logger.debug(f"{request.method} {request.request_path}")
         handler = self.server.router.get_handler(request)
         self.finish_handling(request, response, handler)
 
@@ -416,11 +416,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                             del stream_queues[frame.stream_id]
 
         except OSError as e:
-            self.logger.error('(%s) Closing Connection - \n%s' % (self.uid, str(e)))
+            self.logger.error(f'({self.uid}) Closing Connection - \n{str(e)}')
             if not self.close_connection:
                 self.close_connection = True
         except Exception as e:
-            self.logger.error('(%s) Unexpected Error - \n%s' % (self.uid, str(e)))
+            self.logger.error(f'({self.uid}) Unexpected Error - \n{str(e)}')
         finally:
             for stream_id, (thread, queue) in stream_queues.items():
                 queue.put(None)
@@ -440,7 +440,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 protocol = isomorphic_encode(value)
                 break
         if protocol != b"websocket":
-            raise ProtocolError("Invalid protocol %s with CONNECT METHOD" % (protocol,))
+            raise ProtocolError(f"Invalid protocol {protocol} with CONNECT METHOD")
 
         return True
 
@@ -531,7 +531,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                     raise NotImplementedError("frame.stream_ended")
                     wfile.close()
             elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
-                self.logger.debug('(%s - %s) Stream Reset, Thread Closing' % (self.uid, stream_id))
+                self.logger.debug(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
                 break
 
         t.join()
@@ -576,7 +576,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 # Restart to check for close_connection
                 continue
 
-            self.logger.debug('(%s - %s) %s' % (self.uid, stream_id, str(frame)))
+            self.logger.debug(f'({self.uid} - {stream_id}) {str(frame)}')
 
             if isinstance(frame, RequestReceived):
                 rfile, wfile = os.pipe()
@@ -606,7 +606,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 if frame.stream_ended:
                     wfile.close()
             elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
-                self.logger.debug('(%s - %s) Stream Reset, Thread Closing' % (self.uid, stream_id))
+                self.logger.debug(f'({self.uid} - {stream_id}) Stream Reset, Thread Closing')
                 break
 
             if request is not None:
@@ -839,7 +839,7 @@ class WebTestHttpd:
         :param block: True to run the server on the current thread, blocking,
                       False to run on a separate thread."""
         http_type = "http2" if self.http2 else "https" if self.use_ssl else "http"
-        self.logger.info("Starting %s server on %s:%s" % (http_type, self.host, self.port))
+        self.logger.info(f"Starting {http_type} server on {self.host}:{self.port}")
         self.started = True
         self.server_thread = threading.Thread(target=self.httpd.serve_forever)
         self.server_thread.setDaemon(True)  # don't hang on exit
@@ -857,7 +857,7 @@ class WebTestHttpd:
                 self.httpd.server_close()
                 self.server_thread.join()
                 self.server_thread = None
-                self.logger.info("Stopped http server on %s:%s" % (self.host, self.port))
+                self.logger.info(f"Stopped http server on {self.host}:{self.port}")
             except AttributeError:
                 pass
             self.started = False
@@ -868,7 +868,7 @@ class WebTestHttpd:
             return None
 
         return urlunsplit(("http" if not self.use_ssl else "https",
-                           "%s:%s" % (self.host, self.port),
+                           f"{self.host}:{self.port}",
                            path, query, fragment))
 
 

@@ -415,7 +415,7 @@ class RefTestImplementation:
         else:
             rv = self.screenshot_cache[key]
 
-        self.message.append("%s %s" % (test.url, rv[0]))
+        self.message.append(f"{test.url} {rv[0]}")
         return True, rv
 
     def reset(self):
@@ -493,7 +493,7 @@ class RefTestImplementation:
         extrema = image.getextrema()
         if all(min == max for min, max in extrema):
             color = ''.join('%02X' % value for value, _ in extrema)
-            self.message.append("Screenshot is solid color 0x%s for %s\n" % (color, url))
+            self.message.append(f"Screenshot is solid color 0x{color} for {url}\n")
 
     def run_test(self, test):
         viewport_size = test.viewport_size
@@ -745,7 +745,7 @@ class CallbackHandler:
             self._send_message(cmd_id, "complete", "error")
             raise
         else:
-            self.logger.debug("Action %s completed with result %s" % (action, result))
+            self.logger.debug(f"Action {action} completed with result {result}")
             return_message = {"result": result}
             self._send_message(cmd_id, "complete", "success", json.dumps(return_message))
 

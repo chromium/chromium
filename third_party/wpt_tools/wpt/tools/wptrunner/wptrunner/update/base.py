@@ -35,13 +35,13 @@ class Step:
             assert set(self.provides).issubset(set(state.keys()))
             state.steps = state.steps + [name]
         else:
-            raise ValueError("Expected a %s step, got a %s step" % (name, stored_step))
+            raise ValueError(f"Expected a {name} step, got a {stored_step} step")
 
     def create(self, data):
         raise NotImplementedError
 
     def restore(self, state):
-        self.logger.debug("Step %s using stored state" % (self.__class__.__name__,))
+        self.logger.debug(f"Step {self.__class__.__name__} using stored state")
         for key in self.provides:
             assert key in state
 

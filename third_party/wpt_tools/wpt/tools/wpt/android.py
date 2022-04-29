@@ -66,7 +66,7 @@ def install_sdk(logger, dest=None):
     # TODO: either always use the latest version or have some way to
     # configure a per-product version if there are strong requirements
     # to use a specific version.
-    url = 'https://dl.google.com/android/repository/sdk-tools-%s-4333796.zip' % (os_name,)
+    url = f'https://dl.google.com/android/repository/sdk-tools-{os_name}-4333796.zip'
 
     logger.info("Getting SDK from %s" % url)
     temp_path = os.path.join(sdk_path, url.rsplit("/", 1)[1])

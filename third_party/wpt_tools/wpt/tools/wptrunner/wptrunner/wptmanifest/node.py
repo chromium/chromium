@@ -21,7 +21,7 @@ class Node:
         self.parent.children.remove(self)
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.data)
+        return f"<{self.__class__.__name__} {self.data}>"
 
     def __str__(self):
         rv = [repr(self)]
