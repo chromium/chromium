@@ -103,9 +103,8 @@ ci.builder(
         category = "reviver",
         short_name = "M",
     ),
-    # To avoid peak hours, we run it at 5 AM UTC, 7 AM UTC.
-    # TODO(zhiyuans): Increase the frequency based on previous run results.
-    schedule = "0 5,7 * * *",
+    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
+    schedule = "0 1,4,7,10,13 * * *",
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
