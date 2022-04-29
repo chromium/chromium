@@ -3119,6 +3119,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
+    enum="Hresult" expires_after="2022-08-30">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when the MediaFoundationRenderer::CreateMediaEngine() fails.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.ErrorReason"
     enum="MediaFoundationRendererErrorReason" expires_after="2022-08-30">
   <owner>xhwang@chromium.org</owner>
