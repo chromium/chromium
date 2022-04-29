@@ -547,7 +547,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
-  return MediaStreamTrack::Create(
+  return MediaStreamTrack::FromTransferredState(
       GetScriptState(),
       TransferredValues{.session_id = session_id,
                         .kind = kind,

@@ -60,8 +60,10 @@ String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
   return String();
 }
 
-MediaStreamTrack* MediaStreamTrack::Create(ScriptState* script_state,
-                                           const TransferredValues& data) {
+// static
+MediaStreamTrack* MediaStreamTrack::FromTransferredState(
+    ScriptState* script_state,
+    const TransferredValues& data) {
   auto* window =
       DynamicTo<LocalDOMWindow>(ExecutionContext::From(script_state));
   if (!window)

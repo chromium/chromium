@@ -65,9 +65,12 @@ class MODULES_EXPORT MediaStreamTrack
     virtual void TrackChangedState() = 0;
   };
 
-  // TODO(1288839): Implement to recreate MST after transfer
-  static MediaStreamTrack* Create(ScriptState* script_state,
-                                  const TransferredValues& data);
+  // Create a MediaStreamTrack instance as a result of a transfer into this
+  // context, eg when receiving a postMessage() with an MST in the transfer
+  // list.
+  // TODO(https://crbug.com/1288839): Implement to recreate MST after transfer
+  static MediaStreamTrack* FromTransferredState(ScriptState* script_state,
+                                                const TransferredValues& data);
 
   // MediaStreamTrack.idl
   virtual String kind() const = 0;
