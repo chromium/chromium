@@ -40,6 +40,7 @@ class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
 class ExtensionTelemetryUploader;
 class ExtensionTelemetryPersister;
+class SafeBrowsingTokenFetcher;
 
 // This class process extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
@@ -106,6 +107,10 @@ class ExtensionTelemetryService : public KeyedService {
   GetExtensionInfoForReport(const extensions::Extension& extension);
 
   void UploadPersistedFile(std::string report, bool success);
+
+  // Creates access token fetcher based on profile log-in status.
+  // Returns nullptr when the user is not signed in.
+  std::unique_ptr<SafeBrowsingTokenFetcher> GetTokenFetcher();
 
   std::unique_ptr<safe_browsing::ExtensionTelemetryPersister> persister_;
 

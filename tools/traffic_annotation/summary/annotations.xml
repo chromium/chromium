@@ -349,7 +349,7 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_google_photos_albums" added_in_milestone="99" content_hash_code="00248f64" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
  <item id="webapk_create" added_in_milestone="99" content_hash_code="07b8fd35" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
  <item id="webapk_update" added_in_milestone="99" content_hash_code="0763f8a7" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
- <item id="safe_browsing_extension_telemetry" added_in_milestone="98" content_hash_code="07998e68" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.cc" />
+ <item id="safe_browsing_extension_telemetry" added_in_milestone="98" content_hash_code="06f81c76" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.cc" />
  <item id="fast_pair_device_metadata_fetcher" added_in_milestone="100" content_hash_code="0655adc6" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc" />
  <item id="fast_pair_image_decoder" added_in_milestone="99" content_hash_code="04d764bc" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="00c76007" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />

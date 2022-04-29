@@ -179,7 +179,6 @@ TEST_F(ExtensionTelemetryServiceTest, IsEnabledOnlyWhenESBIsEnabled) {
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Destruct and restart service and verify that it starts disabled.
-
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
       &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
       extension_registry_, extension_prefs_);

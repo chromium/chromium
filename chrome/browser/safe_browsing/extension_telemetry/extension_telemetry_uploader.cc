@@ -9,6 +9,9 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
@@ -44,7 +47,8 @@ constexpr net::NetworkTrafficAnnotationTag
       destination: GOOGLE_OWNED_SERVICE
     }
     policy {
-      cookies_allowed: NO
+      cookies_allowed: YES
+      cookies_store: "Safe Browsing cookie store"
       setting:
         "Users can enable this feature by selecting 'Enhanced protection' "
         "under the Security->Safe Browsing setting. The feature is disabled by "
@@ -107,17 +111,19 @@ ExtensionTelemetryUploader::~ExtensionTelemetryUploader() = default;
 ExtensionTelemetryUploader::ExtensionTelemetryUploader(
     OnUploadCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-    std::unique_ptr<std::string> upload_data)
+    std::unique_ptr<std::string> upload_data,
+    std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher)
     : callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
       upload_data_(std::move(upload_data)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      num_upload_retries_(0) {}
+      num_upload_retries_(0),
+      token_fetcher_(std::move(token_fetcher)) {}
 
 void ExtensionTelemetryUploader::Start() {
   upload_start_time_ = base::TimeTicks::Now();
   RecordUploadSize(upload_data_->size());
-  SendRequest();
+  MaybeSendRequestWithAccessToken();
 }
 
 // static
@@ -125,12 +131,27 @@ std::string ExtensionTelemetryUploader::GetUploadURLForTest() {
   return kUploadUrl;
 }
 
-void ExtensionTelemetryUploader::SendRequest() {
+void ExtensionTelemetryUploader::MaybeSendRequestWithAccessToken() {
+  if (token_fetcher_) {
+    token_fetcher_->Start(base::BindOnce(
+        &ExtensionTelemetryUploader::SendRequest, weak_factory_.GetWeakPtr()));
+  } else {
+    SendRequest(std::string());
+  }
+}
+
+void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kUploadUrl);
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (!access_token.empty()) {
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token);
+  } else {
+    resource_request->credentials_mode =
+        network::mojom::CredentialsMode::kInclude;
+  }
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),
       kSafeBrowsingExtensionTelemetryTrafficAnnotation);
@@ -172,8 +193,9 @@ void ExtensionTelemetryUploader::RetryOrFinish(int net_error,
     } else {
       content::GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&ExtensionTelemetryUploader::SendRequest,
-                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &ExtensionTelemetryUploader::MaybeSendRequestWithAccessToken,
+              weak_factory_.GetWeakPtr()),
           current_backoff_);
       current_backoff_ *= kBackoffFactor;
       num_upload_retries_++;

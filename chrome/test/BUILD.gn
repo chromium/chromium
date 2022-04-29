@@ -7864,6 +7864,7 @@ test("unit_tests") {
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/content/common:file_type_policies_test_support",
+      "//components/safe_browsing/core/browser:token_fetcher",
     ]
   }
 
