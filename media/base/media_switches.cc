@@ -245,6 +245,12 @@ const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
 
 namespace media {
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
+// Enables android HW decoding of HEVC content.
+const base::Feature kMediaCodecHEVC{"AndroidHEVC",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
+
 // Prefer FFmpeg to LibVPX for Vp8 decoding with opaque alpha mode.
 const base::Feature kFFmpegDecodeOpaqueVP8{"FFmpegDecodeOpaqueVP8",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

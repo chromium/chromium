@@ -169,10 +169,12 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
                                  false);  // require_encrypted
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  supported_configs.emplace_back(HEVCPROFILE_MIN, HEVCPROFILE_MAX,
-                                 gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
+  if (base::FeatureList::IsEnabled(kMediaCodecHEVC)) {
+    supported_configs.emplace_back(HEVCPROFILE_MIN, HEVCPROFILE_MAX,
+                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                   true,    // allow_encrypted
+                                   false);  // require_encrypted
+  }
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   // Technically we should check which profiles are supported, but we can
