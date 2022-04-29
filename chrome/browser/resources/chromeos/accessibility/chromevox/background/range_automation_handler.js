@@ -6,8 +6,8 @@
  * @fileoverview Handles automation from ChromeVox's current range.
  */
 import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/background/custom_automation_event.js';
 import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

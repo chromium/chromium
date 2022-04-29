@@ -8,10 +8,10 @@
  */
 import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
 import {Color} from '/chromevox/background/color.js';
-import {ChromeVoxEvent} from '/chromevox/background/custom_automation_event.js';
 import {EditableLine} from '/chromevox/background/editing/editable_line.js';
 import {IntentHandler} from '/chromevox/background/editing/intent_handler.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
+import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
 import {ChromeVoxEditableTextBase, TextChangeEvent} from '/chromevox/common/editable_text_base.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;

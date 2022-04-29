@@ -6,7 +6,7 @@
  * @fileoverview Basic facillities to handle events from a single automation
  * node.
  */
-import {ChromeVoxEvent} from '/chromevox/background/custom_automation_event.js';
+import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;

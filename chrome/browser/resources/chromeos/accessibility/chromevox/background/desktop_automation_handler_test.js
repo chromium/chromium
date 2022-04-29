@@ -16,7 +16,7 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
 
     await importModule(
         'CustomAutomationEvent',
-        '/chromevox/background/custom_automation_event.js');
+        '/chromevox/common/custom_automation_event.js');
     await importModule(
         'DesktopAutomationHandler',
         '/chromevox/background/desktop_automation_handler.js');
