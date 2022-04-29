@@ -377,8 +377,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
             base::BindOnce(
                 &PermissionBubbleMediaAccessHandler::OnAccessRequestResponse,
                 weak_factory_.GetWeakPtr(), web_contents, request_id, devices,
-                result, std::move(ui)),
-            {content::BrowserThread::UI});
+                result, std::move(ui)));
         return;
       } else if (system_audio_permission == SystemPermission::kRestricted ||
                  system_audio_permission == SystemPermission::kDenied) {
@@ -405,8 +404,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
             base::BindOnce(
                 &PermissionBubbleMediaAccessHandler::OnAccessRequestResponse,
                 weak_factory_.GetWeakPtr(), web_contents, request_id, devices,
-                result, std::move(ui)),
-            {content::BrowserThread::UI});
+                result, std::move(ui)));
         return;
       } else if (system_video_permission == SystemPermission::kRestricted ||
                  system_video_permission == SystemPermission::kDenied) {

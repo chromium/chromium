@@ -8,7 +8,6 @@
 #import <AVFoundation/AVFoundation.h>
 
 #include "base/callback.h"
-#include "base/task/task_traits.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
 
 enum AuthStatus {
@@ -33,8 +32,7 @@ class MediaAuthorizationWrapperTest final
   // MediaAuthorizationWrapper:
   NSInteger AuthorizationStatusForMediaType(NSString* media_type) override;
   void RequestAccessForMediaType(NSString* media_type,
-                                 base::OnceClosure callback,
-                                 const base::TaskTraits& traits) override {}
+                                 base::OnceClosure callback) override {}
 
  private:
   AuthStatus permission_status_ = kNotDetermined;

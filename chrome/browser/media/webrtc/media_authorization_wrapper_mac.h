@@ -19,8 +19,7 @@ class MediaAuthorizationWrapper {
   // is the minimum requirement for Chromium, switch types.
   virtual NSInteger AuthorizationStatusForMediaType(NSString* media_type) = 0;
   virtual void RequestAccessForMediaType(NSString* media_type,
-                                         base::OnceClosure callback,
-                                         const base::TaskTraits& traits) = 0;
+                                         base::OnceClosure callback) = 0;
 };
 
 }  // namespace system_media_permissions
