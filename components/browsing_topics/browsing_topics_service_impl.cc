@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
+#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -289,7 +290,7 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
       continue;
     }
 
-    blink::mojom::EpochTopicPtr result_topic = blink::mojom::EpochTopic::New();
+    auto result_topic = blink::mojom::EpochTopic::New();
     result_topic->topic = topic.value().value();
     result_topic->config_version = base::StrCat(
         {"chrome.", base::NumberToString(
@@ -352,6 +353,77 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
                  });
 
   return result_topics;
+}
+
+mojom::WebUIGetBrowsingTopicsStateResultPtr
+BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi() const {
+  if (!browsing_topics_state_loaded_) {
+    return mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
+        "State loading hasn't finished. Please retry shortly.");
+  }
+
+  if (browsing_topics_state_.next_scheduled_calculation_time().is_null()) {
+    DCHECK(topics_calculator_ && browsing_topics_state_.epochs().empty());
+
+    return mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
+        "Initial calculation hasn't finished. Please retry shortly.");
+  }
+
+  auto webui_state = mojom::WebUIBrowsingTopicsState::New();
+
+  webui_state->next_scheduled_calculation_time =
+      browsing_topics_state_.next_scheduled_calculation_time();
+
+  for (const EpochTopics& epoch : browsing_topics_state_.epochs()) {
+    DCHECK_LE(epoch.padded_top_topics_start_index(),
+              epoch.top_topics_and_observing_domains().size());
+
+    // Note: for a failed epoch calculation, the default zero-initialized values
+    // will be displayed in the Web UI.
+    auto webui_epoch = mojom::WebUIEpoch::New();
+    webui_epoch->calculation_time = epoch.calculation_time();
+    webui_epoch->model_version = base::NumberToString(epoch.model_version());
+    webui_epoch->taxonomy_version =
+        base::NumberToString(epoch.taxonomy_version());
+
+    for (size_t i = 0; i < epoch.top_topics_and_observing_domains().size();
+         ++i) {
+      const TopicAndDomains& topic_and_domains =
+          epoch.top_topics_and_observing_domains()[i];
+
+      privacy_sandbox::CanonicalTopic canonical_topic =
+          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
+                                          epoch.taxonomy_version());
+
+      std::vector<std::string> webui_observed_by_domains;
+      webui_observed_by_domains.reserve(
+          topic_and_domains.hashed_domains().size());
+      for (const auto& domain : topic_and_domains.hashed_domains()) {
+        webui_observed_by_domains.push_back(
+            base::NumberToString(domain.value()));
+      }
+
+      // Note: if the topic is invalid (i.e. cleared), the output `topic_id`
+      // will be 0; if the topic is invalid, or if the taxonomy version isn't
+      // recognized by this Chrome binary, the output `topic_name` will be
+      // "Unknown".
+      auto webui_topic = mojom::WebUITopic::New();
+      webui_topic->topic_id = topic_and_domains.topic().value();
+      webui_topic->topic_name = canonical_topic.GetLocalizedRepresentation();
+      webui_topic->is_real_topic = (i < epoch.padded_top_topics_start_index());
+      webui_topic->observed_by_domains = std::move(webui_observed_by_domains);
+
+      webui_epoch->topics.push_back(std::move(webui_topic));
+    }
+
+    webui_state->epochs.push_back(std::move(webui_epoch));
+  }
+
+  // Reorder the epochs from latest to oldest.
+  std::reverse(webui_state->epochs.begin(), webui_state->epochs.end());
+
+  return mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(
+      std::move(webui_state));
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>

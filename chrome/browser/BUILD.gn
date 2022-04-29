@@ -2039,6 +2039,7 @@ static_library("browser") {
     "//components/browsing_data/content",
     "//components/browsing_data/core",
     "//components/browsing_topics",
+    "//components/browsing_topics/mojom:mojo_bindings",
     "//components/captive_portal/content",
     "//components/captive_portal/core",
     "//components/captive_portal/core:buildflags",

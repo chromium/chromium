@@ -48,6 +48,9 @@ class BrowsingTopicsServiceImpl
       const url::Origin& context_origin,
       content::RenderFrameHost* main_frame) override;
 
+  mojom::WebUIGetBrowsingTopicsStateResultPtr GetBrowsingTopicsStateForWebUi()
+      const override;
+
   std::vector<privacy_sandbox::CanonicalTopic> GetTopicsForSiteForDisplay(
       const url::Origin& top_origin) const override;
 

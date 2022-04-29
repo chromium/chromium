@@ -24,6 +24,7 @@ source_set("browsing_topics") {
   deps = [
     "//base",
     "//components/browsing_topics/common:common",
+    "//components/browsing_topics/mojom:mojo_bindings",
     "//components/history/content/browser",
     "//components/history/core/browser",
     "//components/keyed_service/core",
@@ -51,6 +52,7 @@ source_set("test_support") {
   deps = [
     ":browsing_topics",
     "//base/test:test_support",
+    "//components/browsing_topics/mojom:mojo_bindings",
     "//components/history/core/browser:browser",
     "//third_party/blink/public/common",
   ]

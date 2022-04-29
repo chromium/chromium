@@ -44,6 +44,7 @@ const char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 const char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
 const char kChromeUIBookmarksHost[] = "bookmarks";
 const char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
+const char kChromeUIBrowsingTopicsInternalsHost[] = "topics-internals";
 const char kChromeUICertificateViewerHost[] = "view-cert";
 const char kChromeUICertificateViewerURL[] = "chrome://view-cert/";
 const char kChromeUIChromeSigninHost[] = "chrome-signin";
@@ -597,6 +598,7 @@ const char* const kChromeHostURLs[] = {
 #endif
     kChromeUIAutofillInternalsHost,
     kChromeUIBluetoothInternalsHost,
+    kChromeUIBrowsingTopicsInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUIComponentsHost,
     kChromeUICrashesHost,

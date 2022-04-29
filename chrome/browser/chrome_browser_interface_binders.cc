@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
+#include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
@@ -45,6 +46,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
+#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/contextual_search/buildflags.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_service_impl.h"
@@ -752,6 +754,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       media::mojom::MediaEngagementScoreDetailsProvider, MediaEngagementUI>(
       map);
+
+  RegisterWebUIControllerInterfaceBinder<browsing_topics::mojom::PageHandler,
+                                         BrowsingTopicsInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       media_history::mojom::MediaHistoryStore, MediaHistoryUI>(map);

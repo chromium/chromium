@@ -1,0 +1,85 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --header-text-color: rgb(92, 97, 102);
+  --common-border: 1px solid rgba(0, 0, 0, .12);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  color: rgb(48, 57, 66);
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  height: 100%;
+  margin: 15px;
+  overflow: auto;
+}
+
+header {
+  padding-bottom: 10px;
+}
+
+h1 {
+  color: var(--header-text-color);
+  font-size: 1.5rem;
+}
+
+cr-tab-box {
+  font-size: 1.3rem;
+}
+
+.epochs-header {
+  border-top: var(--common-border);
+  color: var(--header-text-color);
+  font-size: 1.1rem;
+  padding-top: 20px;
+}
+
+.epoch-div,
+.topics-state-div,
+.features-and-parameters-div {
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 10px;
+}
+
+.epoch-div {
+  border: 2px solid rgb(206, 206, 206);
+  border-radius: 3px;
+  margin-top: 20px;
+}
+
+.epoch-topics-table {
+  border: var(--common-border);
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding-inline-end: 10px;
+  padding-inline-start: 10px;
+}
+
+td,
+th,
+tr {
+  border: var(--common-border);
+  padding-inline-end: 10px;
+  padding-inline-start: 10px;
+}
+
+.context-domain-entry {
+  border: var(--common-border);
+  border-radius: 4px;
+  padding-inline-end: 5px;
+  padding-inline-start: 5px;
+}

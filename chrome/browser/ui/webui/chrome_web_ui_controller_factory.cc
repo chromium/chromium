@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
+#include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
@@ -742,6 +743,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
   if (url.host_piece() == chrome::kChromeUIBluetoothInternalsHost)
     return &NewWebUI<BluetoothInternalsUI>;
+  if (url.host_piece() == chrome::kChromeUIBrowsingTopicsInternalsHost)
+    return &NewWebUI<BrowsingTopicsInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIComponentsHost)
     return &NewWebUI<ComponentsUI>;
   if (url.spec() == chrome::kChromeUIConstrainedHTMLTestURL)

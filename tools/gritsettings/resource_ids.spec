@@ -312,7 +312,7 @@
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/federated_learning/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/browsing_topics/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2160],
   },

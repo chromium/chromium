@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
@@ -82,6 +83,10 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
               GetBrowsingTopicsForJsApi,
               (const url::Origin&, content::RenderFrameHost*),
               (override));
+  MOCK_METHOD(mojom::WebUIGetBrowsingTopicsStateResultPtr,
+              GetBrowsingTopicsStateForWebUi,
+              (),
+              (const override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetTopicsForSiteForDisplay,
               (const url::Origin&),
