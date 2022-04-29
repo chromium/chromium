@@ -381,6 +381,22 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
+GURL IdpNetworkRequestManager::FixupProviderUrl(const GURL& url) {
+  // We accept both "https://idp.example/foo/" and "https://idp.example/foo" as
+  // valid provider url to locate the manifest. Historically, URLs with a
+  // trailing slash indicate a directory while those without a trailing slash
+  // denote a file. However, to give developers more flexibility, we append a
+  // trailing slash if one is not present.
+  GURL target_url = url;
+  if (target_url.path().empty() || target_url.path().back() != '/') {
+    std::string new_path = target_url.path() + '/';
+    GURL::Replacements replacements;
+    replacements.SetPathStr(new_path);
+    target_url = target_url.ReplaceComponents(replacements);
+  }
+  return target_url;
+}
+
 void IdpNetworkRequestManager::FetchManifestList(
     FetchManifestListCallback callback) {
   DCHECK(!manifest_list_url_loader_);
@@ -409,18 +425,7 @@ void IdpNetworkRequestManager::FetchManifest(
 
   idp_manifest_callback_ = std::move(callback);
 
-  // Accepts both "https://idp.example/foo/" and "https://idp.example/foo" as
-  // valid provider url to locate the manifest. Historically, URLs with a
-  // trailing slash indicate a directory while those without a trailing slash
-  // denote a file. However, to give developers more flexibility, we append a
-  // trailing slash if one is not present.
-  GURL target_url = provider_;
-  if (target_url.path().empty() || target_url.path().back() != '/') {
-    std::string new_path = target_url.path() + '/';
-    GURL::Replacements replacements;
-    replacements.SetPathStr(new_path);
-    target_url = target_url.ReplaceComponents(replacements);
-  }
+  GURL target_url = FixupProviderUrl(provider_);
 
   target_url = target_url.Resolve(IdpNetworkRequestManager::kManifestFilePath);
 
@@ -588,8 +593,7 @@ void IdpNetworkRequestManager::OnManifestListLoaded(
   manifest_list_url_loader_.reset();
 
   if (response_error != FetchStatus::kSuccess) {
-    std::move(manifest_list_callback_)
-        .Run(response_error, std::set<std::string>());
+    std::move(manifest_list_callback_).Run(response_error, std::set<GURL>());
     return;
   }
 
@@ -622,7 +626,7 @@ void IdpNetworkRequestManager::OnManifestLoaded(
 
 void IdpNetworkRequestManager::OnManifestListParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  std::set<std::string> urls;
+  std::set<GURL> urls;
 
   if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     std::move(manifest_list_callback_)
@@ -648,10 +652,10 @@ void IdpNetworkRequestManager::OnManifestListParsed(
     const std::string* url = value.GetIfString();
     if (!url) {
       std::move(manifest_list_callback_)
-          .Run(FetchStatus::kInvalidResponseError, std::set<std::string>());
+          .Run(FetchStatus::kInvalidResponseError, std::set<GURL>());
       return;
     }
-    urls.insert(*url);
+    urls.insert(FixupProviderUrl(GURL(*url)));
   }
 
   std::move(manifest_list_callback_).Run(FetchStatus::kSuccess, urls);

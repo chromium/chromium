@@ -388,8 +388,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void FetchManifestList(FetchManifestListCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
-    std::move(callback).Run(FetchStatus::kSuccess,
-                            config_.manifest_list.provider_urls);
+    std::set<GURL> url_set(config_.manifest_list.provider_urls.begin(),
+                           config_.manifest_list.provider_urls.end());
+    std::move(callback).Run(FetchStatus::kSuccess, url_set);
   }
 
   void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
@@ -962,21 +963,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasNoTrailingSlash) {
   MockConfiguration config{kConfigurationValid};
   config.manifest_list.provider_urls =
       std::set<std::string>{"https://idp.example/"};
-
-  RunAuthTest(parameters, kExpectationSuccess, config);
-}
-
-// Test mismatching trailing slash is allowed.
-TEST_F(BasicFederatedAuthRequestImplTest,
-       ManifestListHasTrailingSlashAfterPath) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmManifestValidation);
-
-  RequestParameters parameters{"https://idp.example/foo/", kClientId, kNonce,
-                               /*prefer_auto_sign_in=*/false};
-  MockConfiguration config{kConfigurationValid};
-  config.manifest_list.provider_urls =
-      std::set<std::string>{"https://idp.example/foo"};
 
   RunAuthTest(parameters, kExpectationSuccess, config);
 }

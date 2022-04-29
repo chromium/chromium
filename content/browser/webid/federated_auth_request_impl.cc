@@ -527,7 +527,7 @@ void FederatedAuthRequestImpl::FetchManifest(FetchManifestType type) {
 
 void FederatedAuthRequestImpl::OnManifestListFetched(
     IdpNetworkRequestManager::FetchStatus status,
-    const std::set<std::string>& urls) {
+    const std::set<GURL>& urls) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
       RecordRequestIdTokenStatus(IdTokenStatus::kManifestListHttpNotFound,
@@ -592,18 +592,10 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   // Besides, for GURL without path, |provider_.spec()| will append a trailing
   // slash automatically. Therefore we relax the requirement by allowing
   // mismatch on trailing slash.
-  std::string provider_url = provider_.spec();
-  if (provider_.path().empty() || provider_.path().back() != '/') {
-    std::string new_path = provider_.path() + '/';
-    GURL::Replacements replacements;
-    replacements.SetPathStr(new_path);
-    provider_url = provider_.ReplaceComponents(replacements).spec();
-  }
-  DCHECK_EQ(provider_url.back(), '/');
+  GURL provider_url = IdpNetworkRequestManager::FixupProviderUrl(provider_);
+  DCHECK_EQ(provider_url.path().back(), '/');
 
   bool provider_url_is_valid = (urls.count(provider_url) != 0);
-  provider_url.pop_back();
-  provider_url_is_valid |= (urls.count(provider_url) != 0);
 
   if (!provider_url_is_valid) {
     RecordRequestIdTokenStatus(IdTokenStatus::kManifestNotInManifestList,
@@ -621,7 +613,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
 
 void FederatedAuthRequestImpl::OnManifestListFetchedForRevoke(
     IdpNetworkRequestManager::FetchStatus status,
-    const std::set<std::string>& urls) {
+    const std::set<GURL>& urls) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
       RecordRevokeStatus(RevokeStatusForMetrics::kManifestListHttpNotFound,
@@ -661,7 +653,8 @@ void FederatedAuthRequestImpl::OnManifestListFetchedForRevoke(
     return;
   }
 
-  if (urls.count(provider_.spec()) == 0) {
+  GURL provider_url = IdpNetworkRequestManager::FixupProviderUrl(provider_);
+  if (urls.count(provider_url) == 0) {
     RecordRevokeStatus(RevokeStatusForMetrics::kManifestNotInManifestList,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError,

@@ -86,10 +86,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   enum FetchManifestType { kForToken, kForRevoke };
   void FetchManifest(FetchManifestType type);
   void OnManifestListFetched(IdpNetworkRequestManager::FetchStatus status,
-                             const std::set<std::string>& urls);
+                             const std::set<GURL>& urls);
   void OnManifestListFetchedForRevoke(
       IdpNetworkRequestManager::FetchStatus status,
-      const std::set<std::string>& urls);
+      const std::set<GURL>& urls);
   void OnManifestFetched(IdpNetworkRequestManager::FetchStatus status,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata idp_metadata);
