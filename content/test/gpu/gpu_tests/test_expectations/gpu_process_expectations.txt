@@ -128,6 +128,8 @@ crbug.com/1275738 [ linux angle-swiftshader ] GpuProcess_disable_gpu [ RetryOnFa
 # Flakey on Lacros FYI bot
 crbug.com/1311719 [ linux display-server-wayland ] GpuProcess_disabling_workarounds_works [ RetryOnFailure ]
 
+crbug.com/1321145 [ fuchsia fuchsia-board-qemu-x64 ] * [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
