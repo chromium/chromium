@@ -343,12 +343,4 @@ void InitializeSourceUrlRecorderForWebContents(
       web_contents);
 }
 
-SourceId GetSourceIdForWebContentsDocument(
-    const content::WebContents* web_contents) {
-  const internal::SourceUrlRecorderWebContentsObserver* obs =
-      internal::SourceUrlRecorderWebContentsObserver::FromWebContents(
-          web_contents);
-  return obs ? obs->GetLastCommittedSourceId() : kInvalidSourceId;
-}
-
 }  // namespace ukm

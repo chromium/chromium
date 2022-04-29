@@ -29,7 +29,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"

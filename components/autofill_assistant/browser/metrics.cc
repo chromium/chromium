@@ -11,7 +11,6 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/startup_util.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill_assistant {

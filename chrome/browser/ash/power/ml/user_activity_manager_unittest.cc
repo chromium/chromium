@@ -36,7 +36,6 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
