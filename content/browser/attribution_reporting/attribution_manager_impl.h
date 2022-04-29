@@ -102,14 +102,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
                  base::OnceClosure done) override;
 
-  using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
-
-  void MaybeEnqueueEventForTesting(SourceOrTrigger event);
-
  private:
   friend class AttributionManagerImplTest;
 
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
+  using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,

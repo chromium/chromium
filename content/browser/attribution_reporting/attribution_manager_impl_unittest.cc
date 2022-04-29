@@ -1542,35 +1542,31 @@ TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
   const auto r1 = url::Origin::Create(GURL("https://r1.test"));
   const auto r2 = url::Origin::Create(GURL("https://r2.test"));
 
-  const AttributionManagerImpl::SourceOrTrigger kEvents[] = {
-      SourceBuilder()
-          .SetSourceEventId(1)
-          .SetDebugKey(11)
-          .SetReportingOrigin(r1)
-          .SetExpiry(kImpressionExpiry)
-          .Build(),
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetSourceEventId(1)
+                                         .SetDebugKey(11)
+                                         .SetReportingOrigin(r1)
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build());
 
-      TriggerBuilder().SetTriggerData(2).SetReportingOrigin(r1).Build(),
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetTriggerData(2).SetReportingOrigin(r1).Build());
 
-      TriggerBuilder()
-          .SetTriggerData(3)
-          .SetDebugKey(13)
-          .SetReportingOrigin(r2)
-          .Build(),
+  attribution_manager_->HandleTrigger(TriggerBuilder()
+                                          .SetTriggerData(3)
+                                          .SetDebugKey(13)
+                                          .SetReportingOrigin(r2)
+                                          .Build());
 
-      SourceBuilder()
-          .SetSourceEventId(4)
-          .SetDebugKey(14)
-          .SetReportingOrigin(r2)
-          .SetExpiry(kImpressionExpiry)
-          .Build(),
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetSourceEventId(4)
+                                         .SetDebugKey(14)
+                                         .SetReportingOrigin(r2)
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build());
 
-      TriggerBuilder().SetTriggerData(5).SetReportingOrigin(r2).Build(),
-  };
-
-  for (const auto& event : kEvents) {
-    attribution_manager_->MaybeEnqueueEventForTesting(event);
-  }
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetTriggerData(5).SetReportingOrigin(r2).Build());
 
   ASSERT_THAT(StoredSources(), IsEmpty());
   ASSERT_THAT(StoredReports(), IsEmpty());

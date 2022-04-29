@@ -379,11 +379,6 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
     ProcessEvents();
 }
 
-void AttributionManagerImpl::MaybeEnqueueEventForTesting(
-    SourceOrTrigger event) {
-  MaybeEnqueueEvent(std::move(event));
-}
-
 void AttributionManagerImpl::ProcessEvents() {
   struct DebugCookieOriginGetter {
     const url::Origin* operator()(const StorableSource& source) const {

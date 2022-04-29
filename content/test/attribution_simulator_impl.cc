@@ -269,13 +269,13 @@ class AttributionEventHandler : public AttributionObserver {
 
   // For use with `absl::visit()`.
   void operator()(StorableSource source) {
-    manager_->MaybeEnqueueEventForTesting(std::move(source));
+    manager_->HandleSource(std::move(source));
     FlushCookies();
   }
 
   // For use with `absl::visit()`.
   void operator()(AttributionTriggerAndTime trigger) {
-    manager_->MaybeEnqueueEventForTesting(std::move(trigger.trigger));
+    manager_->HandleTrigger(std::move(trigger.trigger));
     FlushCookies();
   }
 
