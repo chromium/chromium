@@ -174,9 +174,15 @@ void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
   }
 }
 
-void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
+void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
+                                    bool all_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
+  if (all_urls) {
+    DeleteAllUrls();
     return;
   }
 
@@ -230,6 +236,20 @@ void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
   std::vector<UrlId> deleted_urls =
       metrics_table_.DeleteEventsBeforeTimestamp(time);
   url_table_.RemoveUrls(deleted_urls);
+}
+
+void UkmDatabaseBackend::DeleteAllUrls() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Remove all metrics associated with any URL, but retain the metrics that are
+  // not keyed on URL.
+  bool success = db_.Execute("DELETE FROM metrics WHERE url_id!=0");
+  // TODO(ssid): sqlite uses truncate optimization on DELETE statements without
+  // WHERE clause. Maybe replace the DROP and CREATE with DELETE if the
+  // performance is better.
+  success = success && db_.Execute("DROP TABLE urls");
+  success = success && url_table_.InitTable();
+  DCHECK(success);
 }
 
 }  // namespace segmentation_platform

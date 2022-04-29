@@ -44,7 +44,7 @@ class UkmDatabaseBackend : public UkmDatabase {
                              const GURL& url,
                              bool is_validated) override;
   void OnUrlValidated(const GURL& url) override;
-  void RemoveUrls(const std::vector<GURL>& urls) override;
+  void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
   void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
 
@@ -60,6 +60,9 @@ class UkmDatabaseBackend : public UkmDatabase {
   }
 
  private:
+  // Helper to delete all URLs from database.
+  void DeleteAllUrls();
+
   const base::FilePath database_path_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);

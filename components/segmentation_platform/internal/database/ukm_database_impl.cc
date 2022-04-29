@@ -54,11 +54,11 @@ void UkmDatabaseImpl::OnUrlValidated(const GURL& url) {
                                 backend_->GetWeakPtr(), url));
 }
 
-void UkmDatabaseImpl::RemoveUrls(const std::vector<GURL>& urls) {
+void UkmDatabaseImpl::RemoveUrls(const std::vector<GURL>& urls, bool all_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(FROM_HERE,
-                                 base::BindOnce(&UkmDatabaseBackend::RemoveUrls,
-                                                backend_->GetWeakPtr(), urls));
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::RemoveUrls,
+                                backend_->GetWeakPtr(), urls, all_urls));
 }
 
 void UkmDatabaseImpl::RunReadonlyQueries(QueryList&& queries,

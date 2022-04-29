@@ -303,8 +303,8 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   EXPECT_EQ(stats1.metric_count_for_url_id.size(), 4u);
 
   // Removing URLs that were not added does nothing.
-  backend_->RemoveUrls({GURL()});
-  backend_->RemoveUrls({GURL("https://www.other.com")});
+  backend_->RemoveUrls({GURL()}, /*all_urls=*/false);
+  backend_->RemoveUrls({GURL("https://www.other.com")}, /*all_urls=*/false);
 
   DatabaseStats stats2 = GetDatabaseStats(backend_->db());
   EXPECT_EQ(stats2.total_metrics, 12);
@@ -312,7 +312,7 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
   EXPECT_EQ(stats2.metric_count_for_url_id.size(), 4u);
 
   // Removing non-validated URL removes from metrics table.
-  backend_->RemoveUrls({kUrl3});
+  backend_->RemoveUrls({kUrl3}, /*all_urls=*/false);
   DatabaseStats stats3 = GetDatabaseStats(backend_->db());
   EXPECT_EQ(stats3.total_metrics, 9);
   EXPECT_EQ(stats3.metric_count_for_event_id.size(), 3u);
@@ -325,13 +325,66 @@ TEST_F(UkmDatabaseBackendTest, RemoveUrls) {
                                 UrlMatcher{.url_id = kUrlId2, .url = kUrl2}});
 
   // Removing validated URL removes from url and metrics table.
-  backend_->RemoveUrls({kUrl1, kUrl2});
+  backend_->RemoveUrls({kUrl1, kUrl2}, /*all_urls=*/false);
   DatabaseStats stats4 = GetDatabaseStats(backend_->db());
   EXPECT_EQ(stats4.total_metrics, 3);
   EXPECT_EQ(stats4.metric_count_for_event_id.size(), 1u);
   EXPECT_THAT(stats4.metric_count_for_url_id,
               UnorderedElementsAre(std::make_pair(UrlId(), 3)));
   test_util::AssertUrlsInTable(backend_->db(), {});
+}
+
+TEST_F(UkmDatabaseBackendTest, DeleteAllUrls) {
+  const GURL kUrl1("https://www.url1.com");
+  const GURL kUrl2("https://www.url2.com");
+  const GURL kUrl3("https://www.url3.com");
+  const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
+  const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
+  const ukm::SourceId kSourceId1 = 10;
+  const ukm::SourceId kSourceId2 = 20;
+  const ukm::SourceId kSourceId3 = 30;
+  const ukm::SourceId kSourceId4 = 40;
+
+  ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry(kSourceId1);
+  ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
+  ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
+  ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
+
+  // Delete on empty database does not crash.
+  backend_->RemoveUrls({}, /*all_urls=*/true);
+
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, false);
+  backend_->StoreUkmEntry(std::move(entry1));
+  backend_->StoreUkmEntry(std::move(entry2));
+  backend_->StoreUkmEntry(std::move(entry3));
+  backend_->StoreUkmEntry(std::move(entry4));
+
+  test_util::AssertUrlsInTable(backend_->db(),
+                               {UrlMatcher{.url_id = kUrlId1, .url = kUrl1},
+                                UrlMatcher{.url_id = kUrlId2, .url = kUrl2}});
+  DatabaseStats stats1 = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(stats1.total_metrics, 12);
+  EXPECT_EQ(stats1.metric_count_for_event_id.size(), 4u);
+  EXPECT_EQ(stats1.metric_count_for_url_id.size(), 4u);
+
+  // Only one event with 3 metrics and without URL is left.
+  backend_->RemoveUrls({}, /*all_urls=*/true);
+  test_util::AssertUrlsInTable(backend_->db(), {});
+  DatabaseStats stats2 = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(stats2.total_metrics, 3);
+  EXPECT_EQ(stats2.metric_count_for_event_id.size(), 1u);
+  const base::flat_map<UrlId, int> no_url_metrics({{UrlId(), 3}});
+  EXPECT_EQ(stats2.metric_count_for_url_id, no_url_metrics);
+
+  // Delete on table with all metrics without URL ID does nothing.
+  backend_->RemoveUrls({}, /*all_urls=*/true);
+  test_util::AssertUrlsInTable(backend_->db(), {});
+  DatabaseStats stats3 = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(stats3.total_metrics, 3);
+  EXPECT_EQ(stats3.metric_count_for_event_id.size(), 1u);
+  EXPECT_EQ(stats2.metric_count_for_url_id, no_url_metrics);
 }
 
 TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
@@ -494,7 +547,8 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->OnUrlValidated(kUrl1);
   backend_->StoreUkmEntry(GetSampleUkmEntry());
   backend_->UpdateUrlForUkmSource(10, kUrl1, true);
-  backend_->RemoveUrls({kUrl1});
+  backend_->RemoveUrls({kUrl1}, /*all_urls=*/false);
+  backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
 
   UkmDatabase::QueryList queries;
   queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));

@@ -58,8 +58,10 @@ class UkmDatabase {
 
   // Removes all the URLs from URL table and all the associated metrics in
   // metrics table, on best effort. Any new metrics added with the URL will
-  // still be stored in metrics table (without URLs).
-  virtual void RemoveUrls(const std::vector<GURL>& urls) = 0;
+  // still be stored in metrics table (without URLs). If `all_urls` is true,
+  // then clears all the URLs without using `urls` list. It is an optimization
+  // to clear all the URLs quickly.
+  virtual void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) = 0;
 
   // Struct responsible for storing a sql query and its bind values.
   struct CustomSqlQuery {

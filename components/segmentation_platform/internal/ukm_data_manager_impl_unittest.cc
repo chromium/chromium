@@ -211,7 +211,7 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
 
   // Check that RemoveUrls() notification is sent to UkmDatabase.
   base::RunLoop wait_for_remove1;
-  EXPECT_CALL(*ukm_database_, RemoveUrls(std::vector({kUrl1})))
+  EXPECT_CALL(*ukm_database_, RemoveUrls(std::vector({kUrl1}), false))
       .WillOnce(
           [&wait_for_remove1]() { wait_for_remove1.QuitClosure().Run(); });
   wait_for_remove1.Run();

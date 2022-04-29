@@ -157,8 +157,8 @@ TEST_F(UrlSignalHandlerTest, Observation) {
   EXPECT_CALL(ukm_database(), OnUrlValidated(kUrl2));
   signal_handler().OnHistoryVisit(kUrl2);
   std::vector<GURL> list({kUrl1, kUrl2});
-  EXPECT_CALL(ukm_database(), RemoveUrls(list));
-  signal_handler().OnUrlsRemovedFromHistory(list);
+  EXPECT_CALL(ukm_database(), RemoveUrls(list, false));
+  signal_handler().OnUrlsRemovedFromHistory(list, false);
 }
 
 }  // namespace segmentation_platform

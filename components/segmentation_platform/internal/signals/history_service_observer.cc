@@ -36,10 +36,14 @@ void HistoryServiceObserver::OnURLVisited(
 void HistoryServiceObserver::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  if (deletion_info.IsAllHistory()) {
+    url_signal_handler_->OnUrlsRemovedFromHistory({}, /*all_urls=*/true);
+    return;
+  }
   std::vector<GURL> urls;
   for (const auto& info : deletion_info.deleted_rows())
     urls.push_back(info.url());
-  url_signal_handler_->OnUrlsRemovedFromHistory(urls);
+  url_signal_handler_->OnUrlsRemovedFromHistory(urls, /*all_urls=*/false);
   history_delegate_->OnUrlRemoved(urls);
 }
 

@@ -55,7 +55,7 @@ class UrlSignalHandler {
   void OnHistoryVisit(const GURL& url);
 
   // Called when |urls| are removed from the history database.
-  void OnUrlsRemovedFromHistory(const std::vector<GURL>& urls);
+  void OnUrlsRemovedFromHistory(const std::vector<GURL>& urls, bool all_urls);
 
   // Add/Remove history delegates.
   void AddHistoryDelegate(HistoryDelegate* history_delegate);
