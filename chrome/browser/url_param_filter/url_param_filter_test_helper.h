@@ -7,7 +7,16 @@
 
 #include "chrome/browser/url_param_filter/url_param_filterer.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
+
 namespace url_param_filter {
+
+MATCHER_P(EqualsProto,
+          want,
+          "Matches an argument against an expected a proto Message.") {
+  return arg.SerializeAsString() == want.SerializeAsString();
+}
+
 // A helper to easily create URL param filter classification maps based
 // on the passed-in source. `source` should map an eTLD+1 to a vector
 // of params for the given role. For example, for eTLD+1 source.xyz, when
@@ -16,6 +25,12 @@ namespace url_param_filter {
 url_param_filter::ClassificationMap CreateClassificationMapForTesting(
     const std::map<std::string, std::vector<std::string>>& source,
     url_param_filter::FilterClassification_SiteRole role);
+
+// Creates and serializes the URL param filter classifications proto.
+// Used for simulating reading the classifications file from Component Updater.
+std::string CreateSerializedUrlParamFilterClassificationForTesting(
+    const std::map<std::string, std::vector<std::string>>& source_params,
+    const std::map<std::string, std::vector<std::string>>& destination_params);
 
 // Create a base64 representation of the URL param filter classifications
 // proto. Used for initialization of the feature params in tests.

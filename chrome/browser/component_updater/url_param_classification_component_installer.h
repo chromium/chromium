@@ -50,6 +50,10 @@ class UrlParamClassificationComponentInstallerPolicy
   UrlParamClassificationComponentInstallerPolicy& operator=(
       const UrlParamClassificationComponentInstallerPolicy&) = delete;
 
+  static void WriteComponentForTesting(const base::FilePath& install_dir,
+                                       base::StringPiece contents);
+  static void ResetForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UrlParamClassificationComponentInstallerTest,
                            VerifyAttributes);

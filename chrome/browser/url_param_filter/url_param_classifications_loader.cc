@@ -67,9 +67,8 @@ ClassificationMap ClassificationsLoader::GetSourceClassifications() {
         FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
   }
 
-  if (component_source_classifications_.has_value()) {
+  if (component_source_classifications_.has_value())
     return GetClassificationsFromFile(*component_source_classifications_);
-  }
   return ClassificationMap();
 }
 
@@ -86,9 +85,8 @@ ClassificationMap ClassificationsLoader::GetDestinationClassifications() {
                     FilterClassification_SiteRole_DESTINATION);
   }
 
-  if (component_destination_classifications_.has_value()) {
+  if (component_destination_classifications_.has_value())
     return GetClassificationsFromFile(*component_destination_classifications_);
-  }
   return ClassificationMap();
 }
 

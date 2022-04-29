@@ -39,6 +39,8 @@ const char kUrlParamClassificationManifestName[] = "Url Param Classifications";
 
 // Runs on a thread pool.
 absl::optional<std::string> LoadFileFromDisk(const base::FilePath& pb_path) {
+  if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled))
+    return absl::nullopt;
   VLOG(1) << "Reading Url Param Classifications from file: " << pb_path.value();
   std::string file_contents;
   if (!base::ReadFileToString(pb_path, &file_contents)) {
@@ -60,6 +62,14 @@ void WriteMetrics(
         ClassificationListValidationResult result) {
   base::UmaHistogramEnumeration(
       "Navigation.UrlParamFilter.ClassificationListValidationResult", result);
+}
+
+absl::optional<base::FilePath>& GetConfigPathInstance() {
+  // Contains nullopt until registration is complete. Afterward, contains the
+  // FilePath for the component file, or an empty FilePath if no component was
+  // installed at startup.
+  static base::NoDestructor<absl::optional<base::FilePath>> instance;
+  return *instance;
 }
 
 }  // namespace
@@ -106,19 +116,17 @@ void UrlParamClassificationComponentInstallerPolicy::ComponentReady(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
-  if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    // Given BEST_EFFORT since we don't need to be USER_BLOCKING.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&LoadFileFromDisk, GetInstalledPath(install_dir)),
-        base::BindOnce(
-            [](OnUrlParamClassificationComponentReady callback,
-               const absl::optional<std::string>& maybe_file) {
-              if (maybe_file.has_value())
-                callback.Run(maybe_file.value());
-            },
-            on_component_ready_));
-  }
+  // Given BEST_EFFORT since we don't need to be USER_BLOCKING.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&LoadFileFromDisk, GetInstalledPath(install_dir)),
+      base::BindOnce(
+          [](OnUrlParamClassificationComponentReady callback,
+             const absl::optional<std::string>& maybe_file) {
+            if (maybe_file.has_value())
+              callback.Run(maybe_file.value());
+          },
+          on_component_ready_));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -195,6 +203,19 @@ UrlParamClassificationComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
+// static
+void UrlParamClassificationComponentInstallerPolicy::WriteComponentForTesting(
+    const base::FilePath& install_dir,
+    base::StringPiece contents) {
+  CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
+  GetConfigPathInstance() = GetInstalledPath(install_dir);
+}
+
+// static
+void UrlParamClassificationComponentInstallerPolicy::ResetForTesting() {
+  GetConfigPathInstance().reset();
+}
+
 void RegisterUrlParamClassificationComponent(ComponentUpdateService* cus) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Register the component even if feature isn't enabled so that when it is
@@ -206,7 +227,20 @@ void RegisterUrlParamClassificationComponent(ComponentUpdateService* cus) {
             url_param_filter::ClassificationsLoader::GetInstance()
                 ->ReadClassifications(raw_classifications);
           })));
-  installer->Register(cus, base::OnceClosure());
+
+  installer->Register(
+      cus, base::BindOnce([]() {
+        if (GetConfigPathInstance().has_value()) {
+          absl::optional<std::string> file_contents =
+              LoadFileFromDisk(GetConfigPathInstance().value());
+          if (file_contents.has_value()) {
+            // Only read classifications after registration if
+            // needed for testing.
+            url_param_filter::ClassificationsLoader::GetInstance()
+                ->ReadClassifications(file_contents.value());
+          }
+        }
+      }));
 }
 
 }  // namespace component_updater

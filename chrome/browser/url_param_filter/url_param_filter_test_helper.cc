@@ -28,7 +28,7 @@ url_param_filter::ClassificationMap CreateClassificationMapForTesting(
   return result;
 }
 
-std::string CreateBase64EncodedFilterParamClassificationForTesting(
+std::string CreateSerializedUrlParamFilterClassificationForTesting(
     const std::map<std::string, std::vector<std::string>>& source_params,
     const std::map<std::string, std::vector<std::string>>& destination_params) {
   url_param_filter::FilterClassifications classifications;
@@ -42,8 +42,17 @@ std::string CreateBase64EncodedFilterParamClassificationForTesting(
                                    FilterClassification_SiteRole_DESTINATION)) {
     *classifications.add_classifications() = std::move(i.second);
   }
+  return classifications.SerializeAsString();
+}
+
+std::string CreateBase64EncodedFilterParamClassificationForTesting(
+    const std::map<std::string, std::vector<std::string>>& source_params,
+    const std::map<std::string, std::vector<std::string>>& destination_params) {
   std::string compressed;
-  compression::GzipCompress(classifications.SerializeAsString(), &compressed);
+  compression::GzipCompress(
+      CreateSerializedUrlParamFilterClassificationForTesting(
+          source_params, destination_params),
+      &compressed);
   std::string out;
   base::Base64Encode(compressed, &out);
   return out;

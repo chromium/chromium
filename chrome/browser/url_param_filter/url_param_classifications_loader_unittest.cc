@@ -29,12 +29,6 @@ using ::testing::UnorderedElementsAre;
 namespace url_param_filter {
 namespace {
 
-MATCHER_P(EqualsProto,
-          want,
-          "Matches an argument against an expected a proto Message.") {
-  return arg.SerializeAsString() == want.SerializeAsString();
-}
-
 class UrlParamClassificationsLoaderTest : public ::testing::Test {
  public:
   UrlParamClassificationsLoaderTest() {
