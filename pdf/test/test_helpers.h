@@ -8,9 +8,11 @@
 #include "base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkBitmap;
 class SkImage;
+class SkSurface;
 
 namespace gfx {
 class Size;
@@ -28,7 +30,11 @@ testing::AssertionResult MatchesPngFile(
     const SkImage* actual_image,
     const base::FilePath& expected_png_file);
 
-// Creates a Skia-format `Image` of a given size filled with a given color.
+// Creates a Skia surface with dimensions `size` and filled with `color`.
+sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
+                                             SkColor color);
+
+// Creates a Skia image with dimensions `size` and filled with `color`.
 SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
 
 }  // namespace chrome_pdf

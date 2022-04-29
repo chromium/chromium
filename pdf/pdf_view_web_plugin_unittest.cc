@@ -38,7 +38,10 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -118,9 +121,14 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
 // clipped area and `kDefaultColor` as the background color.
 SkBitmap GenerateExpectedBitmapForPaint(const gfx::Rect& expected_clipped_rect,
                                         SkColor paint_color) {
-  SkBitmap expected_bitmap =
-      CreateSkiaImageForTesting(kCanvasSize, kDefaultColor);
-  expected_bitmap.erase(paint_color, gfx::RectToSkIRect(expected_clipped_rect));
+  sk_sp<SkSurface> expected_surface =
+      CreateSkiaSurfaceForTesting(kCanvasSize, kDefaultColor);
+  expected_surface->getCanvas()->clipIRect(
+      gfx::RectToSkIRect(expected_clipped_rect));
+  expected_surface->getCanvas()->clear(paint_color);
+
+  SkBitmap expected_bitmap;
+  expected_surface->makeImageSnapshot()->asLegacyBitmap(&expected_bitmap);
   return expected_bitmap;
 }
 

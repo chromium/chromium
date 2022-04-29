@@ -16,10 +16,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -111,9 +113,15 @@ class PaintManagerTest : public testing::Test {
     SkBitmap snapshot_bitmap;
     ASSERT_TRUE(snapshot->asLegacyBitmap(&snapshot_bitmap));
 
-    SkBitmap expected_bitmap =
-        CreateSkiaImageForTesting(plugin_size, SK_ColorMAGENTA);
-    expected_bitmap.erase(SK_ColorRED, gfx::RectToSkIRect(overlapped_rect));
+    sk_sp<SkSurface> expected_surface =
+        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorMAGENTA);
+    expected_surface->getCanvas()->clipIRect(
+        gfx::RectToSkIRect(overlapped_rect));
+    expected_surface->getCanvas()->clear(SK_ColorRED);
+
+    SkBitmap expected_bitmap;
+    ASSERT_TRUE(expected_surface->makeImageSnapshot()->asLegacyBitmap(
+        &expected_bitmap));
 
     EXPECT_TRUE(
         cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
@@ -128,10 +136,15 @@ class PaintManagerTest : public testing::Test {
     ASSERT_GE(plugin_size.width(), 4);
     ASSERT_GE(plugin_size.height(), 4);
 
-    SkBitmap initial_bitmap =
-        CreateSkiaImageForTesting(plugin_size, SK_ColorRED);
-    initial_bitmap.erase(SK_ColorGREEN, {1, 1, plugin_size.width() - 1,
-                                         plugin_size.height() - 2});
+    sk_sp<SkSurface> initial_surface =
+        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorRED);
+    initial_surface->getCanvas()->clipIRect(SkIRect::MakeLTRB(
+        1, 1, plugin_size.width() - 1, plugin_size.height() - 2));
+    initial_surface->getCanvas()->clear(SK_ColorGREEN);
+
+    SkBitmap initial_bitmap;
+    ASSERT_TRUE(
+        initial_surface->makeImageSnapshot()->asLegacyBitmap(&initial_bitmap));
 
     paint_manager_.Invalidate();
     ASSERT_TRUE(
