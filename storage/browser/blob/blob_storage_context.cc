@@ -223,14 +223,6 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::BuildBlobInternal(
                                                 ? TransportQuotaType::MEMORY
                                                 : TransportQuotaType::FILE;
 
-  uint64_t total_memory_needed =
-      content->copy_quota_needed() +
-      (transport_quota_type == TransportQuotaType::MEMORY
-           ? content->transport_quota_needed()
-           : 0);
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.TotalUnsharedSize",
-                          total_memory_needed / 1024);
-
   std::vector<scoped_refptr<BlobDataItem>> items_needing_timestamp;
   std::vector<base::FilePath> file_paths_needing_timestamp;
   for (auto& item : entry->items_) {

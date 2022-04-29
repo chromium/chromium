@@ -456,17 +456,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.TotalUnsharedSize" units="KB" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The total amount of unique memory used to create a blob. Recorded in
-    BlobStorageContext when the blob is finished being created. This does not
-    include memory that is shared with other blobs. If multiple of the same blob
-    item is present, then this number will reflect the size of the single item.
-  </summary>
-</histogram>
-
 <histogram name="Storage.BlobItemSize.File.Unknown" enum="BooleanUnknown"
     expires_after="M87">
   <owner>mek@chromium.org</owner>
