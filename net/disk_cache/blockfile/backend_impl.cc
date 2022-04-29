@@ -1542,7 +1542,7 @@ void BackendImpl::RestartCache(bool failure) {
   if (failure) {
     DCHECK(!num_refs_);
     DCHECK(open_entries_.empty());
-    DelayedCacheCleanup(path_);
+    CleanupDirectorySync(path_);
   } else {
     DeleteCache(path_, false);
   }

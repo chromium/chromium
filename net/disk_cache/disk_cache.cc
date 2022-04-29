@@ -66,6 +66,7 @@ class CacheCreator {
   void DoCallback(int result);
 
   void OnIOComplete(int result);
+  void OnCacheCleanupComplete(int original_error, bool cleanup_result);
 
   const base::FilePath path_;
   disk_cache::ResetHandling reset_handling_;
@@ -217,15 +218,24 @@ void CacheCreator::OnIOComplete(int result) {
   // We are supposed to try again, so delete the object and all files and do so.
   retry_ = true;
   created_cache_.reset();
-  if (!disk_cache::DelayedCacheCleanup(path_)) {
+
+  disk_cache::CleanupDirectory(
+      path_, base::BindOnce(&CacheCreator::OnCacheCleanupComplete,
+                            base::Unretained(this), result));
+}
+
+void CacheCreator::OnCacheCleanupComplete(int original_result,
+                                          bool cleanup_result) {
+  if (!cleanup_result) {
     // Cleaning up the cache directory fails, so this operation should be
     // considered failed.
-    DCHECK_NE(result, net::OK);
-    DCHECK_NE(result, net::ERR_IO_PENDING);
-    return DoCallback(result);
+    DCHECK_NE(original_result, net::OK);
+    DCHECK_NE(original_result, net::ERR_IO_PENDING);
+    DoCallback(original_result);
+    return;
   }
 
-  // The worker thread will start deleting files soon, but the original folder
+  // The worker thread may be deleting files, but the original folder
   // is not there anymore... let's create a new set of files.
   int rv = Run();
   DCHECK_EQ(net::ERR_IO_PENDING, rv);
