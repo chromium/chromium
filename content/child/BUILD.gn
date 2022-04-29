@@ -78,7 +78,6 @@ target(link_target_type, "child") {
     "//content/common",
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
-    "//crypto:platform",
     "//device/base",
     "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
@@ -160,9 +159,7 @@ target(link_target_type, "child") {
     ]
   }
 
-  configs += [
-    "//content:content_implementation",
-  ]
+  configs += [ "//content:content_implementation" ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

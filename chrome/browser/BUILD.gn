@@ -2333,7 +2333,6 @@ static_library("browser") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
-    "//crypto:platform",
     "//device/base",
     "//device/base/synchronization",
     "//device/fido",
@@ -7384,6 +7383,7 @@ static_library("browser") {
     if (is_linux) {
       sources += [ "net/nss_service_linux.cc" ]
     }
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (trial_comparison_cert_verifier_supported) {

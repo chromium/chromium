@@ -15,9 +15,9 @@ static_library("mozilla_security_manager") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//components/strings:components_strings_grit",
-    "//crypto:platform",
     "//net",
     "//third_party/icu",
     "//ui/base",
   ]
+  configs += [ "//build/config/linux/nss" ]
 }

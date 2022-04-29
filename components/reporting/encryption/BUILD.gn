@@ -25,7 +25,6 @@ static_library("primitives") {
   deps = [
     "//base",
     "//crypto",
-    "//crypto:platform",
     "//third_party/boringssl",
   ]
 }
@@ -41,7 +40,6 @@ static_library("testing_primitives") {
     "//base",
     "//base/test:test_support",
     "//crypto",
-    "//crypto:platform",
     "//third_party/boringssl",
   ]
 }

@@ -110,7 +110,6 @@ component("media") {
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//cc/paint",
-    "//crypto:platform",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
     "//third_party/libyuv",

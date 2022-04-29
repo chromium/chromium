@@ -22,6 +22,7 @@ source_set("chromeos") {
   assert(enable_extensions, "ChromeOS Chrome has to be built with extensions")
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_configs = [ "//build/config/linux/nss" ]
 
   public_deps = [
     "//ash/components/security_token_pin",
@@ -3994,7 +3995,6 @@ static_library("test_support") {
     "//components/policy/test_support",
     "//components/reporting/client:test_support",
     "//components/session_manager/core",
-    "//crypto:platform",
     "//google_apis",
     "//google_apis:test_support",
     "//google_apis/common",
@@ -4992,7 +4992,6 @@ source_set("unit_tests") {
     "//components/user_prefs",
     "//components/variations:test_support",
     "//content/test:test_support",
-    "//crypto:platform",
     "//dbus",
     "//device/bluetooth",
     "//google_apis:test_support",

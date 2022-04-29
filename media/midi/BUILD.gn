@@ -159,10 +159,7 @@ component("midi") {
   }
 
   if (use_alsa && use_udev) {
-    deps += [
-      "//crypto",
-      "//crypto:platform",
-    ]
+    deps += [ "//crypto" ]
     libs += [ "asound" ]
     sources += [
       "midi_manager_alsa.cc",

@@ -55,7 +55,6 @@ cast_source_set("pipeline") {
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
     "//crypto",
-    "//crypto:platform",
     "//media",
     "//third_party/boringssl",
   ]

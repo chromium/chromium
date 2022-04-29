@@ -57,7 +57,6 @@ component("crypto") {
   ]
 
   deps = [
-    ":platform",
     "//base",
     "//base/third_party/dynamic_annotations",
   ]
@@ -128,6 +127,7 @@ component("crypto") {
       "nss_util_internal.h",
     ]
     deps += [ "//build:chromeos_buildflags" ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (is_chromeos_ash) {
@@ -168,11 +168,11 @@ test("crypto_unittests") {
       "nss_key_util_unittest.cc",
       "nss_util_unittest.cc",
     ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   deps = [
     ":crypto",
-    ":platform",
     ":test_support",
     "//base",
     "//base/test:run_all_unittests",
@@ -194,6 +194,7 @@ static_library("test_support") {
       "scoped_test_nss_db.cc",
       "scoped_test_nss_db.h",
     ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (is_chromeos_ash) {
@@ -207,24 +208,6 @@ static_library("test_support") {
 
   deps = [
     ":crypto",
-    ":platform",
     "//base",
   ]
-}
-
-# This target historically abstracted between different cryptography and TLS
-# libraries. Now we always use //third_party/boringssl for cryptography and TLS.
-# On Linux and Chrome OS, we additionally use //build/config/linux/nss for some
-# certificate-related platform integration points. Depend on one or both of the
-# individual targets instead of this one.
-#
-# TODO(https://crbug.com/1275165): Remove this target.
-group("platform") {
-  public_deps = [ "//third_party/boringssl" ]
-
-  # Link in NSS if it is used for the platform certificate library
-  # (use_nss_certs).
-  if (use_nss_certs) {
-    public_configs = [ "//build/config/linux/nss" ]
-  }
 }

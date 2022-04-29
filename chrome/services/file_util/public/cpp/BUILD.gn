@@ -72,7 +72,6 @@ if (safe_browsing_mode == 1) {
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
       "//content/test:test_support",
-      "//crypto:platform",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",

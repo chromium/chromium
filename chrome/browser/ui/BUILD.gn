@@ -931,7 +931,6 @@ static_library("ui") {
       "//components/translate/content/android",
       "//components/webauthn/android",
       "//content/public/browser",
-      "//crypto:platform",
       "//device/vr/buildflags",
       "//services/device/public/cpp/usb",
       "//services/device/public/mojom:usb",
@@ -3969,6 +3968,8 @@ static_library("ui") {
       "webui/webui_js_error/webui_js_error_ui.cc",
       "webui/webui_js_error/webui_js_error_ui.h",
     ]
+    deps += [ "//third_party/boringssl" ]
+    configs += [ "//build/config/linux/nss" ]
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
     }

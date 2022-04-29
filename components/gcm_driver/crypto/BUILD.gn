@@ -29,8 +29,8 @@ static_library("crypto") {
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",
     "//crypto",
-    "//crypto:platform",
     "//net",
+    "//third_party/boringssl",
     "//third_party/leveldatabase",
     "//third_party/protobuf:protobuf_lite",
   ]
@@ -70,7 +70,6 @@ source_set("unit_tests") {
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",
     "//crypto",
-    "//crypto:platform",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",

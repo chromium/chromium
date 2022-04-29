@@ -43,10 +43,8 @@ static_library("net") {
       "x509_certificate_model_nss.cc",
       "x509_certificate_model_nss.h",
     ]
-    deps += [
-      "//chrome/third_party/mozilla_security_manager",
-      "//crypto:platform",
-    ]
+    deps += [ "//chrome/third_party/mozilla_security_manager" ]
+    configs += [ "//build/config/linux/nss" ]
     allow_circular_includes_from =
         [ "//chrome/third_party/mozilla_security_manager" ]
   }

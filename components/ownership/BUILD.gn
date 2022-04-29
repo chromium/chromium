@@ -34,7 +34,7 @@ if (is_chromeos_ash) {
     ]
 
     if (use_nss_certs) {
-      public_deps += [ "//crypto:platform" ]
+      public_configs = [ "//build/config/linux/nss" ]
     }
   }
 

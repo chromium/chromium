@@ -204,10 +204,8 @@ static_library("utility") {
       "importer/nss_decryptor_system_nss.cc",
       "importer/nss_decryptor_system_nss.h",
     ]
-    deps += [
-      "//crypto",
-      "//crypto:platform",
-    ]
+    deps += [ "//crypto" ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (enable_basic_printing) {

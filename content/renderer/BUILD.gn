@@ -263,7 +263,6 @@ target(link_target_type, "renderer") {
     "//content/public/child:child_sources",
     "//content/services/shared_storage_worklet",
     "//crypto",
-    "//crypto:platform",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//device/gamepad/public/mojom",

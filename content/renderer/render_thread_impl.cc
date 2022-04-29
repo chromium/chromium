@@ -151,7 +151,6 @@
 #include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/layout.h"

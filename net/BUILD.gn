@@ -1424,6 +1424,12 @@ component("net") {
         "ssl/ssl_platform_key_nss.h",
       ]
     }
+
+    # TODO(https://crbug.com/978854): This is a public config because
+    # multi_threaded_cert_verifier.h depends on NSS. When the linked bug is
+    # fixed, switch this to a non-public config, so NSS usage must be explicit
+    # in the build.
+    public_configs = [ "//build/config/linux/nss" ]
   }
 
   if (is_fuchsia) {
@@ -1685,7 +1691,6 @@ source_set("net_public_deps") {
     ":uri_template",
     "//base",
     "//crypto",
-    "//crypto:platform",
     "//net/third_party/quiche:net_quic_test_tools_proto",
     "//net/third_party/quiche:quiche",
     "//net/traffic_annotation",
@@ -2223,7 +2228,7 @@ static_library("test_support") {
   }
 
   if (use_nss_certs) {
-    public_deps += [ "//crypto:platform" ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (!is_ios) {
@@ -4422,7 +4427,6 @@ test("net_unittests") {
     "//build:chromeos_buildflags",
     "//components/sqlite_proto",
     "//crypto",
-    "//crypto:platform",
     "//crypto:test_support",
     "//net/base/registry_controlled_domains",
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
@@ -4569,6 +4573,7 @@ test("net_unittests") {
         "ssl/ssl_platform_key_nss_unittest.cc",
       ]
     }
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (use_external_gssapi) {

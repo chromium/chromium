@@ -128,7 +128,6 @@ test("chromeos_unittests") {
       "//components/prefs:test_support",
       "//components/proxy_config",
       "//crypto",
-      "//crypto:platform",
       "//dbus:test_support",
       "//google_apis",
       "//net",

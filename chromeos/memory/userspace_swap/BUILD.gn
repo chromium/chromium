@@ -33,7 +33,6 @@ component("userspace_swap") {
     "//chromeos/memory",
     "//components/memory_pressure",
     "//crypto",
-    "//crypto:platform",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//third_party/zlib/google:compression_utils",
   ]

@@ -387,8 +387,8 @@ static_library("test_support") {
     allow_circular_includes_from = [ ":test_support_ui" ]
   }
 
-  if (is_linux || is_chromeos) {
-    public_deps += [ "//crypto:platform" ]
+  if (use_nss_certs) {
+    public_configs = [ "//build/config/linux/nss" ]
   }
 
   if (is_mac) {
@@ -1406,7 +1406,6 @@ if (!is_android) {
       "//content/test:test_support",
       "//courgette:bsdiff",
       "//courgette:courgette_lib",
-      "//crypto:platform",
       "//crypto:test_support",
       "//device/bluetooth:mocks",
       "//device/fido:cablev2_test_util",
@@ -5708,7 +5707,6 @@ test("unit_tests") {
     "//content/public/app",
     "//content/test:test_support",
     "//courgette:courgette_lib",
-    "//crypto:platform",
     "//crypto:test_support",
     "//device/bluetooth:mocks",
     "//device/fido",
@@ -8789,7 +8787,6 @@ if (!is_android) {
         "//components/sync:test_support_model",
         "//content/app/resources",
         "//content/test:test_support",
-        "//crypto:platform",
         "//crypto:test_support",
         "//extensions/buildflags",
         "//google_apis:test_support",
@@ -9013,7 +9010,6 @@ if (!is_android) {
       "//content/app/resources",
       "//content/test:browsertest_support",
       "//content/test:test_support",
-      "//crypto:platform",
       "//crypto:test_support",
       "//device/fido:test_support",
       "//extensions/buildflags",
@@ -9720,7 +9716,6 @@ if (!is_android) {
       "//components/sync_device_info:test_support",
       "//components/undo",
       "//components/webapps/browser",
-      "//crypto:platform",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",
@@ -9819,7 +9814,6 @@ if (!is_android) {
       "//components/password_manager/core/browser",
       "//components/spellcheck/common",
       "//components/sync",
-      "//crypto:platform",
       "//testing/gmock",
       "//testing/gtest",
       "//testing/perf",
@@ -9946,7 +9940,6 @@ if (!is_android && !is_fuchsia) {
       "//components/sync:test_support_model",
       "//content/app/resources",
       "//content/test:test_support",
-      "//crypto:platform",
       "//crypto:test_support",
       "//google_apis:test_support",
       "//net",
@@ -10075,7 +10068,6 @@ if (!is_android) {
         "//components/user_manager:user_manager",
         "//content/app/resources",
         "//content/test:test_support",
-        "//crypto:platform",
         "//crypto:test_support",
         "//google_apis:test_support",
         "//net",

@@ -60,8 +60,8 @@ static_library("webcrypto") {
   deps = [
     "//base",
     "//crypto",
-    "//crypto:platform",
     "//third_party/blink/public:blink_headers",
+    "//third_party/boringssl",
   ]
 }
 
@@ -88,10 +88,10 @@ source_set("unit_tests") {
     ":webcrypto",
     "//base/test:test_support",
     "//crypto",
-    "//crypto:platform",
     "//testing/gtest",
     "//testing/perf",
     "//third_party/blink/public:blink",
+    "//third_party/boringssl",
     "//third_party/re2",
   ]
 }
@@ -110,7 +110,6 @@ source_set("fuzzer_support") {
     ":webcrypto",
     "//base",
     "//crypto",
-    "//crypto:platform",
     "//mojo/core/embedder",
     "//third_party/blink/public:blink",
   ]

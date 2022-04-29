@@ -45,9 +45,6 @@ component("os_crypt") {
     "//build:chromeos_buildflags",
     "//components/prefs",
     "//crypto",
-
-    # TODO(tfarina): Remove this dep when http://crbug.com/363749 is fixed.
-    "//crypto:platform",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
