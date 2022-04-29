@@ -80,7 +80,7 @@ constexpr auto kMinimalServices = base::make_span((const char* const[]){
 
 // DebugData service is needed only for profiling.
 #if BUILDFLAG(CLANG_PROFILING)
-    "fuchsia.debugdata.DebugData",
+    "fuchsia.debugdata.Publisher",
 #endif
 
     fuchsia::intl::PropertyProvider::Name_,
