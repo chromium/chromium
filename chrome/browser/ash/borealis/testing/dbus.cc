@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/borealis/testing/dbus.h"
 
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 
 namespace borealis {
 
@@ -35,15 +35,15 @@ chromeos::FakeCiceroneClient* FakeCiceroneHelper::FakeCiceroneClient() {
 
 FakeSeneschalHelper::FakeSeneschalHelper(BasicDBusHelper* basic_helper) {
   DCHECK(basic_helper);
-  chromeos::SeneschalClient::InitializeFake();
+  ash::SeneschalClient::InitializeFake();
 }
 
 FakeSeneschalHelper::~FakeSeneschalHelper() {
-  chromeos::SeneschalClient::Shutdown();
+  ash::SeneschalClient::Shutdown();
 }
 
-chromeos::FakeSeneschalClient* FakeSeneschalHelper::FakeSeneschalClient() {
-  return chromeos::FakeSeneschalClient::Get();
+ash::FakeSeneschalClient* FakeSeneschalHelper::FakeSeneschalClient() {
+  return ash::FakeSeneschalClient::Get();
 }
 
 FakeDlcserviceHelper::FakeDlcserviceHelper(BasicDBusHelper* basic_helper) {

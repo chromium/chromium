@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
@@ -54,7 +55,6 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -143,7 +143,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
-  InitializeDBusClient<chromeos::SeneschalClient>(bus);
+  InitializeDBusClient<SeneschalClient>(bus);
   InitializeDBusClient<chromeos::SessionManagerClient>(bus);
   InitializeDBusClient<SpacedClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
@@ -217,7 +217,7 @@ void ShutdownDBus() {
   SystemClockClient::Shutdown();
   SpacedClient::Shutdown();
   chromeos::SessionManagerClient::Shutdown();
-  chromeos::SeneschalClient::Shutdown();
+  SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
   if (ash::features::IsRgbKeyboardEnabled()) {
     RgbkbdClient::Shutdown();

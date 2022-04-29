@@ -22,11 +22,11 @@
 #include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/chunneld/fake_chunneld_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,7 +125,7 @@ TEST_F(BorealisContextTest, CiceroneFailure) {
 }
 
 TEST_F(BorealisContextTest, SeneschalFailure) {
-  auto* seneschal_client = chromeos::FakeSeneschalClient::Get();
+  auto* seneschal_client = ash::FakeSeneschalClient::Get();
 
   seneschal_client->NotifySeneschalStopped();
   histogram_tester_.ExpectUniqueSample(

@@ -163,13 +163,6 @@ proto_library("plugin_vm_service_proto") {
   proto_out_dir = "chromeos/dbus/plugin_vm_service"
 }
 
-proto_library("seneschal_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto" ]
-
-  proto_out_dir = "chromeos/dbus/seneschal"
-}
-
 proto_library("vm_applications_apps_proto") {
   sources = [ "//third_party/cros_system_api/dbus/vm_applications/apps.proto" ]
 

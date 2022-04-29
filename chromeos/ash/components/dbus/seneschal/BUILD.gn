@@ -2,13 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("seneschal") {
-  defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
+  defines = [ "IS_SENESCHAL_IMPL" ]
   deps = [
+    ":seneschal_proto",
     "//base",
-    "//chromeos/dbus:seneschal_proto",
     "//chromeos/dbus/cicerone",
     "//chromeos/dbus/common",
     "//dbus",
@@ -20,4 +23,11 @@ component("seneschal") {
     "seneschal_client.cc",
     "seneschal_client.h",
   ]
+}
+
+proto_library("seneschal_proto") {
+  sources =
+      [ "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/seneschal"
 }

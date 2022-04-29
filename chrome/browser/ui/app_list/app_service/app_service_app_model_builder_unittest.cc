@@ -58,10 +58,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -735,7 +735,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
     AppServiceAppModelBuilderTest::SetUp();
     test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
     test_helper_->ReInitializeAppServiceIntegration();
@@ -752,7 +752,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     // DBusThreadManager to ensure all keyed services that might rely on DBus
     // clients are destroyed.
     profile_.reset();
-    chromeos::SeneschalClient::Shutdown();
+    ash::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
@@ -986,10 +986,10 @@ class PluginVmAppTest : public testing::Test {
       chromeos::DBusThreadManager::Initialize();
       chromeos::CiceroneClient::InitializeFake();
       chromeos::ConciergeClient::InitializeFake();
-      chromeos::SeneschalClient::InitializeFake();
+      ash::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
-      chromeos::SeneschalClient::Shutdown();
+      ash::SeneschalClient::Shutdown();
       chromeos::ConciergeClient::Shutdown();
       chromeos::CiceroneClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();

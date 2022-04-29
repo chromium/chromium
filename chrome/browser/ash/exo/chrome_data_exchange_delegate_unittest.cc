@@ -24,11 +24,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -75,7 +75,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
+    SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
     test_helper_ =
@@ -109,7 +109,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
         storage::FileSystemMountOption(), crostini_dir_);
 
     // DBus seneschal client.
-    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
+    fake_seneschal_client_ = FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
   }
 
@@ -117,7 +117,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_.reset();
-    chromeos::SeneschalClient::Shutdown();
+    SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
@@ -138,7 +138,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   std::string crostini_mount_name_;
   base::FilePath crostini_dir_;
 
-  chromeos::FakeSeneschalClient* fake_seneschal_client_ = nullptr;
+  FakeSeneschalClient* fake_seneschal_client_ = nullptr;
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {

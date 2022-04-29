@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_TESTING_DBUS_H_
 #define CHROME_BROWSER_ASH_BOREALIS_TESTING_DBUS_H_
 
+namespace ash {
+class FakeSeneschalClient;
+}
+
 namespace chromeos {
 class FakeCiceroneClient;
 class FakeConciergeClient;
-class FakeSeneschalClient;
 class FakeDlcserviceClient;
 }  // namespace chromeos
 
@@ -35,7 +38,7 @@ class FakeSeneschalHelper {
   ~FakeSeneschalHelper();
 
   // Returns a handle to the dbus fake for seneschal.
-  chromeos::FakeSeneschalClient* FakeSeneschalClient();
+  ash::FakeSeneschalClient* FakeSeneschalClient();
 };
 
 class FakeDlcserviceHelper {

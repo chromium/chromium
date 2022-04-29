@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 
 namespace guest_os {
 
@@ -55,7 +55,7 @@ enum class FailureClasses {
 // Take care to ignore VMs owned by other implementers.
 class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
                                 chromeos::CiceroneClient::Observer,
-                                chromeos::SeneschalClient::Observer,
+                                ash::SeneschalClient::Observer,
                                 chromeos::ChunneldClient::Observer {
  public:
   explicit GuestOsStabilityMonitor(const std::string& histogram);
@@ -79,7 +79,7 @@ class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
   void CiceroneServiceStopped() override;
   void CiceroneServiceStarted() override;
 
-  //  chromeos::SeneschalClient::Observer::
+  //  ash::SeneschalClient::Observer::
   void SeneschalServiceStopped() override;
   void SeneschalServiceStarted() override;
 
@@ -95,8 +95,7 @@ class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
   base::ScopedObservation<chromeos::CiceroneClient,
                           chromeos::CiceroneClient::Observer>
       cicerone_observer_;
-  base::ScopedObservation<chromeos::SeneschalClient,
-                          chromeos::SeneschalClient::Observer>
+  base::ScopedObservation<ash::SeneschalClient, ash::SeneschalClient::Observer>
       seneschal_observer_;
   base::ScopedObservation<chromeos::ChunneldClient,
                           chromeos::ChunneldClient::Observer>

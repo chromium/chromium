@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/seneschal/seneschal_service.pb.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace guest_os {

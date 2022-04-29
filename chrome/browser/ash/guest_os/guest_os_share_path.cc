@@ -24,8 +24,8 @@
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -68,7 +68,7 @@ void OnVmRestartedForSeneschal(
     return;
   }
   request.set_handle(vm_info->info.seneschal_server_handle());
-  chromeos::SeneschalClient::Get()->SharePath(
+  ash::SeneschalClient::Get()->SharePath(
       request,
       base::BindOnce(&OnSeneschalSharePathResponse, std::move(callback)));
 }
@@ -408,7 +408,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     request.set_handle(vm_info->info.seneschal_server_handle());
   }
 
-  chromeos::SeneschalClient::Get()->SharePath(
+  ash::SeneschalClient::Get()->SharePath(
       request,
       base::BindOnce(&OnSeneschalSharePathResponse, std::move(callback)));
 }
@@ -472,7 +472,7 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
   }
 
   request.set_path(unshare_path.value());
-  chromeos::SeneschalClient::Get()->UnsharePath(
+  ash::SeneschalClient::Get()->UnsharePath(
       request,
       base::BindOnce(&OnSeneschalUnsharePathResponse, std::move(callback)));
 }

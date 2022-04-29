@@ -42,11 +42,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -326,7 +326,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   chromeos::DBusThreadManager::Initialize();
   chromeos::CiceroneClient::InitializeFake();
   chromeos::ConciergeClient::InitializeFake();
-  chromeos::SeneschalClient::InitializeFake();
+  ash::SeneschalClient::InitializeFake();
 
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(profile_.get());
@@ -498,7 +498,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
             url.virtual_path().value());
 
   profile_.reset();
-  chromeos::SeneschalClient::Shutdown();
+  ash::SeneschalClient::Shutdown();
   chromeos::ConciergeClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
@@ -809,7 +809,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   chromeos::DBusThreadManager::Initialize();
   chromeos::CiceroneClient::InitializeFake();
   chromeos::ConciergeClient::InitializeFake();
-  chromeos::SeneschalClient::InitializeFake();
+  ash::SeneschalClient::InitializeFake();
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm"});

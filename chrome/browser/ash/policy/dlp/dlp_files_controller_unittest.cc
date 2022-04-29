@@ -27,12 +27,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/drive/drive_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -236,7 +236,7 @@ class DlpFilesExternalDestinationTest
     chromeos::DBusThreadManager::Initialize();
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
 
     crostini::CrostiniManager* crostini_manager =
         crostini::CrostiniManager::GetForProfile(profile_.get());
@@ -271,7 +271,7 @@ class DlpFilesExternalDestinationTest
     chromeos::DBusThreadManager::Shutdown();
     chromeos::CiceroneClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
-    chromeos::SeneschalClient::Shutdown();
+    ash::SeneschalClient::Shutdown();
 
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_
-#define CHROMEOS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_
 
 #include "base/observer_list.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // FakeSeneschalClient is a stub implementation of SeneschalClient used for
 // testing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
-    : public SeneschalClient {
+class COMPONENT_EXPORT(SENESCHAL) FakeSeneschalClient : public SeneschalClient {
  public:
   // Returns the fake global instance if initialized. May return null.
   static FakeSeneschalClient* Get();
@@ -80,6 +79,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
   vm_tools::seneschal::UnsharePathResponse unshare_path_response_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SENESCHAL_FAKE_SENESCHAL_CLIENT_H_

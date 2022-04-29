@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -80,4 +80,4 @@ void FakeSeneschalClient::UnsharePath(
       FROM_HERE, base::BindOnce(std::move(callback), unshare_path_response_));
 }
 
-}  // namespace chromeos
+}  // namespace ash
