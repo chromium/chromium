@@ -548,7 +548,7 @@ union BluetoothResult {
 
 // Information related to one of a device's Bluetooth adapters.
 //
-// NextMinVersion: 1, NextIndex: 4
+// NextMinVersion: 2, NextIndex: 9
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -558,6 +558,56 @@ struct BluetoothAdapterInfo {
   bool powered@2;
   // The number of devices connected to this adapter.
   uint32 num_connected_devices@3;
+  // The info of connected devices to this adapter.
+  [MinVersion=1] array<BluetoothDeviceInfo>? connected_devices@4;
+  // The adapter is visible or not.
+  [MinVersion=1] bool discoverable@5;
+  // The device discovery procedure is active or not.
+  [MinVersion=1] bool discovering@6;
+  // The list of the available local services.
+  [MinVersion=1] array<string>? uuids@7;
+  // Local Device ID information.
+  [MinVersion=1] string? modalias@8;
+};
+
+
+// Information related to one of a adapter's Bluetooth connected devices.
+//
+// NextMinVersion: 1, NextIndex: 8
+struct BluetoothDeviceInfo {
+  // The MAC address of the device.
+  string address@0;
+  // The name of the device.
+  string? name@1;
+  // The carriers supported by this remote device ("BR/EDR", "LE", or "DUAL").
+  BluetoothDeviceType type@2;
+  // The external appearance of the device.
+  NullableUint16 appearance@3;
+  // Remote Device ID information.
+  string? modalias@4;
+  // Received Signal Strength Indicator.
+  NullableInt16 rssi@5;
+  // The Maximum Transmission Unit used in ATT communication.
+  NullableUint16 mtu@6;
+  // The list of the available remote services.
+  array<string>? uuids@7;
+};
+
+// An enumeration of type in Bluetooth device info.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Extensible]
+enum BluetoothDeviceType {
+  // An enum value not defined in this version of the enum definition.
+  [Default] kUnmappedEnumField = 0,
+  // Unfound type.
+  kUnfound = 1,
+  // BR/EDR.
+  kBrEdr = 2,
+  // LE.
+  kLe = 3,
+  // DUAL.
+  kDual = 4,
 };
 
 // System probe result. Can either be populated with the SystemInfo or an error
