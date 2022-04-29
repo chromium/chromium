@@ -7,10 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace content {
 
 class WebUIControllerFactory;
+class WebUIConfig;
 
 // A class to manage the registration of WebUIControllerFactory instances in
 // tests. Registers the given |factory| on construction and unregisters it
@@ -28,6 +30,21 @@ class ScopedWebUIControllerFactoryRegistration {
  private:
   raw_ptr<content::WebUIControllerFactory> factory_;
   raw_ptr<content::WebUIControllerFactory> factory_to_replace_;
+};
+
+// A class to manage the registration of WebUIConfig instances in tests.
+// Registers the given |webui_config| on construction and unregisters it
+// on destruction. This should be used in unit tests where multiple tests can
+// run in the same process and is not needed for browser tests, which are each
+// run in their own process.
+class ScopedWebUIConfigRegistration {
+ public:
+  explicit ScopedWebUIConfigRegistration(
+      std::unique_ptr<WebUIConfig> webui_config);
+  ~ScopedWebUIConfigRegistration();
+
+ private:
+  const url::Origin webui_config_origin_;
 };
 
 // A class used in tests to ensure that registered WebUIControllerFactory and

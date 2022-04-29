@@ -209,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   // Navigate to a different WebUI type and ensure that the SiteInstance
   // has changed and the new process also has WebUI bindings.
   const GURL web_ui_url2(GetWebUIURL(kChromeUIGpuHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
-      web_contents->GetBrowserContext(), web_ui_url2));
+  EXPECT_TRUE(WebUIConfigMap::GetInstance().GetConfig(
+      web_contents->GetBrowserContext(), url::Origin::Create(web_ui_url2)));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url2));
   auto* new_site_instance = web_contents->GetSiteInstance();
   EXPECT_NE(orig_site_instance, new_site_instance);

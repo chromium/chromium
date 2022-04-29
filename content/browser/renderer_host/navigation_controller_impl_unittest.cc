@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_url_handler_impl.h"
+#include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -31,8 +32,6 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/webui/content_web_ui_controller_factory.h"
-#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/render_view_host.h"
@@ -211,10 +210,6 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
     WebContents* web_contents = RenderViewHostImplTestHarness::web_contents();
     ASSERT_TRUE(web_contents);  // The WebContents should be created by now.
     WebContentsObserver::Observe(web_contents);
-
-    factory_registration_ =
-        std::make_unique<ScopedWebUIControllerFactoryRegistration>(
-            ContentWebUIControllerFactory::GetInstance());
   }
 
   // WebContentsObserver:
@@ -276,10 +271,6 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   size_t navigation_entries_deleted_counter_ = 0;
   PrunedDetails last_navigation_entry_pruned_details_;
   ReloadType last_reload_type_;
-
- private:
-  std::unique_ptr<ScopedWebUIControllerFactoryRegistration>
-      factory_registration_;
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {
@@ -944,6 +935,8 @@ TEST_F(NavigationControllerTest, LoadURL_ExistingPending) {
 // navigation to a cross-process, privileged URL. This will happen if the user
 // hits back, but before that commits, they navigate somewhere new.
 TEST_F(NavigationControllerTest, LoadURL_PrivilegedPending) {
+  ScopedWebUIConfigRegistration gpu_webui(
+      std::make_unique<GpuInternalsUIConfig>());
   NavigationControllerImpl& controller = controller_impl();
 
   // First make some history, starting with a privileged URL.

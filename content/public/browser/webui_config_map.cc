@@ -4,6 +4,7 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/web_contents.h"
@@ -103,6 +104,11 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
     return nullptr;
 
   return config.get();
+}
+
+void WebUIConfigMap::RemoveForTesting(const url::Origin& origin) {
+  DCHECK(base::Contains(configs_map_, origin));
+  configs_map_.erase(origin);
 }
 
 }  // namespace content

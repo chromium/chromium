@@ -4,8 +4,13 @@
 
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
+#include "base/strings/strcat.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
+#include "content/public/common/url_constants.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -30,6 +35,27 @@ ScopedWebUIControllerFactoryRegistration::
     content::WebUIControllerFactory::RegisterFactory(factory_to_replace_);
 }
 
+ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
+    std::unique_ptr<WebUIConfig> webui_config)
+    : webui_config_origin_(url::Origin::Create(GURL(
+          base::StrCat({webui_config->scheme(), url::kStandardSchemeSeparator,
+                        webui_config->host()})))) {
+  if (webui_config_origin_.scheme() == kChromeUIScheme) {
+    WebUIConfigMap::GetInstance().AddWebUIConfig(std::move(webui_config));
+    return;
+  }
+  if (webui_config_origin_.scheme() == kChromeUIUntrustedScheme) {
+    WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+        std::move(webui_config));
+    return;
+  }
+  NOTREACHED();
+}
+
+ScopedWebUIConfigRegistration::~ScopedWebUIConfigRegistration() {
+  WebUIConfigMap::GetInstance().RemoveForTesting(webui_config_origin_);
+}
+
 void CheckForLeakedWebUIRegistrations::OnTestStart(
     const testing::TestInfo& test_info) {
   // Call GetInstance() to ensure WebUIConfig registers its
@@ -42,15 +68,12 @@ void CheckForLeakedWebUIRegistrations::OnTestStart(
 
 void CheckForLeakedWebUIRegistrations::OnTestEnd(
     const testing::TestInfo& test_info) {
-  // TODO(crbug.com/1317510): Right now WebUIConfigs are not used in unit tests,
-  // so there is no ScopedWebUIControllerFactoryRegistration equivalent for
-  // WebUIConfigs. As we migrate from WebUIControllerFactory to WebUIConfig this
-  // EXPECT_EQ will get hit. At that point, we should implement
-  // ScopedWebUIConfigRegistration.
   EXPECT_EQ(initial_size_of_webui_config_map_,
             WebUIConfigMap::GetInstance().GetSizeForTesting())
       << "A WebUIConfig was registered by a test but never unregistered. This "
-         "can cause flakiness in later tests.";
+         "can cause flakiness in later tests. Please use "
+         "ScopedWebUIConfigRegistration to ensure that registered configs are "
+         "unregistered.";
 
   EXPECT_EQ(
       initial_num_factories_registered_,

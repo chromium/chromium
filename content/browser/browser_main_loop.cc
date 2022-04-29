@@ -96,6 +96,7 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/browser/utility_process_host.h"
 #include "content/browser/webrtc/webrtc_internals.h"
+#include "content/browser/webui/content_web_ui_configs.h"
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/common/content_switches_internal.h"
@@ -703,6 +704,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
                  "BrowserMainLoop::Subsystem:ContentWebUIController");
     WebUIControllerFactory::RegisterFactory(
         ContentWebUIControllerFactory::GetInstance());
+    RegisterContentWebUIConfigs();
   }
 
   {

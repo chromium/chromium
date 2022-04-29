@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
-#include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
 #include "content/browser/media/media_internals_ui.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
@@ -37,7 +36,6 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
 #if !BUILDFLAG(IS_ANDROID)
       url.host_piece() == kChromeUITracingHost ||
 #endif
-      url.host_piece() == kChromeUIGpuHost ||
       url.host_piece() == kChromeUIHistogramHost ||
       url.host_piece() == kChromeUIIndexedDBInternalsHost ||
       url.host_piece() == kChromeUIMediaInternalsHost ||
@@ -64,8 +62,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                            const GURL& url) {
   if (!url.SchemeIs(kChromeUIScheme))
     return nullptr;
-  if (url.host_piece() == kChromeUIGpuHost)
-    return std::make_unique<GpuInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIHistogramHost)
     return std::make_unique<HistogramsInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIIndexedDBInternalsHost)

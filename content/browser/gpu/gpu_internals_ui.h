@@ -5,9 +5,20 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 #define CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
+
+class CONTENT_EXPORT GpuInternalsUIConfig : public WebUIConfig {
+ public:
+  GpuInternalsUIConfig();
+
+  // WebUIConfig
+  std::unique_ptr<WebUIController> CreateWebUIController(
+      WebUI* web_ui) override;
+};
 
 class GpuInternalsUI : public WebUIController {
  public:
@@ -20,4 +31,3 @@ class GpuInternalsUI : public WebUIController {
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
-

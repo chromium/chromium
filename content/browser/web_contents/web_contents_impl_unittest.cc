@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -29,8 +30,6 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/webui/content_web_ui_controller_factory.h"
-#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -148,9 +147,6 @@ class WebContentsImplTest : public RenderViewHostImplTestHarness {
   // Instantiate LacrosService for WakeLock support.
   chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
 #endif
-
-  ScopedWebUIControllerFactoryRegistration factory_registration_{
-      ContentWebUIControllerFactory::GetInstance()};
 };
 
 class TestWebContentsObserver : public WebContentsObserver {
@@ -1190,6 +1186,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
   const bool will_change_site_instance =
       IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
   // Start with a web ui page, which gets a new RVH with WebUI bindings.
+  ScopedWebUIConfigRegistration gpu_webui(
+      std::make_unique<GpuInternalsUIConfig>());
   GURL url1(std::string(kChromeUIScheme) + "://" +
             std::string(kChromeUIGpuHost));
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url1);
@@ -1328,6 +1326,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
       BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start with a web ui page, which gets a new RFH with WebUI bindings.
+  ScopedWebUIConfigRegistration gpu_webui(
+      std::make_unique<GpuInternalsUIConfig>());
   GURL url1(std::string(kChromeUIScheme) + "://" +
             std::string(kChromeUIGpuHost));
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url1);
@@ -2334,6 +2334,8 @@ TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
 // Tests that GetRelatedActiveContentsCount tracks BrowsingInstance changes
 // from WebUI.
 TEST_F(WebContentsImplTest, ActiveContentsCountChangeBrowsingInstance) {
+  ScopedWebUIConfigRegistration gpu_webui(
+      std::make_unique<GpuInternalsUIConfig>());
   scoped_refptr<SiteInstance> instance(
       SiteInstance::Create(browser_context()));
 

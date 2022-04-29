@@ -2638,7 +2638,7 @@ IN_PROC_BROWSER_TEST_P(RFHMProcessPerTabTest, MAYBE_BackFromWebUI) {
 //   browsing instances, but should require a new site instance.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, WebUIGetsBindings) {
   GURL url1(std::string(kChromeUIScheme) + "://" +
-            std::string(kChromeUIGpuHost));
+            std::string(kChromeUIUkmHost));
   GURL url2(std::string(kChromeUIScheme) + "://" +
             std::string(kChromeUIHistogramHost));
 
