@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 
-#include "base/android/locale_utils.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -60,10 +59,12 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordDomainCapabilitiesFetching)) {
+    // TODO(crbug.com/1314010): Replace these dependencies by a |Dependencies|
+    // or |PlatformDependencies| object.
     std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
         autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
             browser_context, chrome::GetChannel(), GetCountryCode(),
-            base::android::GetDefaultLocaleString());
+            g_browser_process->GetApplicationLocale());
 
     std::unique_ptr<CapabilitiesServiceImpl> service =
         std::make_unique<CapabilitiesServiceImpl>(

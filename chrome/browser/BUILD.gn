@@ -1034,6 +1034,8 @@ static_library("browser") {
     "password_manager/field_info_manager_factory.h",
     "password_manager/password_reuse_manager_factory.cc",
     "password_manager/password_reuse_manager_factory.h",
+    "password_manager/password_scripts_fetcher_factory.cc",
+    "password_manager/password_scripts_fetcher_factory.h",
     "password_manager/password_store_backend_sync_delegate_impl.cc",
     "password_manager/password_store_backend_sync_delegate_impl.h",
     "password_manager/password_store_factory.cc",
@@ -3260,8 +3262,6 @@ static_library("browser") {
       "password_manager/android/save_update_password_message_delegate.h",
       "password_manager/android/update_password_infobar_delegate_android.cc",
       "password_manager/android/update_password_infobar_delegate_android.h",
-      "password_manager/password_scripts_fetcher_factory.cc",
-      "password_manager/password_scripts_fetcher_factory.h",
       "payments/android/service_worker_payment_app_bridge.cc",
       "permissions/grouped_permission_infobar_delegate_android.cc",
       "permissions/grouped_permission_infobar_delegate_android.h",
@@ -4605,7 +4605,7 @@ static_library("browser") {
     }
   }
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [
       "autocomplete/tab_matcher_desktop.cc",
       "autocomplete/tab_matcher_desktop.h",

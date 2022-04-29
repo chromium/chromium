@@ -333,27 +333,27 @@ static_library("browser") {
     sources += [
       "built_in_backend_to_android_backend_migrator.cc",
       "built_in_backend_to_android_backend_migrator.h",
-      "capabilities_service.h",
-      "capabilities_service_impl.cc",
-      "capabilities_service_impl.h",
-      "password_scripts_fetcher.h",
-      "password_scripts_fetcher_impl.cc",
-      "password_scripts_fetcher_impl.h",
       "password_store_backend_migration_decorator.cc",
       "password_store_backend_migration_decorator.h",
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
-      "saved_passwords_capabilities_fetcher.cc",
-      "saved_passwords_capabilities_fetcher.h",
     ]
-    deps += [ "//components/autofill_assistant/browser/public" ]
   }
 
   if (!is_ios) {
     sources += [
+      "capabilities_service.h",
+      "capabilities_service_impl.cc",
+      "capabilities_service_impl.h",
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
+      "password_scripts_fetcher.h",
+      "password_scripts_fetcher_impl.cc",
+      "password_scripts_fetcher_impl.h",
+      "saved_passwords_capabilities_fetcher.cc",
+      "saved_passwords_capabilities_fetcher.h",
     ]
+    deps += [ "//components/autofill_assistant/browser/public" ]
   }
 
   if (!is_android && !is_ios) {
