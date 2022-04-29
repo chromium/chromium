@@ -739,7 +739,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb;
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(1);
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(0);
-  EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   histogram_tester_.ExpectUniqueSample(
@@ -753,8 +752,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
-  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
-      web_contents1, DlpRulesManager::Restriction::kScreenshot));
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
@@ -808,7 +805,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb;
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(0);
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(1);
-  EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   histogram_tester_.ExpectUniqueSample(
@@ -822,7 +818,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
-  EXPECT_FALSE(helper_->HasAnyContentCached());
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
@@ -1258,8 +1253,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, true, 1);
 
-  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
-      web_contents, DlpRulesManager::Restriction::kScreenShare));
   // The contents should already be cached as allowed by the user, so this
   // should not trigger a new warning. We have to switch the level in order to
   // trigger a proper check of restrictions, otherwise it would be skipped
@@ -1327,7 +1320,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser(), ui::VKEY_ESCAPE, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
-  EXPECT_FALSE(helper_->HasAnyContentCached());
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenShareWarnProceededUMA, false, 1);
   histogram_tester_.ExpectBucketCount(
@@ -1535,8 +1527,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
-  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
-      web_contents, DlpRulesManager::Restriction::kScreenShare));
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
                         /*total_count=*/2,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
@@ -1569,7 +1559,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
               DlpRulesManager::Level::kWarn, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareBlockedNotificationId));
-  EXPECT_FALSE(helper_->HasAnyContentCached());
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
                         /*total_count=*/1,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,

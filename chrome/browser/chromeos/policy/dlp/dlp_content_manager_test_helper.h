@@ -41,12 +41,6 @@ class DlpContentManagerTestHelper {
 
   void ResetWarnNotifierForTesting();
 
-  bool HasContentCachedForRestriction(
-      content::WebContents* web_contents,
-      DlpRulesManager::Restriction restriction) const;
-
-  bool HasAnyContentCached() const;
-
   int ActiveWarningDialogsCount() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

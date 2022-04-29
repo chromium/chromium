@@ -605,8 +605,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
                                               false, false, false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
-  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
-      web_contents, DlpRulesManager::Restriction::kPrinting));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
@@ -663,8 +661,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
 
-  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
-      web_contents, DlpRulesManager::Restriction::kScreenShare));
   // The contents should already be cached as allowed by the user, so this
   // should not trigger a new warning.
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);

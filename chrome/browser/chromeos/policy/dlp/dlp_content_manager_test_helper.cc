@@ -76,19 +76,6 @@ void DlpContentManagerTestHelper::ResetWarnNotifierForTesting() {
   manager_->ResetWarnNotifierForTesting();
 }
 
-bool DlpContentManagerTestHelper::HasContentCachedForRestriction(
-    content::WebContents* web_contents,
-    DlpRulesManager::Restriction restriction) const {
-  DCHECK(manager_);
-  return manager_->user_allowed_contents_cache_.Contains(web_contents,
-                                                         restriction);
-}
-
-bool DlpContentManagerTestHelper::HasAnyContentCached() const {
-  DCHECK(manager_);
-  return manager_->user_allowed_contents_cache_.GetSizeForTesting() != 0;
-}
-
 int DlpContentManagerTestHelper::ActiveWarningDialogsCount() const {
   DCHECK(manager_);
   return manager_->warn_notifier_->ActiveWarningDialogsCountForTesting();
