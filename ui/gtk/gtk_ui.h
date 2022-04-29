@@ -71,7 +71,7 @@ class GtkUi : public views::LinuxUI {
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
 
   // views::LinuxUI:
-  void Initialize() override;
+  bool Initialize() override;
   bool GetTint(int id, color_utils::HSL* tint) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;

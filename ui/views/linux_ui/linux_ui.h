@@ -100,7 +100,7 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // running with the "--ash" flag.)
   static LinuxUI* instance();
 
-  virtual void Initialize() = 0;
+  virtual bool Initialize() = 0;
   virtual bool GetTint(int id, color_utils::HSL* tint) const = 0;
   virtual bool GetColor(int id,
                         SkColor* color,

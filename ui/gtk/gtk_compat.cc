@@ -151,30 +151,15 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor, uint32_t micro) {
 }
 
 DISABLE_CFI_ICALL
-void GtkInit(const std::vector<std::string>& args) {
-  static void* gtk_init = DlSym(GetLibGtk(), "gtk_init");
-  if (GtkCheckVersion(4)) {
-    DlCast<void()>(gtk_init)();
-  } else {
-    // gtk_init() modifies argv, so make a copy first.
-    size_t args_chars = 0;
-    for (const auto& arg : args)
-      args_chars += arg.size() + 1;
-    std::vector<char> args_copy(args_chars);
-    std::vector<char*> argv;
-    char* dst = args_copy.data();
-    for (const auto& arg : args) {
-      argv.push_back(strcpy(dst, arg.c_str()));
-      dst += arg.size() + 1;
-    }
+bool GtkInitCheck(int* argc, char** argv) {
+  static void* gtk_init_check = DlSym(GetLibGtk(), "gtk_init_check");
+  if (GtkCheckVersion(4))
+    return DlCast<gboolean()>(gtk_init_check)();
 
-    int gtk_argc = argv.size();
-    char** gtk_argv = argv.data();
-    {
-      // http://crbug.com/423873
-      ANNOTATE_SCOPED_MEMORY_LEAK;
-      DlCast<void(int*, char***)>(gtk_init)(&gtk_argc, &gtk_argv);
-    }
+  {
+    // http://crbug.com/423873
+    ANNOTATE_SCOPED_MEMORY_LEAK;
+    return DlCast<gboolean(int*, char***)>(gtk_init_check)(argc, &argv);
   }
 }
 

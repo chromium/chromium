@@ -11,9 +11,6 @@
 #include <gtk/gtk.h>
 #include <gtk/gtkunixprint.h>
 
-#include <string>
-#include <vector>
-
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,7 +47,7 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor = 0, uint32_t micro = 0);
 // The below functions replace GTK functions whose interface has
 // changed across versions, but whose (symbol) names have not.
 
-void GtkInit(const std::vector<std::string>& args);
+[[nodiscard]] bool GtkInitCheck(int* argc, char** argv);
 
 gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context);
 

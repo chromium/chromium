@@ -345,33 +345,8 @@ void ListGtkThemes(const base::FilePath path,
 }  // namespace
 
 GtkUi::GtkUi() : window_frame_actions_() {
-  using Action = views::LinuxUI::WindowFrameAction;
-  using ActionSource = views::LinuxUI::WindowFrameActionSource;
-
   DCHECK(!g_gtk_ui);
   g_gtk_ui = this;
-
-  CHECK(LoadGtk());
-
-  auto* delegate = ui::LinuxUiDelegate::GetInstance();
-  DCHECK(delegate);
-  platform_ = CreateGtkUiPlatform(delegate->GetBackend());
-
-  // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
-  // do it once it is ready.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->SetVar("NO_AT_BRIDGE", "1");
-  GtkInitFromCommandLine(*base::CommandLine::ForCurrentProcess());
-  native_theme_ = NativeThemeGtk::instance();
-
-  // This creates an extra thread that may race against GtkInitFromCommandLine,
-  // so this must be done after to avoid the race condition.
-  ShellDialogLinux::Initialize();
-
-  window_frame_actions_ = {
-      {ActionSource::kDoubleClick, Action::kToggleMaximize},
-      {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
-      {ActionSource::kRightClick, Action::kMenu}};
 }
 
 GtkUi::~GtkUi() {
@@ -385,7 +360,34 @@ GtkUiPlatform* GtkUi::GetPlatform() {
   return g_gtk_ui->platform_.get();
 }
 
-void GtkUi::Initialize() {
+bool GtkUi::Initialize() {
+  if (!LoadGtk())
+    return false;
+
+  auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  DCHECK(delegate);
+  platform_ = CreateGtkUiPlatform(delegate->GetBackend());
+
+  // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
+  // do it once it is ready.
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  env->SetVar("NO_AT_BRIDGE", "1");
+  // gtk_init_check() modifies argv, so make a copy first.
+  CmdLineArgs cmd_line = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
+  if (!GtkInitFromCommandLine(&cmd_line.argc, cmd_line.argv.data()))
+    return false;
+  native_theme_ = NativeThemeGtk::instance();
+
+  // This creates an extra thread that may race against GtkInitFromCommandLine,
+  // so this must be done after to avoid the race condition.
+  ShellDialogLinux::Initialize();
+
+  using Action = views::LinuxUI::WindowFrameAction;
+  using ActionSource = views::LinuxUI::WindowFrameActionSource;
+  window_frame_actions_ = {
+      {ActionSource::kDoubleClick, Action::kToggleMaximize},
+      {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
+      {ActionSource::kRightClick, Action::kMenu}};
   // Linux ozone platforms may want to set LinuxInputMethodContextFactory
   // instance instead of using GtkUi context factory. This step is made upon
   // CreateInputMethod call. If the factory is not set, use the GtkUi context
@@ -439,6 +441,8 @@ void GtkUi::Initialize() {
   indicators_count = 0;
 
   platform_->OnInitialized(GetDummyWindow());
+
+  return true;
 }
 
 bool GtkUi::GetTint(int id, color_utils::HSL* tint) const {

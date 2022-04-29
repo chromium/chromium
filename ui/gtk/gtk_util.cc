@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/strings/string_split.h"
@@ -37,17 +36,6 @@ namespace gtk {
 namespace {
 
 const char kAuraTransientParent[] = "aura-transient-parent";
-
-void CommonInitFromCommandLine(const base::CommandLine& command_line) {
-  // Callers should have already called setlocale(LC_ALL, "") and
-  // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
-  // service_manager::Main.
-  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0);
-  // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
-  // overwrites the LC_NUMERIC locale to something other than "C".
-  gtk_disable_setlocale();
-  GtkInit(command_line.argv());
-}
 
 GtkCssContext AppendCssNodeToStyleContextImpl(
     GtkCssContext context,
@@ -152,8 +140,15 @@ const char* GtkCssMenuScrollbar() {
                             : "GtkScrollbar#scrollbar #trough";
 }
 
-void GtkInitFromCommandLine(const base::CommandLine& command_line) {
-  CommonInitFromCommandLine(command_line);
+bool GtkInitFromCommandLine(int* argc, char** argv) {
+  // Callers should have already called setlocale(LC_ALL, "") and
+  // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
+  // service_manager::Main.
+  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0);
+  // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
+  // overwrites the LC_NUMERIC locale to something other than "C".
+  gtk_disable_setlocale();
+  return GtkInitCheck(argc, argv);
 }
 
 void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
