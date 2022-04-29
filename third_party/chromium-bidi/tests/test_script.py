@@ -27,7 +27,7 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
             "target": {"context": context_id}}}, "exceptionDetails")
 
     recursiveCompare({
-        "text": "Uncaught",
+        "text": "1",
         "columnNumber": 19,
         "lineNumber": 0,
         "exception": {
@@ -44,6 +44,54 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
                 "functionName": "b",
                 "lineNumber": 0,
                 "columnNumber": 43
+            }, {
+                "url": "",
+                "functionName": "c",
+                "lineNumber": 1,
+                "columnNumber": 13
+            }, {
+                "url": "",
+                "functionName": "",
+                "lineNumber": 1,
+                "columnNumber": 19
+            }, {
+                "url": "",
+                "functionName": "",
+                "lineNumber": 1,
+                "columnNumber": 25}]}
+    }, exception_details, ["objectId"])
+
+
+@pytest.mark.asyncio
+async def test_script_evaluateThrowingError_exceptionReturned(websocket,
+      context_id):
+    exception_details = await execute_command(websocket, {
+        "id": 45,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
+            "target": {"context": context_id}}}, "exceptionDetails")
+
+    recursiveCompare({
+        "text": "Error: foo",
+        "columnNumber": 19,
+        "lineNumber": 0,
+        "exception": {
+            "type": "object",
+            "objectId": "__any_value__",
+            "value": []
+        },
+        "stackTrace": {
+            "callFrames": [{
+                "url": "",
+                "functionName": "a",
+                "lineNumber": 0,
+                "columnNumber": 25
+            }, {
+                "url": "",
+                "functionName": "b",
+                "lineNumber": 0,
+                "columnNumber": 58
             }, {
                 "url": "",
                 "functionName": "c",

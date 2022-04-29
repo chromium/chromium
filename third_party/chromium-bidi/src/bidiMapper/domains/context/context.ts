@@ -257,6 +257,10 @@ export class Context {
       cdpExceptionDetails.exception!
     );
 
+    const text = await this._serializer.stringifyCdpException(
+      cdpExceptionDetails.exception!
+    );
+
     return {
       exceptionDetails: {
         exception,
@@ -267,7 +271,7 @@ export class Context {
         stackTrace: {
           callFrames: callFrames || [],
         },
-        text: cdpExceptionDetails.text,
+        text: text || cdpExceptionDetails.text,
       },
     };
   }

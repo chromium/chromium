@@ -77,6 +77,33 @@ export class LogManager {
         },
       });
     });
+
+    this._cdpClient.Runtime.on('exceptionThrown', async (params) => {
+      let text = params.exceptionDetails.text;
+
+      if (params.exceptionDetails.exception) {
+        const exceptionString = await this._serializer.stringifyCdpException(
+          params.exceptionDetails.exception
+        );
+        if (exceptionString) {
+          text = exceptionString;
+        }
+      }
+
+      await this._bidiServer.sendMessage({
+        method: 'log.entryAdded',
+        params: {
+          level: 'error',
+          text,
+          timestamp: params.timestamp,
+          stackTrace: this._getBidiStackTrace(
+            params.exceptionDetails.stackTrace
+          ),
+          type: 'javascript',
+          realm: this._contextId,
+        },
+      });
+    });
   }
 
   private _getLogLevel(consoleAPIType: string): Log.LogLevel {

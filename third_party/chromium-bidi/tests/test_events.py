@@ -163,3 +163,39 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                         }]}},
         event_response,
         ["timestamp", 'objectId'])
+
+@pytest.mark.asyncio
+async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
+    # Send command.
+    command = {
+        "id": 14,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<script>throw new Error('some error')</script>",
+            "wait": "interactive",
+            "context": context_id}}
+    await send_JSON_command(websocket, command)
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, 'log.entryAdded')
+
+    # Assert "log.entryAdded" event emitted.
+    recursiveCompare(
+        {
+            "method": "log.entryAdded",
+            "params": {
+                # BaseLogEntry
+                "level": "error",
+                "text": "Error: some error",
+                "timestamp": "__any_value__",
+                "stackTrace": {
+                    "callFrames": [{
+                        "url": "",
+                        "functionName": "",
+                        "lineNumber": 0,
+                        "columnNumber": 14}]},
+                # ConsoleLogEntry
+                "type": "javascript",
+                "realm": context_id}},
+        event_response,
+        ["timestamp"])

@@ -68,4 +68,26 @@ export class Serializer {
 
     return response.result.value;
   }
+
+  /**
+   * Gets the string representation of an exception. This is equivalent to
+   * calling toString() on the exception value. If the exception is an Error,
+   * this will be the Error's message property.
+   * @param exception CDP remote object representing a thrown exception.
+   * @returns string The stringified exception message.
+   */
+  public async stringifyCdpException(
+    exception: Protocol.Runtime.RemoteObject
+  ): Promise<string | undefined> {
+    const response = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: String(function (exception: unknown) {
+        return String(exception);
+      }),
+      objectId: await this.getDummyContextId(),
+      arguments: [exception],
+      returnByValue: true,
+    });
+
+    return response.result.value;
+  }
 }
