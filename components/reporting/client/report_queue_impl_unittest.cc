@@ -41,6 +41,8 @@ using ::reporting::test::TestStorageModule;
 namespace reporting {
 namespace {
 
+constexpr char kTestMessage[] = "TEST_MESSAGE";
+
 // Creates a |ReportQueue| using |TestStorageModule| and
 // |TestEncryptionModule|. Allows access to the storage module for checking
 // stored values.
@@ -132,7 +134,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
+  test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   EXPECT_OK(a.result());
@@ -156,7 +158,7 @@ TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
           })));
 
   reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
+  test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
@@ -179,7 +181,7 @@ TEST_F(ReportQueueImplTest, EnqueueProtoFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
+  test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
@@ -203,7 +205,7 @@ TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
 
 TEST_F(ReportQueueImplTest, EnqueueAndFlushSuccess) {
   reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
+  test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   EXPECT_OK(a.result());
@@ -214,7 +216,7 @@ TEST_F(ReportQueueImplTest, EnqueueAndFlushSuccess) {
 
 TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
   reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
+  test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   EXPECT_OK(a.result());
@@ -306,6 +308,25 @@ TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
   enqueue_cb_queue.pop();
   EXPECT_OK(event3.result());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ReportQueueImplTest, EnqueueRecordWithInvalidPriority) {
+  test::TestEvent<Status> event;
+  report_queue_->Enqueue(kTestMessage, Priority::UNDEFINED_PRIORITY,
+                         event.cb());
+  const auto result = event.result();
+
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.code(), error::INVALID_ARGUMENT);
+}
+
+TEST_F(ReportQueueImplTest, FlushSpeculativeReportQueue) {
+  test::TestEvent<Status> event;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(kTestMessage, priority_, event.cb());
+
+  const auto result = event.result();
+  ASSERT_OK(result);
 }
 
 }  // namespace
