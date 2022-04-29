@@ -710,16 +710,22 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
   if (usage & SHARED_IMAGE_USAGE_RAW_DRAW)
     return true;
 
-  // If |shared_image_manager_| is thread safe, it means the display is
-  // running on a separate thread (which uses a separate GL context or
-  // VkDeviceQueue).
+  // DISPLAY is for gpu composition and SCANOUT for overlays.
+  constexpr int kDisplayCompositorUsage =
+      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_SCANOUT;
+
+  // Image is used on display compositor gpu thread if it's used by display
+  // compositor and if display compositor runs on a separate thread. Image is
+  // used by display compositor if it has kDisplayCompositorUsage or is being
+  // created by display compositor.
   const bool used_by_display_compositor_gpu_thread =
-      (usage & SHARED_IMAGE_USAGE_DISPLAY || is_for_display_compositor_) &&
+      ((usage & kDisplayCompositorUsage) || is_for_display_compositor_) &&
       shared_image_manager_->display_context_on_another_thread();
-  // If it has usage other than DISPLAY OR if it is not used just for display
-  // compositor, it means that it is used by the gpu main thread.
+
+  // If it has usage other than kDisplayCompositorUsage OR if it is not created
+  // by display compositor, it means that it is used by the gpu main thread.
   const bool used_by_main_gpu_thread =
-      usage & ~SHARED_IMAGE_USAGE_DISPLAY || !is_for_display_compositor_;
+      usage & ~kDisplayCompositorUsage || !is_for_display_compositor_;
   return used_by_display_compositor_gpu_thread && used_by_main_gpu_thread;
 }
 
