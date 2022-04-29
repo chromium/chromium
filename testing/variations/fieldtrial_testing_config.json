@@ -8528,24 +8528,6 @@
             ]
         }
     ],
-    "WebRTC-Video-VariableStartScaleFactor": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux",
-                "ios",
-                "chromeos",
-                "android_webview",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,_20220315"
-                }
-            ]
-        }
-    ],
     "WebRTC-Vp9ExternalRefCtrl": [
         {
             "platforms": [
