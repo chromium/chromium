@@ -30,6 +30,9 @@ consoles.list_view(
 
 try_.builder(
     name = "chromeos-amd64-generic-cfi-thin-lto-rel",
+    mirrors = [
+        "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
+    ],
 )
 
 try_.builder(
