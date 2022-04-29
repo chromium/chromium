@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">הולנדית (הולנד)</translation>
 <translation id="174937106936716857">מספר הקבצים הכולל</translation>
 <translation id="1755345808328621801">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">אישור האימות נדחה מקומית</translation>
 <translation id="1775381402323441512">פרטי הסרטון</translation>
 <translation id="180035236176489073">עליך להיות במצב מקוון כדי לגשת לקבצים אלה.</translation>
@@ -708,6 +709,7 @@
 <translation id="7037472120706603960">תעתיק טמילית</translation>
 <translation id="7040138676081995583">פתיחה באמצעות...</translation>
 <translation id="7048024426273850086">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, עוצמת האות: ‎ %<ph name="SIGNAL_STRENGTH" />, סוללת הטלפון: %<ph name="BATTERY_STATUS" />‎, התחברות</translation>
+<translation id="7070804685954057874">קלט ישיר</translation>
 <translation id="7075931588889865715">‏תאילנדית עם מקלדת TIS 820-2531</translation>
 <translation id="708278670402572152">עליך להתנתק כדי לאפשר סריקה</translation>
 <translation id="7086590977277044826">‏טמילית עם מקלדת InScript</translation>
@@ -748,6 +750,7 @@
 <translation id="7489215562877293245">‏נמצאו <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     הקבצים מוכנים לגיבוי ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">היראגאנה</translation>
 <translation id="7495372004724182530">מליאלאם פונטית</translation>
 <translation id="7505167922889582512">הצגת קבצים מוסתרים</translation>
 <translation id="7514365320538308">הורדה</translation>
@@ -808,6 +811,7 @@
 <translation id="7868774406711971383">פולנית</translation>
 <translation id="7874321682039004450">פיליפינית</translation>
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
+<translation id="7903984238293908205">קאטקאנה</translation>
 <translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7925247922861151263">‏בדיקת AAA נכשלה</translation>
 <translation id="7925686952655276919">אין להשתמש בנתונים ניידים עבור סנכרון</translation>
@@ -844,6 +848,7 @@
 <translation id="8208580316430297579">עטיפת האלבום</translation>
 <translation id="8223479393428528563">כדי לשמור קבצים אלה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקבצים ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">ביטול</translation>
+<translation id="8250690786522693009">לטינית</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8261561378965667560">‏סינית Array</translation>

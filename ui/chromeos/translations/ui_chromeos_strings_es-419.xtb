@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Holandés (Países Bajos)</translation>
 <translation id="174937106936716857">Cantidad total de archivos</translation>
 <translation id="1755345808328621801">Este archivo está diseñado para PCs que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="1775381402323441512">Información del video</translation>
 <translation id="180035236176489073">Tienes que estar conectado para acceder a estos archivos.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tamil (transliteración)</translation>
 <translation id="7040138676081995583">Abrir con...</translation>
 <translation id="7048024426273850086">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, conectar</translation>
+<translation id="7070804685954057874">Ingreso directo</translation>
 <translation id="7075931588889865715">Tailandés con teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desactiva la conexión para habilitar el análisis</translation>
 <translation id="7086590977277044826">Tamil con teclado InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Se encontró un total de <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Ya se puede realizar una copia de seguridad en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabar (fonético)</translation>
 <translation id="7505167922889582512">Mostrar los archivos ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polaco</translation>
 <translation id="7874321682039004450">Filipino</translation>
 <translation id="78946041517601018">Unidades compartidas</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Si formateas una partición, se borrarán todos los datos almacenados en ella. No se puede deshacer esta acción.</translation>
 <translation id="7925247922861151263">Falló la verificación de AAA</translation>
 <translation id="7925686952655276919">No utilizar datos móviles para la sincronización</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Material gráfico</translation>
 <translation id="8223479393428528563">Para guardar estos archivos para su uso sin conexión, conéctate nuevamente, haz clic con el botón derecho en los archivos y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Anular</translation>
+<translation id="8250690786522693009">Latino</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8261561378965667560">Chino (Array)</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">hollandi (Holland)</translation>
 <translation id="174937106936716857">Faile kokku</translation>
 <translation id="1755345808328621801">See fail on mõeldud Windowsi tarkvara kasutavale arvutile. See ei ühildu Chrome OS-i käitava seadmega. Otsige sobivat asendusrakendust Chrome'i veebipoest.</translation>
+<translation id="1757915090001272240">Lai ladina</translation>
 <translation id="1773212559869067373">Autentimissertifikaat lükati kohalikult tagasi</translation>
 <translation id="1775381402323441512">Video teave</translation>
 <translation id="180035236176489073">Failide juurde pääsemiseks on vaja võrguühendust.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">tamili, transliteratsioon</translation>
 <translation id="7040138676081995583">Ava rakendusega ...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, telefoni aku: <ph name="BATTERY_STATUS" />%, ühenda</translation>
+<translation id="7070804685954057874">Otsesisestus</translation>
 <translation id="7075931588889865715">tai, klaviatuuriga TIS 820-2531</translation>
 <translation id="708278670402572152">Skannimise lubamiseks katkestage ühendus</translation>
 <translation id="7086590977277044826">tamili, InScript-klaviatuuriga</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Leiti <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive'i<ph name="END_LINK" /> varundamiseks valmis</translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalami, foneetiline</translation>
 <translation id="7505167922889582512">Kuva peidetud failid</translation>
 <translation id="7514365320538308">Laadi alla</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">poola</translation>
 <translation id="7874321682039004450">filipiini</translation>
 <translation id="78946041517601018">Jagatud kettad</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7925247922861151263">AAA kontrollimine nurjus</translation>
 <translation id="7925686952655276919">Ära kasuta sünkroonimiseks mobiilset andmesidet</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Kujundus</translation>
 <translation id="8223479393428528563">Kui soovite salvestada need failid võrguühenduseta kasutamiseks, minge uuesti veebi, paremklõpsake failidel ja tehke valik <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Katkesta</translation>
+<translation id="8250690786522693009">Ladina</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8261561378965667560">hiina, reapõhine sisestus</translation>

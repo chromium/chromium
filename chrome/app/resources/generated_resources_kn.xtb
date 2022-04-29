@@ -554,6 +554,7 @@
 <translation id="1536754031901697553">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1537254971476575106">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="15373452373711364">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್</translation>
+<translation id="1539630663098418038"><ph name="ORIGIN" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು <ph name="EXTENSIONS_REQUESTING_ACCESS" /> ವಿನಂತಿಸುತ್ತಿದೆ</translation>
 <translation id="1540605929960647700">ಡೆಮೊ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1541346352678737112">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="1542137295869176367">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -1876,6 +1877,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಆಗಿ</translation>
 <translation id="2749836841884031656">ಸಿಮ್</translation>
 <translation id="2749881179542288782">ವ್ಯಾಕರಣವನ್ನು ಕಾಗುಣಿತದೊಂದಿಗೆ ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ವಿನಂತಿಸಲಾಗುತ್ತಿದೆ:</translation>
 <translation id="2753677631968972007">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ನಿಯಂತ್ರಿಸಿ.</translation>
 <translation id="2755349111255270002">ಇದನ್ನು <ph name="DEVICE_TYPE" /> ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="2755367719610958252">ಪ್ರವೇಶಿಸುವಿಕೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -2350,6 +2352,7 @@
 <translation id="3227137524299004712">ಮೈಕ್ರೋಫೋನ್</translation>
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="3233271424239923319">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
+<translation id="3234978181857588512">ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="3238192140106069382">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ ಮತ್ತು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ ಇರುವ ಸಮಯದ ಮಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="3241680850019875542">ಪ್ಯಾಕ್ ಮಾಡಲು ವಿಸ್ತರಣೆಯ ಮೂಲ ಡೈರೆಕ್ಟರಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ. ವಿಸ್ತರಣೆಯನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು, ಮರುಬಳಸಲು ಖಾಸಗಿ ಕೀ ಫೈಲ್‌‌ ಅನ್ನು ಕೂಡ ಆಯ್ಕೆಮಾಡಿ.</translation>
@@ -3563,6 +3566,7 @@
 <translation id="4429239357082509581">Steam ರನ್ ಮಾಡಲು ಅನುಮತಿ ಹೊಂದಿಲ್ಲ</translation>
 <translation id="4430019312045809116">ವಾಲ್ಯೂಮ್</translation>
 <translation id="4430369329743628066">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="4430422687972614133">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4432621511648257259">ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="443454694385851356">ಪಾರಂಪರಿಕ (ಅಸುರಕ್ಷಿತ)</translation>
 <translation id="443475966875174318">ಹೊಂದಾಣಿಕೆಯಾಗದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ</translation>
@@ -7095,6 +7099,7 @@
 <translation id="7947964080535614577">ಕಂಟೆಂಟ್ ಅಥವಾ ಸೇವೆಗಳನ್ನು ಉಚಿತವಾಗಿ ಒದಗಿಸುವ ಸಲುವಾಗಿ ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ. ಆದರೆ, ಕೆಲವು ಸೈಟ್‌ಗಳು ಅನಪೇಕ್ಷಿತ ಅಥವಾ ದಾರಿತಪ್ಪಿಸುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುವ ಸಾಧ್ಯತೆಯಿರುತ್ತದೆ.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> ನ ಎಲ್ಲಾ ಪುಟಗಳು</translation>
 <translation id="7951265006188088697">Google Pay ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ನಿರ್ವಹಿಸಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಿ</translation>
+<translation id="795130320946928025">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="7952708427581814389">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="795282463722894016">ಮರುಸ್ಥಾಪನೆ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="7952904276017482715">ನಿರೀಕ್ಷಿತ ಐಡಿ "<ph name="EXPECTED_ID" />", ಆದರೆ ಐಡಿ "<ph name="NEW_ID" />" ಆಗಿದೆ</translation>

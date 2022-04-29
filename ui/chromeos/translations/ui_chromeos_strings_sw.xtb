@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Kiholanzi (Uholanzi)</translation>
 <translation id="174937106936716857">Jumla ya idadi ya faili</translation>
 <translation id="1755345808328621801">Faili hii imeundwa mahususi kwa ajili ya kompyuta binafsi inayotumia programu ya Windows. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. Tafadhali tafuta katika Duka la Chrome kwenye Wavuti ili upate programu mbadala inayofaa.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Cheti cha uthibitishaji kimekataliwa kindani</translation>
 <translation id="1775381402323441512">Maelezo ya video</translation>
 <translation id="180035236176489073">Sharti uwe mtandaoni ili ufikie faili hizi.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Unukuzi wa mfumo wa kuandika Kitamili</translation>
 <translation id="7040138676081995583">Fungua kwa...</translation>
 <translation id="7048024426273850086">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
+<translation id="7070804685954057874">Ingizo la moja kwa moja</translation>
 <translation id="7075931588889865715">Kitai kwenye kibodi ya TIS 820-2531</translation>
 <translation id="708278670402572152">Ondoa ili uruhusu utafutaji</translation>
 <translation id="7086590977277044826">Kitamili kwenye kibodi ya Hati za Kihindi</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> imepatikana 
    <ph name="LINE_BREAK1" />
     Iko tayari kuhifadhi nakala kwenye <ph name="BEGIN_LINK" />Hifadhi ya Google<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Kihiragana</translation>
 <translation id="7495372004724182530">Fonetiki ya Kimalayalamu</translation>
 <translation id="7505167922889582512">Onyesha faili zilizofichwa</translation>
 <translation id="7514365320538308">Pakua</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Kipolandi</translation>
 <translation id="7874321682039004450">Kifilipino</translation>
 <translation id="78946041517601018">Hifadhi za pamoja</translation>
+<translation id="7903984238293908205">Kikatakana</translation>
 <translation id="7908793776359722643">Hatua ya kuweka upya muundo wa sehemu itafuta data yote iliyohifadhiwa kwenye sehemu hiyo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="7925247922861151263">Ukaguzi wa AAA umeshindikana</translation>
 <translation id="7925686952655276919">Usitumie data ya simu kwa ulinganishaji</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Kazi ya sanaa</translation>
 <translation id="8223479393428528563">Ili kuhifadhi faili hizi kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Ghairi</translation>
+<translation id="8250690786522693009">Kilatini</translation>
 <translation id="8250920743982581267">Hati</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8261561378965667560">Mbinu ya Array ya kuingiza data ya Kichina</translation>

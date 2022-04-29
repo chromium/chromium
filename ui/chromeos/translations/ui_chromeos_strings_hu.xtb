@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">holland (Hollandia)</translation>
 <translation id="174937106936716857">Fájlok száma összesen</translation>
 <translation id="1755345808328621801">Ezt a fájlt Windows-szoftvereket használó számítógéphez készítették. Nem kompatibilis az Ön ChromeOS-t futtató eszközével. A Chrome Webáruházban kereshet megfelelő helyettesítő alkalmazást.</translation>
+<translation id="1757915090001272240">Széles latin</translation>
 <translation id="1773212559869067373">A hitelesítési tanúsítvány helyileg elutasítva</translation>
 <translation id="1775381402323441512">Videófájl adatai</translation>
 <translation id="180035236176489073">Online kell lennie a fájlok eléréséhez.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">tamil, betű szerinti átírás</translation>
 <translation id="7040138676081995583">Megnyitás ezzel:...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, csatlakozás</translation>
+<translation id="7070804685954057874">Közvetlen bevitel</translation>
 <translation id="7075931588889865715">thai, TIS 820-2531-billentyűzettel</translation>
 <translation id="708278670402572152">A keresés engedélyezéséhez szakítsa meg a hálózati kapcsolatot</translation>
 <translation id="7086590977277044826">tamil, InScript-billentyűzettel</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">A következőket találtuk: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     A rendszer készen áll a <ph name="BEGIN_LINK" />Google Drive-ra<ph name="END_LINK" /> történő biztonsági mentésre</translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálam, fonetikus</translation>
 <translation id="7505167922889582512">Rejtett fájlok megjelenítése</translation>
 <translation id="7514365320538308">Letöltés</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">lengyel</translation>
 <translation id="7874321682039004450">filippínó</translation>
 <translation id="78946041517601018">Megosztott meghajtók</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">A partíció formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>
 <translation id="7925686952655276919">Ne használjon mobiladatokat a szinkronizáláshoz</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Grafikák</translation>
 <translation id="8223479393428528563">A fájlok offline használatra való mentéséhez lépjen fel újra az online felületre, kattintson jobb gombbal a fájlokra, és válassza a(z) <ph name="OFFLINE_CHECKBOX_NAME" /> lehetőséget.</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8261561378965667560">kínai, tömb</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">هلندی (هلند)</translation>
 <translation id="174937106936716857">تعداد کل فایل‌ها</translation>
 <translation id="1755345808328621801">‏این فایل برای رایانه شخصی‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. لطفاً «نت‌بازار Chrome» را برای یافتن برنامه جایگزین مناسب جستجو کنید.</translation>
+<translation id="1757915090001272240">لاتین گسترده</translation>
 <translation id="1773212559869067373">گواهینامه راستی‌آزمایی به صورت محلی رد شد</translation>
 <translation id="1775381402323441512">اطلاعات ویدیو</translation>
 <translation id="180035236176489073">باید آنلاین باشید تا به این فایل‌ها دسترسی داشته باشید.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">تامیل (نویسه‌گردانی)</translation>
 <translation id="7040138676081995583">باز کردن با...</translation>
 <translation id="7048024426273850086">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
+<translation id="7070804685954057874">ورود مستقیم</translation>
 <translation id="7075931588889865715">‏تایلندی با صفحه‌کلید TIS 820-2531</translation>
 <translation id="708278670402572152">برای فعال کردن اسکن، ارتباط را قطع کنید</translation>
 <translation id="7086590977277044826">تامیل با صفحه‌کلید هندی</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">‏<ph name="FILE_COUNT" /> مورد پیدا شد
     <ph name="LINE_BREAK1" />
     آماده برای پشتیبان‌گیری در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">هیراگانا</translation>
 <translation id="7495372004724182530">مالایالم (آوایی)</translation>
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>
 <translation id="7514365320538308">بارگیری</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">لهستانی</translation>
 <translation id="7874321682039004450">فیلیپینی</translation>
 <translation id="78946041517601018">درایوهای هم‌رسانی‌شده</translation>
+<translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
 <translation id="7925686952655276919">از داده‌های تلفن همراه برای همگام‌سازی استفاده نشود</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">کار هنری</translation>
 <translation id="8223479393428528563">برای ذخیره این فایل‌ها جهت استفاده آفلاین، دوباره آنلاین شوید، روی فایل‌ها کلیک راست کنید و گزینه <ph name="OFFLINE_CHECKBOX_NAME" /> را انتخاب کنید.</translation>
 <translation id="8249296373107784235">لغو</translation>
+<translation id="8250690786522693009">لاتین</translation>
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8261561378965667560">چینی (آرای)</translation>

@@ -706,6 +706,7 @@
 <translation id="7037472120706603960">ການແປທັບສັບພາສາທາມິລ</translation>
 <translation id="7040138676081995583">ເປີດດ້ວຍ...</translation>
 <translation id="7048024426273850086">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ເຊື່ອມຕໍ່</translation>
+<translation id="7070804685954057874">ການປ້ອນເຂົ້າໂດຍກົງ</translation>
 <translation id="7075931588889865715">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມ TIS 820-2531</translation>
 <translation id="708278670402572152">ຕັດເຊື່ອມຕໍ່ເພື່ອເປີດນຳໃຊ້ການສະແກນ</translation>
 <translation id="7086590977277044826">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
@@ -806,6 +807,7 @@
 <translation id="7868774406711971383">ພາສາໂພລິຊ</translation>
 <translation id="7874321682039004450">ພາສາຟິລິບປິໂນ</translation>
 <translation id="78946041517601018">drive ທີ່ແບ່ງປັນ</translation>
+<translation id="7903984238293908205">ຄາຕາຄານະ</translation>
 <translation id="7908793776359722643">ການຟໍແມັດຫ້ອງຂໍ້ມູນຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7925247922861151263">ກວດເບິ່ງ AAA ບໍ່ສໍາເລັດ</translation>
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>

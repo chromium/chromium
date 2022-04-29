@@ -94,6 +94,8 @@
 <translation id="1742316578210444689">Hébreu (translittération)</translation>
 <translation id="1747761757048858544">Néerlandais (Pays-Bas)</translation>
 <translation id="174937106936716857">Nombre total de fichiers</translation>
+<translation id="1755345808328621801">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une appli de remplacement appropriée sur le Chrome Web Store.</translation>
+<translation id="1757915090001272240">Latin large</translation>
 <translation id="1773212559869067373">Certificat d'authentification rejeté en local.</translation>
 <translation id="1775381402323441512">Informations sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
@@ -223,6 +225,7 @@
 <translation id="2943503720238418293">Utilisez un nom plus court.</translation>
 <translation id="2949781154072577687">Formatage de <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Méduse</translation>
+<translation id="2977940621473452797">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez rechercher une appli de remplacement appropriée sur le Chrome Web Store.</translation>
 <translation id="2984337792991268709">Aujourd'hui à <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restauration de <ph name="COUNT" /> éléments…</translation>
 <translation id="2994669386200004489">Impossible de sauvegarder <ph name="FILE_NAME" /></translation>
@@ -418,6 +421,7 @@
 <translation id="4694604912444486114">Singe</translation>
 <translation id="469612310041132144">Chinois (rapide)</translation>
 <translation id="4697043402264950621">Liste des fichiers triée par <ph name="COLUMN_NAME" /> dans l'ordre croissant.</translation>
+<translation id="469897186246626197">Ce fichier est conçu pour un ordinateur Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="4706042980341760088">Tamoul (avec clavier de machine à écrire)</translation>
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">Ouverture de "<ph name="PATH" />"…</translation>
@@ -538,6 +542,7 @@
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
+<translation id="5618330573454123917">Ce fichier est conçu pour un ordinateur Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Écouter</translation>
@@ -703,6 +708,7 @@
 <translation id="7037472120706603960">Tamoul (translittération)</translation>
 <translation id="7040138676081995583">Ouvrir avec…</translation>
 <translation id="7048024426273850086">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, connexion</translation>
+<translation id="7070804685954057874">Entrée directe</translation>
 <translation id="7075931588889865715">Thaï avec clavier TIS 820-2531</translation>
 <translation id="708278670402572152">Déconnecter pour permettre la recherche</translation>
 <translation id="7086590977277044826">Tamoul (avec clavier InScript)</translation>
@@ -730,6 +736,7 @@
 <translation id="7309413087278791451">Allemand (Belgique)</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7343393116438664539">Vietnamien (Télex)</translation>
+<translation id="7357762654218998920">Ce type de fichier n'est pas compatible. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="7359359531237882347">Copie de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="7375951387215729722">Liste des fichiers triée par <ph name="COLUMN_NAME" /> dans l'ordre décroissant.</translation>
 <translation id="7402503521691663770">Appareils Chrome OS Flex</translation>
@@ -742,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> trouvées
     <ph name="LINE_BREAK1" />
     Prêt à sauvegarder sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>
 <translation id="7514365320538308">Télécharger</translation>
@@ -802,6 +810,7 @@
 <translation id="7868774406711971383">Polonais</translation>
 <translation id="7874321682039004450">Philippin</translation>
 <translation id="78946041517601018">Drive d'équipe partagés</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
@@ -838,6 +847,7 @@
 <translation id="8208580316430297579">Œuvre d'art</translation>
 <translation id="8223479393428528563">Pour enregistrer ces fichiers en vue d'une utilisation hors connexion, reconnectez-vous, cliquez sur les fichiers à l'aide du bouton droit de la souris, puis sélectionnez l'option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Annuler</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261561378965667560">Chinois (tableau)</translation>

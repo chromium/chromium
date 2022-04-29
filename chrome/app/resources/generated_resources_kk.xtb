@@ -546,6 +546,7 @@
 <translation id="1536754031901697553">Ажыратылуда…</translation>
 <translation id="1537254971476575106">Толық экран ұлғайтқышы</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> кеңейтімі <ph name="ORIGIN" /> сайтын оқу мен өзгертуді сұрауда.</translation>
 <translation id="1540605929960647700">Демо режимін қосу</translation>
 <translation id="1541346352678737112">Желі табылмады</translation>
 <translation id="1542137295869176367">Кіру деректері жаңартылмады.</translation>
@@ -1865,6 +1866,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> өніміне кіру</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Емлемен грамматиканы тексеру</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> сайтының деректерін оқу мен өзгерту сұралуда:</translation>
 <translation id="2753677631968972007">Сайт рұқсаттарын қолмен басқару.</translation>
 <translation id="2755349111255270002">Осы <ph name="DEVICE_TYPE" /> құрылғысын қалпына келтіру</translation>
 <translation id="2755367719610958252">Арнайы мүмкіндіктерді басқару</translation>
@@ -2339,6 +2341,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3233271424239923319">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау</translation>
+<translation id="3234978181857588512">Құрылғыға сақтау</translation>
 <translation id="3238192140106069382">Қосылуда және расталуда</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> үшін уақыт шектеуі алынды.</translation>
 <translation id="3241680850019875542">Бумаға салу үшін кеңейтімнің түпкі каталогін таңдаңыз. Кеңейтімді жаңарту үшін қайта пайдалану мақсатында жеке кілтті таңдаңыз.</translation>
@@ -3551,6 +3554,7 @@
 <translation id="4429239357082509581">Steam қолданбасын іске қосуға рұқсат жоқ</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
 <translation id="4430369329743628066">Бетбелгі қосылды</translation>
+<translation id="4430422687972614133">Виртуалдық картаны қосу</translation>
 <translation id="4432621511648257259">Құпия сөз қате</translation>
 <translation id="443454694385851356">Бұрынғы (қауіпті)</translation>
 <translation id="443475966875174318">Үйлеспейтін қолданбаларды жаңарту немесе өшіру</translation>
@@ -7075,6 +7079,7 @@
 <translation id="7947964080535614577">Сайттар әдетте жарнамалар көрсетеді, сондықтан олар мазмұнды немесе қызметтерді тегін ұсынады. Бірақ кейбір сайтта мезі қылатын немесе жалған ақпаратты жарнамалар кездесетіні белгілі.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> доменінің барлық беті</translation>
 <translation id="7951265006188088697">Google Pay төлеу әдістерін енгізу немесе басқару үшін <ph name="BEGIN_LINK" />Google аккаунты<ph name="END_LINK" /> бетіне кіріңіз.</translation>
+<translation id="795130320946928025">Виртуалдық картаны өшіру</translation>
 <translation id="7952708427581814389">Сайттар буфердегі мәтін мен кескіндерді көруге рұқсат сұрай алады.</translation>
 <translation id="795282463722894016">Қалпына келтірілді</translation>
 <translation id="7952904276017482715">"<ph name="NEW_ID" />" идентификаторы күтілген "<ph name="EXPECTED_ID" />" идентификаторына сәйкес келмейді</translation>

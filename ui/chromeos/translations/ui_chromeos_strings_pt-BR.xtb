@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Holandês (Países Baixos)</translation>
 <translation id="174937106936716857">Contagem total de arquivos</translation>
 <translation id="1755345808328621801">Esse arquivo foi projetado para um computador que use o software Windows. Ele não é compatível com seu dispositivo, que executa o ChromeOS. Procure na Chrome Web Store por um app substituto adequado.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Certificado de autenticação rejeitado localmente</translation>
 <translation id="1775381402323441512">Informações sobre o vídeo</translation>
 <translation id="180035236176489073">É necessário estar conectado para acessar estes arquivos.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tâmil (transliteração)</translation>
 <translation id="7040138676081995583">Abrir com...</translation>
 <translation id="7048024426273850086">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, conectar</translation>
+<translation id="7070804685954057874">Entrada direta</translation>
 <translation id="7075931588889865715">Tailandês com teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desconectar para ativar a verificação</translation>
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Total de arquivos encontrados: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Pronto para fazer backup para o <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiala (fonético)</translation>
 <translation id="7505167922889582512">Mostrar arquivos ocultos</translation>
 <translation id="7514365320538308">Fazer o download</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polonês</translation>
 <translation id="7874321682039004450">Filipino</translation>
 <translation id="78946041517601018">Drives compartilhados</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatar uma partição excluirá todos os dados armazenados nela. Essa ação não pode ser desfeita.</translation>
 <translation id="7925247922861151263">Falha ao verificar AAA</translation>
 <translation id="7925686952655276919">Não usar dados móveis na sincronização</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Capa do álbum</translation>
 <translation id="8223479393428528563">Para salvar esses arquivos para uso off-line, fique on-line novamente, clique com o botão direito nos arquivos e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Cancelar</translation>
+<translation id="8250690786522693009">latim</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8261561378965667560">Chinês (array)</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">холандски (Холандија)</translation>
 <translation id="174937106936716857">Укупан број датотека</translation>
 <translation id="1755345808328621801">Фајл је осмишљен за рачунар који користи Windows софтвер. Није компатибилан са уређајем, који користи Chrome ОС. Претражите Chrome веб-продавницу да бисте нашли одговарајућу замену за апликацију.</translation>
+<translation id="1757915090001272240">латиница – широко</translation>
 <translation id="1773212559869067373">Сертификат за потврду аутентичности је одбијен локално</translation>
 <translation id="1775381402323441512">Информације о видео датотеци</translation>
 <translation id="180035236176489073">Морате да будете на мрежи да бисте приступили овим датотекама.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">транслитерација тамилског</translation>
 <translation id="7040138676081995583">Отвори помоћу апликације...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, повежите</translation>
+<translation id="7070804685954057874">Директни унос</translation>
 <translation id="7075931588889865715">тајски са тастатуром TIS 820-2531</translation>
 <translation id="708278670402572152">Прекините везу да бисте омогућили скенирање</translation>
 <translation id="7086590977277044826">тамилски са индијском тастатуром</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Пронађене су датотеке (<ph name="FILE_COUNT" />)
     <ph name="LINE_BREAK1" />
     Све је спремно за прављење резервних копија на <ph name="BEGIN_LINK" />Google диску<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалам</translation>
 <translation id="7505167922889582512">Прикажи скривене датотеке</translation>
 <translation id="7514365320538308">Преузми</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">пољски</translation>
 <translation id="7874321682039004450">филипински</translation>
 <translation id="78946041517601018">Дељени дискови</translation>
+<translation id="7903984238293908205">катакана</translation>
 <translation id="7908793776359722643">Ако форматирате партицију, бришете све податке на њој. Ова радња не може да се опозове.</translation>
 <translation id="7925247922861151263">Провера потврде идентитета, овлашћења и приступа није успела</translation>
 <translation id="7925686952655276919">Не користи податке за мобилне уређаје за синхронизацију</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Илустрације</translation>
 <translation id="8223479393428528563">Да бисте сачували ове датотеке за офлајн коришћење, повежите се поново на интернет, кликните десним тастером на датотеке и изаберите опцију <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Откажи</translation>
+<translation id="8250690786522693009">латиница</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261561378965667560">низ за кинески</translation>

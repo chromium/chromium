@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">荷兰语（荷兰）</translation>
 <translation id="174937106936716857">文件总数</translation>
 <translation id="1755345808328621801">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
 <translation id="180035236176489073">您必须在线访问这些文件。</translation>
@@ -702,6 +703,7 @@
 <translation id="7037472120706603960">泰米尔语音译</translation>
 <translation id="7040138676081995583">打开方式...</translation>
 <translation id="7048024426273850086">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
+<translation id="7070804685954057874">直接输入</translation>
 <translation id="7075931588889865715">泰语 TIS 820-2531 键盘</translation>
 <translation id="708278670402572152">要想启用扫描，请先断开连接</translation>
 <translation id="7086590977277044826">泰米尔语 InScript 键盘</translation>
@@ -742,6 +744,7 @@
 <translation id="7489215562877293245">找到了 <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     可以开始备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" />了</translation>
+<translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">马拉雅拉姆语注音</translation>
 <translation id="7505167922889582512">显示隐藏文件</translation>
 <translation id="7514365320538308">下载</translation>
@@ -802,6 +805,7 @@
 <translation id="7868774406711971383">波兰语</translation>
 <translation id="7874321682039004450">菲律宾语</translation>
 <translation id="78946041517601018">共享云端硬盘</translation>
+<translation id="7903984238293908205">片假名</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
 <translation id="7925686952655276919">不使用移动数据进行同步</translation>
@@ -838,6 +842,7 @@
 <translation id="8208580316430297579">图片</translation>
 <translation id="8223479393428528563">要保存这些文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="8249296373107784235">取消</translation>
+<translation id="8250690786522693009">拉丁文</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8261561378965667560">中文行列</translation>

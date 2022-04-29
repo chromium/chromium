@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-forsinkelse</translation>
 <translation id="123124571410524056">Der er muligvis en portal</translation>
 <translation id="1238612778414822719">HTTPS-forsinkelse</translation>
+<translation id="1264116747675686718">Opdaterer OS-version</translation>
 <translation id="1264369926465113395">Se Chromebooks nye digitale magasin til indholdsskabere</translation>
 <translation id="1270369111467284986">Der blev muligvis registreret en loginportal</translation>
 <translation id="1290331692326790741">Svagt signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
+<translation id="2177831236093724629">Der blev fundet <ph name="LINK_BEGIN" />ukvalificerede komponenter<ph name="LINK_END" />. Opdater til den nyeste version af Chrome OS for at sikre, at alle kvalificerede komponenter identificeres.</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
+<translation id="320091191259649613">Hvis du stadig ser denne fejl efter opdateringen, er det muligt, at komponenten først for nylig er kvalificeret og ikke er en del af databasen endnu.</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Skjul rapport</translation>
+<translation id="5008611843832219958">Opdater til den nyeste version af Chrome OS for at optimere reparationsprocessen</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv.</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Scanningen kunne ikke gennemføres</translation>
 <translation id="5502931783115429516">Android kører ikke</translation>
+<translation id="5507300744274596613">Sørg for, at Chrome OS er opdateret</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
+<translation id="5984145644188835034">Standardbaggrund</translation>
 <translation id="6034694447310538551">Aktivér automatisk månedlig nulstilling</translation>
 <translation id="6037291330010597344">Scannerens dokumentføder er tom. Tilføj dokumenter, og prøv igen.</translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -547,6 +553,7 @@
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6723839937902243910">Strøm</translation>
+<translation id="672609503628871915">Se de nye funktioner</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6749473226660745022">Billeder</translation>
 <translation id="6753452347192452143">Enheden er en computer.</translation>
@@ -716,6 +723,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">pund</translation>
 <translation id="8662671328352114214">Opret forbindelse til <ph name="TYPE" />-netværk</translation>
+<translation id="8671972493856476349">Opdater til <ph name="VERSION_NUMBER" />, og genstart</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøgle:</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
@@ -780,6 +788,7 @@
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Gateway kan ikke kontaktes fra Android-apps</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>
+<translation id="922179502584117429">Den aktuelle version, <ph name="VERSION_NUMBER" />, er forældet</translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ikke aktiveret</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Niderlandzki (Holandia)</translation>
 <translation id="174937106936716857">Łączna liczba plików</translation>
 <translation id="1755345808328621801">To jest plik na komputery z oprogramowaniem Windows. Jest on niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
+<translation id="1757915090001272240">szeroka łacina</translation>
 <translation id="1773212559869067373">Certyfikat uwierzytelniania został odrzucony lokalnie</translation>
 <translation id="1775381402323441512">Informacje o pliku wideo</translation>
 <translation id="180035236176489073">Musisz być w trybie online, by uzyskać dostęp do tych plików.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tamilski – transliteracja</translation>
 <translation id="7040138676081995583">Otwórz za pomocą...</translation>
 <translation id="7048024426273850086">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, połącz</translation>
+<translation id="7070804685954057874">Wprowadzanie bezpośrednie</translation>
 <translation id="7075931588889865715">Tajski z klawiaturą TIS 820-2531</translation>
 <translation id="708278670402572152">Rozłącz, by włączyć skanowanie</translation>
 <translation id="7086590977277044826">Tamilski z klawiaturą InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Znaleziono <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Wszystko gotowe do utworzenia kopii zapasowej na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">Malajalam (znaki fonetyczne)</translation>
 <translation id="7505167922889582512">Pokaż ukryte pliki</translation>
 <translation id="7514365320538308">Pobierz</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polski</translation>
 <translation id="7874321682039004450">Filipiński</translation>
 <translation id="78946041517601018">Dyski współdzielone</translation>
+<translation id="7903984238293908205">katakana</translation>
 <translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7925247922861151263">Sprawdzenie AAA nie powiodło się</translation>
 <translation id="7925686952655276919">Nie synchronizuj przez połączenie komórkowe</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Dzieła sztuki</translation>
 <translation id="8223479393428528563">Aby zapisać te pliki i używać ich offline, przejdź do trybu online, kliknij pliki prawym przyciskiem myszy i wybierz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Przerwij</translation>
+<translation id="8250690786522693009">łacina</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8261561378965667560">Chiński array</translation>

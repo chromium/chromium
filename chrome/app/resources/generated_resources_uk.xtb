@@ -555,6 +555,7 @@
 <translation id="1536754031901697553">Від’єднання…</translation>
 <translation id="1537254971476575106">Лупа для всього екрана</translation>
 <translation id="15373452373711364">Великий курсор миші</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> подає запит на читання й зміну сайту <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Увімкніть демонстраційний режим</translation>
 <translation id="1541346352678737112">Мережу не знайдено</translation>
 <translation id="1542137295869176367">Не вдалось оновити дані для входу</translation>
@@ -585,6 +586,7 @@
 <translation id="156793199942386351">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Відкрити налаштування дисплея</translation>
+<translation id="1569044524074707727">Розблокуйте телефон</translation>
 <translation id="1570604804919108255">Увімкнути звук сповіщень</translation>
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1571738973904005196">Переглянути вкладку: <ph name="TAB_ORIGIN" /></translation>
@@ -1886,6 +1888,7 @@
 <translation id="2749756011735116528">Увійти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Перевірити граматику та правопис</translation>
+<translation id="275085171842676231">Надсилання запиту на читання й зміну сайту <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /></translation>
 <translation id="2753677631968972007">Ручне керування дозволами сайтів.</translation>
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Керувати спеціальними можливостями</translation>
@@ -2027,6 +2030,7 @@
 <translation id="288042212351694283">Доступ до ваших пристроїв Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Коли ви натискаєте розширення</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> за мить перезапуститься та скине налаштування</translation>
+<translation id="2883470649061584386">Стрічка</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2885729872133513017">Під час декодування відповіді сервера виникла проблема.</translation>
 <translation id="2886119409731773154">Це може зайняти до 30 хвилин</translation>
@@ -2359,6 +2363,7 @@
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3233271424239923319">Створити резервну копію додатків і файлів Linux</translation>
+<translation id="3234978181857588512">Зберегти на пристрій</translation>
 <translation id="3238192140106069382">Триває підключення та перевірка</translation>
 <translation id="3239373508713281971">Для додатка <ph name="APP_NAME" /> скасовано ліміт часу</translation>
 <translation id="3241680850019875542">Виберіть кореневий каталог для пакування розширення. Щоб оновити розширення, також виберіть файл секретного ключа для повторного використання.</translation>
@@ -3571,6 +3576,7 @@
 <translation id="4429239357082509581">Немає дозволу на запуск додатка Steam</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4430369329743628066">Закладку додано</translation>
+<translation id="4430422687972614133">Увімкнути віртуальну картку</translation>
 <translation id="4432621511648257259">Неправильний пароль</translation>
 <translation id="443454694385851356">Застарілий (небезпечно)</translation>
 <translation id="443475966875174318">Оновити або видалити несумісні додатки</translation>
@@ -5337,6 +5343,7 @@
 <translation id="6227002569366039565">Натисніть |<ph name="ACCELERATOR" />|, щоб виділити цю спливаючу підказку, а потім ще раз – щоб виділити елемент, якого вона стосується.</translation>
 <translation id="6227280783235722609">розширення</translation>
 <translation id="6229849828796482487">Від'єднати мережу Wi-Fi</translation>
+<translation id="6230165830166519105">Спробувати інший спосіб</translation>
 <translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6231881193380278751">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Акумулятор</translation>
@@ -7102,6 +7109,7 @@
 <translation id="7947964080535614577">Сайти зазвичай показують рекламу, щоб пропонувати контент або послуги без оплати. Однак деякі сайти показують нав’язливі чи оманливі оголошення.</translation>
 <translation id="7948407723851303488">Усі сторінки <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Щоб додати способи оплати Google Pay або керувати ними, перейдіть в <ph name="BEGIN_LINK" />обліковий запис Google<ph name="END_LINK" /></translation>
+<translation id="795130320946928025">Вимкнути віртуальну картку</translation>
 <translation id="7952708427581814389">Сайти можуть запитувати дозвіл на перегляд тексту й зображень у буфері обміну</translation>
 <translation id="795282463722894016">Відновлення завершено</translation>
 <translation id="7952904276017482715">Очікувався ідентифікатор <ph name="EXPECTED_ID" />, але отримано <ph name="NEW_ID" /></translation>

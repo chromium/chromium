@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">연결을 해제하는 중...</translation>
 <translation id="1537254971476575106">전체화면 돋보기</translation>
 <translation id="15373452373711364">큰 마우스 커서</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" />에서 <ph name="ORIGIN" /> 사이트를 읽고 변경할 수 있도록 요청합니다.</translation>
 <translation id="1540605929960647700">데모 모드 사용</translation>
 <translation id="1541346352678737112">네트워크 없음</translation>
 <translation id="1542137295869176367">로그인 데이터를 업데이트할 수 없습니다.</translation>
@@ -582,6 +583,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
+<translation id="1569044524074707727">휴대전화 잠금 해제</translation>
 <translation id="1570604804919108255">알림 숨기기 취소</translation>
 <translation id="1571304935088121812">사용자 이름 복사</translation>
 <translation id="1571738973904005196">탭 보기: <ph name="TAB_ORIGIN" /></translation>
@@ -1884,6 +1886,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 사이트 읽기 및 변경 요청:</translation>
 <translation id="2753677631968972007">사이트 권한을 수동으로 관리합니다.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> 초기화</translation>
 <translation id="2755367719610958252">접근성 기능 관리</translation>
@@ -2025,6 +2028,7 @@
 <translation id="288042212351694283">Universal 2nd Factor 기기에 액세스</translation>
 <translation id="2881076733170862447">확장 프로그램을 클릭할 경우</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 다시 시작되어 곧 재설정됩니다.</translation>
+<translation id="2883470649061584386">피드</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2885729872133513017">서버 응답을 디코딩하는 동안 문제가 발생했습니다.</translation>
 <translation id="2886119409731773154">최대 30분 걸릴 수 있습니다.</translation>
@@ -2357,6 +2361,7 @@
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
+<translation id="3234978181857588512">기기에 저장</translation>
 <translation id="3238192140106069382">연결 및 확인 중</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />의 시간제한이 삭제되었습니다.</translation>
 <translation id="3241680850019875542">압축할 확장 프로그램의 루트 디렉터리를 선택합니다. 확장 프로그램을 업데이트하려면 다시 사용할 비공개 키 파일도 선택합니다.</translation>
@@ -3567,6 +3572,7 @@
 <translation id="4429239357082509581">Steam에 실행 권한이 없음</translation>
 <translation id="4430019312045809116">볼륨</translation>
 <translation id="4430369329743628066">북마크 추가됨</translation>
+<translation id="4430422687972614133">가상 카드 사용</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="443454694385851356">이전(안전하지 않음)</translation>
 <translation id="443475966875174318">호환되지 않는 애플리케이션 업데이트 또는 삭제</translation>
@@ -5336,6 +5342,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6227002569366039565">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="6227280783235722609">확장 프로그램</translation>
 <translation id="6229849828796482487">Wi-Fi 네트워크 연결 해제</translation>
+<translation id="6230165830166519105">다른 방법 시도</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6231881193380278751">검색어 매개변수를 URL에 추가하여 다음 페이지를 자동으로 새로고침하세요. chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">배터리</translation>
@@ -7096,6 +7103,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7947964080535614577">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />의 모든 페이지</translation>
 <translation id="7951265006188088697">Google Pay 결제 수단을 추가하거나 관리하려면 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />을 방문하세요.</translation>
+<translation id="795130320946928025">가상 카드 사용 중지</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
 <translation id="795282463722894016">복원 완료</translation>
 <translation id="7952904276017482715">ID로 '<ph name="EXPECTED_ID" />'을(를) 예상했으나 '<ph name="NEW_ID" />'이(가) 표시되었습니다</translation>

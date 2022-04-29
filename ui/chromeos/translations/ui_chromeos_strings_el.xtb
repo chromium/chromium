@@ -96,6 +96,7 @@
 <translation id="1747761757048858544">Ολλανδικά (Ολλανδίας)</translation>
 <translation id="174937106936716857">Συνολικός αριθμός αρχείων</translation>
 <translation id="1755345808328621801">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. Αναζητήστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε τοπικά</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
 <translation id="180035236176489073">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
@@ -721,6 +722,7 @@
 <translation id="7037472120706603960">Μεταγραφή σε ταμίλ</translation>
 <translation id="7040138676081995583">Άνοιγμα με…</translation>
 <translation id="7048024426273850086">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Σύνδεση</translation>
+<translation id="7070804685954057874">Άμεση εισαγωγή</translation>
 <translation id="7075931588889865715">Ταϊλανδικά με πληκτρολόγιο TIS 820-2531</translation>
 <translation id="708278670402572152">Αποσυνδεθείτε για να είναι δυνατή η σάρωση</translation>
 <translation id="7086590977277044826">Ταμίλ με πληκτρολόγιο InScript</translation>
@@ -762,6 +764,7 @@
 <translation id="7489215562877293245">Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία
     <ph name="LINE_BREAK1" />
     Έτοιμα για δημιουργία αντιγράφων ασφαλείας στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Χιραγκάνα</translation>
 <translation id="7495372004724182530">Φωνητική εισαγωγή Μαλαγιαλαμικών</translation>
 <translation id="7505167922889582512">Εμφάνιση κρυφών αρχείων</translation>
 <translation id="7514365320538308">Λήψη</translation>
@@ -824,6 +827,7 @@
 <translation id="7868774406711971383">Πολωνικά</translation>
 <translation id="7874321682039004450">Φιλιππινέζικα</translation>
 <translation id="78946041517601018">Κοινά Drive</translation>
+<translation id="7903984238293908205">Κατακάνα</translation>
 <translation id="7908793776359722643">Η μορφοποίηση ενός διαμερίσματος θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτό. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7925247922861151263">Ο έλεγχος ΑΑΑ απέτυχε</translation>
 <translation id="7925686952655276919">Μη χρησιμοποιείτε δεδομένα για κινητά για συγχρονισμό</translation>
@@ -861,6 +865,7 @@
 <translation id="8208580316430297579">Έργα τέχνης</translation>
 <translation id="8223479393428528563">Για να αποθηκεύσετε αυτά τα αρχεία για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στα αρχεία και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
+<translation id="8250690786522693009">Λατινικά</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8261561378965667560">Πίνακας Κινεζικών</translation>

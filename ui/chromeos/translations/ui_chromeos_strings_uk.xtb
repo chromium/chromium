@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Нідерландська (Нідерланди)</translation>
 <translation id="174937106936716857">Усього файлів</translation>
 <translation id="1755345808328621801">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
+<translation id="1757915090001272240">Розширена латиниця</translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="1775381402323441512">Інформація про відео</translation>
 <translation id="180035236176489073">Щоб отримати доступ до цих файлів, потрібно перебувати в режимі онлайн.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Тамільська, транслітерація</translation>
 <translation id="7040138676081995583">Відкрити за допомогою...</translation>
 <translation id="7048024426273850086">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, підключитися</translation>
+<translation id="7070804685954057874">Пряме введення</translation>
 <translation id="7075931588889865715">Тайська, розкладка TIS 820–2531</translation>
 <translation id="708278670402572152">Від’єднайте пристрій, щоб увімкнути сканування</translation>
 <translation id="7086590977277044826">Тамільська, розкладка InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Знайдено: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Готово до резервного копіювання на <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетична розкладка</translation>
 <translation id="7505167922889582512">Показати сховані файли</translation>
 <translation id="7514365320538308">Завантажити</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Польська</translation>
 <translation id="7874321682039004450">Філіппінська</translation>
 <translation id="78946041517601018">Спільні диски</translation>
+<translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>
 <translation id="7925686952655276919">Не використовувати мобільне передавання даних для синхронізації</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Твір мистецтва</translation>
 <translation id="8223479393428528563">Щоб зберегти ці файли для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файли правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Скасувати</translation>
+<translation id="8250690786522693009">Латиниця</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8261561378965667560">Китайська, Array</translation>

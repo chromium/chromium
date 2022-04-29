@@ -115,6 +115,7 @@
 <translation id="1536604384701784949">Για να χρησιμοποιήσετε τη διεύθυνση <ph name="USER_EMAIL_ADDRESS" />, πρέπει να αποσυνδεθείτε πρώτα από όλους τους λογαριασμούς. Για να αποσυνδεθείτε, επιλέξτε Ακύρωση για επιστροφή. Έπειτα επιλέξτε την ώρα για να ανοίξετε την περιοχή κατάστασης και επιλέξτε Αποσύνδεση. Στη συνέχεια συνδεθείτε ξανά στη διεύθυνση <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Μεγάλος δείκτης ποντικιού</translation>
 <translation id="1546492247443594934">Γραφείο 2</translation>
+<translation id="1546930421365146760">Ζητήστε από τον διαχειριστή σας να ρυθμίσει αυτήν τη συσκευή στην Κονσόλα διαχειριστή Google</translation>
 <translation id="1550523713251050646">Κάντε κλικ για περισσότερες επιλογές</translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="1570871743947603115">Εναλλαγή Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -1157,6 +1158,7 @@
 <translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8054466585765276473">Υπολογισμός χρόνου μπαταρίας που απομένει.</translation>
+<translation id="8055510977240456975">Απόκρυψη προτάσεων συνέχισης</translation>
 <translation id="8061464966246066292">Υψηλή αντίθεση</translation>
 <translation id="8098591350844501178">Διακοπή μετάδοσης οθόνης σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ενεργές, όλες οι εφαρμογές</translation>

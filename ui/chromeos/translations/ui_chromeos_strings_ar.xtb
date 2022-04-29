@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">الهولندية (هولندا)</translation>
 <translation id="174937106936716857">إجمالي عدد الملفات</translation>
 <translation id="1755345808328621801">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Windows. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
+<translation id="1757915090001272240">اللاتينية الواسعة</translation>
 <translation id="1773212559869067373">تمّ رفض شهادة المصادقة محليًا</translation>
 <translation id="1775381402323441512">معلومات الفيديو</translation>
 <translation id="180035236176489073">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذه الملفات.</translation>
@@ -708,6 +709,7 @@
 <translation id="7037472120706603960">تحويل صوتي إلى اللغة التاميلية</translation>
 <translation id="7040138676081995583">فتح باستخدام...</translation>
 <translation id="7048024426273850086">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
+<translation id="7070804685954057874">الإدخال المباشر</translation>
 <translation id="7075931588889865715">‏التايلاندية باستخدام لوحة مفاتيح TIS 820-2531</translation>
 <translation id="708278670402572152">قطع الاتصال لتفعيل الفحص</translation>
 <translation id="7086590977277044826">‏التاميلية باستخدام لوحة مفاتيح InScript</translation>
@@ -748,6 +750,7 @@
 <translation id="7489215562877293245">‏تم العثور على <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     جاهز للاحتفاظ بنسخة احتياطية في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">هيراغانا</translation>
 <translation id="7495372004724182530">الماليالامية الصوتية</translation>
 <translation id="7505167922889582512">إظهار الملفات المخفية</translation>
 <translation id="7514365320538308">تنزيل</translation>
@@ -808,6 +811,7 @@
 <translation id="7868774406711971383">البولندية</translation>
 <translation id="7874321682039004450">الفلبينية</translation>
 <translation id="78946041517601018">‏مساحات Drive المشتركة</translation>
+<translation id="7903984238293908205">كاتاكانا</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7925247922861151263">‏تعذّر فحص AAA</translation>
 <translation id="7925686952655276919">عدم استخدام بيانات الجوال للمزامنة</translation>
@@ -844,6 +848,7 @@
 <translation id="8208580316430297579">عمل فني</translation>
 <translation id="8223479393428528563">لحفظ هذه الملفات بلا اتصال، عليك العودة للاتصال انقر بزر الماوس الأيمن على الملفات، وحدد خيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">إلغاء</translation>
+<translation id="8250690786522693009">اللاتينية</translation>
 <translation id="8250920743982581267">المستندات</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8261561378965667560">‏الصينية باستخدام لوحة مفاتيح Array</translation>

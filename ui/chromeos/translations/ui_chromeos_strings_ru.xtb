@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Нидерландский (Нидерланды)</translation>
 <translation id="174937106936716857">Общее количество файлов</translation>
 <translation id="1755345808328621801">Этот файл предназначен для ПК с ОС Windows и несовместим с Chrome OS на вашем устройстве. Чтобы найти аналогичное приложение, перейдите в интернет-магазин Chrome.</translation>
+<translation id="1757915090001272240">Широкая латиница</translation>
 <translation id="1773212559869067373">Сертификат аутентификации отклонен локально</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
 <translation id="180035236176489073">Для доступа к файлам необходимо подключение к Интернету.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Тамильский, транслитерация</translation>
 <translation id="7040138676081995583">Открыть с помощью…</translation>
 <translation id="7048024426273850086">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключиться</translation>
+<translation id="7070804685954057874">Прямой ввод</translation>
 <translation id="7075931588889865715">Тайский, раскладка TIS 820-2531</translation>
 <translation id="708278670402572152">Чтобы запустить сканирование, отключитесь от сети.</translation>
 <translation id="7086590977277044826">Тамильский, раскладка InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Обнаружены файлы (<ph name="FILE_COUNT" />).
     <ph name="LINE_BREAK1" />
     Файлы готовы к сохранению на <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" />.</translation>
+<translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетический</translation>
 <translation id="7505167922889582512">Показывать скрытые файлы</translation>
 <translation id="7514365320538308">Скачать</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Польский</translation>
 <translation id="7874321682039004450">Филиппинский</translation>
 <translation id="78946041517601018">Общие диски</translation>
+<translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7925247922861151263">Сбой при проверке AAA</translation>
 <translation id="7925686952655276919">Не используйте синхронизацию данных с мобильных устройств</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Обложка</translation>
 <translation id="8223479393428528563">Чтобы работать с этими файлами в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на каждый документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="8249296373107784235">Отмена</translation>
+<translation id="8250690786522693009">Латиница</translation>
 <translation id="8250920743982581267">Документы</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8261561378965667560">Китайский, структурный ввод</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">荷蘭文 (荷蘭)</translation>
 <translation id="174937106936716857">檔案總數</translation>
 <translation id="1755345808328621801">這個檔案是專為使用 Windows 軟體的個人電腦所設計，與搭載 Chrome OS 的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
+<translation id="1757915090001272240">橫向拉丁文</translation>
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資訊</translation>
 <translation id="180035236176489073">你必須連上網路才能存取這些檔案。</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">泰米爾文 (音譯)</translation>
 <translation id="7040138676081995583">選擇開啟工具...</translation>
 <translation id="7048024426273850086">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量 <ph name="BATTERY_STATUS" />%，連線</translation>
+<translation id="7070804685954057874">直接輸入</translation>
 <translation id="7075931588889865715">泰文搭配 TIS 820-2531 鍵盤</translation>
 <translation id="708278670402572152">中斷連線即可啟用掃描功能</translation>
 <translation id="7086590977277044826">泰米爾文搭配 InScript 鍵盤</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">找到 <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     現在可以備份到 <ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />了</translation>
+<translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">馬拉雅拉姆文 (拼音)</translation>
 <translation id="7505167922889582512">顯示隱藏的檔案</translation>
 <translation id="7514365320538308">下載</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">波蘭文</translation>
 <translation id="7874321682039004450">菲律賓文</translation>
 <translation id="78946041517601018">共用的雲端硬碟</translation>
+<translation id="7903984238293908205">片假名</translation>
 <translation id="7908793776359722643">若將分割區格式化，其中儲存的所有資料都將遭到清除。這項操作無法復原。</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
 <translation id="7925686952655276919">請勿使用行動數據進行同步處理</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">圖檔</translation>
 <translation id="8223479393428528563">如要儲存這些檔案以供離線使用，請重新上網，在檔案上按一下滑鼠右鍵，然後選取 [<ph name="OFFLINE_CHECKBOX_NAME" />] 選項。</translation>
 <translation id="8249296373107784235">取消</translation>
+<translation id="8250690786522693009">拉丁文</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8261561378965667560">中文 (行列)</translation>

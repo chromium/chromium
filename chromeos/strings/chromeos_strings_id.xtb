@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
+<translation id="1264116747675686718">Mengupdate versi OS</translation>
 <translation id="1264369926465113395">Lihat majalah digital baru Chromebook untuk para seniman</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
+<translation id="2177831236093724629">Ditemukan <ph name="LINK_BEGIN" />komponen yang tidak memenuhi syarat<ph name="LINK_END" />. Untuk memastikan semua komponen yang memenuhi syarat teridentifikasi, update Chrome OS ke versi terbaru.</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2209788852729124853">Reset Penghitung Traffic</translation>
 <translation id="2212733584906323460">Resolusi Nama</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
+<translation id="320091191259649613">Jika Anda masih melihat masalah setelah update, mungkin komponen tersebut baru memenuhi syarat dan belum berhasil masuk ke database.</translation>
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
+<translation id="5008611843832219958">Update ke Chrome OS versi terbaru untuk mendapatkan proses perbaikan yang dioptimalkan</translation>
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan info media.</translation>
@@ -431,6 +435,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Tidak dapat menyelesaikan pemindaian</translation>
 <translation id="5502931783115429516">Android tidak berjalan</translation>
+<translation id="5507300744274596613">Pastikan Chrome OS sudah diupdate</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Buat pasangan kunci acak</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Wallpaper Default</translation>
 <translation id="6034694447310538551">Aktifkan reset bulanan otomatis</translation>
 <translation id="6037291330010597344">Pengumpan dokumen pemindai kosong. Tambahkan dokumen, lalu coba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -548,6 +554,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6723839937902243910">Daya</translation>
+<translation id="672609503628871915">Lihat apa saja yang baru</translation>
 <translation id="6747215703636344499">Dihentikan - Baki hasil cetak penuh</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Perangkat adalah komputer.</translation>
@@ -717,6 +724,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8660881923941176839">pound</translation>
 <translation id="8662671328352114214">Bergabung dengan jaringan <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Update ke <ph name="VERSION_NUMBER" /> &amp; mulai ulang</translation>
 <translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
@@ -781,6 +789,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
+<translation id="922179502584117429">Versi <ph name="VERSION_NUMBER" /> saat ini perlu diupdate</translation>
 <translation id="932327136139879170">Beranda</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>

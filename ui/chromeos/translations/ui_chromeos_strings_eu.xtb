@@ -706,6 +706,7 @@
 <translation id="7037472120706603960">Tamileraren transliterazioa</translation>
 <translation id="7040138676081995583">Ireki honekin…</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. <ph name="PROVIDER_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
+<translation id="7070804685954057874">Idazketa zuzena</translation>
 <translation id="7075931588889865715">Thailandiarra, TIS 820-2531 teklatuarekin</translation>
 <translation id="708278670402572152">Sareak bilatu ahal izateko, deskonektatu</translation>
 <translation id="7086590977277044826">Tamildarra, InScript teklatuarekin</translation>
@@ -806,6 +807,7 @@
 <translation id="7868774406711971383">Poloniarra</translation>
 <translation id="7874321682039004450">Filipinarra</translation>
 <translation id="78946041517601018">Unitate partekatuak</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Partizio bat formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza.</translation>
 <translation id="7925247922861151263">Ezin izan da AAA egiaztapena egin</translation>
 <translation id="7925686952655276919">Ez erabili datu-konexioa sinkronizatzeko</translation>

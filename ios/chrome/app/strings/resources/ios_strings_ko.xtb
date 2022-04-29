@@ -462,6 +462,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4941089862236492464">죄송합니다. 항목을 공유하는 중에 문제가 발생했습니다.</translation>
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
 <translation id="4945756290001680296">비밀번호 설정 액세스</translation>
+<translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="4986678885919050584">기기에서 삭제</translation>
 <translation id="4989542687859782284">사용할 수 없음</translation>
@@ -596,7 +597,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6144589619057374135">시크릿 모드에서 ${url} 열기</translation>
 <translation id="6149061208933997199">비밀번호 사용</translation>
 <translation id="6159839020698489198">선택사항</translation>
-<translation id="6173386249456979368">위험한 웹사이트, 다운로드 항목, 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 사용자에게 비밀번호 유출을 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6184086493125982861">탭 표시</translation>
 <translation id="6187302354554850004">최근 동기화: <ph name="LAST_USED_TIME" /></translation>

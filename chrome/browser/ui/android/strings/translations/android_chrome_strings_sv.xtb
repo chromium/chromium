@@ -117,6 +117,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
 <translation id="1592864538817356322">Standardskydd:</translation>
+<translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> föreslagna objekt i listan nedan.</translation>
 <translation id="161647866166517041">Spam och bedrägerier motverkas med hjälp av förtroendetoken som hjälper webbplatserna att skilja på botar och människor och bekämpa bedrägerier.
 
 En webbplats kan utfärda en förtroendetoken till din webbläsare utifrån hur du interagerar med den webbplatsen, till exempel genom att regelbundet logga in på ett konto. Om andra webbplatser du besöker senare söker efter och hittar en giltig förtroendetoken är det mer sannolikt att du ses som en person och inte som en bot.

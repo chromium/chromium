@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Нидерландски (Нидерландия)</translation>
 <translation id="174937106936716857">Общ брой файлове</translation>
 <translation id="1755345808328621801">Този файл е предназначен за компютри с Windows и не е съвместим с устройството ви с Chrome OS. Моля, потърсете в уеб магазина на Chrome подходящо приложение със същата функционалност.</translation>
+<translation id="1757915090001272240">широка латиница</translation>
 <translation id="1773212559869067373">Сертификатът за удостоверяване бе отхвърлен локално</translation>
 <translation id="1775381402323441512">Информация за видеофайла</translation>
 <translation id="180035236176489073">Трябва да сте онлайн, за да осъществите достъп до тези файлове.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Тамилски (транслитерация)</translation>
 <translation id="7040138676081995583">Отваряне със...</translation>
 <translation id="7048024426273850086">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
+<translation id="7070804685954057874">Директно въвеждане</translation>
 <translation id="7075931588889865715">Тайски с клавиатура TIS 820-2531</translation>
 <translation id="708278670402572152">Прекратете връзката, за да активирате сканирането</translation>
 <translation id="7086590977277044826">Тамилски с клавиатура InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Намерихме <ph name="FILE_COUNT" />
 <ph name="LINE_BREAK1" />
 Готови сме да създадем резервно копие в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетична клавиатура)</translation>
 <translation id="7505167922889582512">Показване на скритите файлове</translation>
 <translation id="7514365320538308">Изтегляне</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Полски</translation>
 <translation id="7874321682039004450">Филипински</translation>
 <translation id="78946041517601018">Споделени дискове</translation>
+<translation id="7903984238293908205">катакана</translation>
 <translation id="7908793776359722643">При форматирането на даден дял ще бъдат изтрити всички съхранявани в него данни. Това действие не може да бъде отменено.</translation>
 <translation id="7925247922861151263">Проверката за AAA не бе успешна</translation>
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Художествено произведение</translation>
 <translation id="8223479393428528563">За да запазите тези файлове за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху тях и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
+<translation id="8250690786522693009">латиница</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8261561378965667560">Китайски (табличен метод на въвеждане)</translation>

@@ -582,6 +582,7 @@
 <translation id="156793199942386351">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Открыть настройки экрана</translation>
+<translation id="1569044524074707727">Разблокировка телефона</translation>
 <translation id="1570604804919108255">Включить звук уведомлений</translation>
 <translation id="1571304935088121812">Копировать имя пользователя</translation>
 <translation id="1571738973904005196">Перейти на вкладку: <ph name="TAB_ORIGIN" /></translation>
@@ -2012,6 +2013,7 @@
 <translation id="288042212351694283">С доступом к устройствам Universal 2nd Factor</translation>
 <translation id="2881076733170862447">При нажатии на расширение</translation>
 <translation id="2882943222317434580">Сейчас будет выполнен перезапуск и сброс настроек <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="2883470649061584386">Лента</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2885729872133513017">Не удалось расшифровать ответ сервера.</translation>
 <translation id="2886119409731773154">На это может уйти до 30 минут.</translation>
@@ -2344,6 +2346,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3232754137068452469">Веб-приложение</translation>
 <translation id="3233271424239923319">Выполнить резервное копирование приложений и файлов Linux</translation>
+<translation id="3234978181857588512">Сохранить на устройстве</translation>
 <translation id="3238192140106069382">Подключение и проверка…</translation>
 <translation id="3239373508713281971">Для приложения "<ph name="APP_NAME" />" снято ограничение времени использования.</translation>
 <translation id="3241680850019875542">Выберите корневой каталог упаковываемого расширения. Для обновления расширения также укажите закрытый ключ.</translation>
@@ -5325,6 +5328,7 @@
 <translation id="6227002569366039565">Чтобы перейти к всплывающей подсказке, нажмите |<ph name="ACCELERATOR" />|. Повторное нажатие позволит перейти к элементу, на который указывает подсказка.</translation>
 <translation id="6227280783235722609">расширение</translation>
 <translation id="6229849828796482487">Отключить сеть Wi-Fi</translation>
+<translation id="6230165830166519105">Другой способ</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6231881193380278751">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батарея</translation>

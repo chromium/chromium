@@ -706,6 +706,7 @@
 <translation id="7037472120706603960">Tamilisht me transliterim</translation>
 <translation id="7040138676081995583">Hape me...</translation>
 <translation id="7048024426273850086">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
+<translation id="7070804685954057874">Hyrja e drejtpërdrejtë</translation>
 <translation id="7075931588889865715">Tajlandisht me tastierë TIS 820-2531</translation>
 <translation id="708278670402572152">Shkëputu për të aktivizuar skanimin</translation>
 <translation id="7086590977277044826">Tamilisht me tastierë InScript</translation>
@@ -806,6 +807,7 @@
 <translation id="7868774406711971383">Polonisht</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7925247922861151263">Kontrolli AAA dështoi</translation>
 <translation id="7925686952655276919">Mos përdor të dhëna celulare për sinkronizim</translation>

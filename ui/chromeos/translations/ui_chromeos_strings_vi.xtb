@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Tiếng Hà Lan (Hà Lan)</translation>
 <translation id="174937106936716857">Tổng số lượng tệp</translation>
 <translation id="1755345808328621801">Tệp này dành cho máy tính sử dụng phần mềm Windows. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. Vui lòng tìm kiếm ứng dụng thay thế phù hợp trong Cửa hàng Chrome trực tuyến.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Chứng chỉ xác thực bị từ chối cục bộ</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
 <translation id="180035236176489073">Bạn phải trực tuyến để truy cập các tệp này.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tiếng Tamil (chuyển tự)</translation>
 <translation id="7040138676081995583">Mở bằng...</translation>
 <translation id="7048024426273850086">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
+<translation id="7070804685954057874">Nhập trực tiếp</translation>
 <translation id="7075931588889865715">Tiếng Thái bằng bàn phím TIS 820-2531</translation>
 <translation id="708278670402572152">Ngắt kết nối để bật tính năng quét</translation>
 <translation id="7086590977277044826">Tiếng Tamil bằng bàn phím InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Đã tìm thấy <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Đã sẵn sàng sao lưu vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Tiếng Malayalam (phiên âm)</translation>
 <translation id="7505167922889582512">Hiển thị các tệp ẩn</translation>
 <translation id="7514365320538308">Tải xuống</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
 <translation id="7874321682039004450">Tiếng Philippines</translation>
 <translation id="78946041517601018">Bộ nhớ dùng chung</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>
 <translation id="7925686952655276919">Không sử dụng dữ liệu di động để đồng bộ hóa</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Tác phẩm nghệ thuật</translation>
 <translation id="8223479393428528563">Để lưu các tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
+<translation id="8250690786522693009">Tiếng Latinh</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8261561378965667560">Tiếng Trung (bộ gõ Array)</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ደች (ኔዘርላንድስ)</translation>
 <translation id="174937106936716857">ጠቅላላ ፋይል ብዛት</translation>
 <translation id="1755345808328621801">ይህ ፋይል የተሰራው የWindows ሶፍትዌር ለሚጠቀም ፒሲ ነው። ይሄ ChromeOSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን ተተኪ መተግበሪያ ለማግኘት እባክዎ የChrome ድር መደብሩን ይፈልጉ።</translation>
+<translation id="1757915090001272240">ስፊ ላቲን</translation>
 <translation id="1773212559869067373">የማረጋገጫ ምስክር ወረቀት በአካባቢው ተቀባይነት አላገኘም</translation>
 <translation id="1775381402323441512">የቪዲዮ መረጃ</translation>
 <translation id="180035236176489073">እነዚህን ፋይሎች ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">በታሚል ቋንቋ ፊደል መጻፍ</translation>
 <translation id="7040138676081995583">ይክፈቱ በ...</translation>
 <translation id="7048024426273850086">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="PHONE_NAME" />፣ <ph name="PROVIDER_NAME" /> ፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ ተገናኝ</translation>
+<translation id="7070804685954057874">ቀጥተኛ ግቤት</translation>
 <translation id="7075931588889865715">ታይላንድኛ በTIS 820-2531 ቁልፍ ሰሌዳ</translation>
 <translation id="708278670402572152">መቃኘትን ለማንቃት ግንኙነት ያቋርጡ</translation>
 <translation id="7086590977277044826">ታሚልኛ በInScript ቁልፍ ሰሌዳ</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ተገኝቷል
     <ph name="LINE_BREAK1" />
     ምትኬ ወደ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ለማስቀመጥ ዝግጁ</translation>
+<translation id="749452993132003881">ሂራጋንኛ</translation>
 <translation id="7495372004724182530">ማሊያላም ፎነቲክ</translation>
 <translation id="7505167922889582512">የተደበቁ ፋይሎችን አሳይ</translation>
 <translation id="7514365320538308">አውርድ</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">ፖላንድኛ</translation>
 <translation id="7874321682039004450">ፊሊፒኖ</translation>
 <translation id="78946041517601018">የተጋሩ Drives</translation>
+<translation id="7903984238293908205">ካታካና</translation>
 <translation id="7908793776359722643">በክፍልፍል ላይ ቅርጸት መስራት በእሱ ላይ የተከማቸውን ሁሉም ውሂብ ያጠፋል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="7925247922861151263">የAAA ማረጋገጥ አልተሳካም</translation>
 <translation id="7925686952655276919">ለማመሳሰል የተንቀሳቃሽ ስልክ ውሂብን አትጠቀም</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">ሥነ ጥበብ</translation>
 <translation id="8223479393428528563">እነዚህን ፋይሎች ከመስመር ውጪ ለመጠቀም ለማስቀመጥ ተመልሰው መስመር ላይ ይሂዱ፣ ፋይሎቹን በቀኝ ጠቅ ያድርጉ፣ እና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
+<translation id="8250690786522693009">ላቲን</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8261561378965667560">የቻይንኛ ድርድር</translation>

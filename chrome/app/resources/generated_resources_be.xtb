@@ -582,6 +582,7 @@
 <translation id="156793199942386351">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />". Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
 <translation id="1567993339577891801">Кансоль JavaScript</translation>
 <translation id="1568323446248056064">Адкрыць налады дысплэя</translation>
+<translation id="1569044524074707727">Разблакіруйце тэлефон</translation>
 <translation id="1570604804919108255">Уключыць гук апавяшчэнняў</translation>
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
 <translation id="1571738973904005196">Праглядзець укладку: <ph name="TAB_ORIGIN" /></translation>
@@ -2011,6 +2012,7 @@
 <translation id="288042212351694283">Доступ да прылад універсальнай двухфактарнай аўтэнтыфікацыі</translation>
 <translation id="2881076733170862447">Калі націснуць на пашырэнне</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> перазапусціцца, і налады будуць скінуты імгненна</translation>
+<translation id="2883470649061584386">Стужка</translation>
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2885729872133513017">Узнікла праблема пры расшыфроўцы адказу сервера.</translation>
 <translation id="2886119409731773154">Гэта можа заняць да 30 хвілін</translation>
@@ -2343,6 +2345,7 @@
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3232754137068452469">Вэб-праграма</translation>
 <translation id="3233271424239923319">Стварыць рэзервовую копію файлаў і праграм Linux</translation>
+<translation id="3234978181857588512">Захаваць на прыладзе</translation>
 <translation id="3238192140106069382">Ідзе падключэнне і спраўджанне</translation>
 <translation id="3239373508713281971">Абмежаванне часу выдалена для праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="3241680850019875542">Выберыце каранёвы каталог, куды трэба ўпакаваць пашырэнне. Каб абнавіць пашырэнне, таксама выберыце файл закрытага ключа, які трэба ўжыць.</translation>
@@ -5323,6 +5326,7 @@
 <translation id="6227002569366039565">Націсніце |<ph name="ACCELERATOR" />|, каб перайсці да гэтага ўсплывальнага апавяшчэння, а затым яшчэ раз, каб перайсці да элемента, на які яно вядзе.</translation>
 <translation id="6227280783235722609">пашырэнне</translation>
 <translation id="6229849828796482487">Адключыцца ад сеткі Wi-Fi</translation>
+<translation id="6230165830166519105">Паспрабаваць іншы спосаб</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
 <translation id="6231881193380278751">Дадайце параметр запыту ў URL-адрас для аўтаматычнага абнаўлення старонкі: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Акумулятар</translation>

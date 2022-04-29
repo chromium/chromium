@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Hollandsk (Holland)</translation>
 <translation id="174937106936716857">Samlet antal filer</translation>
 <translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører Chrome OS. Søg efter en anden egnet app i Chrome Webshop.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
 <translation id="180035236176489073">Du skal være online for at få adgang til disse filer.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tamil translitteration</translation>
 <translation id="7040138676081995583">Åbn med...</translation>
 <translation id="7048024426273850086">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
+<translation id="7070804685954057874">Direkte indtastning</translation>
 <translation id="7075931588889865715">Thai med TIS 820-2531-tastatur</translation>
 <translation id="708278670402572152">Afbryd forbindelsen for at aktivere scanning</translation>
 <translation id="7086590977277044826">Tamil med InScript-tastatur</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Der blev fundet <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Klar til at sikkerhedskopiere til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetisk</translation>
 <translation id="7505167922889582512">Vis skjulte filer</translation>
 <translation id="7514365320538308">Download</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polsk</translation>
 <translation id="7874321682039004450">Filippinsk</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
 <translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Kunst</translation>
 <translation id="8223479393428528563">Hvis du vil gemme disse filer til offlinebrug, skal du gå online igen, højreklikke på filerne og vælge indstillingen <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Annuller</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8261561378965667560">Kinesisk array</translation>

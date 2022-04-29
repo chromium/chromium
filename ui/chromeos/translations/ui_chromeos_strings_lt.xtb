@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Nyderlandų k. (Nyderlandai)</translation>
 <translation id="174937106936716857">Bendras failų skaičius</translation>
 <translation id="1755345808328621801">Šis failas skirtas asmeniniam kompiuteriui, kuriame naudojama „Windows“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. Ieškokite tinkamos pakaitinės programos „Chrome“ internetinėje parduotuvėje.</translation>
+<translation id="1757915090001272240">„Wide Latin“</translation>
 <translation id="1773212559869067373">Autentifikavimo sertifikatas atmestas vietiniu mastu</translation>
 <translation id="1775381402323441512">Vaizdo įrašo informacija</translation>
 <translation id="180035236176489073">Jei norite pasiekti šios failus, turite prisijungti.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tamilų k. transliteracija</translation>
 <translation id="7040138676081995583">Atidaryti naudojant...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="PHONE_NAME" />“, „<ph name="PROVIDER_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, prisijungti</translation>
+<translation id="7070804685954057874">Tiesioginė įvestis</translation>
 <translation id="7075931588889865715">Tajų k. su TIS 820-2531 klaviatūra</translation>
 <translation id="708278670402572152">Atjunkite, kad įgalintumėte nuskaitymą</translation>
 <translation id="7086590977277044826">Tamilų k. su „InScript“ klaviatūra</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Rasta: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Paruošta kurti atsarginę kopiją <ph name="BEGIN_LINK" />„Google“ diske<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalių k. fonetinė</translation>
 <translation id="7505167922889582512">Rodyti paslėptus failus</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Lenkų k.</translation>
 <translation id="7874321682039004450">Filipiniečių k.</translation>
 <translation id="78946041517601018">Bendri diskai</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatuojant skaidinį bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="7925247922861151263">AAA patikra nepavyko</translation>
 <translation id="7925686952655276919">Sinchronizuojant nenaudoti duomenų mobiliesiems</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Meno kūrinys</translation>
 <translation id="8223479393428528563">Jei norite išsaugoti šiuos failus ir naudoti juos be interneto ryšio, vėl prisijunkite prie interneto, spustelėkite failus dešiniuoju pelės klavišu ir pasirinkite parinktį „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="8249296373107784235">Nutraukti</translation>
+<translation id="8250690786522693009">Lotynų</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8261561378965667560">Kinų k. masyvas</translation>

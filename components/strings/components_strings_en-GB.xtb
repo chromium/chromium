@@ -471,7 +471,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2185836064961771414">American football</translation>
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
-<translation id="2188852899391513400">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends changing it now, and then checking your saved passwords.</translation>
 <translation id="219906046732893612">Home improvement</translation>
 <translation id="2202020181578195191">Enter a valid expiry year</translation>
 <translation id="22081806969704220">Tray 3</translation>
@@ -1333,6 +1332,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4607603470419975064">See Chrome tips button: press Enter to learn about Chrome features</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
 <translation id="4617273035598175554">Graphics and animation software</translation>
+<translation id="4627165777145349100">More about this page</translation>
 <translation id="4627675673814409125">This policy cannot be set at the Chrome profile level and will be ignored.</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
@@ -1974,7 +1974,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="643051589346665201">Change Google password</translation>
 <translation id="6433490469411711332">Edit contact info</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> refused to connect.</translation>
-<translation id="6438025220577812695">Change it myself</translation>
 <translation id="6440503408713884761">Ignored</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>

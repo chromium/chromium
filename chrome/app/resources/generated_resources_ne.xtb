@@ -548,6 +548,7 @@
 <translation id="1536754031901697553">विच्छेद गर्दै...</translation>
 <translation id="1537254971476575106">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="15373452373711364">ठुलो माउस कर्सर</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> ले <ph name="ORIGIN" /> मा भएका सामग्री रिड गर्ने र ती सामग्री परिवर्तन गर्ने अनुमति माग्दै छ</translation>
 <translation id="1540605929960647700">डेमो मोड सक्षम पार्नुहोस्</translation>
 <translation id="1541346352678737112">कुनै पनि नेटवर्क फेला परेन</translation>
 <translation id="1542137295869176367">तपाईंको साइन इन डेटा परिवर्तन गर्न सकिएन</translation>
@@ -1866,6 +1867,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">व्याकरणसँगै हिज्जे पनि जाँच्नुहोस्</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> मा भएका सामग्री रिड गर्ने र ती सामग्री परिवर्तन गर्ने अनुमति मागिँदै छ:</translation>
 <translation id="2753677631968972007">म्यानुअल रूपमा साइटका अनुमतिहरू नियन्त्रण गर्नुहोस्।</translation>
 <translation id="2755349111255270002">यो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्</translation>
 <translation id="2755367719610958252">पहुँच सम्बन्धी सुविधाहरूलाई व्यवस्थापन गर्नुहोस्</translation>
@@ -2341,6 +2343,7 @@
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3233271424239923319">Linux एप र फाइलहरू ब्याकअप गर्नुहोस्</translation>
+<translation id="3234978181857588512">डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="3238192140106069382">डिभाइस कनेक्ट हुँदै छ र पुष्टि गरिँदै छ</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> को समय सीमा हटाइयो</translation>
 <translation id="3241680850019875542">प्याक गर्नको लागि एक्स्टेन्सनको मूल डाइरेक्टरी चयन गर्नुहोस्। कुनै एक्स्टेन्सनलाई अपडेट गर्न, पुन: प्रयोग गर्नकोो लागि निजी कुञ्जी फाइललाई पनि चयन गर्नुहोस्।</translation>
@@ -3552,6 +3555,7 @@
 <translation id="4429239357082509581">Steam इन्स्टल गर्ने अनुमति दिइएको छैन</translation>
 <translation id="4430019312045809116">आयतन</translation>
 <translation id="4430369329743628066">पुस्तक चिन्ह थपियो!</translation>
+<translation id="4430422687972614133">भर्चुअल कार्ड अन गर्नुहोस्</translation>
 <translation id="4432621511648257259">पासवर्ड मिलेन</translation>
 <translation id="443454694385851356">लिगेसी (असुरक्षित)</translation>
 <translation id="443475966875174318">नमिल्दा एपहरू अपडेट गर्नुहोस् वा हटाउनुहोस्</translation>
@@ -7079,6 +7083,7 @@
 <translation id="7947964080535614577">सामग्री वा सेवाहरू निःशुल्क रूपमा प्रदान गर्न सकियोस् भन्नाका लागि साइटहरूले सामान्यतया विज्ञापनहरू देखाउँछन्। तर केही साइटहरूले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउन सक्छन्।</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> का सबै पेजहरू</translation>
 <translation id="7951265006188088697">Google Pay भुक्तानी विधिहरू थप्न वा व्यवस्थापन गर्न आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा जानुहोस्</translation>
+<translation id="795130320946928025">भर्चुअल कार्ड अफ गर्नुहोस्</translation>
 <translation id="7952708427581814389">साइटहरूले तपाईंको क्लिपबोर्डमा भएका पाठ तथा फोटोहरू हेर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="795282463722894016">पुनर्स्थापना सम्पन्न भयो</translation>
 <translation id="7952904276017482715">अपेक्षित ID "<ph name="EXPECTED_ID" />" हो, तर भएको ID भने "<ph name="NEW_ID" />" छ</translation>

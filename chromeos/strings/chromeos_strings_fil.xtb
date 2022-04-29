@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latency ng DNS</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
 <translation id="1238612778414822719">Latency ng HTTPS</translation>
+<translation id="1264116747675686718">Ina-update ang bersyon ng OS</translation>
 <translation id="1264369926465113395">Tingnan ang bagong digital na magazine ng Chromebook para sa mga creator</translation>
 <translation id="1270369111467284986">May pinaghihinalaang captive portal</translation>
 <translation id="1290331692326790741">Mahina ang signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
+<translation id="2177831236093724629">Nakahanap ng <ph name="LINK_BEGIN" />mga hindi kwalipikadong bahagi<ph name="LINK_END" />. Para tiyaking natutukoy ang lahat ng kwalipikadong bahagi, i-update ang iyong Chrome OS sa pinakabagong bersyon.</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
+<translation id="320091191259649613">Kung mararanasan mo pa rin ang issue pagkatapos ng pag-update, posibleng bago lang ang pagkakwalipikado ng bahagi at wala pa ito sa database.</translation>
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Itago ang ulat</translation>
+<translation id="5008611843832219958">Mag-update sa pinakabagong bersyon ng Chrome OS para sa naka-optimize na proseso ng pag-aayos</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
@@ -431,6 +435,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Hindi makumpleto ang pag-scan</translation>
 <translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
+<translation id="5507300744274596613">Tiyaking up to date ang Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5939518447894949180">I-reset</translation>
 <translation id="594552776027197022">Bumuo ng random na keypair</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Default na Wallpaper</translation>
 <translation id="6034694447310538551">I-enable ang awtomatikong buwanang pag-reset</translation>
 <translation id="6037291330010597344">Walang laman ang document feeder ng scanner. Magdagdag ng mga dokumento at subukan ulit.</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -548,6 +554,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6723839937902243910">Power</translation>
+<translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="6749473226660745022">Mga Larawan</translation>
 <translation id="6753452347192452143">Computer ang device.</translation>
@@ -717,6 +724,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8660881923941176839">pounds</translation>
 <translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>
+<translation id="8671972493856476349">Mag-update sa <ph name="VERSION_NUMBER" /> at mag-restart</translation>
 <translation id="8675354002693747642">Pre-shared key:</translation>
 <translation id="8677859815076891398">Walang album. Gumawa ng album sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gamitin ang mga Kaliwa o Pakanang arrow key para pamahalaan ang feature na ito.</translation>
@@ -781,6 +789,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>
+<translation id="922179502584117429">Luma na ang kasalukuyang bersyong <ph name="VERSION_NUMBER" /></translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Hindi na-activate</translation>

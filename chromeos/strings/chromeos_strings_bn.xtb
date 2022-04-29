@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
 <translation id="123124571410524056">পোর্টাল হতে পারে</translation>
 <translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
+<translation id="1264116747675686718">OS ভার্সন আপডেট করা হচ্ছে</translation>
 <translation id="1264369926465113395">ক্রিয়েটরের জন্য Chromebook-এর নতুন ডিজিট্যাল ম্যাগাজিন দেখুন</translation>
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। সমস্ত উপযুক্ত কম্পোনেন্ট শনাক্ত করা হয়েছে তা নিশ্চিত করতে, আপনার Chrome OS লেটেস্ট ভার্সনে আপডেট করুন।</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
 <translation id="2212733584906323460">নামের রেজোলিউশন</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
+<translation id="320091191259649613">আপনি যদি আপডেটের পরেও সমস্যাটি দেখতে পান, তাহলে এটা সম্ভব যে কম্পোনেন্টটি নতুনভাবে উপযুক্ত এবং এটি এখনও ডাটাবেসে তৈরি করেনি।</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">চালান</translation>
 <translation id="4987769320337599931">ফায়ারওয়াল</translation>
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
+<translation id="5008611843832219958">অপ্টিমাইজ করা রিপেয়ার প্রসেসের জন্য Chrome OS-এর লেটেস্ট ভার্সন আপডেট করুন</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">আপনার স্ক্রিন ব্যবহার না হলে ফটো, সময়, আবহাওয়া এবং মিডিয়া সম্পর্কিত তথ্য দেখুন।</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">স্ক্যান সম্পূর্ণ করা যায়নি</translation>
 <translation id="5502931783115429516">Android কাজ করছে না</translation>
+<translation id="5507300744274596613">Chrome OS আপ-টু-ডেট আছে কিনা কনফার্ম করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="594552776027197022">র‍্যান্ডম কী পেয়ার জেনারেট করুন</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">ডিফল্ট ওয়ালপেপার</translation>
 <translation id="6034694447310538551">প্রতিমাসে অটোমেটিক রিসেট করার ফিচার চালু করুন</translation>
 <translation id="6037291330010597344">স্ক্যানারের ডকুমেন্ট ফিডার খালি আছে। ডকুমেন্ট যোগ করে আবার চেষ্টা করুন।</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -547,6 +553,7 @@
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
+<translation id="672609503628871915">নতুন কী আছে দেখুন</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
 <translation id="6749473226660745022">ফটো</translation>
 <translation id="6753452347192452143">ডিভাইস একটি কম্পিউটার।</translation>
@@ -716,6 +723,7 @@
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8660881923941176839">পাউন্ড</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটওয়ার্কে সংযুক্ত হন</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" />-এ আপডেট করে রিস্টার্ট করুন</translation>
 <translation id="8675354002693747642">আগে-থাকতে শেয়ার করা কী</translation>
 <translation id="8677859815076891398">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই ফিচার ম্যানেজ করতে, 'বাঁদিক' বা 'ডানদিকের তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
@@ -780,6 +788,7 @@
 <translation id="917720651393141712">পরীক্ষা করুন</translation>
 <translation id="9204237731135241582">Android অ্যাপ থেকে গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
 <translation id="9211490828691860325">সব ডেক্স</translation>
+<translation id="922179502584117429">বর্তমান ভার্সন <ph name="VERSION_NUMBER" /> পুরনো হয়ে গেছে</translation>
 <translation id="932327136139879170">হোম</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">সক্রিয় নেই</translation>

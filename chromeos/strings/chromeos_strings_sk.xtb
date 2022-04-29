@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latencia DNS</translation>
 <translation id="123124571410524056">Podozrenie na portál</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
+<translation id="1264116747675686718">Aktualizuje sa verzia operačného systému</translation>
 <translation id="1264369926465113395">Pozrite si nový digitálny časopis Chromebooku pre autorov</translation>
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Skúsiť znova</translation>
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
+<translation id="2177831236093724629">Boli nájdené <ph name="LINK_BEGIN" />nevhodné komponenty<ph name="LINK_END" />. Ak chcete mať istotu, že všetky vhodné komponenty budú identifikované, aktualizujte Chrome OS na najnovšiu verziu.</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
+<translation id="320091191259649613">Ak bude po aktualizácii problém pretrvávať, je možné, že komponent je podľa novej klasifikácie vhodný, ale ešte sa nedostal do databázy.</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Skryť prehľad</translation>
+<translation id="5008611843832219958">Ak chcete mať k dispozícii optimalizovaný proces opravy, aktualizujte na najnovšiu verziu systému Chrome OS</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Nastavte, aby sa pri nečinnosti obrazovky zobrazovali fotky, čas, počasie a informácie o médiách.</translation>
@@ -431,6 +435,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenovanie sa nepodarilo dokončiť</translation>
 <translation id="5502931783115429516">Android nefunguje</translation>
+<translation id="5507300744274596613">Skontrolujte, či je systém Chrome OS aktuálny</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="594552776027197022">Generovanie náhodného páru kľúčov</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Predvolená tapeta</translation>
 <translation id="6034694447310538551">Povoliť automatický mesačný reset</translation>
 <translation id="6037291330010597344">Podávač dokumentov skenera je prázdny. Pridajte dokumenty a skúste to znova.</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
@@ -548,6 +554,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6723839937902243910">Napájanie</translation>
+<translation id="672609503628871915">Zobraziť novinky</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
 <translation id="6749473226660745022">Fotky</translation>
 <translation id="6753452347192452143">Zariadenie je počítač.</translation>
@@ -717,6 +724,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8660881923941176839">libry</translation>
 <translation id="8662671328352114214">Pridanie sa k sieti <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Aktualizovať na verziu <ph name="VERSION_NUMBER" /> a reštartovať</translation>
 <translation id="8675354002693747642">Predzdieľaný kľúč</translation>
 <translation id="8677859815076891398">Žiadne albumy Vytvorte album vo <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Spravujte túto funkciu pomocou ľavej alebo pravej šípky.</translation>
@@ -781,6 +789,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="917720651393141712">Testovať</translation>
 <translation id="9204237731135241582">Brána sa nedá kontaktovať v aplikáciách pre Android</translation>
 <translation id="9211490828691860325">Všetky plochy</translation>
+<translation id="922179502584117429">Aktuálna verzia <ph name="VERSION_NUMBER" /> je zastaraná</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Neaktivované</translation>

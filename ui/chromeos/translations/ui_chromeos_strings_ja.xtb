@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">オランダ語（オランダ）</translation>
 <translation id="174937106936716857">合計ファイル数</translation>
 <translation id="1755345808328621801">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
+<translation id="1757915090001272240">全角ラテン文字</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
 <translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">タミル語（文字変換）</translation>
 <translation id="7040138676081995583">アプリケーションで開く...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、接続</translation>
+<translation id="7070804685954057874">直接入力</translation>
 <translation id="7075931588889865715">タイ語（TIS 820-2531）キーボード</translation>
 <translation id="708278670402572152">スキャンを有効にするにはネットワークから切断してください</translation>
 <translation id="7086590977277044826">タミル語（字母）キーボード</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" />が見つかりました
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップできます</translation>
+<translation id="749452993132003881">ひらがな</translation>
 <translation id="7495372004724182530">マラヤーラム語（表音）</translation>
 <translation id="7505167922889582512">非表示のファイルを表示</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">ポーランド語</translation>
 <translation id="7874321682039004450">フィリピン語</translation>
 <translation id="78946041517601018">共有ドライブ</translation>
+<translation id="7903984238293908205">カタカナ</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">アート</translation>
 <translation id="8223479393428528563">これらのファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
 <translation id="8249296373107784235">中止</translation>
+<translation id="8250690786522693009">ラテン文字</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8261561378965667560">中国語（行列）</translation>

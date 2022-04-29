@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Belanda (Belanda)</translation>
 <translation id="174937106936716857">Jumlah file total</translation>
 <translation id="1755345808328621801">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Sertifikat autentikasi ditolak secara lokal</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Anda harus online untuk mengakses file ini.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Transliterasi Tamil</translation>
 <translation id="7040138676081995583">Buka dengan...</translation>
 <translation id="7048024426273850086">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
+<translation id="7070804685954057874">Masukan langsung</translation>
 <translation id="7075931588889865715">Thai dengan keyboard TIS 820-2531</translation>
 <translation id="708278670402572152">Putuskan hubungan untuk mengaktifkan pemindaian</translation>
 <translation id="7086590977277044826">Tamil dengan keyboard InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ditemukan
     <ph name="LINE_BREAK1" />
     Siap untuk mencadangkan ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>
 <translation id="7505167922889582512">Tampilkan file tersembunyi</translation>
 <translation id="7514365320538308">Download</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polandia</translation>
 <translation id="7874321682039004450">Filipina</translation>
 <translation id="78946041517601018">Drive bersama</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Memformat partisi akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7925247922861151263">Pemeriksaan AAA gagal</translation>
 <translation id="7925686952655276919">Jangan gunakan data seluler untuk sinkronisasi</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Karya Seni</translation>
 <translation id="8223479393428528563">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan pada file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Batalkan</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8261561378965667560">Array China</translation>

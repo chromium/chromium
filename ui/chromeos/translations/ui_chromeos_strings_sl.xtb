@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">nizozemščina (Nizozemska)</translation>
 <translation id="174937106936716857">Skupno število datotek</translation>
 <translation id="1755345808328621801">Ta datoteka je namenjena za računalnike s programsko opremo Windows in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
+<translation id="1757915090001272240">Široka latinica</translation>
 <translation id="1773212559869067373">Potrdilo za preverjanje pristnosti je bilo zavrnjeno lokalno</translation>
 <translation id="1775381402323441512">Podatki o videoposnetku</translation>
 <translation id="180035236176489073">Če želite dostopati do datotek, mora biti vzpostavljena povezava z internetom.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">tamilščina (transkripcija)</translation>
 <translation id="7040138676081995583">Odpri z aplikacijo ...</translation>
 <translation id="7048024426273850086">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, vzpostavitev povezave</translation>
+<translation id="7070804685954057874">Neposredni vnos</translation>
 <translation id="7075931588889865715">tajščina s tipkovnico TIS 820-2531</translation>
 <translation id="708278670402572152">Prekinite povezavo za omogočanje iskanja</translation>
 <translation id="7086590977277044826">tamilščina s tipkovnico InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Št. najdenih: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Pripravljen za varnostno kopiranje v <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalščina (fonetična)</translation>
 <translation id="7505167922889582512">Prikaz skritih datotek</translation>
 <translation id="7514365320538308">Prenos</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">poljščina</translation>
 <translation id="7874321682039004450">filipinščina</translation>
 <translation id="78946041517601018">Diski v skupni rabi</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Če formatirate particijo, se izbrišejo vsi podatki, shranjeni na njej. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="7925247922861151263">Preverjanje AAA ni uspelo</translation>
 <translation id="7925686952655276919">Ne uporabi mobilnih podatkov za sinhronizacijo</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Slikovni material</translation>
 <translation id="8223479393428528563">Če želite te datoteke shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteke in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Prekini</translation>
+<translation id="8250690786522693009">Latinščina</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8261561378965667560">kitajščina (način vnosa array)</translation>

@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Olandese (Paesi Bassi)</translation>
 <translation id="174937106936716857">Numero totale di file</translation>
 <translation id="1755345808328621801">Questo file è supportato su PC con software Windows. Non è compatibile con il tuo dispositivo che esegue Chrome OS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Certificato di autenticazione rifiutato localmente</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Per poter accedere a questi file devi essere online.</translation>
@@ -706,6 +707,7 @@
 <translation id="7037472120706603960">Traslitterazione tamil</translation>
 <translation id="7040138676081995583">Apri con...</translation>
 <translation id="7048024426273850086">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
+<translation id="7070804685954057874">Immissione diretta</translation>
 <translation id="7075931588889865715">Thai con tastiera TIS 820-2531</translation>
 <translation id="708278670402572152">Scollega per consentire la scansione</translation>
 <translation id="7086590977277044826">Tamil con tastiera InScript</translation>
@@ -746,6 +748,7 @@
 <translation id="7489215562877293245">Elementi trovati: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Pronti per il backup su <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetica</translation>
 <translation id="7505167922889582512">Mostra file nascosti</translation>
 <translation id="7514365320538308">Scarica</translation>
@@ -806,6 +809,7 @@
 <translation id="7868774406711971383">Polacco</translation>
 <translation id="7874321682039004450">Filippino</translation>
 <translation id="78946041517601018">Drive condivisi</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">La formattazione di una partizione eliminerà tutti i dati archiviati al suo interno. L'operazione non potrà essere annullata.</translation>
 <translation id="7925247922861151263">Controllo AAA non riuscito</translation>
 <translation id="7925686952655276919">Non utilizzare dati mobili per la sincronizzazione</translation>
@@ -842,6 +846,7 @@
 <translation id="8208580316430297579">Copertina</translation>
 <translation id="8223479393428528563">Per salvare i file da utilizzare offline, torna online, fai clic con il pulsante destro del mouse sui file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Interrompi</translation>
+<translation id="8250690786522693009">Latino</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8261561378965667560">Cinese Array</translation>

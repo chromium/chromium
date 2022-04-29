@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">டச்சு (நெதர்லாந்து)</translation>
 <translation id="174937106936716857">மொத்த ஃபைலின் எண்ணிக்கை</translation>
 <translation id="1755345808328621801">Windows மென்பொருளைப் பயன்படுத்தும் PCக்காக இந்த ஃபைல் வடிவமைக்கப்பட்டுள்ளது. ChromeOSஸில் இயங்கும் உங்கள் சாதனத்தில் இதைத் திறக்க முடியாது. பொருத்தமான மாற்று ஆப்ஸை Chrome ஆன்லைன் ஸ்டோரில் தேடவும்.</translation>
+<translation id="1757915090001272240"> அகலமான லத்தீன்</translation>
 <translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
 <translation id="180035236176489073">இந்த ஃபைல்களை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">தமிழ் ஒலிபெயர்ப்பு</translation>
 <translation id="7040138676081995583">இதனுடன் திற...</translation>
 <translation id="7048024426273850086">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
+<translation id="7070804685954057874">நேரடி உள்ளீடு</translation>
 <translation id="7075931588889865715">தாய் - TIS 820-2531 கீபோர்டு</translation>
 <translation id="708278670402572152">ஸ்கேன் செய்வதை இயக்க, இணைப்பைத் துண்டிக்கவும்</translation>
 <translation id="7086590977277044826">தமிழ் - இன்ஸ்கிரிப்ட் கீபோர்டு</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> உள்ளது
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google இயக்ககத்திற்குக்<ph name="END_LINK" /> காப்புப் பிரதி எடுக்கத் தயாராக உள்ளது</translation>
+<translation id="749452993132003881">ஹிரகனா</translation>
 <translation id="7495372004724182530">மலையாள ஒலிப்புமுறை</translation>
 <translation id="7505167922889582512">மறைக்கப்பட்ட கோப்புகளைக் காட்டு</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">போலிஷ்</translation>
 <translation id="7874321682039004450">ஃபிலிப்பினோ</translation>
 <translation id="78946041517601018">பகிர்ந்த இயக்ககங்கள்</translation>
+<translation id="7903984238293908205">கட்டாகனா</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7925247922861151263">AAA சோதனை தோல்வியுற்றது</translation>
 <translation id="7925686952655276919">ஒத்திசைப்பதற்கு, மொபைல் டேட்டா பயன்படுத்தாதே</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">கலைப்பணி</translation>
 <translation id="8223479393428528563">இந்த ஃபைல்களை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிக்க, ஆன்லைனிற்கு சென்று, ஃபைல்களில் வலது-கிளிக் செய்து, <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்தெடுக்கவும்.</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
+<translation id="8250690786522693009">லத்தீன்</translation>
 <translation id="8250920743982581267">ஆவணங்கள்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8261561378965667560">சீனம் (அரே)</translation>

@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="123124571410524056">Portal muzlatildi</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
+<translation id="1264116747675686718">OT versiyasi yangilanmoqda</translation>
 <translation id="1264369926465113395">Chromebook qurilmasining ijodkorlar uchun yangi raqamli jurnali bilan tanishing</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Mos boʻlmagan komponentlar<ph name="LINK_END" /> topildi. Barcha mos komponentlarni identifikatsiyalash uchun Chrome OS tizimini eng oxirgi versiyasiga yangilang.</translation>
 <translation id="2180197493692062006">Xatolik yuz berdi. Ilovani qayta ochishga urining.</translation>
 <translation id="2209788852729124853">Traffik hisoblagichlarini tiklash</translation>
 <translation id="2212733584906323460">NS parametrlari</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
+<translation id="320091191259649613">Muammo yangilanishdan keyin ham qaytarilsa, komponenti yangi moslangan va axborot omboriga hali kiritilmagan boʻlishi mumkin.</translation>
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="4987769320337599931">Himoya devori</translation>
 <translation id="4999333166442584738">Hisobotni yopish</translation>
+<translation id="5008611843832219958">Takomillashga tuzatish jarayonidan foydalanish uchun Chrome OS tizimini eng oxirgi versiyaga yangilang</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Qurilma kutish rejimiga oʻtganda rasmlar, vaqt, ob-havo va media axboroti chiqsin.</translation>
@@ -431,6 +435,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanerlash tugallanmadi</translation>
 <translation id="5502931783115429516">Android orqali bajarilmadi</translation>
+<translation id="5507300744274596613">Chrome OS eng oxirgi versiyada ekanini tekshiring</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5939518447894949180">Asliga qaytarish</translation>
 <translation id="594552776027197022">Tasodifiy kalitlar juftligini yaratish</translation>
 <translation id="5972388717451707488">Tizimni yangilash</translation>
+<translation id="5984145644188835034">Standart fon rasmi</translation>
 <translation id="6034694447310538551">Har oyda avtomatik asliga qaytarishni yoqish</translation>
 <translation id="6037291330010597344">Skanerga qogʻozlar joylanmagan. Hujjatlarni joylang va qaytadan urining.</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -548,6 +554,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6723839937902243910">Quvvat</translation>
+<translation id="672609503628871915">Nimalar yangiligini ko‘ring</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="6749473226660745022">Suratlar</translation>
 <translation id="6753452347192452143">Qurilma — kompyuter.</translation>
@@ -717,6 +724,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funt</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> versiyasiga yangilash va oʻchirib yoqish</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
 <translation id="8677859815076891398">Albomlar mavjud emas. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> orqali albom yarating.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiya chapga va oʻngga strelkalar orqali boshqariladi.</translation>
@@ -781,6 +789,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
+<translation id="922179502584117429">Joriy versiya (<ph name="VERSION_NUMBER" />) eskirgan</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>

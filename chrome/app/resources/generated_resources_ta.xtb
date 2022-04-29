@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">துண்டிக்கிறது...</translation>
 <translation id="1537254971476575106">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="15373452373711364">பெரிய மவுஸ் இடஞ்சுட்டி</translation>
+<translation id="1539630663098418038"><ph name="ORIGIN" /> தளத்தில் உள்ளவற்றைப் படிக்கவும் மாற்றவும் <ph name="EXTENSIONS_REQUESTING_ACCESS" /> கோருகிறது</translation>
 <translation id="1540605929960647700">டெமோ பயன்முறையை இயக்கவும்</translation>
 <translation id="1541346352678737112">நெட்வொர்க் எதுவும் கிடைக்கவில்லை</translation>
 <translation id="1542137295869176367">உங்கள் உள்நுழைவுத் தரவைப் புதுப்பிக்க முடியவில்லை</translation>
@@ -1884,6 +1885,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> இல் உள்நுழையவும்</translation>
 <translation id="2749836841884031656">சிம்</translation>
 <translation id="2749881179542288782">இலக்கணம் மற்றும் எழுத்துப்பிழை சரிபார்</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> தளத்தில் உள்ளவற்றைப் படிக்கவும் மாற்றவும் கோருகிறது:</translation>
 <translation id="2753677631968972007">தளத்தின் அனுமதிகளை நீங்களே கட்டுப்படுத்துங்கள்.</translation>
 <translation id="2755349111255270002">இந்த <ph name="DEVICE_TYPE" /> ஐ மீட்டமைத்தல்</translation>
 <translation id="2755367719610958252">அணுகல்தன்மை அம்சங்களை நிர்வகி</translation>
@@ -2358,6 +2360,7 @@
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3232754137068452469">இணைய ஆப்ஸ்</translation>
 <translation id="3233271424239923319">Linux ஆப்ஸ் காப்புப்பிரதிகளும் கோப்புகளும்</translation>
+<translation id="3234978181857588512">சாதனத்தில் சேமி</translation>
 <translation id="3238192140106069382">இணைக்கிறது &amp; சரிபார்க்கிறது</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />க்கான நேர வரம்பு அகற்றப்பட்டது</translation>
 <translation id="3241680850019875542">தொகுக்க வேண்டிய நீட்டிப்பின் மூல இருப்பிடத்தைத் தேர்ந்தெடு. ஒரு நீட்டிப்பைப் புதுப்பிக்க, மீண்டும் பயன்படுத்துவதற்கு தனிப்பட்ட விசை ஃபைலையும் தேர்ந்தெடு.</translation>
@@ -3570,6 +3573,7 @@
 <translation id="4429239357082509581">Steam ஆப்ஸை நிறுவுவதற்கு அனுமதி இல்லை</translation>
 <translation id="4430019312045809116">அளவு</translation>
 <translation id="4430369329743628066">புத்தகக்குறி சேர்க்கப்பட்டது</translation>
+<translation id="4430422687972614133">விர்ச்சுவல் கார்டை இயக்கு</translation>
 <translation id="4432621511648257259">தவறான கடவுச்சொல்</translation>
 <translation id="443454694385851356">லெகஸி (பாதுகாப்பற்றது)</translation>
 <translation id="443475966875174318">இணங்காத பயன்பாடுகளைப் புதுப்பிக்கவும் அல்லது அகற்றவும்</translation>
@@ -7100,6 +7104,7 @@
 <translation id="7947964080535614577">உள்ளடக்கம், சேவைகள் ஆகியவற்றைக் கட்டணமின்றி வழங்குவதற்காக விளம்பரங்களைத் தளங்கள் வழக்கமாகக் காட்டும். ஆனால் சில தளங்கள் குறுக்கிடும்/தவறாக வழிநடத்தும் விளம்பரங்களைக் காட்டலாம்.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> டொமைனின் அனைத்துப் பக்கங்களும்</translation>
 <translation id="7951265006188088697">Google Pay கட்டண முறையில் சேர்க்கவோ நிர்வகிக்கவோ உங்கள் <ph name="BEGIN_LINK" />Google கணக்கிற்கு<ph name="END_LINK" />செல்லவும்</translation>
+<translation id="795130320946928025">விர்ச்சுவல் கார்டை முடக்கு</translation>
 <translation id="7952708427581814389">கிளிப்போர்டில் உள்ள உரையையும் படங்களையும் தளங்கள் பார்க்க முயலும்போது அனுமதி கேள்</translation>
 <translation id="795282463722894016">மீட்டமைக்கப்பட்டது</translation>
 <translation id="7952904276017482715">எதிர்பார்க்கப்பட்ட ஐடி "<ph name="EXPECTED_ID" />", ஆனால் இருப்பது "<ph name="NEW_ID" />" ஐடி ஆகும்</translation>

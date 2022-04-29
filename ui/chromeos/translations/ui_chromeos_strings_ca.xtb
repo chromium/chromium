@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Neerlandès (Països Baixos)</translation>
 <translation id="174937106936716857">Total de fitxers</translation>
 <translation id="1755345808328621801">Aquest fitxer està dissenyat per a un ordinador amb programari Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
+<translation id="1757915090001272240">Llatí ample</translation>
 <translation id="1773212559869067373">S'ha rebutjat el certificat d'autenticació de manera local</translation>
 <translation id="1775381402323441512">Informació del vídeo</translation>
 <translation id="180035236176489073">Heu d'estar en línia per accedir a aquests fitxers.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tàmil (transliteració)</translation>
 <translation id="7040138676081995583">Obre amb...</translation>
 <translation id="7048024426273850086">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
+<translation id="7070804685954057874">Entrada directa</translation>
 <translation id="7075931588889865715">Tailandès amb teclat TIS 820-2531</translation>
 <translation id="708278670402572152">Desconnecta de la xarxa per activar la cerca</translation>
 <translation id="7086590977277044826">Tàmil amb teclat InScript</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">S'han trobat <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     A punt per crear una còpia de seguretat a <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiàlam fonètic</translation>
 <translation id="7505167922889582512">Mostra els fitxers amagats</translation>
 <translation id="7514365320538308">Baixa</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Polonès</translation>
 <translation id="7874321682039004450">Filipí</translation>
 <translation id="78946041517601018">Unitats compartides</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7925247922861151263">Error en la comprovació d'AAA</translation>
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Caràtula</translation>
 <translation id="8223479393428528563">Per desar aquests fitxers per utilitzar-los fora de línia, connecteu-vos a una xarxa, feu clic amb el botó dret als fitxers i seleccioneu l'opció <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
+<translation id="8250690786522693009">Llatí</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8261561378965667560">Xinès (matriu)</translation>

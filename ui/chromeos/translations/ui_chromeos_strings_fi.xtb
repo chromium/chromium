@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">hollanti (Alankomaat)</translation>
 <translation id="174937106936716857">Tiedostoja yhteensä</translation>
 <translation id="1755345808328621801">Tämä tiedosto on tarkoitettu Windows-käyttöjärjestelmää käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
+<translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Todennusvarmenne on hylätty paikallisesti</translation>
 <translation id="1775381402323441512">Videon tiedot</translation>
 <translation id="180035236176489073">Sinun täytyy olla online-tilassa käyttääksesi näitä tiedostoja.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">translitteroitu tamil</translation>
 <translation id="7040138676081995583">Avaa sovelluksessa...</translation>
 <translation id="7048024426273850086">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, yhdistä</translation>
+<translation id="7070804685954057874">Suora syöttö</translation>
 <translation id="7075931588889865715">thai, TIS 820-2531 ‑näppäimistö</translation>
 <translation id="708278670402572152">Katkaise yhteys, jotta skannaus voidaan ottaa käyttöön.</translation>
 <translation id="7086590977277044826">tamil, InScript-näppäimistö</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> löytyi
     <ph name="LINE_BREAK1" />
     Valmis varmuuskopioimaan <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">foneettinen malajalam</translation>
 <translation id="7505167922889582512">Näytä piilotetut tiedostot</translation>
 <translation id="7514365320538308">Lataa</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">puola</translation>
 <translation id="7874321682039004450">filipino</translation>
 <translation id="78946041517601018">Jaetut Drivet</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Osion alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7925247922861151263">AAA-testi epäonnistui</translation>
 <translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Kuvitus</translation>
 <translation id="8223479393428528563">Jos haluat tallentaa nämä tiedostot offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8261561378965667560">kiina (array)</translation>

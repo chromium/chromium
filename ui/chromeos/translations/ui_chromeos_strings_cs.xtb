@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">nizozemština (Nizozemsko)</translation>
 <translation id="174937106936716857">Celkový počet souborů</translation>
 <translation id="1755345808328621801">Tento soubor je určen pro počítač se softwarem Windows. S vaším zařízením se systémem ChromeOS není kompatibilní. Vyhledejte v Internetovém obchodě Chrome vhodnou náhradní aplikaci.</translation>
+<translation id="1757915090001272240">Široká latinka</translation>
 <translation id="1773212559869067373">Ověřovací certifikát byl místně odmítnut</translation>
 <translation id="1775381402323441512">Informace o videu</translation>
 <translation id="180035236176489073">Pro přístup k souborům musíte být online.</translation>
@@ -706,6 +707,7 @@
 <translation id="7037472120706603960">tamilština (přepis)</translation>
 <translation id="7040138676081995583">Otevřít v aplikaci...</translation>
 <translation id="7048024426273850086">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, síla signálu: <ph name="PROVIDER_NAME" />, <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, připojit</translation>
+<translation id="7070804685954057874">Přímé zadávání textu</translation>
 <translation id="7075931588889865715">thajština s klávesnicí TIS 820-2531</translation>
 <translation id="708278670402572152">Chcete-li povolit vyhledávání, odpojte zařízení od sítě</translation>
 <translation id="7086590977277044826">tamilština s klávesnicí InScript</translation>
@@ -746,6 +748,7 @@
 <translation id="7489215562877293245">Nalezeno: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Připraveno k zálohování na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálamština (fonetická)</translation>
 <translation id="7505167922889582512">Zobrazit skryté soubory</translation>
 <translation id="7514365320538308">Stáhnout</translation>
@@ -806,6 +809,7 @@
 <translation id="7868774406711971383">polština</translation>
 <translation id="7874321682039004450">filipínština</translation>
 <translation id="78946041517601018">Sdílené disky</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Naformátováním oddílu smažete všechna na něm uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="7925247922861151263">Selhala bezpečnostní kontrola AAA</translation>
 <translation id="7925686952655276919">Nepoužívat k synchronizaci mobilní datové přenosy</translation>
@@ -842,6 +846,7 @@
 <translation id="8208580316430297579">Umělecké dílo</translation>
 <translation id="8223479393428528563">Chcete-li tyto soubory uložit pro používání offline, vraťte se zpět online, klikněte na ně pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Zrušit</translation>
+<translation id="8250690786522693009">Latinka</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8261561378965667560">čínština (Array)</translation>

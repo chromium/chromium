@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
+<translation id="1264116747675686718">กำลังอัปเดตเวอร์ชันระบบปฏิบัติการ</translation>
 <translation id="1264369926465113395">ดูนิตยสารดิจิทัลใหม่ของ Chromebook สำหรับผู้สร้างสรรค์งานศิลปะและการออกแบบ</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
+<translation id="2177831236093724629">พบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> โปรดอัปเดต Chrome OS เป็นเวอร์ชันล่าสุดเพื่อให้แน่ใจว่ามีการระบุคอมโพเนนต์ที่ตรงตามข้อกำหนดทุกคอมโพเนนต์</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
 <translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2212733584906323460">การจำแนกชื่อ</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
+<translation id="320091191259649613">หากคุณยังคงพบปัญหาดังกล่าวหลังการอัปเดต ก็เป็นไปได้ว่าคอมโพเนนต์นั้นเพิ่งมีคุณสมบัติตรงตามข้อกำหนดและยังไม่ได้รับการบันทึกลงในฐานข้อมูล</translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="4987769320337599931">ไฟร์วอลล์</translation>
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
+<translation id="5008611843832219958">อัปเดต Chrome OS เป็นเวอร์ชันล่าสุดเพื่อเข้าสู่ขั้นตอนการซ่อมที่เหมาะสมที่สุด</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ระบบจะแสดงรูปภาพ เวลา สภาพอากาศ และข้อมูลสื่อเมื่อไม่มีการใช้งานหน้าจอ</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">สแกนไม่สำเร็จ</translation>
 <translation id="5502931783115429516">Android ไม่ทำงาน</translation>
+<translation id="5507300744274596613">ตรวจสอบว่า Chrome OS เป็นเวอร์ชันล่าสุด</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
+<translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
 <translation id="6034694447310538551">เปิดใช้การรีเซ็ตทุกเดือนโดยอัตโนมัติ</translation>
 <translation id="6037291330010597344">ไม่มีเอกสารในตัวป้อนเอกสารของเครื่องสแกน ใส่เอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -548,6 +554,7 @@
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
+<translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6753452347192452143">อุปกรณ์เป็นคอมพิวเตอร์</translation>
@@ -717,6 +724,7 @@
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8660881923941176839">ปอนด์</translation>
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">อัปเดตเป็น <ph name="VERSION_NUMBER" /> และรีสตาร์ท</translation>
 <translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
@@ -781,6 +789,7 @@
 <translation id="917720651393141712">ทดสอบ</translation>
 <translation id="9204237731135241582">ไม่สามารถติดต่อกับเกตเวย์จากแอป Android</translation>
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
+<translation id="922179502584117429">เวอร์ชันปัจจุบัน <ph name="VERSION_NUMBER" /> ล้าสมัยแล้ว</translation>
 <translation id="932327136139879170">หน้าแรก</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ไม่ได้เปิดการใช้งาน</translation>

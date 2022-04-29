@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Holandiešu (Nīderlande)</translation>
 <translation id="174937106936716857">Failu kopskaits</translation>
 <translation id="1755345808328621801">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
+<translation id="1757915090001272240">Plats latīņu</translation>
 <translation id="1773212559869067373">Autentifikācijas sertifikāts tika lokāli noraidīts.</translation>
 <translation id="1775381402323441512">Video informācija</translation>
 <translation id="180035236176489073">Lai piekļūtu šiem failiem, jums ir jābūt tiešsaistē.</translation>
@@ -707,6 +708,7 @@
 <translation id="7037472120706603960">Tamilu, transliterācija</translation>
 <translation id="7040138676081995583">Atvērt ar...</translation>
 <translation id="7048024426273850086">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss procentos: <ph name="BATTERY_STATUS" />, savienojums</translation>
+<translation id="7070804685954057874">Tiešā ievade</translation>
 <translation id="7075931588889865715">Taju, ar TIS 820-2531 tastatūru</translation>
 <translation id="708278670402572152">Atvienojiet, lai iespējotu skenēšanu</translation>
 <translation id="7086590977277044826">Tamilu, ar InScript tastatūru</translation>
@@ -747,6 +749,7 @@
 <translation id="7489215562877293245">Atrasts: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Gatavs dublēšanai <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalu, fonētiskā</translation>
 <translation id="7505167922889582512">Rādīt paslēptos failus</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
@@ -807,6 +810,7 @@
 <translation id="7868774406711971383">Poļu</translation>
 <translation id="7874321682039004450">Filipīniešu</translation>
 <translation id="78946041517601018">Kopīgie diski</translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7925247922861151263">AAA pārbaude neizdevās</translation>
 <translation id="7925686952655276919">Nelietot mobilos datus sinhronizācijai</translation>
@@ -843,6 +847,7 @@
 <translation id="8208580316430297579">Mākslas darbs</translation>
 <translation id="8223479393428528563">Lai saglabātu šos failus izmantošanai bezsaistē, aktivizējiet tiešsaistes režīmu, ar peles labo pogu noklikšķiniet uz failiem un atlasiet opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
+<translation id="8250690786522693009">latīņu</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8261561378965667560">Ķīniešu, masīva ievades metode</translation>
