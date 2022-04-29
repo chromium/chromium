@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <memory>
+#include <cmath>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -20,15 +20,18 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
-#include "pdf/ppapi_migration/graphics.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -94,7 +97,7 @@ void PaintManager::SetTransform(float scale,
                                 const gfx::Point& origin,
                                 const gfx::Vector2d& translate,
                                 bool schedule_flush) {
-  if (!graphics_)
+  if (!surface_)
     return;
 
   if (scale <= 0.0f) {
@@ -124,7 +127,7 @@ void PaintManager::ClearTransform() {
 }
 
 void PaintManager::Invalidate() {
-  if (!graphics_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_)
     return;
 
   EnsureCallbackPending();
@@ -134,7 +137,7 @@ void PaintManager::Invalidate() {
 void PaintManager::InvalidateRect(const gfx::Rect& rect) {
   DCHECK(!in_paint_);
 
-  if (!graphics_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_)
     return;
 
   // Clip the rect to the device area.
@@ -151,7 +154,7 @@ void PaintManager::ScrollRect(const gfx::Rect& clip_rect,
                               const gfx::Vector2d& amount) {
   DCHECK(!in_paint_);
 
-  if (!graphics_ && !has_pending_resize_)
+  if (!surface_ && !has_pending_resize_)
     return;
 
   EnsureCallbackPending();
@@ -200,7 +203,7 @@ void PaintManager::DoPaint() {
   // do this later.
   //
   // Note that `has_pending_resize_` will always be set on the first DoPaint().
-  DCHECK(graphics_ || has_pending_resize_);
+  DCHECK(surface_ || has_pending_resize_);
   if (has_pending_resize_) {
     plugin_size_ = pending_size_;
     // Only create a new graphics context if the current context isn't big
@@ -214,7 +217,6 @@ void PaintManager::DoPaint() {
       surface_ =
           SkSurface::MakeRasterN32Premul(new_size.width(), new_size.height());
       DCHECK(surface_);
-      graphics_ = std::make_unique<SkiaGraphics>(surface_.get());
 
       // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
       client_->InvalidatePluginContainer();
@@ -249,9 +251,14 @@ void PaintManager::DoPaint() {
     ready_now = aggregator_.GetReadyRects();
     aggregator_.ClearPendingUpdate();
 
-    // Apply any scroll first.
-    if (update.has_scroll)
-      graphics_->Scroll(update.scroll_rect, update.scroll_delta);
+    // First, apply any scroll amount less than the surface's size.
+    if (update.has_scroll &&
+        std::abs(update.scroll_delta.x()) < surface_->width() &&
+        std::abs(update.scroll_delta.y()) < surface_->height()) {
+      // TODO(crbug.com/1263614): Use `SkSurface::notifyContentWillChange()`.
+      gfx::ScrollCanvas(surface_->getCanvas(), update.scroll_rect,
+                        update.scroll_delta);
+    }
 
     view_size_changed_waiting_for_paint_ = false;
   } else {
@@ -280,7 +287,11 @@ void PaintManager::DoPaint() {
   }
 
   for (const auto& ready_rect : ready_now) {
-    graphics_->PaintImage(ready_rect.image(), ready_rect.rect());
+    // TODO(crbug.com/1284255): Avoid inefficient `SkBitmap::asImage()`.
+    SkRect skia_rect = gfx::RectToSkRect(ready_rect.rect());
+    surface_->getCanvas()->drawImageRect(
+        ready_rect.image().asImage(), skia_rect, skia_rect, SkSamplingOptions(),
+        nullptr, SkCanvas::kStrict_SrcRectConstraint);
   }
 
   Flush();

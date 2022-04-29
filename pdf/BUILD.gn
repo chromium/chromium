@@ -242,8 +242,6 @@ if (enable_pdf) {
     sources = [
       "ppapi_migration/bitmap.cc",
       "ppapi_migration/bitmap.h",
-      "ppapi_migration/graphics.cc",
-      "ppapi_migration/graphics.h",
       "ppapi_migration/result_codes.h",
       "ppapi_migration/url_loader.cc",
       "ppapi_migration/url_loader.h",
@@ -380,7 +378,6 @@ if (enable_pdf) {
       "pdfium/pdfium_print_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
-      "ppapi_migration/graphics_unittest.cc",
       "ppapi_migration/url_loader_unittest.cc",
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",

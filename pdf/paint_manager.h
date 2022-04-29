@@ -5,16 +5,11 @@
 #ifndef PDF_PAINT_MANAGER_H_
 #define PDF_PAINT_MANAGER_H_
 
-#include <stdint.h>
-
-#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
-#include "pdf/ppapi_migration/graphics.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -163,9 +158,6 @@ class PaintManager {
 
   // Backing Skia surface.
   sk_sp<SkSurface> surface_;
-
-  // This graphics device will be null if no graphics has been set yet.
-  std::unique_ptr<Graphics> graphics_;
 
   PaintAggregator aggregator_;
 

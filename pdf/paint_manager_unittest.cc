@@ -9,16 +9,20 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "pdf/paint_ready_rect.h"
-#include "pdf/ppapi_migration/graphics.h"
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -80,6 +84,78 @@ class PaintManagerTest : public testing::Test {
     run_loop.Run();
 
     return saved_snapshot;
+  }
+
+  void TestPaintImage(const gfx::Size& plugin_size,
+                      const gfx::Size& source_size,
+                      const gfx::Rect& paint_rect,
+                      const gfx::Rect& overlapped_rect) {
+    // Paint `paint_rect` from `source_size` image over a magenta background.
+    paint_manager_.SetSize(plugin_size, 1.0f);
+    sk_sp<SkImage> snapshot = WaitForFlush(
+        /*expected_paint_rects=*/{{gfx::Rect(plugin_size)}},
+        /*fake_ready=*/
+        {
+            {gfx::Rect(plugin_size),
+             CreateSkiaImageForTesting(plugin_size, SK_ColorMAGENTA)},
+            {paint_rect, CreateSkiaImageForTesting(source_size, SK_ColorRED)},
+        },
+        /*fake_pending=*/{});
+    ASSERT_TRUE(snapshot);
+
+    // Check if snapshot has `overlapped_rect` painted red.
+    snapshot = snapshot->makeSubset(
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+    ASSERT_TRUE(snapshot);
+
+    SkBitmap snapshot_bitmap;
+    ASSERT_TRUE(snapshot->asLegacyBitmap(&snapshot_bitmap));
+
+    SkBitmap expected_bitmap =
+        CreateSkiaImageForTesting(plugin_size, SK_ColorMAGENTA);
+    expected_bitmap.erase(SK_ColorRED, gfx::RectToSkIRect(overlapped_rect));
+
+    EXPECT_TRUE(
+        cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
+                          cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  }
+
+  void TestScroll(const gfx::Vector2d& scroll_amount,
+                  const gfx::Rect& expected_paint_rect,
+                  base::StringPiece expected_png) {
+    // Paint non-uniform initial image.
+    gfx::Size plugin_size = paint_manager_.GetEffectiveSize();
+    ASSERT_GE(plugin_size.width(), 4);
+    ASSERT_GE(plugin_size.height(), 4);
+
+    SkBitmap initial_bitmap =
+        CreateSkiaImageForTesting(plugin_size, SK_ColorRED);
+    initial_bitmap.erase(SK_ColorGREEN, {1, 1, plugin_size.width() - 1,
+                                         plugin_size.height() - 2});
+
+    paint_manager_.Invalidate();
+    ASSERT_TRUE(
+        WaitForFlush(/*expected_paint_rects=*/{gfx::Rect(plugin_size)},
+                     /*fake_ready=*/{{gfx::Rect(plugin_size), initial_bitmap}},
+                     /*fake_pending=*/{}));
+
+    // Scroll by `scroll_amount`, painting `expected_paint_rect` magenta.
+    paint_manager_.ScrollRect(gfx::Rect(plugin_size), scroll_amount);
+    sk_sp<SkImage> snapshot = WaitForFlush(
+        /*expected_paint_rects=*/{expected_paint_rect},
+        /*fake_ready=*/
+        {{expected_paint_rect,
+          CreateSkiaImageForTesting(plugin_size, SK_ColorMAGENTA)}},
+        /*fake_pending=*/{});
+    ASSERT_TRUE(snapshot);
+
+    // Compare snapshot to `expected_png`.
+    snapshot = snapshot->makeSubset(
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+    ASSERT_TRUE(snapshot);
+
+    EXPECT_TRUE(
+        MatchesPngFile(snapshot.get(), GetTestDataFilePath(expected_png)));
   }
 
   NiceMock<FakeClient> client_;
@@ -172,6 +248,65 @@ TEST_F(PaintManagerTest, DoPaintFirst) {
 
   EXPECT_TRUE(MatchesPngFile(snapshot.get(),
                              GetTestDataFilePath("do_paint_first.png")));
+}
+
+TEST_F(PaintManagerTest, PaintImage) {
+  // Painted area is within the plugin area and the source image.
+  TestPaintImage(/*plugin_size=*/{20, 20}, /*source_size=*/{15, 15},
+                 /*paint_rect=*/{0, 0, 10, 10},
+                 /*overlapped_rect=*/{0, 0, 10, 10});
+
+  // Painted area straddles the plugin area and the source image.
+  TestPaintImage(/*plugin_size=*/{50, 30}, /*source_size=*/{30, 50},
+                 /*paint_rect=*/{10, 10, 30, 30},
+                 /*overlapped_rect=*/{10, 10, 20, 20});
+
+  // Painted area is outside the plugin area.
+  TestPaintImage(/*plugin_size=*/{10, 10}, /*source_size=*/{30, 30},
+                 /*paint_rect=*/{10, 10, 10, 10},
+                 /*overlapped_rect=*/{0, 0, 0, 0});
+
+  // Painted area is outside the source image.
+  TestPaintImage(/*plugin_size=*/{15, 15}, /*source_size=*/{5, 5},
+                 /*paint_rect=*/{10, 10, 5, 5},
+                 /*overlapped_rect=*/{0, 0, 0, 0});
+}
+
+TEST_F(PaintManagerTest, Scroll) {
+  paint_manager_.SetSize({4, 5}, 1.0f);
+
+  TestScroll(/*scroll_amount=*/{1, 0}, /*expected_paint_rect=*/{0, 0, 1, 5},
+             "scroll_right.png");
+  TestScroll(/*scroll_amount=*/{-2, 0}, /*expected_paint_rect=*/{2, 0, 2, 5},
+             "scroll_left.png");
+  TestScroll(/*scroll_amount=*/{0, 3}, /*expected_paint_rect=*/{0, 0, 4, 3},
+             "scroll_down.png");
+  TestScroll(/*scroll_amount=*/{0, -3}, /*expected_paint_rect=*/{0, 2, 4, 3},
+             "scroll_up.png");
+}
+
+TEST_F(PaintManagerTest, ScrollIgnored) {
+  paint_manager_.SetSize({4, 5}, 1.0f);
+
+  // Scroll to the edge of the plugin area.
+  TestScroll(/*scroll_amount=*/{4, 0}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{-4, 0}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{0, 5}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{0, -5}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+
+  // Scroll outside of the plugin area.
+  TestScroll(/*scroll_amount=*/{5, 0}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{-7, 0}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{0, 8}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
+  TestScroll(/*scroll_amount=*/{0, -9}, /*expected_paint_rect=*/{0, 0, 4, 5},
+             "scroll_ignored.png");
 }
 
 }  // namespace
