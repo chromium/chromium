@@ -13,7 +13,7 @@
 
 class ToolbarActionViewDelegateViews;
 
-// An abstract "View" for an ExtensionAction (either a BrowserAction or a
+// An abstract "View" for an ExtensionAction (Action, BrowserAction, or a
 // PageAction). This contains the logic for showing the action's popup and
 // the context menu. This class doesn't subclass View directly, as the
 // implementations for page actions/browser actions are different types of

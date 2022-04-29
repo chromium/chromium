@@ -1,0 +1,14 @@
+{
+  "name": "Action via keyboard shortcuts",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "action": {},
+  "commands": {
+    "_execute_action": {
+      "suggested_key": "Ctrl+Shift+U"
+    }
+  }
+}

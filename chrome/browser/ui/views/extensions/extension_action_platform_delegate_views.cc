@@ -26,6 +26,14 @@
 
 using extensions::ActionInfo;
 
+namespace {
+bool IsActionRelatedCommand(const std::string& name) {
+  return name == extensions::manifest_values::kActionCommandEvent ||
+         name == extensions::manifest_values::kBrowserActionCommandEvent ||
+         name == extensions::manifest_values::kPageActionCommandEvent;
+}
+}  //  namespace
+
 // static
 std::unique_ptr<ExtensionActionPlatformDelegate>
 ExtensionActionPlatformDelegate::Create(
@@ -93,13 +101,8 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
   if (extension_id != controller_->extension()->id())
     return;  // Not this action's extension.
 
-  if (command.command_name() !=
-          extensions::manifest_values::kBrowserActionCommandEvent &&
-      command.command_name() !=
-          extensions::manifest_values::kPageActionCommandEvent) {
-    // Not an action-related command.
+  if (!IsActionRelatedCommand(command.command_name()))
     return;
-  }
 
   RegisterCommand();
 }
@@ -110,11 +113,8 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
   if (extension_id != controller_->extension()->id())
     return;
 
-  if (command.command_name() !=
-          extensions::manifest_values::kBrowserActionCommandEvent &&
-      command.command_name() !=
-          extensions::manifest_values::kPageActionCommandEvent)
-    return;  // Not an action-related command.
+  if (!IsActionRelatedCommand(command.command_name()))
+    return;
 
   extensions::Command extension_command;
   if (controller_->GetExtensionCommand(&extension_command))
