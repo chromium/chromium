@@ -30,6 +30,10 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   // DOM event.
   void OnScriptCacheRequested(const base::Value::List& args);
 
+  // Responds to requests for refreshing script cache by prewarming the cache.
+  // Called by user-triggered DOM event.
+  void OnRefreshScriptCacheRequested(const base::Value::List& args);
+
   // Data gathering methods.
   // Gathers information on all APC-related feature and feature parameters.
   base::Value::List GetAPCRelatedFlags() const;

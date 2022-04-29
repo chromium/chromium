@@ -19,7 +19,7 @@ function onFlagsInfoReceived(flags) {
   const addEntry = function(flag) {
     const nameLabel = flag['name'];
     const enabledLabel = flag['enabled'];
-    const table = $('flags_table');
+    const table = $('flags-table');
     table.appendChild(createTableRow(nameLabel, enabledLabel));
     // If they exist, also list feature parameters.
     if ('parameters' in flag) {
@@ -35,7 +35,7 @@ function onScriptFetchingInfoReceived(scriptFetcherInfo) {
   if (!scriptFetcherInfo) {
     return;
   }
-  const table = $('script_fetching_table');
+  const table = $('script-fetching-table');
   for (const [key, value] of Object.entries(scriptFetcherInfo)) {
     table.appendChild(createTableRow(key, value));
   }
@@ -45,23 +45,27 @@ function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
   if (!autofillAssistantInfo) {
     return;
   }
-  const table = $('autofill_assistant_table');
+  const table = $('autofill-assistant-table');
   for (const [key, value] of Object.entries(autofillAssistantInfo)) {
     table.appendChild(createTableRow(key, value));
   }
 }
 
-function resetScriptCache() {
-  const element = $('script_cache_content');
-  element.textContent = 'Cache not loaded.';
+function hideScriptCache() {
+  const element = $('script-cache-content');
+  element.textContent = 'Cache not shown.';
 }
 
-function requestScriptCache() {
+function showScriptCache() {
   chrome.send('get-script-cache');
 }
 
+function refreshScriptCache() {
+  chrome.send('refresh-script-cache');
+}
+
 function onScriptCacheReceived(scriptsCacheInfo) {
-  const element = $('script_cache_content');
+  const element = $('script-cache-content');
   if (!scriptsCacheInfo.length) {
     element.textContent = 'Cache is empty.';
     return;
@@ -89,9 +93,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
       onAutofillAssistantInfoReceived);
   addWebUIListener('on-script-cache-received', onScriptCacheReceived);
 
-  resetScriptCache();
-  $('scripts_clear').onclick = resetScriptCache;
-  $('scripts_refresh').onclick = requestScriptCache;
+  hideScriptCache();
+  $('script-cache-hide').onclick = hideScriptCache;
+  $('script-cache-show').onclick = showScriptCache;
+  $('script-cache-refresh').onclick = refreshScriptCache;
 
   chrome.send('loaded');
 });

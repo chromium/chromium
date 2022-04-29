@@ -20,3 +20,7 @@ html {
   font-weight: bold;
   text-align: center;
 }
+
+#script-fetching-table {
+  padding-bottom: 10px;
+}

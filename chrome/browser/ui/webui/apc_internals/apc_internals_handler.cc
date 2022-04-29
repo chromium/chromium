@@ -46,6 +46,11 @@ void APCInternalsHandler::RegisterMessages() {
       "get-script-cache",
       base::BindRepeating(&APCInternalsHandler::OnScriptCacheRequested,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "refresh-script-cache",
+      base::BindRepeating(&APCInternalsHandler::OnRefreshScriptCacheRequested,
+                          base::Unretained(this)));
 }
 
 void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
@@ -64,6 +69,18 @@ void APCInternalsHandler::OnScriptCacheRequested(
     const base::Value::List& args) {
   FireWebUIListener("on-script-cache-received",
                     base::Value(GetPasswordScriptFetcherCache()));
+}
+
+void APCInternalsHandler::OnRefreshScriptCacheRequested(
+    const base::Value::List& args) {
+#if BUILDFLAG(IS_ANDROID)
+  content::BrowserContext* browser_context =
+      web_ui()->GetWebContents()->GetBrowserContext();
+  password_manager::PasswordScriptsFetcher* scripts_fetcher =
+      PasswordScriptsFetcherFactory::GetForBrowserContext(browser_context);
+  if (scripts_fetcher)
+    scripts_fetcher->PrewarmCache();
+#endif
 }
 
 // Returns a list of dictionaries that contain the name and the state of
