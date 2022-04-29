@@ -59,6 +59,7 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -843,7 +844,8 @@ void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
   const gfx::Size new_image_size =
       PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
   if (new_image_size != old_image_size) {
-    InitImageData(new_image_size);
+    image_data_.allocPixels(
+        SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(new_image_size)));
     first_paint_ = true;
   }
 

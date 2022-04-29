@@ -252,9 +252,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Send a notification that the print preview has loaded.
   void SendPrintPreviewLoadedNotification();
 
-  // Initialize image buffer(s) according to the new context size.
-  virtual void InitImageData(const gfx::Size& size) = 0;
-
   // Schedules invalidation tasks after painting finishes.
   void InvalidateAfterPaintDone();
 
@@ -377,8 +374,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
   bool full_frame() const { return full_frame_; }
-
-  SkBitmap& mutable_image_data() { return image_data_; }
 
   const gfx::Rect& available_area() const { return available_area_; }
 

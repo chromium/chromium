@@ -42,7 +42,6 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
-#include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
@@ -944,10 +943,6 @@ void PdfViewWebPlugin::SaveAs() {
 
   service->SaveUrlAs(GURL(GetURL().c_str()),
                      network::mojom::ReferrerPolicy::kDefault);
-}
-
-void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
-  mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }
 
 void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {

@@ -149,8 +149,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, SaveAs, (), (override));
 
-  MOCK_METHOD(void, InitImageData, (const gfx::Size&), (override));
-
   MOCK_METHOD(void, SetFormTextFieldInFocus, (bool), (override));
 
   MOCK_METHOD(void,

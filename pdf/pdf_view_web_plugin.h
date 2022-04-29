@@ -298,7 +298,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void OnDocumentLoadComplete() override;
   void SendMessage(base::Value::Dict message) override;
   void SaveAs() override;
-  void InitImageData(const gfx::Size& size) override;
   void SetFormTextFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,

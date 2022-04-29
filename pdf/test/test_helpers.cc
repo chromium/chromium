@@ -9,7 +9,6 @@
 #include "base/path_service.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "pdf/ppapi_migration/bitmap.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -45,7 +44,8 @@ testing::AssertionResult MatchesPngFile(
 }
 
 SkBitmap CreateSkiaImageForTesting(const gfx::Size& size, SkColor color) {
-  SkBitmap bitmap = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(size)));
   bitmap.eraseColor(color);
   return bitmap;
 }

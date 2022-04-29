@@ -240,8 +240,6 @@ if (enable_pdf) {
     visibility = [ ":*" ]
 
     sources = [
-      "ppapi_migration/bitmap.cc",
-      "ppapi_migration/bitmap.h",
       "ppapi_migration/result_codes.h",
       "ppapi_migration/url_loader.cc",
       "ppapi_migration/url_loader.h",
@@ -251,13 +249,9 @@ if (enable_pdf) {
 
     deps = [
       "//base",
-      "//printing/mojom",
-      "//skia",
+      "//net",
       "//third_party/blink/public:blink",
-      "//third_party/blink/public/common:headers",
-      "//ui/base",
-      "//ui/base/cursor/mojom:cursor_type",
-      "//ui/gfx",
+      "//url",
     ]
   }
 

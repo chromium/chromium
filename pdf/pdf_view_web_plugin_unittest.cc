@@ -21,7 +21,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -120,8 +119,7 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
 SkBitmap GenerateExpectedBitmapForPaint(const gfx::Rect& expected_clipped_rect,
                                         SkColor paint_color) {
   SkBitmap expected_bitmap =
-      CreateN32PremulSkBitmap(gfx::SizeToSkISize(kCanvasSize));
-  expected_bitmap.eraseColor(kDefaultColor);
+      CreateSkiaImageForTesting(kCanvasSize, kDefaultColor);
   expected_bitmap.erase(paint_color, gfx::RectToSkIRect(expected_clipped_rect));
   return expected_bitmap;
 }
