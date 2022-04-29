@@ -33,6 +33,10 @@ bool DisplayMode::operator<(const DisplayMode& other) const {
   return refresh_rate_ < other.refresh_rate_;
 }
 
+bool DisplayMode::operator>(const DisplayMode& other) const {
+  return other < *this;
+}
+
 std::string DisplayMode::ToString() const {
   return base::StringPrintf("[%s %srate=%f]", size_.ToString().c_str(),
                             is_interlaced_ ? "interlaced " : "", refresh_rate_);

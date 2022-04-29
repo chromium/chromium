@@ -32,28 +32,24 @@ namespace {
 // its histogram (between 0 to 4 external monitors).
 constexpr int kMaxDisplaysCount = 5;
 
-// Find the next best mode after |display_mode|. If none can be found return
-// nullptr.
-const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
-                                const DisplayMode* display_mode) {
-  // Internal displays are restricted to their native mode. We do not attempt to
-  // downgrade their modes upon failure.
-  if (display_state.type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    return nullptr;
-  }
+// Find the next best mode that is smaller than |request->mode|. The next best
+// mode is found by comparing resolutions, and if those are similar, comparing
+// refresh rates. If no mode is found, return nullptr.
+const DisplayMode* FindNextMode(const DisplayConfigureRequest& request) {
+  DCHECK(request.mode);
 
-  if (!display_mode)
+  // Internal displays are restricted to their native mode. We do not
+  // attempt to downgrade their modes upon failure.
+  if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
     return nullptr;
 
-  int best_mode_pixels = 0;
+  if (request.display->modes().size() <= 1)
+    return nullptr;
+
   const DisplayMode* best_mode = nullptr;
-  int current_mode_pixels = display_mode->size().GetArea();
-  for (const std::unique_ptr<const DisplayMode>& mode : display_state.modes()) {
-    int pixel_count = mode->size().GetArea();
-    if (pixel_count < current_mode_pixels && pixel_count > best_mode_pixels) {
+  for (const auto& mode : request.display->modes()) {
+    if (*mode < *request.mode && (!best_mode || *mode > *best_mode))
       best_mode = mode.get();
-      best_mode_pixels = pixel_count;
-    }
   }
 
   return best_mode;
@@ -367,8 +363,7 @@ bool ConfigureDisplaysTask::DowngradeLargestRequestWithAlternativeModes() {
     DisplayConfigureRequest* next_request = sorted_requests.top();
     sorted_requests.pop();
 
-    const DisplayMode* next_mode =
-        FindNextMode(*next_request->display, next_request->mode);
+    const DisplayMode* next_mode = FindNextMode(*next_request);
     if (next_mode) {
       next_request->mode = next_mode;
       return true;

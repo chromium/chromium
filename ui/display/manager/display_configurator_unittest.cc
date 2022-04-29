@@ -1041,6 +1041,9 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
               {outputs_[0]->display_id(), gfx::Point(0, 0), modes[3].get()})
               .c_str(),
           GetCrtcAction(
+              {outputs_[0]->display_id(), gfx::Point(0, 0), modes[4].get()})
+              .c_str(),
+          GetCrtcAction(
               {outputs_[0]->display_id(), gfx::Point(0, 0), modes[2].get()})
               .c_str(),
           nullptr),
@@ -1109,6 +1112,9 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[3].get()})
               .c_str(),
           GetCrtcAction(
+              {outputs_[1]->display_id(), gfx::Point(0, 0), modes[4].get()})
+              .c_str(),
+          GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[2].get()})
               .c_str(),
           GetCrtcAction(
@@ -1145,6 +1151,11 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                          gfx::Point(0, modes[0]->size().height() +
                                            DisplayConfigurator::kVerticalGap),
                          modes[3].get()})
+              .c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, modes[0]->size().height() +
+                                           DisplayConfigurator::kVerticalGap),
+                         modes[4].get()})
               .c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, modes[0]->size().height() +

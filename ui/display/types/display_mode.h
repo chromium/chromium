@@ -31,6 +31,7 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   float refresh_rate() const { return refresh_rate_; }
 
   bool operator<(const DisplayMode& other) const;
+  bool operator>(const DisplayMode& other) const;
 
   std::string ToString() const;
 
