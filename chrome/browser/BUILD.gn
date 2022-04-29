@@ -2186,6 +2186,7 @@ static_library("browser") {
     "//components/policy/content/",
     "//components/policy/core/browser",
     "//components/policy/proto",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
@@ -4513,7 +4514,6 @@ static_library("browser") {
       "//components/keep_alive_registry",
       "//components/live_caption",
       "//components/memory_pressure",
-      "//components/pref_registry",
       "//components/services/app_service:lib",
       "//components/services/app_service/public/cpp:app_file_handling",
       "//components/services/app_service/public/cpp:app_share_target",
@@ -7275,7 +7275,6 @@ static_library("browser") {
       "//chrome/browser/supervised_user/supervised_user_error_page",
       "//chrome/browser/supervised_user/supervised_user_features",
       "//chrome/common:supervised_user_commands_mojom",
-      "//components/pref_registry",
     ]
   }
   if (enable_supervised_users && enable_extensions) {

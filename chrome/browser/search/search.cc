@@ -31,7 +31,7 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filter.h"  // nogncheck
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

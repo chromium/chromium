@@ -65,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
+#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"  // nogncheck
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #endif
 

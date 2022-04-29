@@ -1065,7 +1065,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileRenderer.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/TopSitesTileView.java",
   "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountFeedbackReporter.java",
-  "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
   "java/src/org/chromium/chrome/browser/survey/ChromeSurveyController.java",
   "java/src/org/chromium/chrome/browser/survey/SurveyController.java",
   "java/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridge.java",
