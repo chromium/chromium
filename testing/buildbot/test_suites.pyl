@@ -3922,7 +3922,7 @@
       },
       'ios_chrome_signin_eg2tests_module': {
       'swarming': {
-          'shards': 2,
+          'shards': 5,
         },
       },
       'ios_chrome_ui_eg2tests_module': {
