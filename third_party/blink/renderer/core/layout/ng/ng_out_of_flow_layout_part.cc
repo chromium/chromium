@@ -2037,8 +2037,14 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
 
   if (box.IsOutOfFlowPositioned()) {
     // If the inner multicol is out-of-flow positioned, its fragments will be
-    // found as direct children of fragmentainers in the nearest ancestor
-    // fragmentation context.
+    // found as direct children of fragmentainers in some ancestor fragmentation
+    // context. It may not be the *nearest* fragmentation context, though, since
+    // the OOF inner multicol may be contained by other OOFs, which in turn may
+    // not be contained by the innermost multicol container, and so on. Skip
+    // above all OOFs in the containing block chain, to find the right
+    // fragmentation context root.
+    while (containing_block->IsOutOfFlowPositioned())
+      containing_block = containing_block->ContainingNGBlock();
     containing_block = containing_block->ContainingFragmentationContextRoot();
 
     // Since this is treated as a nested multicol container, we should always
