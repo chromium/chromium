@@ -13,6 +13,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
@@ -40,7 +44,11 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
   void Close(const base::UnguessableToken& id) override;
 
  private:
+  // Returns ptr to top level window from window at given id.
   aura::Window* GetWindow(const base::UnguessableToken& id);
+
+  // Returns ptr to top level widget from window at given id.
+  views::Widget* GetWidget(const base::UnguessableToken& id);
 
   content::BrowserContext* browser_context_;
 };

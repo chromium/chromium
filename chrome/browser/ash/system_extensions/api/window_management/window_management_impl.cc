@@ -34,7 +34,7 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
   proxy->InstanceRegistry().ForEachInstance(
       [&windows](const apps::InstanceUpdate& update) {
         auto window = blink::mojom::CrosWindow::New();
-        aura::Window* target = update.Window();
+        aura::Window* target = update.Window()->GetToplevelWindow();
         views::Widget* widget =
             views::Widget::GetTopLevelWidgetForNativeView(target);
         if (!target || !widget) {
@@ -77,27 +77,37 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
 
 void WindowManagementImpl::SetFullscreen(const base::UnguessableToken& id,
                                          bool fullscreen) {
-  aura::Window* target = GetWindow(id);
-  // TODO(b/223320570): Add error handling for stale ids.
-  if (!target) {
-    return;
+  views::Widget* widget = GetWidget(id);
+  if (widget) {
+    widget->SetFullscreen(fullscreen);
   }
-  views::Widget::GetWidgetForNativeWindow(target)->SetFullscreen(fullscreen);
 }
 
 void WindowManagementImpl::Maximize(const base::UnguessableToken& id) {
   aura::Window* target = GetWindow(id);
   // TODO(b/223320570): Add error handling for stale ids.
-  if (target) {
-    WindowState::Get(target)->Maximize();
+  if (!target) {
+    return;
+  }
+
+  // Returns null when id points to non top level window or is null itself.
+  WindowState* state = WindowState::Get(target);
+  if (state) {
+    state->Maximize();
   }
 }
 
 void WindowManagementImpl::Minimize(const base::UnguessableToken& id) {
   aura::Window* target = GetWindow(id);
   // TODO(b/223320570): Add error handling for stale ids.
-  if (target) {
-    WindowState::Get(target)->Minimize();
+  if (!target) {
+    return;
+  }
+
+  // Returns null when id points to non top level window or is null itself.
+  WindowState* state = WindowState::Get(target);
+  if (state) {
+    state->Minimize();
   }
 }
 
@@ -110,10 +120,9 @@ void WindowManagementImpl::Focus(const base::UnguessableToken& id) {
 }
 
 void WindowManagementImpl::Close(const base::UnguessableToken& id) {
-  aura::Window* target = GetWindow(id);
-  // TODO(b/223320570): Add error handling for stale ids.
-  if (target) {
-    views::Widget::GetWidgetForNativeWindow(target)->Close();
+  views::Widget* widget = GetWidget(id);
+  if (widget) {
+    widget->Close();
   }
 }
 
@@ -124,10 +133,22 @@ aura::Window* WindowManagementImpl::GetWindow(
       Profile::FromBrowserContext(browser_context_));
   proxy->InstanceRegistry().ForOneInstance(
       id, [&target](const apps::InstanceUpdate& update) {
-        target = update.Window();
+        target = update.Window()->GetToplevelWindow();
       });
 
   return target;
+}
+
+views::Widget* WindowManagementImpl::GetWidget(
+    const base::UnguessableToken& id) {
+  aura::Window* target = GetWindow(id);
+
+  if (!target) {
+    return nullptr;
+  }
+
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(target);
+  return widget;
 }
 
 }  // namespace ash
