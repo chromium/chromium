@@ -65,7 +65,11 @@ bool HasChosenToSyncPreferences(syncer::SyncService* sync_service) {
 PasswordSettingsUpdaterService::PasswordSettingsUpdaterService(
     PrefService* pref_service,
     syncer::SyncService* sync_service)
-    : pref_service_(pref_service), sync_service_(sync_service) {
+    : pref_service_(pref_service),
+      sync_service_(sync_service),
+      bridge_(PasswordSettingsUpdaterAndroidBridge::Create()),
+      lifecycle_helper_(
+          std::make_unique<PasswordManagerLifecycleHelperImpl>()) {
   DCHECK(pref_service_);
   DCHECK(sync_service_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
