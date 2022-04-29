@@ -820,6 +820,7 @@ cr.define('cr.login', function() {
           console.error('SamlHandler.onAPICall_: token mismatch');
         } else {
           this.confirmToken_ = call.token;
+          this.dispatchEvent(new CustomEvent('apiPasswordConfirmed'));
         }
       } else {
         console.error('SamlHandler.onAPICall_: unknown message');

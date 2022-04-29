@@ -442,6 +442,7 @@ cr.define('cr.login', function() {
       this.missingGaiaInfoCallback = null;
       this.needPassword = true;
       this.services_ = null;
+      this.waitApiPasswordConfirm_ = false;
       this.gaiaDoneTimer_ = null;
       /** @private {boolean} */
       this.isConstrainedWindow_ = false;
@@ -488,6 +489,7 @@ cr.define('cr.login', function() {
       this.samlHandler_.reset();
       this.videoEnabled = false;
       this.services_ = null;
+      this.waitApiPasswordConfirm_ = false;
       this.maybeClearGaiaTimeout_();
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
@@ -534,6 +536,9 @@ cr.define('cr.login', function() {
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'apiPasswordAdded',
           e => this.onSamlApiPasswordAdded_(e));
+      this.webviewEventManager_.addEventListener(
+          this.samlHandler_, 'apiPasswordConfirmed',
+          e => this.onSamlApiPasswordConfirmed_(e));
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'challengeMachineKeyRequired',
           e => this.onChallengeMachineKeyRequired_(e));
@@ -1088,7 +1093,8 @@ cr.define('cr.login', function() {
       const userInfoAvailable = !!this.services_;
 
       const gaiaDone = userInfoAvailable &&
-          (!this.enableCloseView_ || this.closeViewReceived_);
+          (!this.enableCloseView_ || this.closeViewReceived_) &&
+          !this.waitApiPasswordConfirm_;
 
       if (gaiaDone) {
         this.maybeClearGaiaTimeout_();
@@ -1293,9 +1299,23 @@ cr.define('cr.login', function() {
      */
     onSamlApiPasswordAdded_(e) {
       this.dispatchEvent(new Event('apiPasswordAdded'));
+      this.waitApiPasswordConfirm_ = true;
+
       // Saml API 'add' password might be received after the 'loadcommit'
       // event. In such case, maybeCompleteAuth_ should be attempted again if
       // GAIA ID is available.
+      if (this.gaiaId_) {
+        this.maybeCompleteAuth_();
+      }
+    }
+
+    /**
+     * Invoked when |samlHandler_| fires 'apiPasswordConfirmed' event. Could be
+     * from 3rd-party SAML IdP or Gaia which also uses the API.
+     * @private
+     */
+    onSamlApiPasswordConfirmed_(e) {
+      this.waitApiPasswordConfirm_ = false;
       if (this.gaiaId_) {
         this.maybeCompleteAuth_();
       }
@@ -1435,6 +1455,13 @@ cr.define('cr.login', function() {
             GAIA_MESSAGE_SAML_CLOSE_VIEW :
             GAIA_MESSAGE_GAIA_CLOSE_VIEW;
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);
+      }
+
+      if (this.waitApiPasswordConfirm_) {
+        // Log duplicates the log from the saml handler. The message is used by
+        // the tast test to catch failures.
+        console.error('SamlHandler.onAPICall_: API password was not confirmed');
+        this.waitApiPasswordConfirm_ = false;
       }
 
       this.maybeClearGaiaTimeout_();
