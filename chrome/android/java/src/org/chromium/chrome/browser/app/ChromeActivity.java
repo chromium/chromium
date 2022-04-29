@@ -328,6 +328,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new InsetObserverViewSupplier();
     private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
             new ObservableSupplierImpl<>();
+
     private SnackbarManager mSnackbarManager;
 
     // Timestamp in ms when initial layout inflation begins
@@ -525,7 +526,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getModalDialogManagerSupplier(), /* appMenuBlocker= */ this,
                 this::supportsAppMenu, this::supportsFindInPage, mTabCreatorManagerSupplier,
                 getFullscreenManager(), mCompositorViewHolderSupplier,
-                getTabContentManagerSupplier(), getOverviewModeBehaviorSupplier(),
+                getTabContentManagerSupplier(),
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
                 this::isWarmOnResume, /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
@@ -1758,15 +1759,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     @VisibleForTesting
     public @Nullable OverviewModeBehavior getOverviewModeBehavior() {
-        return null;
-    }
-
-    /**
-     * @return {@link ObservableSupplier} for the {@link OverviewModeBehavior} for this activity
-     *         if it supports an overview mode, null otherwise.
-     */
-
-    public @Nullable OneshotSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
         return null;
     }
 

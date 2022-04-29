@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
@@ -49,6 +48,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -150,7 +151,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int NUM_ENTRIES = 8;
     }
 
-    protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
+    protected @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     private @Nullable StartSurface.StateObserver mStartSurfaceStateObserver;
     private @StartSurfaceState int mStartSurfaceState;
@@ -166,8 +167,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @param toolbarManager The {@link ToolbarManager} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
      *         activity.
-     * @param overviewModeBehaviorSupplier An {@link ObservableSupplier} for the
-     *         {@link OverviewModeBehavior} associated with the containing activity.
+     * @param layoutStateProvidersSupplier An {@link ObservableSupplier} for the
+     *         {@link LayoutStateProvider} associated with the containing activity.
      * @param startSurfaceSupplier An {@link OneshotSupplier} for the Start surface.
      * @param bookmarkBridgeSupplier An {@link ObservableSupplier} for the {@link BookmarkBridge}
      *         associated with the containing activity.
@@ -175,7 +176,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             @Nullable OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
         mContext = context;
@@ -186,9 +187,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
 
-        if (overviewModeBehaviorSupplier != null) {
-            overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
-                    overviewModeBehavior -> { mOverviewModeBehavior = overviewModeBehavior; }));
+        if (layoutStateProvidersSupplier != null) {
+            layoutStateProvidersSupplier.onAvailable(mCallbackController.makeCancelable(
+                    layoutStateProvider -> { mLayoutStateProvider = layoutStateProvider; }));
         }
 
         if (startSurfaceSupplier != null) {
@@ -278,7 +279,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the grid tab switcher is showing.
      */
     private boolean isInTabSwitcher() {
-        return mOverviewModeBehavior != null && mOverviewModeBehavior.overviewVisible()
+        return mLayoutStateProvider != null
+                && mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)
                 && !isInStartSurfaceHomepage();
     }
 

@@ -23,11 +23,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -117,13 +117,13 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager) {
         return new TabGroupUiCoordinator(activity, parentView, incognitoStateProvider,
                 scrimCoordinator, omniboxFocusStateSupplier, bottomSheetController,
                 activityLifecycleDispatcher, isWarmOnResumeSupplier, tabModelSelector,
                 tabContentManager, rootView, dynamicResourceLoaderSupplier, tabCreatorManager,
-                shareDelegateSupplier, overviewModeBehaviorSupplier, snackbarManager);
+                shareDelegateSupplier, layoutStateProviderSupplier, snackbarManager);
     }
 
     @Override

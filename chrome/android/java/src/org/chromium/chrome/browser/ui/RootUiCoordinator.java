@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -63,6 +62,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -243,7 +243,8 @@ public class RootUiCoordinator
     private MediaCaptureOverlayController mCaptureController;
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
     protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
+    protected final ObservableSupplier<LayoutManagerImpl> mLayoutManagerImplSupplier;
+    protected final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     protected final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
     private final BooleanSupplier mSupportsAppMenuSupplier;
@@ -252,7 +253,6 @@ public class RootUiCoordinator
     protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected final StatusBarColorController mStatusBarColorController;
-    protected final OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
@@ -287,7 +287,7 @@ public class RootUiCoordinator
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param jankTracker Tracks the jank in the app.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
-     * @param layoutManagerSupplier Supplies the {@link LayoutManager}.
+     * @param layoutManagerImplSupplier Supplies the {@link LayoutManager}.
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
      * @param activityThemeColorSupplier Supplies the activity color theme.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
@@ -298,7 +298,6 @@ public class RootUiCoordinator
      * @param fullscreenManager Manages the fullscreen state.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
-     * @param overviewModeBehaviorSupplier Supplier of the overview mode manager.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
@@ -335,7 +334,6 @@ public class RootUiCoordinator
             @NonNull FullscreenManager fullscreenManager,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
@@ -361,7 +359,6 @@ public class RootUiCoordinator
         mFullscreenManager = fullscreenManager;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
@@ -378,9 +375,17 @@ public class RootUiCoordinator
 
         mOmniboxPedalDelegate = new OmniboxPedalDelegateImpl(
                 mActivity, mHistoryClustersCoordinatorSupplier, mModalDialogManagerSupplier);
-        mLayoutManagerSupplierCallback = this::onLayoutManagerAvailable;
-        mLayoutManagerSupplier = layoutManagerSupplier;
-        mLayoutManagerSupplier.addObserver(mLayoutManagerSupplierCallback);
+
+        // This little bit of arithmetic is necessary because of Java doesn't like accepting
+        // Supplier<BaseImpl> where Supplier<Base> is expected. We should remove the need for
+        // LayoutManagerImpl in this class so we can simply use Supplier<LayoutManager>.
+        mLayoutManagerSupplier = new ObservableSupplierImpl<>();
+        mLayoutManagerSupplierCallback = (layoutManager) -> {
+            onLayoutManagerAvailable(layoutManager);
+            mLayoutManagerSupplier.set(layoutManager);
+        };
+        mLayoutManagerImplSupplier = layoutManagerSupplier;
+        mLayoutManagerImplSupplier.addObserver(mLayoutManagerSupplierCallback);
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
@@ -421,7 +426,7 @@ public class RootUiCoordinator
 
         mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
-                mActivity, mStatusBarColorProvider, mOverviewModeBehaviorSupplier,
+                mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
                 mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
     }
 
@@ -458,7 +463,6 @@ public class RootUiCoordinator
 
         destroyUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.unregister(this);
-        mLayoutManagerSupplier.removeObserver(mLayoutManagerSupplierCallback);
 
         if (mMessageDispatcher != null) {
             mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
@@ -990,7 +994,7 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mStartSurfaceParentTabSupplier,
                     mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
-                    mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
+                    mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
                     mOmniboxPedalDelegate, mInitializeUiWithIncognitoColors);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {

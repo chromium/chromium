@@ -11,10 +11,11 @@ import android.view.WindowManager;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -48,20 +49,26 @@ public class IncognitoTabSnapshotController implements TabModelSelectorObserver 
         mTabModelSelector = tabModelSelector;
         mContext = context;
 
-        OverviewModeObserver mOverviewModeObserver = new EmptyOverviewModeObserver() {
-            @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                mInOverviewMode = true;
-                updateIncognitoState();
-            }
+        LayoutStateObserver mLayoutStateObserver =
+                new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(int layoutType, boolean showToolbar) {
+                        assert layoutType == LayoutType.TAB_SWITCHER;
 
-            @Override
-            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-                mInOverviewMode = false;
-            }
-        };
+                        mInOverviewMode = true;
+                        updateIncognitoState();
+                    }
 
-        layoutManager.addOverviewModeObserver(mOverviewModeObserver);
+                    @Override
+                    public void onStartedHiding(
+                            int layoutType, boolean showToolbar, boolean delayAnimation) {
+                        assert layoutType == LayoutType.TAB_SWITCHER;
+
+                        mInOverviewMode = false;
+                    }
+                });
+
+        layoutManager.addObserver(mLayoutStateObserver);
         tabModelSelector.addObserver(this);
     }
 

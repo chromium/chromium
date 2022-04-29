@@ -46,12 +46,13 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
@@ -123,7 +124,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private View mDecorView;
     @Mock
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
     @Mock
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock
@@ -149,7 +150,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
 
-    private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
+    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
@@ -163,7 +164,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         MockitoAnnotations.initMocks(this);
         setupFeatureDefaults();
 
-        mOverviewModeSupplier.set(mOverviewModeBehavior);
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
@@ -197,7 +198,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mOverviewModeSupplier, null, mBookmarkBridgeSupplier));
+                mLayoutStateProviderSupplier, null, mBookmarkBridgeSupplier));
     }
 
     private void setupFeatureDefaults() {
@@ -255,7 +256,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testShouldShowPageMenu_Tablet() {
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(false);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         when(mTabModel.getCount()).thenReturn(1);
         Assert.assertTrue(mAppMenuPropertiesDelegate.shouldShowPageMenu());
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
@@ -264,7 +265,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testShouldShowOverviewMenu_Tablet() {
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(true);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
         when(mTabModel.getCount()).thenReturn(1);
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldShowPageMenu());
         Assert.assertEquals(
@@ -473,7 +474,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testOverviewMenuItems_Tablet_NoTabs() {
         setUpIncognitoMocks();
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(false);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         when(mTabModel.getCount()).thenReturn(0);
 
         Assert.assertEquals(
@@ -835,7 +836,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setUpMocksForPageMenu() {
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(false);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldCheckBookmarkStar(any(Tab.class));
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldEnableDownloadPage(any(Tab.class));
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldShowReaderModePrefs(any(Tab.class));
@@ -847,7 +848,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setUpMocksForOverviewMenu() {
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(true);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         setUpIncognitoMocks();
     }

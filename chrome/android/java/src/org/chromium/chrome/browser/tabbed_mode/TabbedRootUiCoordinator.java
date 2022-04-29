@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
@@ -57,6 +56,7 @@ import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -232,7 +232,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param fullscreenManager Manages the fullscreen state.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
-     * @param overviewModeBehaviorSupplier Supplier of the overview mode manager.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
@@ -274,7 +273,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull FullscreenManager fullscreenManager,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
@@ -295,9 +293,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
                 modalDialogManagerSupplier, appMenuBlocker, supportsAppMenuSupplier,
                 supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,
-                compositorViewHolderSupplier, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
-                isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
+                compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
+                activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 initializeUiWithIncognitoColors);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -404,7 +401,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onPostInflationStartup();
 
         mSystemUiCoordinator = new TabbedSystemUiCoordinator(mActivity.getWindow(),
-                mTabModelSelectorSupplier.get(), mOverviewModeBehaviorSupplier, mFullscreenManager);
+                mTabModelSelectorSupplier.get(), mLayoutManagerSupplier, mFullscreenManager);
     }
 
     @Override
@@ -502,10 +499,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             AppMenuHandler appMenuHandler =
                     mAppMenuCoordinator == null ? null : mAppMenuCoordinator.getAppMenuHandler();
-            mEmptyBackgroundViewWrapper = new EmptyBackgroundViewWrapper(
-                    mTabModelSelectorSupplier.get(),
-                    mTabCreatorManagerSupplier.get().getTabCreator(false), mActivity,
-                    appMenuHandler, mSnackbarManagerSupplier.get(), mOverviewModeBehaviorSupplier);
+            mEmptyBackgroundViewWrapper =
+                    new EmptyBackgroundViewWrapper(mTabModelSelectorSupplier.get(),
+                            mTabCreatorManagerSupplier.get().getTabCreator(false), mActivity,
+                            appMenuHandler, mSnackbarManagerSupplier.get(), mLayoutManagerSupplier);
             mEmptyBackgroundViewWrapper.initialize();
         }
 

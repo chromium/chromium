@@ -40,11 +40,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -126,7 +127,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private View mDecorView;
     @Mock
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
     @Mock
     private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock
@@ -158,7 +159,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
-    private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
+    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
@@ -181,7 +182,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mOverviewModeSupplier.set(mOverviewModeBehavior);
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
@@ -204,11 +205,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mTabbedAppMenuPropertiesDelegate = Mockito.spy(
-                new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
-                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier, null,
-                        mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager, mSnackbarManager));
+        mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
+                ContextUtils.getApplicationContext(), mActivityTabProvider,
+                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
+                mAppMenuDelegate, mLayoutStateProviderSupplier, null, mBookmarkBridgeSupplier,
+                mFeedLauncher, mDialogManager, mSnackbarManager));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
@@ -421,7 +422,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private void setUpMocksForPageMenu() {
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        when(mOverviewModeBehavior.overviewVisible()).thenReturn(false);
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldCheckBookmarkStar(any(Tab.class));

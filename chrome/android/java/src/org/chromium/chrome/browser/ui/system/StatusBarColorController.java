@@ -15,11 +15,14 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -67,7 +70,7 @@ public class StatusBarColorController
 
     private final Window mWindow;
     private final boolean mIsTablet;
-    private @Nullable OverviewModeBehavior mOverviewModeBehavior;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
     private final StatusBarColorProvider mStatusBarColorProvider;
     private final ActivityTabProvider.ActivityTabTabObserver mStatusBarColorTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -79,7 +82,7 @@ public class StatusBarColorController
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
-    private @Nullable OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
+    private @Nullable LayoutStateObserver mLayoutStateObserver;
     private @Nullable Tab mCurrentTab;
     private boolean mIsInOverviewMode;
     private boolean mIsIncognito;
@@ -99,14 +102,14 @@ public class StatusBarColorController
      * @param isTablet Whether the current context is on a tablet.
      * @param context The Android context used to load colors.
      * @param statusBarColorProvider An implementation of {@link StatusBarColorProvider}.
-     * @param overviewModeBehaviorSupplier Supplies the overview mode behavior.
+     * @param layoutManagerSupplier Supplies the layout manager.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
      */
     public StatusBarColorController(Window window, boolean isTablet, Context context,
             StatusBarColorProvider statusBarColorProvider,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ActivityTabProvider tabProvider, TopUiThemeColorProvider topUiThemeColorProvider) {
         mWindow = window;
@@ -184,26 +187,26 @@ public class StatusBarColorController
             }
         };
 
-        if (overviewModeBehaviorSupplier != null) {
-            overviewModeBehaviorSupplier.onAvailable(
-                    mCallbackController.makeCancelable(overviewModeBehavior -> {
-                        assert overviewModeBehavior != null;
-                        mOverviewModeBehavior = overviewModeBehavior;
-                        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+        if (layoutManagerSupplier != null) {
+            layoutManagerSupplier.addObserver(mCallbackController.makeCancelable(layoutManager -> {
+                assert layoutManager != null;
+                mLayoutStateProvider = layoutManager;
+                mLayoutStateObserver = new FilterLayoutStateObserver(
+                        LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
                             @Override
-                            public void onOverviewModeStartedShowing(boolean showToolbar) {
+                            public void onStartedShowing(int layoutType, boolean showToolbar) {
                                 mIsInOverviewMode = true;
                                 updateStatusBarColor();
                             }
 
                             @Override
-                            public void onOverviewModeFinishedHiding() {
+                            public void onFinishedHiding(int layoutType) {
                                 mIsInOverviewMode = false;
                                 updateStatusBarColor();
                             }
-                        };
-                        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
-                    }));
+                        });
+                mLayoutStateProvider.addObserver(mLayoutStateObserver);
+            }));
         }
 
         activityLifecycleDispatcher.register(this);
@@ -214,8 +217,8 @@ public class StatusBarColorController
     @Override
     public void onDestroy() {
         mStatusBarColorTabObserver.destroy();
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);

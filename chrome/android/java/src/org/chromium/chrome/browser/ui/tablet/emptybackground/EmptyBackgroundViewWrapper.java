@@ -13,9 +13,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -41,7 +42,7 @@ public class EmptyBackgroundViewWrapper {
     private final SnackbarManager mSnackbarManager;
 
     CallbackController mCallbackController = new CallbackController();
-    private @Nullable OverviewModeBehavior mOverviewModeBehavior;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     private EmptyBackgroundViewTablet mBackgroundView;
     private final @Nullable AppMenuHandler mMenuHandler;
@@ -55,21 +56,21 @@ public class EmptyBackgroundViewWrapper {
      * @param menuHandler A {@link AppMenuHandler} to handle menu touch events.
      * @param snackbarManager The {@link SnackbarManager} to show the undo snackbar when the empty
      *         background is visible.
-     * @param overviewModeBehaviorSupplier An {@link ObservableSupplier} for the
-     *         {@link OverviewModeBehavior} associated with the containing activity.
+     * @param layoutStateProviderSupplier An {@link ObservableSupplier} for the
+     *         {@link LayoutManager} associated with the containing activity.
      */
     public EmptyBackgroundViewWrapper(TabModelSelector selector, TabCreator tabCreator,
             Activity activity, @Nullable AppMenuHandler menuHandler,
             SnackbarManager snackbarManager,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+            ObservableSupplier<LayoutManager> layoutStateProviderSupplier) {
         mActivity = activity;
         mMenuHandler = menuHandler;
         mTabModelSelector = selector;
         mTabCreator = tabCreator;
         mSnackbarManager = snackbarManager;
 
-        overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
-                overviewModeBehavior -> mOverviewModeBehavior = overviewModeBehavior));
+        layoutStateProviderSupplier.addObserver(mCallbackController.makeCancelable(
+                layoutStateProvider -> mLayoutStateProvider = layoutStateProvider));
 
         mTabModelObserver = new TabModelObserver() {
             @Override
@@ -181,7 +182,8 @@ public class EmptyBackgroundViewWrapper {
         // 2. Overview mode is not showing AND
         // 3. We're in the normal TabModel OR there are no tabs present in either model
         return model.getCount() == 0
-                && (mOverviewModeBehavior == null || !mOverviewModeBehavior.overviewVisible())
+                && (mLayoutStateProvider == null
+                        || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER))
                 && (!incognitoSelected || isIncognitoEmpty);
     }
 }

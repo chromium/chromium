@@ -20,10 +20,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -138,7 +138,7 @@ public interface TabManagementDelegate {
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabCreatorManager Manages creation of tabs.
      * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
-     * @param overviewModeBehaviorSupplier Suppolies the current {@link OverviewModeBehavior}.
+     * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param snackbarManager Manages the display of snackbars.
      * @return The {@link TabGroupUi}.
      */
@@ -154,7 +154,7 @@ public interface TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager);
 
     /**

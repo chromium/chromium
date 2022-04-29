@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -248,7 +247,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
     private final TabContentManager mTabContentManager;
     private final TabCreatorManager mTabCreatorManager;
-    private final OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private final SnackbarManager mSnackbarManager;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
 
@@ -365,7 +363,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param isWarmOnResumeSupplier Supplies whether the activity was warm on resume.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
-     * @param overviewModeBehaviorSupplier Supplies the current {@link OverviewModeBehavior}.
      * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}.
@@ -401,9 +398,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull BottomSheetController bottomSheetController,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabContentManager tabContentManager,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            @NonNull SnackbarManager snackbarManager, JankTracker jankTracker,
+            @NonNull TabCreatorManager tabCreatorManager, @NonNull SnackbarManager snackbarManager,
+            JankTracker jankTracker,
             @NonNull Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
@@ -432,7 +428,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mSnackbarManager = snackbarManager;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
 
@@ -1263,7 +1258,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mActivityLifecycleDispatcher, mIsWarmOnResumeSupplier, mTabModelSelector,
                 mTabContentManager, mCompositorViewHolder,
                 mCompositorViewHolder::getDynamicResourceLoader, mTabCreatorManager,
-                mShareDelegateSupplier, mOverviewModeBehaviorSupplier, mSnackbarManager);
+                mShareDelegateSupplier, mLayoutStateProviderSupplier, mSnackbarManager);
         mBottomControlsCoordinatorSupplier.set(
                 new BottomControlsCoordinator(mActivity, mWindowAndroid, mLayoutManager,
                         mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,

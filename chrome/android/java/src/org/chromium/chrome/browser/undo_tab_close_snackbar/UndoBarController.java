@@ -12,8 +12,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -49,7 +50,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     private final SnackbarManager.SnackbarManageable mSnackbarManagable;
     private final Context mContext;
     private CallbackController mCallbackController = new CallbackController();
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
 
     /**
      * Creates an instance of a {@link UndoBarController}.
@@ -57,19 +58,19 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * @param selector The {@link TabModelSelector} that will be used to commit and undo tab
      *                 closures.
      * @param snackbarManageable The holder class to get the manager that helps to show up snackbar.
-     * @param overviewModeBehaviorSupplier The {@link OverviewModeBehavior} to help check whether
-     *         the
+     * @param layoutStateProviderSupplier The {@link LayoutStateProvider} to help check whether the
+     *                                    tab switcher is showing.
      * @param dialogVisibilitySupplier The {@link Supplier} to get the visibility of TabGridDialog.
      */
     public UndoBarController(Context context, TabModelSelector selector,
             SnackbarManager.SnackbarManageable snackbarManageable,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable Supplier<Boolean> dialogVisibilitySupplier) {
         mSnackbarManagable = snackbarManageable;
         mTabModelSelector = selector;
         mContext = context;
-        overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
-                overviewModeBehavior -> mOverviewModeBehavior = overviewModeBehavior));
+        layoutStateProviderSupplier.onAvailable(mCallbackController.makeCancelable(
+                layoutStateProvider -> mLayoutStateProvider = layoutStateProvider));
 
         mTabModelObserver = new TabModelObserver() {
             /**
@@ -83,8 +84,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 if (TabUiFeatureUtilities.isConditionalTabStripEnabled()
                         && ConditionalTabStripUtils.getFeatureStatus()
                                 == ConditionalTabStripUtils.FeatureStatus.ACTIVATED
-                        && (mOverviewModeBehavior != null
-                                && !mOverviewModeBehavior.overviewVisible())) {
+                        && (mLayoutStateProvider != null
+                                && !mLayoutStateProvider.isLayoutVisible(
+                                        LayoutType.TAB_SWITCHER))) {
                     return false;
                 }
                 // When closure(s) happen and we are trying to show the undo bar, check whether the

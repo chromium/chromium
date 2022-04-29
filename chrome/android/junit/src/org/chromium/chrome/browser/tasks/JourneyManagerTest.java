@@ -28,7 +28,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -64,10 +66,10 @@ public final class JourneyManagerTest {
     private TabModelSelector mTabModelSelector;
 
     @Mock
-    private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
+    private LayoutStateObserver mLayoutStateObserver;
 
     @Mock
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
 
     @Mock
     private Tab mTab;
@@ -101,10 +103,10 @@ public final class JourneyManagerTest {
         mSharedPreferences.edit().clear().commit();
 
         mJourneyManager = new JourneyManager(
-                mTabModelSelector, mDispatcher, mOverviewModeBehavior, mEngagementTimeUtil);
+                mTabModelSelector, mDispatcher, mLayoutStateProvider, mEngagementTimeUtil);
         mTabModelSelectorTabObserver = mJourneyManager.getTabModelSelectorTabObserver();
         mTabModelSelectorTabModelObserver = mJourneyManager.getTabModelSelectorTabModelObserver();
-        mOverviewModeObserver = mJourneyManager.getOverviewModeObserver();
+        mLayoutStateObserver = mJourneyManager.getOverviewModeObserver();
 
         verify(mDispatcher).register(mJourneyManager);
 
@@ -422,7 +424,7 @@ public final class JourneyManagerTest {
         // Advance time.
         doReturn(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS).when(mEngagementTimeUtil).currentTime();
 
-        mOverviewModeObserver.onOverviewModeStartedShowing(true);
+        mLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER, true);
         flushAsyncPrefs();
 
         assertEquals(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,
@@ -433,7 +435,7 @@ public final class JourneyManagerTest {
     public void destroy_unregistersLifecycleObserver() {
         mJourneyManager.onDestroy();
         verify(mDispatcher).unregister(mJourneyManager);
-        verify(mOverviewModeBehavior).removeOverviewModeObserver(mOverviewModeObserver);
+        verify(mLayoutStateProvider).removeObserver(mLayoutStateObserver);
     }
 
     private void flushAsyncPrefs() {

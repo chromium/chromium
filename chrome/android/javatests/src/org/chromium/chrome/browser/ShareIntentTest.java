@@ -155,10 +155,9 @@ public class ShareIntentTest {
                     mockActivity::supportsFindInPage, mockActivity.getTabCreatorManagerSupplier(),
                     browserControlsManager.getFullscreenManager(),
                     mockActivity.getCompositorViewHolderSupplier(),
-                    mockActivity.getTabContentManagerSupplier(),
-                    mockActivity.getOverviewModeBehaviorSupplier(),
-                    mockActivity::getSnackbarManager, mockActivity.getActivityType(),
-                    mockActivity::isInOverviewMode, mockActivity::isWarmOnResume,
+                    mockActivity.getTabContentManagerSupplier(), mockActivity::getSnackbarManager,
+                    mockActivity.getActivityType(), mockActivity::isInOverviewMode,
+                    mockActivity::isWarmOnResume,
                     /* appMenuDelegate= */ mockActivity,
                     /* statusBarColorProvider= */ mockActivity,
                     mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(), false);

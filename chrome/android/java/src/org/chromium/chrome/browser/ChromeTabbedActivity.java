@@ -49,7 +49,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -354,7 +353,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private final UnownedUserDataSupplier<StartupPaintPreviewHelper>
             mStartupPaintPreviewHelperSupplier = new StartupPaintPreviewHelperSupplier();
 
-    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier =
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     // TODO(crbug.com/1108496): Removed after all usages has been migrated to LayoutStateProvider.
     private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
@@ -705,7 +704,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
                     mOverviewModeBehaviorSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
-            mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
+            mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
         }
@@ -729,9 +728,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
                     mOverviewModeBehaviorSupplier,
-                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker, tabSwitcherViewHolder,
-                    mRootUiCoordinator.getScrimCoordinator(), getLifecycleDispatcher());
-            mLayoutStateProviderOneshotSupplier.set(mLayoutManager);
+                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
+                    tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
+                    getLifecycleDispatcher());
+            mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
             mOverviewModeController = mLayoutManager;
         }
@@ -880,13 +880,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void initJourneyManager() {
-        assert mOverviewModeController != null;
+        assert mLayoutManager != null;
 
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initJourneyManager")) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_ENGAGEMENT_REPORTING_ANDROID)) {
                 // The lifecycle of this object is managed by the lifecycle dispatcher.
-                new JourneyManager(getTabModelSelector(), getLifecycleDispatcher(),
-                        mOverviewModeController, new EngagementTimeUtil());
+                new JourneyManager(getTabModelSelector(), getLifecycleDispatcher(), mLayoutManager,
+                        new EngagementTimeUtil());
             }
         }
     }
@@ -1096,11 +1096,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public OverviewModeBehavior getOverviewModeBehavior() {
         return mOverviewModeController;
-    }
-
-    @Override
-    public @Nullable OneshotSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
-        return mOverviewModeBehaviorSupplier;
     }
 
     /**
@@ -1662,15 +1657,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
                 mBookmarkBridgeSupplier, getContextualSearchManagerSupplier(),
                 getTabModelSelectorSupplier(), mStartSurfaceSupplier,
-                mIntentMetadataOneshotSupplier, mLayoutStateProviderOneshotSupplier,
+                mIntentMetadataOneshotSupplier, mLayoutStateProviderSupplier,
                 mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
                 mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
-                getModalDialogManagerSupplier(), /* appMenuBlocker= */ this, this::supportsAppMenu,
-                this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
+                getModalDialogManagerSupplier(),
+                /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,
+                getTabCreatorManagerSupplier(), getFullscreenManager(),
                 getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
-                getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
-                this::isInOverviewMode, this::isWarmOnResume, /* appMenuDelegate= */ this,
+                this::getSnackbarManager, getActivityType(), this::shouldShowOverviewPageOnStart,
+                this::isWarmOnResume,
+                /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, mEphemeralTabCoordinatorSupplier,
                 getIntentRequestTracker(), getControlContainerHeightResource(),
                 mInsetObserverViewSupplier, this::backShouldCloseTab,
@@ -1738,7 +1735,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         mUndoBarPopupController = new UndoBarController(this, mTabModelSelector,
-                this::getSnackbarManager, mOverviewModeBehaviorSupplier, dialogVisibilitySupplier);
+                this::getSnackbarManager, mLayoutStateProviderSupplier, dialogVisibilitySupplier);
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
@@ -1825,7 +1822,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean startIncognito = savedInstanceState != null
                 && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
 
-        mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mOverviewModeBehaviorSupplier);
+        mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mLayoutStateProviderSupplier);
 
         boolean tabModelWasCreated = mTabModelOrchestrator.createTabModels(
                 this, this, mNextTabPolicySupplier, mWindowId);
@@ -1885,7 +1882,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new TabbedAppMenuPropertiesDelegate(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), this, mOverviewModeBehaviorSupplier,
+                getWindow().getDecorView(), this, mLayoutStateProviderSupplier,
                 ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
                 mBookmarkBridgeSupplier,
                 ()

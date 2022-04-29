@@ -157,7 +157,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getModalDialogManagerSupplier(), /* appMenuBlocker= */ this, this::supportsAppMenu,
                 this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
                 getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
-                getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
+                this::getSnackbarManager, getActivityType(),
                 this::isInOverviewMode, this::isWarmOnResume, /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,

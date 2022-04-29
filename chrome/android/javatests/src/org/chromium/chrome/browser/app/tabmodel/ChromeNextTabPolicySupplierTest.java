@@ -36,6 +36,6 @@ public class ChromeNextTabPolicySupplierTest {
     public void verifyOverviewModeBehaviorIsNotNull() {
         Assert.assertNotNull(mActivityTestRule.getActivity()
                                      .getNextTabPolicySupplier()
-                                     .getOverviewModeBehavior());
+                                     .getLayoutStateProvider());
     }
 }
