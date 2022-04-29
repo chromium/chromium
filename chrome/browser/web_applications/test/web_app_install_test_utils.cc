@@ -56,6 +56,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.title = base::UTF8ToUTF16(app_name);
   web_app_info.description = base::UTF8ToUTF16(app_name);
   web_app_info.user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info.install_url = start_url;
 
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_DEFAULT);

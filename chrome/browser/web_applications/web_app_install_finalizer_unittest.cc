@@ -403,4 +403,28 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  info->install_url = GURL("https://foo.example/installer");
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(result.installed_app_id,
+            GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
+
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_EQ(1u, installed_app->management_to_external_config_map()
+                    .at(WebAppManagement::Type::kPolicy)
+                    .install_urls.size());
+  EXPECT_EQ(GURL("https://foo.example/installer"),
+            *installed_app->management_to_external_config_map()
+                 .at(WebAppManagement::Type::kPolicy)
+                 .install_urls.begin());
+}
+
 }  // namespace web_app

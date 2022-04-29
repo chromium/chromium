@@ -8,7 +8,9 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -31,13 +33,9 @@ namespace web_app {
 class ExternallyInstalledWebAppPrefs {
  public:
   // Used in the migration to the web_app DB.
-  struct ParsedPrefs {
-    ParsedPrefs();
-    ParsedPrefs(const ParsedPrefs& other);
-    ~ParsedPrefs();
-
-    base::flat_map<WebAppManagement::Type, bool> placeholder_map;
-  };
+  using ParsedPrefs = base::flat_map<
+      AppId,
+      base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>>;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -81,19 +79,13 @@ class ExternallyInstalledWebAppPrefs {
 
   // Converts the existing external_pref information to a map<AppId,
   // ParsedPrefs> for simplified parsing and migrating to the web app DB.
-  static base::flat_map<AppId, ParsedPrefs> GetAppIdToWebAppParsedData(
-      PrefService* pref_service);
+  static ParsedPrefs ParseExternalPrefsToWebAppData(PrefService* pref_service);
 
   // Used to migrate the external pref data to the installed web_app DB.
   static void MigrateExternalPrefData(PrefService* pref_service,
                                       WebAppSyncBridge* sync_bridge);
 
  private:
-  // The install_source to web_app_management conversion refers to the
-  // ConvertExternalInstallSourceToSource() function in
-  // web_app_install_utils.cc.
-  static WebAppManagement::Type ConvertExternalInstallSourceToWebAppManagement(
-      int source);
   const raw_ptr<PrefService> pref_service_;
 };
 

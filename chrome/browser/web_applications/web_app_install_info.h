@@ -324,6 +324,11 @@ struct WebAppInstallInfo {
   // Intended to be a temporary app while we wait for the install_url to
   // successfully load.
   bool is_placeholder = false;
+
+  // The install URL for the app. This does not always need to be
+  // populated (especially for user installed or sync installed apps)
+  // in which case the URL will not be written to the web_app DB.
+  GURL install_url;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

@@ -623,6 +623,9 @@ void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
 
   if (install_params.launch_query_params)
     web_app_info.launch_query_params = install_params.launch_query_params;
+
+  if (install_params.install_url.is_valid())
+    web_app_info.install_url = install_params.install_url;
 }
 
 void WebAppInstallTask::InstallWebAppOnManifestValidated(

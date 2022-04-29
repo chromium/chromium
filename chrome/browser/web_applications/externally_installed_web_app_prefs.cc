@@ -78,13 +78,6 @@ const base::Value* GetPreferenceValue(const PrefService* pref_service,
 
 }  // namespace
 
-ExternallyInstalledWebAppPrefs::ParsedPrefs::ParsedPrefs() = default;
-
-ExternallyInstalledWebAppPrefs::ParsedPrefs::ParsedPrefs(
-    const ParsedPrefs& other) = default;
-
-ExternallyInstalledWebAppPrefs::ParsedPrefs::~ParsedPrefs() = default;
-
 // static
 void ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -247,18 +240,16 @@ bool ExternallyInstalledWebAppPrefs::IsPlaceholderApp(
 }
 
 // static
-base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
+ExternallyInstalledWebAppPrefs::ParsedPrefs
+ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
     PrefService* pref_service) {
   const base::Value* urls_to_dicts =
       pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
-  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-      ids_to_parsed_data;
+  ParsedPrefs ids_to_parsed_data;
   if (!urls_to_dicts)
     return ids_to_parsed_data;
 
   for (auto it : urls_to_dicts->DictItems()) {
-    ParsedPrefs parsed_prefs;
     const base::Value* v = &it.second;
     if (!v->is_dict()) {
       continue;
@@ -269,69 +260,45 @@ ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
       continue;
     }
 
-    if (ids_to_parsed_data.contains(app_id->GetString())) {
-      parsed_prefs = ids_to_parsed_data[app_id->GetString()];
-    }
-
     auto* source = v->FindKey(kInstallSource);
     if (!source) {
-      ids_to_parsed_data[app_id->GetString()] = parsed_prefs;
       continue;
     }
 
-    WebAppManagement::Type source_type =
-        ConvertExternalInstallSourceToWebAppManagement(source->GetInt());
-
-    parsed_prefs.placeholder_map[source_type] =
-        v->FindBoolKey(kIsPlaceholder).value_or(false);
-    ids_to_parsed_data.insert_or_assign(app_id->GetString(),
-                                        std::move(parsed_prefs));
+    WebAppManagement::Type source_type = ConvertExternalInstallSourceToSource(
+        static_cast<ExternalInstallSource>(source->GetInt()));
+    WebApp::ExternalManagementConfig& config =
+        ids_to_parsed_data[app_id->GetString()][source_type];
+    config.is_placeholder = v->FindBoolKey(kIsPlaceholder).value_or(false);
+    config.install_urls.emplace(GURL(it.first));
   }
+
   return ids_to_parsed_data;
-}
-
-// static
-WebAppManagement::Type
-ExternallyInstalledWebAppPrefs::ConvertExternalInstallSourceToWebAppManagement(
-    int source) {
-  switch (source) {
-    case 0:
-      return ConvertExternalInstallSourceToSource(
-          ExternalInstallSource::kInternalDefault);
-    case 1:
-      return ConvertExternalInstallSourceToSource(
-          ExternalInstallSource::kExternalDefault);
-    case 2:
-      return ConvertExternalInstallSourceToSource(
-          ExternalInstallSource::kExternalPolicy);
-    case 3:
-      return ConvertExternalInstallSourceToSource(
-          ExternalInstallSource::kSystemInstalled);
-    case 4:
-      return ConvertExternalInstallSourceToSource(ExternalInstallSource::kArc);
-    default:
-      NOTREACHED();
-      return WebAppManagement::Type::kSync;
-  }
 }
 
 // static
 void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
     PrefService* pref_service,
     WebAppSyncBridge* sync_bridge) {
-  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-      pref_to_app_data = GetAppIdToWebAppParsedData(pref_service);
+  ExternallyInstalledWebAppPrefs::ParsedPrefs pref_to_app_data =
+      ParseExternalPrefsToWebAppData(pref_service);
 
   ScopedRegistryUpdate update(sync_bridge);
   for (auto it : pref_to_app_data) {
     WebApp* web_app = update->UpdateApp(it.first);
     if (web_app) {
-      // Sync placeholder info across external prefs and web_app DB by
-      // overwriting.
-      for (auto placeholder_info : it.second.placeholder_map) {
-        if (web_app->GetSources().test(placeholder_info.first)) {
-          web_app->AddPlaceholderInfoToManagementExternalConfigMap(
-              placeholder_info.first, placeholder_info.second);
+      // Sync data across externally installed prefs and web_app DB.
+      for (auto parsed_info : it.second) {
+        if (!web_app->GetSources().test(parsed_info.first)) {
+          continue;
+        }
+        web_app->AddPlaceholderInfoToManagementExternalConfigMap(
+            parsed_info.first, parsed_info.second.is_placeholder);
+        for (auto url : parsed_info.second.install_urls) {
+          // Do not migrate invalid URLs.
+          DCHECK(url.is_valid());
+          web_app->AddInstallURLToManagementExternalConfigMap(parsed_info.first,
+                                                              url);
         }
       }
     }

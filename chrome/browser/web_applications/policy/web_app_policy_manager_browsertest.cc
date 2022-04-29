@@ -204,6 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
   auto install_source = ExternalInstallSource::kExternalPolicy;
   std::unique_ptr<WebAppInstallInfo> install_info =
       std::make_unique<WebAppInstallInfo>();
+  install_info->install_url = GURL(kInstallUrl);
   UpdateWebAppInfoFromManifest(*manifest, GURL(kManifestUrl),
                                install_info.get());
   WebAppProvider::GetForTest(profile())

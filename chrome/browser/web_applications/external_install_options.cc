@@ -197,6 +197,8 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
 
   params.oem_installed = install_options.oem_installed;
 
+  params.install_url = install_options.install_url;
+
   return params;
 }
 

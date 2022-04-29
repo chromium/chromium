@@ -189,6 +189,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   params.fallback_start_url = install_url;
   // Don't want to allow devs to force manifest updates with the API.
   params.force_reinstall = false;
+  params.install_url = install_url;
 
   task->SetInstallParams(params);
 

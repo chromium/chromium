@@ -1133,6 +1133,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   server_web_app_info->start_url = url;
   server_web_app_info->scope = url;
   server_web_app_info->title = u"Test web app";
+  server_web_app_info->install_url = url;
 
   const webapps::WebappInstallSource install_source =
       AreSystemWebAppsSupported()

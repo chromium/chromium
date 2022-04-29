@@ -747,26 +747,21 @@ WebAppManagement::Type ConvertExternalInstallSourceToSource(
 
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source) {
-  webapps::WebappInstallSource install_source;
   switch (external_install_source) {
     case ExternalInstallSource::kInternalDefault:
-      install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
-      break;
+      return webapps::WebappInstallSource::INTERNAL_DEFAULT;
     case ExternalInstallSource::kExternalDefault:
-      install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
-      break;
+      return webapps::WebappInstallSource::EXTERNAL_DEFAULT;
     case ExternalInstallSource::kExternalPolicy:
-      install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
-      break;
+      return webapps::WebappInstallSource::EXTERNAL_POLICY;
     case ExternalInstallSource::kSystemInstalled:
-      install_source = webapps::WebappInstallSource::SYSTEM_DEFAULT;
-      break;
+      return webapps::WebappInstallSource::SYSTEM_DEFAULT;
     case ExternalInstallSource::kArc:
-      install_source = webapps::WebappInstallSource::ARC;
-      break;
+      return webapps::WebappInstallSource::ARC;
+    default:
+      NOTREACHED();
+      return webapps::WebappInstallSource::SYNC;
   }
-
-  return install_source;
 }
 
 webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(

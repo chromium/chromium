@@ -94,6 +94,13 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   web_app_install_info_->scope = GURL(web_app_info->scope_url);
   DCHECK(web_app_install_info_->scope.is_valid());
 
+  // The install_url and the start_url seem to be same in this case
+  // as far as ExternallyInstalledWebAppPrefs are concerned.
+  // This is because inside OnWebAppCreated(), the start_url is
+  // passed to the external prefs to be stored as the install_url.
+  web_app_install_info_->install_url = GURL(web_app_info->start_url);
+  DCHECK(web_app_install_info_->install_url.is_valid());
+
   if (web_app_info->theme_color != kInvalidColor) {
     web_app_install_info_->theme_color = SkColorSetA(
         static_cast<SkColor>(web_app_info->theme_color), SK_AlphaOPAQUE);

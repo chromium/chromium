@@ -218,9 +218,10 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, OldPrefFormat) {
                    .IsPlaceholderApp("app_id_string"));
 }
 
-// Case 1: Single App ID, no placeholder info (defaults to
+// Case 1: Single Install URL per source, no placeholder info (defaults to
 // false).
-TEST_F(ExternallyInstalledWebAppPrefsTest, NoPlaceholderInfoDefaultsToFalse) {
+TEST_F(ExternallyInstalledWebAppPrefsTest,
+       WebAppParsedDataOneInstallURLPerSource) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -233,20 +234,29 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, NoPlaceholderInfoDefaultsToFalse) {
   })");
   profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
                              std::move(external_prefs));
-  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-      web_app_data_map =
-          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
-              profile()->GetPrefs());
-  EXPECT_EQ(1u, web_app_data_map.size());
-  EXPECT_FALSE(web_app_data_map["test_app1"]
-                   .placeholder_map[WebAppManagement::Type::kPolicy]);
-  EXPECT_FALSE(web_app_data_map["test_app1"]
-                   .placeholder_map[WebAppManagement::Type::kSystem]);
+  ExternallyInstalledWebAppPrefs::ParsedPrefs web_app_data_map =
+      ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
+          profile()->GetPrefs());
+
+  // Set up expected_data
+  ExternallyInstalledWebAppPrefs::ParsedPrefs expected_map;
+  WebApp::ExternalManagementConfig config1;
+  config1.is_placeholder = false;
+  config1.install_urls = {GURL("https://app1.com/")};
+  expected_map["test_app1"][WebAppManagement::Type::kPolicy] =
+      std::move(config1);
+  WebApp::ExternalManagementConfig config2;
+  config2.is_placeholder = false;
+  config2.install_urls = {GURL("https://app2.com/")};
+  expected_map["test_app1"][WebAppManagement::Type::kSystem] =
+      std::move(config2);
+
+  EXPECT_EQ(web_app_data_map, expected_map);
 }
 
-// Case 2: Multiple entries with single app ID, with is_placeholder set to true.
+// Case 2: Multiple Install URL per source, with is_placeholder set to true.
 TEST_F(ExternallyInstalledWebAppPrefsTest,
-       SinglePlaceholderInfoDefaultsToTrue) {
+       WebAppDataMapMultipleInstallURLPerSource) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -260,17 +270,30 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   })");
   profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
                              std::move(external_prefs));
+  ExternallyInstalledWebAppPrefs::ParsedPrefs web_app_data_map =
+      ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
+          profile()->GetPrefs());
 
-  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-      web_app_data_map =
-          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
-              profile()->GetPrefs());
-  EXPECT_EQ(1u, web_app_data_map.size());
-  EXPECT_TRUE(web_app_data_map["test_app1"]
-                  .placeholder_map[WebAppManagement::Type::kDefault]);
+  // Set up expected_data
+  ExternallyInstalledWebAppPrefs::ParsedPrefs expected_map;
+  WebApp::ExternalManagementConfig config;
+  config.is_placeholder = true;
+  config.install_urls = {GURL("https://app1.com/"), GURL("https://app2.com/")};
+  expected_map["test_app1"][WebAppManagement::Type::kDefault] =
+      std::move(config);
+
+  EXPECT_EQ(web_app_data_map, expected_map);
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest, MultiAppsMultiPlaceholderInfo) {
+// Edge cases:
+// 1. pref entry with no data.
+// 2. pref entry with all data.
+// 3. pref entry with no source but existing app_id (won't generate map
+// without knowing which source to correspond with).
+// 4. pref entry with source but no app_id (won't generate map because app
+// ID does not exist).
+TEST_F(ExternallyInstalledWebAppPrefsTest,
+       WebAppDataMapMultipleAppIDsMultipleURLs) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -296,19 +319,27 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, MultiAppsMultiPlaceholderInfo) {
   })");
   profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
                              std::move(external_prefs));
-  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
-      web_app_data_map =
-          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
-              profile()->GetPrefs());
-  EXPECT_EQ(2u, web_app_data_map.size());
-  EXPECT_FALSE(web_app_data_map["test_app1"]
-                   .placeholder_map[WebAppManagement::Type::kDefault]);
-  EXPECT_TRUE(web_app_data_map["test_app4"]
-                  .placeholder_map[WebAppManagement::Type::kWebAppStore]);
+  ExternallyInstalledWebAppPrefs::ParsedPrefs web_app_data_map =
+      ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
+          profile()->GetPrefs());
+
+  // Set up expected_data
+  ExternallyInstalledWebAppPrefs::ParsedPrefs expected_map;
+  WebApp::ExternalManagementConfig config1;
+  config1.is_placeholder = false;
+  config1.install_urls = {GURL("https://app1.com/"), GURL("https://app2.com/")};
+  WebApp::ExternalManagementConfig config2;
+  config2.is_placeholder = true;
+  config2.install_urls = {GURL("https://app4.com/")};
+  expected_map["test_app1"][WebAppManagement::Type::kDefault] =
+      std::move(config1);
+  expected_map["test_app4"][WebAppManagement::Type::kWebAppStore] =
+      std::move(config2);
+
+  EXPECT_EQ(web_app_data_map, expected_map);
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       PlaceholderMigrationTestForSingleSource) {
+TEST_F(ExternallyInstalledWebAppPrefsTest, MigrationTestForSingleSource) {
   InitProvider();
   std::unique_ptr<WebApp> web_app = test::CreateWebApp(
       GURL("https://app.com/"), WebAppManagement::Type::kDefault);
@@ -334,6 +365,14 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   EXPECT_TRUE(installed_app->management_to_external_config_map()
                   .at(WebAppManagement::Type::kDefault)
                   .is_placeholder);
+  // Verify install source and urls have been migrated.
+  EXPECT_EQ(1u, installed_app->management_to_external_config_map()
+                    .at(WebAppManagement::Type::kDefault)
+                    .install_urls.size());
+  EXPECT_EQ(GURL("https://app.com/install"),
+            *installed_app->management_to_external_config_map()
+                 .at(WebAppManagement::Type::kDefault)
+                 .install_urls.begin());
 }
 
 }  // namespace web_app

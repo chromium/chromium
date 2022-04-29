@@ -379,6 +379,11 @@ class WebApp {
       WebAppManagement::Type source_type,
       bool is_placeholder);
 
+  // This adds an install_url per management type (source) for the
+  // WebAppManagementToInstallURLsMap.
+  void AddInstallURLToManagementExternalConfigMap(WebAppManagement::Type type,
+                                                  GURL install_url);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;

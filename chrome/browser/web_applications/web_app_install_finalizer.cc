@@ -173,6 +173,10 @@ void WebAppInstallFinalizer::FinalizeInstall(
   if (source != WebAppManagement::Type::kSync) {
     web_app->AddPlaceholderInfoToManagementExternalConfigMap(
         source, web_app_info.is_placeholder);
+    if (web_app_info.install_url.is_valid()) {
+      web_app->AddInstallURLToManagementExternalConfigMap(
+          source, web_app_info.install_url);
+    }
   }
 
   if (!options.locally_installed) {

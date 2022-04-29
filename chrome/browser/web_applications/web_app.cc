@@ -399,6 +399,14 @@ void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
   management_to_external_config_map_[type].is_placeholder = is_placeholder;
 }
 
+void WebApp::AddInstallURLToManagementExternalConfigMap(
+    WebAppManagement::Type type,
+    GURL install_url) {
+  DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK(install_url.is_valid());
+  management_to_external_config_map_[type].install_urls.emplace(install_url);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;

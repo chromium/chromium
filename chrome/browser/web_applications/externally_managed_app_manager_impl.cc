@@ -211,6 +211,10 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
         WebApp* app_to_update = update->UpdateApp(app_id.value());
         app_to_update->AddSource(ConvertExternalInstallSourceToSource(
             install_options.install_source));
+        app_to_update->AddInstallURLToManagementExternalConfigMap(
+            ConvertExternalInstallSourceToSource(
+                install_options.install_source),
+            install_options.install_url);
       }
       std::move(front->callback)
           .Run(install_options.install_url,

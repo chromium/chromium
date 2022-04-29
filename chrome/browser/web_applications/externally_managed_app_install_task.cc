@@ -158,6 +158,7 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
   for (std::string& search_term : install_params.additional_search_terms) {
     web_app_info->additional_search_terms.push_back(std::move(search_term));
   }
+  web_app_info->install_url = install_params.install_url;
   install_manager_->InstallWebAppFromInfo(
       std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
@@ -297,6 +298,7 @@ void ExternallyManagedAppInstallTask::FinalizePlaceholderInstall(
 #endif  // defined(CHROMEOS)
 
   web_app_info.start_url = install_options_.install_url;
+  web_app_info.install_url = install_options_.install_url;
 
   web_app_info.user_display_mode = install_options_.user_display_mode;
 
