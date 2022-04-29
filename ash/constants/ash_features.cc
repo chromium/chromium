@@ -560,7 +560,7 @@ const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
 
 // Enables Kiosk enrollment option in OOBE.
 const base::Feature kEnableKioskEnrollmentInOobe{
-    "EnableKioskEnrollmentInOobe", base::FEATURE_ENABLED_BY_DEFAULT};
+    "EnableKioskEnrollmentInOobe", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables skipping of network screen.
 const base::Feature kEnableOobeNetworkScreenSkip{
