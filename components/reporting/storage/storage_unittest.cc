@@ -882,7 +882,6 @@ class StorageTest
   void DeliverKey() {
     ASSERT_TRUE(is_encryption_enabled())
         << "Key can be delivered only when encryption is enabled";
-    key_delivery_count_.fetch_add(1u);
     storage_->UpdateEncryptionKey(signed_encryption_key_);
   }
 
@@ -908,7 +907,6 @@ class StorageTest
   SignedEncryptionInfo signed_encryption_key_;
   bool expect_to_need_key_{false};
   std::atomic<bool> key_delivery_failure_{false};
-  std::atomic<size_t> key_delivery_count_{0};
   scoped_refptr<test::TestCompressionModule> test_compression_module_;
 
   // Test-wide global mapping of <generation id, sequencing id> to record
@@ -980,7 +978,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
     return;
   }
 
-  static constexpr auto kKeyRenewalTime = base::Seconds(5);
+  static constexpr auto kKeyRenewalTime = base::Milliseconds(500);
   CreateTestStorageOrDie(BuildTestStorageOptions(),
                          EncryptionModule::Create(kKeyRenewalTime));
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
@@ -1014,23 +1012,16 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
   WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
-  // Uploader expectations set by CreateTestStorage are still active.
-  // They accept KEY_UPDATE upload with or without data.
-  const size_t old_key_delivery_count = key_delivery_count_.load();
-
   // Wait to trigger encryption key request on the next upload.
-  task_environment_.FastForwardBy(kKeyRenewalTime + base::Seconds(1));
-
-  // Make sure at least one key delivery took place after the encryption key
-  // request was triggered above.
-  task_environment_.RunUntilIdle();
-  EXPECT_THAT(key_delivery_count_.load(), Gt(old_key_delivery_count));
+  task_environment_.FastForwardBy(kKeyRenewalTime + base::Milliseconds(100));
 
   // Set uploader expectations for MANUAL upload.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::MANUAL)))
+              Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        // Prevent more key delivery requests.
+        DeliverKey();
         return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
