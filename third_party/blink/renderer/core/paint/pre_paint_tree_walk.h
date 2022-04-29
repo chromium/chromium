@@ -56,6 +56,15 @@ class CORE_EXPORT PrePaintTreeWalk final {
     PrePaintTreeWalkContextBase(const PrePaintTreeWalkContextBase&) = default;
 
    public:
+    // Reset fragmentation when entering something that shouldn't be affected by
+    // the current fragmentation context(s).
+    void ResetFragmentation() {
+      current_fragmentainer = {};
+      absolute_positioned_container = {};
+      fixed_positioned_container = {};
+      oof_container_candidate_fragment = nullptr;
+    }
+
     PaintInvalidatorContext paint_invalidator_context;
 
     // The ancestor in the PaintLayer tree which is a scroll container. Note

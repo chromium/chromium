@@ -108,10 +108,7 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
                                   needs_tree_builder_context_update);
 
   // Block fragmentation doesn't cross frame boundaries.
-  context.current_fragmentainer = {};
-  context.absolute_positioned_container = {};
-  context.fixed_positioned_container = {};
-  context.oof_container_candidate_fragment = nullptr;
+  context.ResetFragmentation();
 
   // ancestor_scroll_container_paint_layer does not cross frame boundaries.
   context.ancestor_scroll_container_paint_layer = nullptr;
@@ -443,9 +440,9 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
     // If we're in a fragmentation context, the parent fragment of OOFs is the
     // fragmentainer, unless the object is monolithic, in which case nothing
     // inside the object participates in the current block fragmentation
-    // context. This means that this object (and not the nearest fragmentainer)
-    // acts as a containing block for OOF descendants,
-    context.current_fragmentainer = {};
+    // context.
+    context.ResetFragmentation();
+    return;
   }
 
   // The OOF containing block structure is special under block fragmentation: A
