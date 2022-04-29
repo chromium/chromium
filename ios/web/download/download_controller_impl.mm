@@ -4,16 +4,19 @@
 
 #import "ios/web/download/download_controller_impl.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "ios/web/download/data_url_download_task.h"
 #import "ios/web/download/download_native_task_bridge.h"
 #import "ios/web/download/download_native_task_impl.h"
 #import "ios/web/download/download_session_cookie_storage.h"
 #import "ios/web/download/download_session_task_impl.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller_delegate.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/http/http_request_headers.h"
+#import "net/http/http_request_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,10 +40,12 @@ DownloadController* DownloadController::FromBrowserState(
       browser_state->GetUserData(&kDownloadControllerKey));
 }
 
-DownloadControllerImpl::DownloadControllerImpl() = default;
+DownloadControllerImpl::DownloadControllerImpl()
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})) {}
 
 DownloadControllerImpl::~DownloadControllerImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (DownloadTask* task : alive_tasks_) {
     task->RemoveObserver(this);
     task->Cancel();
@@ -60,18 +65,18 @@ void DownloadControllerImpl::CreateDownloadTask(
     const std::string& content_disposition,
     int64_t total_bytes,
     const std::string& mime_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_)
     return;
 
   if (original_url.SchemeIs(url::kDataScheme)) {
     OnDownloadCreated(std::make_unique<DataUrlDownloadTask>(
         web_state, original_url, http_method, content_disposition, total_bytes,
-        mime_type, identifier));
+        mime_type, identifier, task_runner_));
   } else {
     OnDownloadCreated(std::make_unique<DownloadSessionTaskImpl>(
         web_state, original_url, http_method, content_disposition, total_bytes,
-        mime_type, identifier));
+        mime_type, identifier, task_runner_));
   }
 }
 
@@ -84,7 +89,7 @@ void DownloadControllerImpl::CreateNativeDownloadTask(
     int64_t total_bytes,
     const std::string& mime_type,
     DownloadNativeTaskBridge* download) API_AVAILABLE(ios(15)) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_) {
     [download cancel];
     return;
@@ -92,21 +97,21 @@ void DownloadControllerImpl::CreateNativeDownloadTask(
 
   OnDownloadCreated(std::make_unique<DownloadNativeTaskImpl>(
       web_state, original_url, http_method, content_disposition, total_bytes,
-      mime_type, identifier, download));
+      mime_type, identifier, task_runner_, download));
 }
 
 void DownloadControllerImpl::SetDelegate(DownloadControllerDelegate* delegate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = delegate;
 }
 
 DownloadControllerDelegate* DownloadControllerImpl::GetDelegate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_;
 }
 
 void DownloadControllerImpl::OnDownloadDestroyed(DownloadTask* task) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = alive_tasks_.find(task);
   DCHECK(it != alive_tasks_.end());
   task->RemoveObserver(this);
@@ -115,6 +120,7 @@ void DownloadControllerImpl::OnDownloadDestroyed(DownloadTask* task) {
 
 void DownloadControllerImpl::OnDownloadCreated(
     std::unique_ptr<DownloadTaskImpl> task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(task);
   alive_tasks_.insert(task.get());
   task->AddObserver(this);

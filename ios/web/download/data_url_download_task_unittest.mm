@@ -11,6 +11,8 @@
 #import "base/run_loop.h"
 #import "base/scoped_observation.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -97,7 +99,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidDataUrl) {
   // Create data:// url download task.
   DataUrlDownloadTask task(
       &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
-      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
   StartTaskAndWaitUntilDone(&task, base::FilePath());
 
@@ -122,7 +126,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
   // Create data:// url download task.
   DataUrlDownloadTask task(
       &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
-      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
   base::FilePath path =
       scoped_temp_dir.GetPath().Append(task.GenerateFileName());
@@ -151,7 +157,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
   // Create data:// url download task.
   DataUrlDownloadTask task(
       &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
-      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
   StartTaskAndWaitUntilDone(&task, base::FilePath("/no-such-dir/file.txt"));
 
@@ -170,7 +178,9 @@ TEST_F(DataUrlDownloadTaskTest, EmptyDataUrl) {
   // Create data:// url download task.
   DataUrlDownloadTask task(
       &web_state_, GURL(kEmptyDataUrl), kMethodGet, kContentDisposition,
-      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
   StartTaskAndWaitUntilDone(&task, base::FilePath());
 

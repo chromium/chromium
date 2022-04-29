@@ -8,8 +8,10 @@
 
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
+#import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/sequenced_task_runner_handle.h"
 #import "ios/net/cookies/system_cookie_util.h"
@@ -190,6 +192,7 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
     int64_t total_bytes,
     const std::string& mime_type,
     NSString* identifier,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     SessionFactory session_factory)
     : DownloadTaskImpl(web_state,
                        original_url,
@@ -197,7 +200,8 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier),
+                       identifier,
+                       task_runner),
       session_factory_(std::move(session_factory)) {
   DCHECK(!original_url_.SchemeIs(url::kDataScheme));
 }
@@ -249,10 +253,8 @@ void DownloadSessionTaskImpl::Start(const base::FilePath& path,
                         net::OK);
   } else {
     DCHECK(path != base::FilePath());
-    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
     auto writer =
-        std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
+        std::make_unique<net::URLFetcherFileWriter>(task_runner_, path);
     net::URLFetcherFileWriter* writer_ptr = writer.get();
     writer_ptr->Initialize(
         base::BindOnce(&DownloadSessionTaskImpl::OnWriterInitialized,
@@ -304,14 +306,15 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
   NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
       backgroundSessionConfigurationWithIdentifier:identifier];
 
-  // Cookies have to be set in the session configuration before the sesion is
-  // created. Once the session is created, the configuration object can't be
-  // edited and configuration property will return a copu of the originally
-  // used configuration.
-  // The cookies are copied from the internal WebSiteDataStore cookie store,
-  // so there will be no duplications or invalid cookies.
   const NSHTTPCookieAcceptPolicy policy =
-      [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
+      NSHTTPCookieStorage.sharedHTTPCookieStorage.cookieAcceptPolicy;
+
+  // Cookies have to be set in the session configuration before the session
+  // is created (as once the session is created, the configuration object
+  // can't be edited and configuration properties will return a copy of the
+  // originally used configuration). The cookies are copied from the internal
+  // WebSiteDataStore cookie store, so they should not have duplicates nor
+  // invalid cookies.
   configuration.HTTPCookieStorage =
       [[DownloadSessionCookieStorage alloc] initWithCookies:cookies
                                          cookieAcceptPolicy:policy];

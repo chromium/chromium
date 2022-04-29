@@ -28,14 +28,16 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
 
   // Constructs a new DownloadSessionTaskImpl objects. |web_state|, |identifier|
   // and |delegate| must be valid.
-  DownloadSessionTaskImpl(WebState* web_state,
-                          const GURL& original_url,
-                          NSString* http_method,
-                          const std::string& content_disposition,
-                          int64_t total_bytes,
-                          const std::string& mime_type,
-                          NSString* identifier,
-                          SessionFactory session_factory = SessionFactory());
+  DownloadSessionTaskImpl(
+      WebState* web_state,
+      const GURL& original_url,
+      NSString* http_method,
+      const std::string& content_disposition,
+      int64_t total_bytes,
+      const std::string& mime_type,
+      NSString* identifier,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      SessionFactory session_factory = SessionFactory());
 
   DownloadSessionTaskImpl(const DownloadSessionTaskImpl&) = delete;
   DownloadSessionTaskImpl& operator=(const DownloadSessionTaskImpl&) = delete;

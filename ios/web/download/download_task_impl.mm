@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_result.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state.h"
@@ -18,13 +19,15 @@
 
 namespace web {
 
-DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
-                                   const GURL& original_url,
-                                   NSString* http_method,
-                                   const std::string& content_disposition,
-                                   int64_t total_bytes,
-                                   const std::string& mime_type,
-                                   NSString* identifier)
+DownloadTaskImpl::DownloadTaskImpl(
+    WebState* web_state,
+    const GURL& original_url,
+    NSString* http_method,
+    const std::string& content_disposition,
+    int64_t total_bytes,
+    const std::string& mime_type,
+    NSString* identifier,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : original_url_(original_url),
       http_method_(http_method),
       total_bytes_(total_bytes),
@@ -32,8 +35,11 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
       original_mime_type_(mime_type),
       mime_type_(mime_type),
       identifier_([identifier copy]),
-      web_state_(web_state) {
+      web_state_(web_state),
+      task_runner_(task_runner) {
   DCHECK(web_state_);
+  DCHECK(task_runner_);
+
   base::WeakPtr<DownloadTaskImpl> weak_Task = weak_factory_.GetWeakPtr();
   observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIApplicationWillResignActiveNotification

@@ -5,6 +5,7 @@
 #import "ios/web/download/download_native_task_impl.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_native_task_bridge.h"
 #import "net/base/filename_util.h"
 
@@ -22,6 +23,7 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     int64_t total_bytes,
     const std::string& mime_type,
     NSString* identifier,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     DownloadNativeTaskBridge* download)
     : DownloadTaskImpl(web_state,
                        original_url,
@@ -29,7 +31,8 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier),
+                       identifier,
+                       task_runner),
       download_bridge_(download) {
   DCHECK(download_bridge_);
 }

@@ -9,12 +9,17 @@
 
 #include <set>
 
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "ios/web/download/download_task_impl.h"
 #include "ios/web/public/download/download_controller.h"
 #include "ios/web/public/download/download_task_observer.h"
 #include "ui/base/page_transition_types.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace web {
 
@@ -62,9 +67,11 @@ class DownloadControllerImpl : public DownloadController,
   void OnDownloadCreated(std::unique_ptr<DownloadTaskImpl> task);
 
   // Set of tasks which are currently alive.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::set<DownloadTask*> alive_tasks_;
   DownloadControllerDelegate* delegate_ = nullptr;
-  SEQUENCE_CHECKER(my_sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace web

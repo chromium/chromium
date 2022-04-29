@@ -18,13 +18,15 @@ class DataUrlDownloadTask final : public DownloadTaskImpl {
  public:
   // Constructs a new DataUrlDownloadTask objects. |web_state|, |identifier|
   // and |delegate| must be valid.
-  DataUrlDownloadTask(WebState* web_state,
-                      const GURL& original_url,
-                      NSString* http_method,
-                      const std::string& content_disposition,
-                      int64_t total_bytes,
-                      const std::string& mime_type,
-                      NSString* identifier);
+  DataUrlDownloadTask(
+      WebState* web_state,
+      const GURL& original_url,
+      NSString* http_method,
+      const std::string& content_disposition,
+      int64_t total_bytes,
+      const std::string& mime_type,
+      NSString* identifier,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
   DataUrlDownloadTask(const DataUrlDownloadTask&) = delete;
   DataUrlDownloadTask& operator=(const DataUrlDownloadTask&) = delete;

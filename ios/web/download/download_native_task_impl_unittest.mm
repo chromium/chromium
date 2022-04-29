@@ -4,18 +4,19 @@
 
 #import "ios/web/download/download_native_task_impl.h"
 
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,14 +54,17 @@ class DownloadNativeTaskImplTest : public PlatformTest {
       : fake_task_bridge_([[FakeNativeTaskBridge alloc]
             initWithDownload:fake_download_
                     delegate:fake_delegate_]),
-        task_(std::make_unique<DownloadNativeTaskImpl>(&web_state_,
-                                                       GURL(kUrl),
-                                                       kHttpMethod,
-                                                       kContentDisposition,
-                                                       /*total_bytes=*/-1,
-                                                       kMimeType,
-                                                       @(kIdentifier),
-                                                       fake_task_bridge_)) {
+        task_(std::make_unique<DownloadNativeTaskImpl>(
+            &web_state_,
+            GURL(kUrl),
+            kHttpMethod,
+            kContentDisposition,
+            /*total_bytes=*/-1,
+            kMimeType,
+            @(kIdentifier),
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
+            fake_task_bridge_)) {
     task_->AddObserver(&task_observer_);
   }
 

@@ -7,10 +7,8 @@
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/task_traits.h"
-#import "base/task/thread_pool.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_result.h"
 #import "net/base/data_url.h"
 
@@ -71,20 +69,23 @@ ParseDataUrlResult ParseDataUrlAndSaveToFile(GURL url, base::FilePath path) {
 }  // anonymous namespace
 }  // namespace internal
 
-DataUrlDownloadTask::DataUrlDownloadTask(WebState* web_state,
-                                         const GURL& original_url,
-                                         NSString* http_method,
-                                         const std::string& content_disposition,
-                                         int64_t total_bytes,
-                                         const std::string& mime_type,
-                                         NSString* identifier)
+DataUrlDownloadTask::DataUrlDownloadTask(
+    WebState* web_state,
+    const GURL& original_url,
+    NSString* http_method,
+    const std::string& content_disposition,
+    int64_t total_bytes,
+    const std::string& mime_type,
+    NSString* identifier,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : DownloadTaskImpl(web_state,
                        original_url,
                        http_method,
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier) {
+                       identifier,
+                       task_runner) {
   DCHECK(original_url_.SchemeIs(url::kDataScheme));
 }
 
@@ -109,8 +110,8 @@ void DataUrlDownloadTask::Start(const base::FilePath& path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DownloadTaskImpl::Start(path, destination_hint);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(
           &internal::ParseDataUrlAndSaveToFile, original_url_,
           destination_hint != Destination::kToMemory ? path : base::FilePath()),
