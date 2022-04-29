@@ -51,8 +51,9 @@ message CriticalPersistedTabDataProto {
     FROM_APP_WIDGET = 15;
     FROM_LONGPRESS_INCOGNITO = 16;
     FROM_RECENT_TABS = 17;
-    SIZE = 18;
-    UNKNOWN = 19;
+    FROM_READING_LIST = 18;
+    SIZE = 19;
+    UNKNOWN = 20;
   }
   optional LaunchTypeAtCreation launch_type_at_creation = 8;
 

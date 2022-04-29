@@ -158,6 +158,17 @@ public final class ReadingListUtils {
         sReadingListSupportedForTesting = supported;
     }
 
+    /**
+     * Opens the Reading list folder in the bookmark manager.
+     *
+     * @param isIncognito Whether the bookmark manager should open in incognito mode.
+     */
+    public static void showReadingList(boolean isIncognito) {
+        if (!ReadingListFeatures.isReadingListEnabled()) return;
+        BookmarkUtils.showBookmarkManager(
+                null, new BookmarkId(0, BookmarkType.READING_LIST), /*isIncognito=*/isIncognito);
+    }
+
     /** For cases where we don't want to mock the entire bookmarks save flow infra. */
     public static void setSkipShowSaveFlowForTesting(Boolean skipShowSaveFlowForTesting) {
         sSkipShowSaveFlowForTesting = skipShowSaveFlowForTesting;

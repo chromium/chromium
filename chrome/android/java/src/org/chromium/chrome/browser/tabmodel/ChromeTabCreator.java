@@ -468,6 +468,7 @@ public class ChromeTabCreator extends TabCreator {
             case TabLaunchType.FROM_LAUNCHER_SHORTCUT:
             case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
             case TabLaunchType.FROM_APP_WIDGET:
+            case TabLaunchType.FROM_READING_LIST:
                 transition = PageTransition.AUTO_TOPLEVEL;
                 break;
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND:

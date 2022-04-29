@@ -34,6 +34,7 @@ enum LaunchTypeAtCreation:int {
     FROM_APP_WIDGET = 15,
     FROM_LONGPRESS_INCOGNITO = 16,
     FROM_RECENT_TABS = 17,
+    FROM_READING_LIST = 18,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

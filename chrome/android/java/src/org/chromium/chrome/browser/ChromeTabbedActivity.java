@@ -130,6 +130,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -2219,6 +2220,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // get back to the previous state. The reason for startsWith check is that the
         // actual redirected URL is a different system language based help url.
         final @TabLaunchType int type = currentTab.getLaunchType();
+
         final boolean helpUrl = currentTab.getUrl().getSpec().startsWith(HELP_URL_PREFIX);
         if (type == TabLaunchType.FROM_CHROME_UI && helpUrl) {
             getCurrentTabModel().closeTab(currentTab);
@@ -2259,6 +2261,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 showOverview(StartSurfaceState.SHOWING_PREVIOUS);
             }
             return true;
+        }
+
+        if (type == TabLaunchType.FROM_READING_LIST) {
+            assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
+            ReadingListUtils.showReadingList(currentTab.isIncognito());
         }
 
         final boolean shouldCloseTab = backShouldCloseTab(currentTab);
@@ -2303,6 +2310,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         int type = tab.getLaunchType();
 
         return type == TabLaunchType.FROM_LINK || type == TabLaunchType.FROM_EXTERNAL_APP
+                || type == TabLaunchType.FROM_READING_LIST
                 || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
                 || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO
                 || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND

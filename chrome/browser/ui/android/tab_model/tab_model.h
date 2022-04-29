@@ -102,6 +102,9 @@ class TabModel {
     // parent/child relationship. The tab is added to the end of the TabModel.
     // This does not include opening in the current tab.
     FROM_RECENT_TABS,
+    // Opened from a Reading list. When going "back" on Android, the Reading
+    // list should be reopened.
+    FROM_READING_LIST,
     // Must be last.
     SIZE
   };
