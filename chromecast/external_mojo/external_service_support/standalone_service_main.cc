@@ -8,6 +8,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -55,6 +56,7 @@ int main(int argc, char** argv) {
   chromecast::external_service_support::CommonProcessInitialization(argc, argv);
 
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+  base::FileDescriptorWatcher file_descriptor_watcher(io_task_executor.task_runner());
   base::RunLoop run_loop;
 
   mojo::core::Init();
