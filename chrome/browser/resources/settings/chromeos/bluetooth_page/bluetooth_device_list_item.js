@@ -13,63 +13,81 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_icons.js';
 import '../../settings_shared_css.js';
 
-import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from '//resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BluetoothPageBrowserProxy, BluetoothPageBrowserProxyImpl} from './bluetooth_page_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'bluetooth-device-list-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {FocusRowBehaviorInterface}
+ */
+const BluetoothDeviceListItemElementBase =
+    mixinBehaviors([I18nBehavior, FocusRowBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior, FocusRowBehavior],
+/** @polymer */
+class BluetoothDeviceListItemElement extends
+    BluetoothDeviceListItemElementBase {
+  static get is() {
+    return 'bluetooth-device-list-item';
+  }
 
-  properties: {
-    /**
-     * The bluetooth device.
-     * @type {!chrome.bluetooth.Device}
-     */
-    device: {
-      type: Object,
-      observer: 'onDeviceChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The aria-label attribute for the top-level bluetooth-device-list-item
-     * element.
-     */
-    ariaLabel: {
-      type: String,
-      notify: true,
-      computed: 'getAriaLabel_(device)',
-    },
+  static get properties() {
+    return {
+      /**
+       * The bluetooth device.
+       * @type {!chrome.bluetooth.Device}
+       */
+      device: {
+        type: Object,
+        observer: 'onDeviceChanged_',
+      },
 
-    // TODO(crbug.com/1208155) Add managed policy icon that is shown when this
-    // flag is true.
-    /** @private */
-    shouldShowManagedIcon_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * The aria-label attribute for the top-level bluetooth-device-list-item
+       * element.
+       */
+      ariaLabel: {
+        type: String,
+        notify: true,
+        computed: 'getAriaLabel_(device)',
+      },
 
-  hostAttributes: {role: 'button'},
-
-  /** @private {?BluetoothPageBrowserProxy} */
-  browserProxy_: null,
+      // TODO(crbug.com/1208155) Add managed policy icon that is shown when this
+      // flag is true.
+      /** @private */
+      shouldShowManagedIcon_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
+    /** @private {?BluetoothPageBrowserProxy} */
     this.browserProxy_ = BluetoothPageBrowserProxyImpl.getInstance();
-  },
+
+    this.setAttribute('role', 'button');
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     // Fire an event in case the tooltip was previously showing for the managed
     // icon in this item and this item is being removed.
     this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -79,7 +97,7 @@ Polymer({
     if (event.key === 'Enter') {
       event.stopPropagation();
     }
-  },
+  }
 
   /** @private */
   tryConnect_() {
@@ -87,16 +105,21 @@ Polymer({
       return;
     }
 
-    this.fire('device-event', {
-      action: 'connect',
-      device: this.device,
+    const event = new CustomEvent('device-event', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        action: 'connect',
+        device: this.device,
+      },
     });
-  },
+    this.dispatchEvent(event);
+  }
 
   /** @private */
   onClick_() {
     this.tryConnect_();
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -107,7 +130,7 @@ Polymer({
       this.tryConnect_();
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -118,26 +141,36 @@ Polymer({
     const menu = /** @type {!CrActionMenuElement} */ (this.$.dotsMenu);
     menu.showAt(button);
     event.stopPropagation();
-  },
+  }
 
   /** @private */
   onConnectActionTap_() {
     const action = this.isDisconnected_(this.device) ? 'connect' : 'disconnect';
-    this.fire('device-event', {
-      action: action,
-      device: this.device,
+    const event = new CustomEvent('device-event', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        action: action,
+        device: this.device,
+      },
     });
+    this.dispatchEvent(event);
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
-  },
+  }
 
   /** @private */
   onRemoveTap_() {
-    this.fire('device-event', {
-      action: 'remove',
-      device: this.device,
+    const event = new CustomEvent('device-event', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        action: 'remove',
+        device: this.device,
+      },
     });
+    this.dispatchEvent(event);
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
-  },
+  }
 
   /**
    * @param {boolean} connected
@@ -146,7 +179,7 @@ Polymer({
    */
   getConnectActionText_(connected) {
     return this.i18n(connected ? 'bluetoothDisconnect' : 'bluetoothConnect');
-  },
+  }
 
   /**
    * @param {!chrome.bluetooth.Device} device
@@ -155,7 +188,7 @@ Polymer({
    */
   getDeviceName_(device) {
     return device.name || device.address;
-  },
+  }
 
   /**
    * @param {!chrome.bluetooth.Device} device
@@ -180,7 +213,7 @@ Polymer({
     return this.i18n(
         'bluetoothDeviceWithConnectionStatus', a11ydeviceNameAndType,
         deviceStatus);
-  },
+  }
 
   /**
    * @param {!chrome.bluetooth.Device} device
@@ -200,7 +233,7 @@ Polymer({
     return device.batteryPercentage !== undefined ?
         this.i18n('bluetoothConnectedWithBattery', device.batteryPercentage) :
         this.i18n('bluetoothConnected');
-  },
+  }
 
   /**
    * @param {!chrome.bluetooth.Device} device
@@ -210,7 +243,7 @@ Polymer({
    */
   hasConnectionStatusText_(device) {
     return !!(device.paired || device.connecting);
-  },
+  }
 
   /**
    * @param {!chrome.bluetooth.Device} device
@@ -219,7 +252,7 @@ Polymer({
    */
   isDisconnected_(device) {
     return !device.connected && !device.connecting;
-  },
+  }
 
   /**
    * Returns device type icon's ID corresponding to the given device.
@@ -255,7 +288,7 @@ Polymer({
         return device.connected ? 'os-settings:bluetooth-connected' :
                                   'cr:bluetooth';
     }
-  },
+  }
 
   /**
    * @param {?chrome.bluetooth.Device} newValue
@@ -277,21 +310,30 @@ Polymer({
             this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
           }
         });
-  },
+  }
 
   /** @private */
-  onShowTooltip_: function() {
+  onShowTooltip_() {
     this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
-  },
+  }
 
   /**
    * @param {boolean} showTooltip
    */
   fireTooltipStateChangeEvent_(showTooltip) {
-    this.fire('blocked-tooltip-state-change', {
-      address: this.device.address,
-      show: showTooltip,
-      element: showTooltip ? this.$$('#managedIcon') : undefined,
+    const event = new CustomEvent('blocked-tooltip-state-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        address: this.device.address,
+        show: showTooltip,
+        element: showTooltip ? this.shadowRoot.querySelector('#managedIcon') :
+                               undefined,
+      },
     });
-  },
-});
+    this.dispatchEvent(event);
+  }
+}
+
+customElements.define(
+    BluetoothDeviceListItemElement.is, BluetoothDeviceListItemElement);

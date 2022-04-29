@@ -138,7 +138,7 @@ suite('Bluetooth', function() {
     bluetoothApis.bluetoothPrivateApiForTest = bluetoothPrivateApi;
 
     browserProxy = new TestBluetoothPageBrowserProxy();
-    BluetoothPageBrowserProxyImpl.instance_ = browserProxy;
+    BluetoothPageBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
     bluetoothPage = document.createElement('settings-bluetooth-page');

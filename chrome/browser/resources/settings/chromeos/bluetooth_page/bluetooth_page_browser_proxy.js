@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /** @interface */
 export class BluetoothPageBrowserProxy {
@@ -18,6 +18,17 @@ export class BluetoothPageBrowserProxyImpl {
   isDeviceBlockedByPolicy(address) {
     return sendWithPromise('isDeviceBlockedByPolicy', address);
   }
+
+  /** @return {!BluetoothPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BluetoothPageBrowserProxyImpl());
+  }
+
+  /** @param {!BluetoothPageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BluetoothPageBrowserProxyImpl);
+/** @type {?BluetoothPageBrowserProxy} */
+let instance = null;
