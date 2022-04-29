@@ -21,8 +21,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.PaymentOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.payments.PaymentFeatureList;
@@ -31,6 +34,7 @@ import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
+import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.net.GURLUtils;
@@ -208,25 +212,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
 
         if (options.isConditional) {
-            Fido2ApiCall call =
-                    new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
-            Parcel args = call.start();
-            Fido2ApiCall.WebAuthnCredentialDetailsListResult result =
-                    new Fido2ApiCall.WebAuthnCredentialDetailsListResult();
-            args.writeStrongBinder(result);
-            args.writeString(options.relyingPartyId);
-
             // For use in the lambda expression.
             final byte[] finalClientDataHash = clientDataHash;
-
-            Task<List<WebAuthnCredentialDetails>> task =
-                    call.run(Fido2ApiCall.METHOD_BROWSER_GETCREDENTIALS,
-                            Fido2ApiCall.TRANSACTION_GETCREDENTIALS, args, result);
-            task.addOnSuccessListener(
+            Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
+                    mSupportLevel,
                     (credentials)
                             -> onWebAuthnCredentialDetailsListReceived(frameHost, options,
-                                    callerOriginString, finalClientDataHash, credentials));
-            task.addOnFailureListener(this::onBinderCallException);
+                                    callerOriginString, finalClientDataHash, credentials),
+                    this::onBinderCallException);
             return;
         }
 
@@ -268,18 +261,28 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private void onWebAuthnCredentialDetailsListReceived(RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options, String callerOriginString,
             byte[] clientDataHash, List<WebAuthnCredentialDetails> credentials) {
-        // TODO(kenrb): Call frameHost.onCredentialsDetailsListReceived with
-        // dispatchGetAssertionRequest as a callback.
-        // i.e.:
-        //   frameHost.onCredentialsDetailsListReceived(credentials,
-        //       (selectedCredential) -> dispatchGetAssertionRequest(options,
-        //                                                           callerOriginString,
-        //                                                           clientDataHash,
-        //                                                           selectedCredentialId));
+        frameHost.onCredentialsDetailsListReceived(credentials,
+                (selectedCredentialId)
+                        -> dispatchGetAssertionRequest(
+                                options, callerOriginString, clientDataHash, selectedCredentialId));
     }
 
     private void dispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
             String callerOriginString, byte[] clientDataHash, byte[] credentialId) {
+        if (credentialId != null) {
+            if (credentialId.length == 0) {
+                // An empty credential ID means an error from native code, which can happen if the
+                // embedder does not support Conditional UI.
+                Log.e(TAG, "Empty credential ID from account selection.");
+                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                return;
+            }
+            PublicKeyCredentialDescriptor selected_credential = new PublicKeyCredentialDescriptor();
+            selected_credential.type = PublicKeyCredentialType.PUBLIC_KEY;
+            selected_credential.id = credentialId;
+            selected_credential.transports = new int[] {AuthenticatorTransport.INTERNAL};
+            options.allowCredentials = new PublicKeyCredentialDescriptor[] {selected_credential};
+        }
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);

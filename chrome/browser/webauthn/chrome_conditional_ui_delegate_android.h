@@ -9,14 +9,20 @@
 
 #include "base/callback.h"
 #include "base/supports_user_data.h"
-#include "device/fido/discoverable_credential_metadata.h"
+#include "content/public/browser/conditional_ui_delegate_android.h"
 
 namespace content {
 class WebContents;
 }
 
+namespace device {
+class DiscoverableCredentialMetadata;
+}
+
 // Chrome implementation of ConditionalUiDelegateAndroid.
-class ChromeConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
+class ChromeConditionalUiDelegateAndroid
+    : public base::SupportsUserData::Data,
+      public content::ConditionalUiDelegateAndroid {
  public:
   ChromeConditionalUiDelegateAndroid();
 
@@ -27,11 +33,11 @@ class ChromeConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
 
   ~ChromeConditionalUiDelegateAndroid() override;
 
-  // TODO(kenrb): This will override a method in a content delegate interface
-  // in a subsequent change, so that it can be invoked from RenderFrameHost.
+  // content::ConditionalUiDelegateAndroid:
   void OnWebAuthnRequestPending(
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-      base::OnceCallback<void(const std::vector<uint8_t>& user_id)> callback);
+      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback)
+      override;
 
   // Tells the driver that the user has selected a Web Authentication
   // credential from a dialog, and provides the credential ID for the selected

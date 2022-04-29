@@ -76,6 +76,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/conditional_ui_delegate_android.h"
 #include "content/public/browser/tts_environment_android.h"
 #endif
 
@@ -1336,5 +1337,12 @@ ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     int32_t error_code) {
   return nullptr;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+ConditionalUiDelegateAndroid* ContentBrowserClient::GetConditionalUiDelegate(
+    RenderFrameHost* host) {
+  return nullptr;
+}
+#endif
 
 }  // namespace content

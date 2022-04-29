@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
+    "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiHandler.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
@@ -25,7 +26,6 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/ListCredentials.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/WebAuthnCredentialDetails.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [

@@ -260,6 +260,7 @@
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/renderer_host/render_frame_host_android.h"
 #include "content/public/browser/android/java_interfaces.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #else
 #include "content/browser/hid/hid_service.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -12863,6 +12864,20 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
 
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderFrameHostImpl::WebAuthnConditionalUiRequestPending(
+    const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+    base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
+  auto* delegate =
+      GetContentClient()->browser()->GetConditionalUiDelegate(this);
+  if (!delegate) {
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+  delegate->OnWebAuthnRequestPending(credentials, std::move(callback));
+}
+#endif
 
 void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,

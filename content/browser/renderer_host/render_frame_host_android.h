@@ -98,6 +98,12 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaParamRef<jobject>&,
       jboolean is_payment_credential_creation) const;
 
+  void OnCredentialsDetailsListReceived(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>&,
+      const base::android::JavaParamRef<jobjectArray>& credentials,
+      const base::android::JavaParamRef<jobject>& jcallback) const;
+
   jint GetLifecycleState(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>&) const;
 

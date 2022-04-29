@@ -16,6 +16,7 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.mojo.bindings.InterfaceRequest;
 import org.chromium.mojo.system.Pair;
@@ -216,6 +217,42 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public void onCredentialsDetailsListReceived(
+            List<WebAuthnCredentialDetails> credentialList, Callback<byte[]> callback) {
+        assert credentialList != null;
+        assert callback != null;
+        if (mNativeRenderFrameHostAndroid == 0) {
+            callback.onResult(new byte[0]);
+            return;
+        }
+        WebAuthnCredentialDetails[] credentialArray =
+                credentialList.toArray(new WebAuthnCredentialDetails[credentialList.size()]);
+        RenderFrameHostImplJni.get().onCredentialsDetailsListReceived(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, credentialArray, callback);
+    }
+
+    @CalledByNative
+    private static String getWebAuthnCredentialDetailsUserName(WebAuthnCredentialDetails cred) {
+        return cred.mUserName;
+    }
+
+    @CalledByNative
+    private static String getWebAuthnCredentialDetailsUserDisplayName(
+            WebAuthnCredentialDetails cred) {
+        return cred.mUserDisplayName;
+    }
+
+    @CalledByNative
+    private static byte[] getWebAuthnCredentialDetailsUserId(WebAuthnCredentialDetails cred) {
+        return cred.mUserId;
+    }
+
+    @CalledByNative
+    private static byte[] getWebAuthnCredentialDetailsCredentialId(WebAuthnCredentialDetails cred) {
+        return cred.mCredentialId;
+    }
+
+    @Override
     public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {
         return mRenderFrameHostId;
     }
@@ -257,6 +294,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);
+        void onCredentialsDetailsListReceived(long nativeRenderFrameHostAndroid,
+                RenderFrameHostImpl caller, WebAuthnCredentialDetails[] credentialList,
+                Callback<byte[]> callback);
         int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
     }
 }

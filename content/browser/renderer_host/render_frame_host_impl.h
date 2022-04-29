@@ -172,6 +172,10 @@ class WebUsbService;
 }  // namespace mojom
 }  // namespace blink
 
+namespace device {
+class DiscoverableCredentialMetadata;
+}
+
 namespace gfx {
 class Range;
 }
@@ -2446,6 +2450,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
 
   float GetPageScaleFactor() const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Provide a list of Web Authentication credentials that can be used to
+  // fulfill a WebAuthn sign-in request. These can be passed to the embedder to
+  // be displayed to the user, and the user's selection is returned through the
+  // callback. This is Android only because on desktop platforms the embedder
+  // interacts directly with the device layer.
+  void WebAuthnConditionalUiRequestPending(
+      const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
+#endif
 
   enum class FencedFrameStatus {
     kNotNestedInFencedFrame,

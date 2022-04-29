@@ -41,6 +41,7 @@ import org.chromium.components.payments.PaymentFeatureListJni;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
+import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.mojo_base.mojom.TimeDelta;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.url.internal.mojom.Origin;
@@ -502,5 +503,18 @@ public class Fido2ApiTestHelper {
             }
         };
         mocker.mock(ClientDataJsonImplJni.TEST_HOOKS, clientDataJsonJni);
+    }
+
+    /**
+     * Creates a {@link WebAuthnCredentailDetails} object for testing.
+     * @return a newly created {@link WebAuthnCredentialDetails}.
+     */
+    public static WebAuthnCredentialDetails getCredentialDetails() {
+        WebAuthnCredentialDetails credential = new WebAuthnCredentialDetails();
+        credential.mUserId = "1098237235409872".getBytes(UTF_8);
+        credential.mUserName = "avery.a.jones@example.com";
+        credential.mUserDisplayName = "Avery A. Jones";
+        credential.mCredentialId = new byte[] {8, 7, 6};
+        return credential;
     }
 }

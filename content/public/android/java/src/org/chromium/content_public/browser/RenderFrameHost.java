@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -161,6 +162,17 @@ public interface RenderFrameHost {
      */
     int performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation);
+
+    /**
+     * Provides a list of credentials for WebAuthn Conditional UI. These credentials become
+     * available as options for autofill UI on sign-in input fields. The callback is invoked when
+     * a user selects one of the credentials from the list.
+     *
+     * @param credentialList The list of credentials that can be used as autofill suggestions.
+     * @param callback The callback to be invoked with the credential ID of a selected credential.
+     */
+    void onCredentialsDetailsListReceived(@NonNull List<WebAuthnCredentialDetails> credentialList,
+            @NonNull Callback<byte[]> callback);
 
     /**
      * @return An identifier for this RenderFrameHost.
