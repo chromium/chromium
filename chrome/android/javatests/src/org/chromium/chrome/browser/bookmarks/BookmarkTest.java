@@ -64,7 +64,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -92,6 +91,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -1426,8 +1426,7 @@ public class BookmarkTest {
         // Verify that bookmark 1 is editable (so more button can be triggered) but not movable.
         BookmarkId partnerBookmarkId1 = getReorderAdapter().getIdByPosition(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkBridge.BookmarkItem partnerBookmarkItem1 =
-                    mBookmarkModel.getBookmarkById(partnerBookmarkId1);
+            BookmarkItem partnerBookmarkItem1 = mBookmarkModel.getBookmarkById(partnerBookmarkId1);
             partnerBookmarkItem1.forceEditableForTesting();
             Assert.assertEquals("Incorrect bookmark type for item 1", BookmarkType.PARTNER,
                     partnerBookmarkId1.getType());
@@ -1447,8 +1446,7 @@ public class BookmarkTest {
         // Verify that bookmark 2 is not movable.
         BookmarkId partnerBookmarkId2 = getReorderAdapter().getIdByPosition(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkBridge.BookmarkItem partnerBookmarkItem2 =
-                    mBookmarkModel.getBookmarkById(partnerBookmarkId2);
+            BookmarkItem partnerBookmarkItem2 = mBookmarkModel.getBookmarkById(partnerBookmarkId2);
             partnerBookmarkItem2.forceEditableForTesting();
             Assert.assertEquals("Incorrect bookmark type for item 2", BookmarkType.PARTNER,
                     partnerBookmarkId2.getType());

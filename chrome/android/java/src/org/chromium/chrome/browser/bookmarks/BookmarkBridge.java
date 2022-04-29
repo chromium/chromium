@@ -34,10 +34,9 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFac
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -198,111 +197,6 @@ public class BookmarkBridge {
          *  - Falling back from other methods that are not overridden in this class.
          */
         public abstract void bookmarkModelChanged();
-    }
-
-    /**
-     * Contains data about a bookmark or bookmark folder.
-     */
-    public static class BookmarkItem {
-        private final String mTitle;
-        private final GURL mUrl;
-        private final BookmarkId mId;
-        private final boolean mIsFolder;
-        private final BookmarkId mParentId;
-        private final boolean mIsEditable;
-        private final boolean mIsManaged;
-        private boolean mForceEditableForTesting;
-        private long mDateAdded;
-        private boolean mRead;
-
-        @VisibleForTesting
-        public BookmarkItem(BookmarkId id, String title, GURL url, boolean isFolder,
-                BookmarkId parentId, boolean isEditable, boolean isManaged, long dateAdded,
-                boolean read) {
-            mId = id;
-            mTitle = title;
-            mUrl = url;
-            mIsFolder = isFolder;
-            mParentId = parentId;
-            mIsEditable = isEditable;
-            mIsManaged = isManaged;
-            mDateAdded = dateAdded;
-            mRead = read;
-        }
-
-        /** Returns the title of the bookmark item. */
-        public String getTitle() {
-            return mTitle;
-        }
-
-        /** Returns the url of the bookmark item. */
-        public GURL getUrl() {
-            return mUrl;
-        }
-
-        /** Returns the string to display for the item's url. */
-        public String getUrlForDisplay() {
-            return UrlFormatter.formatUrlForSecurityDisplay(
-                    getUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        }
-
-        /** Returns whether item is a folder or a bookmark. */
-        public boolean isFolder() {
-            return mIsFolder;
-        }
-
-        /** Returns the parent id of the bookmark item. */
-        public BookmarkId getParentId() {
-            return mParentId;
-        }
-
-        /** Returns whether this bookmark can be edited. */
-        public boolean isEditable() {
-            return mForceEditableForTesting || mIsEditable;
-        }
-
-        /** Returns whether this bookmark's URL can be edited */
-        public boolean isUrlEditable() {
-            return isEditable() && mId.getType() == BookmarkType.NORMAL;
-        }
-
-        /** Returns whether this bookmark can be moved */
-        public boolean isMovable() {
-            return ReadingListUtils.isSwappableReadingListItem(mId) || isReorderable();
-        }
-
-        /** Returns whether this bookmark can be moved */
-        public boolean isReorderable() {
-            return isEditable() && mId.getType() == BookmarkType.NORMAL;
-        }
-
-        /** Returns whether this is a managed bookmark. */
-        public boolean isManaged() {
-            return mIsManaged;
-        }
-
-        /** Returns the {@link BookmarkId}. */
-        public BookmarkId getId() {
-            return mId;
-        }
-
-        /** Retuns the timestamp in milliseconds since epoch that the bookmark is added. */
-        public long getDateAdded() {
-            return mDateAdded;
-        }
-
-        /**
-         * Returns whether the bookmark is read. Only valid for {@link BookmarkType#READING_LIST}.
-         * Defaults to "false" for other types.
-         */
-        public boolean isRead() {
-            return mRead;
-        }
-
-        // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
-        void forceEditableForTesting() {
-            mForceEditableForTesting = true;
-        }
     }
 
     /**
@@ -470,9 +364,11 @@ public class BookmarkBridge {
         if (id == null) return null;
 
         if (BookmarkId.SHOPPING_FOLDER.equals(id)) {
+            // TODO(crbug.com/1317801): Add better support for synthetic folders.
             return new BookmarkItem(id, /*title=*/null, /*url=*/null,
                     /*isFolder=*/true, /*parentId=*/getRootFolderId(), /*isEditable=*/false,
-                    /*isManaged=*/false, /*dateAdded=*/0L, /*read=*/false);
+                    /*isManaged=*/false, /*dateAdded=*/0L, /*read=*/false,
+                    /*readingListSwappable=*/false);
         }
 
         return BookmarkBridgeJni.get().getBookmarkByID(
@@ -1298,8 +1194,10 @@ public class BookmarkBridge {
     private static BookmarkItem createBookmarkItem(long id, int type, String title, GURL url,
             boolean isFolder, long parentId, int parentIdType, boolean isEditable,
             boolean isManaged, long dateAdded, boolean read) {
-        return new BookmarkItem(new BookmarkId(id, type), title, url, isFolder,
-                new BookmarkId(parentId, parentIdType), isEditable, isManaged, dateAdded, read);
+        BookmarkId bookmarkId = new BookmarkId(id, type);
+        return new BookmarkItem(bookmarkId, title, url, isFolder,
+                new BookmarkId(parentId, parentIdType), isEditable, isManaged, dateAdded, read,
+                ReadingListUtils.isSwappableReadingListItem(bookmarkId));
     }
 
     @CalledByNative

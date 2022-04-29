@@ -20,9 +20,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.ArrayList;
@@ -42,8 +42,8 @@ public class ReadingListSectionHeaderTest {
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read, int dateAdded) {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
-        BookmarkItem bookmarkItem = new BookmarkItem(
-                bookmarkId, null, null, false, null, false, false, dateAdded, read);
+        BookmarkItem bookmarkItem = new BookmarkItem(bookmarkId, null, null, false, null, false,
+                false, dateAdded, read, /*readingListSwappable=*/false);
         return BookmarkListEntry.createBookmarkEntry(bookmarkItem, /*powerBookmarkMeta=*/null);
     }
 
