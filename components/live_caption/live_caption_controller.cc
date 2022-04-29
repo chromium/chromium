@@ -229,7 +229,7 @@ void LiveCaptionController::OnError(
     OnErrorClickedCallback error_clicked_callback,
     OnDoNotShowAgainClickedCallback error_silenced_callback) {
   if (!caption_bubble_controller_)
-    return;
+    CreateUI();
   caption_bubble_controller_->OnError(caption_bubble_context, error_type,
                                       std::move(error_clicked_callback),
                                       std::move(error_silenced_callback));

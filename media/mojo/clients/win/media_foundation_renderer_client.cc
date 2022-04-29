@@ -11,8 +11,11 @@
 #include "media/base/media_log.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "media/renderers/win/media_foundation_renderer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -24,7 +27,9 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
     mojo::PendingReceiver<ClientExtension> client_extension_receiver,
     std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
     ObserveOverlayStateCB observe_overlay_state_cb,
-    VideoRendererSink* sink)
+    VideoRendererSink* sink,
+    mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
+        media_foundation_renderer_observer)
     : media_task_runner_(std::move(media_task_runner)),
       media_log_(std::move(media_log)),
       mojo_renderer_(std::move(mojo_renderer)),
@@ -33,7 +38,9 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
       observe_overlay_state_cb_(std::move(observe_overlay_state_cb)),
       sink_(sink),
       pending_client_extension_receiver_(std::move(client_extension_receiver)),
-      client_extension_receiver_(this) {
+      client_extension_receiver_(this),
+      pending_media_foundation_renderer_observer_(
+          std::move(media_foundation_renderer_observer)) {
   DVLOG_FUNC(1);
 }
 
@@ -56,6 +63,9 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
   renderer_extension_.Bind(std::move(pending_renderer_extension_),
                            media_task_runner_);
 
+  media_foundation_renderer_observer_.Bind(
+      std::move(pending_media_foundation_renderer_observer_),
+      media_task_runner_);
   client_extension_receiver_.Bind(std::move(pending_client_extension_receiver_),
                                   media_task_runner_);
 

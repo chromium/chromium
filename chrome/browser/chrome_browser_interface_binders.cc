@@ -171,6 +171,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/search/ntp_features.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -587,14 +588,8 @@ void BindMediaFoundationRendererNotifierHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
         receiver) {
-  Profile* profile = Profile::FromBrowserContext(
-      frame_host->GetProcess()->GetBrowserContext());
-  PrefService* profile_prefs = profile->GetPrefs();
-  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
-      captions::IsLiveCaptionFeatureSupported()) {
-    captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
-                                                        std::move(receiver));
-  }
+  captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
+                                                      std::move(receiver));
 }
 #endif
 

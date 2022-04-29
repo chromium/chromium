@@ -12,7 +12,7 @@
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/base/win/overlay_state_observer_subscription.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {

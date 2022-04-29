@@ -21,7 +21,9 @@
 #include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -61,7 +63,9 @@ class MediaFoundationRendererClient
       mojo::PendingReceiver<ClientExtension> client_extension_receiver,
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
       media::ObserveOverlayStateCB observe_overlay_state_cb,
-      VideoRendererSink* sink);
+      VideoRendererSink* sink,
+      mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
+          media_foundation_renderer_observer);
 
   MediaFoundationRendererClient(const MediaFoundationRendererClient&) = delete;
   MediaFoundationRendererClient& operator=(
@@ -179,6 +183,12 @@ class MediaFoundationRendererClient
   // Used to receive calls from the MF_CMD LPAC Utility Process.
   mojo::PendingReceiver<ClientExtension> pending_client_extension_receiver_;
   mojo::Receiver<ClientExtension> client_extension_receiver_;
+
+  mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
+      pending_media_foundation_renderer_observer_;
+  mojo::Remote<media::mojom::MediaFoundationRendererObserver>
+      media_foundation_renderer_observer_;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRendererClient> weak_factory_{this};
 };

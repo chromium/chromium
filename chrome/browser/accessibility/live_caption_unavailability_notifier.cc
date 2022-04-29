@@ -18,10 +18,12 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "url/origin.h"
@@ -49,29 +51,31 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
   if (!web_contents)
     return;
   context_ = CaptionBubbleContextBrowser::Create(web_contents);
+
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+  profile_prefs_ = profile->GetPrefs();
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(profile_prefs_);
+
+  // Unretained is safe because |this| owns the pref_change_registrar_.
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionEnabled,
+      base::BindRepeating(&LiveCaptionUnavailabilityNotifier::
+                              OnSpeechRecognitionAvailabilityChanged,
+                          base::Unretained(this)));
 }
 
 LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() =
     default;
 
-void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated() {
-  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
-  if (live_caption_controller && ShouldDisplayMediaFoundationRendererError()) {
-    // This will trigger the caption bubble to display a message informing the
-    // user that Live Caption is unavailable and link them to the settings page
-    // where they can disable the media foundation renderer to enable Live
-    // Caption. The error message may be overwritten if recognition events are
-    // received from another audio stream.
-    live_caption_controller->OnError(
-        context_.get(),
-        CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
-        base::BindRepeating(&LiveCaptionUnavailabilityNotifier::
-                                OnMediaFoundationRendererErrorClicked,
-                            weak_factory_.GetWeakPtr()),
-        base::BindRepeating(
-            &LiveCaptionUnavailabilityNotifier::
-                OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked,
-            weak_factory_.GetWeakPtr()));
+void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated(
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererObserver>
+        observer) {
+  observers_.Add(this, std::move(observer));
+  if (ShouldDisplayMediaFoundationRendererError()) {
+    DisplayMediaFoundationRendererError();
   }
 }
 
@@ -91,15 +95,21 @@ LiveCaptionUnavailabilityNotifier::GetLiveCaptionController() {
 
 bool LiveCaptionUnavailabilityNotifier::
     ShouldDisplayMediaFoundationRendererError() {
-  PrefService* prefs =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
-          ->GetPrefs();
+  if (!profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled))
+    return false;
 
-  const base::Value* silenced_sites_pref =
-      prefs->GetList(prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
+  if (observers_.empty())
+    return false;
+
+  return !ErrorSilencedForOrigin();
+}
+
+bool LiveCaptionUnavailabilityNotifier::ErrorSilencedForOrigin() {
+  const base::Value* silenced_sites_pref = profile_prefs_->GetList(
+      prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
 
   if (!silenced_sites_pref)
-    return true;
+    return false;
 
   const auto& silenced_sites_list = silenced_sites_pref->GetList();
   const auto it = std::find_if(
@@ -109,7 +119,29 @@ bool LiveCaptionUnavailabilityNotifier::
                render_frame_host()->GetLastCommittedOrigin().Serialize();
       });
 
-  return it == silenced_sites_list.end();
+  return it != silenced_sites_list.end();
+}
+
+void LiveCaptionUnavailabilityNotifier::DisplayMediaFoundationRendererError() {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (!live_caption_controller)
+    return;
+
+  // This will trigger the caption bubble to display a message informing the
+  // user that Live Caption is unavailable and link them to the settings page
+  // where they can disable the media foundation renderer to enable Live
+  // Caption. The error message may be overwritten if recognition events are
+  // received from another audio stream.
+  live_caption_controller->OnError(
+      context_.get(),
+      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
+      base::BindRepeating(&LiveCaptionUnavailabilityNotifier::
+                              OnMediaFoundationRendererErrorClicked,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &LiveCaptionUnavailabilityNotifier::
+              OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked,
+          weak_factory_.GetWeakPtr()));
 }
 
 void LiveCaptionUnavailabilityNotifier::
@@ -139,6 +171,13 @@ void LiveCaptionUnavailabilityNotifier::
       ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+}
+
+void LiveCaptionUnavailabilityNotifier::
+    OnSpeechRecognitionAvailabilityChanged() {
+  if (ShouldDisplayMediaFoundationRendererError()) {
+    DisplayMediaFoundationRendererError();
+  }
 }
 
 }  // namespace captions

@@ -135,3 +135,24 @@ interface MediaFoundationRendererExtension {
   // Notify which rendering mode to be using for future video frames.
   SetRenderingMode(RenderingMode mode);
 };
+
+// This interface is used by the browser to determine if there are any renderers
+// actively using the Media Foundation Renderer. The number of Media Foundation
+// Renderers in use is determined by the number of active connections. The
+// remote lives in the renderer process and the receiver lives in the browser
+// process.
+interface MediaFoundationRendererObserver {
+};
+
+// This interface is used to notify the browser that the renderer is using the
+// Media Foundation Renderer which uses MediaFoundation to render audio
+// directly. Live Caption will not work in this case because Chrome is unable
+// to tap into the audio rendering pipeline. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaFoundationRendererNotifier {
+  // Notify the browser than a Media Foundation Renderer has been created. The
+  // browser will use this event to notify the user that some features
+  // incompatible with the Media Foundation Renderer may not work.
+  MediaFoundationRendererCreated(
+    pending_receiver<MediaFoundationRendererObserver> observer);
+};

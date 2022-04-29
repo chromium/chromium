@@ -12,7 +12,6 @@
 #include "media/mojo/clients/mojo_renderer_factory.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -90,14 +89,19 @@ MediaFoundationRendererClientFactory::CreateRenderer(
   // Notify the browser that a Media Foundation Renderer has been created. Live
   // Caption supports muted media so this is run regardless of whether the media
   // is audible.
-  media_foundation_renderer_notifier_->MediaFoundationRendererCreated();
+  mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
+      media_foundation_renderer_observer_remote;
+  media_foundation_renderer_notifier_->MediaFoundationRendererCreated(
+      media_foundation_renderer_observer_remote
+          .InitWithNewPipeAndPassReceiver());
 
   // mojo_renderer's ownership is passed to MediaFoundationRendererClient.
   return std::make_unique<MediaFoundationRendererClient>(
       media_task_runner, media_log_->Clone(), std::move(mojo_renderer),
       std::move(renderer_extension_remote),
       std::move(client_extension_receiver), std::move(dcomp_texture_wrapper),
-      std::move(observe_overlay_state_cb_), video_renderer_sink);
+      std::move(observe_overlay_state_cb_), video_renderer_sink,
+      std::move(media_foundation_renderer_observer_remote));
 }
 
 media::MediaResource::Type

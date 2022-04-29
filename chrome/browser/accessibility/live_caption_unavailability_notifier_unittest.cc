@@ -27,9 +27,7 @@ class LiveCaptionUnavailabilityNotifierTest
   LiveCaptionUnavailabilityNotifierTest& operator=(
       const LiveCaptionUnavailabilityNotifierTest&) = delete;
 
-  bool ShouldDisplayMediaFoundationRendererError() {
-    return notifier_->ShouldDisplayMediaFoundationRendererError();
-  }
+  bool ErrorSilencedForOrigin() { return notifier_->ErrorSilencedForOrigin(); }
 
   void OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(
       bool checked) {
@@ -61,19 +59,19 @@ class LiveCaptionUnavailabilityNotifierTest
 };
 
 TEST_F(LiveCaptionUnavailabilityNotifierTest, MediaFoundationRendererCreated) {
-  ASSERT_TRUE(ShouldDisplayMediaFoundationRendererError());
+  ASSERT_FALSE(ErrorSilencedForOrigin());
 
   OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(true);
-  ASSERT_FALSE(ShouldDisplayMediaFoundationRendererError());
+  ASSERT_TRUE(ErrorSilencedForOrigin());
 
   NavigateAndCommit(GURL(kExampleSiteSameOrigin));
-  ASSERT_FALSE(ShouldDisplayMediaFoundationRendererError());
+  ASSERT_TRUE(ErrorSilencedForOrigin());
 
   OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(false);
-  ASSERT_TRUE(ShouldDisplayMediaFoundationRendererError());
+  ASSERT_FALSE(ErrorSilencedForOrigin());
 
   NavigateAndCommit(GURL(kExampleSiteDifferentOrigin));
-  ASSERT_TRUE(ShouldDisplayMediaFoundationRendererError());
+  ASSERT_FALSE(ErrorSilencedForOrigin());
 }
 
 }  // namespace captions

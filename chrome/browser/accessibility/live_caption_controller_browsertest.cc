@@ -303,8 +303,9 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DispatchTranscription) {
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError) {
-  OnError();
   EXPECT_FALSE(HasBubbleController());
+  OnError();
+  EXPECT_TRUE(HasBubbleController());
 
   SetLiveCaptionEnabled(true);
   OnError();
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError) {
 
   SetLiveCaptionEnabled(false);
   OnError();
-  EXPECT_FALSE(HasBubbleController());
+  EXPECT_TRUE(HasBubbleController());
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnAudioStreamEnd) {
