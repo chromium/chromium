@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/ui/main/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -301,6 +302,7 @@ bool IsSigninForcedByPolicy() {
                                               init]]];
     [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
     [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
+    [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
   }
   return self;
 }
