@@ -39,6 +39,11 @@ namespace {
 
 // Runs a loop for the given |milliseconds| duration.
 void WaitForMilliseconds(int milliseconds) {
+#if defined(MEMORY_SANITIZER)
+  // MSAN runs much slower than regular tests, so give it more time to complete
+  milliseconds *= 2;
+#endif
+
   base::RunLoop loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, loop.QuitClosure(), base::Milliseconds(milliseconds));
@@ -176,25 +181,13 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordFullscreen DISABLED_RecordFullscreen
-#else
-#define MAYBE_RecordFullscreen RecordFullscreen
-#endif
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordFullscreen) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   FinishVideoRecordingTest(&test_api);
 }
 
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordWindow DISABLED_RecordWindow
-#else
-#define MAYBE_RecordWindow RecordWindow
-#endif
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordWindow) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindow) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForWindow(/*for_video=*/true);
   auto* generator = GetEventGenerator();
@@ -255,13 +248,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindowMultiDisplay) {
   VerifyVideoFileAndDelete(video_path);
 }
 
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordRegion DISABLED_RecordRegion
-#else
-#define MAYBE_RecordRegion RecordRegion
-#endif
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordRegion) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordRegion) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForRegion(/*for_video=*/true);
   // Select a random partial region of the screen.
@@ -269,15 +256,8 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordRegion) {
   FinishVideoRecordingTest(&test_api);
 }
 
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordingServiceEndpointDropped \
-  DISABLED_RecordingServiceEndpointDropped
-#else
-#define MAYBE_RecordingServiceEndpointDropped RecordingServiceEndpointDropped
-#endif
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       MAYBE_RecordingServiceEndpointDropped) {
+                       RecordingServiceEndpointDropped) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
@@ -288,17 +268,8 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path);
 }
 
-// TODO(crbug.com/1313907): Flaky on ash-chrome w/ SwANGLE and MSAN
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordingServiceClientEndpointDropped \
-  DISABLED_RecordingServiceClientEndpointDropped
-#else
-#define MAYBE_RecordingServiceClientEndpointDropped \
-  RecordingServiceClientEndpointDropped
-#endif
-
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       MAYBE_RecordingServiceClientEndpointDropped) {
+                       RecordingServiceClientEndpointDropped) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
@@ -313,16 +284,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path, /*allow_empty=*/true);
 }
 
-// Doing multiple recordings one after the other should produce non-corrupt webm
-// files (i.e. the recording service should send webm chunks that are not
-// affected by buffered chunks from a previous recording).
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_SuccessiveRecording DISABLED_SuccessiveRecording
-#else
-#define MAYBE_SuccessiveRecording SuccessiveRecording
-#endif
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_SuccessiveRecording) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
   ash::CaptureModeTestApi test_api;
   // Do a fullscreen recording, followed by a region recording.
   test_api.StartForFullscreen(/*for_video=*/true);
@@ -332,18 +294,9 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_SuccessiveRecording) {
   FinishVideoRecordingTest(&test_api);
 }
 
-// TODO(crbug.com/1313907): Flaky on ash-chrome w/ SwANGLE and MSAN
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RecordingInterruptedOnCaptureLocked \
-  DISABLED_RecordingInterruptedOnCaptureLocked
-#else
-#define MAYBE_RecordingInterruptedOnCaptureLocked \
-  RecordingInterruptedOnCaptureLocked
-#endif
-
 // Tests that recording will be interrupted once screen capture becomes locked.
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       MAYBE_RecordingInterruptedOnCaptureLocked) {
+                       RecordingInterruptedOnCaptureLocked) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
@@ -354,18 +307,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path);
 }
 
-// Tests that an invalid downloads path set in the browser settings (such as one
-// that points to a location in a non-existing removable device) won't affect
-// where the recordings are saved, and the recording file will be successfully
-// saved. https://crbug.com/1192406.
-// Failing on ChromiumOS MSAN. https://crbug.com/1315067
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_InvalidDownloadsPath DISABLED_InvalidDownloadsPath
-#else
-#define MAYBE_InvalidDownloadsPath InvalidDownloadsPath
-#endif
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       MAYBE_InvalidDownloadsPath) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
   auto* download_prefs =
       DownloadPrefs::FromBrowserContext(browser()->profile());
   const base::FilePath removable_path =
