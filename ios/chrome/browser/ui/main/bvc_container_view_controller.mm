@@ -127,6 +127,24 @@
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.baseViewHeight);
     }
+
+    [coordinator
+        animateAlongsideTransition:nil
+                        completion:^(
+                            id<UIViewControllerTransitionCoordinatorContext>
+                                context) {
+                          if (self.thumbStripPanHandler.currentState ==
+                              ViewRevealState::Peeked) {
+                            CGRect frame = self.view.frame;
+                            CGFloat topOffset =
+                                self.view.window.safeAreaInsets.top;
+                            frame.size.height =
+                                topOffset + kTabStripHeight +
+                                self.thumbStripPanHandler.baseViewHeight -
+                                self.thumbStripPanHandler.peekedHeight;
+                            self.view.frame = frame;
+                          }
+                        }];
   }
 }
 
@@ -166,6 +184,12 @@
   self.solidBackground.overrideUserInterfaceStyle =
       self.incognito ? UIUserInterfaceStyleDark
                      : UIUserInterfaceStyleUnspecified;
+
+  if (currentViewRevealState == ViewRevealState::Peeked) {
+    CGRect frame = self.view.frame;
+    frame.size.height = self.thumbStripPanHandler.baseViewHeight;
+    self.view.frame = frame;
+  }
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
@@ -196,6 +220,17 @@
                               toState:(ViewRevealState)currentViewRevealState
                               trigger:(ViewRevealTrigger)trigger {
   self.solidBackground.hidden = YES;
+
+  if (currentViewRevealState == ViewRevealState::Peeked) {
+    // For a11y scroll to work in peeked mode, the frame has to be reduced to
+    // the height visible. Otherwise focus goes below the bottom.
+    CGFloat topOffset = self.view.window.safeAreaInsets.top;
+    CGRect frame = self.view.frame;
+    frame.size.height = topOffset + kTabStripHeight +
+                        self.thumbStripPanHandler.baseViewHeight -
+                        self.thumbStripPanHandler.peekedHeight;
+    self.view.frame = frame;
+  }
 }
 
 @end
