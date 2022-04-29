@@ -320,8 +320,8 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
 }
 
 TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
-  // Correct ID, wrong language.
-  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "fr");
+  // Correct ID, wrong language (Polish).
+  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "pl");
   EXPECT_FALSE(available);
 
   // ID doesn't exists.

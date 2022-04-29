@@ -46,12 +46,20 @@ const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
   // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
   // Whenever a new DLC is created, it needs to be added here.
   // Clients of Language Packs don't need to know the IDs.
-  // TODO(b/223250258): We currently only have 2 languages. Add all remaining
+  // TODO(b/223250258): We currently only have 10 languages. Add all remaining
   // languages once the infra issue is fixed.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
+          {{kHandwritingFeatureId, "da"}, "handwriting-da"},
+          {{kHandwritingFeatureId, "de"}, "handwriting-de"},
           {{kHandwritingFeatureId, "es"}, "handwriting-es"},
+          {{kHandwritingFeatureId, "fi"}, "handwriting-fi"},
+          {{kHandwritingFeatureId, "fr"}, "handwriting-fr"},
+          {{kHandwritingFeatureId, "it"}, "handwriting-it"},
           {{kHandwritingFeatureId, "ja"}, "handwriting-ja"},
+          {{kHandwritingFeatureId, "nl"}, "handwriting-nl"},
+          {{kHandwritingFeatureId, "pt"}, "handwriting-pt"},
+          {{kHandwritingFeatureId, "sv"}, "handwriting-sv"},
       });
 
   return *all_dlc_ids;
