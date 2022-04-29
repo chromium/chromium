@@ -4135,7 +4135,7 @@
         ],
         # TODO(crbug.com/1195974): Decides whether we want to run this on CQ.
         # This target is heavy, which currently takes ~1 hour to run.
-        'experiment_percentage': 5,
+        'experiment_percentage': 10,
         'test': 'browser_tests',
         'swarming': {
           'shards': 4,
