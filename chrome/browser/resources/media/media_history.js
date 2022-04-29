@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -182,23 +182,35 @@ function showTab(name) {
     case 'stats':
       return store.getMediaHistoryStats().then(response => {
         renderStatsTable(response.stats);
+        setSelectedTab(name);
       });
     case 'origins':
       return store.getMediaHistoryOriginRows().then(response => {
         originsTable.setData(response.rows);
+        setSelectedTab(name);
       });
     case 'playbacks':
       return store.getMediaHistoryPlaybackRows().then(response => {
         playbacksTable.setData(response.rows);
+        setSelectedTab(name);
       });
     case 'sessions':
       return store.getMediaHistoryPlaybackSessionRows().then(response => {
         sessionsTable.setData(response.rows);
+        setSelectedTab(name);
       });
   }
 
   // Return an empty promise if there is no tab.
   return new Promise(() => {});
+}
+
+/** @param {string} id The id of the tab to set as selected. */
+function setSelectedTab(id) {
+  const tabbox = $('tabbox');
+  const index = Array.from(tabbox.querySelectorAll('div[slot=\'tabs\']'))
+                    .findIndex(tab => tab.id === id);
+  tabbox.setAttribute('selected-index', `${index}`);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -211,8 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
   originsTable = new MediaDataTable($('origins-table'), delegate);
   playbacksTable = new MediaDataTable($('playbacks-table'), delegate);
   sessionsTable = new MediaDataTable($('sessions-table'), delegate);
-
-  decorate('tabbox', TabBox);
 
   // Allow tabs to be navigated to by fragment. The fragment with be of the
   // format "#tab-<tab id>".
@@ -229,10 +239,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // When the tab updates, update the anchor.
-  $('tabbox').addEventListener('selectedChange', function() {
+  $('tabbox').addEventListener('selected-index-change', function(e) {
     const tabbox = $('tabbox');
-    const tabs = tabbox.querySelector('tabs').children;
-    const selectedTab = tabs[tabbox.selectedIndex];
+    const tabs = tabbox.querySelectorAll('div[slot=\'tabs\']');
+    const selectedTab = tabs[e.detail];
     window.location.hash = 'tab-' + selectedTab.id;
   }, true);
 

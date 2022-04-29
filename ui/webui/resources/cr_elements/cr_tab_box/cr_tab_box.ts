@@ -12,7 +12,10 @@ export class CrTabBoxElement extends CustomElement {
     return getTrustedHTML`{__html_template__}`;
   }
 
-  private selectedIndex_: number = -1;
+  static get observedAttributes() {
+    return ['selected-index'];
+  }
+
   private tabs_: HTMLElement;
   private panels_: HTMLElement;
   private focusOutlineManager_: FocusOutlineManager;
@@ -31,32 +34,24 @@ export class CrTabBoxElement extends CustomElement {
   }
 
   connectedCallback() {
-    this.updateSelected(0);
+    this.setAttribute('selected-index', '0');
 
     this.getTabs_().forEach((panel: Element, index: number) => {
-      panel.addEventListener('click', this.updateSelected.bind(this, index));
+      panel.addEventListener('click', () => {
+        this.setAttribute('selected-index', index.toString());
+      });
     });
   }
 
-  private getTabs_(): HTMLElement[] {
-    return Array.from(this.tabs_.querySelector('slot')!.assignedElements()) as
-        HTMLElement[];
-  }
-
-  private getPanels_(): Element[] {
-    return Array.from(this.panels_.querySelector('slot')!.assignedElements());
-  }
-
-  updateSelected(selected: number) {
-    if (selected === this.selectedIndex_) {
-      return;
-    }
-
+  attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
+    assert(name === 'selected-index');
+    const newIndex = Number(newValue);
+    assert(!Number.isNaN(newIndex));
     this.getPanels_().forEach((panel: Element, index: number) => {
-      panel.toggleAttribute('selected', index === selected);
+      panel.toggleAttribute('selected', index === newIndex);
     });
     this.getTabs_().forEach((tab: HTMLElement, index: number) => {
-      const isSelected = index === selected;
+      const isSelected = index === newIndex;
       tab.toggleAttribute('selected', isSelected);
       // Update tabIndex for a11y
       tab.setAttribute('tabindex', isSelected ? '0' : '-1');
@@ -68,7 +63,19 @@ export class CrTabBoxElement extends CustomElement {
         tab.focus();
       }
     });
-    this.selectedIndex_ = selected;
+
+    this.dispatchEvent(new CustomEvent(
+        'selected-index-change',
+        {bubbles: true, composed: true, detail: newIndex}));
+  }
+
+  private getTabs_(): HTMLElement[] {
+    return Array.from(this.tabs_.querySelector('slot')!.assignedElements()) as
+        HTMLElement[];
+  }
+
+  private getPanels_(): Element[] {
+    return Array.from(this.panels_.querySelector('slot')!.assignedElements());
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -93,7 +100,9 @@ export class CrTabBoxElement extends CustomElement {
     }
 
     const count = this.getTabs_().length;
-    this.updateSelected((this.selectedIndex_ + delta + count) % count);
+    const newIndex =
+        (Number(this.getAttribute('selected-index')) + delta + count) % count;
+    this.setAttribute('selected-index', newIndex.toString());
 
     // Show focus outline since we used the keyboard.
     this.focusOutlineManager_.visible = true;

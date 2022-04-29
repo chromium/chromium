@@ -27,6 +27,9 @@ MediaHistoryUI::MediaHistoryUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   source->AddResourcePath("media_data_table.js", IDR_MEDIA_DATA_TABLE_JS);
   source->AddResourcePath("media_history.js", IDR_MEDIA_HISTORY_JS);
   source->AddResourcePath("media_session.mojom-webui.js",
