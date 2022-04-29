@@ -2119,13 +2119,12 @@ gfx::Size LocalFrame::GetMainFrameViewportSize() const {
              : local_root.intersection_state_.main_frame_viewport_size;
 }
 
-gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
+gfx::Point LocalFrame::GetMainFrameScrollPosition() const {
   LocalFrame& local_root = LocalFrameRoot();
   return local_root.IsMainFrame()
-             // TODO(crbug.com/1274078): Should this return ScrollPosition()?
-             ? gfx::ToFlooredPoint(gfx::PointAtOffsetFromOrigin(
-                   local_root.View()->GetScrollableArea()->GetScrollOffset()))
-             : local_root.intersection_state_.main_frame_scroll_offset;
+             ? gfx::ToFlooredPoint(
+                   local_root.View()->LayoutViewport()->ScrollPosition())
+             : local_root.intersection_state_.main_frame_scroll_position;
 }
 
 void LocalFrame::SetOpener(Frame* opener_frame) {

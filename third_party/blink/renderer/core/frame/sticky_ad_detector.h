@@ -50,7 +50,7 @@ class CORE_EXPORT StickyAdDetector {
 
   DOMNodeId candidate_id_;
   int candidate_height_;
-  int candidate_start_outermost_main_frame_scroll_offset_;
+  int candidate_start_outermost_main_frame_scroll_position_;
 
   bool done_detection_ = false;
 };

@@ -101,8 +101,8 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
     // If the main frame scrolling position has changed by a distance greater
     // than the height of the candidate, and the candidate is still at the
     // bottom center, then we record the use counter.
-    if (std::abs(candidate_start_outermost_main_frame_scroll_offset_ -
-                 outermost_main_frame->GetMainFrameScrollOffset().y()) >
+    if (std::abs(candidate_start_outermost_main_frame_scroll_position_ -
+                 outermost_main_frame->GetMainFrameScrollPosition().y()) >
         candidate_height_) {
       OnLargeStickyAdDetected(outermost_main_frame);
     }
@@ -132,8 +132,8 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   if (is_large && is_main_page_scrollable && IsStickyAdCandidate(element)) {
     candidate_id_ = element_id;
     candidate_height_ = overlay_rect.size().height();
-    candidate_start_outermost_main_frame_scroll_offset_ =
-        outermost_main_frame->GetMainFrameScrollOffset().y();
+    candidate_start_outermost_main_frame_scroll_position_ =
+        outermost_main_frame->GetMainFrameScrollPosition().y();
   }
 }
 

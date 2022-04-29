@@ -69,7 +69,7 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
   bool candidate_is_ad_ = false;
 
   // The following members are valid only when |candidate_| is not nullptr.
-  int candidate_start_outermost_main_frame_scroll_offset_ = 0;
+  int candidate_start_outermost_main_frame_scroll_position_ = 0;
 
   // The node id of the last element that was detected as unqualified to be an
   // overlay pop-up. We compare any potential candidate with the last

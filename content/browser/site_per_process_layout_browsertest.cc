@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       filter->GetIntersectionState()->main_frame_intersection.IsEmpty());
 }
 
-// Tests that main_frame_scroll_offset is not shared by frames in the same
+// Tests that main_frame_scroll_position is not shared by frames in the same
 // process. This is a regression test for https://crbug.com/1063760.
 //
 // Set up the frame tree to be A(B1(C1),B2(C2)). Send IPC's with different
@@ -1058,16 +1058,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Now that everything is in a stable, consistent state, we will send viewport
   // intersection IPC's to B1 and B2 that contain a different
-  // main_frame_scroll_offset, and then verify that each of them propagates
-  // their own value of main_frame_scroll_offset to C1 and C2, respectively.
+  // main_frame_scroll_position, and then verify that each of them propagates
+  // their own value of main_frame_scroll_position to C1 and C2, respectively.
   // The IPC code mimics messages that A would send to B1 and B2.
   auto b1_intersection_state = b1_node->render_manager()
                                    ->GetProxyToParent()
                                    ->cross_process_frame_connector()
                                    ->intersection_state();
 
-  b1_intersection_state.main_frame_scroll_offset.Offset(10, 0);
-  // A change in main_frame_scroll_offset by itself will not cause B1 to be
+  b1_intersection_state.main_frame_scroll_position.Offset(10, 0);
+  // A change in main_frame_scroll_position by itself will not cause B1 to be
   // marked dirty, so we also modify viewport_intersection.
   b1_intersection_state.viewport_intersection.set_y(
       b1_intersection_state.viewport_intersection.y() + 7);
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                                    ->cross_process_frame_connector()
                                    ->intersection_state();
 
-  b2_intersection_state.main_frame_scroll_offset.Offset(20, 0);
+  b2_intersection_state.main_frame_scroll_position.Offset(20, 0);
   b2_intersection_state.viewport_intersection.set_y(
       b2_intersection_state.viewport_intersection.y() + 7);
   b2_intersection_state.viewport_intersection.set_height(
@@ -1090,17 +1090,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ForceUpdateViewportIntersection(b2_node, b2_intersection_state);
 
   // Once IPC's have been flushed to the C frames, we should see conflicting
-  // values for main_frame_scroll_offset.
+  // values for main_frame_scroll_position.
   flush_ipcs(b1_node);
   flush_ipcs(b2_node);
   ASSERT_TRUE(b1_to_c1_message_filter->MessageReceived());
   ASSERT_TRUE(b2_to_c2_message_filter->MessageReceived());
-  EXPECT_EQ(
-      b1_to_c1_message_filter->GetIntersectionState()->main_frame_scroll_offset,
-      gfx::Point(10, 0));
-  EXPECT_EQ(
-      b2_to_c2_message_filter->GetIntersectionState()->main_frame_scroll_offset,
-      gfx::Point(20, 0));
+  EXPECT_EQ(b1_to_c1_message_filter->GetIntersectionState()
+                ->main_frame_scroll_position,
+            gfx::Point(10, 0));
+  EXPECT_EQ(b2_to_c2_message_filter->GetIntersectionState()
+                ->main_frame_scroll_position,
+            gfx::Point(20, 0));
   b1_to_c1_message_filter->Clear();
   b2_to_c2_message_filter->Clear();
 
@@ -1120,10 +1120,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                                         ->GetDeviceScaleFactor();
   float expected_y = device_scale_factor * 5.0;
   EXPECT_NEAR(b1_to_c1_message_filter->GetIntersectionState()
-                  ->main_frame_scroll_offset.y(),
+                  ->main_frame_scroll_position.y(),
               expected_y, 1.f);
   EXPECT_NEAR(b2_to_c2_message_filter->GetIntersectionState()
-                  ->main_frame_scroll_offset.y(),
+                  ->main_frame_scroll_position.y(),
               expected_y, 1.f);
 }
 

@@ -145,11 +145,11 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
   // The popup candidate has just been dismissed.
   if (is_new_element && candidate_id_ != kInvalidDOMNodeId) {
-    // If the main frame scrolling offset hasn't changed since the candidate's
+    // If the main frame scrolling position hasn't changed since the candidate's
     // appearance, we consider it to be a overlay interstitial; otherwise, we
     // skip that candidate because it could be a parallax/scroller ad.
-    if (outermost_main_frame->GetMainFrameScrollOffset().y() ==
-        candidate_start_outermost_main_frame_scroll_offset_) {
+    if (outermost_main_frame->GetMainFrameScrollPosition().y() ==
+        candidate_start_outermost_main_frame_scroll_position_) {
       OnPopupDetected(outermost_main_frame, candidate_is_ad_);
     }
 
@@ -204,8 +204,8 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
     candidate_id_ = element_id;
     candidate_is_ad_ = is_ad;
-    candidate_start_outermost_main_frame_scroll_offset_ =
-        outermost_main_frame->GetMainFrameScrollOffset().y();
+    candidate_start_outermost_main_frame_scroll_position_ =
+        outermost_main_frame->GetMainFrameScrollPosition().y();
   } else {
     last_unqualified_element_id_ = element_id;
   }

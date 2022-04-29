@@ -469,7 +469,7 @@ class CORE_EXPORT LocalFrame final
       const mojom::blink::ViewportIntersectionState& intersection_state);
 
   gfx::Size GetMainFrameViewportSize() const override;
-  gfx::Point GetMainFrameScrollOffset() const override;
+  gfx::Point GetMainFrameScrollPosition() const override;
 
   void SetOpener(Frame* opener) override;
 

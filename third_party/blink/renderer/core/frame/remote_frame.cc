@@ -845,11 +845,11 @@ gfx::Size RemoteFrame::GetMainFrameViewportSize() const {
   return owner->GetDocument().GetFrame()->GetMainFrameViewportSize();
 }
 
-gfx::Point RemoteFrame::GetMainFrameScrollOffset() const {
+gfx::Point RemoteFrame::GetMainFrameScrollPosition() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
-  return owner->GetDocument().GetFrame()->GetMainFrameScrollOffset();
+  return owner->GetDocument().GetFrame()->GetMainFrameScrollPosition();
 }
 
 void RemoteFrame::SetOpener(Frame* opener_frame) {

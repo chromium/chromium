@@ -192,9 +192,11 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
     TransformState child_frame_to_root_frame(
         TransformState::kUnapplyInverseTransformDirection);
-    child_frame_to_root_frame.Move(PhysicalOffset::FromPointFRound(
-        gfx::PointF(frame.GetMainFrameScrollOffset())));
-
+    // TODO: Should this be IsOutermostMainFrame()?
+    if (owner_document.GetFrame()->LocalFrameRoot().IsMainFrame()) {
+      child_frame_to_root_frame.Move(PhysicalOffset::FromPointFRound(
+          gfx::PointF(frame.GetMainFrameScrollPosition())));
+    }
     if (owner_layout_object) {
       owner_layout_object->MapAncestorToLocal(
           nullptr, child_frame_to_root_frame,
@@ -220,7 +222,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
       viewport_intersection, mainframe_intersection, gfx::Rect(),
       occlusion_state, frame.GetMainFrameViewportSize(),
-      frame.GetMainFrameScrollOffset(), main_frame_gfx_transform));
+      frame.GetMainFrameScrollPosition(), main_frame_gfx_transform));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 

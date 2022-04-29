@@ -44,8 +44,8 @@ struct ViewportIntersectionState {
   // Main frame's size.
   gfx.mojom.Size main_frame_viewport_size;
 
-  // Main frame's scrolling offset.
-  gfx.mojom.Point main_frame_scroll_offset;
+  // Main frame's scrolling position.
+  gfx.mojom.Point main_frame_scroll_position;
 
   // Child frame's transform to the coordinate system of the main frame.
   gfx.mojom.Transform main_frame_transform;
