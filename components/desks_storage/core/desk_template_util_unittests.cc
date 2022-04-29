@@ -41,4 +41,11 @@ TEST_F(DeskTemplateUtilTest, OnlyIncrementTheLastSequenceNumber) {
                 u"test (1) (9)"));
 }
 
+TEST_F(DeskTemplateUtilTest, PopulateRegistryCacheHasAppInfo) {
+  AccountId account_id = AccountId::FromUserEmail("test@gmail.com");
+  auto cache = std::make_unique<apps::AppRegistryCache>();
+  desk_template_util::PopulateAppRegistryCache(account_id, cache.get());
+  EXPECT_EQ(6ul, cache->GetAllApps().size());
+}
+
 }  // namespace desks_storage

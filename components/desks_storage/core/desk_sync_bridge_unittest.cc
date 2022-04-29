@@ -24,9 +24,8 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -333,15 +332,6 @@ ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
   return state;
 }
 
-apps::AppPtr MakeApp(const char* app_id,
-                     const char* name,
-                     apps::AppType app_type) {
-  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
-  app->readiness = apps::Readiness::kReady;
-  app->name = name;
-  return app;
-}
-
 class MockDeskModelObserver : public DeskModelObserver {
  public:
   MOCK_METHOD0(DeskModelLoaded, void());
@@ -407,39 +397,6 @@ class DeskSyncBridgeTest : public testing::Test {
     ShutdownBridge();
     InitializeBridge();
   }
-
-  void PopulateAppRegistryCache() {
-    std::vector<apps::AppPtr> deltas;
-
-    deltas.push_back(
-        MakeApp(kTestPwaAppId, "Test PWA App", apps::AppType::kWeb));
-    // chromeAppId returns kExtension in the real Apps cache.
-    deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
-                             apps::AppType::kChromeApp));
-    deltas.push_back(MakeApp(kTestChromeAppId, "Test Chrome App",
-                             apps::AppType::kChromeApp));
-    deltas.push_back(MakeApp(kTestArcAppId, "Arc app", apps::AppType::kArc));
-
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                     /*should_notify_initialized=*/false);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      for (const auto& delta : deltas) {
-        mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-      }
-      cache_->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                     /*should_notify_initialized=*/false);
-    }
-
-    cache_->SetAccountId(account_id_);
-
-    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
-                                                             cache_.get());
-  }
-
-  void SetUp() override { PopulateAppRegistryCache(); }
 
   void WriteToStoreWithMetadata(
       const std::vector<WorkspaceDeskSpecifics>& specifics_list,
@@ -574,6 +531,11 @@ class DeskSyncBridgeTest : public testing::Test {
     EXPECT_TRUE(conversion_success);
 
     bridge()->SetPolicyDeskTemplates(policy_json);
+  }
+
+  // testing::test.
+  void SetUp() override {
+    desk_template_util::PopulateAppRegistryCache(account_id_, cache_.get());
   }
 
   MockModelTypeChangeProcessor* processor() { return &mock_processor_; }

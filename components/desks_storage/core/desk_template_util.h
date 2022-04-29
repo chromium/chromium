@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+
 namespace desks_storage {
 
 namespace desk_template_util {
@@ -17,6 +20,10 @@ namespace desk_template_util {
 // incremented.
 std::u16string AppendDuplicateNumberToDuplicateName(
     const std::u16string& duplicate_name_u16);
+
+// Populates the given cache with test app information.
+void PopulateAppRegistryCache(AccountId account_id,
+                              apps::AppRegistryCache* cache);
 
 }  // namespace desk_template_util
 
