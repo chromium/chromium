@@ -54,17 +54,22 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
     GetProcs().computePassEncoderSetPipeline(GetHandle(),
                                              pipeline->GetHandle());
   }
-  void dispatch(uint32_t workgroup_count_x,
-                uint32_t workgroup_count_y,
-                uint32_t workgroup_count_z) {
-    GetProcs().computePassEncoderDispatch(GetHandle(), workgroup_count_x,
-                                          workgroup_count_y, workgroup_count_z);
+  void dispatchWorkgroups(uint32_t workgroup_count_x,
+                          uint32_t workgroup_count_y,
+                          uint32_t workgroup_count_z) {
+    GetProcs().computePassEncoderDispatchWorkgroups(
+        GetHandle(), workgroup_count_x, workgroup_count_y, workgroup_count_z);
   }
-  void dispatchIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
-                        uint64_t indirectOffset) {
-    GetProcs().computePassEncoderDispatchIndirect(
+  void dispatchWorkgroupsIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
+                                  uint64_t indirectOffset) {
+    GetProcs().computePassEncoderDispatchWorkgroupsIndirect(
         GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
   }
+  void dispatch(uint32_t workgroup_count_x,
+                uint32_t workgroup_count_y,
+                uint32_t workgroup_count_z);
+  void dispatchIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
+                        uint64_t indirectOffset);
   void writeTimestamp(const DawnObject<WGPUQuerySet>* querySet,
                       uint32_t queryIndex) {
     GetProcs().computePassEncoderWriteTimestamp(
