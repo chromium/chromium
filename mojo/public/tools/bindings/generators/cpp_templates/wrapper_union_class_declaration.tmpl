@@ -7,10 +7,6 @@ class {{export_attribute}} {{union.name}} {
   using Data_ = internal::{{union.name}}_Data;
   using Tag = Data_::{{union.name}}_Tag;
 
-  static {{union.name}}Ptr New() {
-    return {{union.name}}Ptr(base::in_place);
-  }
-
 {%-  for field in union.fields %}
   // Construct an instance holding |{{field.name}}|.
   static {{union.name}}Ptr
