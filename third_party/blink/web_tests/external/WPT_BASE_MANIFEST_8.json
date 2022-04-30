@@ -1682,6 +1682,13 @@
         {}
        ]
       ],
+      "multicol-with-monolithic-oof-with-multicol-with-oof.html": [
+       "43133fc2331f92550ff5417813b0e9e7354547ba",
+       [
+        null,
+        {}
+       ]
+      ],
       "negative-margin-on-column-spanner.html": [
        "0e14943d0157c2f5c1611174ea104431da177ba3",
        [
@@ -1796,6 +1803,13 @@
       ],
       "oof-in-nested-line-float.html": [
        "d4d67763c875bd0a64b8069de73d6d95abb8a740",
+       [
+        null,
+        {}
+       ]
+      ],
+      "oof-nested-multicol-inside-oof.html": [
+       "f80225a5c8bf65cdaf8a73ef9d9eaf427240aa32",
        [
         null,
         {}
@@ -60684,6 +60698,19 @@
         {}
        ]
       ],
+      "opacity-affects-block-in-inline.html": [
+       "340ca185d9e41639be65d61b9e1aa87adf44750a",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/stacking-context/opacity-affects-block-in-inline-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "opacity-change-parent-stacking-context.html": [
        "94587c5f6e21b92ab7ab1d5ca3b447eb2bdab15b",
        [
@@ -60704,6 +60731,19 @@
         [
          [
           "/css/CSS2/stacking-context/opacity-change-twice-stacking-context-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "zindex-affects-block-in-inline.html": [
+       "5a5c9e3dcca6171910f85790e13dc754acda58e0",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/stacking-context/zindex-affects-block-in-inline-ref.html",
           "=="
          ]
         ],
@@ -140796,6 +140836,19 @@
      ],
      "multicol-span-all-children-height-012.html": [
       "49437f027c13092d6d03d7cf26d6f79b05039cc6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "multicol-span-all-children-height-013.html": [
+      "6889c076b65b6371fdb26b54daeb77f7d6180882",
       [
        null,
        [
@@ -234387,6 +234440,19 @@
       }
      },
      "popups": {
+      "popup-defaultopen-display.tentative.html": [
+       "179e07189b31ec4b97ef3aa6ca61765388b781f8",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-defaultopen-display-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "popup-hidden-display.tentative.html": [
        "6ca84dc106be7cb9730d9968efa3c73563a46e71",
        [
@@ -234394,19 +234460,6 @@
         [
          [
           "/html/semantics/popups/popup-hidden-display-ref.tentative.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "popup-initiallyopen-display.tentative.html": [
-       "baefeca9fff11ffee420af51c2a7608ff2157564",
-       [
-        null,
-        [
-         [
-          "/html/semantics/popups/popup-initiallyopen-display-ref.tentative.html",
           "=="
          ]
         ],
@@ -256070,12 +256123,20 @@
        "9bf223c3b567c086faa1d941bf96c778ee0c3568",
        []
       ],
+      "opacity-affects-block-in-inline-ref.html": [
+       "24ed7c921a0c19bf72b564ad107277a614dc40fa",
+       []
+      ],
       "opacity-change-parent-stacking-context-ref.html": [
        "0e38f92ae4743552c86ac4a65cd8b054ea03a880",
        []
       ],
       "opacity-change-twice-stacking-context-ref.html": [
        "da17527af567e0e9d14e181b11ac09548b8003b0",
+       []
+      ],
+      "zindex-affects-block-in-inline-ref.html": [
+       "c0fdb338d08198cfd058ccdabd7766a9e57375fd",
        []
       ]
      },
@@ -315622,12 +315683,12 @@
        "1b4f76af030d66277dc2a0b03c68f37978a3f5bb",
        []
       ],
-      "popup-hidden-display-ref.tentative.html": [
-       "310b14e48a1e6e2b92c83b309f60a633e849c506",
+      "popup-defaultopen-display-ref.tentative.html": [
+       "db1a3f2b044d174781a6c5ba961b7b43c21611ce",
        []
       ],
-      "popup-initiallyopen-display-ref.tentative.html": [
-       "db1a3f2b044d174781a6c5ba961b7b43c21611ce",
+      "popup-hidden-display-ref.tentative.html": [
+       "310b14e48a1e6e2b92c83b309f60a633e849c506",
        []
       ],
       "popup-inside-display-none-ref.tentative.html": [
@@ -377913,7 +377974,7 @@
       ]
      ],
      "layer-rules-cssom.html": [
-      "3e0b613a9fdb4a4490be742c5da266e089337b0f",
+      "b81960df6f6dbc8985b4101f434b9c4a0cb9990c",
       [
        null,
        {}
@@ -477540,6 +477601,20 @@
         {}
        ]
       ],
+      "popup-defaultopen-2.tentative.html": [
+       "1e54e469ae8410cdc204437ec929eac84ce2d0ad",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popup-defaultopen.tentative.html": [
+       "50bf825d8f2672754f0a409bd8c7d42af5be4e57",
+       [
+        null,
+        {}
+       ]
+      ],
       "popup-events.tentative.html": [
        "9390ea3c40b585b2c0a8161765b305f4927f492b",
        [
@@ -477549,20 +477624,6 @@
       ],
       "popup-focus.tentative.html": [
        "66fd7fbca7acf379f6dd1ed7468dfefc4f1eaa9c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "popup-initiallyopen-2.tentative.html": [
-       "a55d33d3ea6e953265193dc1db664162f9aae12d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "popup-initiallyopen.tentative.html": [
-       "9396e014afd18202946e314325e0c3fb93cc6f81",
        [
         null,
         {}
