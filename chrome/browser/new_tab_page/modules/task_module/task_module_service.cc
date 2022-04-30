@@ -242,13 +242,14 @@ void TaskModuleService::OnJsonParsed(
     auto* task_name = task.FindStringPath("task_name");
     auto* task_items = task.FindListPath(GetTaskItemsKey());
     auto* related_searches = task.FindListPath("related_searches");
-    if (!title || !task_name || !task_items || !related_searches ||
+    if (!title || !task_name || !task_items ||
         task_items->GetListDeprecated().size() == 0) {
       continue;
     }
     if (IsTaskDismissed(*task_name)) {
       continue;
     }
+    auto mojo_task = task_module::mojom::Task::New();
     std::vector<task_module::mojom::TaskItemPtr> mojo_task_items;
     for (const auto& task_item : task_items->GetListDeprecated()) {
       const auto* name = task_item.FindStringPath("name");
@@ -274,19 +275,28 @@ void TaskModuleService::OnJsonParsed(
       mojom_task_item->target_url = GURL(*target_url);
       mojo_task_items.push_back(std::move(mojom_task_item));
     }
-    std::vector<task_module::mojom::RelatedSearchPtr> mojo_related_searches;
-    for (const auto& related_search : related_searches->GetListDeprecated()) {
-      auto* text = related_search.FindStringPath("text");
-      auto* target_url = related_search.FindStringPath("target_url");
-      if (!text || !target_url) {
-        continue;
+
+    if (related_searches) {
+      std::vector<task_module::mojom::RelatedSearchPtr> mojo_related_searches;
+      for (const auto& related_search : related_searches->GetListDeprecated()) {
+        auto* text = related_search.FindStringPath("text");
+        auto* target_url = related_search.FindStringPath("target_url");
+        if (!text || !target_url) {
+          continue;
+        }
+        auto mojo_related_search = task_module::mojom::RelatedSearch::New();
+        mojo_related_search->text = *text;
+        mojo_related_search->target_url = GURL(*target_url);
+        mojo_related_searches.push_back(std::move(mojo_related_search));
       }
-      auto mojo_related_search = task_module::mojom::RelatedSearch::New();
-      mojo_related_search->text = *text;
-      mojo_related_search->target_url = GURL(*target_url);
-      mojo_related_searches.push_back(std::move(mojo_related_search));
+
+      base::UmaHistogramCounts100(
+          base::StringPrintf("NewTabPage.%s.RelatedSearchDownloadCount",
+                             GetModuleName()),
+          mojo_related_searches.size());
+      mojo_task->related_searches = std::move(mojo_related_searches);
     }
-    auto mojo_task = task_module::mojom::Task::New();
+
     mojo_task->title = *title;
     mojo_task->name = *task_name;
     base::UmaHistogramCounts100(
@@ -294,11 +304,6 @@ void TaskModuleService::OnJsonParsed(
                            GetTaskItemsName()),
         mojo_task_items.size());
     mojo_task->task_items = std::move(mojo_task_items);
-    base::UmaHistogramCounts100(
-        base::StringPrintf("NewTabPage.%s.RelatedSearchDownloadCount",
-                           GetModuleName()),
-        mojo_related_searches.size());
-    mojo_task->related_searches = std::move(mojo_related_searches);
 
     std::move(callback).Run(std::move(mojo_task));
     return;
