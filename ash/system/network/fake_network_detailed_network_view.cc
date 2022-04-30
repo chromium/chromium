@@ -5,6 +5,7 @@
 #include "ash/system/network/fake_network_detailed_network_view.h"
 
 #include "ash/system/network/network_detailed_network_view.h"
+#include "ash/system/network/network_list_item_view.h"
 
 namespace ash {
 
@@ -16,6 +17,10 @@ FakeNetworkDetailedNetworkView::~FakeNetworkDetailedNetworkView() = default;
 
 views::View* FakeNetworkDetailedNetworkView::GetAsView() {
   return this;
+}
+
+void FakeNetworkDetailedNetworkView::OnViewClicked(views::View* view) {
+  last_clicked_network_list_item_ = static_cast<NetworkListItemView*>(view);
 }
 
 }  // namespace ash
