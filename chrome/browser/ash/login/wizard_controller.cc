@@ -679,10 +679,10 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<PackagedLicenseScreenHandler>(),
       base::BindRepeating(&WizardController::OnPackagedLicenseScreenExit,
                           weak_factory_.GetWeakPtr())));
-  auto gaia_screen = std::make_unique<GaiaScreen>(base::BindRepeating(
-      &WizardController::OnGaiaScreenExit, weak_factory_.GetWeakPtr()));
-  gaia_screen->SetView(oobe_ui->GetView<GaiaScreenHandler>());
-  append(std::move(gaia_screen));
+  append(std::make_unique<GaiaScreen>(
+      oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnGaiaScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<SamlConfirmPasswordScreen>(
       oobe_ui->GetView<SamlConfirmPasswordHandler>()->AsWeakPtr(),

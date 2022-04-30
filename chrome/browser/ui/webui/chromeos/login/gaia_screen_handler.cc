@@ -317,8 +317,6 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 
 }  // namespace
 
-constexpr StaticOobeScreenId GaiaView::kScreenId;
-
 GaiaScreenHandler::GaiaScreenHandler(
     CoreOobeView* core_oobe_view,
     const scoped_refptr<NetworkStateInformer>& network_state_informer)
@@ -326,7 +324,6 @@ GaiaScreenHandler::GaiaScreenHandler(
       network_state_informer_(network_state_informer),
       core_oobe_view_(core_oobe_view) {
   DCHECK(network_state_informer_.get());
-  set_user_acted_method_path_deprecated("login.GaiaSigninScreen.userActed");
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {
@@ -566,7 +563,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   was_security_token_pin_canceled_ = false;
 
   frame_state_ = FRAME_STATE_LOADING;
-  CallJS("login.GaiaSigninScreen.loadAuthExtension", std::move(params));
+  CallExternalAPI("loadAuthExtension", std::move(params));
 }
 
 void GaiaScreenHandler::ReloadGaia(bool force_reload) {
@@ -1112,7 +1109,7 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
 
   frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
                                    base::NullCallback());
-  CallJS("login.GaiaSigninScreen.clickPrimaryButtonForTesting");
+  CallExternalAPI("clickPrimaryButtonForTesting");
 
   if (!test_services_.empty()) {
     // Prefix each doublequote with backslash, so that it will remain correct
@@ -1129,7 +1126,7 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
     code = "document.getElementById('password').value = '" + test_pass_ + "';";
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(code),
                                      base::NullCallback());
-    CallJS("login.GaiaSigninScreen.clickPrimaryButtonForTesting");
+    CallExternalAPI("clickPrimaryButtonForTesting");
   }
 
   // Test properties are cleared in HandleCompleteAuthentication because the
@@ -1157,19 +1154,12 @@ void GaiaScreenHandler::Hide() {
   hidden_ = true;
 }
 
-void GaiaScreenHandler::Bind(GaiaScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void GaiaScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
   gaia_path_ = gaia_path;
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
+  CallExternalAPI("onBeforeLoad");
   populated_account_id_ = account_id;
 
   login_request_variant_ = GaiaLoginVariant::kUnknown;
@@ -1242,9 +1232,9 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
   security_token_pin_dialog_closed_callback_ =
       std::move(pin_dialog_closed_callback);
 
-  CallJS("login.GaiaSigninScreen.showPinDialog",
-         MakeSecurityTokenPinDialogParameters(enable_user_input, error_label,
-                                              attempts_left));
+  CallExternalAPI("showPinDialog",
+                  MakeSecurityTokenPinDialogParameters(
+                      enable_user_input, error_label, attempts_left));
 }
 
 void GaiaScreenHandler::CloseSecurityTokenPinDialog() {
@@ -1257,10 +1247,7 @@ void GaiaScreenHandler::CloseSecurityTokenPinDialog() {
   security_token_pin_entered_callback_.Reset();
   security_token_pin_dialog_closed_callback_.Reset();
 
-  // Notify the page, unless it's already being shut down (which may happen if
-  // we're called from the destructor).
-  if (IsJavascriptAllowed())
-    CallJS("login.GaiaSigninScreen.closePinDialog");
+  CallExternalAPI("closePinDialog");
 }
 
 void GaiaScreenHandler::SetNextSamlChallengeKeyHandlerForTesting(
@@ -1353,8 +1340,7 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
                                   &family_link_allowed);
   params.SetBoolKey("familyLinkAllowed", family_link_allowed);
 
-  CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError",
-         std::move(params));
+  CallExternalAPI("showAllowlistCheckFailedError", std::move(params));
 }
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {

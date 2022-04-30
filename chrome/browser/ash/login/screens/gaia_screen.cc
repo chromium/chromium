@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -40,20 +42,13 @@ std::string GaiaScreen::GetResultString(Result result) {
   }
 }
 
-GaiaScreen::GaiaScreen(const ScreenExitCallback& exit_callback)
+GaiaScreen::GaiaScreen(base::WeakPtr<TView> view,
+                       const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaView::kScreenId, OobeScreenPriority::DEFAULT),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-GaiaScreen::~GaiaScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void GaiaScreen::SetView(GaiaView* view) {
-  view_ = view;
-  if (view_)
-    view_->Bind(this);
-}
+GaiaScreen::~GaiaScreen() = default;
 
 void GaiaScreen::LoadOnline(const AccountId& account) {
   if (!view_)
@@ -90,17 +85,22 @@ void GaiaScreen::ShowAllowlistCheckFailedError() {
 }
 
 void GaiaScreen::ShowImpl() {
+  if (!view_)
+    return;
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;
   view_->Show();
 }
 
 void GaiaScreen::HideImpl() {
+  if (!view_)
+    return;
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->Hide();
 }
 
-void GaiaScreen::OnUserActionDeprecated(const std::string& action_id) {
+void GaiaScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::BACK);
   } else if (action_id == kUserActionCancel) {
@@ -116,7 +116,7 @@ void GaiaScreen::OnUserActionDeprecated(const std::string& action_id) {
     DCHECK(features::IsRedirectToDefaultIdPEnabled());
     exit_callback_.Run(Result::SAML_VIDEO_TIMEOUT);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

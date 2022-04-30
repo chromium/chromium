@@ -345,7 +345,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   get EXTERNAL_API() {
     return [
       'loadAuthExtension', 'doReload', 'showAllowlistCheckFailedError',
-      'showPinDialog', 'closePinDialog', 'clickPrimaryButtonForTesting'
+      'showPinDialog', 'closePinDialog', 'clickPrimaryButtonForTesting',
+      'onBeforeLoad'
     ];
   }
 
@@ -1154,6 +1155,11 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   clickPrimaryButtonForTesting() {
     this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
+  }
+
+  onBeforeLoad() {
+    this.loadingFrameContents_ = true;
+    this.isAllowlistErrorShown_ = false;
   }
 
   /**

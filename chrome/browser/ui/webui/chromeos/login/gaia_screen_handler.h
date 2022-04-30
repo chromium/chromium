@@ -12,6 +12,7 @@
 #include "ash/components/security_token_pin/constants.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
@@ -30,10 +31,6 @@
 
 class AccountId;
 
-namespace ash {
-class GaiaScreen;
-}
-
 namespace base {
 class ElapsedTimer;
 }  // namespace base
@@ -45,7 +42,7 @@ class NSSTempCertsCacheChromeOS;
 namespace chromeos {
 class SigninScreenHandler;
 
-class GaiaView {
+class GaiaView : public base::SupportsWeakPtr<GaiaView> {
  public:
   enum class GaiaPath {
     kDefault,
@@ -64,7 +61,8 @@ class GaiaView {
     kMaxValue = kOnlineSignin
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"gaia-signin"};
+  inline constexpr static StaticOobeScreenId kScreenId{"gaia-signin",
+                                                       "GaiaSigninScreen"};
 
   GaiaView() = default;
 
@@ -84,10 +82,6 @@ class GaiaView {
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  // Binds `screen` to the view.
-  virtual void Bind(ash::GaiaScreen* screen) = 0;
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
   // Show error UI at the end of GAIA flow when user is not allowlisted.
@@ -139,8 +133,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
-  void Bind(ash::GaiaScreen* screen) override;
-  void Unbind() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
   void ShowAllowlistCheckFailedError() override;
 

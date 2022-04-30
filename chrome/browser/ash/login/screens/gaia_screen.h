@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -33,14 +35,13 @@ class GaiaScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  explicit GaiaScreen(const ScreenExitCallback& exit_callback);
+  GaiaScreen(base::WeakPtr<TView> view,
+             const ScreenExitCallback& exit_callback);
 
   GaiaScreen(const GaiaScreen&) = delete;
   GaiaScreen& operator=(const GaiaScreen&) = delete;
 
   ~GaiaScreen() override;
-
-  void SetView(GaiaView* view);
 
   // Loads online Gaia into the webview.
   void LoadOnline(const AccountId& account);
@@ -53,10 +54,10 @@ class GaiaScreen : public BaseScreen {
  private:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
-  GaiaView* view_ = nullptr;
+  base::WeakPtr<TView> view_;
 
   ScreenExitCallback exit_callback_;
 };
