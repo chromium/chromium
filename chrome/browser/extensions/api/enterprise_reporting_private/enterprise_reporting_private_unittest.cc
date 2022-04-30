@@ -17,16 +17,27 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/missive/missive_client.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <netfw.h>
@@ -1012,5 +1023,157 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
       info.password_protection_warning_trigger);
   ExpectDefaultThirdPartyBlockingEnabled(info);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Test for API enterprise.reportingPrivate.enqueueRecord
+class EnterpriseReportingPrivateEnqueueRecordFunctionTest
+    : public ExtensionApiUnittest {
+ public:
+  EnterpriseReportingPrivateEnqueueRecordFunctionTest() = default;
+
+  EnterpriseReportingPrivateEnqueueRecordFunctionTest(
+      const EnterpriseReportingPrivateEnqueueRecordFunctionTest&) = delete;
+  EnterpriseReportingPrivateEnqueueRecordFunctionTest& operator=(
+      const EnterpriseReportingPrivateEnqueueRecordFunctionTest&) = delete;
+
+  static constexpr char kNoError[] = "";
+  static constexpr char kTestDMTokenValue[] = "test_dm_token_value";
+
+  void SetUp() override {
+    ExtensionApiUnittest::SetUp();
+    ::chromeos::MissiveClient::InitializeFake();
+    function_ =
+        base::MakeRefCounted<EnterpriseReportingPrivateEnqueueRecordFunction>();
+    // Set up a Record to attach to an EnqueueRecordRequest
+    base::Value data{base::Value::Type::DICTIONARY};
+    data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));
+    std::string serialized_data;
+    ASSERT_TRUE(base::JSONWriter::Write(data, &serialized_data));
+    reporting::Record record;
+    record.set_data(serialized_data);
+    record.set_destination(reporting::Destination::TELEMETRY_METRIC);
+    serialized_record_data_.resize(record.SerializeAsString().size());
+    ASSERT_TRUE(record.SerializeToArray(serialized_record_data_.data(),
+                                        serialized_record_data_.size()));
+  }
+
+  void TearDown() override {
+    function_.reset();
+    ::chromeos::MissiveClient::Shutdown();
+    ExtensionApiUnittest::TearDown();
+  }
+
+ protected:
+  std::vector<uint8_t> serialized_record_data_;
+  scoped_refptr<extensions::EnterpriseReportingPrivateEnqueueRecordFunction>
+      function_;
+};
+
+TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
+       ValidRecordSuccessfullyEnqueued) {
+  function_->SetProfileIsAffiliatedForTesting(/*is_affiliated=*/true);
+
+  api::enterprise_reporting_private::EnqueueRecordRequest
+      enqueue_record_request;
+  enqueue_record_request.record_data = serialized_record_data_;
+  enqueue_record_request.priority = reporting::Priority::BACKGROUND_BATCH;
+  enqueue_record_request.event_type =
+      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+
+  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
+  params->Append(enqueue_record_request.ToValue());
+
+  // Set up DM token
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+
+  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
+                                             browser(),
+                                             extensions::api_test_utils::NONE);
+  EXPECT_EQ(function_->GetError(), kNoError);
+}
+
+TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
+       InvalidPriorityReturnsError) {
+  function_->SetProfileIsAffiliatedForTesting(true);
+
+  api::enterprise_reporting_private::EnqueueRecordRequest
+      enqueue_record_request;
+  enqueue_record_request.record_data = serialized_record_data_;
+
+  // Set priority to invalid enum value
+  enqueue_record_request.priority = -1;
+
+  enqueue_record_request.event_type =
+      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+
+  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
+  params->Append(enqueue_record_request.ToValue());
+
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+
+  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
+                                             browser(),
+                                             extensions::api_test_utils::NONE);
+
+  EXPECT_EQ(function_->GetError(),
+            EnterpriseReportingPrivateEnqueueRecordFunction::
+                kErrorInvalidEnqueueRecordRequest);
+}
+
+TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
+       NonAffiliatedUserReturnsError) {
+  function_->SetProfileIsAffiliatedForTesting(false);
+
+  api::enterprise_reporting_private::EnqueueRecordRequest
+      enqueue_record_request;
+  enqueue_record_request.record_data = serialized_record_data_;
+
+  enqueue_record_request.priority = reporting::Priority::BACKGROUND_BATCH;
+
+  enqueue_record_request.event_type =
+      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+
+  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
+  params->Append(enqueue_record_request.ToValue());
+
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
+
+  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
+                                             browser(),
+                                             extensions::api_test_utils::NONE);
+
+  EXPECT_EQ(function_->GetError(),
+            EnterpriseReportingPrivateEnqueueRecordFunction::
+                kErrorProfileNotAffiliated);
+}
+
+TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
+       InvalidDMTokenReturnsError) {
+  function_->SetProfileIsAffiliatedForTesting(true);
+  api::enterprise_reporting_private::EnqueueRecordRequest
+      enqueue_record_request;
+  enqueue_record_request.record_data = serialized_record_data_;
+  enqueue_record_request.priority = reporting::Priority::BACKGROUND_BATCH;
+  enqueue_record_request.event_type =
+      api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
+
+  std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
+  params->Append(enqueue_record_request.ToValue());
+
+  // Set up invalid DM token
+  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
+
+  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
+                                             browser(),
+                                             extensions::api_test_utils::NONE);
+
+  EXPECT_EQ(function_->GetError(),
+            EnterpriseReportingPrivateEnqueueRecordFunction::
+                kErrorCannotAssociateRecordWithUser);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

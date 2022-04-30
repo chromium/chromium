@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -91,6 +99,24 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
         test_dir.UnpackedPath(), {.ignore_manifest_warnings = true});
     ASSERT_TRUE(extension);
     ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+
+  void SetProfileAffiliation(bool is_affiliated) {
+    constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting(kFakeBrowserDMToken));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    constexpr char kAffiliationId1[] = "affiliation-id-1";
+    constexpr char kAffiliationId2[] = "affiliation-id-2";
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+    init_params->device_properties->device_dm_token = kFakeBrowserDMToken;
+    init_params->device_properties->device_affiliation_ids = {
+        is_affiliated ? kAffiliationId1 : kAffiliationId2};
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
   }
 
  protected:
@@ -364,5 +390,49 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetCertificate) {
         chrome.test.notifyPass();
     });)");
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       SuccessfullyEnqueueValidRecord) {
+  std::vector<uint8_t> serialized_record_data;
+  std::string serialized_data = R"({"TEST_KEY":"TEST_VALUE"})";
+  reporting::Record record;
+  record.set_data(serialized_data);
+  record.set_destination(reporting::Destination::TELEMETRY_METRIC);
+  serialized_record_data.resize(record.SerializeAsString().size());
+  record.SerializeToArray(serialized_record_data.data(),
+                          serialized_record_data.size());
+
+  // Print std::vector<uint8_t> into a form like "[1,2,3,4]"
+  std::string serialized_record_data_str = "[";
+  for (size_t i = 0; i < serialized_record_data.size(); i++) {
+    if (i == serialized_record_data.size() - 1) {
+      base::StrAppend(&serialized_record_data_str,
+                      {base::NumberToString(serialized_record_data[i]), "]"});
+    } else {
+      base::StrAppend(&serialized_record_data_str,
+                      {base::NumberToString(serialized_record_data[i]), ","});
+    }
+  }
+
+  SetProfileAffiliation(/*is_affiliated = */ true);
+  constexpr char kTest[] = R"(
+
+        const request = {
+          eventType: "USER",
+          priority: 4,
+          recordData: Uint8Array.from(%s),
+        };
+
+        chrome.enterprise.reportingPrivate.enqueueRecord(request, () =>{
+          chrome.test.assertNoLastError();
+
+          chrome.test.succeed();
+        });
+
+      )";
+  RunTest(base::StringPrintf(kTest, serialized_record_data_str.c_str()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
