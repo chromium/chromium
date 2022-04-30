@@ -14,6 +14,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -55,7 +56,10 @@ void DarkModeFeaturePodController::OnIconPressed() {
   // personalization hub respectively.
   ash::Shell::Get()->dark_mode_controller()->SetAutoScheduleEnabled(
       /*enabled=*/false);
-  AshColorProvider::Get()->ToggleColorMode();
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->ToggleColorMode();
+  base::UmaHistogramBoolean("Ash.DarkTheme.SystemTray.IsDarkModeEnabled",
+                            color_provider->IsDarkModeEnabled());
 }
 
 void DarkModeFeaturePodController::OnLabelPressed() {
