@@ -106,6 +106,21 @@ bool SignalStorageConfig::UpdateConfigForSignal(int signal_storage_length,
   return false;
 }
 
+bool SignalStorageConfig::MeetsSignalCollectionRequirementForSignal(
+    base::TimeDelta min_signal_collection_length,
+    uint64_t signal_hash,
+    uint64_t event_hash,
+    proto::SignalType signal_type) {
+  const proto::SignalStorageConfig* config =
+      FindSignal(signal_hash, event_hash, signal_type);
+  if (!config || config->collection_start_time_s() == 0)
+    return false;
+
+  base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Seconds(config->collection_start_time_s()));
+  return clock_->Now() - collection_start_time >= min_signal_collection_length;
+}
+
 bool SignalStorageConfig::MeetsSignalCollectionRequirement(
     const proto::SegmentationModelMetadata& model_metadata,
     bool include_outputs) {
@@ -128,18 +143,36 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
       continue;
     }
 
-    proto::SignalStorageConfig* config =
-        FindSignal(feature.name_hash(), 0, feature.type());
-    if (!config || config->collection_start_time_s() == 0)
+    if (!MeetsSignalCollectionRequirementForSignal(min_signal_collection_length,
+                                                   feature.name_hash(), 0,
+                                                   feature.type())) {
       return false;
-
-    base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Seconds(config->collection_start_time_s()));
-    if (clock_->Now() - collection_start_time < min_signal_collection_length)
-      return false;
+    };
   }
 
-  // TODO(haileywang): Handle UKM features.
+  // Loop through sql features.
+  for (auto const& feature : model_metadata.input_features()) {
+    if (!feature.has_sql_feature())
+      continue;
+
+    if (metadata_utils::ValidateMetadataSqlFeature(feature.sql_feature()) !=
+        metadata_utils::ValidationResult::kValidationSuccess) {
+      continue;
+    }
+
+    const proto::SignalFilterConfig& sql_config =
+        feature.sql_feature().signal_filter();
+
+    for (auto const& event : sql_config.ukm_events()) {
+      for (auto const& metric_hash : event.metric_hash_filter()) {
+        if (!MeetsSignalCollectionRequirementForSignal(
+                min_signal_collection_length, metric_hash, event.event_hash(),
+                proto::SignalType::UKM_EVENT)) {
+          return false;
+        };
+      }
+    }
+  }
 
   return true;
 }

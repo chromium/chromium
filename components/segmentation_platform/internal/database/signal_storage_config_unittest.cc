@@ -61,7 +61,9 @@ class SignalStorageConfigTest : public testing::Test {
 
 TEST_F(SignalStorageConfigTest,
        CheckMeetsSignalCollectionRequirementWithMultipleModels) {
-  // Start with empty DB.
+  // TODO(haileywang): Separate UMA and UKM features tests. Make smaller helper
+  // functions that can be used by other tests to share repeated code. Start
+  // with empty DB.
   SetUpDB();
   base::MockCallback<SignalStorageConfig::SuccessCallback> init_callback;
   EXPECT_CALL(init_callback, Run(true)).Times(1);
@@ -83,19 +85,40 @@ TEST_F(SignalStorageConfigTest,
   metadata2.set_min_signal_collection_length(4);
 
   // Add a user action feature to the both models.
-  proto::UMAFeature* feature = metadata.add_features();
+  proto::InputFeature* input_feature = metadata.add_input_features();
+  proto::UMAFeature* feature = input_feature->mutable_uma_feature();
   uint64_t name_hash = base::HashMetricName("some user action");
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
   feature->set_bucket_count(1);
   feature->set_tensor_length(1);
   feature->set_aggregation(proto::Aggregation::COUNT);
-  proto::UMAFeature* feature2 = metadata2.add_features();
+  proto::InputFeature* input_feature2 = metadata2.add_input_features();
+  proto::UMAFeature* feature2 = input_feature2->mutable_uma_feature();
   feature2->set_type(proto::SignalType::USER_ACTION);
   feature2->set_name_hash(name_hash);
   feature2->set_bucket_count(1);
   feature2->set_tensor_length(1);
   feature2->set_aggregation(proto::Aggregation::COUNT);
+
+  // Add a sql feature to both models.
+  proto::InputFeature* input_feature3 = metadata.add_input_features();
+  proto::SqlFeature* feature3 = input_feature3->mutable_sql_feature();
+  proto::SignalFilterConfig::UkmEvent* ukm_event =
+      feature3->mutable_signal_filter()->add_ukm_events();
+  uint64_t event_hash = base::HashMetricName("some event");
+  uint64_t metric_hash = base::HashMetricName("some metric");
+  feature3->set_sql("sql");
+  ukm_event->set_event_hash(event_hash);
+  ukm_event->add_metric_hash_filter(metric_hash);
+
+  proto::InputFeature* input_feature4 = metadata2.add_input_features();
+  proto::SqlFeature* feature4 = input_feature4->mutable_sql_feature();
+  proto::SignalFilterConfig::UkmEvent* ukm_event2 =
+      feature4->mutable_signal_filter()->add_ukm_events();
+  feature4->set_sql("sql");
+  ukm_event2->set_event_hash(event_hash);
+  ukm_event2->add_metric_hash_filter(metric_hash);
 
   // The DB should be empty before the model is added.
   EXPECT_EQ(0u, db_entries_.size());
@@ -109,7 +132,7 @@ TEST_F(SignalStorageConfigTest,
   // Verify that the DB has now a top level entry.
   EXPECT_EQ(1u, db_entries_.size());
   const auto& config = db_entries_[kDatabaseKey];
-  EXPECT_EQ(1, config.signals_size());
+  EXPECT_EQ(2, config.signals_size());
 
   // Verify that DB has a signal entry with correct storage and collection start
   // time.
@@ -119,13 +142,20 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(base::Days(2).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 
+  proto::SignalStorageConfig signal_config2 = config.signals(1);
+  EXPECT_EQ(metric_hash, signal_config2.name_hash());
+  EXPECT_EQ(event_hash, signal_config2.event_hash());
+  EXPECT_EQ(proto::SignalType::UKM_EVENT, signal_config2.signal_type());
+  EXPECT_EQ(base::Days(2).InSeconds(), signal_config2.storage_length_s());
+  EXPECT_NE(0, signal_config2.collection_start_time_s());
+
   // Add the second model. It should do a overwrite of previous value.
   signal_storage_config_->OnSignalCollectionStarted(metadata2);
   db_->UpdateCallback(true);
 
   // Verify DB size.
   EXPECT_EQ(1u, db_entries_.size());
-  EXPECT_EQ(1, config.signals_size());
+  EXPECT_EQ(2, config.signals_size());
 
   // Verify that DB has a signal entry with correct storage and collection start
   // time.
@@ -134,6 +164,13 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
   EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
+
+  signal_config2 = config.signals(1);
+  EXPECT_EQ(metric_hash, signal_config2.name_hash());
+  EXPECT_EQ(event_hash, signal_config2.event_hash());
+  EXPECT_EQ(proto::SignalType::UKM_EVENT, signal_config2.signal_type());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config2.storage_length_s());
+  EXPECT_NE(0, signal_config2.collection_start_time_s());
 
   // Signal collection shouldn't satisfy.
   EXPECT_FALSE(
@@ -174,87 +211,13 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
   EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
-}
 
-TEST_F(SignalStorageConfigTest,
-       CheckMeetsSignalCollectionRequirementWithSqlFeature) {
-  // Start with empty DB.
-  SetUpDB();
-  base::MockCallback<SignalStorageConfig::SuccessCallback> init_callback;
-  EXPECT_CALL(init_callback, Run(true)).Times(1);
-  signal_storage_config_->InitAndLoad(init_callback.Get());
-  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-  db_->LoadCallback(true);
-  EXPECT_EQ(0u, db_entries_.size());
-
-  // Create a model metadata.
-  proto::SegmentationModelMetadata metadata;
-  metadata.set_time_unit(proto::TimeUnit::DAY);
-  metadata.set_signal_storage_length(2);
-  metadata.set_min_signal_collection_length(2);
-
-  // Create a second model metadata with longer requirement.
-  proto::SegmentationModelMetadata metadata2;
-  metadata2.set_time_unit(proto::TimeUnit::DAY);
-  metadata2.set_signal_storage_length(6);
-  metadata2.set_min_signal_collection_length(4);
-
-  // Add a sql feature to both models.
-  proto::InputFeature* input_feature = metadata.add_input_features();
-  proto::SqlFeature* feature = input_feature->mutable_sql_feature();
-  proto::SignalFilterConfig::UkmEvent* ukm_event =
-      feature->mutable_signal_filter()->add_ukm_events();
-  uint64_t event_hash = base::HashMetricName("some event");
-  uint64_t metric_hash = base::HashMetricName("some metric");
-  feature->set_sql("sql");
-  ukm_event->set_event_hash(event_hash);
-  ukm_event->add_metric_hash_filter(metric_hash);
-
-  proto::InputFeature* input_feature2 = metadata2.add_input_features();
-  proto::SqlFeature* feature2 = input_feature2->mutable_sql_feature();
-  proto::SignalFilterConfig::UkmEvent* ukm_event2 =
-      feature2->mutable_signal_filter()->add_ukm_events();
-  feature2->set_sql("sql");
-  ukm_event2->set_event_hash(event_hash);
-  ukm_event2->add_metric_hash_filter(metric_hash);
-
-  // The DB should be empty before the model is added.
-  EXPECT_EQ(0u, db_entries_.size());
-
-  // Add the model.
-  signal_storage_config_->OnSignalCollectionStarted(metadata);
-  db_->UpdateCallback(true);
-
-  // Verify that the DB has now a top level entry.
-  EXPECT_EQ(1u, db_entries_.size());
-  const auto& config = db_entries_[kDatabaseKey];
-  EXPECT_EQ(1, config.signals_size());
-
-  // Verify that DB has a signal entry with correct storage and collection start
-  // time.
-  proto::SignalStorageConfig signal_config = config.signals(0);
-  EXPECT_EQ(metric_hash, signal_config.name_hash());
-  EXPECT_EQ(event_hash, signal_config.event_hash());
-  EXPECT_EQ(proto::SignalType::UKM_EVENT, signal_config.signal_type());
-  EXPECT_EQ(base::Days(2).InSeconds(), signal_config.storage_length_s());
-  EXPECT_NE(0, signal_config.collection_start_time_s());
-
-  // Add the second model. It should do a overwrite of previous value.
-  signal_storage_config_->OnSignalCollectionStarted(metadata2);
-  db_->UpdateCallback(true);
-
-  // Verify DB size.
-  EXPECT_EQ(1u, db_entries_.size());
-  EXPECT_EQ(1, config.signals_size());
-
-  // Verify that DB has a signal entry with correct storage and collection start
-  // time.
-  signal_config = config.signals(0);
-  EXPECT_EQ(metric_hash, signal_config.name_hash());
-  EXPECT_EQ(event_hash, signal_config.event_hash());
-  EXPECT_EQ(proto::SignalType::UKM_EVENT, signal_config.signal_type());
-  EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
-  EXPECT_NE(0, signal_config.collection_start_time_s());
+  signal_config2 = config.signals(1);
+  EXPECT_EQ(metric_hash, signal_config2.name_hash());
+  EXPECT_EQ(event_hash, signal_config2.event_hash());
+  EXPECT_EQ(proto::SignalType::UKM_EVENT, signal_config2.signal_type());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config2.storage_length_s());
+  EXPECT_NE(0, signal_config2.collection_start_time_s());
 }
 
 TEST_F(SignalStorageConfigTest, CleanupSignals) {

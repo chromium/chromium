@@ -93,6 +93,12 @@ class SignalStorageConfig {
                              uint64_t event_hash,
                              proto::SignalType signal_type);
 
+  bool MeetsSignalCollectionRequirementForSignal(
+      base::TimeDelta min_signal_collection_length,
+      uint64_t signal_hash,
+      uint64_t event_hash,
+      proto::SignalType signal_type);
+
   // Helper method to flush the cached data to the DB. Called whenever the cache
   // is dirty.
   void WriteToDB();
