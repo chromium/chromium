@@ -247,4 +247,10 @@ export class PasscodeInputElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'c2c-passcode-input': PasscodeInputElement;
+  }
+}
+
 customElements.define(PasscodeInputElement.is, PasscodeInputElement);

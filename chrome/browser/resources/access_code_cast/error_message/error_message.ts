@@ -139,4 +139,10 @@ export class ErrorMessageElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'c2c-error-message': ErrorMessageElement;
+  }
+}
+
 customElements.define(ErrorMessageElement.is, ErrorMessageElement);

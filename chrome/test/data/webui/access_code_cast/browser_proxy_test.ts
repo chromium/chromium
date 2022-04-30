@@ -2,13 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+declare const chrome: {
+  send(message: string, args: any): void,
+  getVariableValue(variable: string): string,
+};
+
+declare const loadTimeData: {
+  getBoolean(message: string): boolean,
+};
 
 suite('BrowserProxyTest', () => {
-  let proxy;
+  let proxy: BrowserProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     BrowserProxy.setInstance(new BrowserProxy(true));
     proxy = BrowserProxy.getInstance();
   });
@@ -19,7 +31,7 @@ suite('BrowserProxyTest', () => {
     let receivedMessage = 'none';
 
     // chrome.send is used for test implementation, so we retain its function
-    const mockChromeSend = (message, args) => {
+    const mockChromeSend = (message: string, args: any) => {
       receivedMessage = message;
       chromeSend(message, args);
     };
@@ -35,20 +47,25 @@ suite('BrowserProxyTest', () => {
   test('isDialog returns correct values', () => {
     const chromeGetVariableValue = chrome.getVariableValue;
 
-    let mockChromeGetVariableValue = (message) => {
+    let mockChromeGetVariableValue: (message: string) => string =
+    (message: string) => {
       if (message === 'dialogArguments') {
         return '{testValue: "test"}';
       }
+
+      return 'NOT REACHED';
     };
 
     chrome.getVariableValue = mockChromeGetVariableValue;
 
     assertEquals(proxy.isDialog(), true);
 
-    mockChromeGetVariableValue = (message) => {
+    mockChromeGetVariableValue = (message: string) => {
       if (message === 'dialogArguments') {
         return '';
       }
+
+      return 'NOT REACHED';
     };
 
     chrome.getVariableValue = mockChromeGetVariableValue;
@@ -71,6 +88,8 @@ suite('BrowserProxyTest', () => {
       if (message === 'dialogArguments') {
         return testJson;
       }
+
+      return '';
     };
 
     const dialogArgs = proxy.getDialogArgs();
@@ -84,15 +103,45 @@ suite('BrowserProxyTest', () => {
   test('isCameraAvailable returns correct values', async () => {
     const enumerateDevices = navigator.mediaDevices.enumerateDevices;
 
-    const mockDevicesWithCamera = [
-      {kind: 'audioinput'},
-      {kind: 'videoinput'},
-      {kind: 'audioinput'}
+    const mockDevicesWithCamera: MediaDeviceInfo[] = [
+      {
+        kind: 'audioinput',
+        deviceId: 'test',
+        groupId: 'test',
+        label: 'test',
+        toJSON: () => {},
+      },
+      {
+        kind: 'videoinput',
+        deviceId: 'test',
+        groupId: 'test',
+        label: 'test',
+        toJSON: () => {},
+      },
+      {
+        kind: 'audioinput',
+        deviceId: 'test',
+        groupId: 'test',
+        label: 'test',
+        toJSON: () => {},
+      },
     ];
 
-    const mockDevicesNoCamera = [
-      {kind: 'type1'},
-      {kind: 'type2'},
+    const mockDevicesNoCamera: MediaDeviceInfo[] = [
+      {
+        kind: 'audioinput',
+        deviceId: 'test',
+        groupId: 'test',
+        label: 'test',
+        toJSON: () => {},
+      },
+      {
+        kind: 'audioinput',
+        deviceId: 'test',
+        groupId: 'test',
+        label: 'test',
+        toJSON: () => {},
+      },
     ];
 
     navigator.mediaDevices.enumerateDevices = async () => {
@@ -118,16 +167,12 @@ suite('BrowserProxyTest', () => {
     const proxyBarcodeDetector = proxy.isBarcodeApiAvailable;
     const proxyCamera = proxy.isCameraAvailable;
 
-    const mockGetBooleanEnabled = (message) => {
-      if (message === 'qrScannerEnabled') {
-        return true;
-      }
+    const mockGetBooleanEnabled = (message: string) => {
+      return message === 'qrScannerEnabled';
     };
 
-    const mockGetBooleanDisabled = (message) => {
-      if (message === 'qrScannerEnabled') {
-        return false;
-      }
+    const mockGetBooleanDisabled = (message: string) => {
+      return message !== 'qrScannerEnabled';
     };
 
     const mockIsBarcodeApiAvailableTrue = () => true;

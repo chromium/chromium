@@ -29,7 +29,7 @@ enum PageState {
   QR_INPUT,
 }
 
-interface AccessCodeCastElement {
+export interface AccessCodeCastElement {
   $: {
     backButton: CrButtonElement,
     castButton: CrButtonElement,
@@ -44,7 +44,7 @@ interface AccessCodeCastElement {
 const AccessCodeCastElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
 
-class AccessCodeCastElement extends AccessCodeCastElementBase {
+export class AccessCodeCastElement extends AccessCodeCastElementBase {
   static get is() {
     return 'access-code-cast-app';
   }
@@ -230,6 +230,12 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
   private async cast(): Promise<RouteRequestResultCode> {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
     return castResult.resultCode as RouteRequestResultCode;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'access-code-cast-app': AccessCodeCastElement;
   }
 }
 

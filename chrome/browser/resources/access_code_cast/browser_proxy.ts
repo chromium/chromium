@@ -6,7 +6,7 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './access_code_cast.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './access_code_cast.mojom-webui.js';
 
 declare const chrome: {
   send(message: string): void,
@@ -15,7 +15,7 @@ declare const chrome: {
 
 export class BrowserProxy {
   callbackRouter: PageCallbackRouter;
-  handler: PageHandlerRemote;
+  handler: PageHandlerInterface;
 
   constructor(omitHandler?: boolean) {
     if (omitHandler) {
@@ -28,7 +28,7 @@ export class BrowserProxy {
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        this.handler.$.bindNewPipeAndPassReceiver());
+        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
   closeDialog() {

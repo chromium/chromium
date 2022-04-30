@@ -1,82 +1,35 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://access-code-cast/access_code_cast.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import {AccessCodeCastElement} from 'chrome://access-code-cast/access_code_cast.js';
+import {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
-
-class TestAccessCodeCastBrowserProxy extends TestBrowserProxy {
-  constructor (addResult, castResult, castCallback) {
-    super([
-      'addSink',
-      'castToSink'
-    ]);
-
-    this.addResult = addResult;
-    this.castResult = castResult;
-    this.castCallback = castCallback;
-  }
-
-  /** @override */
-  addSink(accessCode, discoveryMethod) {
-    this.methodCalled('addSink', {accessCode, discoveryMethod});
-    return Promise.resolve({resultCode: this.addResult});
-  }
-
-  /** @override */
-  castToSink() {
-    this.castCallback();
-    this.methodCalled('castToSink');
-    return Promise.resolve({resultCode: this.castResult});
-  }
-}
-
-/**
- * Creates a mock test proxy.
- * @return {TestBrowserProxy}
- */
-export function createTestProxy(addResult, castResult, castCallback) {
-  const callbackRouter = new PageCallbackRouter();
-  return {
-    callbackRouter,
-    callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),
-    handler: new TestAccessCodeCastBrowserProxy(
-      addResult, castResult, castCallback),
-    async isQrScanningAvailable() {
-      return Promise.resolve(true);
-    },
-    closeDialog() {},
-    isDialog() {
-      return true;
-    }
-  };
-}
+import {createTestProxy} from './test_access_code_cast_browser_proxy.js';
 
 suite('AccessCodeCastAppTest', () => {
-  /** @type {!AccessCodeCastElement} */
-  let app;
-  let mockProxy;
+  let app: AccessCodeCastElement;
 
   setup(async () => {
-    PolymerTest.clearBody();
 
-    mockProxy = createTestProxy(
+    const mockProxy = createTestProxy(
       AddSinkResultCode.OK,
       RouteRequestResultCode.OK,
       () => {}
     );
     BrowserProxy.setInstance(mockProxy);
 
+    document.body.innerHTML = '';
     app = document.createElement('access-code-cast-app');
     document.body.appendChild(app);
-
-    await waitAfterNextRender();
+    await waitAfterNextRender(app);
   });
 
   test('codeInputView is shown and qrInputView is hidded by default', () => {
@@ -267,24 +220,25 @@ suite('AccessCodeCastAppTest', () => {
     const realAddSinkAndCast = app.addSinkAndCast;
     app.addSinkAndCast = () => {
       visited = true;
+      return Promise.resolve();
     };
 
     // Enter does nothing if the access code isn't the right length
     document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-    await waitAfterNextRender();
     assertFalse(visited);
 
     app.setAccessCodeForTest('qwerty');
     document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-    await waitAfterNextRender();
     assertTrue(visited);
+
+    app.addSinkAndCast = realAddSinkAndCast;
   });
 
   test('submit button disabled during cast attempt', () => {
     app.setAccessCodeForTest('foobar');
     assertFalse(app.$.castButton.disabled);
-    const testProxy =
-        createTestProxy(AddSinkResultCode.OK, RouteRequestResultCode.OK, () => {
+    const testProxy = createTestProxy(
+      AddSinkResultCode.OK, RouteRequestResultCode.OK, () => {
           assertTrue(app.$.castButton.disabled);
         });
     BrowserProxy.setInstance(testProxy);

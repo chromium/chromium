@@ -3,21 +3,23 @@
 // found in the LICENSE file.
 
 import 'chrome://access-code-cast/passcode_input/passcode_input.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {PasscodeInputElement} from 'chrome://access-code-cast/passcode_input/passcode_input';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 suite('PasscodeInputElementTest', () => {
-  /** @type {!PasscodeInputElement} */
-  let c2cInput;
+  let c2cInput: PasscodeInputElement;
 
   setup(async () => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     c2cInput = document.createElement('c2c-passcode-input');
     c2cInput.length = 6;
     document.body.appendChild(c2cInput);
 
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
   });
 
   test('value set correctly', () => {
@@ -29,7 +31,7 @@ suite('PasscodeInputElementTest', () => {
   test('focus shown correctly', async () => {
     c2cInput.value = '';
     c2cInput.focusInput();
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertTrue(c2cInput.focused);
     assertTrue(c2cInput.getCharBox(0).classList.contains('focused'));
@@ -46,7 +48,7 @@ suite('PasscodeInputElementTest', () => {
     c2cInput.$.inputElement
         .setSelectionRange(testValue.length, testValue.length);
     c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertTrue(c2cInput.getDisplayChar(testValue.length).classList
         .contains('cursor-empty'));
@@ -70,7 +72,7 @@ suite('PasscodeInputElementTest', () => {
     // Case 2: Cursor is before all text
     c2cInput.$.inputElement.setSelectionRange(0, 0);
     c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertFalse(c2cInput.getDisplayChar(0).classList
         .contains('cursor-empty'));
@@ -94,7 +96,7 @@ suite('PasscodeInputElementTest', () => {
     // Case 3: Cursor is between characters of text
     c2cInput.$.inputElement.setSelectionRange(1, 1);
     c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertFalse(c2cInput.getDisplayChar(0).classList
         .contains('cursor-empty'));
@@ -119,7 +121,7 @@ suite('PasscodeInputElementTest', () => {
   test('disabled state propogates correctly', async () => {
     c2cInput.value = '';
     c2cInput.disabled = false;
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertFalse(c2cInput.$.inputElement.disabled);
     assertFalse(c2cInput.getDisplayChar(0).classList.contains('disabled'));
@@ -127,7 +129,7 @@ suite('PasscodeInputElementTest', () => {
     assertFalse(c2cInput.getDisplayChar(2).classList.contains('disabled'));
 
     c2cInput.disabled = true;
-    await waitAfterNextRender();
+    await waitAfterNextRender(c2cInput);
 
     assertTrue(c2cInput.$.inputElement.disabled);
     assertTrue(c2cInput.getDisplayChar(0).classList.contains('disabled'));

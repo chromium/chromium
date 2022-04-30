@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 import 'chrome://access-code-cast/error_message/error_message.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AddSinkResultCode} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import {ErrorMessageElement} from 'chrome://access-code-cast/error_message/error_message.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('ErrorMessageElementTest', () => {
-  /** @type {!ErrorMessageElement} */
-  let c2cErrorMessage;
+  let c2cErrorMessage: ErrorMessageElement;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     c2cErrorMessage = document.createElement('c2c-error-message');
     document.body.appendChild(c2cErrorMessage);
@@ -41,8 +43,9 @@ suite('ErrorMessageElementTest', () => {
     ];
 
     for (let i = 0; i < testValues.length; i++) {
-      c2cErrorMessage.setAddSinkError(testValues[i].addResult);
-      assertEquals(testValues[i].expectedMessage, c2cErrorMessage.messageCode);
+      c2cErrorMessage.setAddSinkError(testValues[i]!.addResult);
+      assertEquals(testValues[i]!.expectedMessage,
+        c2cErrorMessage.getMessageCode());
       c2cErrorMessage.setNoError();
     }
   });
@@ -81,8 +84,9 @@ suite('ErrorMessageElementTest', () => {
     ];
 
     for (let i = 0; i < testValues.length; i++) {
-      c2cErrorMessage.setCastError(testValues[i].castResult);
-      assertEquals(testValues[i].expectedMessage, c2cErrorMessage.messageCode);
+      c2cErrorMessage.setCastError(testValues[i]!.castResult);
+      assertEquals(testValues[i]!.expectedMessage,
+        c2cErrorMessage.getMessageCode());
       c2cErrorMessage.setNoError();
     }
   });
