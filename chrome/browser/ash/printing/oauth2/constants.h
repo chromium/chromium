@@ -18,6 +18,9 @@ constexpr char kRedirectURI[] = "https://TODO.set.redirect.uri/for/ipp/oauth2";
 // name.
 constexpr char kClientName[] = "ChromeOS";
 
+// Max number of parallel OAuth2 sessions with one Authorization Server.
+constexpr size_t kMaxNumberOfSessions = 8;
+
 }  // namespace oauth2
 }  // namespace printing
 }  // namespace ash

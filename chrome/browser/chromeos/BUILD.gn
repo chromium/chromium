@@ -2947,6 +2947,7 @@ source_set("chromeos") {
     "../ash/printing/oauth2/authorization_server_data.h",
     "../ash/printing/oauth2/authorization_server_session.cc",
     "../ash/printing/oauth2/authorization_server_session.h",
+    "../ash/printing/oauth2/authorization_zone.h",
     "../ash/printing/oauth2/constants.h",
     "../ash/printing/oauth2/http_exchange.cc",
     "../ash/printing/oauth2/http_exchange.h",

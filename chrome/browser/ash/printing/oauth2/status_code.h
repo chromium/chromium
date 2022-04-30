@@ -16,8 +16,6 @@ namespace oauth2 {
 enum class StatusCode {
   // Success - no errors occurred.
   kOK = 0,
-  // Required session already exists, so the authorization attempt was ignored.
-  kAlreadyAuthorized,
   // The client is registered to the server but there is no active OAuth2
   // sessions. Run the method InitAuthorization(...) and then
   // FinishAuthorization(...) to start OAuth2 session,
@@ -29,6 +27,10 @@ enum class StatusCode {
   kUnknownAuthorizationServer,
   // The server denied the request.
   kAccessDenied,
+  // RedirectURL obtained during authorization process does not match any
+  // existing session. It means that the obtained response was invalid or the
+  // session was removed (see StatusCode::kTooManySessions) in the meantime.
+  kNoMatchingSession,
   // Access token is invalid or expired (used internally only).
   kInvalidAccessToken,
   // The server sent 503 Service Unavailable HTTP status code.
@@ -39,8 +41,8 @@ enum class StatusCode {
   kInvalidResponse,
   // Cannot open HTTPS connection to the server.
   kConnectionError,
-  // Maximum number of pending authorizations was reached.
-  kTooManyPendingAuthorizations,
+  // The session was terminated because maximum number of sessions was reached.
+  kTooManySessions,
   // Unexpected or unknown error occurred.
   kUnexpectedError
 };
