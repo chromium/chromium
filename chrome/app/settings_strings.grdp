@@ -3538,6 +3538,9 @@
   <message name="IDS_SETTINGS_FIXED_WIDTH_FONT_LABEL" desc="Label for the fixed width font dropdown menu in settings.">
     Fixed-width font
   </message>
+  <message name="IDS_SETTINGS_MATH_FONT_LABEL" desc="Label for the mathematical font dropdown menu in settings.">
+    Mathematical font
+  </message>
   <message name="IDS_SETTINGS_MINIMUM_FONT_SIZE_LABEL" desc="Label for the minimum font size slider in settings.">
     Minimum font size
   </message>

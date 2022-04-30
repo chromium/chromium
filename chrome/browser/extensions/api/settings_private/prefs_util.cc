@@ -214,6 +214,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kWebKitSansSerifFontFamily] =
       settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[::prefs::kWebKitMathFontFamily] =
+      settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kWebKitSerifFontFamily] =
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::prefs::kWebKitStandardFontFamily] =

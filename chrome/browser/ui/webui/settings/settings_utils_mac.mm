@@ -66,6 +66,7 @@ void ValidateSavedFonts(PrefService* prefs) {
   ValidateFontFamily(prefs, prefs::kWebKitSerifFontFamily);
   ValidateFontFamily(prefs, prefs::kWebKitSansSerifFontFamily);
   ValidateFontFamily(prefs, prefs::kWebKitFixedFontFamily);
+  ValidateFontFamily(prefs, prefs::kWebKitMathFontFamily);
 }
 
 }  // namespace settings_utils
