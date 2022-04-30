@@ -222,9 +222,11 @@ interface NetworkServiceTest {
       => (array<FileEnumerationEntry> entries, bool error);
 
   // Creates a "simple" backend for an HTTP cache.
-  // Returns the created cache if succeeded, and null otherwise.
+  // Returns the created cache if succeeded, and null otherwise. When `reset` is
+  // true, this cleans up the cache directory before creating a cache backend.
   CreateSimpleCache(
       pending_remote<HttpCacheBackendFileOperationsFactory> factory,
-      mojo_base.mojom.FilePath path)
+      mojo_base.mojom.FilePath path,
+      bool reset)
       => (pending_remote<SimpleCache>? backend);
 };

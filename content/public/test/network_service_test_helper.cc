@@ -674,15 +674,18 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
       mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
           factory,
       const base::FilePath& path,
+      bool reset,
       CreateSimpleCacheCallback callback) override {
     auto backend_holder = base::MakeRefCounted<
         base::RefCountedData<std::unique_ptr<disk_cache::Backend>>>();
+    const auto reset_mode = reset ? disk_cache::ResetHandling::kReset
+                                  : disk_cache::ResetHandling::kResetOnError;
     int rv = disk_cache::CreateCacheBackend(
         net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
         base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
             std::move(factory)),
-        path, 64 * 1024 * 1024, disk_cache::ResetHandling::kResetOnError,
-        net::NetLog::Get(), &backend_holder->data,
+        path, 64 * 1024 * 1024, reset_mode, net::NetLog::Get(),
+        &backend_holder->data,
         base::BindOnce(&NetworkServiceTestImpl::OnCacheCreated,
                        weak_factory_.GetWeakPtr(), backend_holder,
                        std::move(callback)));

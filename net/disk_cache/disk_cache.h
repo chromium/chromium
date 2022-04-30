@@ -647,6 +647,16 @@ class BackendFileOperations {
   virtual std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) = 0;
 
+  // Deletes the given directory recursively, asynchronously. `callback` will
+  // called with whether the operation succeeded.
+  // This is done by:
+  //  1. Renaming the directory to another directory,
+  //  2. Calling `callback` with the result, and
+  //  3. Deleting the directory.
+  // This means the caller won't know the result of 3.
+  virtual void CleanupDirectory(const base::FilePath& path,
+                                base::OnceCallback<void(bool)> callback) = 0;
+
   // Unbind this object from the sequence, and returns an
   // UnboundBackendFileOperations which can be bound to any sequence. Once
   // this method is called, no methods (except for the destructor) on this
@@ -700,6 +710,8 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
       const base::FilePath& path) override;
   std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) override;
+  void CleanupDirectory(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
   std::unique_ptr<UnboundBackendFileOperations> Unbind() override;
 
  private:

@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/simple/simple_file_enumerator.h"
 #include "net/disk_cache/simple/simple_util.h"
 
@@ -197,6 +198,15 @@ class HttpCacheBackendFileOperations final
     DVLOG(1) << "EnumerateFiles: path = " << path;
     mojo::MakeSelfOwnedReceiver(std::make_unique<FileEnumerator>(path),
                                 std::move(receiver));
+  }
+
+  void CleanupDirectory(const base::FilePath& path,
+                        CleanupDirectoryCallback callback) override {
+    if (!IsValid(path, "CleanupDirectory")) {
+      std::move(callback).Run(false);
+      return;
+    }
+    disk_cache::CleanupDirectory(path, std::move(callback));
   }
 
  private:

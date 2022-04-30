@@ -85,6 +85,14 @@ interface HttpCacheBackendFileOperations {
   // Enumerates files in `path`.
   EnumerateFiles(
       mojo_base.mojom.FilePath path, pending_receiver<FileEnumerator> receiver);
+
+  // Deletes the given directory recursively, asynchronously.
+  // This is done by:
+  //  1. Renaming the directory to another directory,
+  //  2. Returning the result, and
+  //  3. Deleting the directory.
+  // This means the caller won't know the result of 3.
+  CleanupDirectory(mojo_base.mojom.FilePath path) => (bool result);
 };
 
 // A factory interface for HttpcacheBackendFileOperations.

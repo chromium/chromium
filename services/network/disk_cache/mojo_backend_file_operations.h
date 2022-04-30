@@ -38,6 +38,8 @@ class MojoBackendFileOperations final
       const base::FilePath& path) override;
   std::unique_ptr<disk_cache::BackendFileOperations::FileEnumerator>
   EnumerateFiles(const base::FilePath& path) override;
+  void CleanupDirectory(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
   std::unique_ptr<disk_cache::UnboundBackendFileOperations> Unbind() override;
 
  private:

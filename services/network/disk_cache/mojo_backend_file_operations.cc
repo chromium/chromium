@@ -135,6 +135,12 @@ MojoBackendFileOperations::EnumerateFiles(const base::FilePath& path) {
   return std::make_unique<FileEnumeratorImpl>(std::move(remote));
 }
 
+void MojoBackendFileOperations::CleanupDirectory(
+    const base::FilePath& path,
+    base::OnceCallback<void(bool)> callback) {
+  remote_->CleanupDirectory(path, std::move(callback));
+}
+
 std::unique_ptr<disk_cache::UnboundBackendFileOperations>
 MojoBackendFileOperations::Unbind() {
   return std::make_unique<UnboundMojoBackendFileOperations>(remote_.Unbind());

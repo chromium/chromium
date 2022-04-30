@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -128,7 +129,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
         factory_remote.InitWithNewPipeAndPassReceiver());
 
     network_service_test()->CreateSimpleCache(
-        std::move(factory_remote), path,
+        std::move(factory_remote), path, /*reset=*/false,
         base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
           if (cache) {
             simple_cache.Bind(std::move(cache));
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateSimpleCache) {
       factory_remote.InitWithNewPipeAndPassReceiver());
 
   network_service_test()->CreateSimpleCache(
-      std::move(factory_remote), root_path,
+      std::move(factory_remote), root_path, /*reset=*/false,
       base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
         if (cache) {
           simple_cache.Bind(std::move(cache));
@@ -341,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   // We expect the network service to crash due to a bad mojo message.
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   network_service_test()->CreateSimpleCache(
-      std::move(factory_remote), path,
+      std::move(factory_remote), path, /*reset=*/false,
       base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
         EXPECT_FALSE(cache.is_valid());
       }));
@@ -366,12 +367,52 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   // We expect the network service to crash due to a bad mojo message.
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   network_service_test()->CreateSimpleCache(
-      std::move(factory_remote), path,
+      std::move(factory_remote), path, /*reset=*/false,
       base::BindOnce([](mojo::PendingRemote<SimpleCache> cache) {
         EXPECT_FALSE(cache.is_valid());
       }));
   run_loop.Run();
   IgnoreNetworkServiceCrashes();
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
+                       CreateSimpleCacheWithReset) {
+  base::RunLoop run_loop;
+
+  const base::FilePath root_path = GetTempDirPath();
+  const base::FilePath path = root_path.Append(FILE_PATH_LITERAL("cache-dir"));
+  const base::FilePath child_path = path.Append(FILE_PATH_LITERAL("child"));
+  mojo::Remote<SimpleCache> simple_cache;
+  mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+      factory_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root_path),
+      factory_remote.InitWithNewPipeAndPassReceiver());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(path));
+    ASSERT_TRUE(base::CreateDirectory(child_path));
+    ASSERT_TRUE(base::PathExists(child_path));
+  }
+
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  network_service_test()->CreateSimpleCache(
+      std::move(factory_remote), path, /*reset=*/true,
+      base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
+        if (cache) {
+          simple_cache.Bind(std::move(cache));
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  ASSERT_TRUE(simple_cache.is_bound());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(path));
+    EXPECT_FALSE(base::PathExists(child_path));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateEntry) {
