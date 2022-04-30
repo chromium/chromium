@@ -161,6 +161,16 @@ ASH_EXPORT extern const size_t kActionsNeedingWindowLength;
 ASH_EXPORT extern const AcceleratorAction kActionsKeepingMenuOpen[];
 ASH_EXPORT extern const size_t kActionsKeepingMenuOpenLength;
 
+// Actions that are duplicated with browser shortcuts.
+ASH_EXPORT extern const AcceleratorAction kActionsDuplicatedWithBrowser[];
+ASH_EXPORT extern const size_t kActionsDuplicatedWithBrowserLength;
+
+// Actions that are interceptable by browser.
+// These actions are ash's shortcuts, but they are sent to the browser
+// once in order to make it interceptable by webpage/apps.
+ASH_EXPORT extern const AcceleratorAction kActionsInterceptableByBrowser[];
+ASH_EXPORT extern const size_t kActionsInterceptableByBrowserLength;
+
 }  // namespace ash
 
 #endif  // ASH_ACCELERATORS_ACCELERATOR_TABLE_H_

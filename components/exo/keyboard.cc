@@ -4,6 +4,7 @@
 
 #include "components/exo/keyboard.h"
 
+#include "ash/accelerators/accelerator_table.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -13,6 +14,8 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
@@ -146,25 +149,27 @@ bool ProcessAshAcceleratorIfPossible(Surface* surface, ui::KeyEvent* event) {
   if (CanConsumeAshAccelerators(surface))
     return false;
 
-  // TODO(crbug.com/1301977): Remove this workaround on fixing acceleartor
-  // handling for lacros.
-  const ui::Accelerator kAppHandlingAccelerators[] = {
-      // Ctrl-N (new window), Shift-Ctrl-N (new incognite window), Ctrl-T (new
-      // tab), and Shit-Ctrl-T (restore tab) need to be sent to the active
-      // client even when the active window is lacros-chrome, since the
-      // ash-chrome does not handle these new-window requests properly at this
-      // moment.
-      {ui::VKEY_N, ui::EF_CONTROL_DOWN},
-      {ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
-      {ui::VKEY_T, ui::EF_CONTROL_DOWN},
-      {ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
-      // Also forward Ctrl-/ and Shift-Ctrl-/ so Lacros processes the help app
-      // opening while it can be intercepted.
-      {ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN},
-      {ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
-  };
+  // If accelerators can be processed by browser, send it to the app.
+  static const base::NoDestructor<std::vector<ui::Accelerator>>
+      kAppHandlingAccelerators([] {
+        std::vector<ui::Accelerator> result;
+        for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
+          const auto& ash_entry = ash::kAcceleratorData[i];
+          if (base::Contains(base::span<const ash::AcceleratorAction>(
+                                 ash::kActionsInterceptableByBrowser,
+                                 ash::kActionsInterceptableByBrowserLength),
+                             ash_entry.action) ||
+              base::Contains(base::span<const ash::AcceleratorAction>(
+                                 ash::kActionsDuplicatedWithBrowser,
+                                 ash::kActionsDuplicatedWithBrowserLength),
+                             ash_entry.action)) {
+            result.emplace_back(ash_entry.keycode, ash_entry.modifiers);
+          }
+        }
+        return result;
+      }());
   ui::Accelerator accelerator(*event);
-  if (base::Contains(kAppHandlingAccelerators, accelerator))
+  if (base::Contains(*kAppHandlingAccelerators, accelerator))
     return false;
 
   return ash::AcceleratorController::Get()->Process(accelerator);

@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "build/branding_buildflags.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -15,6 +16,7 @@
 #include "ui/events/event_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/accelerators/accelerator_table.h"
 #include "ash/public/cpp/accelerators.h"
 #endif
 
@@ -73,23 +75,21 @@ TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
     // A few shortcuts are defined in the browser as well as in ash so that web
     // contents can consume them. http://crbug.com/309915, 370019, 412435,
     // 321568.
-    if (ash_entry.action == ash::WINDOW_MINIMIZE ||
-        ash_entry.action == ash::SHOW_TASK_MANAGER ||
-        ash_entry.action == ash::OPEN_GET_HELP ||
-        ash_entry.action == ash::MINIMIZE_TOP_WINDOW_ON_BACK)
+    if (base::Contains(base::span<const ash::AcceleratorAction>(
+                           ash::kActionsInterceptableByBrowser,
+                           ash::kActionsInterceptableByBrowserLength),
+                       ash_entry.action)) {
       continue;
+    }
 
     // The following actions are duplicated in both ash and browser accelerator
     // list to ensure BrowserView can retrieve browser command id from the
     // accelerator without needing to know ash.
     // See http://crbug.com/737307 for details.
-    if (ash_entry.action == ash::NEW_WINDOW ||
-        ash_entry.action == ash::NEW_INCOGNITO_WINDOW ||
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        ash_entry.action == ash::OPEN_FEEDBACK_PAGE ||
-#endif
-        ash_entry.action == ash::RESTORE_TAB ||
-        ash_entry.action == ash::NEW_TAB) {
+    if (base::Contains(base::span<const ash::AcceleratorAction>(
+                           ash::kActionsDuplicatedWithBrowser,
+                           ash::kActionsDuplicatedWithBrowserLength),
+                       ash_entry.action)) {
       AcceleratorMapping entry;
       entry.keycode = ash_entry.keycode;
       entry.modifiers = ash_entry.modifiers;

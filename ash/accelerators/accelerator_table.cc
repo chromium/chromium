@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "build/branding_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -434,5 +435,33 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
 };
 
 const size_t kActionsKeepingMenuOpenLength = std::size(kActionsKeepingMenuOpen);
+
+const AcceleratorAction kActionsDuplicatedWithBrowser[] = {
+    // clang-format off
+    NEW_WINDOW,
+    NEW_INCOGNITO_WINDOW,
+    RESTORE_TAB,
+    NEW_TAB,
+// clang-format on
+
+// OPEN_FEEDBACK_PAGE is guarded by the BRANDING macro on defining Browser's
+// shortcuts. To follow it, guard it here, too.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    OPEN_FEEDBACK_PAGE,
+#endif
+};
+
+const size_t kActionsDuplicatedWithBrowserLength =
+    std::size(kActionsDuplicatedWithBrowser);
+
+const AcceleratorAction kActionsInterceptableByBrowser[] = {
+    WINDOW_MINIMIZE,
+    SHOW_TASK_MANAGER,
+    OPEN_GET_HELP,
+    MINIMIZE_TOP_WINDOW_ON_BACK,
+};
+
+const size_t kActionsInterceptableByBrowserLength =
+    std::size(kActionsInterceptableByBrowser);
 
 }  // namespace ash
