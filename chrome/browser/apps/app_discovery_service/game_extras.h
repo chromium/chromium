@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace apps {
 
@@ -19,7 +19,7 @@ class GameExtras : public SourceExtras {
   GameExtras(const absl::optional<std::vector<std::u16string>>& platforms,
              const std::u16string& source,
              const std::u16string& publisher,
-             const GURL& icon_url);
+             const base::FilePath& relative_icon_path);
   GameExtras(const GameExtras&);
   GameExtras& operator=(const GameExtras&) = delete;
   ~GameExtras() override;
@@ -32,7 +32,7 @@ class GameExtras : public SourceExtras {
   const std::u16string& GetSource() const;
   // The company that published the game.
   const std::u16string& GetPublisher() const;
-  const GURL& GetIconUrl() const;
+  const base::FilePath& GetRelativeIconPath() const;
 
   // Result::SourceExtras:
   GameExtras* AsGameExtras() override;
@@ -41,7 +41,7 @@ class GameExtras : public SourceExtras {
   absl::optional<std::vector<std::u16string>> platforms_;
   std::u16string source_;
   std::u16string publisher_;
-  GURL icon_url_;
+  base::FilePath relative_icon_path_;
 };
 
 }  // namespace apps

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
@@ -134,7 +135,8 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     auto extras = std::make_unique<GameExtras>(
         GetPlatforms(app_with_locale.app()),
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
-        base::UTF8ToUTF16(app_with_locale.app().publisher_name()), GURL());
+        base::UTF8ToUTF16(app_with_locale.app().publisher_name()),
+        base::FilePath(app_with_locale.app().icon_info().icon_path()));
     results.push_back(Result(
         AppSource::kGames, app_with_locale.app().app_id_for_platform(),
         GetLocalisedName(app_with_locale.locale_availability(), profile_),

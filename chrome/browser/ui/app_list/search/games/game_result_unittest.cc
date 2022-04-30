@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
@@ -19,7 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace app_list {
 
@@ -42,7 +42,8 @@ TEST_F(GameResultTest, Basic) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          u"SourceName", u"TestGamePublisher", GURL("https://icon-url.com/")));
+          u"SourceName", u"TestGamePublisher",
+          base::FilePath("/icons/test.png")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,
                     apps_result, 0.6, u"SomeGame");
@@ -70,7 +71,7 @@ TEST_F(GameResultTest, NoPlatforms) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({})), u"SourceName",
-          u"TestGamePublisher", GURL("https://icon-url.com/")));
+          u"TestGamePublisher", base::FilePath("/icons/test.png")));
 
   GameResult result1(profile_.get(), &list_controller_, app_discovery_service,
                      apps_result1, 0.6, u"SomeGame");
@@ -81,7 +82,7 @@ TEST_F(GameResultTest, NoPlatforms) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(absl::nullopt, u"SourceName",
                                          u"TestGamePublisher",
-                                         GURL("https://icon-url.com/")));
+                                         base::FilePath("/icons/test.png")));
 
   GameResult result2(profile_.get(), &list_controller_, app_discovery_service,
                      apps_result1, 0.6, u"SomeGame");

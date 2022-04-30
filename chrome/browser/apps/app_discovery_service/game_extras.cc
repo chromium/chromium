@@ -6,17 +6,19 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+
 namespace apps {
 
 GameExtras::GameExtras(
     const absl::optional<std::vector<std::u16string>>& platforms,
     const std::u16string& source,
     const std::u16string& publisher,
-    const GURL& icon_url)
+    const base::FilePath& relative_icon_path)
     : platforms_(platforms),
       source_(source),
       publisher_(publisher),
-      icon_url_(icon_url) {}
+      relative_icon_path_(relative_icon_path) {}
 
 GameExtras::GameExtras(const GameExtras&) = default;
 
@@ -39,8 +41,8 @@ const std::u16string& GameExtras::GetPublisher() const {
   return publisher_;
 }
 
-const GURL& GameExtras::GetIconUrl() const {
-  return icon_url_;
+const base::FilePath& GameExtras::GetRelativeIconPath() const {
+  return relative_icon_path_;
 }
 
 GameExtras* GameExtras::AsGameExtras() {

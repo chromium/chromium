@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
@@ -17,7 +18,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace app_list {
 namespace {
@@ -34,7 +34,8 @@ apps::Result MakeAppsResult(const std::u16string& title) {
       apps::AppSource::kGames, "12345", title,
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          u"SourceName", u"TestGamePublisher", GURL("https://icon-url.com/")));
+          u"SourceName", u"TestGamePublisher",
+          base::FilePath("/icons/test.png")));
 }
 
 }  // namespace
