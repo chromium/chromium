@@ -41,17 +41,6 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-
-      <!-- Dark mode -->
-      <template is="dom-if" if="[[isDarkModeAllowed_]]">
-        <cr-link-row
-            class="hr"
-            id="darkModeRow"
-            label="$i18n{darkModeTitle}"
-            on-click="navigateToDarkMode_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
     </template>
   </div>
 
@@ -76,12 +65,5 @@
       </settings-subpage>
     </template>
 
-  </template>
-
-  <template is="dom-if" route-path="/darkMode">
-    <settings-subpage page-title="$i18n{darkModeTitle}">
-      <settings-dark-mode-subpage prefs="{{prefs}}">
-      </settings-dark-mode-subpage>
-    </settings-subpage>
   </template>
 </settings-animated-pages>

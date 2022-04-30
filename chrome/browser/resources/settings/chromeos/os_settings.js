@@ -39,7 +39,6 @@ import './multidevice_page/multidevice_page.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
 import './personalization_page/change_picture.js';
-import './personalization_page/dark_mode_subpage.js';
 import './personalization_page/personalization_page.js';
 import './os_a11y_page/change_dictation_locale_dialog.js';
 import './os_about_page/channel_switcher_dialog.js';

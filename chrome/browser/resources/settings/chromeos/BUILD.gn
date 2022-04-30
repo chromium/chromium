@@ -615,7 +615,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_toolbar/os_toolbar.js",
     "chromeos/parental_controls_page/parental_controls_page.js",
     "chromeos/personalization_page/change_picture.js",
-    "chromeos/personalization_page/dark_mode_subpage.js",
     "chromeos/personalization_page/personalization_page.js",
     "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
   ]

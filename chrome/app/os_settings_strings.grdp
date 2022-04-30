@@ -803,59 +803,6 @@
     Celsius
   </message>
 
-  <!-- Dark Mode Page -->
-  <message name="IDS_OS_SETTINGS_DARK_MODE_TITLE" desc="Label for row in settings page that opens the dark mode settings page to schedule enabling and disabling dark mode time and modes.">
-    Dark theme
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_ON" desc="Label for the toggle row in dark mode settings page when it is enabled.">
-    On
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_OFF" desc="Label for the toggle row in dark mode settings page when it is disabled.">
-    Off
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_RADIO_GROUP_TITLE" desc="The title of the radio group that allows the user to configure the accent color of the dark mode.">
-    Accent color
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_RADIO_GROUP_DESCRIPTION" desc="The description of the radio group that allows the user to configure the accent color of the dark mode.">
-    Choose the color theme for Launcher, shelf, Quick Settings, and more
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_ON" desc="Label for the checkbox which set the color mode is computed based on the user's wallpaper.">
-    Based on your wallpaper
-  </message>
-  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_OFF" desc="Label for the checkbox which set the color mode to default color than calculated from the current wallpaper.">
-    Neutral
-  </message>
-    <message name="IDS_SETTINGS_DARK_MODE_ON_AT_SUNSET" desc="The sub label for the automatic schedule which explains that Dark Mode will turn on automatically at sunset.">
-    Dark mode will turn on automatically at sunset
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_OFF_AT_SUNRISE" desc="The sub label for the automatic schedule which explains that Dark Mode will turn off automatically at sunrise.">
-    Dark mode will turn off automatically at sunrise
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_CUSTOM" desc="The label of the option to set a custom schedule of the Dark Mode feature.">
-    Custom
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_LABEL" desc="The label for the automatic schedule section of the Dark Mode feature.">
-    Schedule
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_NEVER" desc="The label of the option to turn off the automatic schedule of the Dark Mode feature.">
-    Never
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_SUNSET_TO_SUNRISE" desc="The label of the option to set the automatic schedule of the Dark Mode feature to turn on at sunset and off at sunrise.">
-    Sunset to sunrise
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SUBLABEL_SUNSET_TO_SUNRISE_OFF" desc="The sub label for row in personalization settings page that indicates that dark mode is off and will be automatically turned on at sunset.">
-    Off / Will turn on automatically at sunset
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SUBLABEL_SUNSET_TO_SUNRISE_ON" desc="The sub label for row in personalization settings page that indicates that dark mode is on and will be automatically turned off at sunrise.">
-    On / Will turn off automatically at sunrise
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SUBLABEL_CUSTOM_OFF" desc="The sub label for row in personalization settings page that indicates that dark mode is off and will be automatically turned on at the user's custom start time.">
-    Off / Will turn on automatically at <ph name="TIME">$1<ex>6:30 PM</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_DARK_MODE_SUBLABEL_CUSTOM_ON" desc="The sub label for row in personalization settings page that indicates dark mode is on and will be automatically turned off at the user's custom end time.">
-    On / Will turn off automatically at <ph name="TIME">$1<ex>10:45 AM</ex></ph>
-  </message>
-
   <!-- Search and Assistant section. -->
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">
     Preferred search engine

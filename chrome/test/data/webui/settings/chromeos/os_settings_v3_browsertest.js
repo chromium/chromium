@@ -372,7 +372,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  // TODO(crbug/1240970): Re-enable once flakiness is fixed.
  // ['CupsPrinterPage', 'cups_printer_page_tests.js'],
- ['DarkModeSubpage', 'dark_mode_subpage_tests.js'],
  ['DateTimePage', 'date_time_page_tests.js'],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],

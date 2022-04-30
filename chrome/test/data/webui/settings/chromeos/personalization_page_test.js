@@ -5,7 +5,7 @@
 import {PersonalizationHubBrowserProxyImpl, Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -37,13 +37,6 @@ function createPersonalizationPage() {
         },
       },
     },
-    ash: {
-      dark_mode: {
-        enabled: {
-          value: true,
-        }
-      }
-    }
   });
 
   personalizationPage.set('pageVisibility', {
@@ -68,10 +61,9 @@ suite('PersonalizationHandler', function() {
     createPersonalizationPage();
   });
 
-  teardown(async function() {
+  teardown(function() {
     personalizationPage.remove();
     Router.getInstance().resetRouteForTesting();
-    await flushTasks();
   });
 
   test('wallpaperManager', async () => {
@@ -137,36 +129,6 @@ suite('PersonalizationHandler', function() {
       row.click();
       assertEquals(routes.AMBIENT_MODE, Router.getInstance().getCurrentRoute());
     }
-  });
-
-  test('darkMode', function() {
-    const isGuest = loadTimeData.getBoolean('isGuest');
-    // Enable dark mode feature and guest mode, so dark mode row should be
-    // hidden due to no personalization section show in the guest mode.
-    loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: true});
-    assertTrue(loadTimeData.getBoolean('isDarkModeAllowed'));
-    flush();
-    let row = personalizationPage.$$('#darkModeRow');
-    assertTrue(!row);
-
-    // Disable guest mode and check that dark mode row shows up.
-    loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: false});
-    assertFalse(loadTimeData.getBoolean('isGuest'));
-    createPersonalizationPage();
-    flush();
-    row = personalizationPage.$$('#darkModeRow');
-    assertFalse(!row);
-    row.click();
-    assertTrue(routes.DARK_MODE === Router.getInstance().getCurrentRoute());
-
-    // Disable dark mode feature and check that dark mode row is hidden.
-    loadTimeData.overrideValues({isDarkModeAllowed: false, isGuest: false});
-    assertFalse(loadTimeData.getBoolean('isDarkModeAllowed'));
-    createPersonalizationPage();
-    personalizationPage.prefs.ash.dark_mode.enabled.value = false;
-    flush();
-    row = personalizationPage.$$('#darkModeRow');
-    assertTrue(!row);
   });
 
   test('Deep link to change account picture', async () => {

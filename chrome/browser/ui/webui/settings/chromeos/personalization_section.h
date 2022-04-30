@@ -44,8 +44,6 @@ class PersonalizationSection : public OsSettingsSection {
   // ash::AmbientModeService::Observer:
   void OnAmbientModeEnabledStateChanged();
 
-  void OnDarkModeEnabledStateChanged();
-
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };

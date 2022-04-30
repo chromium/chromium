@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
   deps = [
     ":change_picture",
     ":change_picture_browser_proxy",
-    ":dark_mode_subpage",
     ":personalization_hub_browser_proxy",
     ":personalization_page",
     ":wallpaper_browser_proxy",
@@ -46,16 +45,6 @@ js_library("change_picture_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-js_library("dark_mode_subpage") {
-  deps = [
-    "..:os_route",
-    "..:prefs_behavior",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
 js_library("personalization_page") {
   deps = [
     ":personalization_hub_browser_proxy",
@@ -83,7 +72,6 @@ js_library("wallpaper_browser_proxy") {
 html_to_js("web_components") {
   js_files = [
     "change_picture.js",
-    "dark_mode_subpage.js",
     "personalization_page.js",
   ]
 }

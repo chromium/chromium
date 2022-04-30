@@ -10,7 +10,6 @@ import '../ambient_mode_page/ambient_mode_page.js';
 import '../ambient_mode_page/ambient_mode_photos_page.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import './change_picture.js';
-import './dark_mode_subpage.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
@@ -54,15 +53,6 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isAmbientModeEnabled');
-      },
-      readOnly: true,
-    },
-
-    /** @private */
-    isDarkModeAllowed_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isDarkModeAllowed');
       },
       readOnly: true,
     },
@@ -159,11 +149,6 @@ Polymer({
   /** @private */
   navigateToAmbientMode_() {
     Router.getInstance().navigateTo(routes.AMBIENT_MODE);
-  },
-
-  /** @private */
-  navigateToDarkMode_() {
-    Router.getInstance().navigateTo(routes.DARK_MODE);
   },
 
   /**

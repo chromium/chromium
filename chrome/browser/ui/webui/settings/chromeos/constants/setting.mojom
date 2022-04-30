@@ -144,10 +144,10 @@ enum Setting {
   kAmbientModeOnOff = 501,
   kAmbientModeSource = 502,
   kChangeDeviceAccountImage = 503,
-  // Note: Value 504 was for deprecated kAmbientModeUpdatePhotosContainers.
+  // Note: Values 504, 505, and 506 were for deprecated
+  // kAmbientModeUpdatePhotosContainers, kDarkModeOnOff and
+  // kDarkModeThemed respectively.
   // Do not reuse.
-  kDarkModeOnOff = 505,
-  kDarkModeThemed = 506,
 
   // Search and Assistant section.
   kPreferredSearchEngine = 600,
