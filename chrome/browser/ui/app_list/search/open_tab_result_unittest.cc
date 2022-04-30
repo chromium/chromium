@@ -31,14 +31,14 @@ class OpenTabResultTest : public testing::Test {
 
   ~OpenTabResultTest() override {}
 
-  std::unique_ptr<OpenTabResult> MakeResult(const std::string& query,
-                                            const std::string& description,
-                                            const std::string& url) {
+  std::unique_ptr<OpenTabResult> MakeResult(const std::u16string& query,
+                                            const std::u16string& description,
+                                            const std::u16string& url) {
     AutocompleteMatch match;
-    match.description = base::UTF8ToUTF16(description);
+    match.description = description;
     match.destination_url = GURL(url);
-    TokenizedString tokenized_query(base::UTF8ToUTF16(query),
-                                    TokenizedString::Mode::kWords);
+    match.relevance = 1000;
+    TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
     return std::make_unique<OpenTabResult>(nullptr, nullptr, nullptr,
                                            tokenized_query, match);
   }
@@ -46,7 +46,8 @@ class OpenTabResultTest : public testing::Test {
 
 TEST_F(OpenTabResultTest, Basic) {
   std::unique_ptr<OpenTabResult> result =
-      MakeResult("query", "queryabc", "http://www.website.com");
+      MakeResult(u"query", u"queryabc", u"http://www.website.com");
+
   EXPECT_EQ(result->title(), u"queryabc");
   EXPECT_EQ(
       StringFromTextVector(result->details_text_vector()),
@@ -56,6 +57,17 @@ TEST_F(OpenTabResultTest, Basic) {
       result->accessible_name(),
       base::StrCat({u"queryabc, http://www.website.com/, ",
                     l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
+}
+
+TEST_F(OpenTabResultTest, ManuallyCalculateRelevance) {
+  std::unique_ptr<OpenTabResult> result1 =
+      MakeResult(u"query", u"queryabc", u"http://www.website.com");
+  std::unique_ptr<OpenTabResult> result2 =
+      MakeResult(u"queryabc", u"queryabc", u"http://www.website.com");
+
+  // The results were given the same |match.relevance|, but the closer query
+  // should have higher score.
+  EXPECT_GT(result2->relevance(), result1->relevance());
 }
 
 }  // namespace app_list

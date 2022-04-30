@@ -61,8 +61,12 @@ OpenTabResult::OpenTabResult(Profile* profile,
   SetMetricsType(ash::OPEN_TAB);
   SetCategory(Category::kWeb);
 
-  // Derive relevance from omnibox relevance and normalize it to [0, 1].
-  set_relevance(match_.relevance / kMaxOmniboxScore);
+  // Ignore `match_.relevance` and manually calculate a relevance score for this
+  // result.
+  TokenizedStringMatch string_match;
+  TokenizedString title(match_.description);
+  string_match.Calculate(query, title);
+  set_relevance(string_match.relevance());
 
   UpdateText();
   UpdateIcon();
