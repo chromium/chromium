@@ -5115,8 +5115,8 @@ static_library("browser") {
       "profiles/gaia_info_update_service.h",
       "profiles/gaia_info_update_service_factory.cc",
       "profiles/gaia_info_update_service_factory.h",
-      "signin/chrome_signin_status_metrics_provider_delegate.cc",
-      "signin/chrome_signin_status_metrics_provider_delegate.h",
+      "signin/chrome_signin_and_sync_status_metrics_provider.cc",
+      "signin/chrome_signin_and_sync_status_metrics_provider.h",
     ]
 
     if (!is_android && !is_chromeos_lacros) {

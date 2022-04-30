@@ -47,6 +47,9 @@ class AndroidSessionDurationsService : public KeyedService {
   AndroidSessionDurationsService& operator=(
       const AndroidSessionDurationsService&) = delete;
 
+  bool IsSignedIn() const;
+  bool IsSyncing() const;
+
   // KeyedService:
   void Shutdown() override;
 

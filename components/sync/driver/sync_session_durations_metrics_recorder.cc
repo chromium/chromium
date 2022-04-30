@@ -69,6 +69,15 @@ SyncSessionDurationsMetricsRecorder::~SyncSessionDurationsMetricsRecorder() {
   identity_manager_observation_.Reset();
 }
 
+bool SyncSessionDurationsMetricsRecorder::IsSignedIn() const {
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+bool SyncSessionDurationsMetricsRecorder::IsSyncing() const {
+  return account_status_ == FeatureState::ON &&
+         sync_status_ == FeatureState::ON;
+}
+
 void SyncSessionDurationsMetricsRecorder::OnSessionStarted(
     base::TimeTicks session_start) {
   DVLOG(1) << "Session start";

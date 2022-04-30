@@ -42,12 +42,8 @@ static_library("browser") {
     "signin_internals_util.h",
     "signin_investigator.cc",
     "signin_investigator.h",
-    "signin_status_metrics_provider.cc",
-    "signin_status_metrics_provider.h",
-    "signin_status_metrics_provider_base.cc",
-    "signin_status_metrics_provider_base.h",
-    "signin_status_metrics_provider_delegate.cc",
-    "signin_status_metrics_provider_delegate.h",
+    "signin_status_metrics_provider_helpers.cc",
+    "signin_status_metrics_provider_helpers.h",
   ]
 
   public_deps = [
@@ -87,10 +83,6 @@ static_library("browser") {
       "//ash/components/tpm",
       "//chromeos/crosapi/mojom",
     ]
-    sources -= [
-      "signin_status_metrics_provider.cc",
-      "signin_status_metrics_provider_delegate.cc",
-    ]
   }
 
   if (is_chromeos_lacros) {
@@ -126,7 +118,7 @@ source_set("unit_tests") {
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
     "signin_investigator_unittest.cc",
-    "signin_status_metrics_provider_unittest.cc",
+    "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 
   deps = [
@@ -158,7 +150,7 @@ source_set("unit_tests") {
     ]
     sources -= [
       "account_investigator_unittest.cc",
-      "signin_status_metrics_provider_unittest.cc",
+      "signin_status_metrics_provider_helpers_unittest.cc",
     ]
   }
 

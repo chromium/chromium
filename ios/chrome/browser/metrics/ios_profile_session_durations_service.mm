@@ -48,3 +48,11 @@ void IOSProfileSessionDurationsService::OnSessionEnded(
 bool IOSProfileSessionDurationsService::IsSessionActive() {
   return is_session_active_;
 }
+
+bool IOSProfileSessionDurationsService::IsSignedIn() const {
+  return metrics_recorder_->IsSignedIn();
+}
+
+bool IOSProfileSessionDurationsService::IsSyncing() const {
+  return metrics_recorder_->IsSyncing();
+}

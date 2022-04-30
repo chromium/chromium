@@ -45,6 +45,8 @@ source_set("metrics") {
     "ios_chrome_metrics_service_client.mm",
     "ios_chrome_metrics_services_manager_client.h",
     "ios_chrome_metrics_services_manager_client.mm",
+    "ios_chrome_signin_and_sync_status_metrics_provider.h",
+    "ios_chrome_signin_and_sync_status_metrics_provider.mm",
     "ios_chrome_stability_metrics_provider.h",
     "ios_chrome_stability_metrics_provider.mm",
     "ios_profile_session_durations_service.h",

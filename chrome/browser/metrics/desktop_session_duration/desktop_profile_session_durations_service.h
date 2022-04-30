@@ -41,6 +41,9 @@ class DesktopProfileSessionDurationsService
 
   ~DesktopProfileSessionDurationsService() override;
 
+  bool IsSignedIn() const;
+  bool IsSyncing() const;
+
   // DesktopSessionDurationtracker::Observer:
   void OnSessionStarted(base::TimeTicks session_start) override;
   void OnSessionEnded(base::TimeDelta session_length,

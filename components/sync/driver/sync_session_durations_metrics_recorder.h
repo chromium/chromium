@@ -35,6 +35,23 @@ class SyncSessionDurationsMetricsRecorder
 
   ~SyncSessionDurationsMetricsRecorder() override;
 
+  // Returns whether the user is signed in.
+  // Note: this is not the same thing as |account_status_|.
+  // |account_status_| says OFF (kind of like sayng "no, not signed-in") if the
+  // account is in an error state.  IsSignedIn() does not; it will return
+  // true for accounts that are signed-in in yet an error state.
+  // The most common reason this happens is if a syncing user signs out
+  // of the content area.  They will be put in an error state; this
+  // function will return true.
+  bool IsSignedIn() const;
+
+  // Returns whether the user is syncing.
+  // Note: this is not the same as |sync_status_|.
+  // |sync_status_| says ON (kind of like saying "yes, syncing") even if
+  // syncing is paused because the user signed out (i.e., the account is in an
+  // error state).  IsSyncing() returns false in those cases.
+  bool IsSyncing() const;
+
   // Informs this service that a session started at |session_start| time.
   void OnSessionStarted(base::TimeTicks session_start);
   void OnSessionEnded(base::TimeDelta session_length);
@@ -81,7 +98,7 @@ class SyncSessionDurationsMetricsRecorder
   // refresh token in the identity manager.
   FeatureState DeterminePrimaryAccountStatus() const;
 
-  // Determines the syns status..
+  // Determines the sync status.
   FeatureState DetermineSyncStatus() const;
 
   const raw_ptr<SyncService> sync_service_;

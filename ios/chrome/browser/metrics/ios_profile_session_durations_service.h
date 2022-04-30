@@ -43,6 +43,9 @@ class IOSProfileSessionDurationsService : public KeyedService {
   virtual void OnSessionEnded(base::TimeDelta session_length);
   virtual bool IsSessionActive();
 
+  bool IsSignedIn() const;
+  bool IsSyncing() const;
+
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
       metrics_recorder_;

@@ -108,6 +108,14 @@ void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
   OnAppEnterForeground(base::TimeTicks::Now());
 }
 
+bool AndroidSessionDurationsService::IsSignedIn() const {
+  return sync_session_metrics_recorder_->IsSignedIn();
+}
+
+bool AndroidSessionDurationsService::IsSyncing() const {
+  return sync_session_metrics_recorder_->IsSyncing();
+}
+
 void AndroidSessionDurationsService::Shutdown() {
   sync_session_metrics_recorder_.reset();
   incognito_session_metrics_recorder_.reset();

@@ -40,8 +40,6 @@ source_set("signin") {
     "identity_manager_factory_observer.h",
     "ios_chrome_signin_client.h",
     "ios_chrome_signin_client.mm",
-    "ios_chrome_signin_status_metrics_provider_delegate.h",
-    "ios_chrome_signin_status_metrics_provider_delegate.mm",
     "pattern_account_restriction.h",
     "pattern_account_restriction.mm",
     "resized_avatar_cache.h",

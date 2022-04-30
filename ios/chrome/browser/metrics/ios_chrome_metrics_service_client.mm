@@ -53,7 +53,6 @@
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_status_metrics_provider.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
 #include "components/ukm/ukm_service.h"
@@ -70,10 +69,10 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/metrics/chrome_browser_state_client.h"
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
+#include "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
-#include "ios/chrome/browser/signin/ios_chrome_signin_status_metrics_provider_delegate.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
@@ -324,8 +323,7 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<metrics::CallStackProfileMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      SigninStatusMetricsProvider::CreateInstance(
-          std::make_unique<IOSChromeSigninStatusMetricsProviderDelegate>()));
+      std::make_unique<IOSChromeSigninAndSyncStatusMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<MobileSessionShutdownMetricsProvider>(

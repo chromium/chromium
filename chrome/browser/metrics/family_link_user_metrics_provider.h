@@ -9,7 +9,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -5258,7 +5258,6 @@ test("unit_tests") {
     "../browser/signin/chrome_signin_client_unittest.cc",
     "../browser/signin/chrome_signin_helper_unittest.cc",
     "../browser/signin/chrome_signin_proxying_url_loader_factory_unittest.cc",
-    "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
     "../browser/signin/chrome_signin_url_loader_throttle_unittest.cc",
     "../browser/signin/primary_account_policy_manager_unittest.cc",
     "../browser/signin/reauth_tab_helper_unittest.cc",
@@ -6854,7 +6853,6 @@ test("unit_tests") {
     sources -= [
       "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
       "../browser/profiles/gaia_info_update_service_unittest.cc",
-      "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
 

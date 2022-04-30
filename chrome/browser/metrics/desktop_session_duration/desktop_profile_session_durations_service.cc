@@ -49,6 +49,14 @@ void DesktopProfileSessionDurationsService::Shutdown() {
   sync_metrics_recorder_.reset();
 }
 
+bool DesktopProfileSessionDurationsService::IsSignedIn() const {
+  return sync_metrics_recorder_->IsSignedIn();
+}
+
+bool DesktopProfileSessionDurationsService::IsSyncing() const {
+  return sync_metrics_recorder_->IsSyncing();
+}
+
 void DesktopProfileSessionDurationsService::OnSessionStarted(
     base::TimeTicks session_start) {
   sync_metrics_recorder_->OnSessionStarted(session_start);
