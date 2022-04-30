@@ -96,7 +96,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
             ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
             ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
-            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING,
+            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
     };
 
     // Key used to store the email of the signed in account. This email is obtained from

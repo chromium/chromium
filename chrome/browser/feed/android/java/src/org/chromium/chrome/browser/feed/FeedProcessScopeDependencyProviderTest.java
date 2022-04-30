@@ -68,10 +68,6 @@ public final class FeedProcessScopeDependencyProviderTest {
         }
         @Override
         public void setMetricsReportingEnabled(boolean enabled) {}
-        @Override
-        public boolean isMetricsReportingDisabledByPolicy() {
-            return false;
-        }
     };
 
     @Before

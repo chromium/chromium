@@ -694,8 +694,21 @@ public final class ChromePreferenceKeys {
     public static final String PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS =
             "Chrome.PriceTracking.UserManagedNotificationsTimestamps";
 
-    public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
     public static final String PRIVACY_METRICS_IN_SAMPLE = "in_metrics_sample";
+
+    /**
+     * This is deprecated and is going to be removed in the future (See https://crbug.com/1320040).
+     * Use PrivacyPreferencesManagerImpl#isUsageAndCrashReportingPermitted to know if metrics
+     * reporting is allowed.
+     */
+    @Deprecated
+    public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
+
+    public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER =
+            "Chrome.Privacy.UsageAndCrashReportingPermittedByUser";
+
+    public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY =
+            "Chrome.Privacy.UsageAndCrashReportingPermittedByPolicy";
 
     public static final String PROFILES_BOOT_TIMESTAMP =
             "com.google.android.apps.chrome.ChromeMobileApplication.BOOT_TIMESTAMP";
@@ -1104,6 +1117,8 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRIMARY_ACCOUNT_SYNC,
+                PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,

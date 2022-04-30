@@ -224,7 +224,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(null);
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
         if (mActivity != null) mActivity.finish();
     }
 
@@ -954,7 +954,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     private void setMetricsReportDisabled() {
         SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
         Assert.assertFalse("Crash report should be disabled by shared preference.",
                 PrivacyPreferencesManagerImpl.getInstance()
                         .isUsageAndCrashReportingPermittedByUser());

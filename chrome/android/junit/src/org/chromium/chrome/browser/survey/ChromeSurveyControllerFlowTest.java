@@ -277,7 +277,7 @@ public class ChromeSurveyControllerFlowTest {
     public void testStartDownloadIfEligibleTask_UmaDisabled() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         mSharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
 
         initializeChromeSurveyController();
         assertDownloadAttempted(false);
@@ -287,7 +287,7 @@ public class ChromeSurveyControllerFlowTest {
     public void testStartDownloadIfEligibleTask_UmaEnabled() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         mSharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, true);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, true);
 
         assertDownloadAttempted(false);
         initializeChromeSurveyController();

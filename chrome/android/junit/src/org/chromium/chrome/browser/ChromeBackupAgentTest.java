@@ -120,7 +120,7 @@ public class ChromeBackupAgentTest {
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
-        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
 
         editor.putBoolean(PREFERENCE_KEY_NOT_BACKED_UP, false);
 
@@ -199,8 +199,9 @@ public class ChromeBackupAgentTest {
                                 + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                         1);
         verify(backupData)
-                .writeEntityHeader(
-                        "AndroidDefault." + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, 1);
+                .writeEntityHeader("AndroidDefault."
+                                + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                        1);
         verify(backupData, times(3)).writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
@@ -225,8 +226,9 @@ public class ChromeBackupAgentTest {
         assertThat(names,
                 hasItem("AndroidDefault."
                         + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
-        assertThat(
-                names, hasItem("AndroidDefault." + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING));
+        assertThat(names,
+                hasItem("AndroidDefault."
+                        + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
         assertThat(names, hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY));
         ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
         assertThat(values.size(), equalTo(6));
@@ -337,7 +339,7 @@ public class ChromeBackupAgentTest {
 
         // Change some data.
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, true);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, true);
         editor.apply();
 
         // Do a second backup.

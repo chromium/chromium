@@ -760,7 +760,8 @@ public class FirstRunIntegrationTest {
         sharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         sharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, allowedCrashUpLoad);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                allowedCrashUpLoad);
         setHasAppRestrictionForMock(false);
         FirstRunActivity freActivity = launchFirstRunActivity();
 

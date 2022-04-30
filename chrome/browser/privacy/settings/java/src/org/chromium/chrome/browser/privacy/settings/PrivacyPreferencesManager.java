@@ -85,9 +85,4 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      * Sets whether the usage and crash reporting pref should be enabled.
      */
     void setMetricsReportingEnabled(boolean enabled);
-
-    /**
-     * @return Whether the usage and crash reporting pref is disabled by policy.
-     */
-    boolean isMetricsReportingDisabledByPolicy();
 }

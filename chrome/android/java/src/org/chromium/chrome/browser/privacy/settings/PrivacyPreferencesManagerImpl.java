@@ -15,10 +15,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
-import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.components.policy.PolicyMap;
+import org.chromium.components.policy.PolicyService;
 
 /**
  * Manages preferences related to privacy, metrics reporting, prerendering, and network prediction.
@@ -30,10 +32,17 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     private final Context mContext;
     private final SharedPreferencesManager mPrefs;
 
-    @VisibleForTesting
+    private PolicyService mPolicyService;
+    private PolicyService.Observer mPolicyServiceObserver;
+
+    private boolean mNativeInitialized;
+
     PrivacyPreferencesManagerImpl(Context context) {
         mContext = context;
         mPrefs = SharedPreferencesManager.getInstance();
+        mNativeInitialized = false;
+        // TODO(https://crbug.com/1320040). Clean up deprecated preference migration.
+        migrateDeprecatedPreferences();
     }
 
     public static PrivacyPreferencesManagerImpl getInstance() {
@@ -46,6 +55,48 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @VisibleForTesting
     public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
         sInstance = instance;
+    }
+
+    public void onNativeInitialized() {
+        if (mNativeInitialized) return;
+
+        mNativeInitialized = true;
+
+        createPolicyServiceObserver();
+    }
+
+    protected void createPolicyServiceObserver() {
+        if (mPolicyService != null) {
+            return;
+        }
+
+        mPolicyService = PolicyServiceFactory.getGlobalPolicyService();
+
+        mPolicyServiceObserver = new PolicyService.Observer() {
+            @Override
+            public void onPolicyServiceInitialized() {
+                syncUsageAndCrashReportingPermittedByPolicy();
+            }
+
+            @Override
+            public void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
+                syncUsageAndCrashReportingPermittedByPolicy();
+            }
+        };
+
+        if (mPolicyService.isInitializationComplete()) {
+            syncUsageAndCrashReportingPermittedByPolicy();
+        }
+
+        mPolicyService.addObserver(mPolicyServiceObserver);
+    }
+
+    protected void migrateDeprecatedPreferences() {
+        if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING)) {
+            mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                    mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false));
+            mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING);
+        }
     }
 
     protected boolean isNetworkAvailable() {
@@ -67,17 +118,23 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return networkInfo != null;
     }
 
+    public void syncUsageAndCrashReportingPermittedByPolicy() {
+        // Skip if native browser process is not yet fully initialized.
+        if (!mNativeInitialized) return;
+
+        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy());
+    }
+
     @Override
     public void setUsageAndCrashReporting(boolean enabled) {
-        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, enabled);
+        mPrefs.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, enabled);
         syncUsageAndCrashReportingPrefs();
     }
 
     @Override
     public void syncUsageAndCrashReportingPrefs() {
-        // Skip if native browser process is not yet fully initialized.
-        if (!BrowserStartupController.getInstance().isNativeStarted()) return;
-
         setMetricsReportingEnabled(isUsageAndCrashReportingPermitted());
     }
 
@@ -103,14 +160,14 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public boolean isUsageAndCrashReportingPermittedByPolicy() {
-        // TODO(https://crbug.com/1301701) This function is being called from an invalid thread.
-        // This constant return value is set while figuring out the problem.
-        return true;
+        return mPrefs.readBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
     }
 
     @Override
     public boolean isUsageAndCrashReportingPermittedByUser() {
-        return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+        return mPrefs.readBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
     }
 
     @Override
@@ -132,11 +189,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public void setMetricsReportingEnabled(boolean enabled) {
         PrivacyPreferencesManagerImplJni.get().setMetricsReportingEnabled(enabled);
-    }
-
-    @Override
-    public boolean isMetricsReportingDisabledByPolicy() {
-        return PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
     }
 
     @NativeMethods
