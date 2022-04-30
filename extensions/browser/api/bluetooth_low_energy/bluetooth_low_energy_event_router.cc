@@ -1515,9 +1515,14 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
         !FindNotifySession(extension_id, characteristic_id))
       continue;
 
+    std::vector<base::Value> args_copy;
+    args_copy.reserve(args.size());
+    for (const auto& arg : args) {
+      args_copy.emplace_back(arg.Clone());
+    }
     // Send the event.
-    auto event = std::make_unique<Event>(
-        histogram_value, event_name, base::Value(args).TakeListDeprecated());
+    auto event = std::make_unique<Event>(histogram_value, event_name,
+                                         std::move(args_copy));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }

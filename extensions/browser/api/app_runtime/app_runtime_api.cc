@@ -36,13 +36,12 @@ void DispatchOnEmbedRequestedEventImpl(
     const std::string& extension_id,
     std::unique_ptr<base::DictionaryValue> app_embedding_request_data,
     content::BrowserContext* context) {
-  base::Value::List args;
-  args.Append(
+  std::vector<base::Value> args;
+  args.emplace_back(
       base::Value::FromUniquePtrValue(std::move(app_embedding_request_data)));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
-      app_runtime::OnEmbedRequested::kEventName,
-      base::Value(std::move(args)).TakeListDeprecated(), context);
+      app_runtime::OnEmbedRequested::kEventName, std::move(args), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
 
@@ -70,11 +69,11 @@ void DispatchOnLaunchedEventImpl(
       "isPublicSession",
       ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(base::Value::FromUniquePtrValue(std::move(launch_data)));
-  auto event = std::make_unique<Event>(
-      events::APP_RUNTIME_ON_LAUNCHED, app_runtime::OnLaunched::kEventName,
-      std::move(*args).TakeListDeprecated(), context);
+  std::vector<base::Value> args;
+  args.emplace_back(base::Value::FromUniquePtrValue(std::move(launch_data)));
+  auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
+                                       app_runtime::OnLaunched::kEventName,
+                                       std::move(args), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
   ExtensionPrefs::Get(context)

@@ -314,8 +314,8 @@ void SendOnMessageEventOnUI(
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context))
     return;
 
-  std::unique_ptr<base::ListValue> event_args(new base::ListValue);
-  event_args->Append(
+  std::vector<base::Value> event_args;
+  event_args.emplace_back(
       base::Value::FromUniquePtrValue(event_details->GetAndClearDict()));
 
   EventRouter* event_router = EventRouter::Get(browser_context);
@@ -339,8 +339,8 @@ void SendOnMessageEventOnUI(
   }
 
   auto event = std::make_unique<Event>(
-      histogram_value, event_name, std::move(*event_args).TakeListDeprecated(),
-      browser_context, GURL(), EventRouter::USER_GESTURE_UNKNOWN,
+      histogram_value, event_name, std::move(event_args), browser_context,
+      GURL(), EventRouter::USER_GESTURE_UNKNOWN,
       std::move(event_filtering_info));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
