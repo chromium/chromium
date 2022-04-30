@@ -48,7 +48,6 @@ CriticalNotificationBubbleView::CriticalNotificationBubbleView(
       base::BindOnce(&CriticalNotificationBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
   set_close_on_deactivate(false);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CRITICAL_NOTIFICATION);
 }
 
 CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {

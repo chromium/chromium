@@ -22,7 +22,6 @@
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/public/activation_client.h"
@@ -92,8 +91,6 @@ void ExtensionPopup::ShowPopup(
   // a base::ScopedObservation for this, since the activation client may be
   // deleted without a call back to this class.
   wm::GetActivationClient(native_view->GetRootWindow())->AddObserver(popup);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_POPUP_AURA);
 #endif
 }
 

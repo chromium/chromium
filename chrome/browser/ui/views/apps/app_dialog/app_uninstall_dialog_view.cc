@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -121,8 +120,6 @@ AppUninstallDialogView::AppUninstallDialogView(
                                    base::Unretained(this)));
 
   InitializeView(profile, app_type, app_id, app_name);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::APP_UNINSTALL);
 
   g_app_uninstall_dialog_view = this;
 }

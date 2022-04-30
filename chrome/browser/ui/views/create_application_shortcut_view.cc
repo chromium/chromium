@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -103,9 +102,6 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
   InitControls();
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::CREATE_CHROME_APPLICATION_SHORTCUT);
 }
 
 CreateChromeApplicationShortcutView::~CreateChromeApplicationShortcutView() {}

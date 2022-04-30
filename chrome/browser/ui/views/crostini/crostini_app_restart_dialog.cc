@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -66,7 +65,6 @@ void ShowInternal(gfx::NativeWindow context) {
   views::DialogDelegate::CreateDialogWidget(std::move(delegate), context,
                                             nullptr)
       ->Show();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_APP_RESTART);
 }
 
 }  // namespace

@@ -125,9 +125,6 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
   heading->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   heading->SetAllowCharacterBreak(true);
   AddChildView(std::move(heading));
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::PRINT_JOB_CONFIRMATION);
 }
 
 PrintJobConfirmationDialogView::~PrintJobConfirmationDialogView() = default;

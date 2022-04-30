@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/confirm_bubble.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -61,8 +60,6 @@ ConfirmBubbleViews::ConfirmBubbleViews(
   label_->SetMultiLine(true);
   // Use a fixed maximum message width, so longer messages will wrap.
   label_->SetMaximumWidth(400);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CONFIRM_BUBBLE);
 }
 
 ConfirmBubbleViews::~ConfirmBubbleViews() {

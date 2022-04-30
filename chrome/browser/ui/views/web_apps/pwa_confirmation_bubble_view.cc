@@ -168,8 +168,6 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
                                         web_app::UserDisplayMode::kTabbed);
   }
 
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PWA_CONFIRMATION);
-
   SetHighlightedButton(highlight_button);
 }
 

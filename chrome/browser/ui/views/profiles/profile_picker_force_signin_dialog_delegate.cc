@@ -49,9 +49,6 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
       ->SetDelegate(this);
 
   web_view_->LoadInitialURL(url);
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::PROFILE_PICKER_FORCE_SIGNIN);
 }
 
 ProfilePickerForceSigninDialogDelegate::

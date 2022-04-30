@@ -12,7 +12,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -122,9 +121,6 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   AddChildView(std::move(message_body_label));
 
   RecordOpenedDangerousConfirmDialog(download_->GetDangerType());
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::DOWNLOAD_DANGER_PROMPT);
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {

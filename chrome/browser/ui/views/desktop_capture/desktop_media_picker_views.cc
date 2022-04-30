@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -488,7 +487,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     widget = CreateDialogWidget(this, params.context, nullptr);
     widget->Show();
   }
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::DESKTOP_MEDIA_PICKER);
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, even modals are shown using separate native windows.

@@ -265,7 +265,6 @@ MessageBoxDialog::MessageBoxDialog(const std::u16string& title,
 
   if (!checkbox_text.empty())
     message_box_view_->SetCheckBoxLabel(checkbox_text);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::SIMPLE_MESSAGE_BOX);
 }
 
 MessageBoxDialog::~MessageBoxDialog() {

@@ -145,7 +145,6 @@ bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 
 ProfileMenuView::ProfileMenuView(views::Button* anchor_button, Browser* browser)
     : ProfileMenuViewBase(anchor_button, browser) {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PROFILE_CHOOSER);
   set_close_on_deactivate(close_on_deactivate_for_testing_);
 }
 

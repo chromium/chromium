@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -150,7 +149,6 @@ void ExtensionUninstallDialogViews::Show() {
   } else {
     constrained_window::ShowBrowserModal(std::move(dialog_model), parent());
   }
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_UNINSTALL);
 }
 
 void ExtensionUninstallDialogViews::Close() {

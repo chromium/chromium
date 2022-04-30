@@ -132,8 +132,6 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetCloseCallback(
       base::BindOnce(&DeviceChooserContentView::Close,
                      base::Unretained(device_chooser_content_view_)));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CHOOSER_UI);
 }
 
 ChooserBubbleUiViewDelegate::~ChooserBubbleUiViewDelegate() = default;

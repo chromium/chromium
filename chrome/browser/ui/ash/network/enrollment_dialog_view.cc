@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -95,8 +94,6 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ENROLLMENT);
 }
 
 EnrollmentDialogView::~EnrollmentDialogView() {}

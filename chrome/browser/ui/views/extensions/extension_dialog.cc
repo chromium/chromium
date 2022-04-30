@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
@@ -136,8 +135,6 @@ ExtensionDialog::ExtensionDialog(
   extension_host_observation_.Observe(host_.get());
   process_manager_observation_.Observe(
       extensions::ProcessManager::Get(host_->browser_context()));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION);
 
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowTitle(!init_params.title.empty());

@@ -51,7 +51,6 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
   message_box_view_->SetMessageWidth(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::UPDATE_RECOMMENDED);
 }
 
 UpdateRecommendedMessageBox::~UpdateRecommendedMessageBox() {

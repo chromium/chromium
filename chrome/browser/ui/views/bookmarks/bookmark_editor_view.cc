@@ -78,7 +78,6 @@ BookmarkEditorView::BookmarkEditorView(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   Init();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK_EDITOR);
 }
 
 BookmarkEditorView::~BookmarkEditorView() {

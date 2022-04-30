@@ -506,8 +506,6 @@ ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
                             creation_time_on_startup_ -
                                 startup_metric_utils::MainEntryPointTicks());
   }
-
-  // TODO(crbug.com/1063856): Add |RecordDialogCreation|.
 }
 
 ProfilePickerView::~ProfilePickerView() {

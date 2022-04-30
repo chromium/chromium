@@ -8,7 +8,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -42,7 +41,6 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
           vector_icons::kHelpOutlineIcon));
   learn_more_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ECHO);
 
   if (params.echo_enabled) {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK |

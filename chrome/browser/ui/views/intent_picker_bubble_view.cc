@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -269,8 +268,6 @@ IntentPickerBubbleView::IntentPickerBubbleView(
   // intent_picker_helpers, they will get closed on each navigation start and
   // should stay open until after navigation finishes.
   SetCloseOnMainFrameOriginNavigation(bubble_type == BubbleType::kClickToCall);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::INTENT_PICKER);
 }
 
 IntentPickerBubbleView::~IntentPickerBubbleView() {

@@ -152,9 +152,6 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
   install_manager_observation_.Observe(&provider->install_manager());
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::APP_IDENTITY_UPDATE_CONFIRMATION);
 }
 
 void WebAppIdentityUpdateConfirmationView::OnWebAppWillBeUninstalled(

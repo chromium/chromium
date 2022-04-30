@@ -136,9 +136,6 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
   scroll_view->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::EXTENSION_INSTALL_FRICTION);
 }
 
 std::unique_ptr<views::StyledLabel>

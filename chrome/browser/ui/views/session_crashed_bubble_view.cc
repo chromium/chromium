@@ -22,7 +22,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
@@ -256,8 +255,6 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
     Browser* browser,
     bool uma_opted_in_already,
     bool offer_uma_optin) {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::SESSION_CRASHED);
-
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAppMenuButton();

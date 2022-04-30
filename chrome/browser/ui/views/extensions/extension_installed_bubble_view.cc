@@ -167,7 +167,6 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
                                    : views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
       model_(std::move(model)) {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_INSTALLED);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   if (model_->show_sign_in_promo()) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

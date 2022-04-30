@@ -362,7 +362,6 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
 
   UMA_HISTOGRAM_ENUMERATION("Extensions.InstallPrompt.Type2", prompt_->type(),
                             ExtensionInstallPrompt::NUM_PROMPT_TYPES);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_INSTALL);
 }
 
 ExtensionInstallDialogView::~ExtensionInstallDialogView() {

@@ -313,8 +313,6 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
   AddChildView(
       views::TableView::CreateScrollViewWithTable(std::move(hung_pages_table)))
       ->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::HUNG_RENDERER);
 }
 
 HungRendererDialogView::~HungRendererDialogView() {

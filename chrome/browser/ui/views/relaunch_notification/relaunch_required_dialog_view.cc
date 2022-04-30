@@ -10,7 +10,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -126,7 +125,6 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::RELAUNCH_REQUIRED);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   set_margins(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));

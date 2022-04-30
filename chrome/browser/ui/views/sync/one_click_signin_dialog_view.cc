@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -118,8 +117,6 @@ OneClickSigninDialogView::OneClickSigninDialogView(
                             base::Unretained(this)))
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT))
       .BuildChildren();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ONE_CLICK_SIGNIN);
 }
 
 OneClickSigninDialogView::~OneClickSigninDialogView() {

@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -106,7 +105,6 @@ class NativeDialogContainer : public views::DialogDelegateView {
     SetModalType(kModalType);
     AddChildView(std::move(dialog_body));
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    chrome::RecordDialogCreation(chrome::DialogIdentifier::NATIVE_CONTAINER);
     SetPreferredSize(size);
 
     if (!close_callback.is_null()) {

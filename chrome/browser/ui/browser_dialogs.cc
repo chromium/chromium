@@ -13,11 +13,6 @@
 
 namespace chrome {
 
-void RecordDialogCreation(DialogIdentifier identifier) {
-  UMA_HISTOGRAM_ENUMERATION("Dialog.Creation", identifier,
-                            DialogIdentifier::MAX_VALUE);
-}
-
 #if !defined(TOOLKIT_VIEWS)
 void ShowWindowNamePrompt(Browser* browser) {
   NOTIMPLEMENTED();

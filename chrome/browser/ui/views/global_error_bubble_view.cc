@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -93,8 +92,6 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
             error_, browser),
         error_->GetBubbleViewDetailsButtonLabel()));
   }
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::GLOBAL_ERROR);
 }
 
 GlobalErrorBubbleView::~GlobalErrorBubbleView() = default;

@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -138,8 +137,6 @@ CrostiniRecoveryView::CrostiniRecoveryView(
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(message_label);
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_RECOVERY);
 }
 
 CrostiniRecoveryView::~CrostiniRecoveryView() {

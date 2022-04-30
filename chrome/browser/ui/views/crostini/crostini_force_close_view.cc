@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_force_close_view.h"
 
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,7 +85,6 @@ CrostiniForceCloseView::CrostiniForceCloseView(
   AddChildView(message_label);
 
   set_close_on_deactivate(true);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_FORCE_CLOSE);
 }
 
 CrostiniForceCloseView::~CrostiniForceCloseView() = default;

@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -108,8 +107,6 @@ ExternalProtocolNoHandlersTelSchemeDialog::
 
   views::DialogDelegate::CreateDialogWidget(this, nullptr, parent_window)
       ->Show();
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::EXTERNAL_PROTOCOL_CHROMEOS);
 }
 
 ExternalProtocolNoHandlersTelSchemeDialog::

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -72,9 +71,6 @@ BluetoothDeviceCredentialsView::BluetoothDeviceCredentialsView(
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
   InitControls(device_identifier);
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::BLUETOOTH_DEVICE_CREDENTIALS);
 }
 
 BluetoothDeviceCredentialsView::~BluetoothDeviceCredentialsView() = default;

@@ -511,8 +511,6 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   }
 
   ShowInitialPaymentSheet();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PAYMENT_REQUEST);
 }
 
 PaymentRequestDialogView::~PaymentRequestDialogView() = default;

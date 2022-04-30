@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -248,8 +247,6 @@ void BookmarkBubbleView::ShowBubble(
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK);
 
   if (observer) {
     observer->OnBookmarkBubbleShown(

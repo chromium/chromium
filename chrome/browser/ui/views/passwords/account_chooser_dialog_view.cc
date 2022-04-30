@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -59,7 +58,6 @@ AccountChooserDialogView::AccountChooserDialogView(
   }
   SetArrow(views::BubbleBorder::NONE);
   set_margins(gfx::Insets::TLBR(margins().top(), 0, margins().bottom(), 0));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ACCOUNT_CHOOSER);
 }
 
 AccountChooserDialogView::~AccountChooserDialogView() = default;

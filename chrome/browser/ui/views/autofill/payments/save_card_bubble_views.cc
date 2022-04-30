@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -51,7 +50,6 @@ SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::SAVE_CARD);
 }
 
 void SaveCardBubbleViews::Show(DisplayReason reason) {

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,10 +59,7 @@ DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
     : TabModalConfirmDialogDelegate(web_contents),
       open_callback_(std::move(open_callback)),
       extension_name_(extension_name),
-      file_path_(file_path) {
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::DOWNLOAD_OPEN_CONFIRMATION);
-}
+      file_path_(file_path) {}
 
 DownloadOpenConfirmationDialog::~DownloadOpenConfirmationDialog() = default;
 

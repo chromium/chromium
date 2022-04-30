@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -589,7 +588,6 @@ void ParentPermissionDialogView::ShowDialogInternal() {
   // because they can potentially rely on the side effects of loading info
   // from an extension.
   CreateContents();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PARENT_PERMISSION);
   views::Widget* widget =
       params_->window
           ? constrained_window::CreateBrowserModalDialogViews(this,

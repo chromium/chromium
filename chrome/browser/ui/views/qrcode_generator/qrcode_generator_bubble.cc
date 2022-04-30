@@ -101,7 +101,6 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
 QRCodeGeneratorBubble::~QRCodeGeneratorBubble() = default;
 
 void QRCodeGeneratorBubble::Show() {
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::QR_CODE_GENERATOR);
   textfield_url_->SetText(base::ASCIIToUTF16(url_.possibly_invalid_spec()));
   textfield_url_->SelectAll(false);
   UpdateQRContent();

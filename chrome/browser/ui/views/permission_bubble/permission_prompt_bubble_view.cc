@@ -172,8 +172,6 @@ void PermissionPromptBubbleView::Show() {
     widget->ShowInactive();
 
   SizeToContents();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
 
 bool PermissionPromptBubbleView::ShouldShowRequest(

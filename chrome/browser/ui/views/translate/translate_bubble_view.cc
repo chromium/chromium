@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
@@ -531,7 +530,6 @@ TranslateBubbleView::TranslateBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
   SetProperty(views::kElementIdentifierKey, kIdentifier);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::TRANSLATE);
 }
 
 views::View* TranslateBubbleView::GetCurrentView() const {

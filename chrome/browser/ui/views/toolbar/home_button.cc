@@ -12,7 +12,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
@@ -97,7 +96,6 @@ HomePageUndoBubble::HomePageUndoBubble(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::HOME_PAGE_UNDO);
 }
 
 HomePageUndoBubble::~HomePageUndoBubble() = default;

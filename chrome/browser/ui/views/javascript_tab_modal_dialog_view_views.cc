@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/javascript_tab_modal_dialog_view_views.h"
 
 #include "base/callback.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -109,7 +108,6 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   AddChildView(message_box_view_.get());
 
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::JAVA_SCRIPT);
 }
 
 BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)

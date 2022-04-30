@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/passwords/auto_signin_first_run_dialog_view.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -46,8 +45,6 @@ AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
   SetCancelCallback(
       base::BindOnce(call_controller, base::Unretained(this),
                      &CredentialManagerDialogController::OnAutoSigninTurnOff));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::AUTO_SIGNIN_FIRST_RUN);
 }
 
 AutoSigninFirstRunDialogView::~AutoSigninFirstRunDialogView() {

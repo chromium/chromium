@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/passphrase_textfield.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,7 +51,6 @@ RequestPinView::RequestPinView(
   const bool accept_input = (attempts_left != 0);
   SetDialogParameters(code_type, security_token_pin::ErrorLabel::kNone,
                       attempts_left, accept_input);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::REQUEST_PIN);
 
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

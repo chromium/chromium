@@ -11,7 +11,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/ssl/client_cert_identity.h"
@@ -68,8 +67,6 @@ PlatformKeysCertificateSelector::PlatformKeysCertificateSelector(
         std::move(dialog->callback_).Run(nullptr);
       },
       base::Unretained(this)));
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::PLATFORM_KEYS_CERTIFICATE_SELECTOR);
 }
 
 PlatformKeysCertificateSelector::~PlatformKeysCertificateSelector() {

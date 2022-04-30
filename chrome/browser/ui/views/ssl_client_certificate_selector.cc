@@ -114,8 +114,6 @@ SSLClientCertificateSelector::SSLClientCertificateSelector(
           dialog->auth_observer_impl_->CertificateSelected(nullptr, nullptr);
       },
       this));
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::SSL_CLIENT_CERTIFICATE_SELECTOR);
 }
 
 SSLClientCertificateSelector::~SSLClientCertificateSelector() {}

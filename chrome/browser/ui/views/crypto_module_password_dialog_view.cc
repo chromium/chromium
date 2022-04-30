@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/crypto_module_password_dialog_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -45,7 +44,6 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   Init(hostname, slot_name, reason);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::CRYPTO_PASSWORD);
 }
 
 CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() {

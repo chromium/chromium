@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/network_service_instance.h"
@@ -137,8 +136,6 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
   progress_bar->SetValue(-1);
   progress_bar_ = AddChildView(std::move(progress_bar));
 
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::CROSTINI_ANSIBLE_SOFTWARE_CONFIG);
   OnStateChanged();
 }
 

@@ -37,7 +37,6 @@ class LoginHandlerViews : public LoginHandler {
                      web_contents,
                      std::move(auth_required_callback)),
         popunder_preventer_(std::make_unique<PopunderPreventer>(web_contents)) {
-    RecordDialogCreation(DialogIdentifier::LOGIN_HANDLER);
   }
 
   LoginHandlerViews(const LoginHandlerViews&) = delete;

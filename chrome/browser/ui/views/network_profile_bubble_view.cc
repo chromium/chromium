@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -63,8 +62,6 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
   learn_more->SetCallback(base::BindRepeating(
       &NetworkProfileBubbleView::LinkClicked, base::Unretained(this)));
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::NETWORK_SHARE_PROFILE_WARNING);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
