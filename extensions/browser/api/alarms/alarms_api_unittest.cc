@@ -81,7 +81,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   // JsAlarms.
   std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(base::Value* value) {
     std::vector<std::unique_ptr<JsAlarm>> list;
-    for (const auto& item : value->GetListDeprecated()) {
+    for (const auto& item : value->GetList()) {
       std::unique_ptr<JsAlarm> alarm(new JsAlarm());
 
       if (!item.is_dict()) {

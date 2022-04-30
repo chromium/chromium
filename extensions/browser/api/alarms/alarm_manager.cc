@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
@@ -50,12 +51,11 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   ~DefaultAlarmDelegate() override {}
 
   void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
-    std::unique_ptr<base::ListValue> args(new base::ListValue());
-    args->GetList().Append(
-        base::Value::FromUniquePtrValue(alarm.js_alarm->ToValue()));
-    std::unique_ptr<Event> event(
-        new Event(events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName,
-                  std::move(*args).TakeListDeprecated(), browser_context_));
+    std::vector<base::Value> args;
+    args.push_back(base::Value::FromUniquePtrValue(alarm.js_alarm->ToValue()));
+    std::unique_ptr<Event> event(new Event(events::ALARMS_ON_ALARM,
+                                           alarms::OnAlarm::kEventName,
+                                           std::move(args), browser_context_));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }

@@ -134,7 +134,7 @@ WebRequestConditionAttributeResourceType::Create(
                                             keys::kResourceTypeKey);
     return nullptr;
   }
-  base::Value::ConstListView list = value->GetListDeprecated();
+  const base::Value::List& list = value->GetList();
 
   std::vector<WebRequestResourceType> passed_types;
   passed_types.reserve(list.size());
@@ -215,7 +215,7 @@ WebRequestConditionAttributeContentType::Create(
     return nullptr;
   }
   std::vector<std::string> content_types;
-  for (const auto& entry : value->GetListDeprecated()) {
+  for (const auto& entry : value->GetList()) {
     if (!entry.is_string()) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
       return nullptr;
@@ -287,7 +287,7 @@ class HeaderMatcher {
   // dictionaries of the type declarativeWebRequest.HeaderFilter (see
   // declarative_web_request.json).
   static std::unique_ptr<const HeaderMatcher> Create(
-      const base::Value::ConstListView tests);
+      const base::Value::List& tests);
 
   // Does |this| match the header "|name|: |value|"?
   bool TestNameValue(const std::string& name, const std::string& value) const;
@@ -363,7 +363,7 @@ HeaderMatcher::~HeaderMatcher() = default;
 
 // static
 std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
-    const base::Value::ConstListView tests) {
+    const base::Value::List& tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
   for (const auto& entry : tests) {
     const base::Value::Dict* tests_dict = entry.GetIfDict();
@@ -488,7 +488,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
     switch (content->type()) {
       case base::Value::Type::LIST: {
         CHECK(content->is_list());
-        for (const auto& elem : content->GetListDeprecated()) {
+        for (const auto& elem : content->GetList()) {
           matching_tests->push_back(
               StringMatchTest::Create(elem, match_type, !is_name));
         }
@@ -550,7 +550,7 @@ std::unique_ptr<const HeaderMatcher> PrepareHeaderMatcher(
   }
 
   std::unique_ptr<const HeaderMatcher> header_matcher(
-      HeaderMatcher::Create(value->GetListDeprecated()));
+      HeaderMatcher::Create(value->GetList()));
   if (!header_matcher.get())
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
   return header_matcher;
@@ -718,7 +718,7 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     return false;
 
   int stages = 0;
-  for (const auto& entry : value.GetListDeprecated()) {
+  for (const auto& entry : value.GetList()) {
     if (!entry.is_string())
       return false;
     const std::string& stage_name = entry.GetString();

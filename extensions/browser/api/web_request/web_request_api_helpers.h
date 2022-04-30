@@ -367,7 +367,7 @@ base::Value StringToCharList(const std::string& s);
 
 // Converts a list of integer values between 0 and 255 into a string |*out|.
 // Returns true if the conversion was successful.
-bool CharListToString(base::Value::ConstListView list, std::string* out);
+bool CharListToString(const base::Value::List& list, std::string* out);
 
 // The following functions calculate and return the modifications to requests
 // commanded by extension handlers. All functions take the id of the extension

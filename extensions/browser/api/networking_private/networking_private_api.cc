@@ -468,10 +468,10 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
 
   base::Value enabled_networks_onc_types(
       GetDelegate(browser_context())->GetEnabledNetworkTypes());
-  if (enabled_networks_onc_types.GetListDeprecated().empty())
+  if (enabled_networks_onc_types.GetList().empty())
     return RespondNow(Error(networking_private::kErrorNotSupported));
   base::Value enabled_networks_list(base::Value::Type::LIST);
-  for (const auto& entry : enabled_networks_onc_types.GetListDeprecated()) {
+  for (const auto& entry : enabled_networks_onc_types.GetList()) {
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
       enabled_networks_list.Append(

@@ -87,7 +87,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   // We don't use json_schema_compiler::util::PopulateArrayFromList since it
   // fails if a single Value can't be deserialized. However we want to ignore
   // values which can't be parsed to maintain backwards compatibility.
-  const auto& rules_list = rules.GetListDeprecated();
+  const base::Value::List& rules_list = rules.GetList();
 
   // Ignore any rulesets which exceed the static rule count limit (This is
   // defined as dnr_api::GUARANTEED_MINIMUM_STATIC_RULES + the global rule count

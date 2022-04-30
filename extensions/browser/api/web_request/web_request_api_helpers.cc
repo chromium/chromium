@@ -544,26 +544,26 @@ bool ExtraInfoSpec::InitFromValue(content::BrowserContext* browser_context,
   *extra_info_spec = 0;
   if (!value.is_list())
     return false;
-  base::Value::ConstListView value_list = value.GetListDeprecated();
-  for (size_t i = 0; i < value_list.size(); ++i) {
-    const std::string* str = value_list[i].GetIfString();
+  for (const auto& item : value.GetList()) {
+    const std::string* str = item.GetIfString();
     if (!str)
       return false;
 
-    if (*str == "requestHeaders")
+    if (*str == "requestHeaders") {
       *extra_info_spec |= REQUEST_HEADERS;
-    else if (*str == "responseHeaders")
+    } else if (*str == "responseHeaders") {
       *extra_info_spec |= RESPONSE_HEADERS;
-    else if (*str == "blocking")
+    } else if (*str == "blocking") {
       *extra_info_spec |= BLOCKING;
-    else if (*str == "asyncBlocking")
+    } else if (*str == "asyncBlocking") {
       *extra_info_spec |= ASYNC_BLOCKING;
-    else if (*str == "requestBody")
+    } else if (*str == "requestBody") {
       *extra_info_spec |= REQUEST_BODY;
-    else if (*str == "extraHeaders")
+    } else if (*str == "extraHeaders") {
       *extra_info_spec |= EXTRA_HEADERS;
-    else
+    } else {
       return false;
+    }
   }
   // BLOCKING and ASYNC_BLOCKING are mutually exclusive.
   if ((*extra_info_spec & BLOCKING) && (*extra_info_spec & ASYNC_BLOCKING))
@@ -716,7 +716,7 @@ base::Value StringToCharList(const std::string& s) {
   return result;
 }
 
-bool CharListToString(base::Value::ConstListView list, std::string* out) {
+bool CharListToString(const base::Value::List& list, std::string* out) {
   const size_t list_length = list.size();
   out->resize(list_length);
   int value = 0;

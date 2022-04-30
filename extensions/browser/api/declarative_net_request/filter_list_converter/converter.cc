@@ -243,7 +243,7 @@ class ProtoToJSONRuleConverter {
   }
 
   bool PopulateDomainsInternal(base::StringPiece sub_key, bool exclude_value) {
-    base::Value domains(base::Value::Type::LIST);
+    base::Value::List domains;
 
     // Note: This isn't always correct. Filters consider the $domain option to
     //       match the request domain for main_frame requests - not the
@@ -254,9 +254,9 @@ class ProtoToJSONRuleConverter {
     }
 
     // Omit empty domain list.
-    if (!domains.GetListDeprecated().empty()) {
-      CHECK(
-          json_rule_.SetPath({kRuleConditionKey, sub_key}, std::move(domains)));
+    if (!domains.empty()) {
+      CHECK(json_rule_.SetPath({kRuleConditionKey, sub_key},
+                               base::Value(std::move(domains))));
     }
 
     return true;

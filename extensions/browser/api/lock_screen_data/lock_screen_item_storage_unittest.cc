@@ -106,8 +106,8 @@ class TestEventRouter : public extensions::EventRouter {
       return;
     }
     ASSERT_TRUE(event->event_args);
-    ASSERT_TRUE(!event->event_args->GetListDeprecated().empty());
-    const base::Value& arg_value = event->event_args->GetListDeprecated()[0];
+    ASSERT_TRUE(!event->event_args->GetList().empty());
+    const base::Value& arg_value = event->event_args->GetList()[0];
 
     std::unique_ptr<extensions::api::lock_screen_data::DataItemsAvailableEvent>
         event_args = extensions::api::lock_screen_data::

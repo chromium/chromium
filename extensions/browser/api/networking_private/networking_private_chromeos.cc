@@ -497,7 +497,7 @@ void NetworkingPrivateChromeOS::GetNetworks(
       chromeos::network_util::TranslateNetworkListToONC(
           pattern, configured_only, visible_only, limit);
 
-  for (auto& value : network_properties_list.GetListDeprecated()) {
+  for (auto& value : network_properties_list.GetList()) {
     base::DictionaryValue* network_dict = nullptr;
     value.GetAsDictionary(&network_dict);
     DCHECK(network_dict);
