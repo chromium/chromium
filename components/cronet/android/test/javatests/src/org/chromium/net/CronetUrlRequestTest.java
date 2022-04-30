@@ -2349,7 +2349,6 @@ public class CronetUrlRequestTest {
         }
     }
 
-    @DisabledTest(message = "crbug.com/1319387")
     @Test
     @SmallTest
     @Feature({"Cronet"})
