@@ -9,7 +9,10 @@ namespace policy {
 
 // Capability used by the Media Foundation CDM to grant read and write access to
 // a folder under the Chrome user's profile.
-const wchar_t kMediaFoundationCdmData[] = L"lpacMediaFoundationCdmData";
+const wchar_t kMediaFoundationCdmData[] = L"mediaFoundationCdmData";
+
+// Capability for Media Foundation CDM files that needs read and execute access.
+const wchar_t kMediaFoundationCdmFiles[] = L"mediaFoundationCdmFiles";
 
 }  // namespace policy
 }  // namespace sandbox

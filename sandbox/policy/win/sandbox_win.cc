@@ -607,9 +607,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
 ResultCode SetupAppContainerProfile(AppContainer* container,
                                     const base::CommandLine& command_line,
                                     Sandbox sandbox_type) {
-  if (sandbox_type != Sandbox::kMediaFoundationCdm &&
-      sandbox_type != Sandbox::kGpu &&
+  if (sandbox_type != Sandbox::kGpu &&
       sandbox_type != Sandbox::kXrCompositing &&
+      sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
@@ -658,9 +658,25 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         !container->AddCapability(L"lpacInstrumentation") ||
         !container->AddCapability(L"lpacCryptoServices") ||
         !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications") ||
-        !container->AddCapability(L"mediaFoundationCdmFiles")) {
+        !container->AddCapability(kMediaFoundationCdmFiles) ||
+        !container->AddCapability(kMediaFoundationCdmData)) {
       DLOG(ERROR) << "AppContainer::AddCapability() - "
                   << "Sandbox::kMediaFoundationCdm lpac capabilities failed";
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
+    }
+  }
+
+  if (sandbox_type == Sandbox::kNetwork) {
+    if (!container->AddCapability(
+            base::win::WellKnownCapability::kPrivateNetworkClientServer) ||
+        !container->AddCapability(
+            base::win::WellKnownCapability::kInternetClient) ||
+        !container->AddCapability(
+            base::win::WellKnownCapability::kEnterpriseAuthentication) ||
+        !container->AddCapability(L"lpacIdentityServices") ||
+        !container->AddCapability(L"lpacCryptoServices")) {
+      DLOG(ERROR) << "AppContainer::AddCapability() - "
+                  << "Sandbox::kNetwork lpac capabilities failed";
       return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
     }
   }
@@ -709,30 +725,13 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     }
   }
 
-  // Enable LPAC for GPU process, but not for XRCompositor service.
-  if (sandbox_type == Sandbox::kGpu &&
-      base::FeatureList::IsEnabled(features::kGpuLPAC)) {
-    container->SetEnableLowPrivilegeAppContainer(true);
-  }
-
-  // Enable LPAC for Network service.
-  if (sandbox_type == Sandbox::kNetwork) {
-    container->AddCapability(
-        base::win::WellKnownCapability::kPrivateNetworkClientServer);
-    container->AddCapability(base::win::WellKnownCapability::kInternetClient);
-    container->AddCapability(
-        base::win::WellKnownCapability::kEnterpriseAuthentication);
-    container->AddCapability(L"lpacIdentityServices");
-    container->AddCapability(L"lpacCryptoServices");
-    container->SetEnableLowPrivilegeAppContainer(true);
-  }
-
-  if (sandbox_type == Sandbox::kMediaFoundationCdm) {
-    container->AddCapability(kMediaFoundationCdmData);
-    container->SetEnableLowPrivilegeAppContainer(true);
-  }
-
-  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
+  // Enable LPAC for the following processes. Notably not for the kXrCompositing
+  // service.
+  if ((sandbox_type == Sandbox::kGpu &&
+       base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
+      sandbox_type == Sandbox::kMediaFoundationCdm ||
+      sandbox_type == Sandbox::kNetwork ||
+      sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 

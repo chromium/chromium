@@ -28,6 +28,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
+#include "sandbox/policy/win/lpac_capability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -80,8 +81,8 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomInstall(
     const base::FilePath& install_dir) {
   DVLOG(1) << __func__ << ": Set permission on " << install_dir;
 
-  auto sids =
-      base::win::Sid::FromNamedCapabilityVector({L"mediaFoundationCdmFiles"});
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmFiles});
 
   bool success = false;
   if (sids) {
