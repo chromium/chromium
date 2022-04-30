@@ -151,6 +151,11 @@ typedef struct internal_state {
      *   hash_shift * MIN_MATCH >= hash_bits
      */
 
+    uInt chromium_zlib_hash;
+    /* 0 if Rabin-Karp rolling hash is enabled, non-zero if chromium zlib
+     * hash is enabled.
+     */
+
     long block_start;
     /* Window position at the beginning of the current output block. Gets
      * negative when the window is moved backwards.
@@ -350,7 +355,5 @@ void ZLIB_INTERNAL crc_fold_copy(deflate_state* const s,
                                  const unsigned char* src,
                                  long len);
 unsigned ZLIB_INTERNAL crc_fold_512to32(deflate_state* const s);
-
-void ZLIB_INTERNAL fill_window_sse(deflate_state* s);
 
 #endif /* DEFLATE_H */
