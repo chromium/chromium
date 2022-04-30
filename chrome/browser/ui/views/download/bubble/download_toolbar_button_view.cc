@@ -203,7 +203,10 @@ void DownloadToolbarButtonView::CloseDialog(
 }
 
 void DownloadToolbarButtonView::ResizeDialog() {
-  bubble_delegate_->SizeToContents();
+  // Resize may be called when there is no delegate, e.g. during bubble
+  // construction.
+  if (bubble_delegate_)
+    bubble_delegate_->SizeToContents();
 }
 
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
@@ -212,6 +215,8 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   security_view_ = nullptr;
 }
 
+// TODO(bhatiarohit): Remove the margin around the bubble.
+// Hover button should be visible from end to end of the bubble.
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
   if (!bubble_contents_view)

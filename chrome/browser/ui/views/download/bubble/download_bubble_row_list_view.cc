@@ -7,12 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/box_layout.h"
 
 DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view)
     : is_partial_view_(is_partial_view), creation_time_(base::Time::Now()) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 DownloadBubbleRowListView::~DownloadBubbleRowListView() {
@@ -22,5 +20,5 @@ DownloadBubbleRowListView::~DownloadBubbleRowListView() {
       base::Time::Now() - creation_time_);
 }
 
-BEGIN_METADATA(DownloadBubbleRowListView, views::View)
+BEGIN_METADATA(DownloadBubbleRowListView, views::FlexLayoutView)
 END_METADATA
