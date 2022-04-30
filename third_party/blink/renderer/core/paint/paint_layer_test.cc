@@ -45,7 +45,13 @@ TEST_P(PaintLayerTest, ChildWithoutPaintLayer) {
   EXPECT_NE(nullptr, root_layer);
 }
 
-TEST_P(PaintLayerTest, RootLayerScrollBounds) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
+#define MAYBE_RootLayerScrollBounds DISABLED_RootLayerScrollBounds
+#else
+#define MAYBE_RootLayerScrollBounds RootLayerScrollBounds
+#endif
+TEST_P(PaintLayerTest, MAYBE_RootLayerScrollBounds) {
   USE_NON_OVERLAY_SCROLLBARS();
 
   SetBodyInnerHTML(

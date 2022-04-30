@@ -175,6 +175,9 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest,
                            UserScrollCallBackAtAnimationFinishOnCompositor);
   FRIEND_TEST_ALL_PREFIXES(ScrollAnchorTest, ClampAdjustsAnchorAnimation);
+  // TODO(crbug.com/1313270): Remove this when ScrollAnchorTest runs on Fuchsia.
+  FRIEND_TEST_ALL_PREFIXES(DISABLED_ScrollAnchorTest,
+                           ClampAdjustsAnchorAnimation);
 
   std::unique_ptr<CompositorAnimation> compositor_animation_;
   // The element id to which the compositor animation is attached when

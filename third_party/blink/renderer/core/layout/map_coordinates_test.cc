@@ -1911,10 +1911,18 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetWithWritingModes) {
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1313287): Fix this test on Fuchsia and re-enable.
+#define MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar \
+  DISABLED_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar
+#else
+#define MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar \
+  IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar
+#endif
 // This test verifies that ignoring scroll offset works with writing modes and
 // non-overlay scrollbar.
 TEST_F(MapCoordinatesTest,
-       IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar) {
+       MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar) {
   USE_NON_OVERLAY_SCROLLBARS();
 
   SetBodyInnerHTML(R"HTML(

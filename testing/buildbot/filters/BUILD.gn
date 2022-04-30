@@ -39,10 +39,8 @@ source_set("base_unittests_filters") {
 source_set("blink_unittests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/android.emulator.blink_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.blink_unittests.filter",
-  ]
+  data =
+      [ "//testing/buildbot/filters/android.emulator.blink_unittests.filter" ]
 }
 
 source_set("blink_web_tests_filter") {
