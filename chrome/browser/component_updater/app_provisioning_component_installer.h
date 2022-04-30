@@ -51,7 +51,8 @@ class AppProvisioningComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-  void UpdateAppMetadataOnUI(const std::string& binary_pb);
+  void UpdateAppMetadataOnUI(const base::FilePath& install_dir,
+                             const std::string& binary_pb);
 };
 
 // Call once during startup to make the component update service aware of

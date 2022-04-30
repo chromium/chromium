@@ -22,7 +22,8 @@ AppProvisioningDataManager::AppProvisioningDataManager() = default;
 AppProvisioningDataManager::~AppProvisioningDataManager() = default;
 
 void AppProvisioningDataManager::PopulateFromDynamicUpdate(
-    const std::string& binary_pb) {
+    const std::string& binary_pb,
+    const base::FilePath& install_dir) {
   // Parse the proto and do some validation on it.
   if (binary_pb.empty()) {
     LOG(ERROR) << "Binary is empty";
@@ -38,7 +39,12 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
 
   // TODO(melzhang) : Add check that version of |app_data| is newer.
   app_data_ = std::move(app_data);
+  data_dir_ = install_dir;
   OnAppDataUpdated();
+}
+
+const base::FilePath& AppProvisioningDataManager::GetDataFilePath() {
+  return data_dir_;
 }
 
 void AppProvisioningDataManager::OnAppDataUpdated() {

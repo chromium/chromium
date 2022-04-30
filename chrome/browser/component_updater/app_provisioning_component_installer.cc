@@ -104,7 +104,7 @@ void AppProvisioningComponentInstallerPolicy::ComponentReady(
       base::BindOnce(&LoadAppMetadataFromDisk, GetInstalledPath(install_dir)),
       base::BindOnce(
           &AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI,
-          base::Unretained(this)));
+          base::Unretained(this), install_dir));
 }
 
 base::FilePath AppProvisioningComponentInstallerPolicy::GetRelativeInstallDir()
@@ -133,11 +133,12 @@ base::FilePath AppProvisioningComponentInstallerPolicy::GetInstalledPath(
 }
 
 void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
+    const base::FilePath& install_dir,
     const std::string& binary_pb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!binary_pb.empty()) {
     apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
-        binary_pb);
+        binary_pb, install_dir);
   }
 }
 

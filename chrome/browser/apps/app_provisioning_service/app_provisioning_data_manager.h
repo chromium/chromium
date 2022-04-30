@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
@@ -40,7 +41,10 @@ class AppProvisioningDataManager {
   // Update the internal list from a binary proto fetched from the network.
   // Same integrity checks apply. This can be called multiple times with new
   // protos.
-  void PopulateFromDynamicUpdate(const std::string& binary_pb);
+  void PopulateFromDynamicUpdate(const std::string& binary_pb,
+                                 const base::FilePath& data_dir);
+
+  const base::FilePath& GetDataFilePath();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -59,6 +63,9 @@ class AppProvisioningDataManager {
   std::unique_ptr<proto::AppWithLocaleList> app_data_;
 
   base::ObserverList<Observer> observers_;
+
+  // The path to the directory that contains all app data, including icons.
+  base::FilePath data_dir_;
 };
 
 }  // namespace apps
