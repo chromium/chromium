@@ -98,7 +98,7 @@ public class FeedSurfaceMediator
             }
             if (!mSettingUpStreams) {
                 logSwitchedFeeds(newStream);
-                bindStream(newStream);
+                bindStream(newStream, /*shouldScrollToTop=*/true);
             }
         }
 
@@ -408,8 +408,9 @@ public class FeedSurfaceMediator
         mSettingUpStreams = false;
 
         if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
-            bindStream(mTabToStreamMap.get(
-                    mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)));
+            bindStream(mTabToStreamMap.get(mSectionHeaderModel.get(
+                               SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)),
+                    /*shouldScrollToTop=*/false);
         } else {
             unbindStream();
         }
@@ -505,7 +506,7 @@ public class FeedSurfaceMediator
      * different from new stream. Once bound, the stream can add/remove contents.
      */
     @VisibleForTesting
-    void bindStream(Stream stream) {
+    void bindStream(Stream stream, boolean shouldScrollToTop) {
         if (mCurrentStream == stream) return;
         if (mCurrentStream != null) {
             unbindStream(/* shouldPlaceSpacer = */ true);
@@ -528,7 +529,7 @@ public class FeedSurfaceMediator
                 mCoordinator.getHybridListRenderer(),
                 reliabilityLogger != null ? reliabilityLogger.getLaunchLogger()
                                           : new FeedLaunchReliabilityLogger() {},
-                mHeaderCount);
+                mHeaderCount, shouldScrollToTop);
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
     }
@@ -608,7 +609,7 @@ public class FeedSurfaceMediator
         Stream stream = mTabToStreamMap.get(
                 mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         if (stream != null) {
-            bindStream(stream);
+            bindStream(stream, /*shouldScrollToTop=*/false);
         }
     }
 

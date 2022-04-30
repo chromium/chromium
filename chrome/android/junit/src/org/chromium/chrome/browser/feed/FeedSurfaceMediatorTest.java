@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.eq;
@@ -215,8 +216,10 @@ public class FeedSurfaceMediatorTest {
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
-        verify(mForYouStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
-        verify(mFollowingStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mForYouStream, never())
+                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mFollowingStream, times(1))
+                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
@@ -231,8 +234,10 @@ public class FeedSurfaceMediatorTest {
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
-        verify(mForYouStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
-        verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mForYouStream, times(1))
+                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mFollowingStream, never())
+                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(2, mFeedSurfaceMediator.getTabToStreamSizeForTesting());

@@ -100,7 +100,8 @@ public interface Stream {
      */
     void bind(RecyclerView view, NtpListContentManager manager, FeedScrollState savedInstanceState,
             SurfaceScope surfaceScope, HybridListRenderer renderer,
-            FeedLaunchReliabilityLogger launchReliabilityLogger, int headerCount);
+            FeedLaunchReliabilityLogger launchReliabilityLogger, int headerCount,
+            boolean shouldScrollToTop);
 
     /**
      * Unbinds the feed. Stops this feed from updating the RecyclerView.

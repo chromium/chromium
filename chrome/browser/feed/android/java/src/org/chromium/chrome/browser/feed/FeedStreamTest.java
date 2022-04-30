@@ -158,10 +158,11 @@ public class FeedStreamTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
+    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn, boolean onboardingOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
         overrides.put(ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE, false);
+        overrides.put(ChromeFeatureList.WEB_FEED_ONBOARDING, onboardingOn);
         FeatureList.setTestFeatures(overrides);
     }
 
@@ -193,7 +194,7 @@ public class FeedStreamTest {
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        setFeatureOverrides(true);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true, /*onboardingOn=*/false);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -286,7 +287,7 @@ public class FeedStreamTest {
 
         // Bind again with correct headercount.
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, 2);
+                mLaunchReliabilityLogger, 2, /*shouldScrollToTop=*/false);
 
         // Add different feed content.
         update = FeedUiProto.StreamUpdate.newBuilder()
@@ -881,7 +882,7 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testShowSpinner_PlaceholderDisabled() {
-        setFeatureOverrides(false);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/false, /*onboardingOn=*/false);
         createHeaderContent(1);
         bindToView();
         FeedUiProto.StreamUpdate update =
@@ -901,6 +902,27 @@ public class FeedStreamTest {
 
         assertThat(nativeViewContent.getNativeView(layout),
                 not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
+    }
+
+    @Test
+    public void testStreamUpdatedCreatesSpacer() {
+        // Redo the feature overrides with onboarding turned on this time.
+        setFeatureOverrides(/*loading placeholder=*/true, /*onboardingOn=*/true);
+        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
+                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
+                /* isInterestFeed= */ StreamKind.FOLLOWING,
+                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /*helpAndFeedbackLauncher=*/null);
+        mFeedStream = stream;
+        createHeaderContent(1);
+        bindToView();
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForLoadingSpinnerSlice("a", true))
+                        .build();
+        stream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals("Spacer", mContentManager.getContent(2).getKey());
     }
 
     @Test
@@ -1052,6 +1074,7 @@ public class FeedStreamTest {
 
     void bindToView() {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, mContentManager.getItemCount());
+                mLaunchReliabilityLogger, mContentManager.getItemCount(),
+                /*shouldScrollToTop=*/false);
     }
 }
