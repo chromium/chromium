@@ -22,6 +22,7 @@ input such a user tapping on the canvas for an inline session.
       var finishAfterEachInput = true;
 
       gl = webglCanvas.getContext('webgl', { xrCompatible: true });
+      webglCanvas.onclick = null;
 
       var inputSourceAdded = false;
       function onInputSourcesChange() {

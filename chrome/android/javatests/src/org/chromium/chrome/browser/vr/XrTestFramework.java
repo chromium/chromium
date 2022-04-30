@@ -62,7 +62,10 @@ public abstract class XrTestFramework {
             new HashSet(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */
                     ));
     public static final int PAGE_LOAD_TIMEOUT_S = 10;
-    public static final int POLL_CHECK_INTERVAL_SHORT_MS = 50;
+    // These two were originally different values, but the short one was bumped up to increase
+    // test harness reliability. The long version might also want to be bumped up at some point, or
+    // the two could be merged.
+    public static final int POLL_CHECK_INTERVAL_SHORT_MS = 100;
     public static final int POLL_CHECK_INTERVAL_LONG_MS = 100;
     public static final int POLL_TIMEOUT_SHORT_MS = getShortPollTimeout();
     public static final int POLL_TIMEOUT_LONG_MS = getLongPollTimeout();
