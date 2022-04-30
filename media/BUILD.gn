@@ -294,6 +294,7 @@ component("shared_memory_support") {
   sources = [
     "base/audio_bus.cc",
     "base/audio_bus.h",
+    "base/audio_codecs.h",
     "base/audio_latency.cc",
     "base/audio_latency.h",
     "base/audio_parameters.cc",
@@ -304,6 +305,7 @@ component("shared_memory_support") {
     "base/channel_layout.cc",
     "base/channel_layout.h",
     "base/limits.h",
+    "base/media_export.h",
     "base/media_shmem_export.h",
     "base/sample_format.cc",
     "base/sample_format.h",

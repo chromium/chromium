@@ -51,4 +51,20 @@ void ReportPepperVideoDecoderOutputPictureCountSW(int height) {
                             GetMediaVideoHeight(height));
 }
 
+AudioParameters::Format ConvertAudioCodecToBitstreamFormat(AudioCodec codec) {
+  switch (codec) {
+    case AudioCodec::kAC3:
+      return AudioParameters::Format::AUDIO_BITSTREAM_AC3;
+    case AudioCodec::kEAC3:
+      return AudioParameters::Format::AUDIO_BITSTREAM_EAC3;
+    case AudioCodec::kDTS:
+      return AudioParameters::Format::AUDIO_BITSTREAM_DTS;
+      // No support for DTS_HD yet as this section is related to the incoming
+      // stream type. DTS_HD support is only added for audio track output to
+      // support audiosink reporting DTS_HD support.
+    default:
+      return AudioParameters::Format::AUDIO_FAKE;
+  }
+}
+
 }  // namespace media

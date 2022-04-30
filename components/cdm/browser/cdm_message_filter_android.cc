@@ -16,11 +16,13 @@
 #include "content/public/browser/android/android_overlay_provider.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
+#include "media/audio/android/audio_manager_android.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
@@ -80,6 +82,12 @@ const CodecInfo<media::AudioCodec> kMP4AudioCodecsToQuery[] = {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
+// Is an audio sink connected which supports the given codec?
+static bool CanPassthrough(media::AudioCodec codec) {
+  return (media::AudioManagerAndroid::GetSinkAudioEncodingFormats() &
+          media::ConvertAudioCodecToBitstreamFormat(codec)) != 0;
+}
+
 static SupportedCodecs GetSupportedCodecs(
     const SupportedKeySystemRequest& request,
     bool is_secure) {
@@ -110,9 +118,19 @@ static SupportedCodecs GetSupportedCodecs(
       }
     }
 
+    // It is possible that a device that is not able to decode the audio stream
+    // is connected to an audiosink device that can. In this case, CanDecode()
+    // returns false but CanPassthrough() will return true. CanPassthrough()
+    // calls AudioManagerAndroid::GetSinkAudioEncodingFormats() to retrieve a
+    // bitmask representing audio bitstream formats that are supported by the
+    // connected audiosink device. This bitmask is then matched against current
+    // audio stream's codec type. A match indicates that the connected
+    // audiosink device is able to decode the current audio stream and Chromium
+    // should passthrough the audio bitstream instead of trying to decode it.
     for (const auto& info : kMP4AudioCodecsToQuery) {
       if ((request.codecs & info.eme_codec) &&
-          media::MediaCodecUtil::CanDecode(info.codec)) {
+          (media::MediaCodecUtil::CanDecode(info.codec) ||
+           CanPassthrough(info.codec))) {
         supported_codecs |= info.eme_codec;
       }
     }

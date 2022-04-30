@@ -33,32 +33,13 @@
 #include "media/base/media_client.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/renderer_client.h"
 #include "media/base/timestamp_constants.h"
 #include "media/filters/audio_clock.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 
 namespace media {
-
-namespace {
-
-AudioParameters::Format ConvertCodecToBitstreamFormat(AudioCodec codec) {
-  switch (codec) {
-    case AudioCodec::kAC3:
-      return AudioParameters::Format::AUDIO_BITSTREAM_AC3;
-    case AudioCodec::kEAC3:
-      return AudioParameters::Format::AUDIO_BITSTREAM_EAC3;
-    case AudioCodec::kDTS:
-      return AudioParameters::Format::AUDIO_BITSTREAM_DTS;
-      // No support for DTS_HD yet as this section is related to the incoming
-      // stream type. DTS_HD support is only added for audio track output to
-      // support audiosink reporting DTS_HD support.
-    default:
-      return AudioParameters::Format::AUDIO_FAKE;
-  }
-}
-
-}  // namespace
 
 AudioRendererImpl::AudioRendererImpl(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
@@ -457,7 +438,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
   AudioCodec codec = stream->audio_decoder_config().codec();
   if (auto* mc = GetMediaClient()) {
-    const auto format = ConvertCodecToBitstreamFormat(codec);
+    const auto format = ConvertAudioCodecToBitstreamFormat(codec);
     is_passthrough_ = mc->IsSupportedBitstreamAudioCodec(codec) &&
                       hw_params.IsFormatSupportedByHardware(format);
   } else {
