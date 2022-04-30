@@ -1029,7 +1029,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}other{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}}</translation>
 <translation id="6649642165559792194">Afbeelding bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
-<translation id="6659594942844771486">Tabblad</translation>
+<translation id="6659594942844771486">Browsertabblad</translation>
 <translation id="666731172850799929">Openen in <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6674044799624355221">Stuurt een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen waarnemen</translation>
