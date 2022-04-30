@@ -80,8 +80,11 @@ export class VideoResolutionSettings extends BaseSettings {
     span.setAttribute('aria-label', `${deviceName} ${text}`);
 
     // Currently FPS buttons are only supported on external cameras.
+    const constFpsOptions = option.fpsOptions.filter(
+        (fpsOption) =>
+            SUPPORTED_CONSTANT_FPS.some((fps) => fps === fpsOption.constFps));
     const showFpsButton =
-        option.fpsOptions.length > 1 && facing === Facing.EXTERNAL;
+        constFpsOptions.length > 1 && facing === Facing.EXTERNAL;
     let resolution = new Resolution();
     for (const fps of SUPPORTED_CONSTANT_FPS) {
       const fpsButton =
