@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 from __future__ import print_function
+from os import path
 
 
 def Run(os_path=None, args=None):
@@ -19,10 +20,7 @@ def Run(os_path=None, args=None):
   finally:
     sys.path = old_sys_path
 
-  # Removing viewBox is not always safe, since it assumes that width/height are
-  # not overriden in all usages of an SVG file. Feel free to remove viewBox
-  # manually from a certain SVG if you have audited all its usages.
-  default_args = ['--disable=removeViewBox']
+  default_args = ['--config=' + path.join(_HERE_PATH, 'svgo.config.js')]
   return node.RunNode([node_modules.PathToSvgo()] + default_args + args)
 
 

@@ -31,7 +31,7 @@ def CheckOptimized(input_api, output_api):
     original = b'\n'.join(_ToBinary(line) for line in f.NewContents()).strip()
     output = _ToBinary(
         svgo.Run(input_api.os_path,
-                 ['-o', '-', f.AbsoluteLocalPath()]).strip())
+                 ['-o', '-', '-i', f.AbsoluteLocalPath()]).strip())
     if original != output:
       unoptimized.append(f.LocalPath())
 
