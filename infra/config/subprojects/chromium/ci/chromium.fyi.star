@@ -389,6 +389,19 @@ ci.builder(
     name = "linux-blink-v8-sandbox-future-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",
+        short_name = "SD",
+    ),
+    notifies = ["v8-sandbox-fyi-bots"],
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
+    name = "linux-blink-v8-sandbox-future-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|blink",
         short_name = "SB",
     ),
     notifies = ["v8-sandbox-fyi-bots"],
@@ -396,6 +409,17 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
 )
 
 ci.builder(
