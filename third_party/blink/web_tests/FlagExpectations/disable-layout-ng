@@ -1354,6 +1354,10 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-005.xht 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-006.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-014.xht [ Failure ]
 
+# external/wpt/css/CSS2/stacking-context/
+crbug.com/836244 external/wpt/css/CSS2/stacking-context/opacity-affects-block-in-inline.html [ Failure ]
+crbug.com/764458 external/wpt/css/CSS2/stacking-context/zindex-affects-block-in-inline.html [ Failure ]
+
 ### external/wpt/css/CSS2/tables/
 crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-row-002.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-rowgroup-002.xht [ Failure ]
