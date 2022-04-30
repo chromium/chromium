@@ -205,4 +205,34 @@ TEST_F(FocusControllerTest, NextFocusableElementForIME_Checkbox) {
                           password, mojom::blink::FocusType::kBackward));
 }
 
+// A <select> element should block a form submission.
+TEST_F(FocusControllerTest, NextFocusableElementForIME_Select) {
+  GetDocument().body()->setInnerHTML(
+      "<form>"
+      "  <input type='text' id='username'>"
+      "  <input type='password' id='password'>"
+      "  <select id='login_type'>"
+      "    <option value='regular'>Regular</option>"
+      "    <option value='invisible'>Invisible</option>"
+      "  </select>"
+      "  <input type='submit' value='Login'>"
+      "</form>");
+  Element* username = GetElementById("username");
+  Element* password = GetElementById("password");
+  Element* login_type = GetElementById("login_type");
+  ASSERT_TRUE(username);
+  ASSERT_TRUE(password);
+  ASSERT_TRUE(login_type);
+
+  EXPECT_EQ(password, GetFocusController().NextFocusableElementForIME(
+                          username, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         username, mojom::blink::FocusType::kBackward));
+
+  EXPECT_EQ(login_type, GetFocusController().NextFocusableElementForIME(
+                            password, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(username, GetFocusController().NextFocusableElementForIME(
+                          password, mojom::blink::FocusType::kBackward));
+}
+
 }  // namespace blink
