@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
 <translation id="123124571410524056">Сумња се на портал</translation>
 <translation id="1238612778414822719">HTTPS кашњење</translation>
+<translation id="1264116747675686718">Ажурира се верзија ОС-а</translation>
 <translation id="1264369926465113395">Проверите Chromebook-ов нови дигитални часопис за ауторе</translation>
 <translation id="1270369111467284986">Могућ улазни портал</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Пробај поново</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2163937499206714165">Укључите тамни режим</translation>
+<translation id="2177831236093724629">Пронађене су <ph name="LINK_BEGIN" />неквалификоване компоненте<ph name="LINK_END" />. Да бисте се уверили да су све квалификоване компоненте идентификоване, ажурирајте Chrome ОС на најновију верзију.</translation>
 <translation id="2180197493692062006">Дошло је до грешке. Пробајте да поново отворите апликацију.</translation>
 <translation id="2209788852729124853">Ресетуј бројаче саобраћаја</translation>
 <translation id="2212733584906323460">Разрешавање имена</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Моје датотеке</translation>
 <translation id="3192947282887913208">Аудио датотеке</translation>
 <translation id="3199982728237701504">Увлачење документа (двострано)</translation>
+<translation id="320091191259649613">Ако и даље видите проблем после ажурирања, могуће је да је компонента одскора квалификована и да још увек није доспела у базу података.</translation>
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Покрени</translation>
 <translation id="4987769320337599931">Заштитни зид</translation>
 <translation id="4999333166442584738">Сакриј извештај</translation>
+<translation id="5008611843832219958">Ажурирајте на најновију верзију Chrome ОС-а ради оптимизованог процеса поправке</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Када је екран неактиван, приказују се слике, време, временска прогноза и информације о медијском садржају.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Нисмо успели да довршимо скенирање</translation>
 <translation id="5502931783115429516">Android није покренут</translation>
+<translation id="5507300744274596613">Уверите се да је Chrome ОС ажуриран</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="594552776027197022">Генеришите насумични пар кључева</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Подразумевана позадина</translation>
 <translation id="6034694447310538551">Омогући аутоматско месечно ресетовање</translation>
 <translation id="6037291330010597344">Механизам за увлачење докумената на скенеру је празан. Додајте документе и пробајте поново.</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунте</translation>
 <translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>
+<translation id="8671972493856476349">Ажурирај на <ph name="VERSION_NUMBER" /> и рестартуј</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>
 <translation id="8677859815076891398">Нема албума. Направите албум у <ph name="LINK_BEGIN" />Google сликама<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користите тастер са стрелицом налево или надесно да бисте управљали овом функцијом.</translation>
@@ -782,6 +789,7 @@
 <translation id="917720651393141712">Тестирај</translation>
 <translation id="9204237731135241582">Контакт са мрежним пролазом не успева из Android апликација</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
+<translation id="922179502584117429">Актуелна верзија <ph name="VERSION_NUMBER" /> је застарела</translation>
 <translation id="932327136139879170">Почетна</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Није активирано</translation>

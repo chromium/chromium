@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Cuddni DNS</translation>
 <translation id="123124571410524056">Mae porth yn debygol</translation>
 <translation id="1238612778414822719">Cuddni HTTPS</translation>
+<translation id="1264116747675686718">Wrthi'n diweddaru fersiwn yr OS</translation>
 <translation id="1264369926465113395">Dewch i weld cylchgrawn digidol newydd Chromebook ar gyfer crewyr</translation>
 <translation id="1270369111467284986">Porth caeth yn debygol</translation>
 <translation id="1290331692326790741">Signal gwan</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Rhoi cynnig arall arni</translation>
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
+<translation id="2177831236093724629">Canfuwyd <ph name="LINK_BEGIN" />cydrannau anghymwys<ph name="LINK_END" />. I wneud yn siŵr bod yr holl gydrannau cymwys yn cael eu hadnabod, diweddarwch eich Chrome OS i'r fersiwn diweddaraf.</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
 <translation id="2212733584906323460">Cydraniad Enw</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Fy ffeiliau</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
 <translation id="3199982728237701504">Bwydydd Dogfen (Dwy ochr)</translation>
+<translation id="320091191259649613">Os ydych yn parhau i weld y broblem ar ôl y diweddariad, mae'n bosib bod y gydran newydd gymhwyso ac nid yw wedi cyrraedd y gronfa ddata eto.</translation>
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
 <translation id="3268178239013324452">Wedi methu - Drws ar agor</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Rhedeg</translation>
 <translation id="4987769320337599931">Wal dân</translation>
 <translation id="4999333166442584738">Cuddio'r adroddiad</translation>
+<translation id="5008611843832219958">Diweddarwch i'r fersiwn diweddaraf o Chrome OS ar gyfer proses atgyweirio sydd wedi'i optimeiddio</translation>
 <translation id="500920857929044050">Stopio'r prawf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Pan fydd eich sgrîn yn segur, dangoswch luniau, yr amser, y tywydd a gwybodaeth am y cyfryngau.</translation>
@@ -431,6 +435,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nid oedd modd cwblhau sganio</translation>
 <translation id="5502931783115429516">Nid yw Android yn rhedeg</translation>
+<translation id="5507300744274596613">Gwnewch yn siŵr bod Chrome OS yn gyfredol</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5939518447894949180">Ailosod</translation>
 <translation id="594552776027197022">Cynhyrchu pâr o allweddi ar hap</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Papur Wal Diofyn</translation>
 <translation id="6034694447310538551">Galluogi ailosod misol awtomatig</translation>
 <translation id="6037291330010597344">Mae bwydydd dogfennau'r sganiwr yn wag. Ychwanegwch ddogfennau a rhowch gynnig arall arni.</translation>
 <translation id="6040143037577758943">Cau</translation>
@@ -718,6 +724,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8660881923941176839">pwysau</translation>
 <translation id="8662671328352114214">Ymuno â rhwydwaith <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Diweddaru i <ph name="VERSION_NUMBER" /> ac ailgychwyn</translation>
 <translation id="8675354002693747642">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="8677859815076891398">Dim albymau. Creu albwm yn <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Defnyddiwch y bysellau saeth Chwith neu Dde i reoli'r nodwedd hon.</translation>
@@ -782,6 +789,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="917720651393141712">Prawf</translation>
 <translation id="9204237731135241582">Methu â chysylltu'r porth o apiau Android</translation>
 <translation id="9211490828691860325">Pob desg</translation>
+<translation id="922179502584117429">Mae'r fersiwn bresennol <ph name="VERSION_NUMBER" /> yn hen</translation>
 <translation id="932327136139879170">Cartref</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>

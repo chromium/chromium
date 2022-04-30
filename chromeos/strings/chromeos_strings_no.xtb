@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
+<translation id="1264116747675686718">Oppdaterer OS-versjonen</translation>
 <translation id="1264369926465113395">Ta en kikk på Chromebooks nye digitale magasin for skapere</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
+<translation id="2177831236093724629">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. For å sikre at alle kvalifiserte komponenter identifiseres, oppdater Chrome OS til nyeste versjon.</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
+<translation id="320091191259649613">Hvis du fremdeles ser problemet etter oppdateringen, er det mulig at komponenten nylig er kvalifisert og ikke er lagt inn i databasen ennå.</translation>
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
 <translation id="4999333166442584738">Skjul rapporten</translation>
+<translation id="5008611843832219958">Oppdater til den nyeste versjonen av Chrome for å få en optimalisert reparasjonsprosess</translation>
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Vis bilder, tidspunkt, vær og medieinfo når skjermen er inaktiv.</translation>
@@ -431,6 +435,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Kunne ikke fullføre skanningen</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
+<translation id="5507300744274596613">Sørg for at Chrome OS er oppdatert</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
 <translation id="594552776027197022">Generer tilfeldig nøkkelpar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Standardbakgrunn</translation>
 <translation id="6034694447310538551">Slå på automatisk månedlig tilbakestilling</translation>
 <translation id="6037291330010597344">Skannerens dokumentmater er tom. Legg inn dokumenter, og prøv på nytt.</translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -718,6 +724,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">pund</translation>
 <translation id="8662671328352114214">Koble til <ph name="TYPE" />-nettverket</translation>
+<translation id="8671972493856476349">Oppdater til <ph name="VERSION_NUMBER" /> og start på nytt</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
@@ -782,6 +789,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Kan ikke kontakte gatewayen fra Android-apper</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
+<translation id="922179502584117429">Den gjeldende versjonen, <ph name="VERSION_NUMBER" />, er utdatert</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>

@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">Адключэнне...</translation>
 <translation id="1537254971476575106">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="15373452373711364">Вялікі курсор мышы</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> запытвае дазвол чытаць і змяняць сайт <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Уключыць дэманстрацыйны рэжым</translation>
 <translation id="1541346352678737112">Сетак не знойдзена</translation>
 <translation id="1542137295869176367">Не ўдалося абнавіць даныя для ўваходу</translation>
@@ -1871,6 +1872,7 @@
 <translation id="2749756011735116528">Увайсці ва ўліковы запіс <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM-карта</translation>
 <translation id="2749881179542288782">Праверыць граматыку і правапіс</translation>
+<translation id="275085171842676231">Адпраўляецца запыт на чытанне і змяненне сайта <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />:</translation>
 <translation id="2753677631968972007">Кіраваць дазволамі сайта ўручную.</translation>
 <translation id="2755349111255270002">Скіньце гэту прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Кіраваць спецыяльнымі магчымасцямі</translation>
@@ -3558,6 +3560,7 @@
 <translation id="4429239357082509581">Steam патрабуе дазволу на запуск</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
 <translation id="4430369329743628066">Дададзена закладка</translation>
+<translation id="4430422687972614133">Уключыць віртуальную картку</translation>
 <translation id="4432621511648257259">Няправільны пароль</translation>
 <translation id="443454694385851356">Ранейшая версія (небяспечная)</translation>
 <translation id="443475966875174318">Абнавіць або выдаліць несумяшчальныя праграмы</translation>
@@ -7091,6 +7094,7 @@
 <translation id="7947964080535614577">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна. Аднак некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="7948407723851303488">Усе старонкі дамена <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Каб дадаць спосабы аплаты Google Pay або кіраваць імі, перайдзіце ў свой <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
+<translation id="795130320946928025">Выключыць віртуальную картку</translation>
 <translation id="7952708427581814389">Сайты могуць запытваць дазвол на прагляд тэксту і відарысаў у буферы абмену</translation>
 <translation id="795282463722894016">Аднаўленне выканана</translation>
 <translation id="7952904276017482715">Чакаўся ідэнтыфікатар "<ph name="EXPECTED_ID" />", фактычны ідэнтыфікатар – "<ph name="NEW_ID" />"</translation>

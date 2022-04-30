@@ -669,6 +669,7 @@
 <translation id="4758061975920522644">फोटो मात्र सेयर गरियोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4763480195061959176">भिडियो</translation>
+<translation id="4766313118839197559">पासवर्डहरू यो डिभाइसको पासवर्ड म्यानेजरमा सेभ गरिन्छन्</translation>
 <translation id="4766678251456904326">यन्त्रमा खाता जोड्नुहोस्</translation>
 <translation id="4791358705705538979">तपाईंलाई वेबमा चेकआउट जस्ता कार्यहरू पूरा गर्न मद्दत गर्छ</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -927,6 +928,7 @@
 <translation id="6162892189396105610">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राखिन्छ।</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
+<translation id="6196315980958524839">पासवर्डहरू यो डिभाइसको Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्</translation>
 <translation id="620197886010707372">Google Play मार्फत <ph name="APPNAME" /> एप खोल्ने हो?</translation>
 <translation id="6203593061661911168">Wi-Fi मा कनेक्ट भएपछि डाउनलोड गर्न थालिने छ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
@@ -1257,6 +1259,7 @@
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7961926449547174351">तपाईंले भण्डारण प्रयोग गर्ने अनुमति दिनुभएको छैन, कृपया सेटिङमा गई उक्त अनुमति दिनुहोस्।</translation>
 <translation id="7963646190083259054">विक्रेता:</translation>
+<translation id="7965838025086216108">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="ACCOUNT" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>

@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
 <translation id="1238612778414822719">HTTPS Gecikməsi</translation>
+<translation id="1264116747675686718">OS versiyası güncəllənir</translation>
 <translation id="1264369926465113395">Chromebook'un yaradıcılar üçün yeni rəqəmsal jurnalına baxın</translation>
 <translation id="1270369111467284986">Avtorizasiya portalı şübhəsi var</translation>
 <translation id="1290331692326790741">Zəif siqnal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> tapılıb. Bütün uyğun komponentlərin müəyyən edildiyinə əmin olmaq üçün Chrome OS-i ən son versiyaya güncəlləyin.</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2212733584906323460">Ad Həlli</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
+<translation id="320091191259649613">Güncəlləmədən sonra problemi hələ də görürsünüzsə, ola bilsin ki, komponent yeni uyğunlaşdırılıb və hələ data bazasına daxil edilməyib.</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">İşə salın</translation>
 <translation id="4987769320337599931">Qoruyucu divar</translation>
 <translation id="4999333166442584738">Hesabatı gizlədin</translation>
+<translation id="5008611843832219958">Optimallaşdırılmış təmir prosesi üçün Chrome OS-in ən son versiyasına güncəlləyin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ekran durğun olduqda fotolar, vaxt, hava və media məlumatları göstərilsin.</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanı tamamlamaq olmadı</translation>
 <translation id="5502931783115429516">Android işləmir</translation>
+<translation id="5507300744274596613">Chrome OS-in güncəl olduğuna əmin olun</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
+<translation id="5984145644188835034">Defolt Divar Kağızı</translation>
 <translation id="6034694447310538551">Avtomatik aylıq sıfırlamanı aktivləşdirin</translation>
 <translation id="6037291330010597344">Skanerin sənəd ötürücüsü boşdur. Sənəd əlavə edib yenidən sınayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
@@ -543,7 +549,7 @@
 <translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
 <translation id="6650062777702288430">Kana/hərf-rəqəm keçiricisi</translation>
 <translation id="6657585470893396449">Parol</translation>
-<translation id="6659594942844771486">Panel</translation>
+<translation id="6659594942844771486">Səkmə</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6723839937902243910">Enerji</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funt</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> şəbəkəsinə qoşulun</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> versiyasına güncəlləyin və yenidən başladın</translation>
 <translation id="8675354002693747642">Öncədən paylaşılan açar</translation>
 <translation id="8677859815076891398">Albom yoxdur. <ph name="LINK_BEGIN" />Google Fotoda<ph name="LINK_END" /> albom yaradın.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiyanı idarə etmək üçün Sol və ya Sağ ox düyməsini istifadə edin.</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Android tətbiqlərindən giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="9211490828691860325">Bütün masalar</translation>
+<translation id="922179502584117429">Cari versiya <ph name="VERSION_NUMBER" /> köhnəlib</translation>
 <translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>

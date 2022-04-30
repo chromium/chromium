@@ -670,6 +670,7 @@
 <translation id="4758061975920522644">Поделиться только изображением</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4766313118839197559">Пароли сохранены в Менеджере паролей на этом устройстве.</translation>
 <translation id="4766678251456904326">Добавить аккаунт на устройство</translation>
 <translation id="4791358705705538979">Помогает вам выполнять задачи в Интернете, например оформлять покупки</translation>
 <translation id="4794291718671962615"><ph name="URL" /> (<ph name="MEGABYTES" />)</translation>
@@ -928,6 +929,7 @@
 <translation id="6162892189396105610">Chrome предварительно загружает страницы, которые вы с большой вероятностью посетите.</translation>
 <translation id="6186394685773237175">Раскрытых паролей не найдено.</translation>
 <translation id="6192907950379606605">Описывать изображения</translation>
+<translation id="6196315980958524839">Пароли сохраняются в Google Менеджере паролей и доступны на этом устройстве.</translation>
 <translation id="620197886010707372"><ph name="APPNAME" />: открыть приложение через Google Play?</translation>
 <translation id="6203593061661911168">Скачивание начнется, когда будет установлено подключение по Wi-Fi.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
@@ -1258,6 +1260,7 @@
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>
+<translation id="7965838025086216108">Вы можете использовать сохраненные пароли на любых устройствах. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Добавлено в список для чтения.</translation>
 <translation id="7971136598759319605">Последние действия: 1 день назад</translation>
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>

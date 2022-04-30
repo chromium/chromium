@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
 <translation id="1238612778414822719">HTTPS kašnjenje</translation>
+<translation id="1264116747675686718">Ažurira se verzija OS-a</translation>
 <translation id="1264369926465113395">Proverite Chromebook-ov novi digitalni časopis za autore</translation>
 <translation id="1270369111467284986">Moguć ulazni portal</translation>
 <translation id="1290331692326790741">Slab signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Probaj ponovo</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
+<translation id="2177831236093724629">Pronađene su <ph name="LINK_BEGIN" />nekvalifikovane komponente<ph name="LINK_END" />. Da biste se uverili da su sve kvalifikovane komponente identifikovane, ažurirajte Chrome OS na najnoviju verziju.</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrešavanje imena</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
+<translation id="320091191259649613">Ako i dalje vidite problem posle ažuriranja, moguće je da je komponenta odskora kvalifikovana i da još uvek nije dospela u bazu podataka.</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
 <translation id="4999333166442584738">Sakrij izveštaj</translation>
+<translation id="5008611843832219958">Ažurirajte na najnoviju verziju Chrome OS-a radi optimizovanog procesa popravke</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju.</translation>
@@ -431,6 +435,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nismo uspeli da dovršimo skeniranje</translation>
 <translation id="5502931783115429516">Android nije pokrenut</translation>
+<translation id="5507300744274596613">Uverite se da je Chrome OS ažuriran</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Generišite nasumični par ključeva</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Podrazumevana pozadina</translation>
 <translation id="6034694447310538551">Omogući automatsko mesečno resetovanje</translation>
 <translation id="6037291330010597344">Mehanizam za uvlačenje dokumenata na skeneru je prazan. Dodajte dokumente i probajte ponovo.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -718,6 +724,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funte</translation>
 <translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
+<translation id="8671972493856476349">Ažuriraj na <ph name="VERSION_NUMBER" /> i restartuj</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Koristite taster sa strelicom nalevo ili nadesno da biste upravljali ovom funkcijom.</translation>
@@ -782,6 +789,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="917720651393141712">Testiraj</translation>
 <translation id="9204237731135241582">Kontakt sa mrežnim prolazom ne uspeva iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
+<translation id="922179502584117429">Aktuelna verzija <ph name="VERSION_NUMBER" /> je zastarela</translation>
 <translation id="932327136139879170">Početna</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>

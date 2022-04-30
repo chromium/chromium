@@ -551,6 +551,7 @@
 <translation id="1536754031901697553">Անջատվում է…</translation>
 <translation id="1537254971476575106">Լիաէկրան խոշորացույց</translation>
 <translation id="15373452373711364">Մկնիկի մեծ նշորդ</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> ընդլայնմանն անհրաժեշտ է <ph name="ORIGIN" /> կայքի տվյալները կարդալու և փոփոխելու թույլտվություն</translation>
 <translation id="1540605929960647700">Ցուցադրական ռեժիմի միացում</translation>
 <translation id="1541346352678737112">Ցանց չի գտնվել</translation>
 <translation id="1542137295869176367">Չհաջողվեց թարմացնել ձեր մուտքի տվյալները</translation>
@@ -1870,6 +1871,7 @@
 <translation id="2749756011735116528">Մուտք գործել <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
+<translation id="275085171842676231">Կայքի (<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />) տվյալները կարդալու և փոփոխելու հարցում՝</translation>
 <translation id="2753677631968972007">Ձեռքով կառավարեք կայքի թույլտվությունները։</translation>
 <translation id="2755349111255270002">Վերակայեք <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="2755367719610958252">Կառավարել հատուկ գործառույթները</translation>
@@ -3556,6 +3558,7 @@
 <translation id="4429239357082509581">Steam-ի գործարկման թույլտվություն չկա</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
 <translation id="4430369329743628066">Էջանիշն ավելացվեց</translation>
+<translation id="4430422687972614133">Գրանցել վիրտուալ քարտ</translation>
 <translation id="4432621511648257259">Գաղտնաբառը սխալ է</translation>
 <translation id="443454694385851356">Հնացած (ոչ ապահով)</translation>
 <translation id="443475966875174318">Անհամատեղելի հավելվածների թարմացում կամ հեռացում</translation>
@@ -7083,6 +7086,7 @@
 <translation id="7947964080535614577">Կայքերը սովորաբար գովազդ են ցուցադրում, որպեսզի կարողանան անվճար բովանդակություն և ծառայություններ տրամադրել։ Սակայն որոշ կայքեր ցուցադրում են հոգնեցնող կամ մոլորեցնող գովազդ։</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> տիրույթի բոլոր էջերը</translation>
 <translation id="7951265006188088697">Google Pay-ում վճարման եղանակներ ավելացնելու կամ դրանք կառավարելու համար անցեք ձեր <ph name="BEGIN_LINK" />Google հաշիվ<ph name="END_LINK" /></translation>
+<translation id="795130320946928025">Հեռացնել վիրտուալ քարտը</translation>
 <translation id="7952708427581814389">Կայքերը կարող են սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն խնդրել</translation>
 <translation id="795282463722894016">Վերականգնումն ավարտվեց</translation>
 <translation id="7952904276017482715">Սպասված ID-ն՝ «<ph name="EXPECTED_ID" />», ստացված ID-ն՝ «<ph name="NEW_ID" />»</translation>

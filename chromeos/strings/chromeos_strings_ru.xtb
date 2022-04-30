@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Задержка DNS</translation>
 <translation id="123124571410524056">Возможно, обнаружен сетевой портал.</translation>
 <translation id="1238612778414822719">Время ожидания HTTPS</translation>
+<translation id="1264116747675686718">Обновление…</translation>
 <translation id="1264369926465113395">Почитайте новый цифровой журнал Chromebook для авторов.</translation>
 <translation id="1270369111467284986">Потенциальная страница входа</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
+<translation id="2177831236093724629">Обнаружены <ph name="LINK_BEGIN" />не соответствующие требованиям компоненты<ph name="LINK_END" />. Чтобы убедиться, что все подходящие компоненты идентифицированы, обновите Chrome OS до последней версии.</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
+<translation id="320091191259649613">Если проблема не исчезла после обновления, возможно, компонент был недавно приведен в соответствие с требованиями и сведения об этом ещё не появились в базе данных.</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
 <translation id="4999333166442584738">Скрыть отчет</translation>
+<translation id="5008611843832219958">Обновите Chrome OS до последней версии, чтобы оптимизировать процесс устранения неполадок.</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показывает фото, время, погоду и новости, когда ваше устройство находится в режиме ожидания</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не удалось завершить сканирование</translation>
 <translation id="5502931783115429516">ОС Android не запущена</translation>
+<translation id="5507300744274596613">Обновление Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Обои по умолчанию</translation>
 <translation id="6034694447310538551">Включить ежемесячный автоматический сброс показателя</translation>
 <translation id="6037291330010597344">Автоподатчик документов пуст. Положите документы и повторите попытку.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунта</translation>
 <translation id="8662671328352114214">Присоединиться к сети <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Обновить до версии <ph name="VERSION_NUMBER" /> и перезагрузить</translation>
 <translation id="8675354002693747642">Общий ключ</translation>
 <translation id="8677859815076891398">Альбомов нет. Создайте альбом в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Этой функцией можно управлять нажатием стрелки влево или вправо.</translation>
@@ -782,6 +789,7 @@
 <translation id="917720651393141712">Проверить</translation>
 <translation id="9204237731135241582">Не удается связаться со шлюзом в приложениях для Android.</translation>
 <translation id="9211490828691860325">Все рабочие столы</translation>
+<translation id="922179502584117429">Текущая версия <ph name="VERSION_NUMBER" /> устарела</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не активировано</translation>

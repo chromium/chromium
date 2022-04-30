@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS को विलम्बता</translation>
 <translation id="123124571410524056">पोर्टलका कारणले हुन सक्छ</translation>
 <translation id="1238612778414822719">HTTPS को विलम्बता</translation>
+<translation id="1264116747675686718">OS को संस्करण अपडेट गरिँदै छ</translation>
 <translation id="1264369926465113395">निर्माताहरूका लागि बनाइएको Chromebook को नयाँ डिजिटल पत्रिका पढ्नुहोस्</translation>
 <translation id="1270369111467284986">संदिग्ध क्याप्टिभ पोर्टल</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। सबै योग्य कम्पोनेन्टहरू पहिचान गरिन्छन् भन्ने कुरा सुनिश्चित गर्न आफ्नो Chrome OS अपडेट गरी नवीनतम संस्करण बनाउनुहोस्।</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
 <translation id="3199982728237701504">डकुमेन्ट फिडर (दुईतर्फी)</translation>
+<translation id="320091191259649613">अपडेट गरेपछि पनि समस्या आइरह्यो भने कम्पोनेन्ट भर्खरै योग्य भएकाले र डेटाबेसमा समावेश गरिनसकिएकाले त्यस्तो भएको हुन सक्छ।</translation>
 <translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="4987769320337599931">फायरवाल</translation>
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
+<translation id="5008611843832219958">तपाईं अप्टिमाइज गरिएको मर्मत प्रक्रिया सुरु गर्न चाहनुहुन्छ भने Chrome OS अपडेट गरी नवीनतम संस्करण बनाउनुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
 <translation id="5019310272469539976">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्।</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">स्क्यान गर्ने कार्य पूरा गर्न सकिएन</translation>
 <translation id="5502931783115429516">Android चलिरहेको छैन</translation>
+<translation id="5507300744274596613">Chrome OS अप टु डेट छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="594552776027197022">क्रमरहित किपेयर सिर्जना गर्नुहोस्</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
+<translation id="5984145644188835034">डिफल्ट वालपेपर</translation>
 <translation id="6034694447310538551">मासिक रूपमा डेटा प्रयोग स्वतः रिसेट गर्ने विकल्प अन गर</translation>
 <translation id="6037291330010597344">स्क्यानरको डकुमेन्ट फिडर खाली छ। डकुमेन्टहरू हाल्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8660881923941176839">पाउन्ड</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमा सामेल हुनुहोस्</translation>
+<translation id="8671972493856476349">अपडेट गरी <ph name="VERSION_NUMBER" /> बनाउनुहोस् र रिस्टार्ट गर्नुहोस्</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="8677859815076891398">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा गई एउटा एल्बम बनाउनुहोस्।</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">परीक्षण</translation>
 <translation id="9204237731135241582">Android एपहरूबाट गेटवेमा सम्पर्क गर्न सकिएन</translation>
 <translation id="9211490828691860325">सबै डेस्कहरू</translation>
+<translation id="922179502584117429">हालको संस्करण <ph name="VERSION_NUMBER" /> पुरानो भइसकेको छ</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>

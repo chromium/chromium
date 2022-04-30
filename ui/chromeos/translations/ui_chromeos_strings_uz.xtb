@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Niderland (Niderlandiya)</translation>
 <translation id="174937106936716857">Umumiy fayllar soni</translation>
 <translation id="1755345808328621801">Ushbu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan va qurilmangizdagi ChromeOS tizimida ishga tushmaydi. Uni ochishga mos ilova topish uchun Chrome internet doʻkoniga tashrif buyuring.</translation>
+<translation id="1757915090001272240">Enli Lotin</translation>
 <translation id="1773212559869067373">Haqiqiylikni tekshirish sertifikati mahalliy tarzda rad etildi</translation>
 <translation id="1775381402323441512">Video haqida</translation>
 <translation id="180035236176489073">Ushbu fayllarni ochish uchun internetga ulangan bo‘lish kerak.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Xizmatlar</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Axborot yuklanmoqda...</translation>
+<translation id="1832073788765803750">Yarim enli katakana</translation>
 <translation id="1834290891154666894">Subyektning muqobil nomi bilan mos keladigan xato yozuv topildi</translation>
 <translation id="1838709767668011582">Google sayti</translation>
 <translation id="1844692022597038441">Bu fayl internetsiz ishlamaydi.</translation>
@@ -516,6 +518,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> nusxasi <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> xizmatiga zaxiralanmoqda</translation>
 <translation id="535792325654997756">Mushuklari bor odam</translation>
 <translation id="5358764674931277">Kadrlar chastotasi</translation>
+<translation id="5363339716524495120">Xitoy tilida kiritiladi</translation>
 <translation id="5368191757080475556">Jildni Linuxga ulashish</translation>
 <translation id="5402367795255837559">Brayl yozuvi</translation>
 <translation id="5411472733320185105">Proksi-server yordamida quyidagi hostlar va domenlarga ulanilmasin:</translation>
@@ -538,6 +541,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5534520101572674276">Hajm hisoblanmoqda...</translation>
 <translation id="554153475311314364">Grek tili transliteratsiyasi</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Toʻliq enli imlo tekshiruvi</translation>
 <translation id="5602622065581044566">Bolgar (fonetik klaviatura)</translation>
 <translation id="5605830556594064952">AQSH (Dvorak)</translation>
 <translation id="5618330573454123917">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmadagi Chrome OS tizimida ishga tushmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
@@ -747,6 +751,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> topildi
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> xizmatiga zaxiralash uchun tayyor</translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetik</translation>
 <translation id="7505167922889582512">Yashirin fayllarni ko‘rsatish</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
@@ -835,6 +840,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8128733386027980860">Ingliz (Buyuk Britaniya) va Dvorak klaviaturasi</translation>
 <translation id="8137331602592933310">Siz “<ph name="FILENAME" />” faylini o‘chira olmaysiz, chunki bu fayl sizga tegishli emas.</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
+<translation id="8147028810663464959">Toʻliq enli belgilar</translation>
 <translation id="8151638057146502721">Sozlash</translation>
 <translation id="8154842056504218462">Barcha elementlarni belgilandi.</translation>
 <translation id="8157684860301034423">Ilova haqidagi axborot yuklanmadi.</translation>
@@ -844,6 +850,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8208580316430297579">Rasmlar</translation>
 <translation id="8223479393428528563">Ushbu fayllar bilan internet yo‘qligida ishlash uchun, internetga ulaning va har bir fayl ustiga sichqonchaning o‘ng tugmasini bosib, <ph name="OFFLINE_CHECKBOX_NAME" /> bandini tanlang.</translation>
 <translation id="8249296373107784235">Bekor qilish</translation>
+<translation id="8250690786522693009">Lotin</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8261561378965667560">Xitoy (tuzilmaviy)</translation>

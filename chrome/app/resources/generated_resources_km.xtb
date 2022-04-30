@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">កំពុង​ផ្ដាច់...</translation>
 <translation id="1537254971476575106">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
 <translation id="15373452373711364">ទស្សន៍ទ្រនិច​កណ្តុរធំ</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> កំពុងស្នើសុំអាន និងផ្លាស់ប្ដូរ <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">បើកមុខងារ​សាកល្បង</translation>
 <translation id="1541346352678737112">រកបណ្ដាញមិនឃើញទេ</translation>
 <translation id="1542137295869176367">មិនអាច​ធ្វើបច្ចុប្បន្នភាព​ទិន្នន័យសម្រាប់ចូលគណនី​របស់អ្នកបានទេ</translation>
@@ -1887,6 +1888,7 @@
 <translation id="2749756011735116528">ចូលទៅ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">ស៊ីម</translation>
 <translation id="2749881179542288782">ពិនិត្យវេយ្យាករណ៍ជាមួយការប្រកប</translation>
+<translation id="275085171842676231">កំពុងស្នើសុំអាន និងផ្លាស់ប្ដូរ <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />៖</translation>
 <translation id="2753677631968972007">គ្រប់គ្រង​ការអនុញ្ញាតគេហទំព័រដោយផ្ទាល់។</translation>
 <translation id="2755349111255270002">កំណត់ <ph name="DEVICE_TYPE" /> នេះឡើងវិញ</translation>
 <translation id="2755367719610958252">គ្រប់គ្រងលក្ខណៈពិសេសលទ្ធភាពចូលប្រើ</translation>
@@ -3577,6 +3579,7 @@
 <translation id="4429239357082509581">Steam មិនមានការអនុញ្ញាត ដើម្បីដំណើរការទេ</translation>
 <translation id="4430019312045809116">សម្លេង</translation>
 <translation id="4430369329743628066">បានបន្ថែមចំណាំ</translation>
+<translation id="4430422687972614133">បើកកាតនិម្មិត</translation>
 <translation id="4432621511648257259">ពាក្យ​សម្ងាត់​មិន​ត្រឹមត្រូវ</translation>
 <translation id="443454694385851356">​ចាស់ (គ្មាន​សុវត្ថិភាព)</translation>
 <translation id="443475966875174318">ដំឡើង​ជំនាន់ ឬលុប​កម្មវិធី​ដែល​មិន​ត្រូវគ្នា​ចេញ​</translation>
@@ -7111,6 +7114,7 @@
 <translation id="7947964080535614577">ជាធម្មតា គេហទំព័រ​បង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម ដើម្បីអាចឱ្យ​ពួកគេ​ផ្ដល់ខ្លឹមសារ ឬសេវាកម្ម​ដោយឥតគិតថ្លៃ។ ប៉ុន្តែគេហទំព័រមួយចំនួនត្រូវបានគេស្គាល់ថា បង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​នាំឱ្យយល់ច្រឡំ ឬរំខាន។</translation>
 <translation id="7948407723851303488">ទំព័រទាំងអស់នៃ <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">ដើម្បី​បញ្ចូល ឬ​គ្រប់គ្រង​វិធីបង់ប្រាក់ Google Pay សូមចូល​ទៅកាន់<ph name="BEGIN_LINK" />គណនី Google<ph name="END_LINK" /> របស់អ្នក</translation>
+<translation id="795130320946928025">បិទកាតនិម្មិត</translation>
 <translation id="7952708427581814389">គេហទំព័រអាចស្នើសុំមើលអត្ថបទ និងរូបភាពនៅក្នុងឃ្លីបបតរបស់អ្នក</translation>
 <translation id="795282463722894016">បានបញ្ចប់ការស្ដារ</translation>
 <translation id="7952904276017482715">លេខសម្គាល់​ដែលបាន​រំពឹងទុក "<ph name="EXPECTED_ID" />" ប៉ុន្តែ​លេខសម្គាល់​ជាក់ស្ដែងគឺ "<ph name="NEW_ID" />"</translation>

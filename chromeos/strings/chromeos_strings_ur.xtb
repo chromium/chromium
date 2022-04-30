@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
+<translation id="1264116747675686718">‏OS ورژن کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="1264369926465113395">‏تخلیق کاران کے لیے Chromebook کی نئی ڈیجیٹل میگزین چیک کریں</translation>
 <translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
+<translation id="2177831236093724629">‏<ph name="LINK_BEGIN" />نا اہل اجزاء<ph name="LINK_END" /> پائے گئے۔ یہ یقینی بنانے کے لیے کہ تمام اہل اجزاء کی شناخت ہو گئی ہے، اپنے Chrome OS کو تازہ ترین ورژن میں اپ ڈیٹ کریں۔</translation>
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
 <translation id="2209788852729124853">ٹریفک کاؤنٹرز ری سیٹ کریں</translation>
 <translation id="2212733584906323460">ریزولیوشن کا نام دیں</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
+<translation id="320091191259649613">اگر اپ ڈیٹ کے بعد بھی آپ کو مسئلہ نظر آتا ہے تو یہ ہو سکتا ہے کہ جزو ابھی کوالیفائی ہوا ہو اور ڈیٹا بیس میں ابھی تک اپ ڈیٹ نہیں کیا گیا ہو۔</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="4987769320337599931">فائروال</translation>
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
+<translation id="5008611843832219958">‏بہتر مرمت کے عمل کے لیے Chrome OS کے تازہ ترین ورژن میں اپ ڈیٹ کریں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">اسکین مکمل نہیں ہو سکا</translation>
 <translation id="5502931783115429516">‏Android نہیں چل رہا ہے</translation>
+<translation id="5507300744274596613">‏یقینی بنائیں کہ Chrome OS اپ ٹو ڈیٹ ہے</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
+<translation id="5984145644188835034">ڈیفالٹ وال پیپر</translation>
 <translation id="6034694447310538551">خودکار ماہانہ ری سیٹ فعال کریں</translation>
 <translation id="6037291330010597344">اسکینر کا دستاویز فیڈر خالی ہے۔ دستاویزات شامل کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -543,7 +549,7 @@
 <translation id="6647510110698214773">مرموز کاری الگورتھم</translation>
 <translation id="6650062777702288430">کانا/الفانیومیرک کو سوئچ کرنے کی کلید</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
-<translation id="6659594942844771486">ٹیب</translation>
+<translation id="6659594942844771486">براؤزر ٹیب</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
 <translation id="6723839937902243910">پاور</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8660881923941176839">پاؤنڈز</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> میں اپ ڈیٹ کریں اور ری سٹارٹ کریں</translation>
 <translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="8677859815076891398">‏کوئی البم نہیں ہے۔ <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> میں ایک البم تخلیق کریں۔</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> اس خصوصیت کا نظم کرنے کے لئے بائیں یا دائیں تیر کے نشان کی کلیدیں استعمال کریں۔</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">ٹیسٹ</translation>
 <translation id="9204237731135241582">‏Android ایپس سے گیٹ وے رابطے کو منسلک نہیں کیا جا سکتا</translation>
 <translation id="9211490828691860325">تمام ڈیسکس</translation>
+<translation id="922179502584117429">موجودہ ورژن <ph name="VERSION_NUMBER" /> پرانا ہے</translation>
 <translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>

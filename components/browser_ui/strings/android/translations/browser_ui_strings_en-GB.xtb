@@ -101,6 +101,7 @@
 <translation id="3295602654194328831">Hide info</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3333961966071413176">All contacts</translation>
+<translation id="3362437373201486687">Scanning for Bluetooth devices</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
 <translation id="3538390592868664640">Block sites from creating a 3D map of your surroundings or tracking camera position</translation>
 <translation id="3551268116566418498">Leave Incognito mode?</translation>
@@ -271,6 +272,7 @@
 <translation id="7561196759112975576">Always</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
 <translation id="7577900504646297215">Manage interests</translation>
+<translation id="7594634374516752650">Connected to a Bluetooth device</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7781829728241885113">Yesterday</translation>
