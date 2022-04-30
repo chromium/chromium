@@ -45,6 +45,11 @@
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/first_run/upgrade_util_win.h"
+#include "chrome/browser/win/browser_util.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #endif
@@ -226,6 +231,13 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted", true);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (!browser_util::IsBrowserAlreadyRunning() &&
+      g_shutdown_type != ShutdownType::kEndSession) {
+    upgrade_util::SwapNewChromeExeIfPresent();
+  }
 #endif
 
   if (restart_mode != RestartMode::kNoRestart) {
