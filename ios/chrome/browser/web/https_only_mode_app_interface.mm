@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
 
 #include "base/time/time.h"
+#include "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#include "ios/components/security_interstitials/https_only_mode/https_only_mode_upgrade_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

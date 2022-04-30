@@ -377,6 +377,7 @@ source_set("eg_app_support+eg2") {
     ":constants",
     "//base",
     "//components/lookalikes/core",
+    "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/lookalikes",

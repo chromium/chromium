@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/security_interstitials/https_only_mode/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

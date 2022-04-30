@@ -2,25 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("https_only_mode") {
+source_set("https_upgrades") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "https_only_mode_allowlist.h",
-    "https_only_mode_allowlist.mm",
-    "https_only_mode_blocking_page.h",
-    "https_only_mode_blocking_page.mm",
-    "https_only_mode_container.h",
-    "https_only_mode_container.mm",
-    "https_only_mode_controller_client.h",
-    "https_only_mode_controller_client.mm",
-    "https_only_mode_error.h",
-    "https_only_mode_error.mm",
+    "https_only_mode_upgrade_tab_helper.h",
+    "https_only_mode_upgrade_tab_helper.mm",
   ]
   deps = [
-    ":feature",
     "//base",
     "//components/security_interstitials/core",
     "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/web/public:public",
     "//ios/web/public/navigation",
     "//net",
@@ -28,22 +21,15 @@ source_set("https_only_mode") {
   ]
 }
 
-source_set("feature") {
-  sources = [
-    "feature.cc",
-    "feature.h",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "https_only_mode_blocking_page_unittest.mm" ]
+  sources = [ "https_only_mode_upgrade_tab_helper_unittest.mm" ]
   deps = [
-    ":https_only_mode",
+    ":https_upgrades",
     "//base/test:test_support",
     "//components/security_interstitials/core",
+    "//ios/components/security_interstitials/https_only_mode",
     "//ios/web/public",
     "//ios/web/public/test",
     "//net",

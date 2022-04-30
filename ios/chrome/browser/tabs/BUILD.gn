@@ -67,6 +67,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/history:tab_helper",
+    "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:badge",
     "//ios/chrome/browser/infobars/overlays",

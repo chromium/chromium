@@ -237,6 +237,7 @@ source_set("browser_impl") {
     "//ios/chrome/browser/flags",
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/metrics:expired_histograms_array",

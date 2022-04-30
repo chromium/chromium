@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/security_interstitials/https_only_mode/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +16,6 @@
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
-#import "ios/components/security_interstitials/https_only_mode/https_only_mode_upgrade_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
