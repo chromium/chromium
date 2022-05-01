@@ -1058,7 +1058,7 @@
 <translation id="2005967212456643969">Անհատականացնել թույլտվությունները յուրաքանչյուր ընդլայնման համար</translation>
 <translation id="2006638907958895361">Բացել հղումը <ph name="APP" /> հավելվածում</translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
-<translation id="2009590708342941694">«Զմայլիկներ» գործիք</translation>
+<translation id="2009590708342941694">«Էմոջիներ» գործիք</translation>
 <translation id="2010501376126504057">Համատեղելի սարքեր</translation>
 <translation id="2015232545623037616">Համակարգիչը և Chromecast-ը միևնույն Wi-Fi ցանցում են գտնվում</translation>
 <translation id="2016473077102413275">Գործառույթները, որոնց համար պահանջվում են պատկերներ, չեն աշխատի</translation>
@@ -1802,7 +1802,7 @@
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից Google.com կայքում։ <ph name="LEARN_MORE" /></translation>
 <translation id="2730029791981212295">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
-<translation id="2730901670247399077">Զմայլիկների առաջարկներ</translation>
+<translation id="2730901670247399077">Էմոջիների առաջարկներ</translation>
 <translation id="273093730430620027">Այս էջն օգտագործում է ձեր տեսախցիկը:</translation>
 <translation id="2731392572903530958">Նո&amp;րից բացել փակված պատուհանը</translation>
 <translation id="2731700343119398978">Սպասեք…</translation>
@@ -2406,7 +2406,7 @@
 <translation id="3345886924813989455">Աջակցվող դիտարկիչ չի գտնվել</translation>
 <translation id="3347086966102161372">Պատճենել պատկերի հասցեն</translation>
 <translation id="3348038390189153836">Հայտնաբերվել է արտաքին կրիչ</translation>
-<translation id="3348131053948466246">Առաջարկվում են զմայլիկներ։ Դիտելու համար սեղմեք վեր կամ վար սլաքով ստեղնը, իսկ ընտրելու համար՝ Enter։</translation>
+<translation id="3348131053948466246">Առաջարկվում են էմոջիներ։ Դիտելու համար սեղմեք վեր կամ վար սլաքով ստեղնը, իսկ ընտրելու համար՝ Enter։</translation>
 <translation id="3349933790966648062">Օգտագործված հիշողության ծավալ</translation>
 <translation id="3354972872297836698">Չհաջողվեց զուգակցվել «<ph name="DEVICE_NAME" />» սարքին։ Ընտրեք սարքը և նորից փորձեք։</translation>
 <translation id="3355936511340229503">Կապակցման սխալ</translation>
@@ -2939,7 +2939,7 @@
 <translation id="3841964634449506551">Գաղտնաբառը սխալ է</translation>
 <translation id="3842552989725514455">Serif տառատեսակ</translation>
 <translation id="3843464315703645664">Թույլատրված է ներքին օգտագործման համար</translation>
-<translation id="3844888638014364087">Զմայլիկը զետեղվեց</translation>
+<translation id="3844888638014364087">Էմոջին զետեղվեց</translation>
 <translation id="3846116211488856547">Ստացեք գործիքներ, որոնցով կարող եք մշակել կայքեր, Android հավելվածներ և այլն: Linux-ի տեղադրման դեպքում կներբեռնվեն <ph name="DOWNLOAD_SIZE" /> ծավալով տվյալներ:</translation>
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="3848547754896969219">Բացել &amp;ինկոգնիտո պատուհանում</translation>
@@ -4759,14 +4759,14 @@
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />-ն արդեն Օգնականի միջոցով կարգավորել է Voice Match-ը այլ սարքում։ Այս նախկին ձայնագրություններն օգտագործվել են՝ ձեր ձայնի նմուշն այս սարքում ստեղծելու համար։</translation>
 <translation id="56907980372820799">Հղման տվյալներ</translation>
-<translation id="5691581861107245578">Ստացեք զմայլիկների առաջարկներ՝ ձեր մուտքագրած տեքստի հիման վրա</translation>
+<translation id="5691581861107245578">Ստացեք էմոջիների առաջարկներ՝ ձեր մուտքագրած տեքստի հիման վրա</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5692183275898619210">Տպումն ավարտվեց</translation>
 <translation id="5695184138696833495">Android-ի համար հավելվածների ADB գործիք Լինուքսում</translation>
 <translation id="5696143504434933566">Հաղորդել չարաշահման մասին («<ph name="EXTENSION_NAME" />»)</translation>
 <translation id="5696177755977520104">Chrome OS-ի կարգավորումների համաժամացում</translation>
 <translation id="5696679855467848181">Ընթացիկ օգտագործվող PPD ֆայլը՝ <ph name="PPD_NAME" /></translation>
-<translation id="5697832193891326782">Զմայլիկների ընտրիչ</translation>
+<translation id="5697832193891326782">Էմոջիների ընտրիչ</translation>
 <translation id="570043786759263127">Google Play հավելվածներ և ծառայություններ</translation>
 <translation id="5700836101007545240">Ձեր ադմինիստրատորն անջատել է կապ ավելացնելու գործառույթը</translation>
 <translation id="5701080607174488915">Քաղաքականությունը չհաջողվեց բեռնել սերվերից։</translation>
