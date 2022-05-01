@@ -200,11 +200,17 @@ class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
 // and indicators (easy unlock, display password, caps lock enabled).
 class LoginPasswordView::LoginPasswordRow : public views::View {
  public:
-  explicit LoginPasswordRow(const LoginPalette& palette)
-      : color_(palette.password_row_background_color) {}
+  explicit LoginPasswordRow(const LoginPalette& palette) {
+    UpdatePalette(palette);
+  }
+
   ~LoginPasswordRow() override = default;
   LoginPasswordRow(const LoginPasswordRow&) = delete;
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
+
+  void UpdatePalette(const LoginPalette& palette) {
+    color_ = palette.password_row_background_color;
+  }
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -218,7 +224,7 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
   }
 
  private:
-  const SkColor color_;
+  SkColor color_;
 };
 
 // A textfield that selects all text on focus and allows to switch between
@@ -949,8 +955,11 @@ void LoginPasswordView::SubmitPassword() {
 void LoginPasswordView::UpdatePalette(const LoginPalette& palette) {
   palette_ = palette;
   SetCapsLockHighlighted(is_capslock_higlight_);
+  password_row_->UpdatePalette(palette);
   textfield_->UpdatePalette(palette);
   display_password_button_->UpdateIcons(palette);
+  submit_button_->SetBackgroundColor(palette.submit_button_background_color);
+  submit_button_->SetIconColor(palette.submit_button_icon_color);
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
