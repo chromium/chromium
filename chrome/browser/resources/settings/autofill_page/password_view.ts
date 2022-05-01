@@ -116,7 +116,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private isPasswordVisible_: boolean;
   private password_: string;
   // <if expr="chromeos_ash or chromeos_lacros">
-  private isTokenObtained_: boolean = false;
   private showPasswordPromptDialog_: boolean;
   // </if>
   private showEditDialog_: boolean;
@@ -183,6 +182,14 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   /**
+   * Show the password or a placeholder with 10 characters when password is not
+   * set.
+   */
+  private getPassword_(): string {
+    return this.password_ || ' '.repeat(10);
+  }
+
+  /**
    * Gets the password input's type. Should be 'text' when input content is
    * visible otherwise 'password'. If the entry is a federated credential,
    * the content (federation text) is always visible.
@@ -198,7 +205,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
   /** Handler to copy the password from the password field. */
   private onCopyPasswordButtonClick_() {
     assert(!this.isFederated_());
-    navigator.clipboard.writeText(this.password_);
+    this.requestPlaintextPassword(
+            this.credential!.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.COPY)
+        .catch(() => {});
   }
 
   /** Handler to copy the username from the username field. */
@@ -226,7 +236,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
         .then(password => {
           this.credential!.password = password;
           this.showEditDialog_ = true;
-        });
+        }, () => {});
   }
 
   private onEditDialogClosed_() {
@@ -263,35 +273,37 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private onTokenObtained_(
       e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>) {
     assert(e.detail);
-    this.isTokenObtained_ = true;
     this.tokenRequestManager.resolve();
   }
 
   private onPasswordPromptClose_() {
     this.showPasswordPromptDialog_ = false;
     const toFocus = this.activeDialogAnchorStack_.pop();
-    if (!this.isTokenObtained_ && (!toFocus || toFocus.id !== 'editButton')) {
-      // User dismissed the password prompt by clicking cancel. Reroute back if
-      // prompt was not requested within the page.
-      Router.getInstance().navigateTo(routes.PASSWORDS);
-      return;
-    }
     assert(toFocus);
     focusWithoutInk(toFocus);
-    this.isTokenObtained_ = false;
   }
 
   private openPasswordPromptDialog_() {
     this.activeDialogAnchorStack_.push(getDeepActiveElement() as HTMLElement);
     this.showPasswordPromptDialog_ = true;
-    this.isTokenObtained_ = false;
   }
   // </if>
 
   /** Handler for tapping the show/hide button. */
   private onShowPasswordButtonClick_() {
     assert(!this.isFederated_());
-    this.isPasswordVisible_ = !this.isPasswordVisible_;
+    if (this.isPasswordVisible_) {
+      this.password_ = '';
+      this.isPasswordVisible_ = false;
+      return;
+    }
+    this.requestPlaintextPassword(
+            this.credential!.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.VIEW)
+        .then(password => {
+          this.password_ = password;
+          this.isPasswordVisible_ = true;
+        }, () => {});
   }
 
   /** Reroutes to PASSWORDS page and shows the removal notification */
@@ -312,6 +324,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private savedPasswordsChanged_() {
     this.credential = null;
     this.password_ = '';
+    this.isPasswordVisible_ = false;
     if (!this.savedPasswords.length || !this.site || !this.username) {
       return;
     }
@@ -330,19 +343,9 @@ export class PasswordViewElement extends PasswordViewElementBase {
       return;
     }
 
+    this.credential = item;
     if (item.federationText) {
-      this.credential = item;
       this.password_ = item.federationText!;
-    } else {
-      this.requestPlaintextPassword(
-              item.getAnyId(), chrome.passwordsPrivate.PlaintextReason.VIEW)
-          .then(password => {
-            this.password_ = password;
-            this.credential = item;
-          })
-          .catch(_error => {
-            Router.getInstance().navigateTo(routes.PASSWORDS);
-          });
     }
     this.showEditDialog_ = false;
   }

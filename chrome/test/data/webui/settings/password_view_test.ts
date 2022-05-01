@@ -90,11 +90,6 @@ suite('PasswordViewTest', function() {
     });
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    const {id, reason} =
-        await passwordManager.whenCalled('requestPlaintextPassword');
-    assertEquals(ID, id);
-    assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
-
     await flushTasks();
     assertVisibilityOfPageElements(page, /*visibility=*/ true);
   });
@@ -115,9 +110,6 @@ suite('PasswordViewTest', function() {
           site: SITE,
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
-
-        assertEquals(
-            0, passwordManager.getCallCount('requestPlaintextPassword'));
 
         await flushTasks();
         assertVisibilityOfPageElements(page, /*visibility=*/ false);
@@ -142,50 +134,15 @@ suite('PasswordViewTest', function() {
     });
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    assertEquals(0, passwordManager.getCallCount('requestPlaintextPassword'));
-
     await flushTasks();
     assertVisibilityOfFederatedCredentialElements(page);
   });
-
-  // <if expr="not chromeos_ash and not chromeos_lacros">
-  test(
-      'When password request fails view page is empty, ' +
-          'and page is routed to passwords page',
-      async function() {
-        const passwordList = [
-          createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
-        ];
-
-        passwordManager.data.passwords = passwordList;
-        const page = document.createElement('password-view');
-        document.body.appendChild(page);
-        const params = new URLSearchParams({
-          username: USERNAME,
-          site: SITE,
-        });
-        Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
-
-        // This will fail because passwordManager.setPlaintextPasswords was not
-        // called.
-        const {id, reason} =
-            await passwordManager.whenCalled('requestPlaintextPassword');
-        assertEquals(ID, id);
-        assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
-
-        await flushTasks();
-        assertVisibilityOfPageElements(page, /*visibility=*/ false);
-
-        assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
-      });
-  // </if>
 
   test('Clicking show password button shows / hides it', async function() {
     const passwordList = [
       createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
     ];
 
-    passwordManager.setPlaintextPassword(PASSWORD);
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
@@ -195,41 +152,54 @@ suite('PasswordViewTest', function() {
     });
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    await passwordManager.whenCalled('requestPlaintextPassword');
     await flushTasks();
-
     const passwordInput =
         page.shadowRoot!.querySelector<HTMLInputElement>('#passwordInput');
     const showButton = page.shadowRoot!.querySelector<HTMLButtonElement>(
         '#showPasswordButton');
     assertTrue(!!passwordInput);
     assertTrue(!!showButton);
-
     assertEquals('password', passwordInput.type);
+    assertEquals(' '.repeat(10), passwordInput.value);
     assertTrue(showButton.classList.contains('icon-visibility'));
 
     showButton.click();
-    flush();
 
+    // this will fail because setPlaintextPassword is not called.
+    await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
+    assertEquals('password', passwordInput.type);
+    assertEquals(' '.repeat(10), passwordInput.value);
+    assertTrue(showButton.classList.contains('icon-visibility'));
+
+    passwordManager.setPlaintextPassword(PASSWORD);
+    // show the password
+    showButton.click();
+
+    const {id, reason} =
+        await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
+    assertEquals(ID, id);
+    assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
     assertEquals('text', passwordInput.type);
+    assertEquals(PASSWORD, passwordInput.value);
     assertTrue(showButton.classList.contains('icon-visibility-off'));
 
+    // hide the password by re-clicking
     showButton.click();
     flush();
-
     assertEquals('password', passwordInput.type);
+    assertEquals(' '.repeat(10), passwordInput.value);
     assertTrue(showButton.classList.contains('icon-visibility'));
   });
 
   test(
-      'When saved passwords change credential is re-requested',
+      'When saved passwords change credential is still shown',
       async function() {
-        const passwordList = [
-          createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
-        ];
+        const passwordEntry =
+            createPasswordEntry({url: SITE, username: USERNAME, id: ID});
 
-        passwordManager.setPlaintextPassword(PASSWORD);
-        passwordManager.data.passwords = passwordList;
+        passwordManager.data.passwords = [passwordEntry];
         const page = document.createElement('password-view');
         document.body.appendChild(page);
         const params = new URLSearchParams({
@@ -237,22 +207,20 @@ suite('PasswordViewTest', function() {
           site: SITE,
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
-
-        await passwordManager.whenCalled('requestPlaintextPassword');
-        assertEquals(
-            1, passwordManager.getCallCount('requestPlaintextPassword'));
         await flushTasks();
-        passwordManager.resetResolver('requestPlaintextPassword');
+        assertTrue(!!page.credential);
+        assertEquals(SITE, page.credential.urls.shown);
+        assertEquals(USERNAME, page.credential.username);
 
         passwordManager.lastCallback.addSavedPasswordListChangedListener!
-            (passwordList.concat([
+            ([passwordEntry].concat([
               createPasswordEntry({url: 'site2.com', username: 'user2', id: 1}),
             ]));
 
-        await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
-        assertEquals(
-            1, passwordManager.getCallCount('requestPlaintextPassword'));
+        assertTrue(!!page.credential);
+        assertEquals(SITE, page.credential.urls.shown);
+        assertEquals(USERNAME, page.credential.username);
       });
 
   test(
@@ -272,14 +240,12 @@ suite('PasswordViewTest', function() {
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-        await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
-        passwordManager.resetResolver('requestPlaintextPassword');
+        assertVisibilityOfPageElements(page, /*visibility=*/ true);
 
         passwordManager.lastCallback.addSavedPasswordListChangedListener!([]);
 
         await flushTasks();
-
         assertVisibilityOfPageElements(page, /*visibility=*/ false);
       });
 
@@ -301,9 +267,7 @@ suite('PasswordViewTest', function() {
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-        await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
-        passwordManager.resetResolver('requestPlaintextPassword');
 
         page.shadowRoot!.querySelector<HTMLButtonElement>(
                             '#editButton')!.click();
@@ -328,7 +292,6 @@ suite('PasswordViewTest', function() {
             ([entry]);
 
         await flushTasks();
-        await passwordManager.whenCalled('requestPlaintextPassword');
         assertFalse(isVisible(editDialog));
 
         assertEquals(NEW_USERNAME, page.credential!.username);
@@ -357,7 +320,6 @@ suite('PasswordViewTest', function() {
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-        await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
 
         page.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -400,8 +362,6 @@ suite('PasswordViewTest', function() {
           site: SITE,
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
-
-        await passwordManager.whenCalled('requestPlaintextPassword');
         await flushTasks();
 
         page.shadowRoot!.querySelector<HTMLButtonElement>(
