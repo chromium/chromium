@@ -349,10 +349,7 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
           tmp_rect.set_width(0);
           result_rect = gfx::Rect(tmp_rect);
         } else {
-          // PPAPI flash does not support GetCompositionCharacterBounds. We need
-          // to call GetCaretBounds instead to get correct text bounds info.
-          // TODO(https://crbug.com/963706): Remove this hack.
-          result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
+          return TS_E_NOLAYOUT;
         }
       } else if (text_input_client_->GetCompositionCharacterBounds(
                      start_pos - 1, &tmp_rect)) {
@@ -382,19 +379,9 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
           // first character bounds instead of returning TS_E_NOLAYOUT.
         }
       } else {
-        // PPAPI flash does not support GetCompositionCharacterBounds. We need
-        // to call GetCaretBounds instead to get correct text bounds info.
-        // TODO(https://crbug.com/963706): Remove this hack.
-        if (start_pos == 0) {
-          result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
-        } else {
-          return TS_E_NOLAYOUT;
-        }
+        return TS_E_NOLAYOUT;
       }
     } else {
-      // Caret Bounds may be incorrect if focus is in flash control and
-      // |start_pos| is not equal to |end_pos|. In this case, it's better to
-      // return previous caret rectangle instead.
       result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
     }
   }

@@ -1405,14 +1405,6 @@ class GetTextExtTestCallback : public TSFTextStoreTestCallback {
     has_composition_text_ = true;
     GetTextExtTest(view_cookie, 0, 0, 11, 12, 11, 20);
 
-    // TODO(nona, kinaba): Remove following test case after PPAPI supporting
-    // GetCompositionCharacterBounds.
-    SetInternalState(u"a", 0, 0, 1);
-    layout_prepared_character_num_ = 0;
-    GetTextExtTest(view_cookie, 0, 1, 1, 2, 4, 6);
-    SetInternalState(u"abc", 0, 0, 3);
-    GetTextExtNoLayoutTest(view_cookie, 2, 3);
-
     return S_OK;
   }
 
