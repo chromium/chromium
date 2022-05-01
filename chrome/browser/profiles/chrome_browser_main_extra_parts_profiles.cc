@@ -480,14 +480,13 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileThemeUpdateServiceFactory::GetInstance();
 #endif
   ProtocolHandlerRegistryFactory::GetInstance();
-  if (reading_list::switches::IsReadingListEnabled()) {
-    ReadingListModelFactory::GetInstance();
+
+  ReadingListModelFactory::GetInstance();
 
 #if BUILDFLAG(IS_ANDROID)
-    ReadingListManagerFactory::GetInstance();
-    ReadingListNotificationServiceFactory::GetInstance();
+  ReadingListManagerFactory::GetInstance();
+  ReadingListNotificationServiceFactory::GetInstance();
 #endif
-  }
 
   RendererUpdaterFactory::GetInstance();
 
