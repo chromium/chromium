@@ -2996,7 +2996,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="4192388905594723944">URL để xác thực mã thông báo xác thực ứng dụng truy cập từ xa</translation>
 <translation id="4203055629055264833">Nếu bạn đặt chính sách này thành Bật hoặc không đặt, thì người dùng có thể đưa trang kết quả mới đây nhất của công cụ tìm kiếm mặc định vào một bảng điều khiển bên bằng cách bật/tắt một biểu tượng trong thanh công cụ.
 
-      Thao tác đặt chính sách này thành Tắt sẽ xoá một biểu tượng khỏi thanh công cụ, biểu tượng này mở ra bảng điều khiển bên chứa trang kết quả của công cụ tìm kiếm mặc định.</translation>
+      Nếu bạn đặt chính sách này thành Tắt, biểu tượng bật/tắt sẽ bị xoá khỏi thanh công cụ và người dùng sẽ không thể mở bảng điều khiển bên để xem trang kết quả tìm kiếm của công cụ tìm kiếm mặc định.</translation>
 <translation id="4203643479966921607">Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ được bật. Người dùng có thể chạy ứng dụng này từ trình đơn ứng dụng, trình đơn ngữ cảnh của trang, các chức năng điều khiển nội dung đa phương tiện trên trang web hỗ trợ Cast và biểu tượng thanh công cụ Cast (nếu hiển thị).
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ bị tắt.</translation>
