@@ -20,6 +20,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "ui/base/wayland/color_manager_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/triangle_f.h"
@@ -32,42 +33,6 @@ namespace {
 #define PARAM_TO_FLOAT(x) (x / 10000.f)
 
 constexpr auto kDefaultColorSpace = gfx::ColorSpace::CreateSRGB();
-
-constexpr auto kChromaticityMap =
-    base::MakeFixedFlatMap<zcr_color_manager_v1_chromaticity_names,
-                           gfx::ColorSpace::PrimaryID>(
-        {{ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT601_525_LINE,
-          gfx::ColorSpace::PrimaryID::SMPTE170M},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT601_625_LINE,
-          gfx::ColorSpace::PrimaryID::BT470BG},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_SMPTE170M,
-          gfx::ColorSpace::PrimaryID::SMPTE170M},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT709,
-          gfx::ColorSpace::PrimaryID::BT709},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT2020,
-          gfx::ColorSpace::PrimaryID::BT2020},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_SRGB,
-          gfx::ColorSpace::PrimaryID::BT709},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_DISPLAYP3,
-          gfx::ColorSpace::PrimaryID::P3},
-         {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_ADOBERGB,
-          gfx::ColorSpace::PrimaryID::ADOBE_RGB}});
-
-constexpr auto kEotfMap =
-    base::MakeFixedFlatMap<zcr_color_manager_v1_eotf_names,
-                           gfx::ColorSpace::TransferID>({
-        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR,
-         gfx::ColorSpace::TransferID::LINEAR},
-        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
-         gfx::ColorSpace::TransferID::BT709},
-        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT2087,
-         gfx::ColorSpace::TransferID::GAMMA24},
-        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_ADOBERGB,
-         // This is ever so slightly inaccurate. The number ought to be
-         // 2.19921875f, not 2.2
-         gfx::ColorSpace::TransferID::GAMMA22},
-        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ, gfx::ColorSpace::TransferID::PQ},
-    });
 
 // Wrapper around a |gfx::ColorSpace| that tracks additional data useful to the
 // protocol. These live as wayland resource data.
@@ -315,8 +280,8 @@ void color_manager_create_color_space_from_names(
   uint32_t error_flags = 0;
 
   auto chromaticity_id = gfx::ColorSpace::PrimaryID::INVALID;
-  const auto* maybe_primary = kChromaticityMap.find(chromaticity);
-  if (maybe_primary != std::end(kChromaticityMap)) {
+  const auto* maybe_primary = ui::wayland::kChromaticityMap.find(chromaticity);
+  if (maybe_primary != std::end(ui::wayland::kChromaticityMap)) {
     chromaticity_id = maybe_primary->second;
   } else {
     DLOG(ERROR) << "Unable to find named chromaticity for id=" << chromaticity;
@@ -324,8 +289,8 @@ void color_manager_create_color_space_from_names(
   }
 
   auto eotf_id = gfx::ColorSpace::TransferID::INVALID;
-  const auto* maybe_eotf = kEotfMap.find(eotf);
-  if (maybe_eotf != std::end(kEotfMap)) {
+  const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
+  if (maybe_eotf != std::end(ui::wayland::kEotfMap)) {
     eotf_id = maybe_eotf->second;
   } else {
     DLOG(ERROR) << "Unable to find named eotf for id=" << eotf;
@@ -382,8 +347,8 @@ void color_manager_create_color_space_from_params(
   }
 
   auto eotf_id = gfx::ColorSpace::TransferID::INVALID;
-  const auto* maybe_eotf = kEotfMap.find(eotf);
-  if (maybe_eotf != std::end(kEotfMap)) {
+  const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
+  if (maybe_eotf != std::end(ui::wayland::kEotfMap)) {
     eotf_id = maybe_eotf->second;
   } else {
     DLOG(ERROR) << "Unable to find named transfer function for id=" << eotf;
