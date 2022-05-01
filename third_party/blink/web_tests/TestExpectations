@@ -7746,6 +7746,8 @@ crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-inter
 # Sheriff 2022-04-29
 crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
 crbug.com/1321229 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Skip ]
+crbug.com/1321229 [ Mac11-arm64 ] fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure ]
+crbug.com/1321229 [ Mac10.15 ] fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure ]
 crbug.com/1321229 fast/forms/calendar-picker/date-picker-input-change-events.html [ Skip ]
 crbug.com/1321229 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Skip ]
 crbug.com/1321229 fast/forms/month/month-picker-input-change-events.html [ Skip ]
