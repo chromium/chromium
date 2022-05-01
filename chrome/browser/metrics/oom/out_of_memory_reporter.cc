@@ -60,22 +60,13 @@ void OutOfMemoryReporter::SetTickClockForTest(
   tick_clock_ = std::move(tick_clock);
 }
 
-void OutOfMemoryReporter::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  // Ignore navigations to documents not in the primary main frame, as they will
-  // never show up as a visible top document. In particular, prerendered pages
-  // will navigate again in the primary main frame when they are activated.
-  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
-      handle->IsSameDocument()) {
-    return;
-  }
+void OutOfMemoryReporter::PrimaryPageChanged(content::Page& page) {
   last_committed_source_id_.reset();
   last_navigation_timestamp_ = tick_clock_->NowTicks();
   crashed_render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
-  if (handle->IsErrorPage())
+  if (page.GetMainDocument().IsErrorDocument())
     return;
-  last_committed_source_id_ = ukm::ConvertToSourceId(
-      handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  last_committed_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 }
 
 void OutOfMemoryReporter::PrimaryMainFrameRenderProcessGone(

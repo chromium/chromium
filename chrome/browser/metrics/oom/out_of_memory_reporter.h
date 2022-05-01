@@ -61,7 +61,7 @@ class OutOfMemoryReporter
   void SetTickClockForTest(std::unique_ptr<const base::TickClock> tick_clock);
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus termination_status) override;
 
