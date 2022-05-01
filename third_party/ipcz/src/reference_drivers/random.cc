@@ -21,11 +21,14 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #elif BUILDFLAG(IS_MAC)
-#include <fcntl.h>
 #include <sys/random.h>
 #include <unistd.h>
 #elif BUILDFLAG(IS_NACL)
 #include <nacl/nacl_random.h>
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -39,6 +42,33 @@
 
 namespace ipcz::reference_drivers {
 
+namespace {
+
+#if defined(OS_POSIX)
+void RandomBytesFromDevUrandom(absl::Span<uint8_t> destination) {
+  static int urandom_fd = [] {
+    for (;;) {
+      int result = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
+      if (result >= 0) {
+        return result;
+      }
+      ABSL_ASSERT(errno == EINTR);
+    }
+  }();
+
+  while (!destination.empty()) {
+    ssize_t result = read(urandom_fd, destination.data(), destination.size());
+    if (result < 0) {
+      ABSL_ASSERT(errno == EINTR);
+      continue;
+    }
+    destination.remove_prefix(result);
+  }
+}
+#endif
+
+}  // namespace
+
 void RandomBytes(absl::Span<uint8_t> destination) {
 #if BUILDFLAG(IS_WIN)
   ABSL_ASSERT(destination.size() <= std::numeric_limits<ULONG>::max());
@@ -51,38 +81,21 @@ void RandomBytes(absl::Span<uint8_t> destination) {
   while (!destination.empty()) {
     ssize_t result =
         syscall(__NR_getrandom, destination.data(), destination.size(), 0);
-    if (result == -1) {
-      ABSL_ASSERT(errno == EINTR);
+    if (result == -1 && errno == EINTR) {
       continue;
+    } else if (result > 0) {
+      destination.remove_prefix(result);
+    } else {
+      RandomBytesFromDevUrandom(destination);
+      return;
     }
-
-    destination.remove_prefix(result);
   }
 #elif BUILDFLAG(IS_MAC)
   if (__builtin_available(macOS 10.12, *)) {
     const bool ok = getentropy(destination.data(), destination.size()) == 0;
     ABSL_ASSERT(ok);
   } else {
-    // For macOS older than 10.12, fall back onto /dev/urandom, which we open
-    // lazily on first call and leave open indefinitely.
-    static int urandom_fd = [] {
-      for (;;) {
-        int result = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
-        if (result >= 0) {
-          return result;
-        }
-        ABSL_ASSERT(errno == EINTR);
-      }
-    }();
-
-    while (!destination.empty()) {
-      ssize_t result = read(urandom_fd, destination.data(), destination.size());
-      if (result < 0) {
-        ABSL_ASSERT(errno == EINTR);
-        continue;
-      }
-      destination.remove_prefix(result);
-    }
+    RandomBytesFromDevUrandom(destination);
   }
 #elif BUILDFLAG(IS_NACL)
   while (!destination.empty()) {

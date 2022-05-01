@@ -35,6 +35,13 @@ class RouterLink : public RefCounted {
   // transmitted from the closed side before it was closed.
   virtual void AcceptRouteClosure(SequenceNumber sequence_length) = 0;
 
+  // Deactivates this RouterLink to sever any binding it may have to a specific
+  // Router. Note that deactivation is not necessarily synchronous, so some
+  // in-progress calls into a Router may still complete on behalf of this
+  // RouterLink after Deactivate() returns. This call only ensures that the link
+  // will stop calling into (and generally stop referencing) the Router ASAP.
+  virtual void Deactivate() = 0;
+
  protected:
   ~RouterLink() override = default;
 };

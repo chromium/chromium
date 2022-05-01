@@ -9,6 +9,7 @@
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/router.h"
+#include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -22,19 +23,38 @@ class LocalRouterLink::SharedState : public RefCounted {
 
   LinkType type() const { return type_; }
 
-  const Ref<Router>& side(LinkSide side) const {
-    if (side == LinkSide::kA) {
-      return router_a_;
+  Ref<Router> GetRouter(LinkSide side) {
+    absl::MutexLock lock(&mutex_);
+    switch (side.value()) {
+      case LinkSide::kA:
+        return router_a_;
+
+      case LinkSide::kB:
+        return router_b_;
     }
-    return router_b_;
+  }
+
+  void Deactivate(LinkSide side) {
+    absl::MutexLock lock(&mutex_);
+    switch (side.value()) {
+      case LinkSide::kA:
+        router_a_.reset();
+        break;
+
+      case LinkSide::kB:
+        router_b_.reset();
+        break;
+    }
   }
 
  private:
   ~SharedState() override = default;
 
   const LinkType type_;
-  const Ref<Router> router_a_;
-  const Ref<Router> router_b_;
+
+  absl::Mutex mutex_;
+  Ref<Router> router_a_ ABSL_GUARDED_BY(mutex_);
+  Ref<Router> router_b_ ABSL_GUARDED_BY(mutex_);
 };
 
 // static
@@ -58,17 +78,23 @@ LinkType LocalRouterLink::GetType() const {
 }
 
 bool LocalRouterLink::HasLocalPeer(const Router& router) {
-  return state_->side(side_.opposite()).get() == &router;
+  return state_->GetRouter(side_.opposite()).get() == &router;
 }
 
 void LocalRouterLink::AcceptParcel(Parcel& parcel) {
-  Router& receiver = *state_->side(side_.opposite());
-  receiver.AcceptInboundParcel(parcel);
+  if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
+    receiver->AcceptInboundParcel(parcel);
+  }
 }
 
 void LocalRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
-  Router& receiver = *state_->side(side_.opposite());
-  receiver.AcceptRouteClosureFrom(state_->type(), sequence_length);
+  if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
+    receiver->AcceptRouteClosureFrom(state_->type(), sequence_length);
+  }
+}
+
+void LocalRouterLink::Deactivate() {
+  state_->Deactivate(side_);
 }
 
 }  // namespace ipcz

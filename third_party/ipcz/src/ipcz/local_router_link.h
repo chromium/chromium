@@ -25,6 +25,7 @@ class LocalRouterLink : public RouterLink {
   bool HasLocalPeer(const Router& router) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
+  void Deactivate() override;
 
  private:
   class SharedState;

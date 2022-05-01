@@ -64,6 +64,7 @@ void Router::CloseRoute() {
 
   ABSL_ASSERT(link);
   link->AcceptRouteClosure(sequence_length);
+  link->Deactivate();
 }
 
 void Router::SetOutwardLink(Ref<RouterLink> link) {
