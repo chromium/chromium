@@ -1243,6 +1243,11 @@ const base::Feature kIOSurfaceCapturer{"IOSurfaceCapturer",
 const base::Feature kMacSyscallSandbox{"MacSyscallSandbox",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature that controls whether WebContentsOcclusionChecker should handle
+// occlusion notifications.
+const base::Feature kMacWebContentsOcclusion{"MacWebContentsOcclusion",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables retrying to obtain list of available cameras on Macbooks after
 // restarting the video capture service if a previous attempt delivered zero
 // cameras.

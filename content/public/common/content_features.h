@@ -316,6 +316,7 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
 CONTENT_EXPORT extern const base::Feature kDeviceMonitorMac;
 CONTENT_EXPORT extern const base::Feature kIOSurfaceCapturer;
 CONTENT_EXPORT extern const base::Feature kMacSyscallSandbox;
+CONTENT_EXPORT extern const base::Feature kMacWebContentsOcclusion;
 CONTENT_EXPORT extern const base::Feature kRetryGetVideoCaptureDeviceInfos;
 #endif  // BUILDFLAG(IS_MAC)
 

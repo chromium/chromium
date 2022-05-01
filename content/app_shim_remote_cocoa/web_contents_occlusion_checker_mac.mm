@@ -9,6 +9,9 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "content/public/common/content_features.h"
+
+using features::kMacWebContentsOcclusion;
 
 namespace {
 
@@ -20,8 +23,6 @@ const base::mac::ScopedObjCClassSwizzler* GetWindowClassSwizzler() {
   return window_class_swizzler.get();
 }
 
-const base::Feature kMacWebContentsOcclusion{"MacWebContentsOcclusion",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<bool> kEnhancedWindowOcclusionDetection{
     &kMacWebContentsOcclusion, "EnhancedWindowOcclusionDetection", false};
 const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
@@ -63,6 +64,7 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 - (instancetype)init {
   self = [super init];
 
+  DCHECK(base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
   [self setUpNotifications];
 
   return self;

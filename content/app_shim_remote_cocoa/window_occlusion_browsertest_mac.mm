@@ -9,6 +9,7 @@
 #include "base/test/test_timeouts.h"
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 
@@ -18,8 +19,7 @@ using remote_cocoa::mojom::SelectionDirection;
 using content::DropData;
 
 namespace {
-const base::Feature kMacWebContentsOcclusion{"MacWebContentsOcclusion",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kEnhancedWindowOcclusionDetection[] =
     "EnhancedWindowOcclusionDetection";
 const char kDisplaySleepAndAppHideDetection[] =
@@ -504,7 +504,7 @@ class WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature
  public:
   WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature() {
     _features.InitAndEnableFeatureWithParameters(
-        kMacWebContentsOcclusion,
+        features::kMacWebContentsOcclusion,
         {{kEnhancedWindowOcclusionDetection, "true"}});
     _enhanced_window_occlusion_detection_enabled = true;
   }
@@ -518,7 +518,8 @@ class WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature
  public:
   WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature() {
     _features.InitAndEnableFeatureWithParameters(
-        kMacWebContentsOcclusion, {{kDisplaySleepAndAppHideDetection, "true"}});
+        features::kMacWebContentsOcclusion,
+        {{kDisplaySleepAndAppHideDetection, "true"}});
     _display_sleep_detection_enabled = true;
   }
 

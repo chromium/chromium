@@ -7,6 +7,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/feature_list.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 

@@ -11,6 +11,7 @@
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
+#include "content/public/common/content_features.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -21,9 +22,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 
+using content::DropData;
+using features::kMacWebContentsOcclusion;
 using remote_cocoa::mojom::DraggingInfo;
 using remote_cocoa::mojom::SelectionDirection;
-using content::DropData;
 
 namespace {
 // Time to delay clearing the pasteboard for after a drag ends. This is
@@ -104,11 +106,17 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewCocoa
 
-@implementation WebContentsViewCocoa
+@implementation WebContentsViewCocoa {
+  // TODO(https://crbug.com/883031): Remove this when kMacWebContentsOcclusion
+  // is enabled by default.
+  BOOL _inFullScreenTransition;
+}
 
 + (void)initialize {
-  // Create the WebContentsOcclusionCheckerMac shared instance.
-  [WebContentsOcclusionCheckerMac sharedInstance];
+  if (base::FeatureList::IsEnabled(kMacWebContentsOcclusion)) {
+    // Create the WebContentsOcclusionCheckerMac shared instance.
+    [WebContentsOcclusionCheckerMac sharedInstance];
+  }
 }
 
 - (instancetype)initWithViewsHostableView:(ui::ViewsHostableView*)v {
@@ -367,8 +375,24 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
 - (void)updateWebContentsVisibility:
     (remote_cocoa::mojom::Visibility)visibility {
+  DCHECK(base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
   if (_host)
     _host->OnWindowVisibilityChanged(visibility);
+}
+
+- (void)legacyUpdateWebContentsVisibility {
+  using remote_cocoa::mojom::Visibility;
+  DCHECK(!base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
+  if (!_host || _inFullScreenTransition)
+    return;
+  Visibility visibility = Visibility::kVisible;
+  if ([self isHiddenOrHasHiddenAncestor] || ![self window])
+    visibility = Visibility::kHidden;
+  else if ([[self window] occlusionState] & NSWindowOcclusionStateVisible)
+    visibility = Visibility::kVisible;
+  else
+    visibility = Visibility::kOccluded;
+  _host->OnWindowVisibilityChanged(visibility);
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
@@ -387,7 +411,77 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
     [subview setFrame:[self bounds]];
 }
 
+- (void)viewWillMoveToWindow:(NSWindow*)newWindow {
+  if (base::FeatureList::IsEnabled(kMacWebContentsOcclusion)) {
+    // WebContentsOcclusionCheckerMac will handle notifications.
+    return;
+  }
+
+  NSWindow* oldWindow = [self window];
+  NSNotificationCenter* notificationCenter =
+      [NSNotificationCenter defaultCenter];
+
+  _inFullScreenTransition = NO;
+  if (oldWindow) {
+    NSArray* notificationsToRemove = @[
+      NSWindowDidChangeOcclusionStateNotification,
+      NSWindowWillEnterFullScreenNotification,
+      NSWindowDidEnterFullScreenNotification,
+      NSWindowWillExitFullScreenNotification,
+      NSWindowDidExitFullScreenNotification
+    ];
+    for (NSString* notificationName in notificationsToRemove) {
+      [notificationCenter removeObserver:self
+                                    name:notificationName
+                                  object:oldWindow];
+    }
+  }
+  if (newWindow) {
+    [notificationCenter addObserver:self
+                           selector:@selector(windowChangedOcclusionState:)
+                               name:NSWindowDidChangeOcclusionStateNotification
+                             object:newWindow];
+    // The fullscreen transition causes spurious occlusion notifications.
+    // See https://crbug.com/1081229
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillEnterFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidEnterFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillExitFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidExitFullScreenNotification
+                             object:newWindow];
+  }
+}
+
+- (void)windowChangedOcclusionState:(NSNotification*)notification {
+  DCHECK(!base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
+  [self legacyUpdateWebContentsVisibility];
+}
+
+- (void)fullscreenTransitionStarted:(NSNotification*)notification {
+  DCHECK(!base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
+  _inFullScreenTransition = YES;
+}
+
+- (void)fullscreenTransitionComplete:(NSNotification*)notification {
+  DCHECK(!base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
+  _inFullScreenTransition = NO;
+}
+
 - (void)viewDidMoveToWindow {
+  if (!base::FeatureList::IsEnabled(kMacWebContentsOcclusion)) {
+    [self legacyUpdateWebContentsVisibility];
+    return;
+  }
   if ([self window] == nil) {
     [self updateWebContentsVisibility:remote_cocoa::mojom::Visibility::kHidden];
   } else {
@@ -397,10 +491,18 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)viewDidHide {
+  if (!base::FeatureList::IsEnabled(kMacWebContentsOcclusion)) {
+    [self legacyUpdateWebContentsVisibility];
+    return;
+  }
   [self updateWebContentsVisibility:remote_cocoa::mojom::Visibility::kHidden];
 }
 
 - (void)viewDidUnhide {
+  if (!base::FeatureList::IsEnabled(kMacWebContentsOcclusion)) {
+    [self legacyUpdateWebContentsVisibility];
+    return;
+  }
   [[WebContentsOcclusionCheckerMac sharedInstance]
       updateWebContentsVisibility:self];
 }
