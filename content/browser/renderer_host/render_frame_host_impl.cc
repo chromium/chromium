@@ -6601,7 +6601,7 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     return;
 
   child->set_csp_attribute(std::move(parsed_csp_attribute));
-  child->set_anonymous(anonymous);
+  child->SetAnonymous(anonymous);
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(

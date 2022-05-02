@@ -289,7 +289,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // Reflects the 'anonymous' attribute of the corresponding iframe html
   // element.
   bool anonymous() const { return anonymous_; }
-  void set_anonymous(bool anonymous) { anonymous_ = anonymous; }
+  void SetAnonymous(bool anonymous);
 
   bool HasSameOrigin(const FrameTreeNode& node) const {
     return render_manager_.current_replication_state().origin.IsSameOriginWith(

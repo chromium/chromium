@@ -501,6 +501,21 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   }
 }
 
+void FrameTreeNode::SetAnonymous(bool anonymous) {
+  if (anonymous) {
+    if (!parent_) {
+      bad_message::ReceivedBadMessage(current_frame_host()->GetProcess(),
+                                      bad_message::FTN_ANONYMOUS);
+      return;
+    }
+
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        parent_, blink::mojom::WebFeature::kAnonymousIframe);
+  }
+
+  anonymous_ = anonymous;
+}
+
 bool FrameTreeNode::IsLoading() const {
   RenderFrameHostImpl* current_frame_host =
       render_manager_.current_frame_host();

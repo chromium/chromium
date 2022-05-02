@@ -700,7 +700,7 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
 TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   TestRenderFrameHost* child_document = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_rfh())->AppendChild(""));
-  child_document->frame_tree_node()->set_anonymous(true);
+  child_document->frame_tree_node()->SetAnonymous(true);
 
   const GURL kUrl = GURL("http://chromium.org");
   auto navigation =
@@ -728,7 +728,7 @@ TEST_F(NavigationRequestTest,
   auto* child_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
-  child_frame->frame_tree_node()->set_anonymous(true);
+  child_frame->frame_tree_node()->SetAnonymous(true);
 
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateRendererInitiated(

@@ -8803,6 +8803,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="275" label="FF_DIFFERENT_MODE_THAN_EMBEDDER"/>
   <int value="276" label="RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME"/>
   <int value="277" label="FF_NAVIGATION_INVALID_URL"/>
+  <int value="278" label="FTN_ANONYMOUS"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -38130,6 +38131,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4216" label="CookieHasNotBeenRefreshedIn201To300Days"/>
   <int value="4217" label="CookieHasNotBeenRefreshedIn301To350Days"/>
   <int value="4218" label="CookieHasNotBeenRefreshedIn351To400Days"/>
+  <int value="4219" label="AnonymousIframe"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

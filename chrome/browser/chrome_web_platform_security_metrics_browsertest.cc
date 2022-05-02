@@ -12,6 +12,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -140,6 +141,8 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) final {
+    // For anonymous iframe:
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -1770,6 +1773,62 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::ExecJs(cross_origin_popup, "window.opener.window"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessWindow, 1);
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeInitialEmptyDocumentControl) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.anonymous = false;
+    document.body.appendChild(iframe);
+  )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeInitialEmptyDocument) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.anonymous = true;
+    document.body.appendChild(iframe);
+  )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeNavigationControl) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.src = location.href;
+      iframe.anonymous = false;
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       AnonymousIframeNavigation) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.src = location.href;
+      iframe.anonymous = true;
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

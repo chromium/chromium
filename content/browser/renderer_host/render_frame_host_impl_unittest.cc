@@ -372,7 +372,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   EXPECT_FALSE(child_frame->anonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
-  child_frame->frame_tree_node()->set_anonymous(true);
+  child_frame->frame_tree_node()->SetAnonymous(true);
   EXPECT_FALSE(child_frame->anonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
