@@ -95,14 +95,13 @@ class POLICY_EXPORT DictionaryPolicyConversions : public PolicyConversions {
       delete;
   ~DictionaryPolicyConversions() override;
 
-  // TODO(chromium:1321529): Investigate returning base::Value::Dict.
   base::Value ToValue() override;
 
  private:
-  base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
+  base::Value GetExtensionPolicies(PolicyDomain policy_domain);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Value::Dict GetDeviceLocalAccountPolicies();
+  base::Value GetDeviceLocalAccountPolicies();
 #endif
 };
 
@@ -114,7 +113,6 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
   ArrayPolicyConversions& operator=(const ArrayPolicyConversions&) = delete;
   ~ArrayPolicyConversions() override;
 
-  // TODO(chromium:1321529): Investigate returning base::Value::List.
   base::Value ToValue() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -124,11 +122,11 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
-  base::Value::Dict GetChromePolicies();
-  base::Value::Dict GetPrecedencePolicies();
+  base::Value GetChromePolicies();
+  base::Value GetPrecedencePolicies();
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::Value::Dict GetUpdaterPolicies();
+  base::Value GetUpdaterPolicies();
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

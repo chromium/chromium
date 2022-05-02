@@ -69,7 +69,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Returns true if this client is able to return information on the updater's
   // policies.
   bool HasUpdaterPolicies() const;
-  base::Value::Dict GetUpdaterPolicies();
+  base::Value GetUpdaterPolicies();
 
   // Sets the updater policy schemas.
   void SetUpdaterPolicySchemas(PolicyConversions::PolicyToSchemaMap schemas);
@@ -81,28 +81,27 @@ class POLICY_EXPORT PolicyConversionsClient {
 
   // Returns policies for Chrome browser. Must only be called if
   // |HasUserPolicies()| returns true.
-  base::Value::Dict GetChromePolicies();
+  base::Value GetChromePolicies();
 
   // Returns precedence-related policies for Chrome browser. Must only be called
   // if |HasUserPolicies()| returns true.
-  base::Value::Dict GetPrecedencePolicies();
+  base::Value GetPrecedencePolicies();
 
   // Returns an array containing the ordered precedence strings.
-  base::Value::List GetPrecedenceOrder();
+  base::Value GetPrecedenceOrder();
 
   // Returns true if this client is able to return information on user
   // policies.
   virtual bool HasUserPolicies() const = 0;
 
-  // Returns policies for Chrome extensions in a list of base::Value::Dict.
-  virtual base::Value::List GetExtensionPolicies(
-      PolicyDomain policy_domain) = 0;
+  // Returns policies for Chrome extensions.
+  virtual base::Value GetExtensionPolicies(PolicyDomain policy_domain) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns policies for ChromeOS device.
-  virtual base::Value::List GetDeviceLocalAccountPolicies() = 0;
+  virtual base::Value GetDeviceLocalAccountPolicies() = 0;
   // Returns device specific information if this device is enterprise managed.
-  virtual base::Value::Dict GetIdentityFields() = 0;
+  virtual base::Value GetIdentityFields() = 0;
 #endif
 
   // Returns the embedder's PolicyService.
@@ -127,7 +126,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   // policy namespace of |map|. |deprecated_policies| holds deprecated policies.
   // |future_policies| holds unreleased policies. A policy without an entry in
   // |known_policy_schemas| is an unknown policy.
-  base::Value::Dict GetPolicyValue(
+  base::Value GetPolicyValue(
       const std::string& policy_name,
       const PolicyMap::Entry& policy,
       const PoliciesSet& deprecated_policies,
@@ -142,7 +141,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   // policy namespace of |map|. |deprecated_policies| holds deprecated policies.
   // |future_policies| holds unreleased policies. A policy in |map| but without
   // an entry |known_policy_schemas| is an unknown policy.
-  base::Value::Dict GetPolicyValues(
+  base::Value GetPolicyValues(
       const PolicyMap& map,
       PolicyErrorMap* errors,
       const PoliciesSet& deprecated_policies,
