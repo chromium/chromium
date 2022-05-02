@@ -61,8 +61,6 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   int SliderTickOffsetFromTrackCenter() const override;
   void AdjustSliderThumbSize(ComputedStyle&) const override;
 
-  void SetCheckboxSize(ComputedStyle&) const override;
-  void SetRadioSize(ComputedStyle&) const override;
   void AdjustInnerSpinButtonStyle(ComputedStyle&) const override;
   void AdjustButtonStyle(ComputedStyle&) const override;
 

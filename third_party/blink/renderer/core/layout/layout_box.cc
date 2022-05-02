@@ -32,6 +32,8 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -268,6 +270,14 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
 LayoutUnit SliderIntrinsicInlineSize(const LayoutBox& box) {
   constexpr int kDefaultTrackLength = 129;
   return LayoutUnit(kDefaultTrackLength * box.StyleRef().EffectiveZoom());
+}
+
+LogicalSize ThemePartIntrinsicSize(const LayoutBox& box,
+                                   WebThemeEngine::Part part) {
+  const auto& style = box.StyleRef();
+  PhysicalSize size(Platform::Current()->ThemeEngine()->GetSize(part));
+  size.Scale(style.EffectiveZoom());
+  return size.ConvertToLogical(style.GetWritingMode());
 }
 
 LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
@@ -1387,27 +1397,36 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return kIndefiniteSize;
   const Element& element = *To<Element>(GetNode());
 
-  auto* select = DynamicTo<HTMLSelectElement>(element);
+  const auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList())) {
     return MenuListIntrinsicInlineSize(*select, *this);
   }
-  auto* input = DynamicTo<HTMLInputElement>(element);
+  const auto* input = DynamicTo<HTMLInputElement>(element);
   if (UNLIKELY(input)) {
     if (input->IsTextField())
       return TextFieldIntrinsicInlineSize(*input, *this);
     const AtomicString& type = input->type();
     if (type == input_type_names::kFile)
       return FileUploadControlIntrinsicInlineSize(*input, *this);
-    else if (type == input_type_names::kRange)
+    if (type == input_type_names::kRange)
       return SliderIntrinsicInlineSize(*this);
+    auto effective_appearance = StyleRef().EffectiveAppearance();
+    if (effective_appearance == kCheckboxPart) {
+      return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
+          .inline_size;
+    }
+    if (effective_appearance == kRadioPart) {
+      return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio)
+          .inline_size;
+    }
     return kIndefiniteSize;
   }
-  auto* textarea = DynamicTo<HTMLTextAreaElement>(element);
+  const auto* textarea = DynamicTo<HTMLTextAreaElement>(element);
   if (UNLIKELY(textarea))
     return TextAreaIntrinsicInlineSize(*textarea, *this);
-
   if (IsSliderContainer(element))
     return SliderIntrinsicInlineSize(*this);
+
   return kIndefiniteSize;
 }
 
@@ -1418,18 +1437,27 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
 
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->UsesMenuList()) {
+    if (select->UsesMenuList())
       return MenuListIntrinsicBlockSize(*select, *this);
-    } else {
-      return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
-             ComputeLogicalScrollbars().BlockSum();
-    }
-  } else if (IsTextFieldIncludingNG()) {
+    return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
+           ComputeLogicalScrollbars().BlockSum();
+  }
+  if (IsTextFieldIncludingNG())
     return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
-  } else if (IsTextAreaIncludingNG()) {
+  if (IsTextAreaIncludingNG()) {
     return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
                                       *this);
   }
+
+  auto effective_appearance = StyleRef().EffectiveAppearance();
+  if (effective_appearance == kCheckboxPart) {
+    return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
+        .block_size;
+  }
+  if (effective_appearance == kRadioPart) {
+    return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio).block_size;
+  }
+
   return kIndefiniteSize;
 }
 

@@ -168,58 +168,6 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
   PlatformColorsDidChange();
 }
 
-namespace {
-
-void SetSizeIfAuto(const gfx::Size& size, ComputedStyle& style) {
-  if (style.Width().IsAutoOrContentOrIntrinsic())
-    style.SetWidth(Length::Fixed(size.width()));
-  if (style.Height().IsAutoOrContentOrIntrinsic())
-    style.SetHeight(Length::Fixed(size.height()));
-}
-
-void SetMinimumSizeIfAuto(const gfx::Size& size, ComputedStyle& style) {
-  // We only want to set a minimum size if no explicit size is specified, to
-  // avoid overriding author intentions.
-  if (style.MinWidth().IsAutoOrContentOrIntrinsic() &&
-      style.Width().IsAutoOrContentOrIntrinsic())
-    style.SetMinWidth(Length::Fixed(size.width()));
-  if (style.MinHeight().IsAutoOrContentOrIntrinsic() &&
-      style.Height().IsAutoOrContentOrIntrinsic())
-    style.SetMinHeight(Length::Fixed(size.height()));
-}
-
-}  // namespace
-
-void LayoutThemeDefault::SetCheckboxSize(ComputedStyle& style) const {
-  // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsAutoOrContentOrIntrinsic() &&
-      !style.Height().IsAutoOrContentOrIntrinsic())
-    return;
-
-  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartCheckbox);
-  float zoom_level = style.EffectiveZoom();
-  size.set_width(size.width() * zoom_level);
-  size.set_height(size.height() * zoom_level);
-  SetMinimumSizeIfAuto(size, style);
-  SetSizeIfAuto(size, style);
-}
-
-void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
-  // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsAutoOrContentOrIntrinsic() &&
-      !style.Height().IsAutoOrContentOrIntrinsic())
-    return;
-
-  gfx::Size size =
-      Platform::Current()->ThemeEngine()->GetSize(WebThemeEngine::kPartRadio);
-  float zoom_level = style.EffectiveZoom();
-  size.set_width(size.width() * zoom_level);
-  size.set_height(size.height() * zoom_level);
-  SetMinimumSizeIfAuto(size, style);
-  SetSizeIfAuto(size, style);
-}
-
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
     ComputedStyle& style) const {
   gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(

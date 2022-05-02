@@ -39,7 +39,7 @@ PASS getWidth('input-button-75') is getWidth('input-button-100')
 PASS getHeight('input-button-75') != '0px' is true
 PASS getHeight('input-button-75') is getHeight('input-button-100')
 PASS getWidth('input-checkbox-75') is getWidth('input-checkbox-100')
-PASS getHeight('input-checkbox-75') == '0px' is true
+PASS getHeight('input-checkbox-75') != '0px' is true
 PASS getHeight('input-checkbox-75') is getHeight('input-checkbox-100')
 PASS getWidth('input-file-75') is getWidth('input-file-100')
 PASS getHeight('input-file-75') != '0px' is true
@@ -49,7 +49,7 @@ FAIL getHeight('input-image-75') should be 100px. Was 75px.
 PASS getWidth('input-image-100') is '100px'
 PASS getHeight('input-image-100') is '100px'
 PASS getWidth('input-radio-75') is getWidth('input-radio-100')
-PASS getHeight('input-radio-75') == '0px' is true
+PASS getHeight('input-radio-75') != '0px' is true
 PASS getHeight('input-radio-75') is getHeight('input-radio-100')
 PASS getWidth('input-reset-75') is getWidth('input-reset-100')
 PASS getHeight('input-reset-75') != '0px' is true

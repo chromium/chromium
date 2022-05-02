@@ -432,13 +432,6 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
 }
 
 void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style) const {
-  // A summary of the rules for checkbox designed to match WinIE:
-  // width/height - honored (WinIE actually scales its control for small widths,
-  // but lets it overflow for small heights.)
-  // font-size - not honored (control has no text), but we use it to decide
-  // which control size to use.
-  SetCheckboxSize(style);
-
   // padding - not honored by WinIE, needs to be removed.
   style.ResetPadding();
 
@@ -448,13 +441,6 @@ void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style) const {
 }
 
 void LayoutTheme::AdjustRadioStyle(ComputedStyle& style) const {
-  // A summary of the rules for checkbox designed to match WinIE:
-  // width/height - honored (WinIE actually scales its control for small widths,
-  // but lets it overflow for small heights.)
-  // font-size - not honored (control has no text), but we use it to decide
-  // which control size to use.
-  SetRadioSize(style);
-
   // padding - not honored by WinIE, needs to be removed.
   style.ResetPadding();
 

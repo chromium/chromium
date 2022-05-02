@@ -211,10 +211,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // Methods for each appearance value.
   virtual void AdjustCheckboxStyle(ComputedStyle&) const;
-  virtual void SetCheckboxSize(ComputedStyle&) const {}
-
   virtual void AdjustRadioStyle(ComputedStyle&) const;
-  virtual void SetRadioSize(ComputedStyle&) const {}
 
   virtual void AdjustButtonStyle(ComputedStyle&) const;
   virtual void AdjustInnerSpinButtonStyle(ComputedStyle&) const;

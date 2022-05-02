@@ -768,8 +768,8 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
     if (part) {
       float corner_radius =
           ui::NativeTheme::GetInstanceForWeb()->GetBorderRadiusForPart(
-              part.value(), style.Width().GetFloatValue(),
-              style.Height().GetFloatValue());
+              part.value(), reference_border_rect.size.width,
+              reference_border_rect.size.height);
       corner_radius =
           ui::NativeTheme::GetInstanceForWeb()->AdjustBorderRadiusByZoom(
               part.value(), corner_radius, style.EffectiveZoom());
