@@ -136,7 +136,6 @@
       grid-column-gap: 16px;
       grid-row-gap: 16px;
       height: 100%;
-      overflow: auto;
       width: 100%;
     }
 
@@ -173,6 +172,12 @@
       flex-direction: column;
       height: 100%;
       justify-content: center;
+    }
+
+    .scroll-container {
+      /* TODO(longbowei): Update max-height later with specs. */
+      max-height: 600px;
+      overflow: auto;
     }
 
     [slot=optional-icon] {

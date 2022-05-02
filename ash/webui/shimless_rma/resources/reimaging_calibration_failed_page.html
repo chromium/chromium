@@ -9,16 +9,18 @@
     </div>
   </div>
   <div slot="right-pane">
-    <div class="component-grid calibration">
-      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
-        <calibration-component-chip id="[[component.id]]"
-          checked="{{component.checked}}"
-          failed="[[component.failed]]"
-          component-name="[[component.name]]"
-          disabled$="[[isComponentDisabled_(component.disabled,
-              allButtonsDisabled)]]">
-        </calibration-component-chip>
-      </template>
+    <div class="scroll-container">
+      <div class="component-grid calibration">
+        <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+          <calibration-component-chip id="[[component.id]]"
+            checked="{{component.checked}}"
+            failed="[[component.failed]]"
+            component-name="[[component.name]]"
+            disabled$="[[isComponentDisabled_(component.disabled,
+                allButtonsDisabled)]]">
+          </calibration-component-chip>
+        </template>
+      </div>
     </div>
   </div>
 </base-page>
