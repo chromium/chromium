@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -96,14 +97,14 @@ class DependentIterator {
  private:
   // `graph_` and `task_` are not a raw_ptr<...> for performance reasons (based
   // on analysis of sampling profiler data and tab_search:top100:2020).
-  TaskGraph* graph_;
-  const Task* task_;
+  RAW_PTR_EXCLUSION TaskGraph* graph_;
+  RAW_PTR_EXCLUSION const Task* task_;
 
   size_t current_index_;
 
   // `current_node_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data and tab_search:top100:2020).
-  TaskGraph::Node* current_node_;
+  RAW_PTR_EXCLUSION TaskGraph::Node* current_node_;
 };
 
 }  // namespace

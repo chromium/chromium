@@ -6,6 +6,7 @@
 #define MOJO_CORE_REQUEST_CONTEXT_H_
 
 #include "base/containers/stack_container.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"
@@ -103,7 +104,7 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
   //
   // `tls_context` is not a raw_ptr<...> as a performance optimization: The
   // pointee doesn't need UaF protection (it has a global/static lifetime).
-  base::ThreadLocalPointer<RequestContext>* tls_context_;
+  RAW_PTR_EXCLUSION base::ThreadLocalPointer<RequestContext>* tls_context_;
 };
 
 }  // namespace core

@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -115,7 +116,7 @@ class CC_EXPORT TilingSetEvictionQueue {
 
     // `tilings_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    std::vector<PictureLayerTiling*>* tilings_;
+    RAW_PTR_EXCLUSION std::vector<PictureLayerTiling*>* tilings_;
 
     WhichTree tree_;
     PictureLayerTiling::PriorityRectType priority_rect_type_;

@@ -202,7 +202,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     // `resource_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    PoolResource* resource_ = nullptr;
+    RAW_PTR_EXCLUSION PoolResource* resource_ = nullptr;
   };
 
   // When holding gpu resources, the |context_provider| should be non-null,

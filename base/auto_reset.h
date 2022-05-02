@@ -7,6 +7,8 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 // base::AutoReset<> is useful for setting a variable to a new value only within
 // a particular scope. An base::AutoReset<> object resets a variable to its
 // original value upon destruction, making it an alternative to writing
@@ -46,7 +48,7 @@ class AutoReset {
   // `scoped_variable_` is not a raw_ptr<T> for performance reasons: Large
   // number of non-PartitionAlloc pointees + AutoReset is typically short-lived
   // (e.g. allocated on the stack).
-  T* scoped_variable_;
+  RAW_PTR_EXCLUSION T* scoped_variable_;
 
   T original_value_;
 };

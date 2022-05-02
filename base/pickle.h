@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 
@@ -314,7 +315,7 @@ class BASE_EXPORT Pickle {
 
   // `header_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data).
-  Header* header_;
+  RAW_PTR_EXCLUSION Header* header_;
   size_t header_size_;  // Supports extra data between header and payload.
   // Allocation size of payload (or -1 if allocation is const). Note: this
   // doesn't count the header.

@@ -35,9 +35,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -145,7 +145,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
 
   // `image_provider` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data and tab_search:top100:2020).
-  ImageProvider* image_provider;
+  RAW_PTR_EXCLUSION ImageProvider* image_provider;
 
   SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
@@ -1274,8 +1274,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
     // `buffer_` and `ptr_` are not a raw_ptr<...> for performance reasons
     // (based on analysis of sampling profiler data and tab_search:top100:2020).
-    const PaintOpBuffer* buffer_ = nullptr;
-    char* ptr_ = nullptr;
+    RAW_PTR_EXCLUSION const PaintOpBuffer* buffer_ = nullptr;
+    RAW_PTR_EXCLUSION char* ptr_ = nullptr;
 
     size_t op_offset_ = 0;
   };
@@ -1343,9 +1343,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // `buffer_`, `ptr_`, and `offsets_` are not a raw_ptr<...> for performance
     // reasons (based on analysis of sampling profiler data and
     // tab_search:top100:2020).
-    const PaintOpBuffer* buffer_ = nullptr;
-    char* ptr_ = nullptr;
-    const std::vector<size_t>* offsets_;
+    RAW_PTR_EXCLUSION const PaintOpBuffer* buffer_ = nullptr;
+    RAW_PTR_EXCLUSION char* ptr_ = nullptr;
+    RAW_PTR_EXCLUSION const std::vector<size_t>* offsets_;
 
     size_t op_offset_ = 0;
     size_t offsets_index_ = 0;
@@ -1422,7 +1422,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
     // `current_op_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    const PaintOp* current_op_ = nullptr;
+    RAW_PTR_EXCLUSION const PaintOp* current_op_ = nullptr;
 
     uint8_t current_alpha_ = 255;
   };

@@ -95,8 +95,8 @@ class CONTENT_EXPORT FrameTree {
     // `current_node_` and `root_of_subtree_to_skip_` are not a raw_ptr<...> for
     // performance reasons (based on analysis of sampling profiler data and
     // tab_search:top100:2020).
-    FrameTreeNode* current_node_;
-    const FrameTreeNode* const root_of_subtree_to_skip_;
+    RAW_PTR_EXCLUSION FrameTreeNode* current_node_;
+    RAW_PTR_EXCLUSION const FrameTreeNode* const root_of_subtree_to_skip_;
 
     const bool should_descend_into_inner_trees_;
     base::circular_deque<FrameTreeNode*> queue_;

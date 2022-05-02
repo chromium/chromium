@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "url/url_canon.h"
 
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
  protected:
   // `str_` is not a raw_ptr<...> for performance reasons (based on analysis of
   // sampling profiler data and tab_search:top100:2020).
-  std::string* str_;
+  RAW_PTR_EXCLUSION std::string* str_;
 };
 
 // An extension of the Replacements class that allows the setters to use

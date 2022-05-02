@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,7 +37,7 @@ class BASE_EXPORT LazyNow {
   // `tick_clock_` is not a raw_ptr<TickClock> as a performance optimization:
   // The pointee doesn't need UaF protection (it has the same lifetime as the
   // theead/sequence).
-  const TickClock* tick_clock_;  // Not owned.
+  RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
   absl::optional<TimeTicks> now_;
 };
 

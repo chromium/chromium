@@ -85,7 +85,7 @@ class BASE_EXPORT WorkQueue {
 
     // `work_queue_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    WorkQueue* work_queue_;
+    RAW_PTR_EXCLUSION WorkQueue* work_queue_;
 
     const bool was_empty_;
   };

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/linked_list.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
@@ -161,7 +162,7 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
  private:
   // `list_` is not a raw_ptr<...> for performance reasons: on-stack pointer +
   // based on analysis of sampling profiler data and tab_search:top100:2020.
-  ObserverList* list_ = nullptr;
+  RAW_PTR_EXCLUSION ObserverList* list_ = nullptr;
 };
 
 }  // namespace internal

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace mojo {
 namespace core {
@@ -51,7 +52,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessage {
  private:
   // `type_info_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data and tab_search:top100:2020).
-  const TypeInfo* const type_info_;
+  RAW_PTR_EXCLUSION const TypeInfo* const type_info_;
 };
 
 }  // namespace ports

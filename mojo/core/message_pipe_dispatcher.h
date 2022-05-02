@@ -10,6 +10,7 @@
 #include <memory>
 #include <queue>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"
@@ -93,7 +94,7 @@ class MessagePipeDispatcher : public Dispatcher {
   // These are safe to access from any thread without locking.
   // `node_controller_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data).
-  NodeController* const node_controller_;
+  RAW_PTR_EXCLUSION NodeController* const node_controller_;
   const ports::PortRef port_;
   const uint64_t pipe_id_;
   const int endpoint_;

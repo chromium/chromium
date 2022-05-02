@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
@@ -157,7 +158,7 @@ class DictionaryValueUpdate {
   UpdateCallback report_update_;
   // `value_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data).
-  base::DictionaryValue* const value_;
+  RAW_PTR_EXCLUSION base::DictionaryValue* const value_;
   const std::vector<std::string> path_;
 };
 

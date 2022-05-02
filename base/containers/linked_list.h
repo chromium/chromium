@@ -6,6 +6,7 @@
 #define BASE_CONTAINERS_LINKED_LIST_H_
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 // Simple LinkedList type. (See the Q&A section to understand how this
 // differs from std::list).
@@ -110,8 +111,8 @@ class BASE_EXPORT LinkNodeBase {
   // `previous_` and `next_` are not a raw_ptr<...> for performance reasons:
   // on-stack pointer + a large number of non-PA pointees through WeakLinkNode +
   // based on analysis of sampling profiler data and tab_search:top100:2020.
-  LinkNodeBase* previous_ = nullptr;
-  LinkNodeBase* next_ = nullptr;
+  RAW_PTR_EXCLUSION LinkNodeBase* previous_ = nullptr;
+  RAW_PTR_EXCLUSION LinkNodeBase* next_ = nullptr;
 };
 
 }  // namespace internal

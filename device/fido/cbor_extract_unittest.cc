@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/cbor/values.h"
 #include "device/fido/cbor_extract.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,17 +33,17 @@ struct MakeCredRequest {
   // All fields below are not a raw_ptr<T> because cbor_extract.cc would
   // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
   // ref-counting mismatch.
-  const std::vector<uint8_t>* client_data_hash;
-  const std::string* rp_id;
-  const std::vector<uint8_t>* user_id;
-  const std::vector<cbor::Value>* cred_params;
-  const std::vector<cbor::Value>* excluded_credentials;
-  const bool* resident_key;
-  const bool* user_verification;
-  const bool* large_test;
-  const bool* negative_test;
-  const bool* skipped_1;
-  const bool* skipped_2;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
+  RAW_PTR_EXCLUSION const std::string* rp_id;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* user_id;
+  RAW_PTR_EXCLUSION const std::vector<cbor::Value>* cred_params;
+  RAW_PTR_EXCLUSION const std::vector<cbor::Value>* excluded_credentials;
+  RAW_PTR_EXCLUSION const bool* resident_key;
+  RAW_PTR_EXCLUSION const bool* user_verification;
+  RAW_PTR_EXCLUSION const bool* large_test;
+  RAW_PTR_EXCLUSION const bool* negative_test;
+  RAW_PTR_EXCLUSION const bool* skipped_1;
+  RAW_PTR_EXCLUSION const bool* skipped_2;
 };
 
 TEST(CBORExtract, Basic) {

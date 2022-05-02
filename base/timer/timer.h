@@ -141,7 +141,7 @@ class BASE_EXPORT TimerBase {
   // there is no scheduled task.
   // `task_destruction_detector_` is not a raw_ptr<...> for performance reasons
   // (based on analysis of sampling profiler data).
-  TaskDestructionDetector* task_destruction_detector_
+  RAW_PTR_EXCLUSION TaskDestructionDetector* task_destruction_detector_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, |user_task_| is scheduled to run sometime in the future.

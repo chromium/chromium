@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/vector_buffer.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 
@@ -319,7 +320,7 @@ class circular_deque_const_iterator {
   // on-stack pointer, pointing back to the collection being iterated, owned by
   // object that iterates over it.  Additionally this is supported by the
   // analysis of sampling profiler data and tab_search:top100:2020.
-  const circular_deque<T>* parent_deque_;
+  RAW_PTR_EXCLUSION const circular_deque<T>* parent_deque_;
 
   size_t index_;
 

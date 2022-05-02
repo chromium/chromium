@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -158,7 +159,7 @@ struct TlsMetadata {
 struct TlsVectorEntry {
   // `data` is not a raw_ptr<...> for performance reasons (based on analysis of
   // sampling profiler data and tab_search:top100:2020).
-  void* data;
+  RAW_PTR_EXCLUSION void* data;
 
   uint32_t version;
 };

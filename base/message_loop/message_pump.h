@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -108,7 +109,7 @@ class BASE_EXPORT MessagePump {
 
       // `outer_` is not a raw_ptr<...> for performance reasons (based on
       // analysis of sampling profiler data and tab_search:top100:2020).
-      Delegate* outer_;
+      RAW_PTR_EXCLUSION Delegate* outer_;
     };
 
     // Called before a unit of work is executed. This allows reports

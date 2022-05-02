@@ -118,7 +118,7 @@ class SharedMemIPCServer {
   //
   // `client_control_` is not a raw_ptr<IPCControl>, because reinterpret_cast of
   // uninitialized memory to raw_ptr can cause ref-counting mismatch.
-  IPCControl* client_control_;
+  RAW_PTR_EXCLUSION IPCControl* client_control_;
 
   // Keeps track of the server side objects that are used to answer an IPC.
   std::list<std::unique_ptr<ServerControl>> server_contexts_;
@@ -137,7 +137,7 @@ class SharedMemIPCServer {
   //
   // `call_dispatcher_` is not a raw_ptr<Dispatcher>, because reinterpret_cast
   // of uninitialized memory to raw_ptr can cause ref-counting mismatch.
-  Dispatcher* call_dispatcher_;
+  RAW_PTR_EXCLUSION Dispatcher* call_dispatcher_;
 };
 
 }  // namespace sandbox

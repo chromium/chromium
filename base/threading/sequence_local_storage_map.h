@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace base {
 namespace internal {
@@ -61,8 +62,8 @@ class BASE_EXPORT SequenceLocalStorageMap {
    private:
     // `value_` and `destructor_` are not a raw_ptr<...> for performance reasons
     // (based on analysis of sampling profiler data and tab_search:top100:2020).
-    void* value_;
-    DestructorFunc* destructor_;
+    RAW_PTR_EXCLUSION void* value_;
+    RAW_PTR_EXCLUSION DestructorFunc* destructor_;
   };
 
   // Returns the value stored in |slot_id| or nullptr if no value was stored.

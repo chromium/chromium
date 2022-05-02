@@ -87,15 +87,15 @@ struct MakeCredRequest {
   // All fields below are not a raw_ptr<T> because cbor_extract.cc would
   // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
   // ref-counting mismatch.
-  const std::vector<uint8_t>* client_data_hash;
-  const std::string* rp_id;
-  const std::string* rp_name;
-  const std::vector<uint8_t>* user_id;
-  const std::string* user_name;
-  const std::string* user_display_name;
-  const cbor::Value::ArrayValue* cred_params;
-  const cbor::Value::ArrayValue* excluded_credentials;
-  const bool* resident_key;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
+  RAW_PTR_EXCLUSION const std::string* rp_id;
+  RAW_PTR_EXCLUSION const std::string* rp_name;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* user_id;
+  RAW_PTR_EXCLUSION const std::string* user_name;
+  RAW_PTR_EXCLUSION const std::string* user_display_name;
+  RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* cred_params;
+  RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* excluded_credentials;
+  RAW_PTR_EXCLUSION const bool* resident_key;
 };
 
 static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
@@ -144,9 +144,9 @@ struct AttestationObject {
   // All fields below are not a raw_ptr<T> because cbor_extract.cc would
   // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
   // ref-counting mismatch.
-  const std::string* fmt;
-  const std::vector<uint8_t>* auth_data;
-  const cbor::Value* statement;
+  RAW_PTR_EXCLUSION const std::string* fmt;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* auth_data;
+  RAW_PTR_EXCLUSION const cbor::Value* statement;
 };
 
 static constexpr StepOrByte<AttestationObject> kAttObjParseSteps[] = {
@@ -168,9 +168,9 @@ struct GetAssertionRequest {
   // All fields below are not a raw_ptr<T> because cbor_extract.cc would
   // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
   // ref-counting mismatch.
-  const std::string* rp_id;
-  const std::vector<uint8_t>* client_data_hash;
-  const cbor::Value::ArrayValue* allowed_credentials;
+  RAW_PTR_EXCLUSION const std::string* rp_id;
+  RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
+  RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* allowed_credentials;
 };
 
 static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {

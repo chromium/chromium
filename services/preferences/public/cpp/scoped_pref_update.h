@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 
 class PrefService;
@@ -63,7 +64,7 @@ class ScopedDictionaryPrefUpdate {
   // Weak pointer.
   // `service_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data).
-  PrefService* const service_;
+  RAW_PTR_EXCLUSION PrefService* const service_;
   // Path of the preference being updated.
   const std::string path_;
 

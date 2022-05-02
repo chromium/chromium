@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 #include "content/common/content_export.h"
@@ -75,7 +76,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
     //
     // `identifier` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    const void* const identifier;
+    RAW_PTR_EXCLUSION const void* const identifier;
 
     // Whether the task was at some point in a queue that was blocked or low
     // priority.
@@ -135,7 +136,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   // Calculator.
   // `calculator_io_` is not a raw_ptr<...> because Calculator isn't supported
   // in raw_ptr for performance reasons. See crbug.com/1287151.
-  Calculator* calculator_io_ = nullptr;
+  RAW_PTR_EXCLUSION Calculator* calculator_io_ = nullptr;
 };
 
 }  // namespace responsiveness

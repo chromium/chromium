@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -60,7 +61,7 @@ class TaskDestructionDetector {
  private:
   // `timer_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data and tab_search:top100:2020).
-  TimerBase* timer_;
+  RAW_PTR_EXCLUSION TimerBase* timer_;
 };
 
 // static

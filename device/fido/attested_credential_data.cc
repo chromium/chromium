@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_math.h"
 #include "components/cbor/reader.h"
 #include "components/device_event_log/device_event_log.h"
@@ -68,8 +69,8 @@ AttestedCredentialData::ConsumeFromCtapResponse(
     // Both fields below are not a raw_ptr<int64_t>, because ELEMENT() treats
     // the raw_ptr<T> as a void*, skipping AddRef() call and causing a
     // ref-counting mismatch.
-    const int64_t* alg;
-    const int64_t* kty;
+    RAW_PTR_EXCLUSION const int64_t* alg;
+    RAW_PTR_EXCLUSION const int64_t* kty;
   } cose_key;
 
   static constexpr cbor_extract::StepOrByte<COSEKey> kSteps[] = {

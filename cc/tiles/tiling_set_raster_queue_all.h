@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/containers/stack_container.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
@@ -67,8 +68,8 @@ class CC_EXPORT TilingSetRasterQueueAll {
     // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
     // reasons (based on analysis of sampling profiler data and
     // tab_search:top100:2020).
-    PictureLayerTiling* tiling_;
-    TilingData* tiling_data_;
+    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    RAW_PTR_EXCLUSION TilingData* tiling_data_;
 
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     gfx::Rect pending_visible_rect_;
@@ -197,7 +198,7 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
   // `tiling_set_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data).
-  PictureLayerTilingSet* tiling_set_;
+  RAW_PTR_EXCLUSION PictureLayerTilingSet* tiling_set_;
 
   struct IterationStage {
     IterationStage(IteratorType type, TilePriority::PriorityBin bin);

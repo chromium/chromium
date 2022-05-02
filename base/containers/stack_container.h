@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -123,7 +124,7 @@ class StackAllocator : public FallbackAllocator {
 
  private:
   // `source_` is not a raw_ptr<T> for performance reasons: on-stack pointee.
-  Source* source_;
+  RAW_PTR_EXCLUSION Source* source_;
 };
 
 // A wrapper around STL containers that maintains a stack-sized buffer that the

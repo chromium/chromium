@@ -303,7 +303,7 @@ class MultiplexRouter::MessageWrapper {
  private:
   // `router_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data and tab_search:top100:2020).
-  MultiplexRouter* router_ = nullptr;
+  RAW_PTR_EXCLUSION MultiplexRouter* router_ = nullptr;
 
   Message value_;
 };

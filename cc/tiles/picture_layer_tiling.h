@@ -288,7 +288,7 @@ class CC_EXPORT PictureLayerTiling {
 
     // `tiling_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    const PictureLayerTiling* tiling_ = nullptr;
+    RAW_PTR_EXCLUSION const PictureLayerTiling* tiling_ = nullptr;
 
     gfx::Size coverage_rect_max_bounds_;
     gfx::Rect coverage_rect_;
@@ -296,7 +296,7 @@ class CC_EXPORT PictureLayerTiling {
 
     // `current_tile_` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    Tile* current_tile_ = nullptr;
+    RAW_PTR_EXCLUSION Tile* current_tile_ = nullptr;
 
     gfx::Rect current_geometry_rect_;
     int tile_i_ = 0;

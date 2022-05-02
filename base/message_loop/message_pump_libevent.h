@@ -102,7 +102,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
     // `delegate` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    Delegate* const delegate;
+    RAW_PTR_EXCLUSION Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;

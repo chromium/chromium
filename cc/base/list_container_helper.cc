@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace {
 const size_t kDefaultNumElementTypesToReserve = 32;
@@ -265,7 +266,7 @@ class ListContainerHelper::CharAllocator {
   //
   // `last_list_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data and tab_search:top100:2020).
-  InnerList* last_list_;
+  RAW_PTR_EXCLUSION InnerList* last_list_;
 };
 
 // PositionInCharAllocator
