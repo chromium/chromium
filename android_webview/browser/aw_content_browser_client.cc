@@ -272,8 +272,7 @@ AwBrowserContext* AwContentBrowserClient::InitBrowserContext() {
 }
 
 std::unique_ptr<content::BrowserMainParts>
-AwContentBrowserClient::CreateBrowserMainParts(
-    content::MainFunctionParams /*parameters*/) {
+AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
 }
 

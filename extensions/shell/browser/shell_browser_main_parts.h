@@ -13,13 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 
 class PrefService;
-
-namespace content {
-struct MainFunctionParams;
-}
 
 namespace extensions {
 
@@ -39,8 +34,8 @@ class ShellNetworkController;
 // Handles initialization of AppShell.
 class ShellBrowserMainParts : public content::BrowserMainParts {
  public:
-  ShellBrowserMainParts(content::MainFunctionParams parameters,
-                        ShellBrowserMainDelegate* browser_main_delegate);
+  ShellBrowserMainParts(ShellBrowserMainDelegate* browser_main_delegate,
+                        bool is_integration_test);
 
   ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
   ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
@@ -87,10 +82,9 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   // Owned by the KeyedService system.
   raw_ptr<ShellExtensionSystem> extension_system_;
 
-  // For running app browsertests.
-  content::MainFunctionParams parameters_;
-
   std::unique_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
+
+  const bool is_integration_test_;
 };
 
 }  // namespace extensions

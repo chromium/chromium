@@ -18,9 +18,9 @@
 #include "ui/wm/core/wm_core_switches.h"
 
 ChromeBrowserMainPartsLacros::ChromeBrowserMainPartsLacros(
-    content::MainFunctionParams parameters,
+    bool is_integration_test,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsLinux(std::move(parameters), startup_data) {}
+    : ChromeBrowserMainPartsLinux(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsLacros::~ChromeBrowserMainPartsLacros() = default;
 

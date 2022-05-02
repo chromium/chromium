@@ -153,11 +153,8 @@ void StopMessageLoop(base::OnceClosure quit_closure) {
 
 BrowserMainPartsImpl::BrowserMainPartsImpl(
     MainParams* params,
-    content::MainFunctionParams main_function_params,
     std::unique_ptr<PrefService> local_state)
-    : params_(params),
-      main_function_params_(std::move(main_function_params)),
-      local_state_(std::move(local_state)) {}
+    : params_(params), local_state_(std::move(local_state)) {}
 
 BrowserMainPartsImpl::~BrowserMainPartsImpl() = default;
 

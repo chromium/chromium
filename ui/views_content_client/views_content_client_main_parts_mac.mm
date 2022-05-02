@@ -39,8 +39,8 @@ namespace {
 
 class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
  public:
-  ViewsContentClientMainPartsMac(content::MainFunctionParams content_params,
-                                 ViewsContentClient* views_content_client);
+  explicit ViewsContentClientMainPartsMac(
+      ViewsContentClient* views_content_client);
 
   ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
       delete;
@@ -57,10 +57,8 @@ class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
 };
 
 ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
-    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainParts(std::move(content_params),
-                                  views_content_client) {
+    : ViewsContentClientMainParts(views_content_client) {
   // Cache the child process path to avoid triggering an AssertIOAllowed.
   base::FilePath child_process_exe;
   base::PathService::Get(content::CHILD_PROCESS_EXE, &child_process_exe);
@@ -96,10 +94,8 @@ ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(content::MainFunctionParams content_params,
-                                    ViewsContentClient* views_content_client) {
-  return std::make_unique<ViewsContentClientMainPartsMac>(
-      std::move(content_params), views_content_client);
+ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
+  return std::make_unique<ViewsContentClientMainPartsMac>(views_content_client);
 }
 
 // static

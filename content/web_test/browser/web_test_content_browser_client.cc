@@ -356,9 +356,8 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
 
 std::unique_ptr<BrowserMainParts>
 WebTestContentBrowserClient::CreateBrowserMainParts(
-    MainFunctionParams parameters) {
-  auto browser_main_parts =
-      std::make_unique<WebTestBrowserMainParts>(std::move(parameters));
+    bool /* is_integration_test */) {
+  auto browser_main_parts = std::make_unique<WebTestBrowserMainParts>();
 
   set_browser_main_parts(browser_main_parts.get());
 

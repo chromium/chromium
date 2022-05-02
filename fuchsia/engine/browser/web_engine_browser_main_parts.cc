@@ -164,9 +164,8 @@ void FrameHostImpl::CreateFrameWithParams(
 }
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
-    content::ContentBrowserClient* browser_client,
-    content::MainFunctionParams parameters)
-    : browser_client_(browser_client), parameters_(std::move(parameters)) {}
+    content::ContentBrowserClient* browser_client)
+    : browser_client_(browser_client) {}
 
 WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
   display::Screen::SetScreenInstance(nullptr);
@@ -296,12 +295,6 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // Context and remove this workaround.
   if (*g_test_request)
     HandleContextRequest(std::move(*g_test_request));
-
-  // In browser tests |ui_task| runs the "body" of each test.
-  if (parameters_.ui_task) {
-    // Since the main loop won't run, there is nothing to quit.
-    quit_closure_ = base::DoNothing();
-  }
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

@@ -18,7 +18,7 @@ class ElementManagerImpl;
 
 class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsFuchsia(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsFuchsia(bool is_integration_test,
                                 StartupData* startup_data);
 
   ChromeBrowserMainPartsFuchsia(const ChromeBrowserMainPartsFuchsia&) = delete;

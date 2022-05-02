@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
 
@@ -34,8 +33,7 @@ class HeadlessBrowserImpl;
 class HEADLESS_EXPORT HeadlessBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  explicit HeadlessBrowserMainParts(content::MainFunctionParams parameters,
-                                    HeadlessBrowserImpl* browser);
+  explicit HeadlessBrowserMainParts(HeadlessBrowserImpl* browser);
 
   HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
   HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
@@ -75,7 +73,6 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void CreatePrefService();
 #endif
 
-  content::MainFunctionParams parameters_;  // For running browser tests.
   raw_ptr<HeadlessBrowserImpl> browser_;    // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)

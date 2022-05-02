@@ -91,10 +91,9 @@ content::BrowserContext* ShellContentBrowserClient::GetBrowserContext() {
 }
 
 std::unique_ptr<content::BrowserMainParts>
-ShellContentBrowserClient::CreateBrowserMainParts(
-    content::MainFunctionParams parameters) {
-  auto browser_main_parts = CreateShellBrowserMainParts(std::move(parameters),
-                                                        browser_main_delegate_);
+ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
+  auto browser_main_parts =
+      CreateShellBrowserMainParts(browser_main_delegate_, is_integration_test);
 
   browser_main_parts_ = browser_main_parts.get();
 
@@ -382,10 +381,10 @@ std::string ShellContentBrowserClient::GetUserAgent() {
 
 std::unique_ptr<ShellBrowserMainParts>
 ShellContentBrowserClient::CreateShellBrowserMainParts(
-    content::MainFunctionParams parameters,
-    ShellBrowserMainDelegate* browser_main_delegate) {
-  return std::make_unique<ShellBrowserMainParts>(std::move(parameters),
-                                                 browser_main_delegate);
+    ShellBrowserMainDelegate* browser_main_delegate,
+    bool is_integration_test) {
+  return std::make_unique<ShellBrowserMainParts>(browser_main_delegate,
+                                                 is_integration_test);
 }
 
 void ShellContentBrowserClient::AppendRendererSwitches(

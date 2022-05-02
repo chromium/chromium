@@ -27,7 +27,7 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      content::MainFunctionParams parameters) override;
+      bool is_integration_test) override;
 
  private:
   raw_ptr<ViewsContentClient> views_content_client_;

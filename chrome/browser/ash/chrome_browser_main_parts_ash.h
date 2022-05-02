@@ -126,7 +126,7 @@ class TrafficCountersHandler;
 // src/ash or chrome/browser/ui/ash.
 class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
  public:
-  ChromeBrowserMainPartsAsh(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsAsh(bool is_integration_test,
                             StartupData* startup_data);
 
   ChromeBrowserMainPartsAsh(const ChromeBrowserMainPartsAsh&) = delete;

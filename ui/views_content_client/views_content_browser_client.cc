@@ -21,9 +21,8 @@ ViewsContentBrowserClient::~ViewsContentBrowserClient() {
 
 std::unique_ptr<content::BrowserMainParts>
 ViewsContentBrowserClient::CreateBrowserMainParts(
-    content::MainFunctionParams parameters) {
-  return ViewsContentClientMainParts::Create(std::move(parameters),
-                                             views_content_client_);
+    bool /* is_integration_test */) {
+  return ViewsContentClientMainParts::Create(views_content_client_);
 }
 
 }  // namespace ui

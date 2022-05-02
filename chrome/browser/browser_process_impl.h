@@ -53,10 +53,6 @@ class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
 class StartupData;
 
-namespace base {
-class CommandLine;
-}
-
 namespace breadcrumbs {
 class ApplicationBreadcrumbsLogger;
 class BreadcrumbPersistentStorageManager;
@@ -119,7 +115,7 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
   // Called before the browser threads are created.
-  void PreCreateThreads(const base::CommandLine& command_line);
+  void PreCreateThreads();
 
   // Called after the threads have been created but before the message loops
   // starts running. Allows the browser process to do any initialization that

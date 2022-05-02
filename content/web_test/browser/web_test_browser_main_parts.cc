@@ -43,10 +43,9 @@
 
 namespace content {
 
-WebTestBrowserMainParts::WebTestBrowserMainParts(MainFunctionParams parameters)
-    : ShellBrowserMainParts(std::move(parameters)) {}
+WebTestBrowserMainParts::WebTestBrowserMainParts() = default;
 
-WebTestBrowserMainParts::~WebTestBrowserMainParts() {}
+WebTestBrowserMainParts::~WebTestBrowserMainParts() = default;
 
 void WebTestBrowserMainParts::InitializeBrowserContexts() {
   set_browser_context(new WebTestBrowserContext(false));

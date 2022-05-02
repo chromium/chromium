@@ -21,7 +21,7 @@ class ProfileManagerAndroid;
 
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsAndroid(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsAndroid(bool is_integration_test,
                                 StartupData* startup_data);
 
   ChromeBrowserMainPartsAndroid(const ChromeBrowserMainPartsAndroid&) = delete;

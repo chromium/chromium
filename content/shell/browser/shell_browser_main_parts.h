@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 #include "content/shell/browser/shell_browser_context.h"
 
 namespace performance_manager {
@@ -28,7 +27,7 @@ class ShellPlatformDelegate;
 
 class ShellBrowserMainParts : public BrowserMainParts {
  public:
-  explicit ShellBrowserMainParts(MainFunctionParams parameters);
+  ShellBrowserMainParts();
 
   ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
   ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
@@ -72,9 +71,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
  private:
   std::unique_ptr<ShellBrowserContext> browser_context_;
   std::unique_ptr<ShellBrowserContext> off_the_record_browser_context_;
-
-  // For running content_browsertests.
-  MainFunctionParams parameters_;
 
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;

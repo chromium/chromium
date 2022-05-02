@@ -9,7 +9,7 @@
 
 class ChromeBrowserMainPartsPosix : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsPosix(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsPosix(bool is_integration_test,
                               StartupData* startup_data);
 
   ChromeBrowserMainPartsPosix(const ChromeBrowserMainPartsPosix&) = delete;

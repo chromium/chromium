@@ -49,10 +49,8 @@ const base::FilePath::CharType kLocalStateFilename[] =
 
 }  // namespace
 
-HeadlessBrowserMainParts::HeadlessBrowserMainParts(
-    content::MainFunctionParams parameters,
-    HeadlessBrowserImpl* browser)
-    : parameters_(std::move(parameters)), browser_(browser) {}
+HeadlessBrowserMainParts::HeadlessBrowserMainParts(HeadlessBrowserImpl* browser)
+    : browser_(browser) {}
 
 HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 

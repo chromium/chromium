@@ -357,7 +357,6 @@ void HandleTestParameters(const base::CommandLine& command_line) {
 //   the profile is a guest profile in this case, or
 // - kError mode with a nullptr profile if startup should not continue.
 StartupProfileInfo CreateInitialProfile(
-    const content::MainFunctionParams& parameters,
     const base::FilePath& cur_dir,
     const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile");
@@ -550,17 +549,11 @@ void ChromeBrowserMainParts::ProfileInitManager::OnProfileManagerDestroying() {
 
 // BrowserMainParts ------------------------------------------------------------
 
-ChromeBrowserMainParts::ChromeBrowserMainParts(
-    content::MainFunctionParams parameters,
-    StartupData* startup_data)
-    : parameters_(std::move(parameters)),
-      parsed_command_line_(*parameters_.command_line),
-      should_call_pre_main_loop_start_startup_on_variations_service_(
-          !parameters_.ui_task),
-      startup_data_(startup_data) {
+ChromeBrowserMainParts::ChromeBrowserMainParts(bool is_integration_test,
+                                               StartupData* startup_data)
+    : is_integration_test_(is_integration_test), startup_data_(startup_data) {
   DCHECK(startup_data_);
-  // If we're running tests (ui_task is non-null).
-  if (parameters_.ui_task)
+  if (is_integration_test_)
     browser_defaults::enable_help_app = false;
 }
 
@@ -771,7 +764,7 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
 
   // Do the tasks if chrome has been upgraded while it was last running.
   if (!already_running_ &&
-      upgrade_util::DoUpgradeTasks(parsed_command_line())) {
+      upgrade_util::DoUpgradeTasks(*base::CommandLine::ForCurrentProcess())) {
     // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
     // result in browser startup bailing.
     return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
@@ -1021,8 +1014,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 // Chrome OS has its own out-of-box-experience code.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (first_run::IsChromeFirstRun()) {
-    if (!parsed_command_line().HasSwitch(switches::kApp) &&
-        !parsed_command_line().HasSwitch(switches::kAppId)) {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kApp) &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
       browser_creator_->AddFirstRunTabs(master_prefs_->new_tabs);
     }
 
@@ -1117,7 +1110,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   // ChromeOS needs ui::ResourceBundle::InitSharedInstance to be called before
   // this.
-  browser_process_->PreCreateThreads(parsed_command_line());
+  browser_process_->PreCreateThreads();
 
   // This must occur in PreCreateThreads() because it initializes global state
   // which is then read by all threads without synchronization. It must be after
@@ -1172,7 +1165,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 //   PostProfileInit()
 //   ... additional setup
 //   PreBrowserStart()
-//   ... browser_creator_->Start (OR parameters_.ui_task->Run())
+//   ... browser_creator_->Start
 //   PostBrowserStart()
 
 void ChromeBrowserMainParts::PreProfileInit() {
@@ -1246,7 +1239,8 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (ShouldInstallSodaDuringPostProfileInit(parsed_command_line())) {
+  if (ShouldInstallSodaDuringPostProfileInit(
+          *base::CommandLine::ForCurrentProcess())) {
     speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
                                                browser_process_->local_state());
   }
@@ -1366,14 +1360,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if BUILDFLAG(IS_WIN)
   // If the command line specifies 'uninstall' then we need to work here
   // unless we detect another chrome browser running.
-  if (parsed_command_line().HasSwitch(switches::kUninstall)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUninstall)) {
     return DoUninstallTasks(already_running_);
   }
 
-  if (parsed_command_line().HasSwitch(switches::kHideIcons) ||
-      parsed_command_line().HasSwitch(switches::kShowIcons)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHideIcons) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kShowIcons)) {
     return ChromeBrowserMainPartsWin::HandleIconsCommands(
-        parsed_command_line_);
+        *base::CommandLine::ForCurrentProcess());
   }
 
   ui::SelectFileDialog::SetFactory(new ChromeSelectFileDialogFactory());
@@ -1381,7 +1375,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   ui::SelectFileDialog::SetFactory(new ui::SelectFileDialogLacros::Factory());
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (parsed_command_line().HasSwitch(switches::kMakeDefaultBrowser)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kMakeDefaultBrowser)) {
     bool is_managed = g_browser_process->local_state()->IsManagedPreference(
         prefs::kDefaultBrowserSettingEnabled);
     if (is_managed && !g_browser_process->local_state()->GetBoolean(
@@ -1403,9 +1398,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if !BUILDFLAG(IS_ANDROID)
   // If the command line specifies --pack-extension, attempt the pack extension
   // startup action and exit.
-  if (parsed_command_line().HasSwitch(switches::kPackExtension)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPackExtension)) {
     extensions::StartupHelper extension_startup_helper;
-    if (extension_startup_helper.PackExtension(parsed_command_line()))
+    if (extension_startup_helper.PackExtension(
+            *base::CommandLine::ForCurrentProcess()))
       return content::RESULT_CODE_NORMAL_EXIT;
     return chrome::RESULT_CODE_PACK_EXTENSION_ERROR;
   }
@@ -1435,7 +1432,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       // verify proper handling of some switches. When not testing, stick to
       // the standard Unix convention of returning zero when things went as
       // expected.
-      if (parsed_command_line().HasSwitch(switches::kTestType))
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kTestType))
         return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
       return content::RESULT_CODE_NORMAL_EXIT;
 
@@ -1494,7 +1492,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // as they require the process singleton to be held) first.
 
   std::string try_chrome =
-      parsed_command_line().GetSwitchValueASCII(switches::kTryChromeAgain);
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTryChromeAgain);
 
   // The TryChromeDialog may be aborted by a rendezvous from another browser
   // process (e.g., a launch via Chrome's taskbar icon or some such). In this
@@ -1561,7 +1560,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreateInitialProfile(
-      parameters_, /*cur_dir=*/base::FilePath(), parsed_command_line());
+      /*cur_dir=*/base::FilePath(), *base::CommandLine::ForCurrentProcess());
 
   Profile* profile = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
@@ -1603,12 +1602,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Needs to be done before PostProfileInit, to allow connecting DevTools
   // before WebUI for the CrOS login that can be called inside PostProfileInit
   g_browser_process->CreateDevToolsProtocolHandler();
-  if (parsed_command_line().HasSwitch(::switches::kAutoOpenDevToolsForTabs))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kAutoOpenDevToolsForTabs))
     g_browser_process->CreateDevToolsAutoOpener();
 
   // Needs to be done before PostProfileInit, since the SODA Installer setup is
   // called inside PostProfileInit and depends on it.
-  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
   } else {
     // Initialize First-Party Sets even if component updater is disabled.
@@ -1647,16 +1648,17 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // popup asking the user to restart chrome. It is done this late to avoid
   // testing against a bunch of special cases that are taken care early on.
   ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment(
-      parsed_command_line());
+      *base::CommandLine::ForCurrentProcess());
 
   // Registers Chrome with the Windows Restart Manager, which will restore the
   // Chrome session when the computer is restarted after a system update.
   // This could be run as late as WM_QUERYENDSESSION for system update reboots,
   // but should run on startup if extended to handle crashes/hangs/patches.
   // Also, better to run once here than once for each HWND's WM_QUERYENDSESSION.
-  if (!parsed_command_line().HasSwitch(switches::kBrowserTest)) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kBrowserTest)) {
     ChromeBrowserMainPartsWin::RegisterApplicationRestart(
-        parsed_command_line());
+        *base::CommandLine::ForCurrentProcess());
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1680,9 +1682,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
-  if (parsed_command_line().HasSwitch(switches::kDebugPrint)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDebugPrint)) {
     base::FilePath path =
-        parsed_command_line().GetSwitchValuePath(switches::kDebugPrint);
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kDebugPrint);
     if (!path.empty())
       printing::PrintedDocument::SetDebugDumpPath(path);
   }
@@ -1692,7 +1696,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   printing::SetGetDisplayNameFunction(&printing::GetUserFriendlyName);
 #endif
 
-  HandleTestParameters(parsed_command_line());
+  HandleTestParameters(*base::CommandLine::ForCurrentProcess());
 
   // This has to come before the first GetInstance() call. PreBrowserStart()
   // seems like a reasonable place to put this, except on Android,
@@ -1713,7 +1717,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   variations::VariationsService* variations_service =
       browser_process_->variations_service();
-  if (should_call_pre_main_loop_start_startup_on_variations_service_)
+  // Only call PerformPreMainMessageLoopStartup() on VariationsService outside
+  // of integration (browser) tests.
+  if (!is_integration_test())
     variations_service->PerformPreMainMessageLoopStartup();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1730,7 +1736,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // them this early as the cryptohome hasn't yet been mounted (which happens
   // only once we log in). And if we're launching a web app, we don't want to
   // restore the last opened profiles.
-  if (!parsed_command_line().HasSwitch(switches::kAppId)) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
     last_opened_profiles =
         g_browser_process->profile_manager()->GetLastOpenedProfiles();
   }
@@ -1741,8 +1747,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // See the comment above for an explanation of |process_command_line|.
   const bool started =
       !process_command_line ||
-      browser_creator_->Start(parsed_command_line(), base::FilePath(),
-                              profile_info, last_opened_profiles);
+      browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
+                              base::FilePath(), profile_info,
+                              last_opened_profiles);
   if (started) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -1766,7 +1773,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Record now as the last successful chrome start.
-    if (ShouldRecordActiveUse(parsed_command_line()))
+    if (ShouldRecordActiveUse(*base::CommandLine::ForCurrentProcess()))
       GoogleUpdateSettings::SetLastRunTime();
 
     // Create the RunLoop for MainMessageLoopRun() to use and transfer

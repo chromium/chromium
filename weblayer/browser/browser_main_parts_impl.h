@@ -33,7 +33,6 @@ struct MainParams;
 class BrowserMainPartsImpl : public content::BrowserMainParts {
  public:
   BrowserMainPartsImpl(MainParams* params,
-                       content::MainFunctionParams main_function_params,
                        std::unique_ptr<PrefService> local_state);
 
   BrowserMainPartsImpl(const BrowserMainPartsImpl&) = delete;
@@ -61,9 +60,6 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   std::unique_ptr<metrics::MemoryMetricsLogger> memory_metrics_logger_;
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // For running weblayer_browsertests.
-  content::MainFunctionParams main_function_params_;
 
   // Ownership of this moves to BrowserProcess. See
   // ContentBrowserClientImpl::local_state_ for details.

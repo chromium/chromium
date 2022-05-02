@@ -52,10 +52,9 @@
 
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
-ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(
-    content::MainFunctionParams parameters,
-    StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(std::move(parameters), startup_data) {}
+ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
+                                                     StartupData* startup_data)
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
 }
@@ -103,7 +102,8 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // anyone tries doing anything silly like firing off an import job, and
   // before anything creating preferences like Local State in order for the
   // relaunched installed application to still consider itself as first-run.
-  if (!first_run::IsFirstRunSuppressed(parsed_command_line())) {
+  if (!first_run::IsFirstRunSuppressed(
+          *base::CommandLine::ForCurrentProcess())) {
     if (MaybeInstallFromDiskImage()) {
       // The application was installed and the installed copy has been
       // launched.  This process is now obsolete.  Exit.

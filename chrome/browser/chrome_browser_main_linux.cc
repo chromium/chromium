@@ -49,9 +49,9 @@
 #endif
 
 ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
-    content::MainFunctionParams parameters,
+    bool is_integration_test,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(std::move(parameters), startup_data) {}
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 }
@@ -74,15 +74,16 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   std::unique_ptr<os_crypt::Config> config =
       std::make_unique<os_crypt::Config>();
   // Forward to os_crypt the flag to use a specific password store.
-  config->store =
-      parsed_command_line().GetSwitchValueASCII(switches::kPasswordStore);
+  config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kPasswordStore);
   // Forward the product name
   config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
   // OSCrypt may target keyring, which requires calls from the main thread.
   config->main_thread_runner = content::GetUIThreadTaskRunner({});
   // OSCrypt can be disabled in a special settings file.
   config->should_use_preference =
-      parsed_command_line().HasSwitch(switches::kEnableEncryptionSelection);
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableEncryptionSelection);
   chrome::GetDefaultUserDataDirectory(&config->user_data_path);
   OSCrypt::SetConfig(std::move(config));
 #endif  // !BUILDFLAG(IS_CHROMEOS)

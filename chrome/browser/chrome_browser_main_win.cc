@@ -564,10 +564,9 @@ int DoUninstallTasks(bool chrome_still_running) {
 
 // ChromeBrowserMainPartsWin ---------------------------------------------------
 
-ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(
-    content::MainFunctionParams parameters,
-    StartupData* startup_data)
-    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
+ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(bool is_integration_test,
+                                                     StartupData* startup_data)
+    : ChromeBrowserMainParts(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() = default;
 
@@ -592,7 +591,7 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   DCHECK(os_crypt_init);
 
   ChromeBrowserMainParts::PreCreateMainMessageLoop();
-  if (!parameters().ui_task) {
+  if (!is_integration_test()) {
     // Make sure that we know how to handle exceptions from the message loop.
     InitializeWindowProcExceptions();
   }
@@ -670,8 +669,8 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
 
   // If Chrome was launched by a Progressive Web App launcher that needs to be
   // updated, update all launchers for this profile.
-  if (parsed_command_line().HasSwitch(switches::kAppId) &&
-      parsed_command_line().GetSwitchValueASCII(
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId) &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
     content::BrowserThread::PostBestEffortTask(
         FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
@@ -689,7 +688,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   // enabled, we delay checks for settings reset prompt until the scheduled
   // reset is finished.
   if (safe_browsing::PostCleanupSettingsResetter::IsEnabled() &&
-      !parsed_command_line().HasSwitch(switches::kAppId)) {
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
     // Using last opened profiles, because we want to find reset the profile
     // that was open in the last Chrome run, which may not be open yet in
     // the current run.
@@ -739,8 +738,10 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
 
   // Send an accessibility announcement if this launch originated from the
   // installer.
-  if (parsed_command_line().HasSwitch(switches::kFromInstaller))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kFromInstaller)) {
     AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
+  }
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 

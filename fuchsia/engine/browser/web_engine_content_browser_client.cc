@@ -98,9 +98,8 @@ WebEngineContentBrowserClient::~WebEngineContentBrowserClient() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 WebEngineContentBrowserClient::CreateBrowserMainParts(
-    content::MainFunctionParams parameters) {
-  auto browser_main_parts =
-      std::make_unique<WebEngineBrowserMainParts>(this, std::move(parameters));
+    bool /* is_integration_test */) {
+  auto browser_main_parts = std::make_unique<WebEngineBrowserMainParts>(this);
   main_parts_ = browser_main_parts.get();
   return browser_main_parts;
 }

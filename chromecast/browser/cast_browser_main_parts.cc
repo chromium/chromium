@@ -82,7 +82,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/base/media.h"
@@ -403,11 +402,9 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 }  // namespace
 
 CastBrowserMainParts::CastBrowserMainParts(
-    content::MainFunctionParams parameters,
     CastContentBrowserClient* cast_content_browser_client)
     : BrowserMainParts(),
       cast_browser_process_(new CastBrowserProcess()),
-      parameters_(std::move(parameters)),
       cast_content_browser_client_(cast_content_browser_client),
       media_caps_(std::make_unique<media::MediaCapsImpl>()),
       metrics_helper_(std::make_unique<metrics::MetricsHelperImpl>()) {

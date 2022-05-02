@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/web_engine_export.h"
@@ -75,8 +74,8 @@ class FrameHostImpl final : public fuchsia::web::FrameHost {
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  WebEngineBrowserMainParts(content::ContentBrowserClient* browser_client,
-                            content::MainFunctionParams parameters);
+  explicit WebEngineBrowserMainParts(
+      content::ContentBrowserClient* browser_client);
   ~WebEngineBrowserMainParts() override;
 
   WebEngineBrowserMainParts(const WebEngineBrowserMainParts&) = delete;
@@ -120,7 +119,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   void BeginGracefulShutdown();
 
   content::ContentBrowserClient* const browser_client_;
-  content::MainFunctionParams parameters_;
 
   std::unique_ptr<display::Screen> screen_;
 

@@ -17,8 +17,7 @@ namespace {
 class ViewsContentClientMainPartsChromeOS
     : public ViewsContentClientMainPartsAura {
  public:
-  ViewsContentClientMainPartsChromeOS(
-      content::MainFunctionParams content_params,
+  explicit ViewsContentClientMainPartsChromeOS(
       ViewsContentClient* views_content_client);
 
   ViewsContentClientMainPartsChromeOS(
@@ -38,10 +37,8 @@ class ViewsContentClientMainPartsChromeOS
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(std::move(content_params),
-                                      views_content_client) {}
+    : ViewsContentClientMainPartsAura(views_content_client) {}
 
 int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
@@ -69,10 +66,9 @@ void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(content::MainFunctionParams content_params,
-                                    ViewsContentClient* views_content_client) {
+ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsChromeOS>(
-      std::move(content_params), views_content_client);
+      views_content_client);
 }
 
 }  // namespace ui

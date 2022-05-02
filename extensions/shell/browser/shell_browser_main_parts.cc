@@ -92,11 +92,11 @@ using content::BrowserContext;
 namespace extensions {
 
 ShellBrowserMainParts::ShellBrowserMainParts(
-    content::MainFunctionParams parameters,
-    ShellBrowserMainDelegate* browser_main_delegate)
+    ShellBrowserMainDelegate* browser_main_delegate,
+    bool is_integration_test)
     : extension_system_(nullptr),
-      parameters_(std::move(parameters)),
-      browser_main_delegate_(browser_main_delegate) {}
+      browser_main_delegate_(browser_main_delegate),
+      is_integration_test_(is_integration_test) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
@@ -239,7 +239,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
       browser_context_.get());
 
   // Skip these steps in integration tests.
-  if (!parameters_.ui_task) {
+  if (!is_integration_test_) {
     browser_main_delegate_->Start(browser_context_.get());
     desktop_controller_->PreMainMessageLoopRun();
   }

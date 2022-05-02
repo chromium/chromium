@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
@@ -36,6 +35,7 @@ class ShutdownWatcherHelper;
 class WebUsbDetector;
 
 namespace base {
+class CommandLine;
 class RunLoop;
 }
 
@@ -69,8 +69,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif
 
  protected:
-  ChromeBrowserMainParts(content::MainFunctionParams parameters,
-                         StartupData* startup_data);
+  ChromeBrowserMainParts(bool is_integration_test, StartupData* startup_data);
 
   // content::BrowserMainParts overrides.
   // These are called in-order by content::BrowserMainLoop.
@@ -106,15 +105,15 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Displays a warning message that we can't find any locale data files.
   virtual void ShowMissingLocaleMessageBox() = 0;
 
-  const content::MainFunctionParams& parameters() const {
-    return parameters_;
-  }
-  const base::CommandLine& parsed_command_line() const {
-    return parsed_command_line_;
-  }
   const base::FilePath& user_data_dir() const {
     return user_data_dir_;
   }
+
+ protected:
+  // Returns whether ChromeContentBrowserClient::CreateBrowserMainParts was
+  // invoked as part of an integration (browser) test.
+  // Avoid writing test-only conditions in product code if at all possible.
+  bool is_integration_test() const { return is_integration_test_; }
 
  private:
   class ProfileInitManager;
@@ -156,11 +155,9 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   void CallPostProfileInit(Profile* profile);
 
   // Members initialized on construction ---------------------------------------
+  const bool is_integration_test_;
+  const raw_ptr<StartupData> startup_data_;
 
-  content::MainFunctionParams parameters_;
-  // TODO(sky): remove this. This class (and related calls), may mutate the
-  // CommandLine, so it is misleading keeping a const ref here.
-  const base::CommandLine& parsed_command_line_;
   int result_code_ = content::RESULT_CODE_NORMAL_EXIT;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -183,11 +180,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // until tracing of the |system_stats| category is enabled.
   std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
       trace_event_system_stats_monitor_;
-
-  // Whether PerformPreMainMessageLoopStartup() is called on VariationsService.
-  // Initialized to true if |MainFunctionParams::ui_task| is null (meaning not
-  // running browser_tests), but may be forced to true for tests.
-  bool should_call_pre_main_loop_start_startup_on_variations_service_;
 
   // Members initialized after / released before main_message_loop_ ------------
 
@@ -219,8 +211,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif
 
   base::FilePath user_data_dir_;
-
-  raw_ptr<StartupData> startup_data_;
 
   // Indicates that the initial profile has been created and we started
   // executing `PostProfileInit()` for it.

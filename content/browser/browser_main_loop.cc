@@ -511,18 +511,8 @@ void BrowserMainLoop::Init() {
     parameters_.startup_data.reset();
   }
 
-  // As of https://crrev.com/c/3244976 + https://crrev.com/c/3187153, embedders
-  // no longer own running `ui_task`. Some still query its boolean value
-  // however, fake it here. TODO(gab): As a follow-up, update
-  // ContentBrowserClient::CreateBrowserMainParts to take a `bool
-  // is_integration_test` instead of the entire `MainFunctionParams` which none
-  // of the parts impl use beyond ui_task's boolean value:
-  // https://bit.ly/3Eq9v36
-  MainFunctionParams fake_params(parameters_.command_line);
-  if (parameters_.ui_task)
-    fake_params.ui_task = base::DoNothing();
   parts_ = GetContentClient()->browser()->CreateBrowserMainParts(
-      std::move(fake_params));
+      !!parameters_.ui_task);
 }
 
 // BrowserMainLoop stages ==================================================

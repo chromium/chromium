@@ -14,7 +14,6 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/timer/timer.h"
@@ -87,12 +86,11 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Creates an implementation of CastBrowserMainParts. Platform should
   // link in an implementation as needed.
   static std::unique_ptr<CastBrowserMainParts> Create(
-      content::MainFunctionParams parameters,
       CastContentBrowserClient* cast_content_browser_client);
 
   // This class does not take ownership of |url_request_content_factory|.
-  CastBrowserMainParts(content::MainFunctionParams parameters,
-                       CastContentBrowserClient* cast_content_browser_client);
+  explicit CastBrowserMainParts(
+      CastContentBrowserClient* cast_content_browser_client);
 
   CastBrowserMainParts(const CastBrowserMainParts&) = delete;
   CastBrowserMainParts& operator=(const CastBrowserMainParts&) = delete;
@@ -123,7 +121,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 
  private:
   std::unique_ptr<CastBrowserProcess> cast_browser_process_;
-  content::MainFunctionParams parameters_;  // For running browser tests.
   // Caches a pointer of the CastContentBrowserClient.
   CastContentBrowserClient* const cast_content_browser_client_ = nullptr;
   std::unique_ptr<ServiceManagerContext> service_manager_context_;

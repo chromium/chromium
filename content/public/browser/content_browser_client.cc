@@ -83,7 +83,7 @@
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
-    MainFunctionParams parameters) {
+    bool /* is_integration_test */) {
   return nullptr;
 }
 

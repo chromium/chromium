@@ -1393,37 +1393,36 @@ void ChromeContentBrowserClient::SetApplicationLocale(
 }
 
 std::unique_ptr<content::BrowserMainParts>
-ChromeContentBrowserClient::CreateBrowserMainParts(
-    content::MainFunctionParams parameters) {
+ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
   std::unique_ptr<ChromeBrowserMainParts> main_parts;
   // Construct the Main browser parts based on the OS type.
 #if BUILDFLAG(IS_WIN)
-  main_parts = std::make_unique<ChromeBrowserMainPartsWin>(
-      std::move(parameters), &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsWin>(is_integration_test,
+                                                           &startup_data_);
 #elif BUILDFLAG(IS_MAC)
-  main_parts = std::make_unique<ChromeBrowserMainPartsMac>(
-      std::move(parameters), &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsMac>(is_integration_test,
+                                                           &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   main_parts = std::make_unique<ash::ChromeBrowserMainPartsAsh>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   main_parts = std::make_unique<ChromeBrowserMainPartsLinux>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_ANDROID)
   main_parts = std::make_unique<ChromeBrowserMainPartsAndroid>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_POSIX)
   main_parts = std::make_unique<ChromeBrowserMainPartsPosix>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_FUCHSIA)
   main_parts = std::make_unique<ChromeBrowserMainPartsFuchsia>(
-      std::move(parameters), &startup_data_);
+      is_integration_test, &startup_data_);
 #else
   NOTREACHED();
-  main_parts = std::make_unique<ChromeBrowserMainParts>(std::move(parameters),
+  main_parts = std::make_unique<ChromeBrowserManiParts>(is_integration_test,
                                                         &startup_data_);
 #endif
 

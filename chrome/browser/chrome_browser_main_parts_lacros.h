@@ -15,7 +15,7 @@ class PrefsAshObserver;
 // Startup and shutdown code for Lacros. See ChromeBrowserMainParts for details.
 class ChromeBrowserMainPartsLacros : public ChromeBrowserMainPartsLinux {
  public:
-  ChromeBrowserMainPartsLacros(content::MainFunctionParams parameters,
+  ChromeBrowserMainPartsLacros(bool is_integration_test,
                                StartupData* startup_data);
   ChromeBrowserMainPartsLacros(const ChromeBrowserMainPartsLacros&) = delete;
   ChromeBrowserMainPartsLacros& operator=(const ChromeBrowserMainPartsLacros&) =
