@@ -49,15 +49,17 @@ EnrollmentConfig::~EnrollmentConfig() = default;
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig() {
   return GetPrescribedEnrollmentConfig(
-      g_browser_process->local_state(), ash::InstallAttributes::Get(),
+      *g_browser_process->local_state(), *ash::InstallAttributes::Get(),
       chromeos::system::StatisticsProvider::GetInstance());
 }
 
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
-    PrefService* local_state,
-    ash::InstallAttributes* install_attributes,
+    const PrefService& local_state,
+    const ash::InstallAttributes& install_attributes,
     chromeos::system::StatisticsProvider* statistics_provider) {
+  DCHECK(statistics_provider);
+
   EnrollmentConfig config;
 
   // Authentication through the attestation mechanism is controlled by a
@@ -75,32 +77,30 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
       break;
 
     case ZeroTouchEnrollmentMode::FORCED:
-      // Only use attestation to authenticate since zero-touch is forced.
-      config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
-      break;
-
     case ZeroTouchEnrollmentMode::HANDS_OFF:
       // Hands-off implies the same authentication method as Forced.
+
+      // Only use attestation to authenticate since zero-touch is forced.
       config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
       break;
   }
 
   // If OOBE is done and we are not enrolled, make sure we only try interactive
   // enrollment.
-  const bool oobe_complete = local_state->GetBoolean(ash::prefs::kOobeComplete);
+  const bool oobe_complete = local_state.GetBoolean(ash::prefs::kOobeComplete);
   if (oobe_complete &&
       config.auth_mechanism == EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE)
     config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
   // If OOBE is done and we are enrolled, check for need to recover enrollment.
   // Enrollment recovery is not implemented for Active Directory.
-  if (oobe_complete && install_attributes->IsCloudManaged()) {
+  if (oobe_complete && install_attributes.IsCloudManaged()) {
     // Regardless what mode is applicable, the enrollment domain is fixed.
-    config.management_domain = install_attributes->GetDomain();
+    config.management_domain = install_attributes.GetDomain();
 
     // Enrollment has completed previously and installation-time attributes
     // are in place. Enrollment recovery is required when the server
     // registration gets lost.
-    if (local_state->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
+    if (local_state.GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
       LOG(WARNING) << "Enrollment recovery required according to pref.";
       if (statistics_provider->GetEnterpriseMachineID().empty())
         LOG(WARNING) << "Postponing recovery because machine id is missing.";
@@ -117,10 +117,10 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
 
   // Gather enrollment signals from various sources.
   const base::Value* device_state =
-      local_state->GetDictionary(prefs::kServerBackedDeviceState);
+      local_state.GetDictionary(prefs::kServerBackedDeviceState);
   std::string device_state_mode;
   std::string device_state_management_domain;
-  absl::optional<bool> is_license_packaged_with_device;
+  bool is_license_packaged_with_device = false;
   std::string license_type;
 
   if (device_state) {
@@ -128,16 +128,11 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     device_state_management_domain =
         GetString(*device_state, kDeviceStateManagementDomain);
     is_license_packaged_with_device =
-        device_state->FindBoolPath(kDeviceStatePackagedLicense);
+        device_state->FindBoolPath(kDeviceStatePackagedLicense).value_or(false);
     license_type = GetString(*device_state, kDeviceStateLicenseType);
   }
 
-  if (is_license_packaged_with_device) {
-    config.is_license_packaged_with_device =
-        is_license_packaged_with_device.value();
-  } else {
-    config.is_license_packaged_with_device = false;
-  }
+  config.is_license_packaged_with_device = is_license_packaged_with_device;
 
   if (license_type == kDeviceStateLicenseTypeEnterprise) {
     config.license_type = LicenseType::kEnterprise;
@@ -150,14 +145,14 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   }
 
   const bool pref_enrollment_auto_start_present =
-      local_state->HasPrefPath(prefs::kDeviceEnrollmentAutoStart);
+      local_state.HasPrefPath(prefs::kDeviceEnrollmentAutoStart);
   const bool pref_enrollment_auto_start =
-      local_state->GetBoolean(prefs::kDeviceEnrollmentAutoStart);
+      local_state.GetBoolean(prefs::kDeviceEnrollmentAutoStart);
 
   const bool pref_enrollment_can_exit_present =
-      local_state->HasPrefPath(prefs::kDeviceEnrollmentCanExit);
+      local_state.HasPrefPath(prefs::kDeviceEnrollmentCanExit);
   const bool pref_enrollment_can_exit =
-      local_state->GetBoolean(prefs::kDeviceEnrollmentCanExit);
+      local_state.GetBoolean(prefs::kDeviceEnrollmentCanExit);
 
   const bool oem_is_managed = GetMachineFlag(
       statistics_provider, chromeos::system::kOemIsEnterpriseManagedKey, false);

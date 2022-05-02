@@ -106,10 +106,11 @@ struct EnrollmentConfig {
   // enrollment recovery, or already-present install attributes. Note that
   // |config.management_domain| may be non-empty even if |config.mode| is
   // MODE_NONE.
+  // |statistics_provider| would also be const if it had const access methods.
   static EnrollmentConfig GetPrescribedEnrollmentConfig();
   static EnrollmentConfig GetPrescribedEnrollmentConfig(
-      PrefService* local_state,
-      ash::InstallAttributes* install_attributes,
+      const PrefService& local_state,
+      const ash::InstallAttributes& install_attributes,
       chromeos::system::StatisticsProvider* statistics_provider);
 
   EnrollmentConfig();
