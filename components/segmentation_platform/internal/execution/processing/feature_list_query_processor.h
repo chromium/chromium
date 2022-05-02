@@ -18,7 +18,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
-class SignalDatabase;
+class StorageService;
 
 namespace processing {
 
@@ -33,8 +33,7 @@ using optimization_guide::proto::OptimizationTarget;
 class FeatureListQueryProcessor {
  public:
   FeatureListQueryProcessor(
-      SignalDatabase* signal_database,
-      UkmDatabase* ukm_database,
+      StorageService* storage_service,
       std::unique_ptr<FeatureAggregator> feature_aggregator);
   virtual ~FeatureListQueryProcessor();
 
@@ -86,11 +85,8 @@ class FeatureListQueryProcessor {
       base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
       FeatureProcessorState* feature_processor_state);
 
-  // Signal database for uma features.
-  const raw_ptr<SignalDatabase> signal_database_;
-
-  // Ukm database for sql features.
-  const raw_ptr<UkmDatabase> ukm_database_;
+  // Storage service which provides signals to process.
+  const raw_ptr<StorageService> storage_service_;
 
   // Feature aggregator that aggregates data for uma features.
   const std::unique_ptr<FeatureAggregator> feature_aggregator_;

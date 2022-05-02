@@ -7,7 +7,7 @@
 namespace segmentation_platform::processing {
 
 MockFeatureListQueryProcessor::MockFeatureListQueryProcessor()
-    : FeatureListQueryProcessor(nullptr, nullptr, nullptr) {}
+    : FeatureListQueryProcessor(nullptr, nullptr) {}
 
 MockFeatureListQueryProcessor::~MockFeatureListQueryProcessor() = default;
 

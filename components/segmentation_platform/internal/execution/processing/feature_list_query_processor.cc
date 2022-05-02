@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -17,6 +18,7 @@
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 
 namespace segmentation_platform::processing {
 
@@ -26,11 +28,9 @@ const int kIndexNotUsed = 0;
 }  // namespace
 
 FeatureListQueryProcessor::FeatureListQueryProcessor(
-    SignalDatabase* signal_database,
-    UkmDatabase* ukm_database,
+    StorageService* storage_service,
     std::unique_ptr<FeatureAggregator> feature_aggregator)
-    : signal_database_(signal_database),
-      ukm_database_(ukm_database),
+    : storage_service_(storage_service),
       feature_aggregator_(std::move(feature_aggregator)) {}
 
 FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
@@ -107,11 +107,18 @@ void FeatureListQueryProcessor::ProcessNext(
       processor = std::make_unique<CustomInputProcessor>(
           std::move(queries), feature_processor_state->prediction_time());
     } else if (data.input_feature->has_sql_feature()) {
+      auto* ukm_manager = storage_service_->ukm_data_manager();
+      if (!ukm_manager->IsUkmEngineEnabled()) {
+        // UKM engine is disabled, feature cannot be processed.
+        feature_processor_state->SetError();
+        feature_processor_state->RunCallback();
+        return;
+      }
       SqlFeatureProcessor::QueryList queries = {
           {kIndexNotUsed, data.input_feature->sql_feature()}};
       processor = std::make_unique<SqlFeatureProcessor>(
           std::move(queries), feature_processor_state->prediction_time(),
-          ukm_database_);
+          ukm_manager->GetUkmDatabase());
     }
   } else {
     // Process output features
@@ -146,8 +153,8 @@ FeatureListQueryProcessor::GetUmaFeatureProcessor(
     base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
     FeatureProcessorState* feature_processor_state) {
   return std::make_unique<UmaFeatureProcessor>(
-      std::move(uma_features), signal_database_, feature_aggregator_.get(),
-      feature_processor_state->prediction_time(),
+      std::move(uma_features), storage_service_->signal_database(),
+      feature_aggregator_.get(), feature_processor_state->prediction_time(),
       feature_processor_state->bucket_duration(),
       feature_processor_state->segment_id());
 }

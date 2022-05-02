@@ -8,8 +8,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/data_collection/data_collection_scheduler.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
-#include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
@@ -36,9 +35,7 @@ void ExecutionService::InitForTesting(
 }
 
 void ExecutionService::Initialize(
-    SignalDatabase* signal_database,
-    SegmentInfoDatabase* segment_info_database,
-    SignalStorageConfig* signal_storage_config,
+    StorageService* storage_service,
     SignalHandler* signal_handler,
     base::Clock* clock,
     ModelExecutionManager::SegmentationModelUpdatedCallback callback,
@@ -47,24 +44,25 @@ void ExecutionService::Initialize(
     ModelProviderFactory* model_provider_factory,
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options,
-    PrefService* pref_service) {
+    PrefService* local_state) {
   feature_list_query_processor_ =
       std::make_unique<processing::FeatureListQueryProcessor>(
-          signal_database, nullptr,
+          storage_service,
           std::make_unique<processing::FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(
-      segment_info_database, feature_list_query_processor_.get(),
+      storage_service->segment_info_database(),
+      feature_list_query_processor_.get(),
       signal_handler->deprecated_histogram_signal_handler(),
-      signal_storage_config, clock);
+      storage_service->signal_storage_config(), clock);
   training_data_collector_->OnServiceInitialized();
 
   model_executor_ = std::make_unique<ModelExecutorImpl>(
       clock, feature_list_query_processor_.get());
 
   model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
-      all_segment_ids, model_provider_factory, clock, segment_info_database,
-      callback);
+      all_segment_ids, model_provider_factory, clock,
+      storage_service->segment_info_database(), callback);
 
   // TODO(qinmin): Store the allowed Id list in a SegmentationUkmHelper.
   if (!base::GetFieldTrialParamValueByFeature(
@@ -72,15 +70,15 @@ void ExecutionService::Initialize(
            kSegmentIdsAllowedForReportingKey)
            .empty()) {
     data_collection_scheduler_ = std::make_unique<DataCollectionScheduler>(
-        training_data_collector_.get(), pref_service, clock);
+        training_data_collector_.get(), local_state, clock);
     // TODO(qinmin): post a delayed task to run
     // DataCollectionScheduler::ReportTrainingDataIfApplicable().
   }
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-      std::move(observers), segment_info_database, signal_storage_config,
-      model_execution_manager_.get(), model_executor_.get(), all_segment_ids,
-      clock, platform_options);
+      std::move(observers), storage_service->segment_info_database(),
+      storage_service->signal_storage_config(), model_execution_manager_.get(),
+      model_executor_.get(), all_segment_ids, clock, platform_options);
 
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
       /*expired_only=*/true);

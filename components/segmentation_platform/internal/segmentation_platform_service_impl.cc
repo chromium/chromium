@@ -164,9 +164,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
   execution_service_.Initialize(
-      storage_service_->signal_database(),
-      storage_service_->segment_info_database(),
-      storage_service_->signal_storage_config(), &signal_handler_, clock_,
+      storage_service_.get(), &signal_handler_, clock_,
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
