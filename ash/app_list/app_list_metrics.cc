@@ -530,4 +530,22 @@ void ResetContinueSectionFileRemovedCountForTest() {
   g_continue_file_removals_in_session = 0;
 }
 
+void RecordHideContinueSectionMetric() {
+  // The continue section is a productivity launcher feature.
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+
+  const bool hide_continue_section =
+      Shell::Get()->app_list_controller()->ShouldHideContinueSection();
+  if (Shell::Get()->IsInTabletMode()) {
+    base::UmaHistogramBoolean(
+        "Apps.AppList.ContinueSectionHiddenByUser.TabletMode",
+        hide_continue_section);
+  } else {
+    base::UmaHistogramBoolean(
+        "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode",
+        hide_continue_section);
+  }
+}
+
 }  // namespace ash

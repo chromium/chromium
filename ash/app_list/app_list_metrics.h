@@ -304,6 +304,9 @@ void RecordCumulativeContinueSectionResultRemovedNumber();
 // Launcher Continue Section in the session.
 void ResetContinueSectionFileRemovedCountForTest();
 
+// Records a metric for whether the user has hidden the continue section.
+void RecordHideContinueSectionMetric();
+
 }  // namespace ash
 
 #endif  // ASH_APP_LIST_APP_LIST_METRICS_H_

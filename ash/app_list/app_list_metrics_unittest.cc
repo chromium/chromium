@@ -573,6 +573,62 @@ TEST_F(AppListMetricsProductivityLauncherTest,
       1 /* Number of times launched from chip */);
 }
 
+TEST_F(AppListMetricsProductivityLauncherTest,
+       HideContinueSectionMetricInClamshellMode) {
+  base::HistogramTester histograms;
+
+  // Show the app list with a full continue section.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Metric is recorded in false bucket.
+  const int false_bucket = 0;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode", false_bucket,
+      1);
+  helper->Dismiss();
+
+  // Hide the continue section, then show the app list.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+  helper->ShowAppList();
+
+  // Metric is recorded in true bucket.
+  const int true_bucket = 1;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.ClamshellMode", true_bucket, 1);
+  helper->Dismiss();
+}
+
+TEST_F(AppListMetricsProductivityLauncherTest,
+       HideContinueSectionMetricInTabletMode) {
+  base::HistogramTester histograms;
+
+  // Show the tablet mode app list with a full continue section.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Metric is recorded in false bucket.
+  const int false_bucket = 0;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.TabletMode", false_bucket, 1);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+
+  // Hide the continue section, then show the tablet mode app list.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Metric is recorded in true bucket.
+  const int true_bucket = 1;
+  histograms.ExpectBucketCount(
+      "Apps.AppList.ContinueSectionHiddenByUser.TabletMode", true_bucket, 1);
+}
+
 // Test that the histogram records an app launch from a recent app suggestion
 // while the homecher all apps is showing.
 TEST_F(AppListMetricsProductivityLauncherTest, HomecherLaunchFromRecentApps) {

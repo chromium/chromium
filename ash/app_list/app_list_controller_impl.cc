@@ -1792,6 +1792,10 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
 
+    // Record whether the continue section is hidden by the user.
+    if (real_visibility)
+      RecordHideContinueSectionMetric();
+
     if (!home_launcher_animation_callback_.is_null())
       home_launcher_animation_callback_.Run(real_visibility);
   }
