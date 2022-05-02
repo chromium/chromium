@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
@@ -35,10 +34,6 @@ FakeOsIntegrationManager::FakeOsIntegrationManager(
   if (!has_file_handler_manager()) {
     set_file_handler_manager(
         std::make_unique<FakeWebAppFileHandlerManager>(profile));
-  }
-  if (!this->protocol_handler_manager()) {
-    set_protocol_handler_manager(
-        std::make_unique<FakeWebAppProtocolHandlerManager>(profile));
   }
   if (!this->url_handler_manager()) {
     set_url_handler_manager(std::make_unique<FakeUrlHandlerManager>(profile));
@@ -132,11 +127,6 @@ void FakeOsIntegrationManager::UpdateOsHooks(
 void FakeOsIntegrationManager::SetFileHandlerManager(
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager) {
   set_file_handler_manager(std::move(file_handler_manager));
-}
-
-void FakeOsIntegrationManager::SetProtocolHandlerManager(
-    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager) {
-  set_protocol_handler_manager(std::move(protocol_handler_manager));
 }
 
 void FakeOsIntegrationManager::SetUrlHandlerManager(

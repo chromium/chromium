@@ -342,14 +342,6 @@ absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
 }
 
 std::vector<custom_handlers::ProtocolHandler>
-OsIntegrationManager::GetHandlersForProtocol(const std::string& protocol) {
-  if (!protocol_handler_manager_)
-    return std::vector<custom_handlers::ProtocolHandler>();
-
-  return protocol_handler_manager_->GetHandlersFor(protocol);
-}
-
-std::vector<custom_handlers::ProtocolHandler>
 OsIntegrationManager::GetAppProtocolHandlers(const AppId& app_id) {
   if (!protocol_handler_manager_)
     return std::vector<custom_handlers::ProtocolHandler>();

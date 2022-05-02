@@ -155,8 +155,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
   // Proxy calls for WebAppProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                                     const GURL& protocol_url);
-  virtual std::vector<custom_handlers::ProtocolHandler> GetHandlersForProtocol(
-      const std::string& protocol);
   virtual std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
       const AppId& app_id);
   virtual std::vector<custom_handlers::ProtocolHandler>

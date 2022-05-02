@@ -505,6 +505,17 @@ bool WebAppRegistrar::IsDisallowedLaunchProtocol(
                                    protocol_scheme);
 }
 
+bool WebAppRegistrar::IsRegisteredLaunchProtocol(
+    const AppId& app_id,
+    const std::string& protocol_scheme) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return false;
+
+  return base::Contains(web_app->protocol_handlers(), protocol_scheme,
+                        [](const auto& info) { return info.protocol; });
+}
+
 base::flat_set<std::string> WebAppRegistrar::GetAllAllowedLaunchProtocols()
     const {
   base::flat_set<std::string> protocols;
@@ -621,12 +632,6 @@ const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? &web_app->file_handlers() : nullptr;
-}
-
-const apps::ProtocolHandlers* WebAppRegistrar::GetAppProtocolHandlers(
-    const AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? &web_app->protocol_handlers() : nullptr;
 }
 
 bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(

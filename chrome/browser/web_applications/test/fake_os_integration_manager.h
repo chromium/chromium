@@ -89,9 +89,6 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   void SetFileHandlerManager(
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager);
 
-  void SetProtocolHandlerManager(
-      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager);
-
   void SetUrlHandlerManager(
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
 

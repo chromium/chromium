@@ -1120,4 +1120,27 @@ TEST_F(WebAppRegistrarTest, DisallowedLaunchProtocols) {
   }
 }
 
+TEST_F(WebAppRegistrarTest, IsRegisteredLaunchProtocol) {
+  controller().Init();
+
+  apps::ProtocolHandlerInfo protocol_handler_info1;
+  protocol_handler_info1.protocol = "web+test";
+  protocol_handler_info1.url = GURL("http://example.com/test=%s");
+
+  apps::ProtocolHandlerInfo protocol_handler_info2;
+  protocol_handler_info2.protocol = "web+test2";
+  protocol_handler_info2.url = GURL("http://example.com/test2=%s");
+
+  auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
+  const AppId app_id = web_app->app_id();
+  web_app->SetProtocolHandlers(
+      {protocol_handler_info1, protocol_handler_info2});
+  RegisterApp(std::move(web_app));
+
+  EXPECT_TRUE(registrar().IsRegisteredLaunchProtocol(app_id, "web+test"));
+  EXPECT_TRUE(registrar().IsRegisteredLaunchProtocol(app_id, "web+test2"));
+  EXPECT_FALSE(registrar().IsRegisteredLaunchProtocol(app_id, "web+test3"));
+  EXPECT_FALSE(registrar().IsRegisteredLaunchProtocol(app_id, "mailto"));
+}
+
 }  // namespace web_app

@@ -43,22 +43,6 @@ absl::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
   return absl::nullopt;
 }
 
-std::vector<ProtocolHandler> WebAppProtocolHandlerManager::GetHandlersFor(
-    const std::string& protocol) const {
-  std::vector<ProtocolHandler> protocol_handlers;
-
-  for (const auto& app_id : app_registrar_->GetAppIds()) {
-    const std::vector<ProtocolHandler> handlers =
-        GetAppProtocolHandlers(app_id);
-    for (const auto& handler : handlers) {
-      if (handler.protocol() == protocol)
-        protocol_handlers.push_back(handler);
-    }
-  }
-
-  return protocol_handlers;
-}
-
 std::vector<apps::ProtocolHandlerInfo>
 WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
     const std::string& app_id) const {

@@ -143,6 +143,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool IsDisallowedLaunchProtocol(const AppId& app_id,
                                   const std::string& protocol_scheme) const;
 
+  // Returns true if the web app with the |app_id| has registered to handle
+  // |protocol_scheme|.
+  bool IsRegisteredLaunchProtocol(const AppId& app_id,
+                                  const std::string& protocol_scheme) const;
+
   // Gets all allowed launch protocols from all installed apps.
   base::flat_set<std::string> GetAllAllowedLaunchProtocols() const;
 
@@ -167,8 +172,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
   blink::mojom::HandleLinks GetAppHandleLinks(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
-  const apps::ProtocolHandlers* GetAppProtocolHandlers(
-      const AppId& app_id) const;
   bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
   bool IsIsolated(const AppId& app_id) const;
 

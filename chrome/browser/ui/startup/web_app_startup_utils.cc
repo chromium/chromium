@@ -211,20 +211,9 @@ class StartupWebAppCreator
       return LaunchResult::kHandled;
     }
 
-    OsIntegrationManager& os_integration_manager =
-        provider->os_integration_manager();
-    const std::vector<custom_handlers::ProtocolHandler> handlers =
-        os_integration_manager.GetHandlersForProtocol(protocol_url.scheme());
-
-    // TODO(https://crbug.com/1249907): This code should be simplified such that
-    // it only checks if the protocol is associated with the app_id.
-    // |GetHandlersForProtocol| will return a list of all apps that can handle
-    // the protocol, which is unnecessary here.
-    if (!base::Contains(handlers, true, [](const auto& handler) {
-          return handler.web_app_id().has_value();
-        })) {
+    // Check if this app has registered as a handler for the protocol.
+    if (!registrar.IsRegisteredLaunchProtocol(app_id_, protocol_url.scheme()))
       return LaunchResult::kNotHandled;
-    }
 
     protocol_url_ = protocol_url;
 
