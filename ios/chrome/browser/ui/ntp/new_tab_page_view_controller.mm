@@ -720,6 +720,14 @@
   [self.headerController.view removeFromSuperview];
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    // If |self.headerController| is nil after removing it from the view
+    // hierarchy it means its no longer owned by anyone (e.g. The coordinator
+    // might have been stopped.) and it should not be added in that case.
+    // TODO(crbug.com/1321820): Remove once owner of |headerController| is the
+    // primary driver of its lifecycle.
+    if (!self.headerController)
+      return;
+
     UIViewController* parentViewController =
         self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
                            : self.discoverFeedWrapperViewController;
