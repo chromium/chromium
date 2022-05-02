@@ -236,36 +236,32 @@ INSTANTIATE_TEST_SUITE_P(
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"legacy"},
-            .negative_samples = {"default", "experimental", "nextgen",
-                                 "fallback"}},
+            .negative_samples = {"default", "experimental", "nextgen"}},
 #else
         PatternTestCase{
             .prediction_source = PredictionSource::kDefaultHeuristics,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"default"},
-            .negative_samples = {"legacy", "experimental", "nextgen",
-                                 "fallback"}},
+            .negative_samples = {"legacy", "experimental", "nextgen"}},
         PatternTestCase{
             .prediction_source = PredictionSource::kExperimentalHeuristics,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"experimental"},
-            .negative_samples = {"default", "legacy", "nextgen", "fallback"}},
+            .negative_samples = {"default", "legacy", "nextgen"}},
         PatternTestCase{
             .prediction_source = PredictionSource::kNextGenHeuristics,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"nextgen"},
-            .negative_samples = {"default", "legacy", "experimental",
-                                 "fallback"}},
+            .negative_samples = {"default", "legacy", "experimental"}},
         PatternTestCase{
             .prediction_source = PredictionSource::kFallbackHeuristics,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
-            .positive_samples = {"fallback"},
-            .negative_samples = {"default", "legacy", "experimental",
-                                 "nextgen"}},
+            .positive_samples = {"legacy"},
+            .negative_samples = {"default", "experimental", "nextgen"}},
 #endif
         PatternTestCase{
             .prediction_source = PredictionSource::kDefaultHeuristics,
@@ -328,16 +324,15 @@ INSTANTIATE_TEST_SUITE_P(
                  "postleitzahl",
                  // Not referring to a ZIP code:
                  "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase {
-          .prediction_source = PredictionSource::kDefaultHeuristics,
-          .pattern_name = "ZIP_CODE", .language = "de",
-          .positive_samples = {  // Inherited from "en":
-            "Zip code",
-            "postal code",
-            // Specifically added for "de":
-            "postleitzahl"
-          }
-        }
+        PatternTestCase{
+            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "de",
+            .positive_samples =
+                {// Inherited from "en":
+                 "Zip code", "postal code",
+                 // Specifically added for "de":
+                 "postleitzahl"}}
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         ,
         PatternTestCase{
@@ -471,16 +466,15 @@ INSTANTIATE_TEST_SUITE_P(
                  "postleitzahl",
                  // Not referring to a ZIP code:
                  "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase {
-          .prediction_source = PredictionSource::kNextGenHeuristics,
-          .pattern_name = "ZIP_CODE", .language = "de",
-          .positive_samples = {  // Inherited from "en":
-            "Zip code",
-            "postal code",
-            // Specifically added for "de":
-            "postleitzahl"
-          }
-        }
+        PatternTestCase{
+            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_name = "ZIP_CODE",
+            .language = "de",
+            .positive_samples =
+                {// Inherited from "en":
+                 "Zip code", "postal code",
+                 // Specifically added for "de":
+                 "postleitzahl"}}
 #endif
         ));
 
