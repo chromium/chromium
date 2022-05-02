@@ -6,7 +6,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,6 +28,10 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/accessibility/platform/ax_platform_node.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 namespace views {
@@ -110,6 +113,13 @@ class MenuControllerUITest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ui::testing::ScopedAxModeSetter ax_mode_setter(ui::kAXModeComplete);
+#endif
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11) {
+    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
+  }
 #endif
 
   // Create a parent widget.
