@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Mga Serbisyo</translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
+<translation id="1832073788765803750">Half width katakana</translation>
 <translation id="1834290891154666894">Invalid na entry ng pagtugma ng alternatibong pangalan</translation>
 <translation id="1838709767668011582">Site ng Google</translation>
 <translation id="1844692022597038441">Hindi available offline ang file na ito.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Bina-back up ang <ph name="FILE_COUNT" /> sa <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Taong may mga pusa</translation>
 <translation id="5358764674931277">Frame rate</translation>
+<translation id="5363339716524495120">Chinese ang wika sa pag-input</translation>
 <translation id="5368191757080475556">Ibahagi ang folder sa Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Huwag gumamit ng mga setting ng proxy para sa mga host at domain na ito:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Kinakalkula ang laki</translation>
 <translation id="554153475311314364">Greek Transliteration</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Puno na ang lapad ng bantas</translation>
 <translation id="5602622065581044566">Bulgarian na may Phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na gumagamit ng ChromeOS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">English (UK) na may Dvorak keyboard</translation>
 <translation id="8137331602592933310">Ibinahagi sa iyo ang "<ph name="FILENAME" />." Hindi mo ito matatanggal dahil hindi mo ito pagmamay-ari.</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
+<translation id="8147028810663464959">Puno na ang lapad ng character</translation>
 <translation id="8151638057146502721">I-configure</translation>
 <translation id="8154842056504218462">Pinili ang lahat ng entry.</translation>
 <translation id="8157684860301034423">Hindi na-retrieve ang impormasyon ng app.</translation>

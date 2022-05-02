@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS 지연 시간</translation>
 <translation id="123124571410524056">포털 의심됨</translation>
 <translation id="1238612778414822719">HTTPS 지연 시간</translation>
+<translation id="1264116747675686718">OS 버전 업데이트 중</translation>
 <translation id="1264369926465113395">크리에이터를 위한 Chromebook 활용 방법을 소개하는 새로운 디지털 잡지를 확인하세요.</translation>
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />정규화되지 않은 구성요소<ph name="LINK_END" />가 발견되었습니다. 정규화된 구성요소를 모두 식별할 수 있도록 Chrome OS를 최신 버전으로 업데이트하세요.</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2212733584906323460">이름 결정</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
+<translation id="320091191259649613">업데이트 후에도 문제가 계속 발생하는 경우 구성요소가 새로 정규화된 후 아직 데이터베이스에 포함되지 않았을 수 있습니다.</translation>
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">실행</translation>
 <translation id="4987769320337599931">방화벽</translation>
 <translation id="4999333166442584738">보고서 숨기기</translation>
+<translation id="5008611843832219958">복구 프로세스를 최적화할 수 있도록 Chrome OS 최신 버전으로 업데이트하세요.</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">스캔을 완료할 수 없음</translation>
 <translation id="5502931783115429516">Android 실행되고 있지 않음</translation>
+<translation id="5507300744274596613">Chrome OS가 최신 버전인지 확인</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
+<translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="6034694447310538551">월간 자동 재설정 사용 설정</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">채널</translation>
 <translation id="8660881923941176839">파운드</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" />로 업데이트 및 다시 시작</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
@@ -782,6 +789,7 @@
 <translation id="917720651393141712">테스트</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
+<translation id="922179502584117429">현재 버전(<ph name="VERSION_NUMBER" />)은 최신 버전이 아닙니다.</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>

@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Layanan</translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuat informasi...</translation>
+<translation id="1832073788765803750">Katakana lebar separuh</translation>
 <translation id="1834290891154666894">Entri kecocokan nama alternatif subjek tidak valid</translation>
 <translation id="1838709767668011582">Situs Google</translation>
 <translation id="1844692022597038441">File ini tidak tersedia secara offline.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Mencadangkan <ph name="FILE_COUNT" /> ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Orang dengan kucing</translation>
 <translation id="5358764674931277">Kecepatan frame</translation>
+<translation id="5363339716524495120">Bahasa masukan adalah China</translation>
 <translation id="5368191757080475556">Bagikan folder dengan Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Jangan menggunakan setelan proxy untuk host dan domain berikut:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Menghitung ukuran</translation>
 <translation id="554153475311314364">Transliterasi Yunani</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Lebar tanda baca Penuh</translation>
 <translation id="5602622065581044566">Bulgaria dengan keyboard Fonetik</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
 <translation id="5618330573454123917">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Inggris (Inggris Raya) dengan keyboard Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" telah dibagikan dengan Anda. Namun Anda tidak dapat menghapusnya karena bukan milik Anda.</translation>
 <translation id="813913629614996137">Memulai...</translation>
+<translation id="8147028810663464959">Lebar karakter Penuh</translation>
 <translation id="8151638057146502721">Konfigurasi</translation>
 <translation id="8154842056504218462">Semua entri dipilih.</translation>
 <translation id="8157684860301034423">Gagal mengambil info aplikasi.</translation>

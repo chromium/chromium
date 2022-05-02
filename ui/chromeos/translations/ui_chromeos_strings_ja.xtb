@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">サービス</translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="183183971458492120">情報を読み込んでいます...</translation>
+<translation id="1832073788765803750">半角カタカナ</translation>
 <translation id="1834290891154666894">無効なサブジェクト代替名マッチのエントリ</translation>
 <translation id="1838709767668011582">Google サイト</translation>
 <translation id="1844692022597038441">このファイルはオフラインでは表示できません。</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" />を <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップしています</translation>
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
+<translation id="5363339716524495120">入力言語は中国語です</translation>
 <translation id="5368191757080475556">Linux とのフォルダ共有</translation>
 <translation id="5402367795255837559">点字</translation>
 <translation id="5411472733320185105">以下のホストとドメインにはプロキシ設定を使用しない:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">サイズを計算しています</translation>
 <translation id="554153475311314364">ギリシア語（文字変換）</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">句読点幅は全角です</translation>
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
 <translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">英語（イギリス）（Dvorak）キーボード</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」を共有しました。ファイルの所有者ではないため、このファイルを削除することはできません。</translation>
 <translation id="813913629614996137">初期化しています...</translation>
+<translation id="8147028810663464959">文字幅は全角です</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154842056504218462">すべての項目を選択しました。</translation>
 <translation id="8157684860301034423">アプリ情報を取得できませんでした。</translation>

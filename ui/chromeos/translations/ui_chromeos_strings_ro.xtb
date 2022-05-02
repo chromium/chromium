@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Servicii</translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Se încarcă informațiile…</translation>
+<translation id="1832073788765803750">Katakana pe jumătate de lățime</translation>
 <translation id="1834290891154666894">intrare nevalidă a potrivirii numelui alternativ al subiectului</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Acest fișier nu este disponibil offline.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Se face backup pentru <ph name="FILE_COUNT" /> în <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
+<translation id="5363339716524495120">Limba de introducere a textului este chineza</translation>
 <translation id="5368191757080475556">Permite accesul Linux la dosar</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Nu utiliza setările proxy pentru următoarele gazde și domenii:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Se calculează dimensiunea</translation>
 <translation id="554153475311314364">Greacă, transliterație</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Lățimea pentru punctuație este completă</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
 <translation id="5618330573454123917">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Engleză (S.U.A.) cu tastatură Dvorak</translation>
 <translation id="8137331602592933310">V-a fost permis accesul la „<ph name="FILENAME" />”. Nu puteți șterge fișierul, deoarece nu vă aparține.</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
+<translation id="8147028810663464959">Lățimea pentru caractere este completă</translation>
 <translation id="8151638057146502721">Configurați</translation>
 <translation id="8154842056504218462">S-au selectat toate intrările.</translation>
 <translation id="8157684860301034423">Nu s-au putut prelua informațiile despre aplicație.</translation>

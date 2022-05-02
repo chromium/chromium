@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Usluge</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Informacije se učitavaju...</translation>
+<translation id="1832073788765803750">katakana sa pola širine</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva subjekta</translation>
 <translation id="1838709767668011582">Google sajt</translation>
 <translation id="1844692022597038441">Ova datoteka nije dostupna van mreže.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Prave se rezervne kopije (<ph name="FILE_COUNT" />) na <ph name="BEGIN_LINK" />Google disku<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Osoba sa mačkama</translation>
 <translation id="5358764674931277">Brzina kadrova</translation>
+<translation id="5363339716524495120">Jezik unosa je kineski</translation>
 <translation id="5368191757080475556">Delite direktorijum sa Linux-om</translation>
 <translation id="5402367795255837559">Brajeva azbuka</translation>
 <translation id="5411472733320185105">Ne koristi podešavanja proksija za ove hostove i domene:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="554153475311314364">grčki, transliteracija</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Širina znakova interpunkcije je Puna</translation>
 <translation id="5602622065581044566">bugarski sa fonetskom tastaturom</translation>
 <translation id="5605830556594064952">američka Dvorak</translation>
 <translation id="5618330573454123917">Ovaj fajl je osmišljen za računar koji koristi Macintosh softver. Nije kompatibilan sa vašim uređajem, koji koristi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u Chrome OS-u.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">engleski (SAD) sa tastaturom Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ se deli sa vama. Ne možete da je izbrišete jer nije u vašem vlasništvu.</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
+<translation id="8147028810663464959">Širina znakova je Puna</translation>
 <translation id="8151638057146502721">Konfiguriši</translation>
 <translation id="8154842056504218462">Izabrali ste sve stavke.</translation>
 <translation id="8157684860301034423">Preuzimanje informacija o aplikaciji nije uspelo.</translation>

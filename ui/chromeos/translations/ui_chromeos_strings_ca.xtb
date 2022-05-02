@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Serveis</translation>
 <translation id="1829129547161959350">Pingüí</translation>
 <translation id="183183971458492120">S'està carregant la informació...</translation>
+<translation id="1832073788765803750">Katakana d'amplada mitjana</translation>
 <translation id="1834290891154666894">Entrada no vàlida de nom alternatiu d'assumpte coincident</translation>
 <translation id="1838709767668011582">Lloc de Google</translation>
 <translation id="1844692022597038441">Aquest fitxer no està disponible sense connexió.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">S'estan afegint <ph name="FILE_COUNT" /> a la còpia de seguretat de <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persona amb gats</translation>
 <translation id="5358764674931277">Fotogrames per segon</translation>
+<translation id="5363339716524495120">L'idioma d'introducció és el xinès</translation>
 <translation id="5368191757080475556">Comparteix la carpeta amb Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">No utilitzeu la configuració del servidor intermediari per a aquests amfitrions i dominis:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">S'està calculant la mida</translation>
 <translation id="554153475311314364">Grec (transliteració)</translation>
 <translation id="5583640892426849032">Retrocés</translation>
+<translation id="5583664733673201137">L'amplada de la puntuació és completa</translation>
 <translation id="5602622065581044566">Búlgar amb teclat fonètic</translation>
 <translation id="5605830556594064952">Dvorak nord-americà</translation>
 <translation id="5618330573454123917">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Anglès (Regne Unit) amb teclat Dvorak</translation>
 <translation id="8137331602592933310">El fitxer "<ph name="FILENAME" />" s'ha compartit amb l'usuari. No el podeu suprimir perquè no és vostre.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
+<translation id="8147028810663464959">L'amplada dels caràcters és completa</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154842056504218462">S'han seleccionat totes les entrades.</translation>
 <translation id="8157684860301034423">No s'ha pogut recuperar la informació de l'aplicació.</translation>

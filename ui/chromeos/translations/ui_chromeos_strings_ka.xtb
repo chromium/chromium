@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ჰოლანდიური (ნიდერლანდები)</translation>
 <translation id="174937106936716857">ფაილების საერთო რაოდენობა</translation>
 <translation id="1755345808328621801">ეს ფაილი განკუთვნილია პერსონალური კომპიუტერისთვის, რომელიც იყენებს Windows-ის პროგრამულ უზრუნველყოფას. ის არ არის თავსებადი თქვენს მოწყობილობასთან, რომელზეც გაშვებულია ChromeOS. ალტერნატიული აპის პოვნა შეგიძლიათ Chrome Web Store-ში.</translation>
+<translation id="1757915090001272240">ფართო ლათინური</translation>
 <translation id="1773212559869067373">სერტიფიკატის ავტენთიფიკაცია ადგილობრივად უაყოფილია</translation>
 <translation id="1775381402323441512">ვიდეოს ინფორმაცია</translation>
 <translation id="180035236176489073">თქვენ უნდა იყოთ ონლაინ რეჟიმში, რომ განახორციელოთ წვდომა ამ ფაილებზე.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">სერვისები</translation>
 <translation id="1829129547161959350">პინგვინი</translation>
 <translation id="183183971458492120">მიმდინარეობს ინფორმაციის ჩატვირთვა…</translation>
+<translation id="1832073788765803750">ნახევარი სიგანის კატაკანა</translation>
 <translation id="1834290891154666894">სუბიექტის ალტერნატიული სახელის დამთხვევის მნიშვნელობა არასწორია</translation>
 <translation id="1838709767668011582">Google-ის საიტი</translation>
 <translation id="1844692022597038441">ეს ფაილი არ არის ხელმისაწვდომი ოფლაინში.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> კოპირდება <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ის სარეზერვო საცავში</translation>
 <translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>
+<translation id="5363339716524495120">შეყვანის ენაა ჩინური</translation>
 <translation id="5368191757080475556">საქაღალდის გაზიარება Linux-თან</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
 <translation id="5411472733320185105">არ გამოიყენოთ პროქსის პარამეტრები ამ საკვანძო კომპიუტერისთვის და დომენებისთვის:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">ზომის გამოთვლა</translation>
 <translation id="554153475311314364">ბერძნული ტრანსლიტერაცია</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
+<translation id="5583664733673201137">პუნქტუაციის სიგანე სავსეა</translation>
 <translation id="5602622065581044566">ბულგარული ფონეტიკური კლავიატურით</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის არ არის თავსებადი თქვენს მოწყობილობასთან, რომელზეც გაშვებულია ChromeOS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> ChromeOS-ზე ფაილების გახსნის შესახებ.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245">მოიძებნა <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     მზადაა <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ზე სარეზერვო კოპირებისთვის</translation>
+<translation id="749452993132003881">ჰირაგანა</translation>
 <translation id="7495372004724182530">მალაიალამური ფონეტიკური</translation>
 <translation id="7505167922889582512">დამალული ფაილების ჩვენება</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">ინგლისური (გაერთიანებული სამეფო) Dvorak კლავიატურით</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ გაზიარებულია თქვენთვის. მისი წაშლა შეუძლებელია, რადგან ის თქვენ არ გეკუთვნით.</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>
+<translation id="8147028810663464959">სიმბოლოთა სიგანე სავსეა</translation>
 <translation id="8151638057146502721">კონფიგურირება</translation>
 <translation id="8154842056504218462">არჩეულია ყველა ჩანაწერი.</translation>
 <translation id="8157684860301034423">აპის ინფორმაციის მოძიება ვერ მოხერხდა.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">ხელოვნების ნიმუშები</translation>
 <translation id="8223479393428528563">ამ ფაილების ქსელგარე გამოყენებისათვის, დაბრუნდით ქსელში, ფაილზე გმარჯვენა ღილაკზე დააჭირეთ და მონიშნეთ <ph name="OFFLINE_CHECKBOX_NAME" /> ვარიანტი.</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
+<translation id="8250690786522693009">ლათინური</translation>
 <translation id="8250920743982581267">დოკუმენტები</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8261561378965667560">ჩინური Array</translation>

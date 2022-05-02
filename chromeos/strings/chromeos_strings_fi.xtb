@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
 <translation id="1238612778414822719">HTTPS-viive</translation>
+<translation id="1264116747675686718">Käyttöjärjestelmää päivitetään</translation>
 <translation id="1264369926465113395">Tutustu Chromebookin uuteen, sisällöntuottajille tarkoitettuun digitaaliseen lehteen</translation>
 <translation id="1270369111467284986">Mahdollinen captive portal</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
 <translation id="2161394479394250669">Peru tulostustyö</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Sopimattomia osia<ph name="LINK_END" /> löytyi. Päivitä Chrome-käyttöjärjestelmä uusimpaan versioon niin varmistat, että sopivat osat tunnistetaan.</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3192947282887913208">Äänitiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
+<translation id="320091191259649613">Jos ongelma ei ratkea päivittämällä, komponentti saattaa olla vasta äskettäin hyväksytty, eikä sitä ole vielä lisätty tietokantaan.</translation>
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="4987769320337599931">Palomuuri</translation>
 <translation id="4999333166442584738">Piilota raportti</translation>
+<translation id="5008611843832219958">Päivitä Chrome-käyttöjärjestelmä uusimpaan versioon, niin saat käyttöösi optimoidun korjausprosessin</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kun näyttö on epäaktiivinen, näytä kuvia, kellonaika sekä sää- ja mediatietoja.</translation>
@@ -431,6 +435,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skannausta ei voi suorittaa loppuun</translation>
 <translation id="5502931783115429516">Android ei käynnissä</translation>
+<translation id="5507300744274596613">Varmista, että Chrome-käyttöjärjestelmä on ajan tasalla</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Oletustaustakuva</translation>
 <translation id="6034694447310538551">Ota automaattinen kuukausittainen nollaus käyttöön</translation>
 <translation id="6037291330010597344">Skannerin syöttölaite on tyhjä. Lisää dokumentteja ja yritä uudelleen.</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -718,6 +724,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8660881923941176839">paunaa</translation>
 <translation id="8662671328352114214">Liity <ph name="TYPE" />-verkkoon</translation>
+<translation id="8671972493856476349">Päivitä versioon <ph name="VERSION_NUMBER" /> ja käynnistä uudelleen</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
@@ -782,6 +789,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9204237731135241582">Yhdyskäytävään ei saada yhteyttä Android-sovelluksilla</translation>
 <translation id="9211490828691860325">Kaikki työpöydät</translation>
+<translation id="922179502584117429">Nykyinen versio (<ph name="VERSION_NUMBER" />) on vanhentunut</translation>
 <translation id="932327136139879170">Etusivu</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ei aktivoitu</translation>

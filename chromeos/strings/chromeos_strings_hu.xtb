@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
 <translation id="123124571410524056">Portál valószínűsíthető</translation>
 <translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
+<translation id="1264116747675686718">Operációs rendszer verziójának frissítése</translation>
 <translation id="1264369926465113395">Olvassa el a Chromebook új, alkotóknak szóló digitális magazinját</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
+<translation id="2177831236093724629">A rendszer <ph name="LINK_BEGIN" />nem jóváhagyott komponenseket<ph name="LINK_END" /> talált. Az összes jóváhagyott komponens azonosításának biztosítása érdekében frissítse Chrome OS verzióját a legújabbra.</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
+<translation id="320091191259649613">Ha a frissítés után továbbra is tapasztal problémát, előfordulhat, hogy a komponens jóváhagyása újonnan történt, és még nem szerepel az adatbázisban.</translation>
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Futtatás</translation>
 <translation id="4987769320337599931">Tűzfal</translation>
 <translation id="4999333166442584738">Jelentés elrejtése</translation>
+<translation id="5008611843832219958">Frissítsen a Chrome OS legújabb verziójára az optimális javítási folyamat érdekében</translation>
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Tétlen képernyőjén megjelenhetnek fotók, az idő, az időjárás és egyéb médiatartalmak információi.</translation>
@@ -431,6 +435,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nem sikerült befejezni a szkennelést</translation>
 <translation id="5502931783115429516">Az Android nem fut</translation>
+<translation id="5507300744274596613">Győződjön meg arról, hogy a Chrome OS naprakész</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
 <translation id="6037291330010597344">A szkenner dokumentumadagolója üres. Helyezzen be dokumentumokat, és próbálja újra.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -718,6 +724,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8655295600908251630">Csatorna</translation>
 <translation id="8660881923941176839">font</translation>
 <translation id="8662671328352114214">Csatlakozás <ph name="TYPE" />-hálózatra</translation>
+<translation id="8671972493856476349">Frissítés a következő verzióra, és újraindítás: <ph name="VERSION_NUMBER" /></translation>
 <translation id="8675354002693747642">Előre megosztott kulcs</translation>
 <translation id="8677859815076891398">Nincs album. Hozzon létre albumot a <ph name="LINK_BEGIN" />Google Fotókban<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> A funkció kezeléséhez használja a balra és jobbra nyilakat.</translation>
@@ -782,6 +789,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="917720651393141712">Tesztmérkőzés</translation>
 <translation id="9204237731135241582">Nem lehet csatlakozni az átjáróhoz androidos alkalmazásokról</translation>
 <translation id="9211490828691860325">Az összes asztal</translation>
+<translation id="922179502584117429">A jelenlegi verzió (<ph name="VERSION_NUMBER" />) elavult</translation>
 <translation id="932327136139879170">Főoldal</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>

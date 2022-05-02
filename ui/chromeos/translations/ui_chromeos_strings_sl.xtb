@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Storitve</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Nalaganje podatkov …</translation>
+<translation id="1832073788765803750">katakana polovične širine</translation>
 <translation id="1834290891154666894">Neveljaven vnos za ujemanje nadomestnega imena subjekta</translation>
 <translation id="1838709767668011582">Googlovo spletno mesto</translation>
 <translation id="1844692022597038441">Ta datoteka ni na voljo brez povezave.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Varnostno kopiranje v <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Oseba z mačkami</translation>
 <translation id="5358764674931277">Število sličic v sekundi</translation>
+<translation id="5363339716524495120">Jezik vnosa je kitajščina</translation>
 <translation id="5368191757080475556">Skupna raba mape z Linuxom</translation>
 <translation id="5402367795255837559">Braillova pisava</translation>
 <translation id="5411472733320185105">Ne uporabljaj nastavitev proxyja za te gostitelje in domene:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Izračunavanje velikosti</translation>
 <translation id="554153475311314364">grščina (transkripcija)</translation>
 <translation id="5583640892426849032">Vračalka</translation>
+<translation id="5583664733673201137">Širina ločila je zapolnjena</translation>
 <translation id="5602622065581044566">bolgarščina s fonetično tipkovnico</translation>
 <translation id="5605830556594064952">Združene države – Dvorak</translation>
 <translation id="5618330573454123917">Ta datoteka je zasnovana za računalnike s programsko opremo Macintosh, in ni združljiva z vašo napravo, ki uporablja sistem Chrome OS. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">angleščina (VB) s tipkovnico Dvorak</translation>
 <translation id="8137331602592933310">Datoteka »<ph name="FILENAME" />« je v skupni rabi z vami. Ne morete je izbrisati, ker niste njen lastnik.</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
+<translation id="8147028810663464959">Širina znaka je zapolnjena</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154842056504218462">Izbrani so vsi vnosi.</translation>
 <translation id="8157684860301034423">Prenos podatkov aplikacije ni uspel.</translation>

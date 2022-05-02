@@ -670,6 +670,7 @@
 <translation id="4758061975920522644">이미지만 공유</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4763480195061959176">동영상</translation>
+<translation id="4766313118839197559">비밀번호가 이 기기의 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4791358705705538979">웹에서 결제와 같은 작업을 처리하도록 도와줍니다.</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -928,6 +929,7 @@
 <translation id="6162892189396105610">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 미리 로드합니다.</translation>
 <translation id="6186394685773237175">유출된 비밀번호가 없습니다.</translation>
 <translation id="6192907950379606605">이미지 설명 보기</translation>
+<translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="620197886010707372">Google Play에서 <ph name="APPNAME" /> 앱을 여시겠습니까?</translation>
 <translation id="6203593061661911168">Wi-Fi에 연결되면 다운로드가 시작됩니다.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
@@ -1258,6 +1260,7 @@
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7963646190083259054">공급업체:</translation>
+<translation id="7965838025086216108">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="ACCOUNT" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>

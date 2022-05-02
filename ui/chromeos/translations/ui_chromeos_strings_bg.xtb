@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Услуги</translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информацията се зарежда...</translation>
+<translation id="1832073788765803750">катакана с половин ширина</translation>
 <translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
 <translation id="1838709767668011582">Сайт в Google</translation>
 <translation id="1844692022597038441">Този файл не е налице офлайн.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Създаваме резервно копие на <ph name="FILE_COUNT" /> в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Човек с котки</translation>
 <translation id="5358764674931277">Скорост на кадрите</translation>
+<translation id="5363339716524495120">Езикът за въвеждане е китайски</translation>
 <translation id="5368191757080475556">Споделяне на папката с Linux</translation>
 <translation id="5402367795255837559">Брайлово писмо</translation>
 <translation id="5411472733320185105">Настройките за прокси сървър да не се използват за тези хостове или домейни:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Размерът се изчислява</translation>
 <translation id="554153475311314364">Гръцки (транслитерация)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Ширината на препинателните знаци е пълна</translation>
 <translation id="5602622065581044566">Български с фонетична клавиатура</translation>
 <translation id="5605830556594064952">Американска (Дворак) клавиатура</translation>
 <translation id="5618330573454123917">Този файл е предназначен за компютри със софтуер за Macintosh. Той не е съвместим с устройството ви с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="8137331602592933310">Файлът „<ph name="FILENAME" />“ е споделен с вас. Не можете да го изтриете, защото не го притежавате.</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
+<translation id="8147028810663464959">Ширината на знаците е пълна</translation>
 <translation id="8151638057146502721">Конфигуриране</translation>
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
 <translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>

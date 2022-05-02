@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-ის რეაგირების დრო</translation>
 <translation id="123124571410524056">სავარაუდოდ, გამოიყენება პორტალი</translation>
 <translation id="1238612778414822719">HTTPS რეაგირების დრო</translation>
+<translation id="1264116747675686718">მიმდინარეობს ოპერაციული სისტემის ვერსიის განახლება</translation>
 <translation id="1264369926465113395">გაეცანით Chromebook-ის ახალ ციფრულ ჟურნალს შემქმნელებისთვის</translation>
 <translation id="1270369111467284986">სავარაუდოდ, გამოიყენება ავტორიზაციის პორტალი</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ხელახლა ცდა</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2163937499206714165">მუქი რეჟიმის გააქტიურება</translation>
+<translation id="2177831236093724629">მოიძებნა <ph name="LINK_BEGIN" />კრიტერიუმებთან შეუსაბამო კომპონენტები<ph name="LINK_END" />. კრიტერიუმებთან შესაბამისი ყველა კომპონენტი იდენტიფიცირებული რომ იყოს, განაახლეთ Chrome OS უახლეს ვერსიამდე.</translation>
 <translation id="2180197493692062006">რაღაც შეცდომა მოხდა. ცადეთ აპის ხელახლა გახსნა.</translation>
 <translation id="2209788852729124853">ტრაფიკის მთვლელების გადაყენება</translation>
 <translation id="2212733584906323460">სახელის გამორკვევა</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
+<translation id="320091191259649613">თუ განახლების შემდეგ პრობლემა კვლავ შეგექმნებათ, შესაძლოა, კომპონენტი ახალია და ჯერ არ მოხვედრილა მონაცემთა ბაზაში.</translation>
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
@@ -225,6 +228,7 @@
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
+<translation id="3517001332549868749">ChromeOS განახლება</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
 <translation id="3557205324756024651">ადგილობრივი იდენტობა (არასავალდებულო)</translation>
@@ -377,6 +381,7 @@
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
 <translation id="4999333166442584738">ანგარიშის დამალვა</translation>
+<translation id="5008611843832219958">აღდგენის ოპტიმიზაციის მიზნით, განაახლეთ Chrome OS უახლეს ვერსიამდე</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">როცა ეკრანი უმოქმედოა, შეგიძლიათ გამოაჩინოთ ფოტოები, დრო, ამინდი და მედიაინფორმაცია.</translation>
@@ -431,6 +436,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">სკანირება ვერ შესრულდა</translation>
 <translation id="5502931783115429516">Android არ არის გაშვებული</translation>
+<translation id="5507300744274596613">დარწმუნდით, რომ Chrome OS განახლებულია</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +475,7 @@
 <translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="594552776027197022">გასაღებთა შემთხვევითი წყვილის შექმნა</translation>
 <translation id="5972388717451707488">ძრავას განახლება</translation>
+<translation id="5984145644188835034">ნაგულისხმევი ფონი</translation>
 <translation id="6034694447310538551">ავტომატური ყოველთვიური გადაყენების ჩართვა</translation>
 <translation id="6037291330010597344">სკანერის დოკუმენტების მიმწოდი ცარიელია. დაამატეთ დოკუმენტები და ცადეთ ხელახლა.</translation>
 <translation id="6040143037577758943">დახურვა</translation>
@@ -548,6 +555,7 @@
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
 <translation id="6723839937902243910">ენერგია</translation>
+<translation id="6723847290197874913">კლავიატურის შენათება</translation>
 <translation id="672609503628871915">ნახეთ სიახლეებირა სიახლეა</translation>
 <translation id="6747215703636344499">გაჩერდა — გამომტანი სავსეა</translation>
 <translation id="6749473226660745022">ფოტოები</translation>
@@ -718,6 +726,7 @@
 <translation id="8655295600908251630">არხი</translation>
 <translation id="8660881923941176839">ფუნტი</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" />-მდე განახლება და გადატვირთვა</translation>
 <translation id="8675354002693747642">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="8677859815076891398">ალბომები არ არის. შექმენით ალბომები <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ში.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ამ ფუნქციის სამართავად გამოიყენეთ კლავიშები მარცხნივ ან მარჯვნივ მიმართული ისრებით.</translation>
@@ -782,6 +791,7 @@
 <translation id="917720651393141712">შემოწმება</translation>
 <translation id="9204237731135241582">გეითვეისთან დაკავშირება ვერ ხერხდება Android აპების მეშვეობით</translation>
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
+<translation id="922179502584117429">ამჟამინდელი ვერსია (<ph name="VERSION_NUMBER" />) მოძველებულია</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">არ არის გააქტიურებული</translation>

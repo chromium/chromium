@@ -94,7 +94,7 @@
 <translation id="1742316578210444689">Hebreo (transliteración)</translation>
 <translation id="1747761757048858544">Neerlandés (Países Bajos)</translation>
 <translation id="174937106936716857">Número total de archivos</translation>
-<translation id="1755345808328621801">Este archivo está diseñado para un PC que utilice software de Windows. No es compatible con tu dispositivo, que utiliza Chrome OS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="1755345808328621801">Este archivo está diseñado para un PC que utilice software de Windows. No es compatible con tu dispositivo, que utiliza ChromeOS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="1775381402323441512">Información del vídeo</translation>
@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Servicios</translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="183183971458492120">Cargando información...</translation>
+<translation id="1832073788765803750">Katakana de ancho medio</translation>
 <translation id="1834290891154666894">Entrada de la coincidencia del nombre alternativo del sujeto no válida</translation>
 <translation id="1838709767668011582">Sitio de Google</translation>
 <translation id="1844692022597038441">Este archivo no está disponible sin conexión.</translation>
@@ -225,7 +226,7 @@
 <translation id="2943503720238418293">Utiliza un nombre más corto</translation>
 <translation id="2949781154072577687">Formateando <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
-<translation id="2977940621473452797">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="2977940621473452797">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza ChromeOS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="2984337792991268709">Hoy a las <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restaurando <ph name="COUNT" /> elementos...</translation>
 <translation id="2994669386200004489">No se ha podido crear la copia de seguridad de <ph name="FILE_NAME" /></translation>
@@ -421,7 +422,7 @@
 <translation id="4694604912444486114">Mono</translation>
 <translation id="469612310041132144">Chino (abreviado)</translation>
 <translation id="4697043402264950621">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden ascendente.</translation>
-<translation id="469897186246626197">Este archivo está diseñado para un PC que utilice software de Windows. No es compatible con tu dispositivo, que utiliza Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS</translation>
+<translation id="469897186246626197">Este archivo está diseñado para un PC que utilice software de Windows. No es compatible con tu dispositivo, que utiliza ChromeOS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en ChromeOS</translation>
 <translation id="4706042980341760088">Tamil con teclado de máquina de escribir</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abriendo <ph name="PATH" /></translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Creando copia de seguridad de <ph name="FILE_COUNT" /> en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persona con gatos</translation>
 <translation id="5358764674931277">Velocidad de fotogramas</translation>
+<translation id="5363339716524495120">El idioma de entrada es chino</translation>
 <translation id="5368191757080475556">Compartir carpeta con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>
@@ -540,9 +542,10 @@
 <translation id="5534520101572674276">Calculando tamaño...</translation>
 <translation id="554153475311314364">Griego (transliteración)</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
+<translation id="5583664733673201137">Puntuación de ancho completo</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Estados Unidos (Dvorak)</translation>
-<translation id="5618330573454123917">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS</translation>
+<translation id="5618330573454123917">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en ChromeOS</translation>
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escuchar</translation>
@@ -736,7 +739,7 @@
 <translation id="7309413087278791451">Alemán (Bélgica)</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7343393116438664539">Vietnamita (Télex)</translation>
-<translation id="7357762654218998920">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS</translation>
+<translation id="7357762654218998920">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en ChromeOS</translation>
 <translation id="7359359531237882347">Se están copiando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="7375951387215729722">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
 <translation id="7402503521691663770">Dispositivos ChromeOS Flex</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">El archivo "<ph name="FILENAME" />" se ha compartido contigo. No puedes eliminarlo porque no es tuyo.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
+<translation id="8147028810663464959">Carácter de ancho completo</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154842056504218462">Se han seleccionado todos los elementos.</translation>
 <translation id="8157684860301034423">No se ha podido recuperar la información de la aplicación.</translation>

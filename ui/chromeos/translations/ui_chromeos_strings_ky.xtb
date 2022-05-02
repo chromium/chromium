@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Голландча (Нидерланддар)</translation>
 <translation id="174937106936716857">Жалпы файлдардын саны</translation>
 <translation id="1755345808328621801">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Интернет дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
+<translation id="1757915090001272240">Жазы латын тамгалары</translation>
 <translation id="1773212559869067373">Аныктыгын текшерүү тастыктамасы жергиликтүү деңгээлде четке кагылды</translation>
 <translation id="1775381402323441512">Видео тууралуу маалымат</translation>
 <translation id="180035236176489073">Бул файлдар онлайн режиминде гана колдонулат.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Кызматтар</translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
+<translation id="1832073788765803750">Жарым жазылыктагы катакана</translation>
 <translation id="1834290891154666894">Cубъекттин кошумча аталышына окшош жараксыз жазуу</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бул файл офлайнда жеткиликтүү эмес.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> <ph name="FILE_COUNT" /> камдык көчүрмөсү сакталууда</translation>
 <translation id="535792325654997756">Мышыктар менен адам</translation>
 <translation id="5358764674931277">Кадрлардын жыштыгы</translation>
+<translation id="5363339716524495120">Киргизүү тили — кытайча</translation>
 <translation id="5368191757080475556">Папканы Linux аркылуу бөлүшүү</translation>
 <translation id="5402367795255837559">Брайл</translation>
 <translation id="5411472733320185105">Бул хосттор жана домендер үчүн прокси жөндөөлөрү колдонулбасын:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Эсептөө өлчөмү</translation>
 <translation id="554153475311314364">Грекче (транслитерация)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Тыныш белгинин эни Толук</translation>
 <translation id="5602622065581044566">Болгарча (фонетикалык баскычтоп)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> табылды
     <ph name="LINE_BREAK1" />
     Камдык көчүрмөсүн <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сактай берсеңиз болот</translation>
+<translation id="749452993132003881">Хираганача</translation>
 <translation id="7495372004724182530">Малайаламча, фонетикалык</translation>
 <translation id="7505167922889582512">Жашыруун файлдарды көрсөтүү</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">Англисче (Улуу Британия) жана Dvorak баскычтобу</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сиз менен бөлүшүлдү. Ал сизге таандык эмес болгондуктан, аны жок кыла албайсыз.</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
+<translation id="8147028810663464959">Символдун эни Толук</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
 <translation id="8154842056504218462">Бардык пункттар тандалды.</translation>
 <translation id="8157684860301034423">Колдонмо тууралуу маалымат алынбай калды.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Санат иши</translation>
 <translation id="8223479393428528563">Бул файлдарды оффлайнда колдонуу үчүн онлайн режимине кайтып, файлдарды оң баскыч менен чыкылдатып, андан соң <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
+<translation id="8250690786522693009">Латын</translation>
 <translation id="8250920743982581267">Документтер</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8261561378965667560">Кытайча (түзүмдүк)</translation>

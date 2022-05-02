@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Tjenester</translation>
 <translation id="1829129547161959350">Pingviner</translation>
 <translation id="183183971458492120">Laster inn informasjon …</translation>
+<translation id="1832073788765803750">Katakana – halv bredde</translation>
 <translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
 <translation id="1838709767668011582">Google-nettsted</translation>
 <translation id="1844692022597038441">Denne filen er ikke tilgjengelig utenfor Internett.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Sikkerhetskopierer <ph name="FILE_COUNT" /> til <ph name="BEGIN_LINK" />Google Disk<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildefrekvens</translation>
+<translation id="5363339716524495120">Skrivespråket er kinesisk</translation>
 <translation id="5368191757080475556">Del mappe med Linux</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
 <translation id="5411472733320185105">Ikke bruk proxy-tjenerinnstillinger for følgende tjenere og domener:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Gresk, translitterasjon</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
+<translation id="5583664733673201137">Tegnsettingsbredden er Full</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
 <translation id="5605830556594064952">Amerikansk Dvorak</translation>
 <translation id="5618330573454123917">Denne filen er laget for datamaskiner som kjører Macintosh-programvare. Den er ikke kompatibel med enheten din, som kjører ChromeOS. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Engelsk (Storbritannia) med Dvorak-tastatur</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» er delt med deg. Du kan ikke slette filen fordi du ikke eier den.</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
+<translation id="8147028810663464959">Karakterbredden er Full</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154842056504218462">Valgte alle oppføringene.</translation>
 <translation id="8157684860301034423">Kunne ikke hente appinfo.</translation>

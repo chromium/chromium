@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">സേവനങ്ങള്‍</translation>
 <translation id="1829129547161959350">പെൻഗ്വിൻ</translation>
 <translation id="183183971458492120">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</translation>
+<translation id="1832073788765803750">ഹാഫ് വിഡ്‌ത്ത് കറ്റക്കാന</translation>
 <translation id="1834290891154666894">സബ്ജക്റ്റ് ഓൾട്ടർനേറ്റീവ് നെയിം പൊരുത്തത്തിന്റെ എൻട്രി അസാധുവാണ്</translation>
 <translation id="1838709767668011582">Google സൈറ്റ്</translation>
 <translation id="1844692022597038441">ഈ ഫയൽ ഓഫ്‌ലൈനിൽ ലഭ്യമാകില്ല.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> <ph name="FILE_COUNT" /> ബാക്കപ്പ് ചെയ്യുന്നു</translation>
 <translation id="535792325654997756">വ്യക്തിയും പൂച്ചകളും</translation>
 <translation id="5358764674931277">ഫ്രെയിം എണ്ണം</translation>
+<translation id="5363339716524495120">ഇൻപുട്ട് ഭാഷ ചൈനീസ് ആണ്</translation>
 <translation id="5368191757080475556">Linux ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="5402367795255837559">ബ്രെയ്‌ലി</translation>
 <translation id="5411472733320185105">ഈ ഹോസ്റ്റുകള്‍ക്കും ഡൊമെയ്നുകള്‍ക്കുമായി പ്രോക്സി ക്രമീകരണങ്ങള്‍ ഉപയോഗിക്കരുത്:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">കണക്കാക്കിയ വലുപ്പം</translation>
 <translation id="554153475311314364">ഗ്രീക്ക് ലിപ്യന്തരണം</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
+<translation id="5583664733673201137">ചിഹ്നന വീതി പൂർണ്ണമാണ്</translation>
 <translation id="5602622065581044566">ഫൊണറ്റിക് കീബോർഡ് ഉള്ള ബൾഗേറിയൻ</translation>
 <translation id="5605830556594064952">യുകെ ദ്വരോക്ക്</translation>
 <translation id="5618330573454123917">Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന കമ്പ്യൂട്ടറിന് വേണ്ടി രൂപകൽപ്പന ചെയ്ത ഫയൽ ആണിത്. ChromeOS റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിൽ ഇതിന് പിന്തുണയില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Dvorak കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുകെ)</translation>
 <translation id="8137331602592933310">നിങ്ങളുമായി "<ph name="FILENAME" />" എന്നത് പങ്കിട്ടിരിക്കുന്നു. ഇത് നിങ്ങളുടേതല്ലാത്തതിനാൽ നിങ്ങൾക്ക് അത് ഇല്ലാതാക്കാനാകില്ല.</translation>
 <translation id="813913629614996137">ആരംഭിക്കുന്നു...</translation>
+<translation id="8147028810663464959">പ്രതീക വീതി പൂർണ്ണമാണ്</translation>
 <translation id="8151638057146502721">കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="8154842056504218462">എല്ലാ എൻട്രികളും തിരഞ്ഞെടുത്തു.</translation>
 <translation id="8157684860301034423">ആപ്പ് വിവരം വീണ്ടെടുക്കാനായില്ല.</translation>

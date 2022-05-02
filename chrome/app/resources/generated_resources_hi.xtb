@@ -5649,6 +5649,7 @@
 <translation id="6520876759015997832"><ph name="LIST_SIZE" /> में से खोज का नतीजा <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. सेक्शन पर जाने के लिए Enter दबाएं.</translation>
 <translation id="6521214596282732365">आम तौर पर, साइटें आपके फ़ॉन्ट इसलिए इस्तेमाल करती हैं, ताकि आप ऑनलाइन डिज़ाइन और ग्राफ़िक टूल से हाई-फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="6523303810310758032">पूरा ब्राउज़िंग इतिहास या किसी खास साइट का इतिहास मिटाने पर, परफ़ॉर्मेंस से जुड़ी जानकारी भी मिट जाती है. <ph name="BEGIN_LINK" />अपना ब्राउज़िंग इतिहास<ph name="END_LINK" /> देखें</translation>
+<translation id="6523574494641144162">Google Password Manager, इन पासवर्ड को आपके Google खाते में सेव नहीं कर सका. इन्हें इस डिवाइस पर सेव किया जा सकता है.</translation>
 <translation id="6524735478670290456">हम इस डेटा का इस्तेमाल कैसे करते हैं:</translation>
 <translation id="652492607360843641">आप <ph name="NETWORK_TYPE" /> नेटवर्क से जुड़े हुए हैं.</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
@@ -5955,6 +5956,7 @@
 <translation id="6818198425579322765">उस पेज की भाषा जिसका अनुवाद करना है</translation>
 <translation id="6818547713623251698">अपने फ़ोन में मौजूद फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखें</translation>
 <translation id="6818802132960437751">वायरस से सुरक्षित रखने वाला सॉफ़्टवेयर पहले से मौजूद है</translation>
+<translation id="6818920801736417483">क्या आपको पासवर्ड सेव करने हैं?</translation>
 <translation id="6823174134746916417">टचपैड पर क्लिक-के-लिए-टैप</translation>
 <translation id="6824564591481349393">&amp;ईमेल पते की कॉपी बनाएं</translation>
 <translation id="6824584962142919697">&amp;एलिमेंट जाँचें</translation>

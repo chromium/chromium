@@ -1063,6 +1063,7 @@
 <translation id="3835233591525155343">Түзмөгүңүздүн колдонулушу</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңы Google документин тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="385051799172605136">Артка</translation>
+<translation id="3851515670389017037">Саякаттар жабылды</translation>
 <translation id="3858027520442213535">Күн менен убакытты жаңыртуу</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3872834068356954457">Илим</translation>
@@ -1363,6 +1364,7 @@
 <translation id="470284880436071933">Кылмыш жана адилеттүүлүк</translation>
 <translation id="4704732901923281920">Биологиялык илимдер</translation>
 <translation id="4708268264240856090">Туташууңуз үзгүлтүккө учурады</translation>
+<translation id="4709819737903924300">Саякаттар толук экран режиминде ачылды</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Тармак мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> дарегинин сырсөзү</translation>
@@ -1826,6 +1828,7 @@
 <translation id="5989320800837274978">Бекитилген прокси серверлер да, .pac скрипттин URL'и да көрсөтүлгөн жок.</translation>
 <translation id="5992691462791905444">Инженердик Z формасында бүктөө</translation>
 <translation id="5995727681868049093">Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу</translation>
+<translation id="5997247540087773573">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы аны азыр өзгөртүп жана башка сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сурамы боюнча <ph name="RESULT_COUNT" /> жыйынтык табылды</translation>
 <translation id="6006484371116297560">Классикалык тема</translation>
 <translation id="6008122969617370890">N–1 ирети</translation>
@@ -1864,6 +1867,7 @@
 <translation id="6061154937977953833">Күрөш</translation>
 <translation id="6064217302520318294">Экран кулпусу</translation>
 <translation id="6064602040258638498">Купондор жана арзандатуу сунуштары</translation>
+<translation id="6078813287646374487">Бул бет жөнүндө толук маалыматты көрсөтүү</translation>
 <translation id="6080696365213338172">Мазмунду администратор берген тастыктама аркылуу колдондуңуз. <ph name="DOMAIN" /> тапшырылган дайын-даректериңизди ортодон администраторуңуз кармап калышы мүмкүн.</translation>
 <translation id="6087312102907839798">Окшош натыйжалар</translation>
 <translation id="6094273045989040137">Аннотация режимин иштетүү</translation>
@@ -2602,6 +2606,7 @@
 <translation id="8163866351304776260">Сол жагын төрт жолу тешүү</translation>
 <translation id="8175796834047840627">Аккаунтуңузга кирип турганыңыздан улам, Chrome карталарыңызды Google аккаунтуңузга сактап коюуну сунуштап жатат. Бул параметрди жөндөөлөргө өтүп, өзгөртүп койсоңуз болот.</translation>
 <translation id="8176440868214972690">Бул түзмөктүн администратору жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
+<translation id="8179003511148538426">Саякаттар экрандын жарымына чейин ачылды</translation>
 <translation id="8184538546369750125">Дүйнөлүк демейки жөндөөнү колдонуу (Уруксат берүү)</translation>
 <translation id="8186706823560132848">Программа</translation>
 <translation id="8190193880870196235">Кеңейтүү аркылуу башкарылат</translation>

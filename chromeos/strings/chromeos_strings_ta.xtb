@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS தாமதம்</translation>
 <translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
+<translation id="1264116747675686718">OS பதிப்பைப் புதுப்பிக்கிறது</translation>
 <translation id="1264369926465113395">Chromebookகின், கிரியேட்டர்களுக்கான புதிய டிஜிட்டல் பத்திரிகையைப் பார்க்கவும்</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: மீண்டும் முயலுங்கள்</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
 <translation id="2163937499206714165">டார்க் பயன்முறையை இயக்குதல்</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />தகுதிபெறாத காம்பனென்ட்டுகள்<ph name="LINK_END" /> உள்ளன. தகுதிபெற்ற அனைத்துக் காம்பனென்ட்டுகளும் அடையாளம் காணப்பட்டதை உறுதிசெய்ய, Chrome OSஸைச் சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கவும்.</translation>
 <translation id="2180197493692062006">ஏதோ தவறாகிவிட்டது. ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
 <translation id="2209788852729124853">டிராஃபிக் கவுண்ட்டர்களை மீட்டமை</translation>
 <translation id="2212733584906323460">நேம் ரெசல்யூஷன்</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
 <translation id="3192947282887913208">ஆடியோ ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
+<translation id="320091191259649613">புதுப்பிக்கப்பட்ட பிறகும் சிக்கல் இருந்தால், காம்பனென்ட் புதிதாகத் தகுதிபெற்றிருந்து தரவுத்தளத்தில் இன்னமும் அது சேர்க்கப்படாமல் இருக்கலாம்.</translation>
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
 <translation id="4999333166442584738">அறிக்கையை மறை</translation>
+<translation id="5008611843832219958">மேம்பட்ட சரிபார்ப்புச் செயலாக்கத்தை மேற்கொள்ள, Chrome OSஸைச் சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கவும்</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">திரை செயலில் இல்லாதபோது படங்கள், நேரம், வானிலை, மீடியா தகவல்கள் ஆகியவற்றைக் காட்டு.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
 <translation id="5502931783115429516">Android இயங்கவில்லை</translation>
+<translation id="5507300744274596613">Chrome OS பதிப்பு சமீபத்தியதாக இருப்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">இயல்பு வால்பேப்பர்</translation>
 <translation id="6034694447310538551">மாதந்தோறும் தானாக ரீசெட் செய்வதை இயக்கு</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">சேனல்</translation>
 <translation id="8660881923941176839">பவுண்டுகள்</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> நெட்வொர்க்கில் சேர்தல்</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> பதிப்பிற்குப் புதுப்பித்து மீண்டும் தொடங்கு</translation>
 <translation id="8675354002693747642">முன்பே பகிரப்பட்ட விசை</translation>
 <translation id="8677859815076891398">ஆல்பங்கள் எதுவுமில்லை. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸில் ஓர் ஆல்பத்தை உருவாக்குங்கள்.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> இந்த அம்சத்தை நிர்வகிக்க, இடது/வலது அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
@@ -782,6 +789,7 @@
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="9211490828691860325">அனைத்து டெஸ்குகளும்</translation>
+<translation id="922179502584117429">தற்போதுள்ள <ph name="VERSION_NUMBER" /> பதிப்பு பழைய பதிப்பாகும்</translation>
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">செயலாக்கப்படவில்லை</translation>

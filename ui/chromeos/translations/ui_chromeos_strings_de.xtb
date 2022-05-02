@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Dienste</translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Informationen werden geladen…</translation>
+<translation id="1832073788765803750">Katakana mit halber Breite</translation>
 <translation id="1834290891154666894">Ungültige Übereinstimmung für den alternativen Betreffnamen</translation>
 <translation id="1838709767668011582">Google Sites-Website</translation>
 <translation id="1844692022597038441">Diese Datei ist offline nicht verfügbar.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> werden auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
 <translation id="5358764674931277">Framerate</translation>
+<translation id="5363339716524495120">Eingabesprache ist Chinesisch.</translation>
 <translation id="5368191757080475556">Ordner für Linux freigeben</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Proxy-Einstellungen nicht für diese Hosts und Domains verwenden:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Größe wird berechnet.</translation>
 <translation id="554153475311314364">Griechisch (Transliteration)</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
+<translation id="5583664733673201137">Punktbreite ist "Voll".</translation>
 <translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
 <translation id="5605830556594064952">USA – Dvorak</translation>
 <translation id="5618330573454123917">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Englisch (Vereinigtes Königreich) mit Dvorak-Tastatur</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit dir geteilt. Du kannst die Datei nicht löschen, da du nicht der Inhaber bist.</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
+<translation id="8147028810663464959">Zeichenbreite ist "Voll".</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154842056504218462">Alle Einträge wurden ausgewählt.</translation>
 <translation id="8157684860301034423">Fehler beim Abrufen der App-Informationen.</translation>

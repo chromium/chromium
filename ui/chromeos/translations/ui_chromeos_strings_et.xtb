@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Teenused</translation>
 <translation id="1829129547161959350">Pingviin</translation>
 <translation id="183183971458492120">Teabe laadimine …</translation>
+<translation id="1832073788765803750">Poollaiusega katakana</translation>
 <translation id="1834290891154666894">Sobimatu teema alternatiivse nime vaste sisestus</translation>
 <translation id="1838709767668011582">Google'i sait</translation>
 <translation id="1844692022597038441">Fail ei ole võrguühenduseta saadaval.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive'i<ph name="END_LINK" /> varundamine: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Kassidega inimene</translation>
 <translation id="5358764674931277">Kaadrisagedus</translation>
+<translation id="5363339716524495120">Sisestuskeel on hiina keel</translation>
 <translation id="5368191757080475556">Kausta jagamine Linuxiga</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ära kasuta puhverserveri seadeid nende hostide ja domeenide puhul:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Suuruse arvutamine</translation>
 <translation id="554153475311314364">kreeka, transliteratsioon</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
+<translation id="5583664733673201137">Kirjavahemärkide laius on täislaius</translation>
 <translation id="5602622065581044566">bulgaaria, foneetilise klaviatuuriga</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
 <translation id="5618330573454123917">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">inglise (Ühendkuningriik), Dvoraki klaviatuuriga</translation>
 <translation id="8137331602592933310">Faili „<ph name="FILENAME" />” on teiega jagatud. Te ei saa seda kustutada, kuna te pole selle omanik.</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
+<translation id="8147028810663464959">Märkide laius on täislaius</translation>
 <translation id="8151638057146502721">Seadista</translation>
 <translation id="8154842056504218462">Valiti kõik kirjed.</translation>
 <translation id="8157684860301034423">Rakenduse teabe toomine nurjus.</translation>

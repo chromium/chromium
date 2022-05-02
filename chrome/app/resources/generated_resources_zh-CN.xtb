@@ -1909,6 +1909,7 @@
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2796424461616874739">连接到“<ph name="DEVICE_NAME" />”时身份验证超时。</translation>
 <translation id="2796740370559399562">继续允许设置 Cookie</translation>
+<translation id="2798347533012571708">保留更新</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2800760947029405028">上传图片</translation>
 <translation id="2801954693771979815">屏幕上的内容大小</translation>
@@ -3735,6 +3736,7 @@
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620809267248568679">此设置是由扩展程序强制设置的。</translation>
+<translation id="4622051949285931942">关闭自动更新？</translation>
 <translation id="4623167406982293031">验证帐号</translation>
 <translation id="4623189117674524348">系统未能向此设备授予 API 访问权限。</translation>
 <translation id="4624054169152573743">颜色主题</translation>
@@ -4533,6 +4535,7 @@
 <translation id="5436575196282187764">Google 相册中的“回忆”集锦</translation>
 <translation id="5439680044267106777">跳过此步骤并设置新的个人资料</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
+<translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
 <translation id="5442228125690314719">创建磁盘映像时出错。请重试。</translation>
 <translation id="5442550868130618860">开启自动更新</translation>
 <translation id="5445400788035474247">10 倍</translation>
@@ -4764,6 +4767,7 @@
 <translation id="5658415415603568799">为了提升安全性，Smart Lock 会在 20 小时后要求您输入您的密码。</translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5659833766619490117">无法翻译此网页</translation>
+<translation id="566097169318652001">您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。一旦您的应用过期，其中的关键功能可能也会停止运行，而您将失去依法索赔的权利。</translation>
 <translation id="5662513737565158057">更改 Linux 应用的运行方式。</translation>
 <translation id="5667293444945855280">恶意软件</translation>
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
@@ -5762,7 +5766,7 @@
 <translation id="6655458902729017087">隐藏帐号</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659213950629089752">此页面已由“<ph name="NAME" />”扩展程序缩放</translation>
-<translation id="6659594942844771486">Tab 键</translation>
+<translation id="6659594942844771486">标签页</translation>
 <translation id="666099631117081440">打印服务器</translation>
 <translation id="6662931079349804328">企业政策已更改。实验按钮已从工具栏移除。</translation>
 <translation id="6663190258859265334">对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作，使其还原到先前的版本。</translation>
@@ -6987,6 +6991,7 @@
 <translation id="7865127013871431856">翻译选项</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
+<translation id="7869655448736341731">不限</translation>
 <translation id="7870730066603611552">完成设置后查看同步选项</translation>
 <translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
 <translation id="7871109039747854576">用 <ph name="COMMA" /> 键和 <ph name="PERIOD" /> 键在候选字词列表中翻页</translation>
@@ -7443,6 +7448,7 @@
 <translation id="8300374739238450534">深夜蓝</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 个地址}}</translation>
 <translation id="8304383784961451596">您无权使用此设备。请与管理员联系以获取登录权限，或者使用受 Family Link 监管的 Google 帐号登录。</translation>
+<translation id="8306885873692337975">获取最新的功能和安全性方面的改进。</translation>
 <translation id="8307094075368387939">您可在个性化中心内调整时间表、设定壁纸和屏保，以及自定义系统颜色。</translation>
 <translation id="8308016398665340540">您正在与此设备的其他用户共享该网络</translation>
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>

@@ -1060,6 +1060,7 @@
 <translation id="3835233591525155343">თქვენი მოწყობილობის გამოყენება</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ახალი Google Doc-ის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="385051799172605136">უკან</translation>
+<translation id="3851515670389017037">პროცესები დახურულია</translation>
 <translation id="3858027520442213535">განახლების თარიღი და დრო</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3872834068356954457">მეცნიერება</translation>
@@ -1355,6 +1356,7 @@
 <translation id="470284880436071933">დამნაშავეობა და მართლმსაჯულება</translation>
 <translation id="4704732901923281920">ბიოლოგიური მეცნიერებები</translation>
 <translation id="4708268264240856090">თქვენი კავშირი შეფერხდა</translation>
+<translation id="4709819737903924300">პროცესები გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-ის ქსელის დიაგნოსტიკის ხელსაწყოს გაშვება<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />-ის პაროლი</translation>
@@ -1818,6 +1820,7 @@
 <translation id="5989320800837274978">არ არის მითითებული არც ფიქსირებული პროქსი სერვერი, არც .pac სკრიპტის URL.</translation>
 <translation id="5992691462791905444">საინჟინრო დაკეცვა Z-ის ფორმით</translation>
 <translation id="5995727681868049093">თქვენს Google ანგარიშში თქვენი ინფორმაციის, კონფიდენციალურობისა და უსაფრთხოების მართვა</translation>
+<translation id="5997247540087773573">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, Google პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ის და შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="6000758707621254961">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="RESULT_COUNT" /> შედეგი</translation>
 <translation id="6006484371116297560">კლასიკური</translation>
 <translation id="6008122969617370890">მიმდევრობა N-დან 1-მდე</translation>
@@ -1856,6 +1859,7 @@
 <translation id="6061154937977953833">ჭიდაობა</translation>
 <translation id="6064217302520318294">ეკრანის დაბლოკვა</translation>
 <translation id="6064602040258638498">ვაუჩერები და ფასდაკლებები</translation>
+<translation id="6078813287646374487">ამ გვერდის შესახებ დამატებითი ინფორმაციის ჩვენება</translation>
 <translation id="6080696365213338172">თქვენ მიიღეთ წვდომა შიგთავსზე ადმინისტრატორის სერტიფიკატის გამოყენებით. <ph name="DOMAIN" />-ზე გაგზავნილ მონაცემებზე შეიძლება მიიღოს წვდომა ადმინისტრატორმა.</translation>
 <translation id="6087312102907839798">დაკავშირებული ძიებები</translation>
 <translation id="6094273045989040137">ანოტირება</translation>
@@ -2594,6 +2598,7 @@
 <translation id="8163866351304776260">ოთხმაგად გახვრეტა მარცხნივ</translation>
 <translation id="8175796834047840627">თქვენს Google ანგარიშში ბარათების შენახვას Chrome გთავაზობთ, ვინაიდან შესული ხართ სისტემაში. ამ ქცევის შეცვლა შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="8176440868214972690">ამ მოწყობილობის ადმინისტრატორმა მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
+<translation id="8179003511148538426">პროცესები გახსნილია ნახევარ სიმაღლეზე</translation>
 <translation id="8184538546369750125">გლობალური ნაგულისხმევის გამოყენება (ნებართვა)</translation>
 <translation id="8186706823560132848">პროგრამული უზრუნველყოფა</translation>
 <translation id="8190193880870196235">იმართება გაფართოების მიერ</translation>

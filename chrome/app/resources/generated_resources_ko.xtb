@@ -1934,6 +1934,7 @@
 <translation id="2795716239552913152">사이트에서는 일반적으로 현지 뉴스 또는 주변 상점 같은 관련 기능이나 정보에 위치를 사용합니다.</translation>
 <translation id="2796424461616874739">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증 제한 시간이 초과되었습니다.</translation>
 <translation id="2796740370559399562">쿠키 계속 허용</translation>
+<translation id="2798347533012571708">업데이트 유지</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2800760947029405028">이미지 업로드</translation>
 <translation id="2801954693771979815">화면 크기</translation>
@@ -3192,7 +3193,7 @@
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4031308539321678562">기기에서 인터넷 사용 기록이 완전히 삭제됩니다. Chromebook에 설치된 다른 앱에서 이 프로필의 Google 계정을 사용하고 있을 수 있습니다. 그 경우 <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />에서 계정을 삭제할 수 있습니다.</translation>
 <translation id="4031527940632463547">센서 차단됨</translation>
-<translation id="4033415645631238123">Smart Lock과의 동기화는 더 이상 지원되지 않습니다. Smart Lock을 사용해 잠금 해제할 수는 있습니다.</translation>
+<translation id="4033415645631238123">Smart Lock으로 로그인하는 기능은 더 이상 지원되지 않습니다. Smart Lock을 사용해 잠금 해제할 수는 있습니다.</translation>
 <translation id="4033471457476425443">새 폴더 추가</translation>
 <translation id="4033963223187371752">안전한 사이트에서 안전하지 않은 이미지 또는 웹 프레임 등의 콘텐츠를 삽입할 수 있음</translation>
 <translation id="4034824040120875894">프린터</translation>
@@ -3762,6 +3763,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4620809267248568679">이 설정은 확장 프로그램에서 시행합니다.</translation>
+<translation id="4622051949285931942">자동 업데이트 사용을 중지하시겠습니까?</translation>
 <translation id="4623167406982293031">계정을 인증하세요.</translation>
 <translation id="4623189117674524348">시스템에서 이 기기의 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="4624054169152573743">색상 테마</translation>
@@ -4560,6 +4562,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5436575196282187764">Google 포토 추억</translation>
 <translation id="5439680044267106777">건너뛰고 새 프로필 설정</translation>
 <translation id="544083962418256601">바로가기 만들기...</translation>
+<translation id="5441133529460183413">Chrome 브라우저에서 설치된 웹 앱</translation>
 <translation id="5442228125690314719">디스크 이미지를 생성하는 중 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="5442550868130618860">자동 업데이트 사용</translation>
 <translation id="5445400788035474247">10배</translation>
@@ -4793,6 +4796,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5658415415603568799">보안을 강화하기 위해 Smart Lock에서 20시간 후에 비밀번호를 입력하라는 메시지를 표시합니다.</translation>
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5659833766619490117">페이지를 번역할 수 없음</translation>
+<translation id="566097169318652001">기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다. 앱이 최신 버전이 아니면 주요 기능이 작동 중지될 수 있으며 사용자가 법적 소송을 제기할 권리를 상실하게 됩니다.</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
 <translation id="5667293444945855280">악성 코드</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
@@ -7018,6 +7022,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7865127013871431856">번역 옵션</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>
+<translation id="7869655448736341731">모두</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> 및 <ph name="PERIOD" /> 키를 사용하여 후보 목록을 페이지에 표시</translation>
@@ -7475,6 +7480,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{주소}other{주소 #개}}</translation>
 <translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
+<translation id="8306885873692337975">최신 기능과 보안 개선 사항을 받습니다.</translation>
 <translation id="8307094075368387939">맞춤설정 허브에서 일정을 조정하고 배경화면과 화면 보호기를 설정하며 시스템 색상을 맞춤설정할 수 있습니다.</translation>
 <translation id="8308016398665340540">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8308179586020895837"><ph name="HOST" />에서 카메라에 액세스하려는 경우 메시지 표시</translation>

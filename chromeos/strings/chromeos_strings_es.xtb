@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
+<translation id="1264116747675686718">Actualizando versión del SO</translation>
 <translation id="1264369926465113395">Echa un vistazo a la nueva revista digital de Chromebook para creadores</translation>
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
+<translation id="2177831236093724629">Se han encontrado <ph name="LINK_BEGIN" />componentes no verificados<ph name="LINK_END" />. Para asegurarte de que todos los componentes verificados se identifiquen, actualiza Chrome OS a la versión más reciente.</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
+<translation id="320091191259649613">Si el problema persiste después de la actualización, es posible que el componente se haya verificado hace poco y no se haya añadido todavía a la base de datos.</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
@@ -264,7 +267,7 @@
 <translation id="3954678691475912818">Se desconoce el tipo de dispositivo.</translation>
 <translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las aplicaciones hasta que se haya completado la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
-<translation id="3969602104473960991">Contraseña de Chrome OS actualizada</translation>
+<translation id="3969602104473960991">Contraseña de ChromeOS actualizada</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Ejecutar</translation>
 <translation id="4987769320337599931">Cortafuegos</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
+<translation id="5008611843832219958">Actualiza a la versión más reciente de Chrome OS para iniciar un proceso de reparación optimizado</translation>
 <translation id="500920857929044050">Detener prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Cuando la pantalla está inactiva, muestra fotos, la hora, el tiempo e información multimedia.</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">No se ha podido terminar de escanear</translation>
 <translation id="5502931783115429516">Android no se está ejecutando</translation>
+<translation id="5507300744274596613">Comprueba que Chrome OS esté actualizado</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Generar par de claves aleatorio</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="6034694447310538551">Habilitar el reinicio mensual automático</translation>
 <translation id="6037291330010597344">El alimentador de documentos del escáner está vacío. Añade documentos y vuelve a intentarlo.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -485,7 +491,7 @@
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> álbumes</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6122277663991249694">Servicio de método de introducción de texto de Chrome OS</translation>
+<translation id="6122277663991249694">Servicio de método de introducción de texto de ChromeOS</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -697,7 +703,7 @@
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
-<translation id="8431300646573772016">Novedades de Chrome OS</translation>
+<translation id="8431300646573772016">Novedades de ChromeOS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se ha configurado el DNS</translation>
 <translation id="8456761643544401578">Modo Oscuro automático</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Actualizar a <ph name="VERSION_NUMBER" /> y reiniciar</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Usa las teclas de flecha izquierda y derecha para gestionar esta función.</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">Prueba</translation>
 <translation id="9204237731135241582">No se puede contactar con la pasarela desde aplicaciones Android</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
+<translation id="922179502584117429">La versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>
 <translation id="932327136139879170">Página principal</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Sin activar</translation>

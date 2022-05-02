@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
+<translation id="1264116747675686718">Das Betriebssystem wird aktualisiert</translation>
 <translation id="1264369926465113395">Wirf einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Nicht qualifizierte Komponenten<ph name="LINK_END" /> gefunden. Aktualisiere Chrome OS auf die neueste Version, damit alle qualifizierten Komponenten gefunden werden können.</translation>
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2209788852729124853">Traffic-Zähler zurücksetzen</translation>
 <translation id="2212733584906323460">Namensauflösung</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
+<translation id="320091191259649613">Wenn das Problem nach der Aktualisierung immer noch auftritt, ist die Komponente eventuell neu qualifiziert und wurde noch nicht in die Datenbank aufgenommen.</translation>
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Ausführen</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Bericht ausblenden</translation>
+<translation id="5008611843832219958">Aktualisiere auf die neueste Version von Chrome OS für eine optimierte Reparatur</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, kannst du dir Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
@@ -431,6 +435,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Scanvorgang konnte nicht abgeschlossen werden</translation>
 <translation id="5502931783115429516">Android wird nicht ausgeführt</translation>
+<translation id="5507300744274596613">Ist Chrome OS auf dem neuesten Stand?</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Standardhintergrund</translation>
 <translation id="6034694447310538551">Automatisches Zurücksetzen jeden Monat aktivieren</translation>
 <translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Lege Dokumente ein und versuche es noch einmal.</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -718,6 +724,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">Pfund</translation>
 <translation id="8662671328352114214">Mit <ph name="TYPE" /> verbinden</translation>
+<translation id="8671972493856476349">Update auf <ph name="VERSION_NUMBER" /> durchführen und neu starten</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="8677859815076891398">Keine Alben. Ein Album in <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> erstellen.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwende zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
@@ -782,6 +789,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="917720651393141712">Testen</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
+<translation id="922179502584117429">Die installierte Version (<ph name="VERSION_NUMBER" />) ist veraltet</translation>
 <translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>

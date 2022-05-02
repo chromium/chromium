@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">পরিষেবাসমূহ</translation>
 <translation id="1829129547161959350">পেঙ্গুইন</translation>
 <translation id="183183971458492120">তথ্য লোড করা হচ্ছে…</translation>
+<translation id="1832073788765803750">হাফ ওয়াইড কাটাকানা</translation>
 <translation id="1834290891154666894">সাবজেক্টের অন্য নামের সাথে মিল থাকা এন্ট্রি ভুল</translation>
 <translation id="1838709767668011582">Google সাইট</translation>
 <translation id="1844692022597038441">এই ফাইলটি অফলাইনে উপলব্ধ নয়৷</translation>
@@ -517,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> এর <ph name="BEGIN_LINK" />Google ড্রাইভ<ph name="END_LINK" /> এ ব্যাক-আপ নেওয়া হচ্ছে</translation>
 <translation id="535792325654997756">বিড়ালের সাথে ব্যক্তির ছবি</translation>
 <translation id="5358764674931277">ফ্রেম রেট</translation>
+<translation id="5363339716524495120">ইনপুট ভাষা চীনা</translation>
 <translation id="5368191757080475556">Linux ব্যবহার করে ফোল্ডার শেয়ার করুন</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
 <translation id="5411472733320185105">এই হোস্টগুলি এবং ডোমেনগুলির জন্য প্রক্সি সেটিংস ব্যবহার করবেন না:</translation>
@@ -539,6 +541,7 @@
 <translation id="5534520101572674276">আকার গণনা করা হচ্ছে</translation>
 <translation id="554153475311314364">গ্রিক লিপ্যন্তর</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">যতিচিহ্ন বিস্তৃতি পূর্ণ হয়েছে</translation>
 <translation id="5602622065581044566">বুলগেরিয়ান ভাষায় ফোনেটিক কীবোর্ড</translation>
 <translation id="5605830556594064952">মার্কিন যুক্তরাষ্ট্রীয় দভোরাক</translation>
 <translation id="5618330573454123917">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে। আপনার ডিভাইস ChromeOS-এ চলে বলে সেটি এর জন্য মানানসই নয়। ChromeOS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
@@ -837,6 +840,7 @@
 <translation id="8128733386027980860">ইংরেজি (যুক্তরাজ্য) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" আপনার সাথে শেয়ার করা হয়েছে৷ আপনি এটিকে মুছে ফেলতে পারবেন না কারণ আপনি এটির মালিক নন৷</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
+<translation id="8147028810663464959">শব্দ বিস্তৃতি পূর্ণ হয়েছে</translation>
 <translation id="8151638057146502721">কনফিগার করুন</translation>
 <translation id="8154842056504218462">সব এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
 <translation id="8157684860301034423">অ্যাপের তথ্য ফিরিয়ে আনা যায়নি।</translation>

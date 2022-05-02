@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Služby</translation>
 <translation id="1829129547161959350">Tučňák</translation>
 <translation id="183183971458492120">Načítání informací...</translation>
+<translation id="1832073788765803750">Katakana poloviční šířky</translation>
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
 <translation id="1844692022597038441">Tento soubor není k dispozici v režimu offline.</translation>
@@ -517,6 +518,7 @@
 <translation id="5335458522276292100">Probíhá zálohování na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
+<translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
 <translation id="5368191757080475556">Sdílet složku se systémem Linux</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
 <translation id="5411472733320185105">Nepoužívat nastavení proxy serveru pro následující hostitele a domény:</translation>
@@ -539,6 +541,7 @@
 <translation id="5534520101572674276">Výpočet velikosti</translation>
 <translation id="554153475311314364">řečtina (přepis)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Šířka interpunkce je Plná</translation>
 <translation id="5602622065581044566">bulharština s fonetickou klávesnicí</translation>
 <translation id="5605830556594064952">Americká klávesnice Dvorak</translation>
 <translation id="5618330573454123917">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
@@ -837,6 +840,7 @@
 <translation id="8128733386027980860">angličtina (Velká Británie) s klávesnicí Dvorak</translation>
 <translation id="8137331602592933310">Soubor <ph name="FILENAME" /> s vámi někdo sdílí. Nemůžete ho smazat, protože ho nevlastníte.</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
+<translation id="8147028810663464959">Šířka znaků je Plná</translation>
 <translation id="8151638057146502721">Konfigurovat</translation>
 <translation id="8154842056504218462">Vybrali jste všechny položky.</translation>
 <translation id="8157684860301034423">Informace o aplikaci se nepodařilo načíst.</translation>

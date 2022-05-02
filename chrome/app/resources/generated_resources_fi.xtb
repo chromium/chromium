@@ -1932,6 +1932,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2795716239552913152">Sivustot käyttävät yleensä sijaintia tarjotakseen siihen liittyviä ominaisuuksia tai tietoja (esim. paikallisuutisia tai tietoja lähellä olevista kaupoista)</translation>
 <translation id="2796424461616874739">Todennuksen aikakatkaisu yhdistettäessä kohteeseen <ph name="DEVICE_NAME" />.</translation>
 <translation id="2796740370559399562">Salli evästeet edelleen</translation>
+<translation id="2798347533012571708">Pidä päivitykset</translation>
 <translation id="2799223571221894425">Käynnistä uudelleen</translation>
 <translation id="2800760947029405028">Lähetä kuva</translation>
 <translation id="2801954693771979815">Näytön koko</translation>
@@ -3759,6 +3760,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4620809267248568679">Laajennus on ottanut käyttöön tämän asetuksen.</translation>
+<translation id="4622051949285931942">Laitetaanko automaattiset päivitykset pois päältä?</translation>
 <translation id="4623167406982293031">Vahvista tili</translation>
 <translation id="4623189117674524348">Järjestelmä ei voinut sallia sovellusliittymän käyttöä tälle laitteelle.</translation>
 <translation id="4624054169152573743">Väriteema</translation>
@@ -4557,6 +4559,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5436575196282187764">Google Kuvat ‑muistot</translation>
 <translation id="5439680044267106777">Ohita ja määritä uusi profiili</translation>
 <translation id="544083962418256601">Luo pikakuvakkeita...</translation>
+<translation id="5441133529460183413">Verkkosovellus asennettu Chrome-selaimesta</translation>
 <translation id="5442228125690314719">Näköistiedoston luominen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5442550868130618860">Ota automaattiset päivitykset käyttöön</translation>
 <translation id="5445400788035474247">10x</translation>
@@ -4790,6 +4793,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5658415415603568799">Turvallisuussyistä Smart Lock pyytää antamaan salasanan, kun 20 tuntia on kulunut.</translation>
 <translation id="5659593005791499971">Sähköposti</translation>
 <translation id="5659833766619490117">Sivua ei voi kääntää</translation>
+<translation id="566097169318652001">Laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia. Sovellusten tärkeimmät ominaisuudet saattavat myös lakata toimimasta, kun ne vanhenevat, etkä voi enää tehdä oikeudellisia vaatimuksia.</translation>
 <translation id="5662513737565158057">Muuta Linux-sovellusten toimintatapaa.</translation>
 <translation id="5667293444945855280">Haittaohjelma</translation>
 <translation id="5667546120811588575">Määritetään Google Playta…</translation>
@@ -7013,6 +7017,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7865127013871431856">Käännösasetukset</translation>
 <translation id="7869143217755017858">Poista tumma tila käytöstä</translation>
 <translation id="786957569166715433">Laitepari muodostettu laitteen <ph name="DEVICE_NAME" /> kanssa</translation>
+<translation id="7869655448736341731">Kaikki</translation>
 <translation id="7870730066603611552">Tarkista synkronointiasetukset määrityksen jälkeen</translation>
 <translation id="7870790288828963061">Ei löytynyt kioskisovelluksia, joiden versio on uudempi. Ei päivitettävää. Irrota USB-tikku.</translation>
 <translation id="7871109039747854576">Selaa vaihtoehtolistaa näppäimillä <ph name="COMMA" /> ja <ph name="PERIOD" /></translation>
@@ -7470,6 +7475,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8300374739238450534">Yönsininen</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Osoite}other{# osoitetta}}</translation>
 <translation id="8304383784961451596">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä kirjautumislupaa järjestelmänvalvojalta tai kirjaudu sisään Google-tilillä, jota valvotaan Family Linkillä.</translation>
+<translation id="8306885873692337975">Lataa uusimmat ominaisuudet ja tietoturvaparannukset.</translation>
 <translation id="8307094075368387939">Personointihubissa voit muuttaa aikataulua sekä valita taustakuvan, näytönsäästäjän ja järjestelmän värit.</translation>
 <translation id="8308016398665340540">Jaat tämä verkon muiden laitteen käyttäjien kanssa</translation>
 <translation id="8308179586020895837">Kysy, jos <ph name="HOST" /> haluaa käyttää kameraasi</translation>

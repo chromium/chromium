@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Служби</translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Завантаження інформації…</translation>
+<translation id="1832073788765803750">Катакана половинної ширини</translation>
 <translation id="1834290891154666894">Недійсний запис збігу з альтернативною назвою суб’єкта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1844692022597038441">Цей файл не доступний в режимі офлайн.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Резервне копіювання на <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Людина з котами</translation>
 <translation id="5358764674931277">Частота кадрів</translation>
+<translation id="5363339716524495120">Мова введення – китайська</translation>
 <translation id="5368191757080475556">Надати Linux доступ до папки</translation>
 <translation id="5402367795255837559">Команди Брайля</translation>
 <translation id="5411472733320185105">Не використовуйте налаштування проксі-сервера для таких хостів і доменів:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Обчислення розміру</translation>
 <translation id="554153475311314364">Грецька, транслітерація</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Ширина розділових знаків – повна</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
 <translation id="5605830556594064952">Розкладка Дворака (США)</translation>
 <translation id="5618330573454123917">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Англійська (Велика Британія), розкладка Дворака</translation>
 <translation id="8137331602592933310">Вам надали доступ до файлу "<ph name="FILENAME" />". Ви не можете його видалити, оскільки він вам не належить.</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
+<translation id="8147028810663464959">Ширина символів – повна</translation>
 <translation id="8151638057146502721">Налаштувати</translation>
 <translation id="8154842056504218462">Вибрано всі елементи.</translation>
 <translation id="8157684860301034423">Не вдалось отримати інформацію про додаток.</translation>

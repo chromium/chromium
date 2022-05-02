@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
+<translation id="1264116747675686718">OS のバージョンを更新しています</translation>
 <translation id="1264369926465113395">Chromebook のクリエイター向けの新しい電子雑誌をお試しください</translation>
 <translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 再試行</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />資格を満たしていないコンポーネント<ph name="LINK_END" />が見つかりました。資格を満たすコンポーネントがすべて認識されるように、Chrome OS を最新バージョンに更新してください。</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
 <translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
+<translation id="320091191259649613">更新しても問題が解決しない場合は、新たに資格を満たしたコンポーネントがデータベースに反映されていない可能性があります。</translation>
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">実行</translation>
 <translation id="4987769320337599931">ファイアウォール</translation>
 <translation id="4999333166442584738">レポートを非表示</translation>
+<translation id="5008611843832219958">最適な修復処理が行われるように、Chrome OS を最新バージョンに更新してください。</translation>
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">スキャンを完了できませんでした</translation>
 <translation id="5502931783115429516">Android は実行されていません</translation>
+<translation id="5507300744274596613">Chrome OS が最新バージョンかどうかご確認ください</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">リセット</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
 <translation id="5972388717451707488">エンジンを更新</translation>
+<translation id="5984145644188835034">デフォルトの壁紙</translation>
 <translation id="6034694447310538551">毎月の自動リセットを有効にする</translation>
 <translation id="6037291330010597344">スキャナの給紙トレイが空です。用紙を追加してから、もう一度お試しください。</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8660881923941176839">ポンド</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> に更新して再起動</translation>
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
@@ -782,6 +789,7 @@
 <translation id="917720651393141712">テスト</translation>
 <translation id="9204237731135241582">Android アプリからゲートウェイにアクセスできません</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>
+<translation id="922179502584117429">現在のバージョン <ph name="VERSION_NUMBER" /> は最新ではありません</translation>
 <translation id="932327136139879170">ホーム</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">無効</translation>

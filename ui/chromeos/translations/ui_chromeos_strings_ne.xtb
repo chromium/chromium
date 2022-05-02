@@ -516,6 +516,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> <ph name="BEGIN_LINK" />Google ड्राइभ <ph name="END_LINK" /> मा ब्याकअप गरिँदैछ</translation>
 <translation id="535792325654997756">बिरालो बोकिरहेका व्यक्ति</translation>
 <translation id="5358764674931277">फ्रेम रेट</translation>
+<translation id="5363339716524495120">इनपुट भाषा चिनियाँ हो</translation>
 <translation id="5368191757080475556">Linux सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
 <translation id="5411472733320185105">यी होस्टहरू र डोमेनहरूको लागि प्रोक्सी सेटिङहरू प्रयोग नगर्नुहोस्:</translation>
@@ -538,6 +539,7 @@
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
+<translation id="5583664733673201137">विराम चौडाइ पूर्ण छ</translation>
 <translation id="5602622065581044566">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
 <translation id="5618330573454123917">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
@@ -835,6 +837,7 @@
 <translation id="8128733386027980860">अङ्ग्रेजी (संयुक्त अधिराज्य) ड्भोराक किबोर्ड</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" तपाईंसँग साझा गरिएको छ। तपाईंले यसलाई मेटाउन सक्नुहुन्न किनकी यसमा तपाईंको स्वामित्व छैन।</translation>
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
+<translation id="8147028810663464959">क्यारेक्टर चौडाइ पूर्ण छ</translation>
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
 <translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>

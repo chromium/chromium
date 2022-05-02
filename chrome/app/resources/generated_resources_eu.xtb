@@ -1920,6 +1920,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2795716239552913152">Webguneek kokapena erabili ohi dute eginbide edo informazio egokia eskaintzeko, hala nola tokiko albisteak edo inguruan dauden dendak</translation>
 <translation id="2796424461616874739">Autentifikatzeko denbora-muga gainditu da "<ph name="DEVICE_NAME" />" gailura konektatzean.</translation>
 <translation id="2796740370559399562">Jarraitu cookieak baimentzen</translation>
+<translation id="2798347533012571708">Mantendu eguneratzeak</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2800760947029405028">Kargatu irudi bat</translation>
 <translation id="2801954693771979815">Pantailaren tamaina</translation>
@@ -3751,6 +3752,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
 <translation id="4619615317237390068">Beste gailu batzuetako fitxak</translation>
 <translation id="4620809267248568679">Luzapen batek betearazten du ezarpena.</translation>
+<translation id="4622051949285931942">Eguneratze automatikoak desaktibatu nahi dituzu?</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
 <translation id="4623189117674524348">Sistemak ezin izan dio eman APIa atzitzeko baimenik gailu honi.</translation>
 <translation id="4624054169152573743">Kolore-gaia</translation>
@@ -4549,6 +4551,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5436575196282187764">Google Argazkiak zerbitzuko oroitzapenak</translation>
 <translation id="5439680044267106777">Saltatu eta konfiguratu beste profil bat</translation>
 <translation id="544083962418256601">Sortu lasterbideak…</translation>
+<translation id="5441133529460183413">Chrome arakatzailetik instalatutako web-aplikazioa</translation>
 <translation id="5442228125690314719">Errore bat gertatu da diskoaren irudia sortzean. Saiatu berriro.</translation>
 <translation id="5442550868130618860">Aktibatu eguneratze automatikoak</translation>
 <translation id="5445400788035474247">10x</translation>
@@ -4780,6 +4783,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5658415415603568799">Segurtasun handiagoa izateko, pasahitza idazteko eskatuko dizu Smart Lock zerbitzuak 20 ordu igarotakoan.</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5659833766619490117">Ezin izan da itzuli orria</translation>
+<translation id="566097169318652001">Baliteke gailuak behar bezala funtzionatzeari uztea eta segurtasun- eta funtzionamendu-arazoak izatea. Halaber, litekeena da aplikazioen eginbide nagusiek funtzionatzeari uztea zaharkituta gelditzen direnean, eta zuk legezko erreklamazioak egiteko eskubidea galtzea.</translation>
 <translation id="5662513737565158057">Aldatu Linux-eko aplikazioen funtzionamendua.</translation>
 <translation id="5667293444945855280">Malwarea</translation>
 <translation id="5667546120811588575">Google Play konfiguratzen…</translation>
@@ -7003,6 +7007,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7865127013871431856">Itzultzeko aukerak</translation>
 <translation id="7869143217755017858">Desgaitu modu iluna</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Parekatu da</translation>
+<translation id="7869655448736341731">Edozein</translation>
 <translation id="7870730066603611552">Berrikusi sinkronizazio-aukerak konfigurazioaren ondoren</translation>
 <translation id="7870790288828963061">Ez da aurkitu kiosko-aplikazio berriagorik. Ez dago ezer eguneratzeko. Kendu USB memoria.</translation>
 <translation id="7871109039747854576">Erabili <ph name="COMMA" /> eta <ph name="PERIOD" /> teklak aukeren zerrenda erakusteko</translation>
@@ -7460,6 +7465,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8300374739238450534">Gau-urdina</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Helbidea}other{# helbide}}</translation>
 <translation id="8304383784961451596">Ez duzu baimenik gailu hau erabiltzeko. Jarri harremanetan administratzailearekin saioa hasteko baimena lortzeko, edo hasi saioa Family Link-ek gainbegiratutako Google-ko kontu batean.</translation>
+<translation id="8306885873692337975">Lortu azken eginbideak eta segurtasun-hobekuntzak.</translation>
 <translation id="8307094075368387939">Pertsonalizazio-zentroan doi dezakezu programazioa, baita horma-papera eta pantaila-babeslea ezarri, eta sistemaren koloreak pertsonalizatu ere.</translation>
 <translation id="8308016398665340540">Gailu honen beste erabiltzaile batzuekin ari zara partekatzen sarea</translation>
 <translation id="8308179586020895837">Galdetu <ph name="HOST" /> ostalariak zure kamera atzitu nahi duenean</translation>

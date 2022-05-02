@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Hizmetler</translation>
 <translation id="1829129547161959350">Penguen</translation>
 <translation id="183183971458492120">Bilgiler yükleniyor...</translation>
+<translation id="1832073788765803750">Yarı genişlikte katakana</translation>
 <translation id="1834290891154666894">Alternatif konu adı eşleşme girişi geçersiz</translation>
 <translation id="1838709767668011582">Google sitesi</translation>
 <translation id="1844692022597038441">Bu dosya çevrimdışı kullanılamıyor.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />'a yedekleniyor</translation>
 <translation id="535792325654997756">Kediler ve insan</translation>
 <translation id="5358764674931277">Kare hızı</translation>
+<translation id="5363339716524495120">Giriş dili Çince</translation>
 <translation id="5368191757080475556">Linux ile klasör paylaşma</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Aşağıdaki ana makine ve alanlar için proxy ayarlarını kullanmayın:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Boyut hesaplanıyor</translation>
 <translation id="554153475311314364">Yunanca Harf Çevirisi</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
+<translation id="5583664733673201137">Noktalama genişliği Tam</translation>
 <translation id="5602622065581044566">Fonetik klavye ile Bulgarca</translation>
 <translation id="5605830556594064952">ABD Dvorak</translation>
 <translation id="5618330573454123917">Bu dosya Macintosh yazılımı kullanan bilgisayarlar için tasarlanmıştır. ChromeOS çalıştıran cihazınızla uyumlu değildir. ChromeOS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" sizinle paylaşıldı. Sahibi siz olmadığınız için bu dosyayı silemezsiniz.</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
+<translation id="8147028810663464959">Karakter genişliği Tam</translation>
 <translation id="8151638057146502721">Yapılandır</translation>
 <translation id="8154842056504218462">Tüm girişler seçildi.</translation>
 <translation id="8157684860301034423">Uygulama bilgileri alınamadı.</translation>

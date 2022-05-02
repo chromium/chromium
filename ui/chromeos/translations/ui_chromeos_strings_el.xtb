@@ -106,6 +106,7 @@
 <translation id="1813278315230285598">Υπηρεσίες</translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
+<translation id="1832073788765803750">Κατακάνα μισού πλάτους</translation>
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="1838709767668011582">Ιστότοπος Google</translation>
 <translation id="1844692022597038441">Αυτό το αρχείο δεν είναι διαθέσιμο εκτός σύνδεσης.</translation>
@@ -530,6 +531,7 @@
 <translation id="5335458522276292100">Δημιουργία αντιγράφων ασφαλείας για <ph name="FILE_COUNT" /> αρχεία στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
+<translation id="5363339716524495120">Η γλώσσα εισόδου είναι τα Κινέζικα</translation>
 <translation id="5368191757080475556">Κοινοποίηση φακέλου με Linux</translation>
 <translation id="5402367795255837559">Μπράιγ</translation>
 <translation id="5411472733320185105">Μην χρησιμοποιείτε τις ρυθμίσεις διακομιστή μεσολάβησης για αυτούς τους κεντρικούς υπολογιστές και τομείς:</translation>
@@ -553,6 +555,7 @@
 <translation id="5534520101572674276">Υπολογισμός μεγέθους</translation>
 <translation id="554153475311314364">Μεταγραφή Ελληνικών</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
+<translation id="5583664733673201137">Το εύρος στίξης είναι "Πλήρες"</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5605830556594064952">Dvorak ΗΠΑ</translation>
 <translation id="5618330573454123917">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
@@ -856,6 +859,7 @@
 <translation id="8128733386027980860">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="8137331602592933310">Το "<ph name="FILENAME" />" έχει χρησιμοποιηθεί από κοινού με εσάς. Δεν μπορείτε να το διαγράψετε, επειδή δεν σας ανήκει.</translation>
 <translation id="813913629614996137">Εκκίνηση…</translation>
+<translation id="8147028810663464959">Το εύρος χαρακτήρων είναι "Πλήρες"</translation>
 <translation id="8151638057146502721">Διαμόρφωση</translation>
 <translation id="8154842056504218462">Επιλέχθηκαν όλες οι καταχωρίσεις.</translation>
 <translation id="8157684860301034423">Αποτυχία ανάκτησης των πληροφοριών της εφαρμογής.</translation>

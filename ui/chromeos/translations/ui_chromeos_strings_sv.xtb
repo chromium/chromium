@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Tjänster</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Läser in information …</translation>
+<translation id="1832073788765803750">Katakana med halvbredd</translation>
 <translation id="1834290891154666894">Ogiltig inmatning för matchning av ämnets andra namn</translation>
 <translation id="1838709767668011582">Google-webbplats</translation>
 <translation id="1844692022597038441">Den här filen är inte tillgänglig offline.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Säkerhetskopierar <ph name="FILE_COUNT" /> på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildfrekvens</translation>
+<translation id="5363339716524495120">Inmatningsspråket är kinesiska</translation>
 <translation id="5368191757080475556">Dela mappen med Linux</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
 <translation id="5411472733320185105">Använd inte proxyinställningar för dessa värdenheter och domäner:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Storleken beräknas</translation>
 <translation id="554153475311314364">grekiska, translitterering</translation>
 <translation id="5583640892426849032">Backsteg</translation>
+<translation id="5583664733673201137">Punktbredden är full</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
 <translation id="5605830556594064952">USA (dvorak)</translation>
 <translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">engelska (Förenade kungariket) med Dvorak-tangentbord</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> har delats med dig. Du kan inte ta bort det eftersom du inte äger det.</translation>
 <translation id="813913629614996137">Initierar …</translation>
+<translation id="8147028810663464959">Teckenbredden är full</translation>
 <translation id="8151638057146502721">Konfigurera</translation>
 <translation id="8154842056504218462">Alla poster har markerats.</translation>
 <translation id="8157684860301034423">Det gick inte att hämta information om appen.</translation>

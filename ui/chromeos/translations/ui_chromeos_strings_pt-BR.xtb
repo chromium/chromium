@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Serviços</translation>
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="183183971458492120">Carregando informações…</translation>
+<translation id="1832073788765803750">Katakana com meia largura</translation>
 <translation id="1834290891154666894">Entrada inválida de correspondência do nome alternativo do assunto</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Este arquivo não está disponível off-line.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Fazendo backup de <ph name="FILE_COUNT" /> arquivo(s) para o <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Frame rate</translation>
+<translation id="5363339716524495120">O idioma de entrada é o chinês</translation>
 <translation id="5368191757080475556">Compartilhar pasta com o Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Não usar as configurações de proxy para estes hosts e domínios:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Calculando tamanho...</translation>
 <translation id="554153475311314364">Grego (transliteração)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">A largura da pontuação é inteira</translation>
 <translation id="5602622065581044566">Búlgaro com teclado fonético</translation>
 <translation id="5605830556594064952">Dvorak americano</translation>
 <translation id="5618330573454123917">Esse arquivo foi criado para computadores que usam o software Macintosh. Ele não é compatível com seu dispositivo ChromeOS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no ChromeOS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Inglês (Reino Unido) com teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" foi compartilhado com você. Não é possível excluí-lo porque você não é o proprietário dele.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
+<translation id="8147028810663464959">A largura de caractere é inteira</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154842056504218462">Todas as entradas selecionadas.</translation>
 <translation id="8157684860301034423">Falha ao recuperar informações do app.</translation>

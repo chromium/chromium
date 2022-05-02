@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Dịch vụ</translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="183183971458492120">Đang tải thông tin...</translation>
+<translation id="1832073788765803750">Chữ Katakana nửa chiều rộng</translation>
 <translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
 <translation id="1838709767668011582">Trang web Google</translation>
 <translation id="1844692022597038441">Tệp này không có khi ngoại tuyến.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Đang sao lưu <ph name="FILE_COUNT" /> vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Người với mèo</translation>
 <translation id="5358764674931277">Tốc độ khung hình</translation>
+<translation id="5363339716524495120">Ngôn ngữ nhập là tiếng Trung</translation>
 <translation id="5368191757080475556">Chia sẻ thư mục với Linux</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
 <translation id="5411472733320185105">Không sử dụng cài đặt proxy cho các máy chủ và tên miền này:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Đang tính toán kích thước</translation>
 <translation id="554153475311314364">Tiếng Hy Lạp (chuyển tự)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Độ rộng dấu câu là Đầy đủ</translation>
 <translation id="5602622065581044566">Tiếng Bulgaria bằng bàn phím phiên âm</translation>
 <translation id="5605830556594064952">Dvorak Hoa Kỳ</translation>
 <translation id="5618330573454123917">Tệp này dành cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Tiếng Anh (Anh) bằng bàn phím Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" đã được chia sẻ với bạn. Bạn không thể xóa tệp vì bạn không sở hữu tệp.</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
+<translation id="8147028810663464959">Độ rộng ký tự là Đầy đủ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
 <translation id="8154842056504218462">Đã chọn tất cả các mục.</translation>
 <translation id="8157684860301034423">Không truy xuất được thông tin ứng dụng.</translation>

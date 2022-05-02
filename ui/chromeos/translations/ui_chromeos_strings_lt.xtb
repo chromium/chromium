@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Paslaugos</translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="183183971458492120">Įkeliama informacija...</translation>
+<translation id="1832073788765803750">Pusės pločio katakana</translation>
 <translation id="1834290891154666894">Netinkama alternatyvaus subjekto pavadinimo atitikties įvestis</translation>
 <translation id="1838709767668011582">„Google“ svetainė</translation>
 <translation id="1844692022597038441">Šis failas nepasiekiamas neprisijungus.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Kuriama <ph name="FILE_COUNT" /> atsarginė kopija <ph name="BEGIN_LINK" />„Google“ diske<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Žmogus su katėmis</translation>
 <translation id="5358764674931277">Kadrų dažnis</translation>
+<translation id="5363339716524495120">Įvesties kalba yra kinų k.</translation>
 <translation id="5368191757080475556">Aplankas bendrinamas su „Linux“</translation>
 <translation id="5402367795255837559">Brailio rašmenys</translation>
 <translation id="5411472733320185105">Nenaudoti įgaliotojo serverio nustatymų šioms priegloboms ir domenams:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Apskaičiuojamas dydis</translation>
 <translation id="554153475311314364">Graikų k. transliteracija</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
+<translation id="5583664733673201137">Skyrybos ženklo plotis yra viso dydžio</translation>
 <translation id="5602622065581044566">Bulgarų k. su fonetine klaviatūra</translation>
 <translation id="5605830556594064952">JAV Dvorako</translation>
 <translation id="5618330573454123917">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Anglų k. (JK) su Dvorako klaviatūra</translation>
 <translation id="8137331602592933310">Su jumis buvo bendrintas failas „<ph name="FILENAME" />“. Negalite jo ištrinti, nes jis jums nepriklauso.</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
+<translation id="8147028810663464959">Simbolio plotis yra viso dydžio</translation>
 <translation id="8151638057146502721">Konfigūruoti</translation>
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
 <translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>

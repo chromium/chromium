@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Usługi</translation>
 <translation id="1829129547161959350">Pingwin</translation>
 <translation id="183183971458492120">Ładuję informacje…</translation>
+<translation id="1832073788765803750">Katakana o połowie szerokości</translation>
 <translation id="1834290891154666894">Nieprawidłowa pozycja dopasowania alternatywnej nazwy podmiotu</translation>
 <translation id="1838709767668011582">Witryna Google</translation>
 <translation id="1844692022597038441">Ten plik nie jest dostępny offline.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Tworzą kopię zapasową (<ph name="FILE_COUNT" />) na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
+<translation id="5363339716524495120">Język wprowadzania: chiński</translation>
 <translation id="5368191757080475556">Udostępnianie folderu Linuksowi</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
 <translation id="5411472733320185105">Nie używaj ustawień proxy dla następujących hostów i domen:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Obliczanie rozmiaru</translation>
 <translation id="554153475311314364">Grecki – transliteracja</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Szerokość przestankowania: pełna</translation>
 <translation id="5602622065581044566">Bułgarski z klawiaturą fonetyczną</translation>
 <translation id="5605830556594064952">amerykańska klawiatura Dvoraka</translation>
 <translation id="5618330573454123917">To jest plik na komputery Mac. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Dowiedz się więcej<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Angielski (Wielka Brytania) z klawiaturą Dvoraka</translation>
 <translation id="8137331602592933310">Plik „<ph name="FILENAME" />” został Ci udostępniony. Nie możesz go usunąć, ponieważ nie jesteś jego właścicielem.</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
+<translation id="8147028810663464959">Szerokość znaków: pełna</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8154842056504218462">Zaznaczono wszystkie elementy.</translation>
 <translation id="8157684860301034423">Nie udało się pobrać informacji o aplikacji.</translation>

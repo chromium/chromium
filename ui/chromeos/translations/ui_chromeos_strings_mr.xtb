@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">सेवा</translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
 <translation id="183183971458492120">माहिती लोड करत आहे...</translation>
+<translation id="1832073788765803750">हाफ वाइड कातकाना</translation>
 <translation id="1834290891154666894">विषयाच्या पर्यायी नावाच्या जुळणीची एंट्री चुकीची आहे</translation>
 <translation id="1838709767668011582">Google साइट</translation>
 <translation id="1844692022597038441">ही फाइल ऑफलाइन उपलब्ध नाही.</translation>
@@ -518,6 +519,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> चा <ph name="BEGIN_LINK" />Google ड्राइव्ह<ph name="END_LINK" /> वर बॅकअप घेत आहे</translation>
 <translation id="535792325654997756">मांजरींसह व्यक्ती</translation>
 <translation id="5358764674931277">फ्रेम दर</translation>
+<translation id="5363339716524495120">इनपुट भाषा चीनी आहे</translation>
 <translation id="5368191757080475556">Linux सह फोल्डर शेअर करा</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
 <translation id="5411472733320185105">या होस्ट आणि डोमेनसाठी प्रॉक्सी सेटिंग्ज वापरू नका:</translation>
@@ -540,6 +542,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5534520101572674276">आकार मोजत आहे</translation>
 <translation id="554153475311314364">ग्रीक लिप्यंतरण</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">विरामचिन्ह रूंदी पूर्ण आहे</translation>
 <translation id="5602622065581044566">फोनेटिक कीबोर्डसह बल्गेरियन</translation>
 <translation id="5605830556594064952">येएस द्वोराक</translation>
 <translation id="5618330573454123917">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या ChromeOS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. ChromeOS वर फाइल उघडण्याविषयी <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
@@ -838,6 +841,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8128733386027980860">ड्वोझॅक कीबोर्डसह इंग्रजी (यूके)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" आपल्यासह शेअर केले गेले आहे. हे आपल्या मालकीचे नसल्यामुळे तुम्ही ते हटवू शकत नाही.</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
+<translation id="8147028810663464959">वर्ण रूंदी पूर्ण आहे</translation>
 <translation id="8151638057146502721">कॉंफिगर करा</translation>
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
 <translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>

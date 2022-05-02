@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Usluge</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje podataka...</translation>
+<translation id="1832073788765803750">uska katakana</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja zamjenskog naziva predmeta</translation>
 <translation id="1838709767668011582">Google web-lokacija</translation>
 <translation id="1844692022597038441">Ova datoteka nije dostupna izvan mreže.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Sigurnosno kopiranje datoteka (ukupno) <ph name="FILE_COUNT" /> na <ph name="BEGIN_LINK" />Google disk<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Brzina kadrova u sekundi</translation>
+<translation id="5363339716524495120">Jezik je unosa kineski</translation>
 <translation id="5368191757080475556">Dijelite mapu s Linuxom</translation>
 <translation id="5402367795255837559">Brajica</translation>
 <translation id="5411472733320185105">Ne upotrebljavaj proxy postavke za ove hostove i domene:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Veličina izračuna</translation>
 <translation id="554153475311314364">transliteracija za grčki</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Širina je interpunkcije "puna"</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tipkovnicom</translation>
 <translation id="5605830556594064952">američka (SAD: Dvorak)</translation>
 <translation id="5618330573454123917">Ta je datoteka predviđena za računalo koje upotrebljava Mac OS. Nije kompatibilna s vašim uređajem na kojem se izvodi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u Chrome OS-u.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">engleski (UK) s tipkovnicom Dvorak</translation>
 <translation id="8137331602592933310">S vama je podijeljena datoteka "<ph name="FILENAME" />". Ne možete je izbrisati jer joj niste vlasnik.</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
+<translation id="8147028810663464959">Širina je znakova "puna"</translation>
 <translation id="8151638057146502721">Konfiguracija</translation>
 <translation id="8154842056504218462">Odabrane su sve stavke.</translation>
 <translation id="8157684860301034423">Dohvaćanje informacija o aplikaciji nije uspjelo.</translation>

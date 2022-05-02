@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
+<translation id="1264116747675686718">A atualizar a versão do SO</translation>
 <translation id="1264369926465113395">Veja a nova revista digital do Chromebook para criadores</translation>
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tente novamente</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2163937499206714165">Ativar modo escuro</translation>
+<translation id="2177831236093724629">Foram encontrados <ph name="LINK_BEGIN" />componentes não qualificados<ph name="LINK_END" />. Para se certificar de que todos os componentes qualificados são identificados, atualize o Chrome OS para a versão mais recente.</translation>
 <translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
 <translation id="2209788852729124853">Repor contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nomes</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
+<translation id="320091191259649613">Se continuar a obter o erro após a atualização, é possível que o componente tenha sido qualificado recentemente e ainda não esteja na base de dados.</translation>
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
@@ -378,6 +381,7 @@
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Ocultar relatório</translation>
+<translation id="5008611843832219958">Atualize para a versão mais recente do Chrome OS para um processo de reparação otimizado</translation>
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apresente fotos, as horas, a meteorologia e informações de multimédia quando o ecrã está inativo.</translation>
@@ -432,6 +436,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Não foi possível concluir a digitalização</translation>
 <translation id="5502931783115429516">O Android não está a funcionar</translation>
+<translation id="5507300744274596613">Certifique-se de que o Chrome OS está atualizado</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -470,6 +475,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Imagem de fundo predefinida</translation>
 <translation id="6034694447310538551">Ativar reposição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -720,6 +726,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Atualizar para <ph name="VERSION_NUMBER" /> e reiniciar</translation>
 <translation id="8675354002693747642">Chave pré-partilhada</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilize as teclas das setas para a esquerda ou para a direita para gerir esta funcionalidade.</translation>
@@ -784,6 +791,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9204237731135241582">Não é possível contactar o gateway a partir de apps Android</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
+<translation id="922179502584117429">A versão atual <ph name="VERSION_NUMBER" /> está desatualizada</translation>
 <translation id="932327136139879170">Página inicial</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Não activado</translation>

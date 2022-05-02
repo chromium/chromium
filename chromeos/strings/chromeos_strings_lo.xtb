@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
+<translation id="1264116747675686718">ກຳລັງອັບເດດເວີຊັນລະບົບປະຕິບັດການ</translation>
 <translation id="1264369926465113395">ກວດເບິ່ງວາລະສານດິຈິຕອນໃໝ່ຂອງ Chromebook ສຳລັບຜູ້ສ້າງ</translation>
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
+<translation id="2177831236093724629">ພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ເພື່ອກວດສອບວ່າອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂທັງໝົດໄດ້ຮັບການລະບຸແລ້ວ, ໃຫ້ອັບເດດ Chrome OS ຂອງທ່ານເປັນເວີຊັນຫຼ້າສຸດ.</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
+<translation id="320091191259649613">ຫາກທ່ານຍັງຄົງພົບບັນຫາຫຼັງຈາກອັບເດດ, ມັນເປັນໄປໄດ້ວ່າອົງປະກອບດັ່ງກ່າວຫາກໍຜ່ານເງື່ອນໄຂ ແລະ ຍັງບໍ່ໄດ້ຖືກສົ່ງເຂົ້າໄປໃນຖານຂໍ້ມູນເທື່ອ.</translation>
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">ເຊື່ອງລາຍງານ</translation>
+<translation id="5008611843832219958">ອັບເດດເປັນ Chrome OS ເວີຊັນຫຼ້າສຸດສຳລັບຂັ້ນຕອນການສ້ອມແປງທີ່ປັບໃຫ້ເໝາະສົມແລ້ວ</translation>
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ເມື່ອໜ້າຈໍຂອງທ່ານຢູ່ລ້າໆ, ໃຫ້ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ບໍ່ສາມາດສະແກນໃຫ້ສຳເລັດໄດ້</translation>
 <translation id="5502931783115429516">Android ບໍ່ໄດ້ຖືກເອີ້ນໃຊ້ຢູ່</translation>
+<translation id="5507300744274596613">ໃຫ້ກວດສອບວ່າອັບເດດ Chrome OS ແລ້ວ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="594552776027197022">ສ້າງຄູ່ກະແຈແບບສຸ່ມ</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
+<translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
 <translation id="6034694447310538551">ເປີດການນຳໃຊ້ການຣີເຊັດລາຍເດືອນອັດຕະໂນມັດ</translation>
 <translation id="6037291330010597344">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຫວ່າງເປົ່າ. ກະລຸນາເພີ່ມເອກະສານໃສ່ແລ້ວລອງໃໝ່.</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -719,6 +725,7 @@
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8660881923941176839">ພາວ</translation>
 <translation id="8662671328352114214">ເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">ອັບເດດເປັນ <ph name="VERSION_NUMBER" /> ແລ້ວຣີສະຕາດ</translation>
 <translation id="8675354002693747642">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="8677859815076891398">ບໍ່ມີອະລະບ້ຳ. ສ້າງອະລະບໍ້າໃນ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
@@ -783,6 +790,7 @@
 <translation id="917720651393141712">ທົດສອບ</translation>
 <translation id="9204237731135241582">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວຈາກແອັບ Android ໄດ້</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
+<translation id="922179502584117429">ເວີຊັນປັດຈຸບັນ <ph name="VERSION_NUMBER" /> ແມ່ນເກົ່າແລ້ວ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>

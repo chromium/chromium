@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Hollenska (Holland)</translation>
 <translation id="174937106936716857">Heildarfjöldi skráa</translation>
 <translation id="1755345808328621801">Þessi skrá er hönnuð fyrir tölvu með Windows-hugbúnaði. Hún er ekki samhæf tækinu þínu sem keyrir ChromeOS. Leitaðu að hentugu forriti í stað þessa í vefverslun Chrome.</translation>
+<translation id="1757915090001272240">Breitt latneskt</translation>
 <translation id="1773212559869067373">Auðkenningarvottorði var hafnað staðbundið</translation>
 <translation id="1775381402323441512">Upplýsingar um myndskeið</translation>
 <translation id="180035236176489073">Þú verður að vera á netinu til að geta opnað þessar skrár.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Þjónusta</translation>
 <translation id="1829129547161959350">Mörgæs</translation>
 <translation id="183183971458492120">Sækir upplýsingar...</translation>
+<translation id="1832073788765803750">Katakana í hálfri breidd</translation>
 <translation id="1834290891154666894">Ógild samsvörunarfærsla fyrir auknefni viðfangs</translation>
 <translation id="1838709767668011582">Google vefsvæði</translation>
 <translation id="1844692022597038441">Þessi skrá er ekki tiltæk án nettengingar.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100">Afritar <ph name="FILE_COUNT" /> á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Einstaklingur með ketti</translation>
 <translation id="5358764674931277">Rammatíðni</translation>
+<translation id="5363339716524495120">Inntakstungumál er kínverska</translation>
 <translation id="5368191757080475556">Deila möppu með Linux</translation>
 <translation id="5402367795255837559">Blindraletur</translation>
 <translation id="5411472733320185105">Nota ekki proxy-stillingarnar fyrir þessa hýsla og lén:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Reiknar stærð</translation>
 <translation id="554153475311314364">Gríska umritun</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
+<translation id="5583664733673201137">Greinarmerki eru í fullri breidd</translation>
 <translation id="5602622065581044566">Búlgarska með hljóðritunarlyklaborði</translation>
 <translation id="5605830556594064952">Bandarískt Dvorak</translation>
 <translation id="5618330573454123917">Þessi skrá er hönnuð fyrir tölvu sem notar Macintosh-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir ChromeOS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í ChromeOS.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245">Fann <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Afritun á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> er tilbúin</translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam hljóðritun</translation>
 <translation id="7505167922889582512">Sýna faldar skrár</translation>
 <translation id="7514365320538308">Sækja</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">Enska (bresk) með Dvorak-lyklaborði</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ hefur verið deilt með þér. Þú getur ekki eytt því vegna þess að þú ert ekki eigandinn.</translation>
 <translation id="813913629614996137">Frumstillir...</translation>
+<translation id="8147028810663464959">Stafir eru í fullri breidd</translation>
 <translation id="8151638057146502721">Grunnstilla</translation>
 <translation id="8154842056504218462">Allar færslur valdar.</translation>
 <translation id="8157684860301034423">Mistókst að sækja upplýsingar um forrit.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Listaverk</translation>
 <translation id="8223479393428528563">Til að vista þessar skrár fyrir notkun án nettengingar skaltu tengjast netinu aftur, hægrismella á skrárnar og velja kostinn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Hætta</translation>
+<translation id="8250690786522693009">Latneskt</translation>
 <translation id="8250920743982581267">Skjöl</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8261561378965667560">Kínverska Array</translation>

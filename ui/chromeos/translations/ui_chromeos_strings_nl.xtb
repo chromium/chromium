@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="1829129547161959350">Pinguïn</translation>
 <translation id="183183971458492120">Informatie laden…</translation>
+<translation id="1832073788765803750">Katakana op halve breedte</translation>
 <translation id="1834290891154666894">Ongeldige invoer voor overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="1838709767668011582">Google-site</translation>
 <translation id="1844692022597038441">Dit bestand is offline niet beschikbaar.</translation>
@@ -519,6 +520,7 @@
 <translation id="5335458522276292100">Back-up van <ph name="FILE_COUNT" /> maken op <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persoon met katten</translation>
 <translation id="5358764674931277">Framesnelheid</translation>
+<translation id="5363339716524495120">Invoertaal is Chinees</translation>
 <translation id="5368191757080475556">Map delen met Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">De proxyinstellingen niet gebruiken voor deze hosts en domeinen:</translation>
@@ -541,6 +543,7 @@
 <translation id="5534520101572674276">Grootte berekenen</translation>
 <translation id="554153475311314364">Grieks (transliteratie)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Interpunctiebreedte: volledig (vol)</translation>
 <translation id="5602622065581044566">Bulgaars met fonetisch toetsenbord</translation>
 <translation id="5605830556594064952">Amerikaans Dvorak</translation>
 <translation id="5618330573454123917">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
@@ -839,6 +842,7 @@
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>
 <translation id="813913629614996137">Starten...</translation>
+<translation id="8147028810663464959">Karakterbreedte: volledig (vol)</translation>
 <translation id="8151638057146502721">Configureren</translation>
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>

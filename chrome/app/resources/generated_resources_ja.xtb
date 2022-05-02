@@ -1915,6 +1915,7 @@
 <translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
 <translation id="2796424461616874739">「<ph name="DEVICE_NAME" />」への接続中に、認証がタイムアウトになりました。</translation>
 <translation id="2796740370559399562">Cookie を引き続き許可する</translation>
+<translation id="2798347533012571708">常に更新</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2800760947029405028">画像をアップロード</translation>
 <translation id="2801954693771979815">画面サイズ</translation>
@@ -3741,6 +3742,7 @@
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4620809267248568679">この設定は拡張機能によって行われました。</translation>
+<translation id="4622051949285931942">自動更新をオフにしますか？</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
 <translation id="4623189117674524348">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="4624054169152573743">色のテーマ</translation>
@@ -4536,6 +4538,7 @@
 <translation id="5436575196282187764">Google フォトの「思い出」</translation>
 <translation id="5439680044267106777">スキップして新しいプロファイルを設定</translation>
 <translation id="544083962418256601">ショートカットを作成...</translation>
+<translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
 <translation id="5442228125690314719">ディスク イメージの作成中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="5442550868130618860">自動更新を有効にする</translation>
 <translation id="5445400788035474247">10 倍</translation>
@@ -4769,6 +4772,7 @@
 <translation id="5658415415603568799">セキュリティ強化のため、Smart Lock では 20 時間が経過するとパスワードの入力が求められます。</translation>
 <translation id="5659593005791499971">メール</translation>
 <translation id="5659833766619490117">このページを翻訳できませんでした</translation>
+<translation id="566097169318652001">お使いのデバイスは正しく動作していない可能性があり、セキュリティやパフォーマンス上の問題が発生することがあります。アプリの主な機能が期限切れとなった場合、動作が停止する可能性もあります。その場合、ユーザーは法的申し立てを行う権利を失います。</translation>
 <translation id="5662513737565158057">Linux アプリの動作を変更します。</translation>
 <translation id="5667293444945855280">マルウェア</translation>
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
@@ -6986,6 +6990,7 @@
 <translation id="7865127013871431856">翻訳オプション</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
+<translation id="7869655448736341731">指定なし</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> キーと <ph name="PERIOD" /> キーで候補リストのページを切り替える</translation>
@@ -7444,6 +7449,7 @@
 <translation id="8300374739238450534">ミッドナイトブルー</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{住所}other{# 件の住所}}</translation>
 <translation id="8304383784961451596">このデバイスを使用する権限がありません。ログイン権限についてデバイスの管理者に問い合わせるか、ファミリー リンクで管理されている Google アカウントでログインしてください。</translation>
+<translation id="8306885873692337975">最新の機能を入手しセキュリティを強化しましょう。</translation>
 <translation id="8307094075368387939">Personalisation Hub では、スケジュール調整のほか、壁紙やスクリーンセーバーの設定、システムカラーのカスタマイズを行うことができます。</translation>
 <translation id="8308016398665340540">このデバイスの他のユーザーとネットワークを共有しています</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> がカメラへのアクセスを必要としているときは確認画面を表示する</translation>

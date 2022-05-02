@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Pakalpojumi</translation>
 <translation id="1829129547161959350">Pingvīns</translation>
 <translation id="183183971458492120">Notiek informācijas ielāde...</translation>
+<translation id="1832073788765803750">Pusplatuma katakana</translation>
 <translation id="1834290891154666894">Nederīgs subjekta alternatīvā nosaukuma atbilstības ieraksts.</translation>
 <translation id="1838709767668011582">Google vietne</translation>
 <translation id="1844692022597038441">Šis fails nav pieejams bezsaistē.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Dublēšana <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Persona ar kaķiem</translation>
 <translation id="5358764674931277">Kadri sekundē</translation>
+<translation id="5363339716524495120">Ievades valoda ir ķīniešu valoda.</translation>
 <translation id="5368191757080475556">Mapes kopīgošana ar Linux</translation>
 <translation id="5402367795255837559">Braila raksts</translation>
 <translation id="5411472733320185105">Neizmantojiet starpniekservera iestatījumus šādiem resursdatoriem un domēniem:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Notiek lieluma aprēķināšana.</translation>
 <translation id="554153475311314364">Grieķu, transliterācija</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
+<translation id="5583664733673201137">Pieturzīmju platums ir pilns.</translation>
 <translation id="5602622065581044566">Bulgāru, ar fonētisko tastatūru</translation>
 <translation id="5605830556594064952">ASV Dvorak</translation>
 <translation id="5618330573454123917">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">Angļu (Apvienotā Karaliste), ar Dvorak tastatūru</translation>
 <translation id="8137331602592933310">Fails “<ph name="FILENAME" />” tika kopīgots ar jums. Jūs nevarat to dzēst, jo tas nepieder jums.</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
+<translation id="8147028810663464959">Rakstzīmju platums ir pilns.</translation>
 <translation id="8151638057146502721">Konfigurēt</translation>
 <translation id="8154842056504218462">Atlasīti visi vienumi.</translation>
 <translation id="8157684860301034423">Neizdevās izgūt informāciju par lietotni.</translation>

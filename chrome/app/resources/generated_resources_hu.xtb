@@ -889,6 +889,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1823098433522728610">Ebben a dokumentumban bizalmas tartalom található.</translation>
 <translation id="18245044880483936">A biztonsági másolat adatmennyisége nem számít bele gyermeke Drive-tárhelykvótájába.</translation>
 <translation id="1825565032302550710">A port számának 1024 és 65535 között kell lennie</translation>
+<translation id="182577151972096764">nemrégiben megtekintett receptek</translation>
 <translation id="1826192255355608658">Szinkronizálhatja a Chrome böngésző könyvjelzőit, jelszavait, előzményeit és még sok mást is</translation>
 <translation id="1826516787628120939">Ellenőrzés</translation>
 <translation id="1827738518074806965">Galéria</translation>
@@ -1325,6 +1326,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2241053333139545397">Adatainak olvasása és módosítása bizonyos webhelyeken</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2242687258748107519">Fájlinformáció</translation>
+<translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> eszközét automatikusan frissíti a rendszer, hogy a legfrissebb funkciókat és biztonsági javításokat tudja biztosítani. A frissítési preferenciákat a Beállításokban tekintheti át.</translation>
 <translation id="2246549592927364792">Szeretne képleírásokat kapni a Google-tól?</translation>
 <translation id="2247738527273549923">Az eszközt az Ön szervezete kezeli</translation>
 <translation id="2249111429176737533">Megnyitás ablakként (lapokkal)</translation>
@@ -1619,6 +1621,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="249113932447298600">Elnézést kérünk, de a(z) <ph name="DEVICE_LABEL" /> eszköz jelenleg nem támogatott.</translation>
 <translation id="2492461744635776704">Tanúsítvány-aláírási kérés előkészítése</translation>
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
+<translation id="2495524171012645395">Nemrégiben megtekintett receptek</translation>
 <translation id="2496180316473517155">Böngészés előzményei</translation>
 <translation id="2497229222757901769">Egér sebessége</translation>
 <translation id="2497852260688568942">A szinkronizálást letiltotta a rendszergazda</translation>
@@ -1931,6 +1934,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
 <translation id="2796424461616874739">Hitelesítési időtúllépés a(z) „<ph name="DEVICE_NAME" />” eszköz csatlakoztatása során.</translation>
 <translation id="2796740370559399562">Cookie-k engedélyezése továbbra is</translation>
+<translation id="2798347533012571708">Frissítések megőrzése</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2800760947029405028">Kép feltöltése</translation>
 <translation id="2801954693771979815">Képernyő mérete</translation>
@@ -3435,6 +3439,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4289732974614035569">PIN-kód megadása</translation>
 <translation id="4290791284969893584">Előfordulhat, hogy az adott oldal bezárása után az elkezdett feladatok nem fejeződnek be</translation>
 <translation id="4291265871880246274">Bejelentkezési párbeszédpanel</translation>
+<translation id="429234155571566255">ezek a nemrégiben megtekintett receptek</translation>
 <translation id="4295072614469448764">Az alkalmazás rendelkezésre áll a terminálból. Lehet, hogy ikon is került az Indítóba.</translation>
 <translation id="4295979599050707005">Jelentkezzen be ismét annak megerősítése céljából, hogy fiókja (<ph name="USER_EMAIL" />) használható webhelyekkel, alkalmazásokkal és bővítményekkel a Chrome-ban, illetve a Google Playjel. El is távolíthatja ezt a fiókot. <ph name="LINK_BEGIN" />További információ.<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Újraindítás és visszaállítás</translation>
@@ -3495,6 +3500,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="435527878592612277">Válassza ki a fotóját</translation>
 <translation id="4358302248024731679">A Bluetooth-problémák hatékonyabb elemzése érdekében a Google-alkalmazottak kiegészítő Bluetooth-naplókat is csatolhatnak visszajelzéseikhez. Ha be van jelölve ez a beállítás, a jelentés tartalmazni fogja az aktuális munkamenet btsnoop és HCI naplóit, kitörölve belőlük a lehető legtöbb személyazonosításra alkalmas adatot. Ezekhez a naplókhoz kizárólag a ChromeOS termékcsalád vezetői férhetnek hozzá a Listnr szolgáltatásban. A naplók törlése 90 nap múlva megtörténik.</translation>
 <translation id="4358313196493694334">Kattintási hely stabilizálása</translation>
+<translation id="4358643842961018282">Az eszköz naprakész</translation>
 <translation id="4359408040881008151">Telepítve az ezt nélkülözni nem tudó bővítmény(ek) miatt.</translation>
 <translation id="4359717112757026264">Városkép</translation>
 <translation id="4361142739114356624">Az ügyféltanúsítvány privát kulcsa hiányzik vagy érvénytelen</translation>
@@ -3760,6 +3766,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4620809267248568679">Ezt a beállítást egy bővítmény kényszeríti ki.</translation>
+<translation id="4622051949285931942">Kikapcsolja az automatikus frissítéseket?</translation>
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
 <translation id="4623189117674524348">A rendszer nem tudta hitelesíteni az eszköz API-hozzáférését.</translation>
 <translation id="4624054169152573743">Színösszeállítás</translation>
@@ -4559,6 +4566,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5436575196282187764">Google Fotók-emlékek</translation>
 <translation id="5439680044267106777">Kihagyás és új profil beállítása</translation>
 <translation id="544083962418256601">Parancsikonok létrehozása...</translation>
+<translation id="5441133529460183413">A Chrome böngészőből letöltött internetes alkalmazás</translation>
 <translation id="5442228125690314719">Nem sikerült létrehozni a lemezképet. Próbálja újra.</translation>
 <translation id="5442550868130618860">Automatikus frissítés bekapcsolása</translation>
 <translation id="5445400788035474247">10×</translation>
@@ -4793,6 +4801,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5658415415603568799">A nagyobb biztonság érdekében a Smart Lock 20 óra elteltével megkéri, hogy adja meg jelszavát.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659833766619490117">Nem sikerült lefordítani az oldalt</translation>
+<translation id="566097169318652001">Előfordulhat, hogy az eszköz már nem működik megfelelően, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat. Az alkalmazásban található kulcsfontosságú funkciók működése szintén leállhat, ha már elavulttá válnak, Ön pedig elveszíti a jogi keresetek benyújtására vonatkozó jogát.</translation>
 <translation id="5662513737565158057">A linuxos alkalmazások működésének módosítása.</translation>
 <translation id="5667293444945855280">Ártalmas program</translation>
 <translation id="5667546120811588575">A Google Play beállítása…</translation>
@@ -7017,6 +7026,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7865127013871431856">Fordítási beállítások</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – párosítva</translation>
+<translation id="7869655448736341731">Bármely</translation>
 <translation id="7870730066603611552">Szinkronizálási beállítások ellenőrzése a beállítást követően</translation>
 <translation id="7870790288828963061">Nem található újabb verziójú kioszkalkalmazás, ezért nincs mit frissíteni. Kérjük, távolítsa el az USB-meghajtót.</translation>
 <translation id="7871109039747854576">Karakterlisták lapozása a <ph name="COMMA" /> és a <ph name="PERIOD" /> billentyűvel</translation>
@@ -7139,6 +7149,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7981313251711023384">Oldalak előtöltése a gyorsabb böngészés és keresés érdekében</translation>
 <translation id="798145602633458219">A következő javaslat hozzáadása a keresőmezőhöz: <ph name="SUGGESTION_NAME" /></translation>
 <translation id="7981662863948574132">Az eszköz EID-számához és QR-kódjához tartozó előugró ablak megjelenítése</translation>
+<translation id="7981670705071137488">Ezután a szoftverfrissítések a háttérben fognak futni. A frissítési preferenciákat a Beállításokban tekintheti át.</translation>
 <translation id="7982083145464587921">Kérjük, indítsa újra eszközét a hiba elhárításához.</translation>
 <translation id="7982789257301363584">Hálózat</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> tükrözése</translation>
@@ -7384,6 +7395,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8214489666383623925">Fájl megnyitása...</translation>
 <translation id="8215129063232901118">Hozzáférhet telefonja képességeihez <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="8217399928341212914">Továbbra is tiltsa le több fájl automatikus letöltését</translation>
+<translation id="822050276545350872">Mostantól kezdve nincs szükség várakozásra</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="822347941086490485">HID-eszközök keresése…</translation>
 <translation id="8225046344534779393">Ellenőrizze internetkapcsolatát</translation>
@@ -7473,6 +7485,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8300374739238450534">Éjkék</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Cím}other{# cím}}</translation>
 <translation id="8304383784961451596">Ön nem jogosult az eszköz használatára. Bejelentkezési engedély kéréséhez vegye fel a kapcsolatot a rendszergazdával, vagy jelentkezzen be a Family Linken keresztül felügyelt Google-fiókkal.</translation>
+<translation id="8306885873692337975">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket.</translation>
 <translation id="8307094075368387939">Az ütemezés beállítása mellett a háttérképet, a képernyőkímélőt és a rendszerszíneket is beállíthatja a személyre szabási központban.</translation>
 <translation id="8308016398665340540">Ön épp megosztja ezt a hálózatot ennek az eszköznek a többi felhasználójával</translation>
 <translation id="8308179586020895837">Kérdezzen rá, ha a(z) <ph name="HOST" /> hozzá szeretne férni a kamerához</translation>

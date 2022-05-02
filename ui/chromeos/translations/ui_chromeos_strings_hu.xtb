@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Szolgáltatások</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Adatok betöltése…</translation>
+<translation id="1832073788765803750">Félszélességű katakana</translation>
 <translation id="1834290891154666894">Érvénytelen bejegyzés: Tárgy alternatív egyéb neve – egyezés</translation>
 <translation id="1838709767668011582">Google-webhely</translation>
 <translation id="1844692022597038441">Ez a fájl nem érhető el offline.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> biztonsági mentése a <ph name="BEGIN_LINK" />Google Drive-ra<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Ember macskákkal</translation>
 <translation id="5358764674931277">Képkockasebesség</translation>
+<translation id="5363339716524495120">A beviteli nyelv a kínai</translation>
 <translation id="5368191757080475556">Mappa megosztása Linuxszal</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ne használja a proxy-beállításokat ezekhez a hosztokhoz és domainekhez:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Méret számítása</translation>
 <translation id="554153475311314364">görög, betű szerinti átírás</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">A központozás teljes szélességű</translation>
 <translation id="5602622065581044566">bolgár, fonetikus billentyűzettel</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
 <translation id="5618330573454123917">A fájl Macintosh-szoftvert használó számítógéphez készült. Az Ön ChromeOS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">angol (Egyesült Királyság) billentyűzet Dvorak kiosztással</translation>
 <translation id="8137331602592933310">A következőt osztották meg Önnel: „<ph name="FILENAME" />”. Nem törölheti, mert nem az Ön tulajdonában áll.</translation>
 <translation id="813913629614996137">Indítás…</translation>
+<translation id="8147028810663464959">A karakterszélesség félkövér</translation>
 <translation id="8151638057146502721">Konfigurálás</translation>
 <translation id="8154842056504218462">Összes bejegyzés kijelölve.</translation>
 <translation id="8157684860301034423">Nem sikerült lehívni az alkalmazásadatokat.</translation>

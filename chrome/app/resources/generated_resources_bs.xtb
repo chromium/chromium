@@ -3767,7 +3767,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4619615317237390068">Kartice iz drugih uređaja</translation>
 <translation id="4620809267248568679">Ovu postavku je nametnula ekstenzija.</translation>
-<translation id="4622051949285931942">Želite li isključiti automatska ažuriranja?</translation>
+<translation id="4622051949285931942">Isključiti automatska ažuriranja?</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
 <translation id="4623189117674524348">Sistem nije uspio odobriti pristup API-ju za ovaj uređaj.</translation>
 <translation id="4624054169152573743">Tema u boji</translation>
@@ -4566,7 +4566,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5436575196282187764">Uspomene s Google Fotografija</translation>
 <translation id="5439680044267106777">Preskoči i postavi novi profil</translation>
 <translation id="544083962418256601">Kreiraj prečice...</translation>
-<translation id="5441133529460183413">Web-aplikacija instalirana iz preglednika Chrome</translation>
+<translation id="5441133529460183413">Web aplikacija instalirana s preglednika Chrome.</translation>
 <translation id="5442228125690314719">Greška pri kreiranju slike diska. Pokušajte ponovo.</translation>
 <translation id="5442550868130618860">Uključi automatsko ažuriranje</translation>
 <translation id="5445400788035474247">10 x</translation>
@@ -4800,7 +4800,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5658415415603568799">Radi dodatne sigurnosti Smart Lock će od vas tražiti da unesete lozinku nakon 20 sati.</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5659833766619490117">Ova stranica nije prevedena</translation>
-<translation id="566097169318652001">Vaš uređaj možda više neće pravilno funkcionirati i možda ćete imati problema sa sigurnošću i izvedbom. Ključne značajke u vašim aplikacijama također mogu prestati funkcionirati kad postanu zastarjele i izgubit ćete pravo na pravne zahtjeve.</translation>
+<translation id="566097169318652001">Vaš uređaj možda više neće funkcionirati ispravno i možete naići na probleme sa sigurnošću i performansama. Ključne funkcije u vašim aplikacijama također mogu prestati funkcionirati kada postanu zastarjele, a izgubit ćete pravo na polaganje pravnih zahtjeva.</translation>
 <translation id="5662513737565158057">Promjena načina na koji će Linux aplikacije funkcionirati.</translation>
 <translation id="5667293444945855280">Zlonamjerni softver</translation>
 <translation id="5667546120811588575">Postavljanje Google Playa...</translation>
@@ -7489,7 +7489,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8300374739238450534">Ponoćno plava</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom kojeg nadzire Family Link.</translation>
-<translation id="8306885873692337975">Preuzmite najnovije značajke i sigurnosna poboljšanja.</translation>
+<translation id="8306885873692337975">Preuzmite najnovije funkcije i poboljšanja sigurnosti.</translation>
 <translation id="8307094075368387939">Možete podešavati raspored u Središtu za personalizaciju, kao i postaviti pozadinsku sliku, čuvar ekrana te prilagoditi boje sistema.</translation>
 <translation id="8308016398665340540">Ovu mrežu dijelite s drugim korisnicima ovog uređaja</translation>
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>

@@ -33,6 +33,7 @@
 <translation id="1019101089073227242">ユーザー データ ディレクトリを設定する</translation>
 <translation id="1022361784792428773">ユーザーに対してインストールを禁止する拡張機能 ID (すべて指定する場合は *)</translation>
 <translation id="102492767056134033">ログイン画面での画面キーボードのデフォルト状態を設定する</translation>
+<translation id="102658870205613876">ポップアップの設定</translation>
 <translation id="1027000705181149370">ログイン時に SAML IdP によって設定された認証 Cookie をユーザーのプロフィールに移行するかどうかを制御します。
 
       ログイン時に SAML IdP 経由でユーザーが認証されると、IdP によって設定された Cookie はまず一時プロフィールに書き込まれます。この Cookie をユーザーのプロフィールに移行して認証状態を引き継ぐことができます。
@@ -2080,6 +2081,7 @@
 
       このポリシーは、クラウド ユーザー ポリシーとしてのみ設定できます。
       </translation>
+<translation id="3248019773260441802">ページのアンロード中にポップアップを表示することをページに許可します</translation>
 <translation id="3251500716404598358">ブラウザ切り替えのポリシーを設定します。
 
       設定したウェブサイトは、<ph name="PRODUCT_NAME" /> ではなく別のブラウザで自動的に表示されるようになります。</translation>
@@ -3221,6 +3223,7 @@
 <translation id="4680961954980851756">自動入力を有効にする</translation>
 <translation id="4685721728282448265">TLS の CECPQ2 ポスト量子鍵交換を有効にします</translation>
 <translation id="4693779768620889402">拡張機能プリンタの送信先</translation>
+<translation id="4697581738794063407">URL パラメータ フィルタ機能を制御する</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4699592681017489215">このポリシーでは、DNS 傍受チェックの無効化に使用できるローカルのスイッチを設定します。DNS 傍受チェックは、ブラウザが不明なホスト名をリダイレクトするプロキシの背後にあるかどうかを検出するものです。
 
@@ -3264,6 +3267,7 @@
       <ph name="PAGE_SIZE_NAME" /> にはリストのいずれかの形式または「カスタム」（必要な用紙サイズがリストにない場合）を指定する必要があります。「カスタム」値を使用する場合は、<ph name="PAGE_SIZE_CUSTOM_SIZE" /> プロパティを指定する必要があります。このプロパティには、必要な高さと幅を mm 単位で指定します。それ以外の場合、<ph name="PAGE_SIZE_CUSTOM_SIZE" /> プロパティは指定しないでください。これらのルールにそぐわない場合、ポリシーは無視されます。
 
       ユーザーが選択したプリンタでこのページサイズを使用できない場合、このポリシーは無視されます。</translation>
+<translation id="4789450349513792856">これらのサイトでポップアップをブロックする</translation>
 <translation id="4790588245699320140">Google アシスタントに画面のコンテキストへのアクセスを許可する</translation>
 <translation id="4802744647065138872">緊急のロールバックに備えて保持するユーザーデータのスナップショット数を制限します。</translation>
 <translation id="4802905909524200151"><ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェア アップデートの動作を設定する</translation>
@@ -3990,6 +3994,7 @@
 <translation id="567377007899266033">このポリシーを True に設定した場合、ポリシーによってトリガーされた主要な拡張機能インストールのイベント レポートが Google に送信されます。このポリシーを False に設定した場合、イベントはキャプチャされません。このポリシーを未設定のままにした場合、値はデフォルトで True に設定されます。</translation>
 <translation id="5676740747107495269">ログイン画面の通知領域（システムトレイ）メニューにユーザー補助オプションを表示する</translation>
 <translation id="5679540979548648200">このデバイスのユーザーによる ADB サイドローディングの使用を禁止し、以前にサイドローディングが有効になっていた場合はデバイスの Powerwash を強制的に実行します</translation>
+<translation id="5681258683432554972">デフォルトのポップアップ設定</translation>
 <translation id="5689430183304951538">デフォルトの印刷ページサイズ</translation>
 <translation id="5691637243722588222">このポリシーでは、<ph name="PRODUCT_NAME" /> でサポートする HTTP 認証スキームを指定できます。
 
@@ -4198,6 +4203,7 @@
 <translation id="5899751601113377553"><ph name="LACROS_NAME" /> の使用を許可しない</translation>
 <translation id="5900919753933009463">ネットワーク設定を報告する</translation>
 <translation id="5901427587865226597">両面印刷のみ</translation>
+<translation id="5905114360004248993">これらのサイトでポップアップを許可する</translation>
 <translation id="5905473632148429217">オンライン OCSP / CRL チェックを有効にする</translation>
 <translation id="5907283448020542268"><ph name="GLS_ENABLED" /> に設定した場合、Google 位置情報サービスは初期設定中オンになります（<ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> ポリシーが <ph name="BLOCK_GEOLOCATION_SETTING" />に設定されている場合を除く）。このポリシーを <ph name="GLS_DISABLED" /> に設定するか未設定のままにした場合、位置情報サービスは設定中オフになります。
 
@@ -5160,6 +5166,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
 
        <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="6990736882800900101">ポップアップの表示元ページで操作が明示的に禁止されている場合以外は、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたすべてのポップアップにそのリクエスト元ページの操作を許可する </translation>
 <translation id="6994082778848658360">搭載されているセキュア エレメント ハードウェアが 2 段階認証プロセスに対応している場合に、このプロセスを適用するためにハードウェアをどのように使用できるかを指定します。ユーザーの所在地を検出するには本体の電源ボタンを使用します。
 
       [無効にする] を選択した場合、2 段階認証プロセスは適用されません。
@@ -6355,6 +6362,7 @@
       このポリシーを有効に設定するか未設定のままにした場合、ユーザーはタスク マネージャーのプロセスを終了できます。</translation>
 <translation id="8367209241899435947">Windows で Chrome クリーンアップを有効にする</translation>
 <translation id="8367473200119029349">クラウド レポート</translation>
+<translation id="8367488518695804749">すべてのサイトに対してポップアップ表示を許可しない</translation>
 <translation id="8369602308428138533">画面がオフになるまでの時間（AC 電源での実行時）</translation>
 <translation id="8371178326720637170">管理対象の拡張機能で Enterprise Hardware Platform API を使用できるようにする</translation>
 <translation id="8375817202037102567">ファイルとディレクトリへの書き込みアクセスをブロックするサイトを指定する</translation>
@@ -6717,6 +6725,7 @@
 <translation id="8801680448782904838">ブラウザまたはデバイスの再起動が推奨されるか必要であることをユーザーに通知する</translation>
 <translation id="8804685015028424497">シークレット モードを無効にする</translation>
 <translation id="8807313206348471682">ログアウト確認ダイアログを表示する</translation>
+<translation id="8812091410765157924">ポップアップの表示元ページで操作が明示的に許可されている場合に限り、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたポップアップにその表示元ページの操作を許可する</translation>
 <translation id="8816370949847593408">サポート終了の段階に応じて、一部の Chrome アプリの実行を許可しない。</translation>
 <translation id="8818173863808665831">デバイスの地理的位置をレポートします。
 
@@ -6969,6 +6978,13 @@
 
       このポリシーを無効に設定した場合、登録済みのデバイスは音声の状態の記録および報告を行いません。
       例外: M95 以前では、システム音量レベルの情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
+<translation id="9072475476775217730">このポリシーを無効に設定した場合、<ph name="BLANK_PAGE_NAME" /> をターゲットとするポップアップに、リクエスト元ページへの（JavaScript を介した）アクセスが許可されます。
+
+      このポリシーを有効に設定するか未設定のままにした場合、<ph name="WINDOW_OPENER_PROPERTY" /> プロパティは <ph name="NULL_VALUE" /> に設定されます（アンカーで <ph name="REL_OPENER_ATTRIBUTE" /> が指定されている場合は除く）。
+
+      このポリシーは、<ph name="PRODUCT_NAME" /> バージョン 102 で削除されました。
+
+      詳しくは、https://chromestatus.com/feature/6140064063029248 をご覧ください。</translation>
 <translation id="9073405975862312795">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはユーザーがデバイス上でアクティブになっていた期間を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはアクティブな期間を記録または報告しません。</translation>

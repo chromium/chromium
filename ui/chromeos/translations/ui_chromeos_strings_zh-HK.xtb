@@ -95,7 +95,7 @@
 <translation id="1747761757048858544">荷蘭文 (荷蘭)</translation>
 <translation id="174937106936716857">檔案總數</translation>
 <translation id="1755345808328621801">此檔案是專為使用 Windows 軟件的 PC 電腦而設，與運行 Chrome OS 的裝置並不相容。請前往「Chrome 網上應用程式商店」尋找適合的替代應用程式。</translation>
-<translation id="1757915090001272240">橫向拉丁文</translation>
+<translation id="1757915090001272240">全形英數</translation>
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資料</translation>
 <translation id="180035236176489073">您必須連接網絡才能存取這些檔案。</translation>
@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">服務</translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資料…</translation>
+<translation id="1832073788765803750">半形片假名</translation>
 <translation id="1834290891154666894">無效的主體替代名稱相符項目</translation>
 <translation id="1838709767668011582">Google 網站</translation>
 <translation id="1844692022597038441">這個檔案無法離線瀏覽。</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">正在將 <ph name="FILE_COUNT" /> 備份至「<ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />」</translation>
 <translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
+<translation id="5363339716524495120">輸入語言為中文</translation>
 <translation id="5368191757080475556">與 Linux 分享資料夾</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">正在計算大小</translation>
 <translation id="554153475311314364">希臘文 (音譯)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">標點符號為全形</translation>
 <translation id="5602622065581044566">保加利亞文 (拼音鍵盤)</translation>
 <translation id="5605830556594064952">Dvorak 美式鍵盤</translation>
 <translation id="5618330573454123917">此檔案是專為使用 Macintosh 軟件的電腦而設，與運行 Chrome OS 的裝置並不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">英文 (英國)，Dvorak 鍵盤</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」是他人與您共用的項目。您不是這個檔案的擁有者，無法刪除這個檔案。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8147028810663464959">字元為全形</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154842056504218462">揀晒所有項目。</translation>
 <translation id="8157684860301034423">無法擷取應用程式資料。</translation>
@@ -847,7 +851,7 @@
 <translation id="8208580316430297579">圖片</translation>
 <translation id="8223479393428528563">如要儲存這些檔案以供離線使用，請連上網絡，在相關檔案上按一下滑鼠右鍵，然後選取 <ph name="OFFLINE_CHECKBOX_NAME" /> 選項。</translation>
 <translation id="8249296373107784235">取消</translation>
-<translation id="8250690786522693009">拉丁文</translation>
+<translation id="8250690786522693009">英數</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8261561378965667560">中文 (行列)</translation>

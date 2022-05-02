@@ -1921,6 +1921,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
 <translation id="2796424461616874739">A autenticação excedeu o tempo limite ao ligar a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2796740370559399562">Continuar a permitir cookies</translation>
+<translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800760947029405028">Carregar uma imagem</translation>
 <translation id="2801954693771979815">Tamanho do ecrã</translation>
@@ -3753,6 +3754,7 @@ Pretende pará-lo?</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4620809267248568679">Esta definição é gerida por uma extensão.</translation>
+<translation id="4622051949285931942">Desativar as atualizações automáticas?</translation>
 <translation id="4623167406982293031">Validar conta</translation>
 <translation id="4623189117674524348">O sistema não conseguiu autorizar o acesso da API para este dispositivo.</translation>
 <translation id="4624054169152573743">Tema de cores</translation>
@@ -4551,6 +4553,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5436575196282187764">Memórias do Google Fotos</translation>
 <translation id="5439680044267106777">Ignorar e configurar novo perfil</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
+<translation id="5441133529460183413">App Web instalada a partir do navegador Chrome</translation>
 <translation id="5442228125690314719">Ocorreu um erro ao criar a imagem do disco. Tente novamente.</translation>
 <translation id="5442550868130618860">Ativar atualização automática</translation>
 <translation id="5445400788035474247">10x</translation>
@@ -4785,6 +4788,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5658415415603568799">Para maior segurança, o Smart Lock pedir-lhe-á para introduzir a palavra-passe após 20 horas.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Não foi possível traduzir esta página</translation>
+<translation id="566097169318652001">O seu dispositivo pode ter deixado de funcionar corretamente e pode deparar-se com problemas de segurança e desempenho. As principais funcionalidades nas suas apps também podem deixar de funcionar quando ficarem desatualizadas e irá perder o direito de fazer queixas legais.</translation>
 <translation id="5662513737565158057">Altere a forma como as apps para Linux irão funcionar.</translation>
 <translation id="5667293444945855280">Software maligno</translation>
 <translation id="5667546120811588575">A configurar o Google Play...</translation>
@@ -7011,6 +7015,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7865127013871431856">Opções de tradução</translation>
 <translation id="7869143217755017858">Desativar modo escuro</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – sincronizado</translation>
+<translation id="7869655448736341731">Qualquer</translation>
 <translation id="7870730066603611552">Rever opções de sincronização após a configuração</translation>
 <translation id="7870790288828963061">Nenhuma aplicação do Quiosque encontrada com uma versão mais recente. Nada a atualizar. Remova a pen USB.</translation>
 <translation id="7871109039747854576">Utilizar as teclas <ph name="COMMA" /> e <ph name="PERIOD" /> para paginar uma lista de candidatos</translation>
@@ -7470,6 +7475,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8300374739238450534">Azul noite</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Endereço}other{# endereços}}</translation>
 <translation id="8304383784961451596">Não tem autorização para utilizar este dispositivo. Contacte o administrador para obter autorização de início de sessão ou inicie sessão com uma Conta Google supervisionada pelo Family Link.</translation>
+<translation id="8306885873692337975">Obtenha as funcionalidades e as melhorias de segurança mais recentes.</translation>
 <translation id="8307094075368387939">Pode ajustar o horário no Centro de personalização, bem como definir a imagem de fundo, a proteção de ecrã e personalizar as cores do sistema.</translation>
 <translation id="8308016398665340540">Está a partilhar esta rede com outros utilizadores deste dispositivo</translation>
 <translation id="8308179586020895837">Perguntar se <ph name="HOST" /> pretende aceder à sua câmara</translation>

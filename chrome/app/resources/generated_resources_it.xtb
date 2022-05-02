@@ -1921,6 +1921,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2795716239552913152">In genere, i siti usano la tua posizione per funzionalità o informazioni pertinenti come notizie locali o negozi nelle vicinanze</translation>
 <translation id="2796424461616874739">Timeout dell'autenticazione durante la connessione a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2796740370559399562">Continua a consentire i cookie</translation>
+<translation id="2798347533012571708">Aggiorna regolarmente</translation>
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2800760947029405028">Carica un'immagine</translation>
 <translation id="2801954693771979815">Dimensioni schermo</translation>
@@ -3752,6 +3753,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4620809267248568679">Questa impostazione è applicata da un'estensione.</translation>
+<translation id="4622051949285931942">Vuoi disattivare gli aggiornamenti automatici?</translation>
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4623189117674524348">Il sistema non è riuscito ad autorizzare l'accesso all'API per questo dispositivo.</translation>
 <translation id="4624054169152573743">Tema a colori</translation>
@@ -4550,6 +4552,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5436575196282187764">Ricordi di Google Foto</translation>
 <translation id="5439680044267106777">Ignora e configura un nuovo profilo</translation>
 <translation id="544083962418256601">Crea scorciatoie...</translation>
+<translation id="5441133529460183413">App web installata dal browser Chrome</translation>
 <translation id="5442228125690314719">Errore durante la creazione dell'immagine disco. Riprova.</translation>
 <translation id="5442550868130618860">Attiva aggiornamento automatico</translation>
 <translation id="5445400788035474247">10x</translation>
@@ -4781,6 +4784,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5658415415603568799">Per maggiore sicurezza, Smart Lock ti chiederà di inserire la password dopo 20 ore.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Impossibile tradurre questa pagina</translation>
+<translation id="566097169318652001">Il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza. Inoltre, le funzionalità principali delle tue app potrebbero smettere di funzionare quando diventano obsolete e perderai il diritto di presentare rivendicazioni legali.</translation>
 <translation id="5662513737565158057">Cambia il funzionamento delle app Linux.</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Configurazione di Google Play...</translation>
@@ -7004,6 +7008,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>
 <translation id="7869143217755017858">Disabilita la modalità Buio</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />, accoppiato</translation>
+<translation id="7869655448736341731">Qualsiasi</translation>
 <translation id="7870730066603611552">Controlla le opzioni di sincronizzazione dopo la configurazione</translation>
 <translation id="7870790288828963061">Nessuna app kiosk con versione più recente trovata. Non c'è nulla da aggiornare. Rimuovi la chiavetta USB.</translation>
 <translation id="7871109039747854576">Utilizza i tasti <ph name="COMMA" /> e <ph name="PERIOD" /> per il paging di un elenco di candidati</translation>
@@ -7463,6 +7468,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8300374739238450534">Blu notte</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Indirizzo}other{# indirizzi}}</translation>
 <translation id="8304383784961451596">Non disponi dell'autorizzazione per utilizzare questo dispositivo. Contatta l'amministratore per richiedere l'autorizzazione di accesso o accedi con un Account Google supervisionato tramite Family Link.</translation>
+<translation id="8306885873692337975">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti.</translation>
 <translation id="8307094075368387939">Puoi regolare la programmazione nel Centro personalizzazione, nonché impostare lo sfondo e il salvaschermo e personalizzare i colori di sistema.</translation>
 <translation id="8308016398665340540">Stai condividendo questa rete con altri utenti di questo dispositivo</translation>
 <translation id="8308179586020895837">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam</translation>

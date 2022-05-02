@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Néerlandais (Pays-Bas)</translation>
 <translation id="174937106936716857">Nombre total de fichiers</translation>
 <translation id="1755345808328621801">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique en ligne Chrome Web Store.</translation>
+<translation id="1757915090001272240">Latin pleine chasse</translation>
 <translation id="1773212559869067373">Certificat d'authentification rejeté localement.</translation>
 <translation id="1775381402323441512">Renseignements sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations en cours…</translation>
+<translation id="1832073788765803750">Katakana demi-chasse</translation>
 <translation id="1834290891154666894">Entrée de correspondance de nom alternatif de sujet incorrect</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1844692022597038441">Ce fichier n'est pas accessible hors connexion.</translation>
@@ -518,6 +520,7 @@
 <translation id="5335458522276292100">Sauvegarde de <ph name="FILE_COUNT" /> dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /> en cours…</translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
+<translation id="5363339716524495120">La langue d'entrée définie est le chinois</translation>
 <translation id="5368191757080475556">Partager le dossier avec Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ne pas utiliser les paramètres de mandataire pour ces hôtes et domaines :</translation>
@@ -540,6 +543,7 @@
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="554153475311314364">Grec (translittération)</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
+<translation id="5583664733673201137">La largeur de ponctuation est « complète »</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
 <translation id="5618330573454123917">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
@@ -749,6 +753,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> trouvées
     <ph name="LINE_BREAK1" />
     Prêt à sauvegarder dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>
 <translation id="7514365320538308">Télécharger</translation>
@@ -837,6 +842,7 @@
 <translation id="8128733386027980860">Anglais (R.-U.) avec clavier Dvorak</translation>
 <translation id="8137331602592933310">Le fichier « <ph name="FILENAME" /> » a été partagé avec vous. Vous ne pouvez pas le supprimer, car vous n'en êtes pas le propriétaire.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
+<translation id="8147028810663464959">La largeur de caractères est « complète »</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154842056504218462">Vous avez sélectionné toutes les entrées.</translation>
 <translation id="8157684860301034423">Échec de récupération des informations sur l'application.</translation>
@@ -846,6 +852,7 @@
 <translation id="8208580316430297579">Œuvre d'art</translation>
 <translation id="8223479393428528563">Pour enregistrer ces fichiers et les utiliser hors connexion, reconnectez-vous, cliquez avec le bouton droit sur les fichiers, et sélectionnez l’option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Interrompre</translation>
+<translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261561378965667560">Chinois (tableau)</translation>
