@@ -203,6 +203,8 @@ source_set("filters") {
     sources += [
       "mac/audio_toolbox_audio_decoder.cc",
       "mac/audio_toolbox_audio_decoder.h",
+      "mac/audio_toolbox_audio_encoder.cc",
+      "mac/audio_toolbox_audio_encoder.h",
     ]
   }
 
