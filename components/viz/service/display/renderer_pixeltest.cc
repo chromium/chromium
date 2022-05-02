@@ -1123,6 +1123,13 @@ TEST_P(RendererPixelTest,
 }
 
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+  // Test is flaking with failed large allocations under TSAN when using
+  // SkiaRenderer with GL backend. See https://crbug.com/1320955.
+  if (renderer_type() == RendererType::kSkiaGL)
+    return;
+#endif
+
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId id{1};
@@ -5100,12 +5107,19 @@ class ColorTransformPixelTest
 };
 
 // crbug.com/1312043 Disable the test due to flaky.
-#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
 TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+  // Test is flaking with failed large allocations under TSAN when using
+  // SkiaRenderer with GL backend. See https://crbug.com/1320955.
+  if (renderer_type() == RendererType::kSkiaGL)
+    return;
+#endif
+
   Basic();
 }
 
