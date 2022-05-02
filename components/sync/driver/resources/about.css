@@ -55,6 +55,10 @@
  background: rgb(204, 255, 204);
 }
 
+#typeInfo .message {
+  word-break: break-all;
+}
+
 @-webkit-keyframes highlight1 {
   0% {
     background: rgb(255, 255, 0);
