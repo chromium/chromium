@@ -112,7 +112,8 @@ void CheckPolicyMap(const PolicyMap& policy_map,
   for (const auto& it : policy_map) {
     const std::string& policy_name = it.first;
     const PolicyMap::Entry& entry = it.second;
-    CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
+    CHECK(entry.value_unsafe())
+        << "Policy " << policy_name << " has an empty value";
     CHECK_EQ(entry.scope, expected_policy_scope)
         << "Policy " << policy_name << " has wrong scope";
 
