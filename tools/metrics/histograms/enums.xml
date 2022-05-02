@@ -95378,6 +95378,16 @@ others/histograms.xml -->
     Wallpaper shown one-time only. It does not belong to a particular user and
     is not saved. This is used to show a white background during OOBE.
   </int>
+  <int value="9" label="Google-Photos (deprecated)">
+    Wallpaper chosen by the user from their Google Photos collection. Replaced
+    by Once-Google-Photos.
+  </int>
+  <int value="10" label="Daily-Google-Photos">
+    Surprise wallpaper from one of the user's Google Photos albums.
+  </int>
+  <int value="11" label="Once-Google-Photos">
+    Wallpaper chosen by the user from their Google Photos collection.
+  </int>
 </enum>
 
 <enum name="WarmupStateOnLaunch">
