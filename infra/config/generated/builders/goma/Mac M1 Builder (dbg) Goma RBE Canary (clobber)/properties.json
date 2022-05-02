@@ -1,4 +1,45 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "goma",
+              "builder": "Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.goma.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "goma_canary",
+                  "clobber"
+                ],
+                "build_config": "Debug",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "goma",
+          "builder": "Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "jobs": 80,
     "rpc_extra_params": "?prod",
