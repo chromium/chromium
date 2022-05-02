@@ -235,8 +235,6 @@ TEST(SyncedBookmarkTrackerTest,
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
   tracker->IncrementSequenceNumber(entity);
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(true));
-  // TODO(crbug.com/516866): Test HasLocalChanges after submitting commit
-  // request in a separate test probably.
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {

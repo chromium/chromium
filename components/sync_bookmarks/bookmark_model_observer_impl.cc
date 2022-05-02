@@ -261,15 +261,14 @@ void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
 
   // The given node's children got reordered. We need to reorder all the
   // corresponding sync node.
-
-  // TODO(crbug/com/516866): Make sure that single-move case doesn't produce
-  // unnecessary updates. One approach would be something like:
+  // TODO(crbug.com/1321519): children reordering is used to move one bookmark
+  // on Android, it should be either taken into account here or another bridge
+  // interface should be provided. One approach would be something like:
   // 1. Find a subsequence of elements in the beginning of the vector that is
   //    already sorted.
   // 2. The same for the end.
   // 3. If the two overlap, adjust so they don't.
   // 4. Sort the middle, using Between (e.g. recursive implementation).
-
   syncer::UniquePosition position;
   for (const auto& child : node->children()) {
     const SyncedBookmarkTrackerEntity* entity =

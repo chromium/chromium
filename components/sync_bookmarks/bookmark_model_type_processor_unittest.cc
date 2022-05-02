@@ -522,18 +522,10 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   SimulateOnSyncStarting();
   InitWithSyncedBookmarks(bookmarks, processor());
 
-  std::string metadata_str = processor()->EncodeSyncMetadata();
-  // TODO(crbug.com/516866): Remove this after initial sync done is properly set
-  // within the processor.
-  sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.ParseFromString(metadata_str);
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
-
   // Create a new processor and init it with the same metadata str.
   BookmarkModelTypeProcessor new_processor(bookmark_undo_service());
-  model_metadata.SerializeToString(&metadata_str);
-  new_processor.ModelReadyToSync(metadata_str, base::DoNothing(),
-                                 bookmark_model());
+  new_processor.ModelReadyToSync(processor()->EncodeSyncMetadata(),
+                                 base::DoNothing(), bookmark_model());
 
   AssertState(&new_processor, bookmarks);
 

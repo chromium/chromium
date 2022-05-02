@@ -235,8 +235,6 @@ void SyncedBookmarkTracker::Update(const SyncedBookmarkTrackerEntity* entity,
                 mutable_entity->metadata()->mutable_specifics_hash());
   mutable_entity->metadata()->set_bookmark_favicon_hash(
       base::PersistentHash(specifics.bookmark().favicon()));
-  // TODO(crbug.com/516866): in case of conflict, the entity might exist in
-  // |ordered_local_tombstones_| as well if it has been locally deleted.
 }
 
 void SyncedBookmarkTracker::UpdateServerVersion(
@@ -305,8 +303,6 @@ void SyncedBookmarkTracker::IncrementSequenceNumber(
   DCHECK(!entity->bookmark_node() ||
          !entity->bookmark_node()->is_permanent_node());
 
-  // TODO(crbug.com/516866): Update base hash specifics here if the entity is
-  // not already out of sync.
   AsMutableEntity(entity)->metadata()->set_sequence_number(
       entity->metadata()->sequence_number() + 1);
 }
@@ -677,7 +673,6 @@ void SyncedBookmarkTracker::UpdateUponCommitResponse(
     const std::string& sync_id,
     int64_t server_version,
     int64_t acked_sequence_number) {
-  // TODO(crbug.com/516866): Update specifics if we decide to keep it.
   DCHECK(entity);
 
   SyncedBookmarkTrackerEntity* mutable_entity = AsMutableEntity(entity);

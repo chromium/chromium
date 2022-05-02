@@ -398,9 +398,6 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   // If so, still try to decrypt with the available keys regardless.
   if (specifics.password().has_encrypted()) {
     // Passwords use their own legacy encryption scheme.
-    // TODO(crbug.com/516866): If we switch away from the password legacy
-    // encryption, this method and DecryptStoredEntities() )should be already
-    // ready for that change. Add unit test for this future-proofness.
     if (!cryptographer.CanDecrypt(specifics.password().encrypted())) {
       return DECRYPTION_PENDING;
     }
