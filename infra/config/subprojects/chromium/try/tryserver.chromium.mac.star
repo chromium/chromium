@@ -283,6 +283,9 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/ios-simulator-full-configs",
+    ],
     check_for_flakiness = True,
     main_list_view = "try",
     use_clang_coverage = True,
