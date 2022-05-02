@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
@@ -762,7 +763,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback callback) {
-  AggregationServiceImpl* aggregation_service =
+  AggregationService* aggregation_service =
       storage_partition_->GetAggregationService();
   if (!aggregation_service) {
     RecordAssembleAggregatableReportStatus(
@@ -772,30 +773,43 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     return;
   }
 
-  ::content::AssembleAggregatableReport(
-      *aggregation_service, std::move(report),
-      base::BindOnce(&AttributionManagerImpl::OnAggregatableReportAssembled,
-                     weak_factory_.GetWeakPtr(), is_debug_report,
-                     std::move(callback)));
-}
-
-void AttributionManagerImpl::OnAggregatableReportAssembled(
-    bool is_debug_report,
-    ReportSentCallback callback,
-    AttributionReport report,
-    AssembleAggregatableReportStatus status) {
-  RecordAssembleAggregatableReportStatus(status);
-
-  const auto* data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(data);
-
-  if (!data->assembled_report.has_value()) {
+  absl::optional<AggregatableReportRequest> request =
+      CreateAggregatableReportRequest(report);
+  if (!request.has_value()) {
+    RecordAssembleAggregatableReportStatus(
+        AssembleAggregatableReportStatus::kCreateRequestFailed);
     std::move(callback).Run(std::move(report),
                             SendResult(SendResult::Status::kFailedToAssemble));
     return;
   }
+
+  aggregation_service->AssembleReport(
+      std::move(*request),
+      base::BindOnce(&AttributionManagerImpl::OnAggregatableReportAssembled,
+                     weak_factory_.GetWeakPtr(), std::move(report),
+                     is_debug_report, std::move(callback)));
+}
+
+void AttributionManagerImpl::OnAggregatableReportAssembled(
+    AttributionReport report,
+    bool is_debug_report,
+    ReportSentCallback callback,
+    absl::optional<AggregatableReport> assembled_report,
+    AggregationService::AssemblyStatus) {
+  if (!assembled_report.has_value()) {
+    RecordAssembleAggregatableReportStatus(
+        AssembleAggregatableReportStatus::kAssembleReportFailed);
+    std::move(callback).Run(std::move(report),
+                            SendResult(SendResult::Status::kFailedToAssemble));
+    return;
+  }
+
+  auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
+      &report.data());
+  DCHECK(data);
+  data->assembled_report = std::move(assembled_report);
+  RecordAssembleAggregatableReportStatus(
+      AssembleAggregatableReportStatus::kSuccess);
 
   report_sender_->SendReport(std::move(report), is_debug_report,
                              std::move(callback));

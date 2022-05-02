@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace absl {
 class uint128;
@@ -18,7 +18,7 @@ class uint128;
 namespace content {
 
 class AggregatableHistogramContribution;
-class AggregationService;
+class AggregatableReportRequest;
 class AttributionAggregatableSource;
 class AttributionAggregatableTrigger;
 class AttributionFilterData;
@@ -44,12 +44,8 @@ enum class AssembleAggregatableReportStatus {
   kMaxValue = kAssembleReportFailed,
 };
 
-// Assembles the aggregatable report utilizing the aggregation service client.
-CONTENT_EXPORT void AssembleAggregatableReport(
-    AggregationService& aggregation_service,
-    AttributionReport report,
-    base::OnceCallback<void(AttributionReport,
-                            AssembleAggregatableReportStatus)> callback);
+absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
+    const AttributionReport& report);
 
 }  // namespace content
 
