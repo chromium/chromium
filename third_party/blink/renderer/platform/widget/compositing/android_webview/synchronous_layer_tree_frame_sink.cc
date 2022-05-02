@@ -391,6 +391,14 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
                                        /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());
+
+    viz::FrameTimingDetails details;
+    details.received_compositor_frame_timestamp = now;
+    details.draw_start_timestamp = now;
+    details.swap_timings = {now, now, now, now};
+    details.presentation_feedback = {now, base::TimeDelta(), 0};
+    client_->DidPresentCompositorFrame(submit_frame->metadata.frame_token,
+                                       details);
   } else {
     if (viz_frame_submission_enabled_) {
       frame.metadata.begin_frame_ack =
