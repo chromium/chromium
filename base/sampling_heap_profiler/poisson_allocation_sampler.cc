@@ -104,14 +104,14 @@ const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
 // The guard protects against reentering on platforms other the macOS and
 // Android.
-thread_local bool g_tls_internal_reentry_guard;
+thread_local bool g_tls_internal_reentry_guard = false;
 
 // Accumulated bytes towards sample thread local key.
-thread_local intptr_t g_tls_accumulated_bytes;
+thread_local intptr_t g_tls_accumulated_bytes = 0;
 
 // Used as a workaround to avoid bias from muted samples. See
 // ScopedMuteThreadSamples for more details.
-thread_local intptr_t g_tls_accumulated_bytes_snapshot;
+thread_local intptr_t g_tls_accumulated_bytes_snapshot = 0;
 const intptr_t kAccumulatedBytesOffset = 1 << 29;
 
 // A boolean used to distinguish first allocation on a thread:
@@ -121,31 +121,31 @@ const intptr_t kAccumulatedBytesOffset = 1 << 29;
 // allocation on a thread would always trigger the sample, thus skewing the
 // profile towards such allocations. To mitigate that we use the flag to
 // ensure the first allocation is properly accounted.
-thread_local bool g_tls_sampling_interval_initialized;
+thread_local bool g_tls_sampling_interval_initialized = false;
 
 // Controls if sample intervals should not be randomized. Used for testing.
-bool g_deterministic;
+bool g_deterministic = false;
 
 // Controls if hooked samples should be ignored. Used for testing.
 std::atomic_bool g_mute_hooked_samples{false};
 
 // A positive value if profiling is running, otherwise it's zero.
-std::atomic_bool g_running;
+std::atomic_bool g_running{false};
 
 // Pointer to the current |LockFreeAddressHashSet|.
-std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set;
+std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
 
 // Sampling interval parameter, the mean value for intervals between samples.
 std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
 
-void (*g_hooks_install_callback)();
+void (*g_hooks_install_callback)() = nullptr;
 
 // This will be true if *either* InstallAllocatorHooksOnce or
 // SetHooksInstallerCallback has run. `g_hooks_install_callback` should be
 // invoked when *both* have run, so each of them checks the value and, if it is
 // true, knows that the other function has already run so it's time to invoke
 // the callback.
-std::atomic_bool g_hooks_installed;
+std::atomic_bool g_hooks_installed{false};
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 
@@ -390,6 +390,28 @@ bool PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted() {
   return g_tls_internal_reentry_guard;
 }
 
+PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    ScopedSuppressRandomnessForTesting() {
+  DCHECK(!g_deterministic);
+  g_deterministic = true;
+  // The g_tls_accumulated_bytes may contain a random value from previous
+  // test runs, which would make the behaviour of the next call to
+  // RecordAlloc unpredictable.
+  g_tls_accumulated_bytes = 0;
+}
+
+PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    ~ScopedSuppressRandomnessForTesting() {
+  DCHECK(g_deterministic);
+  g_deterministic = false;
+}
+
+// static
+bool PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    IsSuppressed() {
+  return g_deterministic;
+}
+
 PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ScopedMuteHookedSamplesForTesting() {
   DCHECK(!g_mute_hooked_samples);
@@ -420,7 +442,7 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   g_mute_hooked_samples = false;
 }
 
-PoissonAllocationSampler* PoissonAllocationSampler::instance_;
+PoissonAllocationSampler* PoissonAllocationSampler::instance_ = nullptr;
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
   CHECK_EQ(nullptr, instance_);
@@ -636,16 +658,6 @@ LockFreeAddressHashSet& PoissonAllocationSampler::sampled_addresses_set() {
 PoissonAllocationSampler* PoissonAllocationSampler::Get() {
   static NoDestructor<PoissonAllocationSampler> instance;
   return instance.get();
-}
-
-// static
-void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
-  g_deterministic = suppress;
-  // The g_tls_accumulated_bytes may contain a random value from previous
-  // test runs, which would make the behaviour of the next call to
-  // RecordAlloc unpredictable.
-  if (suppress)
-    g_tls_accumulated_bytes = 0;
 }
 
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
