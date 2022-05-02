@@ -37,6 +37,7 @@
     <dimen name="location_bar_verbose_start_padding_verbose_text">4dp</dimen>
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_url_action_offset">-8dp</dimen>
+    <dimen name="location_bar_url_action_padding">8dp</dimen>
 
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>

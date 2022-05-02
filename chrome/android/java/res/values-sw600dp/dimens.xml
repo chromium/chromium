@@ -18,11 +18,11 @@
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">96dp</dimen>
 
-    <dimen name="location_bar_icon_width">40dp</dimen>
+    <dimen name="location_bar_icon_width">48dp</dimen>
     <dimen name="location_bar_icon_margin_end">0dp</dimen>
     <dimen name="location_bar_icon_end_padding">0dp</dimen>
-    <dimen name="location_bar_status_icon_width">40dp</dimen>
-    <dimen name="location_bar_action_icon_width">40dp</dimen>
+    <dimen name="location_bar_status_icon_width">48dp</dimen>
+    <dimen name="location_bar_action_icon_width">48dp</dimen>
     <dimen name="omnibox_suggestion_start_offset_without_icon">@dimen/location_bar_icon_width</dimen>
 
     <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>

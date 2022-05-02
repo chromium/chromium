@@ -58,11 +58,10 @@
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"
             android:layout_width="0dp"
-            android:layout_height="@dimen/modern_toolbar_background_size"
+            android:layout_height="@dimen/modern_toolbar_tablet_background_size"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/modern_toolbar_text_box_background"
-            android:paddingStart="@dimen/location_bar_lateral_padding"
+            android:background="@drawable/modern_toolbar_tablet_text_box_background"
             android:paddingEnd="@dimen/location_bar_lateral_padding" />
 
         <ViewStub

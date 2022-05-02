@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,6 +194,11 @@ public class LocationBarLayout extends FrameLayout {
                     + MarginLayoutParamsCompat.getMarginEnd(urlActionContainerLayoutParams);
         }
         urlContainerMarginEnd += mStatusCoordinator.getAdditionalUrlContainerMarginEnd();
+        // Account for the URL action container end padding on tablets.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            urlContainerMarginEnd +=
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_padding);
+        }
         return urlContainerMarginEnd;
     }
 
