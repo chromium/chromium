@@ -6,9 +6,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -53,7 +56,9 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
     state_ = State::CONFIGURING;
     OnStateChanged();
 
-    ansible_management_service_->ConfigureDefaultContainer(base::DoNothing());
+    ansible_management_service_->ConfigureContainer(
+        crostini::ContainerId::GetDefault(),
+        default_container_ansible_filepath_, base::DoNothing());
     return false;
   }
   DCHECK_EQ(state_, State::ERROR);
@@ -136,6 +141,9 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
   // Values outside the range [0,1] display an infinite loading animation.
   progress_bar->SetValue(-1);
   progress_bar_ = AddChildView(std::move(progress_bar));
+
+  default_container_ansible_filepath_ = profile->GetPrefs()->GetFilePath(
+      crostini::prefs::kCrostiniAnsiblePlaybookFilePath);
 
   OnStateChanged();
 }

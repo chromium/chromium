@@ -51,21 +51,6 @@ AnsibleManagementService::AnsibleManagementService(Profile* profile)
     : profile_(profile), weak_ptr_factory_(this) {}
 AnsibleManagementService::~AnsibleManagementService() = default;
 
-void AnsibleManagementService::ConfigureDefaultContainer(
-    base::OnceCallback<void(bool success)> callback) {
-  if (!ShouldConfigureDefaultContainer(profile_)) {
-    LOG(ERROR) << "Trying to configure default Crostini container when it "
-               << "should not be configured";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  ConfigureContainer(ContainerId::GetDefault(),
-                     profile_->GetPrefs()->GetFilePath(
-                         prefs::kCrostiniAnsiblePlaybookFilePath),
-                     std::move(callback));
-}
-
 void AnsibleManagementService::ConfigureContainer(
     const ContainerId& container_id,
     base::FilePath playbook_path,
@@ -74,6 +59,13 @@ void AnsibleManagementService::ConfigureContainer(
     LOG(ERROR) << "Attempting to configure a container which is already being "
                   "configured";
     std::move(callback).Run(false);
+  }
+  if (container_id == ContainerId::GetDefault() &&
+      !ShouldConfigureDefaultContainer(profile_)) {
+    LOG(ERROR) << "Trying to configure default Crostini container when it "
+               << "should not be configured";
+    std::move(callback).Run(false);
+    return;
   }
   // Add ourselves as an observer if we aren't already awaiting.
   if (configuration_tasks_.empty()) {

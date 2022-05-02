@@ -58,14 +58,6 @@ class AnsibleManagementService : public KeyedService,
 
   ~AnsibleManagementService() override;
 
-  // Deprecated.
-  // TODO(justinhuang): Remove this and clean up all references to it.
-  // Kept for compatibility uses - Prefer ConfigureContainer() instead.
-  // |callback| is called once default Crostini container configuration is
-  // finished.
-  void ConfigureDefaultContainer(
-      base::OnceCallback<void(bool success)> callback);
-
   // Preconfigures a container with a specified Ansible playbook.
   void ConfigureContainer(const ContainerId& container_id,
                           base::FilePath playbook,

@@ -2578,10 +2578,12 @@ void CrostiniManager::OnContainerStarted(
   // pre-determined configuration to the default container.
   if (container_id == ContainerId::GetDefault() &&
       ShouldConfigureDefaultContainer(profile_)) {
-    AnsibleManagementService::GetForProfile(profile_)
-        ->ConfigureDefaultContainer(
-            base::BindOnce(&CrostiniManager::OnDefaultContainerConfigured,
-                           weak_ptr_factory_.GetWeakPtr()));
+    AnsibleManagementService::GetForProfile(profile_)->ConfigureContainer(
+        ContainerId::GetDefault(),
+        profile_->GetPrefs()->GetFilePath(
+            prefs::kCrostiniAnsiblePlaybookFilePath),
+        base::BindOnce(&CrostiniManager::OnDefaultContainerConfigured,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 

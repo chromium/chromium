@@ -7,12 +7,14 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,7 +114,6 @@ class AnsibleManagementServiceTest : public testing::Test,
   }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
   CrostiniManager* crostini_manager_;
   AnsibleManagementService* ansible_management_service_;
@@ -135,64 +136,79 @@ class AnsibleManagementServiceTest : public testing::Test,
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AnsibleManagementTestHelper> test_helper_;
+  std::unique_ptr<TestingProfile> profile_;
 
   base::WeakPtrFactory<AnsibleManagementServiceTest> weak_ptr_factory_{this};
 };
 
-TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerSuccess) {
+TEST_F(AnsibleManagementServiceTest, ConfigureContainerSuccess) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
                      weak_ptr_factory_.GetWeakPtr()));
   run_loop()->Run();
 }
 
-TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerInstallFail) {
+TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
                      weak_ptr_factory_.GetWeakPtr()));
   run_loop()->Run();
 }
 
-TEST_F(AnsibleManagementServiceTest,
-       ConfigureDefaultContainerInstallSignalFail) {
+TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallSignalFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   SetInstallAnsibleStatus(false);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
                      weak_ptr_factory_.GetWeakPtr()));
   run_loop()->Run();
 }
 
-TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerApplyFail) {
+TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplyFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
                      weak_ptr_factory_.GetWeakPtr()));
   run_loop()->Run();
 }
 
-TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerApplySignalFail) {
+TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplySignalFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
   SetApplyAnsibleStatus(false);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
                      weak_ptr_factory_.GetWeakPtr()));
   run_loop()->Run();
@@ -205,9 +221,15 @@ TEST_F(AnsibleManagementServiceTest,
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
-        ansible_management_service()->ConfigureDefaultContainer(
+        ansible_management_service()->ConfigureContainer(
+            ContainerId::GetDefault(),
+            profile_->GetPrefs()->GetFilePath(
+                prefs::kCrostiniAnsiblePlaybookFilePath),
             base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
                            weak_ptr_factory_.GetWeakPtr()));
       }),
@@ -221,14 +243,20 @@ TEST_F(AnsibleManagementServiceTest,
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
   // Unsuccessful sequence of events.
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      ContainerId::GetDefault(),
+      profile_->GetPrefs()->GetFilePath(
+          prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
         // Setup for success.
         test_helper_->SetUpAnsibleInstallation(
             vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
         test_helper_->SetUpPlaybookApplication(
             vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
-        ansible_management_service()->ConfigureDefaultContainer(
+        ansible_management_service()->ConfigureContainer(
+            ContainerId::GetDefault(),
+            profile_->GetPrefs()->GetFilePath(
+                prefs::kCrostiniAnsiblePlaybookFilePath),
             base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
                            weak_ptr_factory_.GetWeakPtr()));
       }),

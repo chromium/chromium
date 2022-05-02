@@ -61,6 +61,7 @@ class CrostiniAnsibleSoftwareConfigView
 
   views::Label* subtext_label_ = nullptr;
   views::ProgressBar* progress_bar_ = nullptr;
+  base::FilePath default_container_ansible_filepath_;
 
   ~CrostiniAnsibleSoftwareConfigView() override;
 };

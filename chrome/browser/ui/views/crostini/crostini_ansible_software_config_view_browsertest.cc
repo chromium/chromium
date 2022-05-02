@@ -8,11 +8,14 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -285,7 +288,10 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        AnsibleConfigFlow_Successful) {
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      crostini::ContainerId::GetDefault(),
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
 
   run_loop()->Run();
@@ -298,7 +304,10 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   // Set install failure. No need to set apply because it should never reach
   // there.
   SetInstallAnsibleStatus(false);
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      crostini::ContainerId::GetDefault(),
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
 
   run_loop()->Run();
@@ -311,7 +320,10 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        AnsibleConfigFlow_ApplicationFailed) {
   // Set apply failure
   SetApplyAnsibleStatus(false);
-  ansible_management_service()->ConfigureDefaultContainer(
+  ansible_management_service()->ConfigureContainer(
+      crostini::ContainerId::GetDefault(),
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting(
           [&](bool success) { std::move(run_loop()->QuitClosure()).Run(); }));
 
