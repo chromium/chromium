@@ -451,6 +451,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 }
 
 CalendarView::~CalendarView() {
+  RestoreHeadersStatus();
+  RestoreMonthStatus();
+
   // Removes child views including month views and event list to remove their
   // dependency from `CalendarViewController`, since these views are destructed
   // after the controller.
