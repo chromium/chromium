@@ -1026,9 +1026,10 @@ void ArcNetHostImpl::TranslateEapCredentialsToDict(
     // certificate to Chrome.
     // TODO(b/220803680): Remove imported certificates and keys when the
     // associated passpoint profile is removed.
+    auto key = cred->client_certificate_key.value();
+    auto pem = cred->client_certificate_pem.value()[0];
     cert_manager_->ImportPrivateKeyAndCert(
-        cred->client_certificate_key.value(),
-        cred->client_certificate_pem.value()[0],
+        key, pem,
         base::BindOnce(&ArcNetHostImpl::TranslateEapCredentialsToDictWithCertID,
                        weak_factory_.GetWeakPtr(), std::move(cred),
                        std::move(callback)));
