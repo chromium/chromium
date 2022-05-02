@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -71,6 +72,9 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
                                 ? R.string.accessibility_expanded_group
                                 : R.string.accessibility_collapsed_group);
         view.setContentDescription(description);
+        if (view.isAccessibilityFocused()) {
+            view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
+        }
     }
 
     private static Drawable createDrawable(Context context) {
