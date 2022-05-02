@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_defines.gni")
+import("//tools/grit/grit_args.gni")
 
 template("preprocess_if_expr") {
   action(target_name) {
@@ -28,7 +28,7 @@ template("preprocess_if_expr") {
              "--out-folder",
              rebase_path(invoker.out_folder, root_build_dir),
              "--in-files",
-           ] + invoker.in_files + grit_defines
+           ] + invoker.in_files + grit_args
 
     if (defined(invoker.defines)) {
       foreach(define, invoker.defines) {

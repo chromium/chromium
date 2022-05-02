@@ -11,6 +11,7 @@ import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//tools/grit/grit_args.gni")
 import("//tools/grit/grit_rule.gni")
 
 # To generate policy documentation for local use, set this to true for the
@@ -205,7 +206,7 @@ action("policy_templates") {
            policy_templates_languages_str,
            "--version_path",
            chrome_version_path,
-         ] + grit_defines
+         ] + grit_args
 
   if (gen_policy_templates_local) {
     args += [ "--local" ]

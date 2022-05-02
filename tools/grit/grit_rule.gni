@@ -42,7 +42,8 @@
 #       And strip the leading "./" from the output files.
 #
 #   defines (optional)
-#       Extra defines to pass to grit (on top of the global grit_defines list).
+#       Extra defines to pass to grit (on top of the global defines in the
+#       grit_args list).
 #
 #   grit_flags (optional)
 #       List of strings containing extra command-line flags to pass to Grit.
@@ -91,7 +92,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/gcc_toolchain.gni")
-import("//tools/grit/grit_defines.gni")
+import("//tools/grit/grit_args.gni")
 _strip_resource_files = is_android && is_official_build
 _js_minifier = "//tools/grit/minify_with_uglify.py"
 _css_minifier = "//tools/grit/minimize_css.py"
@@ -149,7 +150,7 @@ template("grit") {
     deps = [ "//tools/grit:grit_sources" ]
     outputs = [ "${depfile}.stamp" ] + _grit_outputs + _pak_info_outputs
 
-    _grit_flags = grit_defines
+    _grit_flags = grit_args
 
     # Add extra defines with -D flags.
     if (defined(invoker.defines)) {
