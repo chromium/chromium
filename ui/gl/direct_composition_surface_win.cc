@@ -639,21 +639,22 @@ void DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(
 }
 
 // static
-bool DirectCompositionSurfaceWin::IsHDRSupported() {
+gfx::mojom::DXGIInfoPtr DirectCompositionSurfaceWin::GetDXGIInfo() {
+  auto result_info = gfx::mojom::DXGIInfo::New();
   // HDR support was introduced in Windows 10 Creators Update.
   if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
-    return false;
+    return result_info;
 
   // Only direct composition surface can allocate HDR swap chains.
   if (!IsDirectCompositionSupported())
-    return false;
+    return result_info;
 
   HRESULT hr = S_OK;
   Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
   hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create DXGI factory.";
-    return false;
+    return result_info;
   }
 
   bool hdr_monitor_found = false;
@@ -690,14 +691,20 @@ bool DirectCompositionSurfaceWin::IsHDRSupported() {
         continue;
       }
 
-      if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) {
-        hdr_monitor_found = true;
-      }
+      auto result_output = gfx::mojom::DXGIOutputDesc::New();
+      result_output->device_name = desc.DeviceName;
+      result_output->hdr_enabled =
+          desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+      result_output->min_luminance = desc.MinLuminance;
+      result_output->max_luminance = desc.MaxLuminance;
+      result_output->max_full_frame_luminance = desc.MaxFullFrameLuminance;
+      hdr_monitor_found |= result_output->hdr_enabled;
+      result_info->output_descs.push_back(std::move(result_output));
     }
   }
 
   UMA_HISTOGRAM_BOOLEAN("GPU.Output.HDR", hdr_monitor_found);
-  return hdr_monitor_found;
+  return result_info;
 }
 
 // static

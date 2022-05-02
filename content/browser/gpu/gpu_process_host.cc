@@ -1051,8 +1051,8 @@ void GpuProcessHost::DidUpdateOverlayInfo(
   GpuDataManagerImpl::GetInstance()->UpdateOverlayInfo(overlay_info);
 }
 
-void GpuProcessHost::DidUpdateHDRStatus(bool hdr_enabled) {
-  GpuDataManagerImpl::GetInstance()->UpdateHDRStatus(hdr_enabled);
+void GpuProcessHost::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
+  GpuDataManagerImpl::GetInstance()->UpdateDXGIInfo(std::move(dxgi_info));
 }
 #endif
 

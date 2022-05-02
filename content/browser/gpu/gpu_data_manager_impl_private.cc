@@ -89,6 +89,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMECAST)
 #include "chromecast/chromecast_buildflags.h"
@@ -561,15 +562,14 @@ class HDRProxy {
         GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, false);
     if (gpu_process_host) {
       auto* gpu_service = gpu_process_host->gpu_host()->gpu_service();
-      gpu_service->RequestHDRStatus(base::BindOnce(&HDRProxy::GotResult));
+      gpu_service->RequestDXGIInfo(base::BindOnce(&HDRProxy::GotResult));
     } else {
-      bool hdr_enabled = false;
-      GotResult(hdr_enabled);
+      GotResult(gfx::mojom::DXGIInfo::New());
     }
   }
 
-  static void GotResult(bool hdr_enabled) {
-    display::win::ScreenWin::SetHDREnabled(hdr_enabled);
+  static void GotResult(gfx::mojom::DXGIInfoPtr dxgi_info) {
+    display::win::ScreenWin::SetDXGIInfo(std::move(dxgi_info));
   }
 };
 
@@ -1142,10 +1142,11 @@ void GpuDataManagerImplPrivate::UpdateOverlayInfo(
   NotifyGpuInfoUpdate();
 }
 
-void GpuDataManagerImplPrivate::UpdateHDRStatus(bool hdr_enabled) {
+void GpuDataManagerImplPrivate::UpdateDXGIInfo(
+    gfx::mojom::DXGIInfoPtr dxgi_info) {
   // This is running on the main thread;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  HDRProxy::GotResult(hdr_enabled);
+  HDRProxy::GotResult(std::move(dxgi_info));
 }
 
 void GpuDataManagerImplPrivate::UpdateDxDiagNodeRequestStatus(

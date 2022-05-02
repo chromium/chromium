@@ -389,6 +389,13 @@ mojom("native_handle_types") {
   blink_cpp_typemaps = [ shared_cpp_typemap ]
 }
 
+if (is_win) {
+  mojom("dxgi_info") {
+    sources = [ "dxgi_info.mojom" ]
+    public_deps = [ "//mojo/public/mojom/base" ]
+  }
+}
+
 mojom("test_interfaces") {
   sources = [ "traits_test_service.mojom" ]
 

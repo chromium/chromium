@@ -31,6 +31,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/gpu_extra_info.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/mojom/dxgi_info.mojom.h"
+#endif
+
 class GURL;
 
 namespace gpu {
@@ -113,7 +117,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void UpdateVulkanInfo(uint32_t vulkan_version);
   void UpdateDevicePerfInfo(const gpu::DevicePerfInfo& device_perf_info);
   void UpdateOverlayInfo(const gpu::OverlayInfo& overlay_info);
-  void UpdateHDRStatus(bool hdr_enabled);
+  void UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
   void UpdateDxDiagNodeRequestStatus(bool request_continues);
   void UpdateDx12RequestStatus(bool request_continues);
   void UpdateVulkanRequestStatus(bool request_continues);

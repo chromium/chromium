@@ -433,8 +433,9 @@ GpuServiceImpl::GpuServiceImpl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  auto info_callback = base::BindRepeating(
-      &GpuServiceImpl::UpdateOverlayAndHDRInfo, weak_ptr_factory_.GetWeakPtr());
+  auto info_callback =
+      base::BindRepeating(&GpuServiceImpl::UpdateOverlayAndDXGIInfo,
+                          weak_ptr_factory_.GetWeakPtr());
   gl::DirectCompositionSurfaceWin::SetOverlayHDRGpuInfoUpdateCallback(
       info_callback);
 
@@ -903,23 +904,22 @@ void GpuServiceImpl::GetPeakMemoryUsage(uint32_t sequence_num,
                                 weak_ptr_, sequence_num, std::move(callback)));
 }
 
-void GpuServiceImpl::RequestHDRStatus(RequestHDRStatusCallback callback) {
+#if BUILDFLAG(IS_WIN)
+void GpuServiceImpl::RequestDXGIInfo(RequestDXGIInfoCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GpuServiceImpl::RequestHDRStatusOnMainThread,
+      FROM_HERE, base::BindOnce(&GpuServiceImpl::RequestDXGIInfoOnMainThread,
                                 weak_ptr_, std::move(callback)));
 }
 
-void GpuServiceImpl::RequestHDRStatusOnMainThread(
-    RequestHDRStatusCallback callback) {
+void GpuServiceImpl::RequestDXGIInfoOnMainThread(
+    RequestDXGIInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-
-#if BUILDFLAG(IS_WIN)
-  hdr_enabled_ = gl::DirectCompositionSurfaceWin::IsHDRSupported();
-#endif
+  dxgi_info_ = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
   io_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(std::move(callback), hdr_enabled_));
+                       base::BindOnce(std::move(callback), dxgi_info_.Clone()));
 }
+#endif
 
 void GpuServiceImpl::RegisterDisplayContext(
     gpu::DisplayContext* display_context) {
@@ -968,17 +968,6 @@ void GpuServiceImpl::DidLoseContext(bool offscreen,
                                     const GURL& active_url) {
   gpu_host_->DidLoseContext(offscreen, reason, active_url);
 }
-
-#if BUILDFLAG(IS_WIN)
-void GpuServiceImpl::DidUpdateOverlayInfo(
-    const gpu::OverlayInfo& overlay_info) {
-  gpu_host_->DidUpdateOverlayInfo(gpu_info_.overlay_info);
-}
-
-void GpuServiceImpl::DidUpdateHDRStatus(bool hdr_enabled) {
-  gpu_host_->DidUpdateHDRStatus(hdr_enabled);
-}
-#endif
 
 void GpuServiceImpl::StoreShaderToDisk(int client_id,
                                        const std::string& key,
@@ -1336,20 +1325,20 @@ gpu::Scheduler* GpuServiceImpl::GetGpuScheduler() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void GpuServiceImpl::UpdateOverlayAndHDRInfo() {
+void GpuServiceImpl::UpdateOverlayAndDXGIInfo() {
   gpu::OverlayInfo old_overlay_info = gpu_info_.overlay_info;
   gpu::CollectHardwareOverlayInfo(&gpu_info_.overlay_info);
 
   // Update overlay info in the GPU process and send the updated data back to
   // the GPU host in the Browser process through mojom if the info has changed.
   if (old_overlay_info != gpu_info_.overlay_info)
-    DidUpdateOverlayInfo(gpu_info_.overlay_info);
+    gpu_host_->DidUpdateOverlayInfo(gpu_info_.overlay_info);
 
-  // Update HDR status in the GPU process through the GPU host mojom.
-  bool old_hdr_enabled_status = hdr_enabled_;
-  hdr_enabled_ = gl::DirectCompositionSurfaceWin::IsHDRSupported();
-  if (old_hdr_enabled_status != hdr_enabled_)
-    DidUpdateHDRStatus(hdr_enabled_);
+  // Update DXGI adapter info in the GPU process through the GPU host mojom.
+  auto old_dxgi_info = std::move(dxgi_info_);
+  dxgi_info_ = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
+  if (!mojo::Equals(dxgi_info_, old_dxgi_info))
+    gpu_host_->DidUpdateDXGIInfo(dxgi_info_.Clone());
 }
 #endif
 

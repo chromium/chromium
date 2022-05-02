@@ -37,6 +37,8 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 [EnableIf=is_win]
 import "mojo/public/mojom/base/unguessable_token.mojom";
+[EnableIf=is_win]
+import "ui/gfx/mojom/dxgi_info.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -150,9 +152,10 @@ interface GpuService {
       map<gpu.mojom.GpuPeakMemoryAllocationSource, uint64>
           memory_per_allocation_source);
 
-  // Requests that the GPU process query system availability of HDR output and
-  // return it.
-  RequestHDRStatus() => (bool hdr_enabled);
+  // Requests that the GPU process query DXGI adapter and output information
+  // and return it.
+  [EnableIf=is_win]
+  RequestDXGIInfo() => (gfx.mojom.DXGIInfo dxgi_info);
 
   // Notify GPU that a shader program was loaded from disk. Key is an
   // SHA-1 hash, and data a binary blob with serialized program info.

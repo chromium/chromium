@@ -186,7 +186,9 @@ class TestGpuService : public mojom::GpuService {
   void GetPeakMemoryUsage(uint32_t sequence_num,
                           GetPeakMemoryUsageCallback callback) override {}
 
-  void RequestHDRStatus(RequestHDRStatusCallback callback) override {}
+#if BUILDFLAG(IS_WIN)
+  void RequestDXGIInfo(RequestDXGIInfoCallback callback) override {}
+#endif
 
   void LoadedShader(int32_t client_id,
                     const std::string& key,

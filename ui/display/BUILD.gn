@@ -108,6 +108,7 @@ component("display") {
   if (is_win) {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"
+    deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
   if (use_aura) {

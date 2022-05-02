@@ -565,8 +565,8 @@ void GpuHostImpl::DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) {
   delegate_->DidUpdateOverlayInfo(overlay_info);
 }
 
-void GpuHostImpl::DidUpdateHDRStatus(bool hdr_enabled) {
-  delegate_->DidUpdateHDRStatus(hdr_enabled);
+void GpuHostImpl::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
+  delegate_->DidUpdateDXGIInfo(std::move(dxgi_info));
 }
 
 void GpuHostImpl::SetChildSurface(gpu::SurfaceHandle parent,

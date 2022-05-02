@@ -191,9 +191,9 @@ void GpuDataManagerImpl::UpdateOverlayInfo(
   base::AutoLock auto_lock(lock_);
   private_->UpdateOverlayInfo(overlay_info);
 }
-void GpuDataManagerImpl::UpdateHDRStatus(bool hdr_enabled) {
+void GpuDataManagerImpl::UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   base::AutoLock auto_lock(lock_);
-  private_->UpdateHDRStatus(hdr_enabled);
+  private_->UpdateDXGIInfo(std::move(dxgi_info));
 }
 
 void GpuDataManagerImpl::UpdateDxDiagNodeRequestStatus(bool request_continues) {

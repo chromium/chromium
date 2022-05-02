@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
+#include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
 
 namespace gfx {
@@ -79,7 +80,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     virtual void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) = 0;
 #if BUILDFLAG(IS_WIN)
     virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
-    virtual void DidUpdateHDRStatus(bool hdr_enabled) = 0;
+    virtual void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) = 0;
 #endif
     virtual void BlockDomainFrom3DAPIs(const GURL& url,
                                        gpu::DomainGuilt guilt) = 0;
@@ -250,7 +251,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;
 #if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
-  void DidUpdateHDRStatus(bool hdr_enabled) override;
+  void DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
   void SetChildSurface(gpu::SurfaceHandle parent,
                        gpu::SurfaceHandle child) override;
 #endif

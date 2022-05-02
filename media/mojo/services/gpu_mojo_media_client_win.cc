@@ -39,11 +39,16 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
         *traits.target_color_space, traits.gpu_preferences,
         *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
   }
+  // Report that HDR is enabled if any display has HDR enabled.
+  bool hdr_enabled = false;
+  auto dxgi_info = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
+  for (const auto& output_desc : dxgi_info->output_descs)
+    hdr_enabled |= output_desc->hdr_enabled;
   return D3D11VideoDecoder::Create(
       traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
       GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(),
-      gl::DirectCompositionSurfaceWin::IsHDRSupported());
+      hdr_enabled);
 }
 
 absl::optional<SupportedVideoDecoderConfigs>

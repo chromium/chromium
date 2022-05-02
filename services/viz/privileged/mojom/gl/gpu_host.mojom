@@ -11,6 +11,8 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
 import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
+[EnableIf=is_win]
+import "ui/gfx/mojom/dxgi_info.mojom";
 
 // Communication channel from the gpu process to the gpu host. This interface
 // should never have any sync function calls.
@@ -46,10 +48,10 @@ interface GpuHost {
   [EnableIf=is_win]
   DidUpdateOverlayInfo(gpu.mojom.OverlayInfo overlay_info);
 
-  // Tells the GPU host that the HDR status has been updated in the GPU
-  // process.
+  // Tells the GPU host that the DXGI adapter and output information has been
+  // updated in the GPU process.
   [EnableIf=is_win]
-  DidUpdateHDRStatus(bool hdr_enabled);
+  DidUpdateDXGIInfo(gfx.mojom.DXGIInfo dxgi_info);
 
   // GPU process has decided to disable GPU compositing. Host process keeps
   // track of this decision in case the GPU process crashes.

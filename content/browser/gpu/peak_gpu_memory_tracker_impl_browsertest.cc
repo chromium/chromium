@@ -113,7 +113,9 @@ class TestGpuService : public viz::mojom::GpuService {
                            CopyGpuMemoryBufferCallback callback) override {}
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override {}
-  void RequestHDRStatus(RequestHDRStatusCallback callback) override {}
+#if BUILDFLAG(IS_WIN)
+  void RequestDXGIInfo(RequestDXGIInfoCallback callback) override {}
+#endif
   void LoadedShader(int32_t client_id,
                     const std::string& key,
                     const std::string& data) override {}

@@ -31,6 +31,7 @@ mojom("gl") {
 
   if (is_win) {
     sources += [ "info_collection_gpu_service.mojom" ]
+    public_deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
   enabled_features = []
