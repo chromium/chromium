@@ -80,6 +80,20 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "Mac Builder (dbg) Goma RBE Canary (clobber)",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder (dbg)",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_canary",
+                    "clobber",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     cores = 4,
     goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
@@ -87,6 +101,20 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder (dbg)",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_canary",
+                    "clobber",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     cores = None,
     goma_jobs = goma.jobs.J80,
     os = os.MAC_11,
@@ -195,6 +223,20 @@ fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "Mac Builder (dbg) Goma RBE Latest Client (clobber)",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder (dbg)",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_latest_client",
+                    "clobber",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     cores = 4,
     goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,

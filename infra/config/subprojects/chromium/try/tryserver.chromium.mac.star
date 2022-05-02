@@ -176,6 +176,13 @@ try_.builder(
 try_.builder(
     name = "mac_chromium_compile_dbg_ng",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/Mac Builder (dbg)",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     goma_jobs = goma.jobs.J150,
     os = os.MAC_DEFAULT,
     main_list_view = "try",
@@ -195,6 +202,10 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_dbg_ng",
+    mirrors = [
+        "ci/Mac Builder (dbg)",
+        "ci/Mac11 Tests (dbg)",
+    ],
 )
 
 try_.builder(
