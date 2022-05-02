@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -137,7 +138,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
       const std::string& app_id,
       apps::mojom::IntentFilterPtr intent_filter,
       apps::mojom::IntentPtr intent,
-      apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) override;
+      ReplacedAppPreferences replaced_app_preferences) override;
 
   void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                          bool open_in_app) override;

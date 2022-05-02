@@ -267,16 +267,18 @@ void PreferredAppsImpl::AddPreferredAppImpl(
     return;
   }
 
-  apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
-      preferred_apps_list_.AddPreferredApp(
-          app_id, ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
+  auto replaced_apps = preferred_apps_list_.AddPreferredApp(
+      app_id, ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
+
+  auto mojom_replaced_apps =
+      ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(replaced_apps);
 
   WriteToJSON(profile_dir_, preferred_apps_list_);
 
   auto changes = apps::mojom::PreferredAppChanges::New();
 
   changes->added_filters[app_id].push_back(mojom_intent_filter->Clone());
-  changes->removed_filters = Clone(replaced_apps->replaced_preference);
+  changes->removed_filters = Clone(mojom_replaced_apps->replaced_preference);
   host_->OnPreferredAppsChanged(std::move(changes));
 
   if (from_publisher || !intent) {
@@ -332,9 +334,10 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   auto& removed = changes->removed_filters;
 
   for (auto& filter : all_link_filters) {
-    apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
-        preferred_apps_list_.AddPreferredApp(
-            app_id, ConvertMojomIntentFilterToIntentFilter(filter));
+    auto replaced_apps =
+        ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(
+            preferred_apps_list_.AddPreferredApp(
+                app_id, ConvertMojomIntentFilterToIntentFilter(filter)));
     added[app_id].push_back(std::move(filter));
 
     // If we removed overlapping supported links when adding the new app, those

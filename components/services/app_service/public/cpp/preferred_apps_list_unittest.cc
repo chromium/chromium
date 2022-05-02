@@ -9,6 +9,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -234,7 +235,7 @@ TEST_F(PreferredAppListTest, ReplacedAppPreference) {
                                apps::PatternMatchType::kNone, intent_filter_1);
   auto replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
-  EXPECT_EQ(0u, replaced_app_preferences->replaced_preference.size());
+  EXPECT_EQ(0u, replaced_app_preferences.size());
 
   GURL filter_url_3 = GURL("https://www.abc.com/abc");
   auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
@@ -245,9 +246,9 @@ TEST_F(PreferredAppListTest, ReplacedAppPreference) {
                                apps::PatternMatchType::kNone, intent_filter_2);
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId2, intent_filter_2);
-  EXPECT_EQ(1u, replaced_app_preferences->replaced_preference.size());
-  EXPECT_TRUE(replaced_app_preferences->replaced_preference.find(kAppId1) !=
-              replaced_app_preferences->replaced_preference.end());
+  EXPECT_EQ(1u, replaced_app_preferences.size());
+  EXPECT_TRUE(replaced_app_preferences.find(kAppId1) !=
+              replaced_app_preferences.end());
 
   GURL filter_url_4 = GURL("http://www.example.com/abc");
   auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
@@ -259,40 +260,40 @@ TEST_F(PreferredAppListTest, ReplacedAppPreference) {
   // Test when replacing multiple preferred app entries with same app id.
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
-  EXPECT_EQ(1u, replaced_app_preferences->replaced_preference.size());
-  EXPECT_TRUE(replaced_app_preferences->replaced_preference.find(kAppId2) !=
-              replaced_app_preferences->replaced_preference.end());
+  EXPECT_EQ(1u, replaced_app_preferences.size());
+  EXPECT_TRUE(replaced_app_preferences.find(kAppId2) !=
+              replaced_app_preferences.end());
 
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId1, intent_filter_3);
-  EXPECT_EQ(0u, replaced_app_preferences->replaced_preference.size());
+  EXPECT_EQ(0u, replaced_app_preferences.size());
 
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId2, intent_filter_2);
-  EXPECT_EQ(1u, replaced_app_preferences->replaced_preference.size());
-  auto entry = replaced_app_preferences->replaced_preference.find(kAppId1);
-  EXPECT_TRUE(entry != replaced_app_preferences->replaced_preference.end());
+  EXPECT_EQ(1u, replaced_app_preferences.size());
+  auto entry = replaced_app_preferences.find(kAppId1);
+  EXPECT_TRUE(entry != replaced_app_preferences.end());
   EXPECT_EQ(2u, entry->second.size());
 
   // Test when replacing multiple preferred app entries with different app id.
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
-  EXPECT_EQ(1u, replaced_app_preferences->replaced_preference.size());
-  EXPECT_TRUE(replaced_app_preferences->replaced_preference.find(kAppId2) !=
-              replaced_app_preferences->replaced_preference.end());
+  EXPECT_EQ(1u, replaced_app_preferences.size());
+  EXPECT_TRUE(replaced_app_preferences.find(kAppId2) !=
+              replaced_app_preferences.end());
 
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId2, intent_filter_3);
-  EXPECT_EQ(0u, replaced_app_preferences->replaced_preference.size());
+  EXPECT_EQ(0u, replaced_app_preferences.size());
 
   replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId3, intent_filter_2);
-  EXPECT_EQ(2u, replaced_app_preferences->replaced_preference.size());
-  entry = replaced_app_preferences->replaced_preference.find(kAppId1);
-  EXPECT_TRUE(entry != replaced_app_preferences->replaced_preference.end());
+  EXPECT_EQ(2u, replaced_app_preferences.size());
+  entry = replaced_app_preferences.find(kAppId1);
+  EXPECT_TRUE(entry != replaced_app_preferences.end());
   EXPECT_EQ(1u, entry->second.size());
-  entry = replaced_app_preferences->replaced_preference.find(kAppId2);
-  EXPECT_TRUE(entry != replaced_app_preferences->replaced_preference.end());
+  entry = replaced_app_preferences.find(kAppId2);
+  EXPECT_TRUE(entry != replaced_app_preferences.end());
   EXPECT_EQ(1u, entry->second.size());
 }
 
@@ -305,7 +306,7 @@ TEST_F(PreferredAppListTest, ReplacedAppPreferencesSameApp) {
   auto replaced_app_preferences =
       preferred_apps_.AddPreferredApp(kAppId1, intent_filter);
 
-  EXPECT_EQ(0u, replaced_app_preferences->replaced_preference.size());
+  EXPECT_EQ(0u, replaced_app_preferences.size());
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url));
 }
 

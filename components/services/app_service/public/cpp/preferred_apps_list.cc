@@ -39,17 +39,16 @@ void PreferredAppsList::Init(PreferredApps preferred_apps) {
   initialized_ = true;
 }
 
-apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
+ReplacedAppPreferences PreferredAppsList::AddPreferredApp(
     const std::string& app_id,
     const IntentFilterPtr& intent_filter) {
-  auto replaced_app_preferences = apps::mojom::ReplacedAppPreferences::New();
+  ReplacedAppPreferences replaced_app_preferences;
 
   if (EntryExists(app_id, intent_filter)) {
     return replaced_app_preferences;
   }
 
   auto iter = preferred_apps_.begin();
-  auto& replaced_preference_map = replaced_app_preferences->replaced_preference;
 
   // Go through the list and see if there are overlapped intent filters in the
   // list. If there is, add this into the replaced_app_preferences and remove it
@@ -59,8 +58,8 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
     if ((*iter)->app_id != app_id &&
         apps_util::FiltersHaveOverlap((*iter)->intent_filter, intent_filter)) {
       // Add the to be removed preferred app into a map, key by app_id.
-      replaced_preference_map[(*iter)->app_id].push_back(
-          ConvertIntentFilterToMojomIntentFilter((*iter)->intent_filter));
+      replaced_app_preferences[(*iter)->app_id].push_back(
+          std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -72,7 +71,7 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
   if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
     for (auto& obs : observers_) {
       obs.OnPreferredAppChanged(app_id, true);
-      for (auto& app : replaced_preference_map) {
+      for (auto& app : replaced_app_preferences) {
         obs.OnPreferredAppChanged(app.first, false);
       }
     }

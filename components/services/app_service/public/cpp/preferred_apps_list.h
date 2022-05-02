@@ -14,7 +14,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -38,9 +37,8 @@ class PreferredAppsList : public PreferredAppsListHandle {
   // Add a preferred app for an |intent_filter|, and returns a group of
   // |app_ids| that is no longer preferred app of their corresponding
   // |intent_filters|.
-  apps::mojom::ReplacedAppPreferencesPtr AddPreferredApp(
-      const std::string& app_id,
-      const IntentFilterPtr& intent_filter);
+  ReplacedAppPreferences AddPreferredApp(const std::string& app_id,
+                                         const IntentFilterPtr& intent_filter);
 
   // Delete a preferred app for an |intent_filter| with the same |app_id|.
   // Returns the deleted filters, if any.

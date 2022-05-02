@@ -47,6 +47,10 @@ struct PreferredAppChanges {
 
 using PreferredAppChangesPtr = std::unique_ptr<PreferredAppChanges>;
 
+// Represents a group of `app_ids` that is no longer preferred app of their
+// corresponding `intent_filters`.
+using ReplacedAppPreferences = base::flat_map<std::string, IntentFilters>;
+
 // Creates a deep copy of `preferred_apps`.
 PreferredApps ClonePreferredApps(const PreferredApps& preferred_apps);
 
@@ -72,6 +76,10 @@ PreferredApps ConvertMojomPreferredAppsToPreferredApps(
 
 std::vector<apps::mojom::PreferredAppPtr>
 ConvertPreferredAppsToMojomPreferredApps(const PreferredApps& preferred_apps);
+
+apps::mojom::ReplacedAppPreferencesPtr
+ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(
+    const ReplacedAppPreferences& replace_preferences);
 
 }  // namespace apps
 

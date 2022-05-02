@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -42,7 +43,7 @@ class PreferredAppsImpl {
         const std::string& app_id,
         apps::mojom::IntentFilterPtr intent_filter,
         apps::mojom::IntentPtr intent,
-        apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) {}
+        ReplacedAppPreferences replaced_app_preferences) {}
 
     virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                    bool open_in_app) = 0;

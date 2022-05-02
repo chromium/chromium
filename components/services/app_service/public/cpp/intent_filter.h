@@ -202,8 +202,8 @@ IntentFilters CloneIntentFilters(const IntentFilters& intent_filters);
 
 // Creates a deep copy of `intent_filters` map.
 COMPONENT_EXPORT(APP_TYPES)
-base::flat_map<std::string, apps::IntentFilters> CloneIntentFiltersMap(
-    const base::flat_map<std::string, apps::IntentFilters>& intent_filters_map);
+base::flat_map<std::string, IntentFilters> CloneIntentFiltersMap(
+    const base::flat_map<std::string, IntentFilters>& intent_filters_map);
 
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const IntentFilters& source, const IntentFilters& target);

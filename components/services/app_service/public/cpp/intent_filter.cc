@@ -322,10 +322,9 @@ IntentFilters CloneIntentFilters(const IntentFilters& intent_filters) {
   return ret;
 }
 
-base::flat_map<std::string, apps::IntentFilters> CloneIntentFiltersMap(
-    const base::flat_map<std::string, apps::IntentFilters>&
-        intent_filters_map) {
-  base::flat_map<std::string, apps::IntentFilters> ret;
+base::flat_map<std::string, IntentFilters> CloneIntentFiltersMap(
+    const base::flat_map<std::string, IntentFilters>& intent_filters_map) {
+  base::flat_map<std::string, IntentFilters> ret;
   for (const auto& it : intent_filters_map) {
     ret.insert(std::make_pair(it.first, CloneIntentFilters(it.second)));
   }
