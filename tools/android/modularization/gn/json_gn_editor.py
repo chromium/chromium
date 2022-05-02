@@ -21,7 +21,11 @@ from typing import List, Optional
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import subprocess_utils
+from python_utils import git_metadata_utils, subprocess_utils
+
+_SRC_PATH = git_metadata_utils.get_chromium_src_path()
+_AUTONINJA_PATH = os.path.join(_SRC_PATH, 'third_party', 'depot_tools',
+                               'autoninja')
 
 # Refer to parse_tree.cc for GN AST implementation details:
 # https://gn.googlesource.com/gn/+/refs/heads/main/src/gn/parse_tree.cc
@@ -36,14 +40,17 @@ AFTER_COMMENT = 'after_comment'
 
 
 @contextlib.contextmanager
-def _restore_original_file_contents(path):
-    with open(path) as f:
-        original_content = f.read()
+def _backup_and_restore_original_file(path: str):
+    backup_path = path + '.backup'
+    # Move the original file and copy back to preserve timestamp. The next build
+    # file edit will trigger a new `gn gen` and make the necessary build graph
+    # updates.
+    shutil.move(path, backup_path)
     try:
+        shutil.copy(backup_path, path)
         yield
     finally:
-        with open(path, 'w') as f:
-            f.write(original_content)
+        shutil.move(backup_path, path)
 
 
 def _build_targets_output(out_dir: str,
@@ -53,7 +60,7 @@ def _build_targets_output(out_dir: str,
     # This is needed for detecting based on autoninja output whether just the
     # about_credits.html target was built.
     env['NINJA_SUMMARIZE_BUILD'] = '1'
-    proc = subprocess.Popen(['autoninja', '-C', out_dir] + targets,
+    proc = subprocess.Popen([_AUTONINJA_PATH, '-C', out_dir] + targets,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT,
                             env=env,
@@ -99,8 +106,8 @@ class BuildFile:
                  *,
                  dryrun: bool = False):
         self._root = root_gn_path
-        rel_path = os.path.relpath(build_gn_path, root_gn_path)
-        self._gn_rel_path = '//' + os.path.dirname(rel_path)
+        self._rel_path = os.path.relpath(build_gn_path, root_gn_path)
+        self._gn_rel_path = '//' + os.path.dirname(self._rel_path)
         self._full_path = os.path.abspath(build_gn_path)
         self._skip_write_content = dryrun
 
@@ -188,6 +195,14 @@ class BuildFile:
 
         return self._find_all(match_list_assignments)
 
+    def _find_all_deps_lists(self) -> List[List[dict]]:
+        name_list_tuples = self._find_all_list_assignments()
+        return [
+            node_list for name, node_list in name_list_tuples
+            if name == 'deps' or name.startswith('deps_')
+            or name.endswith('_deps') or '_deps_' in name
+        ]
+
     def split_deps(self, original_dep_name: str,
                    new_dep_names: List[str]) -> bool:
         split = False
@@ -199,7 +214,7 @@ class BuildFile:
     def _split_dep(self, original_dep_name: str, new_dep_name: str) -> bool:
         """Add |new_dep_name| to GN deps that contains |original_dep_name|.
 
-        Supports deps, public_deps, and other variables named *_deps.
+        Supports deps, public_deps, and other deps variables.
 
         Works for explicitly assigning a list to deps:
         deps = [ ..., "original_dep", ...]
@@ -223,16 +238,10 @@ class BuildFile:
             assert dep_name.startswith('//'), (
                 f'Absolute GN path required, starting with //: {dep_name}')
 
-        name_list_tuples = self._find_all_list_assignments()
-        all_deps_lists = [
-            node_list for name, node_list in name_list_tuples
-            if name == 'deps' or name.endswith('_deps')
-        ]
-
         added_new_dep = False
         normalized_original_dep_name = self._normalize(original_dep_name)
         normalized_new_dep_name = self._normalize(new_dep_name)
-        for deps_list in all_deps_lists:
+        for deps_list in self._find_all_deps_lists():
             original_dep_idx = None
             new_dep_already_exists = False
             for idx, child in enumerate(deps_list):
@@ -275,7 +284,7 @@ class BuildFile:
                     targets: List[str]) -> bool:
         """Remove |dep_name| if the target can still be built in |out_dir|.
 
-        Supports deps, public_deps, and other variables named *_deps.
+        Supports deps, public_deps, and other deps variables.
 
         Works for explicitly assigning a list to deps:
         deps = [ ..., "original_dep", ...]
@@ -289,15 +298,9 @@ class BuildFile:
         assert dep_name.startswith('//'), (
             f'Absolute GN path required, starting with //: {dep_name}')
 
-        name_list_tuples = self._find_all_list_assignments()
-        all_deps_lists = [
-            node_list for name, node_list in name_list_tuples
-            if name == 'deps' or name.endswith('_deps')
-        ]
-
         removed_dep = False
         normalized_dep_name = self._normalize(dep_name)
-        for deps_list in all_deps_lists:
+        for deps_list in self._find_all_deps_lists():
             child_deps = [
                 self._normalize(c.get(NODE_VALUE)) for c in deps_list
             ]
@@ -308,10 +311,11 @@ class BuildFile:
                     idx_to_remove = idx
                     break
             if idx_to_remove is not None:
-                logging.info(f'Found {normalized_dep_name} in {child_deps}')
+                logging.info(f'Found {normalized_dep_name} '
+                             f'({self._rel_path}) in {child_deps}')
                 child_to_remove = deps_list[idx_to_remove]
                 can_remove_dep = False
-                with _restore_original_file_contents(self._full_path):
+                with _backup_and_restore_original_file(self._full_path):
                     deps_list.remove(child_to_remove)
                     self.write_content_to_file()
                     # Immediately restore deps_list's original value in case the
@@ -349,15 +353,8 @@ class BuildFile:
             return False
         # If ninja did not re-build anything, then the target changed is not
         # among the targets being built. Avoid this change as it's not been
-        # tested/used. about_credits.html is special in that it has build.ninja
-        # in its depfile so it is rebuilt every time build.ninja is updated, so
-        # in practice, every time a BUILD.gn file is updated. If that is the
-        # only target that changed, then it is the same as no real targets were
-        # built.
-        if 'ninja: no work to do.' in output or (
-                '    1 build steps completed' in output
-                and 'to build gen/components/resources/about_credits.html' in
-                output):
+        # tested/used.
+        if 'ninja: no work to do.' in output:
             logging.info('Ninja did not find any targets to build')
             return False
         return True

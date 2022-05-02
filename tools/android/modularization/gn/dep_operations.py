@@ -5,13 +5,14 @@
 
 import argparse
 import dataclasses
+import json
 import logging
 import multiprocessing
 import os
 import pathlib
 import subprocess
 import sys
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Set
 
 import json_gn_editor
 import utils
@@ -25,19 +26,25 @@ _SRC_PATH = git_metadata_utils.get_chromium_src_path()
 sys.path.append(str(_SRC_PATH / 'build' / 'android'))
 from pylib import constants
 
+_AUTONINJA_PATH = os.path.join(_SRC_PATH, 'third_party', 'depot_tools',
+                               'autoninja')
 _GIT_IGNORE_STR = '(git ignored file) '
 
 
 @dataclasses.dataclass
 class OperationResult:
     path: str
-    ignored: bool
-    dryrun: bool
+    git_ignored: bool = False
+    dryrun: bool = False
+    skipped: bool = False
+    skip_reason: str = ''
 
     def __str__(self):
-        dryrun_string = '[DRYRUN] ' if self.dryrun else ''
-        ignore_string = _GIT_IGNORE_STR if self.ignored else ''
-        return f'{dryrun_string}Updated {ignore_string}{self.path}'
+        msg = f'Skipped ' if self.skipped else 'Updated '
+        dryrun = '[DRYRUN] ' if self.dryrun else ''
+        ignore = _GIT_IGNORE_STR if self.git_ignored else ''
+        skip = f' ({self.skip_reason})' if self.skipped else ''
+        return f'{dryrun}{msg}{ignore}{self.path}{skip}'
 
 
 def _split_deps(existing_dep: str, new_deps: List[str], root: pathlib.Path,
@@ -45,7 +52,8 @@ def _split_deps(existing_dep: str, new_deps: List[str], root: pathlib.Path,
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
         if build_file.split_deps(existing_dep, new_deps):
             return OperationResult(path=os.path.relpath(path, start=root),
-                                   ignored=utils.is_git_ignored(root, path),
+                                   git_ignored=utils.is_git_ignored(
+                                       root, path),
                                    dryrun=dryrun)
     return None
 
@@ -56,7 +64,8 @@ def _remove_deps(deps: List[str], out_dir: str, root: pathlib.Path, path: str,
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
         if build_file.remove_deps(deps, out_dir, targets, inline_mode):
             return OperationResult(path=os.path.relpath(path, start=root),
-                                   ignored=utils.is_git_ignored(root, path),
+                                   git_ignored=utils.is_git_ignored(
+                                       root, path),
                                    dryrun=dryrun)
     return None
 
@@ -73,12 +82,39 @@ def _split(args: argparse.Namespace, build_filepaths: List[str],
             for filepath in build_filepaths
         }
         for idx, filepath in enumerate(tasks.keys()):
-            logging.info('[%d/%d] Checking %s', idx, num_total, filepath)
+            relpath = os.path.relpath(filepath, start=root)
+            logging.info('[%d/%d] Checking %s', idx, num_total, relpath)
             operation_result = tasks[filepath].get()
             if operation_result:
                 logging.info(operation_result)
                 results.append(operation_result)
     return results
+
+
+def _get_project_json(out_dir: str) -> Dict[str, dict]:
+    project_json_path = os.path.join(out_dir, 'project.json')
+    with open(project_json_path) as f:
+        return json.load(f)
+
+
+def _calculate_targets_for_file(relpath: str, arg_targets: List[str],
+                                all_targets: Set[str]) -> Optional[List[str]]:
+    if os.path.basename(relpath) != 'BUILD.gn':
+        # Build all targets when we are dealing with build files that might be
+        # imported by other build files (e.g. config.gni or other_name.gn).
+        return []
+    dirpath = os.path.dirname(relpath)
+    extra_targets = []
+    for full_target_name in all_targets:
+        target_dir, short_target_name = full_target_name.split(':', 1)
+        # __ is used for sub-targets in GN, only focus on top-level ones. Also
+        # skip targets using other toolchains, e.g.
+        # base:feature_list_buildflags(//build/toolchain/linux:clang_x64)
+        if (target_dir == dirpath and '__' not in short_target_name
+                and '(' not in short_target_name):
+            extra_targets.append(full_target_name)
+    targets = arg_targets + extra_targets
+    return targets or None
 
 
 def _remove(args: argparse.Namespace, build_filepaths: List[str],
@@ -100,13 +136,23 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
             'Static analysis must be on to ensure correctness.')
         # TODO: Ensure that the build server is not running.
 
-    logging.info(f'Running gn gen in output directory: {out_dir}')
-    subprocess_utils.run_command(['gn', 'gen', '-C', out_dir])
-    logging.info('Building targets in preparation for removing deps')
-    # Avoid capturing stdout/stderr to see progress of the full build.
-    subprocess.run(['autoninja', '-C', out_dir] + args.targets,
-                   check=True,
-                   stdout=sys.stderr)
+    logging.info(f'Running "gn gen" in output directory: {out_dir}')
+    subprocess_utils.run_command(['gn', 'gen', '-C', out_dir, '--ide=json'])
+
+    project_json = _get_project_json(out_dir)
+    # The input file names have a // prefix. (e.g. //android_webview/BUILD.gn)
+    known_build_files = set(
+        name[2:] for name in project_json['build_settings']['gen_input_files'])
+    # Remove the // prefix for target names so ninja can build them.
+    known_target_names = set(name[2:]
+                             for name in project_json['targets'].keys())
+
+    unknown_targets = [t for t in args.targets if t not in known_target_names]
+    assert not unknown_targets, f'Cannot build {unknown_targets} in {out_dir}.'
+
+    logging.info('Building all targets in preparation for removing deps')
+    # Avoid capturing stdout/stderr to see the progress of the full build.
+    subprocess.run([_AUTONINJA_PATH, '-C', out_dir], check=True)
 
     results = []
     for idx, filepath in enumerate(build_filepaths):
@@ -121,15 +167,35 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
                 should_inline = False
             else:
                 should_inline = args.inline_mode
-            logging.info('[%d/%d] Checking %s', idx, num_total, filepath)
-            operation_result = _remove_deps(args.dep, out_dir, root, filepath,
-                                            args.dryrun, args.targets,
-                                            should_inline)
+            relpath = os.path.relpath(filepath, start=root)
+            logging.info('[%d/%d] Checking %s', idx, num_total, relpath)
+            if relpath not in known_build_files:
+                operation_result = OperationResult(
+                    path=relpath,
+                    skipped=True,
+                    skip_reason='Not in the list of known build files.')
+            else:
+                targets = _calculate_targets_for_file(relpath, args.targets,
+                                                      known_target_names)
+                if targets is None:
+                    operation_result = OperationResult(
+                        path=relpath,
+                        skipped=True,
+                        skip_reason='Could not find any valid targets.')
+                else:
+                    operation_result = _remove_deps(args.dep, out_dir, root,
+                                                    filepath, args.dryrun,
+                                                    targets, should_inline)
             if operation_result:
                 logging.info(operation_result)
                 results.append(operation_result)
         # Use blank except: to show this for KeyboardInterrupt as well.
         except:
+            # When interrupted, the last build file may be restored along with
+            # its timestamp, which means an explicit `gn gen` is required to
+            # avoid build failures caused by the interrupted remove operation.
+            logging.error('Exiting... (running final "gn gen")')
+            subprocess_utils.run_command(['gn', 'gen', '-C', out_dir])
             logging.error(
                 f'Encountered error while processing {filepath}. Append the '
                 'following args to resume from this file once the error is '
@@ -193,8 +259,8 @@ def main():
         metavar='T',
         nargs='*',
         default=[],
-        help='The set of targets to compile after each dep removal. By default '
-        'ninja compiles all targets.')
+        help='The set of extra targets to compile after each dep removal. This '
+        'is in addition to file-based targets that are automatically added.')
     remove_parser.add_argument(
         '--inline-mode',
         action='store_true',
@@ -227,6 +293,8 @@ def main():
                     build_filepaths.append(filepath)
         build_filepaths.sort()
 
+    logging.info('Found %d build files.', len(build_filepaths))
+
     if args.resume_from:
         resume_idx = None
         for idx, path in enumerate(build_filepaths):
@@ -234,22 +302,26 @@ def main():
                 resume_idx = idx
                 break
         assert resume_idx is not None, f'Did not find {args.resume_from}.'
+        logging.info('Skipping %d build files with --resume-from.', resume_idx)
         build_filepaths = build_filepaths[resume_idx:]
 
     filtered_build_filepaths = [
-        p for p in build_filepaths if not utils.is_bad_gn_file(p)
+        p for p in build_filepaths if not utils.is_bad_gn_file(p, root)
     ]
     num_total = len(filtered_build_filepaths)
     assert num_total > 0, 'No valid GN files found.'
-    logging.info('Found %d build files.', num_total)
+    logging.info('Running on %d valid build files.', num_total)
 
     operation_results: List[OperationResult] = args.command(
         args, filtered_build_filepaths, root)
-    ignored_operation_results = [r for r in operation_results if r.ignored]
-    num_updated = len(operation_results)
+    ignored_operation_results = [r for r in operation_results if r.git_ignored]
+    skipped_operation_results = [r for r in operation_results if r.skipped]
     num_ignored = len(ignored_operation_results)
-    print(f'Checked {num_total} and updated {num_updated} build files, '
-          f'{num_ignored} of which are ignored by git under {root}')
+    num_skipped = len(skipped_operation_results)
+    num_updated = len(operation_results) - num_skipped
+    print(f'Checked {num_total}, updated {num_updated} ({num_ignored} of '
+          f'which are ignored by git under {root}), and skipped {num_skipped} '
+          'build files.')
     if num_ignored:
         print(f'\nThe following {num_ignored} files were ignored by git and '
               'may need separate CLs in their respective repositories:')
