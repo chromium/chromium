@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_WIDGET_EVENT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_WIDGET_EVENT_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "third_party/blink/public/platform/web_input_event_result.h"
