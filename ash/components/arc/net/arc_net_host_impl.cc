@@ -227,14 +227,17 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type) {
 // the given |network| NetworkConfiguration object.
 void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
                         const base::Value* shill_ipconfig) {
-  if (!shill_ipconfig || !shill_ipconfig->is_dict())
+  const base::Value::Dict* shill_ipconfig_dict = shill_ipconfig->GetIfDict();
+  if (!shill_ipconfig_dict)
     return;
 
   // Only set the IP address and gateway if both are defined and non empty.
-  const auto* address = shill_ipconfig->FindStringPath(shill::kAddressProperty);
-  const auto* gateway = shill_ipconfig->FindStringPath(shill::kGatewayProperty);
+  const auto* address =
+      shill_ipconfig_dict->FindString(shill::kAddressProperty);
+  const auto* gateway =
+      shill_ipconfig_dict->FindString(shill::kGatewayProperty);
   const int prefixlen =
-      shill_ipconfig->FindIntPath(shill::kPrefixlenProperty).value_or(0);
+      shill_ipconfig_dict->FindInt(shill::kPrefixlenProperty).value_or(0);
   if (address && !address->empty() && gateway && !gateway->empty()) {
     if (prefixlen < 64) {
       network->host_ipv4_prefix_length = prefixlen;
@@ -250,8 +253,8 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   // If the user has overridden DNS with the "Google nameservers" UI options,
   // the kStaticIPConfigProperty object will be empty except for DNS addresses.
   if (const auto* dns_list =
-          shill_ipconfig->FindListKey(shill::kNameServersProperty)) {
-    for (const auto& dns_value : dns_list->GetListDeprecated()) {
+          shill_ipconfig_dict->FindList(shill::kNameServersProperty)) {
+    for (const auto& dns_value : *dns_list) {
       const std::string& dns = dns_value.GetString();
       if (dns.empty())
         continue;
@@ -266,21 +269,18 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   }
 
   if (const auto* domains =
-          shill_ipconfig->FindKey(shill::kSearchDomainsProperty)) {
-    if (domains->is_list()) {
-      for (const auto& domain : domains->GetListDeprecated())
-        network->host_search_domains->push_back(domain.GetString());
-    }
+          shill_ipconfig_dict->FindList(shill::kSearchDomainsProperty)) {
+    for (const auto& domain : *domains)
+      network->host_search_domains->push_back(domain.GetString());
   }
 
-  const int mtu = shill_ipconfig->FindIntPath(shill::kMtuProperty).value_or(0);
+  const int mtu = shill_ipconfig_dict->FindInt(shill::kMtuProperty).value_or(0);
   if (mtu > 0)
     network->host_mtu = mtu;
 
   if (const auto* include_routes_list =
-          shill_ipconfig->FindListKey(shill::kIncludedRoutesProperty)) {
-    for (const auto& include_routes_value :
-         include_routes_list->GetListDeprecated()) {
+          shill_ipconfig_dict->FindList(shill::kIncludedRoutesProperty)) {
+    for (const auto& include_routes_value : *include_routes_list) {
       const std::string& include_route = include_routes_value.GetString();
       if (!include_route.empty()) {
         network->include_routes->push_back(include_route);
@@ -289,9 +289,8 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   }
 
   if (const auto* exclude_routes_list =
-          shill_ipconfig->FindListKey(shill::kExcludedRoutesProperty)) {
-    for (const auto& exclude_routes_value :
-         exclude_routes_list->GetListDeprecated()) {
+          shill_ipconfig_dict->FindList(shill::kExcludedRoutesProperty)) {
+    for (const auto& exclude_routes_value : *exclude_routes_list) {
       const std::string& exclude_route = exclude_routes_value.GetString();
       if (!exclude_route.empty()) {
         network->exclude_routes->push_back(exclude_route);
