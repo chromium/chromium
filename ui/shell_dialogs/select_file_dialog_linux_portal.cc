@@ -377,7 +377,10 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
       if (extension.empty())
         continue;
 
-      filter.patterns.insert(base::StringPrintf("*.%s", extension.c_str()));
+      filter.patterns.push_back("*." + base::ToLowerASCII(extension));
+      auto upper = "*." + base::ToUpperASCII(extension);
+      if (upper != filter.patterns.back())
+        filter.patterns.push_back(std::move(upper));
     }
 
     if (filter.patterns.empty())
@@ -407,7 +410,7 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
     // is implied).
     PortalFilter filter;
     filter.name = l10n_util::GetStringUTF8(IDS_SAVEAS_ALL_FILES);
-    filter.patterns.insert("*.*");
+    filter.patterns.push_back("*.*");
 
     filter_set.filters.push_back(std::move(filter));
   }

@@ -71,7 +71,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     PortalFilter& operator=(PortalFilter&& other) = default;
 
     std::string name;
-    std::set<std::string> patterns;
+    std::vector<std::string> patterns;
   };
 
   // A set of PortalFilters, potentially with a default.
