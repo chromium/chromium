@@ -27,6 +27,8 @@ namespace media_router {
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
+bool IsAccessCodeCastEnabled();
+
 class AccessCodeCastSinkService : public KeyedService,
                                   public DiscoveryNetworkMonitor::Observer {
  public:

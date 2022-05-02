@@ -36,6 +36,13 @@ const char kEnableMediaInternalsName[] = "Media-internals page";
 const char kEnableMediaInternalsDescription[] =
     "Enables the chrome://media-internals debug page.";
 
+extern const char kAccessCodeCastDeviceDurationName[] =
+    "Saves devices for Access Code Casting.";
+extern const char kAccessCodeCastDeviceDurationDescription[] =
+    "This feature enables saved devices when using Access Code Casting. Policy "
+    "must be set to "
+    "specify a duration for the device to be saved.";
+
 #if BUILDFLAG(ENABLE_PDF)
 const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =

@@ -37,6 +37,7 @@
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -220,6 +221,7 @@
 #include "components/translate/content/android/translate_message.h"
 #include "components/webapps/browser/android/features.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -8521,6 +8523,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
      flag_descriptions::kDmTokenDeletionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDmTokenDeletion)},
+#if !BUILDFLAG(IS_ANDROID)
+    {media_router::switches::kAccessCodeCastDeviceDurationSwitch,
+     flag_descriptions::kAccessCodeCastDeviceDurationName,
+     flag_descriptions::kAccessCodeCastDeviceDurationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAccessCodeCastRememberDevices)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"bulk-tab-restore-android", flag_descriptions::kBulkTabRestoreAndroidName,
@@ -8664,6 +8672,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
       channel != version_info::Channel::UNKNOWN) {
     return true;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  // Only show the AccessCodeCast duration flag if the AccessCodeCast Ui is
+  // displayed and it is only available on Dev/Canary channels.
+  if (!strcmp(media_router::switches::kAccessCodeCastDeviceDurationSwitch,
+              entry.internal_name)) {
+    return !media_router::IsAccessCodeCastEnabled();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   // HDR mode works, but displays everything horribly wrong prior to windows 10.

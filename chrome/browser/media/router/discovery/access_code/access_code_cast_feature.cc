@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -42,11 +43,13 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
 }
 
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
-  if (!GetAccessCodeCastEnabledPref(pref_service)) {
+  if (!GetAccessCodeCastEnabledPref(pref_service) ||
+      !base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
     return base::Seconds(0);
   }
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
+  // Check to see if the command line was used to set the value.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (IsCommandLineSwitchSupported() &&
       command_line->HasSwitch(switches::kAccessCodeCastDeviceDurationSwitch)) {
     int value;
@@ -55,6 +58,7 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
                       &value);
     return base::Seconds(value);
   }
+  // Return the value set by the policy pref.
   return base::Seconds(
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 }

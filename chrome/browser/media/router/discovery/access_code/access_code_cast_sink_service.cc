@@ -19,6 +19,8 @@
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -49,6 +51,14 @@ const base::TimeDelta kExpirationDelay = base::Milliseconds(250);
 const base::TimeDelta kExpirationTimerDelay = base::Seconds(20);
 
 }  // namespace
+
+bool IsAccessCodeCastEnabled() {
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  if (!profile)
+    return false;
+
+  return GetAccessCodeCastEnabledPref(profile->GetPrefs());
+}
 
 AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
     AccessCodeMediaRoutesObserver(

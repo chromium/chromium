@@ -39,6 +39,8 @@ extern const char kJsonDevMode[];
 extern const char kJsonError[];
 extern const char kJsonErrorCode[];
 extern const char kJsonErrorMessage[];
+
+extern const char kAccessCodeCastFlagParamType[];
 namespace switches {
 // Specifies the URL from which to obtain cast discovery information.
 extern const char kDiscoveryEndpointSwitch[];

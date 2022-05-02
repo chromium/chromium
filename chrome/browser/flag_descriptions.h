@@ -50,6 +50,9 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kEnableMediaInternalsName[];
 extern const char kEnableMediaInternalsDescription[];
 
+extern const char kAccessCodeCastDeviceDurationName[];
+extern const char kAccessCodeCastDeviceDurationDescription[];
+
 #if BUILDFLAG(ENABLE_PDF)
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];

@@ -38,6 +38,8 @@ TEST(AccessCodeCastFeatureTest, GetAccessCodeCastEnabledPref) {
 }
 
 TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
   const int non_default = 10;
   auto pref_service = std::make_unique<TestingPrefServiceSimple>();
   pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
@@ -73,6 +75,8 @@ TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
 }
 
 TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPrefSwitchEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
   EnableCommandLineSupportForTesting();
   const int non_default = 10;
   auto pref_service = std::make_unique<TestingPrefServiceSimple>();
