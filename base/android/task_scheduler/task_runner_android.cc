@@ -4,40 +4,117 @@
 
 #include "base/android/task_scheduler/task_runner_android.h"
 
+#include <array>
+#include <string>
+#include <utility>
+
 #include "base/android/jni_string.h"
-#include "base/android/task_scheduler/post_task_android.h"
+#include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/check.h"
+#include "base/strings/strcat.h"
+#include "base/task/task_executor.h"
+#include "base/task/thread_pool/thread_pool_impl.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
+
+// As a class so it can be friend'ed.
+class AndroidTaskTraits {
+ public:
+  AndroidTaskTraits() = delete;
+
+  static TaskTraits Create(
+      JNIEnv* env,
+      jint priority,
+      jboolean may_block,
+      jbyte extension_id,
+      const base::android::JavaParamRef<jbyteArray>& extension_data) {
+    return TaskTraits(static_cast<TaskPriority>(priority), may_block,
+                      TaskTraitsExtensionStorage(
+                          extension_id, GetExtensionData(env, extension_data)));
+  }
+
+ private:
+  static std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize>
+  GetExtensionData(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jbyteArray>& array_object) {
+    if (env->IsSameObject(array_object, nullptr))
+      return std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize>();
+
+    jbyteArray array = static_cast<jbyteArray>(array_object);
+    DCHECK_EQ(env->GetArrayLength(array),
+              static_cast<jsize>(TaskTraitsExtensionStorage::kStorageSize));
+
+    std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize> result;
+    jbyte* src_bytes = env->GetByteArrayElements(array, nullptr);
+    memcpy(&result[0], src_bytes, TaskTraitsExtensionStorage::kStorageSize);
+    env->ReleaseByteArrayElements(array, src_bytes, JNI_ABORT);
+    return result;
+  }
+};
+
+namespace {
+
+// TODO(1026641): Make destination explicit (separate APIs) on Java side too and
+// get rid of the need for TaskTraitsExtension/etc to reach the UI thread.
+TaskExecutor* GetTaskExecutor(bool use_thread_pool, const TaskTraits& traits) {
+  const bool has_extension =
+      traits.extension_id() != TaskTraitsExtensionStorage::kInvalidExtensionId;
+  DCHECK(has_extension ^ use_thread_pool)
+      << "A destination (e.g. ThreadPool or UiThreadTaskTraits) is required.";
+
+  if (use_thread_pool) {
+    DCHECK(ThreadPoolInstance::Get())
+        << "Hint: if this is in a unit test, you're likely merely missing a "
+           "base::test::TaskEnvironment member in your fixture (or your "
+           "fixture is using a base::test::SingleThreadTaskEnvironment and now "
+           "needs a full base::test::TaskEnvironment).\n";
+    return static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get());
+  }
+
+  // Assume |has_extension| per above invariant.
+  TaskExecutor* executor = GetRegisteredTaskExecutorForTraits(traits);
+  DCHECK(executor)
+      << "A TaskExecutor wasn't yet registered for this extension.\n"
+         "Hint: if this is in a unit test, you're likely missing a "
+         "content::BrowserTaskEnvironment member in your fixture.";
+  return executor;
+}
+
+void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
+                 const std::string& runnable_class_name) {
+  // JNIEnv is thread specific, but we don't know which thread we'll be run on
+  // so we must look it up.
+  std::string event_name = base::StrCat({"JniPostTask: ", runnable_class_name});
+  TRACE_EVENT_BEGIN_WITH_FLAGS0(
+      "toplevel", event_name.c_str(),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  JNI_Runnable::Java_Runnable_run(base::android::AttachCurrentThread(), task);
+  TRACE_EVENT_END_WITH_FLAGS0(
+      "toplevel", event_name.c_str(),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+}
+
+}  // namespace
 
 jlong JNI_TaskRunnerImpl_Init(
     JNIEnv* env,
     jint task_runner_type,
     jint priority,
     jboolean may_block,
-    jboolean thread_pool,
+    jboolean use_thread_pool,
     jbyte extension_id,
     const base::android::JavaParamRef<jbyteArray>& extension_data) {
-  TaskTraits task_traits = PostTaskAndroid::CreateTaskTraits(
-      env, priority, may_block, thread_pool, extension_id, extension_data);
-  scoped_refptr<TaskRunner> task_runner;
-  switch (static_cast<TaskRunnerType>(task_runner_type)) {
-    case TaskRunnerType::BASE:
-      task_runner = CreateTaskRunner(task_traits);
-      break;
-    case TaskRunnerType::SEQUENCED:
-      task_runner = CreateSequencedTaskRunner(task_traits);
-      break;
-    case TaskRunnerType::SINGLE_THREAD:
-      task_runner = CreateSingleThreadTaskRunner(task_traits);
-      break;
-  }
-  return reinterpret_cast<intptr_t>(new TaskRunnerAndroid(
-      task_runner, static_cast<TaskRunnerType>(task_runner_type)));
+  TaskRunnerAndroid* task_runner =
+      TaskRunnerAndroid::Create(env, task_runner_type, priority, may_block,
+                                use_thread_pool, extension_id, extension_data)
+          .release();
+  return reinterpret_cast<intptr_t>(task_runner);
 }
 
 TaskRunnerAndroid::TaskRunnerAndroid(scoped_refptr<TaskRunner> task_runner,
@@ -56,11 +133,12 @@ void TaskRunnerAndroid::PostDelayedTask(
     const base::android::JavaRef<jobject>& task,
     jlong delay,
     jstring runnable_class_name) {
+  // This could be run on any java thread, so we can't cache |env| in the
+  // BindOnce because JNIEnv is thread specific.
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &PostTaskAndroid::RunJavaTask,
-          base::android::ScopedJavaGlobalRef<jobject>(task),
+          &RunJavaTask, base::android::ScopedJavaGlobalRef<jobject>(task),
           android::ConvertJavaStringToUTF8(env, runnable_class_name)),
       Milliseconds(delay));
 }
@@ -72,6 +150,36 @@ bool TaskRunnerAndroid::BelongsToCurrentThread(JNIEnv* env) {
     return false;
   return static_cast<SequencedTaskRunner*>(task_runner_.get())
       ->RunsTasksInCurrentSequence();
+}
+
+// static
+std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
+    JNIEnv* env,
+    jint task_runner_type,
+    jint priority,
+    jboolean may_block,
+    jboolean use_thread_pool,
+    jbyte extension_id,
+    const base::android::JavaParamRef<jbyteArray>& extension_data) {
+  const TaskTraits task_traits = AndroidTaskTraits::Create(
+      env, priority, may_block, extension_id, extension_data);
+  TaskExecutor* const task_executor =
+      GetTaskExecutor(use_thread_pool, task_traits);
+  scoped_refptr<TaskRunner> task_runner;
+  switch (static_cast<TaskRunnerType>(task_runner_type)) {
+    case TaskRunnerType::BASE:
+      task_runner = task_executor->CreateTaskRunner(task_traits);
+      break;
+    case TaskRunnerType::SEQUENCED:
+      task_runner = task_executor->CreateSequencedTaskRunner(task_traits);
+      break;
+    case TaskRunnerType::SINGLE_THREAD:
+      task_runner = task_executor->CreateSingleThreadTaskRunner(
+          task_traits, SingleThreadTaskRunnerThreadMode::SHARED);
+      break;
+  }
+  return std::make_unique<TaskRunnerAndroid>(
+      task_runner, static_cast<TaskRunnerType>(task_runner_type));
 }
 
 }  // namespace base

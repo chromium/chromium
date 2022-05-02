@@ -19,9 +19,10 @@ namespace base {
 class Location;
 class TaskTraits;
 
-// A TaskExecutor can execute Tasks with a specific TaskTraits extension id. To
-// handle Tasks posted via the //base/task/post_task.h API, the TaskExecutor
-// should be registered by calling RegisterTaskExecutor().
+// A TaskExecutor can execute Tasks with a specific TaskTraits extension id.
+// TODO(1026641): Still used by task_runner_android.cc to reach
+// BrowserTaskExecutor but direct APIs should now be preferred where possible
+// (such as content::GetUIThreadTaskRunner). Follow-up cleanup expected.
 class BASE_EXPORT TaskExecutor {
  public:
   virtual ~TaskExecutor() = default;

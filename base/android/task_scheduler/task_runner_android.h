@@ -5,6 +5,8 @@
 #ifndef BASE_ANDROID_TASK_SCHEDULER_TASK_RUNNER_ANDROID_H_
 #define BASE_ANDROID_TASK_SCHEDULER_TASK_RUNNER_ANDROID_H_
 
+#include <memory>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -33,6 +35,15 @@ class TaskRunnerAndroid {
                        jstring runnable_class_name);
 
   bool BelongsToCurrentThread(JNIEnv* env);
+
+  static std::unique_ptr<TaskRunnerAndroid> Create(
+      JNIEnv* env,
+      jint task_runner_type,
+      jint priority,
+      jboolean may_block,
+      jboolean use_thread_pool,
+      jbyte extension_id,
+      const base::android::JavaParamRef<jbyteArray>& extension_data);
 
  private:
   const scoped_refptr<TaskRunner> task_runner_;

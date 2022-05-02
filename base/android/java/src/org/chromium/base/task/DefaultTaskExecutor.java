@@ -12,8 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The default {@link TaskExecutor} which maps directly to base/task/post_task.h.
- * TODO(crbug.com/1026641): Clean this up now that post_task.h is deprecated.
+ * The default {@link TaskExecutor}.
+ * TODO(crbug.com/1026641): Provide direct Java APIs for ThreadPool vs UI thread
+ * task posting instead of sharding based on {@link TaskTraits}.
  */
 class DefaultTaskExecutor implements TaskExecutor {
     private final Map<TaskTraits, TaskRunner> mTraitsToRunnerMap = new HashMap<>();
