@@ -1691,8 +1691,8 @@ source_set("net_public_deps") {
     ":uri_template",
     "//base",
     "//crypto",
+    "//net/third_party/quiche",
     "//net/third_party/quiche:net_quic_test_tools_proto",
-    "//net/third_party/quiche:quiche",
     "//net/traffic_annotation",
     "//third_party/boringssl",
     "//url",
@@ -2031,6 +2031,22 @@ bundle_data("test_support_bundle_data") {
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
+static_library("gtest_util") {
+  testonly = true
+  sources = [
+    "test/gtest_util.h",
+    "test/scoped_disable_exit_on_dfatal.cc",
+    "test/scoped_disable_exit_on_dfatal.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -2142,7 +2158,6 @@ static_library("test_support") {
     "test/embedded_test_server/simple_connection_listener.cc",
     "test/embedded_test_server/simple_connection_listener.h",
     "test/event_waiter.h",
-    "test/gtest_util.h",
     "test/key_util.cc",
     "test/key_util.h",
     "test/net_test_suite.cc",
@@ -2151,8 +2166,6 @@ static_library("test_support") {
     "test/quic_simple_test_server.h",
     "test/revocation_builder.cc",
     "test/revocation_builder.h",
-    "test/scoped_disable_exit_on_dfatal.cc",
-    "test/scoped_disable_exit_on_dfatal.h",
     "test/ssl_test_util.cc",
     "test/ssl_test_util.h",
     "test/test_certificate_data.h",
@@ -2187,6 +2200,7 @@ static_library("test_support") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
+    ":gtest_util",
     "//base",
     "//base/test:test_support",
     "//crypto",
@@ -2559,7 +2573,6 @@ source_set("quic_test_tools") {
     ":test_support",
     "//base",
     "//crypto:test_support",
-    "//net/third_party/quiche:quiche_test_tools",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/boringssl",
@@ -2568,10 +2581,8 @@ source_set("quic_test_tools") {
   ]
   public_deps = [
     ":quic_test_flags_utils",
-    "//net/third_party/quiche:quic_test_tools_core",
+    "//net/third_party/quiche:quiche_test_support",
   ]
-  allow_circular_includes_from =
-      [ "//net/third_party/quiche:quic_test_tools_core" ]
 }
 
 source_set("simple_quic_tools") {
@@ -2599,13 +2610,11 @@ source_set("simple_quic_tools") {
     ":net",
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//net/third_party/quiche:simple_quic_tools_core",
+    "//net/third_party/quiche:quiche_tool_support",
     "//third_party/protobuf:protobuf_lite",
     "//url",
   ]
-  public_deps = [ "//net/third_party/quiche:simple_quic_tools_core" ]
-  allow_circular_includes_from =
-      [ "//net/third_party/quiche:simple_quic_tools_core" ]
+  public_deps = [ "//net/third_party/quiche:quiche_tool_support" ]
 }
 
 if (!is_ios) {
@@ -2617,11 +2626,9 @@ if (!is_ios) {
       ":simple_quic_tools",
       "//base",
       "//build/win:default_exe_manifest",
+      "//net/third_party/quiche:quic_client_core",
       "//url",
     ]
-    public_deps = [ "//net/third_party/quiche:quic_client_core" ]
-    allow_circular_includes_from =
-        [ "//net/third_party/quiche:quic_client_core" ]
   }
   executable("quic_server") {
     sources = [
@@ -2634,12 +2641,10 @@ if (!is_ios) {
       ":simple_quic_tools",
       "//base",
       "//build/win:default_exe_manifest",
+      "//net/third_party/quiche:quic_server_core",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
-    public_deps = [ "//net/third_party/quiche:quic_server_core" ]
-    allow_circular_includes_from =
-        [ "//net/third_party/quiche:quic_server_core" ]
   }
   executable("crypto_message_printer") {
     sources = [ "tools/quic/crypto_message_printer_bin.cc" ]
@@ -4435,7 +4440,6 @@ test("net_unittests") {
     "//net/dns/public:tests",
     "//net/http:transport_security_state_unittest_data",
     "//net/http:transport_security_state_unittest_data_default",
-    "//net/third_party/quiche:quiche_test_tools",
     "//net/third_party/quiche:quiche_tests",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
     "//sql",
@@ -4446,8 +4450,6 @@ test("net_unittests") {
     "//url",
     "//url:buildflags",
   ]
-
-  allow_circular_includes_from = [ "//net/third_party/quiche:quiche_tests" ]
 
   if (enable_websockets) {
     deps += [ "//net/server:tests" ]

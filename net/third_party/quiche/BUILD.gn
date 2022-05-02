@@ -2,9 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Build file for QUICHE, <https://quiche.googlesource.com/quiche/>
+#
+# The following build targets are defined:
+#   - quiche -- the part of QUICHE that is shipped within Chromium proper.
+#   - *_tool_support -- support code used in CLI tools and unit tests.
+#   - *_test_support -- support code only used in unit tests.
+#   - quiche_tests -- all of the QUICHE test targets.
+#
+# There are two kinds of build target: quiche_ and epoll_; quiche_ targets are
+# built on all platforms, epoll_ targets are only built on Linux and certain
+# similar platforms.
+
+# Dependency graph of the key targets in this file:
+#
+#     quiche <--- quiche_tool_support <--- quiche_test_support <--- quiche_tests
+#                          ^                        ^                     |
+#                          |                        |                     |
+#                          |                        |                     |
+#                  epoll_tool_support <---  epoll_test_support <----------+ (*)
+#
+#             (*) only used on platforms where epoll tests are built
+
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+build_epoll_based_tools = is_linux || is_chromeos
 
 config("quiche_internal_config") {
   cflags = []
@@ -679,8 +703,8 @@ component("quiche") {
   ]
 
   public_deps = [
+    ":net_quic_proto",
     "//base",
-    "//net/third_party/quiche:net_quic_proto",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//url",
@@ -725,32 +749,23 @@ proto_library("net_quic_test_tools_proto") {
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-if (is_linux || is_chromeos) {
-  source_set("epoll_server") {
+if (build_epoll_based_tools) {
+  static_library("epoll_tool_support") {
+    testonly = true
     sources = [
       "overrides/quiche_platform_impl/epoll_bug_impl.h",
       "overrides/quiche_platform_impl/epoll_logging_impl.h",
       "overrides/quiche_platform_impl/epoll_thread_impl.h",
-      "src/quiche/epoll_server/platform/api/epoll_bug.h",
-      "src/quiche/epoll_server/platform/api/epoll_logging.h",
-      "src/quiche/epoll_server/platform/api/epoll_thread.h",
-      "src/quiche/epoll_server/simple_epoll_server.cc",
-      "src/quiche/epoll_server/simple_epoll_server.h",
-    ]
-    deps = [
-      "//base",
-      "//net",
-    ]
-  }
-
-  source_set("epoll_quic_tools") {
-    testonly = true
-    sources = [
       "overrides/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
       "src/quiche/common/platform/api/quiche_epoll.h",
       "src/quiche/common/platform/api/quiche_stream_buffer_allocator.h",
       "src/quiche/common/platform/api/quiche_udp_socket_platform_api.h",
       "src/quiche/common/platform/default/quiche_platform_impl/quiche_stream_buffer_allocator_impl.h",
+      "src/quiche/epoll_server/platform/api/epoll_bug.h",
+      "src/quiche/epoll_server/platform/api/epoll_logging.h",
+      "src/quiche/epoll_server/platform/api/epoll_thread.h",
+      "src/quiche/epoll_server/simple_epoll_server.cc",
+      "src/quiche/epoll_server/simple_epoll_server.h",
       "src/quiche/quic/core/quic_default_packet_writer.cc",
       "src/quiche/quic/core/quic_default_packet_writer.h",
       "src/quiche/quic/core/quic_epoll_alarm_factory.cc",
@@ -763,78 +778,6 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/core/quic_packet_reader.h",
       "src/quiche/quic/core/quic_udp_socket.h",
       "src/quiche/quic/core/quic_udp_socket_posix.cc",
-      "src/quiche/quic/platform/api/quic_epoll.h",
-      "src/quiche/quic/platform/api/quic_stream_buffer_allocator.h",
-      "src/quiche/quic/platform/api/quic_udp_socket_platform_api.h",
-      "src/quiche/quic/tools/quic_client.cc",
-      "src/quiche/quic/tools/quic_client.h",
-      "src/quiche/quic/tools/quic_client_epoll_network_helper.cc",
-      "src/quiche/quic/tools/quic_client_epoll_network_helper.h",
-      "src/quiche/quic/tools/quic_server.cc",
-      "src/quiche/quic/tools/quic_server.h",
-    ]
-    deps = [
-      ":epoll_server",
-      "//base",
-      "//net",
-      "//net:simple_quic_tools",
-      "//third_party/boringssl",
-    ]
-  }
-
-  executable("epoll_quic_client") {
-    testonly = true
-    sources = [
-      "src/quiche/quic/tools/quic_client_bin.cc",
-      "src/quiche/quic/tools/quic_epoll_client_factory.cc",
-      "src/quiche/quic/tools/quic_epoll_client_factory.h",
-      "src/quiche/quic/tools/quic_toy_client.cc",
-      "src/quiche/quic/tools/quic_toy_client.h",
-    ]
-    deps = [
-      ":epoll_quic_tools",
-      ":epoll_server",
-      "//base",
-      "//net",
-      "//net:quic_test_tools",
-      "//net:simple_quic_tools",
-      "//third_party/boringssl",
-    ]
-  }
-
-  executable("epoll_quic_server") {
-    testonly = true
-    sources = [
-      "src/quiche/quic/tools/quic_epoll_server_factory.cc",
-      "src/quiche/quic/tools/quic_epoll_server_factory.h",
-      "src/quiche/quic/tools/quic_server_bin.cc",
-      "src/quiche/quic/tools/quic_toy_server.cc",
-      "src/quiche/quic/tools/quic_toy_server.h",
-    ]
-    deps = [
-      ":epoll_quic_tools",
-      ":epoll_server",
-      "//base",
-      "//net",
-      "//net:simple_quic_tools",
-      "//third_party/boringssl",
-    ]
-  }
-
-  executable("quic_client_interop_test") {
-    testonly = true
-    sources = [ "src/quiche/quic/tools/quic_client_interop_test_bin.cc" ]
-    deps = [
-      ":epoll_quic_tools",
-      "//net",
-      "//net:quic_test_tools",
-      "//net:simple_quic_tools",
-    ]
-  }
-
-  source_set("masque_tools") {
-    testonly = true
-    sources = [
       "src/quiche/quic/masque/masque_client_session.cc",
       "src/quiche/quic/masque/masque_client_session.h",
       "src/quiche/quic/masque/masque_client_tools.cc",
@@ -855,25 +798,96 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/masque/masque_server_session.h",
       "src/quiche/quic/masque/masque_utils.cc",
       "src/quiche/quic/masque/masque_utils.h",
+      "src/quiche/quic/platform/api/quic_epoll.h",
+      "src/quiche/quic/platform/api/quic_stream_buffer_allocator.h",
+      "src/quiche/quic/platform/api/quic_udp_socket_platform_api.h",
+      "src/quiche/quic/tools/quic_client.cc",
+      "src/quiche/quic/tools/quic_client.h",
+      "src/quiche/quic/tools/quic_client_epoll_network_helper.cc",
+      "src/quiche/quic/tools/quic_client_epoll_network_helper.h",
+      "src/quiche/quic/tools/quic_server.cc",
+      "src/quiche/quic/tools/quic_server.h",
     ]
-    deps = [
-      ":epoll_quic_tools",
-      "//net",
-      "//net:simple_quic_tools",
-      "//third_party/boringssl",
-      "//third_party/protobuf:protobuf_lite",
-    ]
+
     configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":quiche_tool_support",
+      "//base",
+      "//net",
+      "//third_party/boringssl",
+    ]
+  }
+
+  executable("epoll_quic_client") {
+    testonly = true
+    sources = [
+      "src/quiche/quic/tools/quic_client_bin.cc",
+      "src/quiche/quic/tools/quic_epoll_client_factory.cc",
+      "src/quiche/quic/tools/quic_epoll_client_factory.h",
+    ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":epoll_tool_support",
+      ":quic_client_core",
+      ":quiche_tool_support",
+      "//base",
+      "//net",
+      "//third_party/boringssl",
+    ]
+  }
+
+  executable("epoll_quic_server") {
+    testonly = true
+    sources = [
+      "src/quiche/quic/tools/quic_epoll_server_factory.cc",
+      "src/quiche/quic/tools/quic_epoll_server_factory.h",
+      "src/quiche/quic/tools/quic_server_bin.cc",
+    ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":epoll_tool_support",
+      ":quic_server_core",
+      ":quiche_tool_support",
+      "//base",
+      "//net",
+      "//third_party/boringssl",
+    ]
+  }
+
+  executable("quic_client_interop_test") {
+    testonly = true
+    sources = [ "src/quiche/quic/tools/quic_client_interop_test_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":epoll_tool_support",
+      ":quiche_test_support",
+      ":quiche_tool_support",
+      "//net",
+    ]
   }
 
   executable("masque_client") {
     testonly = true
     sources = [ "src/quiche/quic/masque/masque_client_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     deps = [
-      ":epoll_quic_tools",
-      ":masque_tools",
+      ":epoll_tool_support",
+      ":quiche_tool_support",
       "//net",
-      "//net:simple_quic_tools",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
@@ -882,85 +896,91 @@ if (is_linux || is_chromeos) {
   executable("masque_server") {
     testonly = true
     sources = [ "src/quiche/quic/masque/masque_server_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     deps = [
-      ":epoll_quic_tools",
-      ":masque_tools",
+      ":epoll_tool_support",
+      ":quiche_tool_support",
       "//net",
-      "//net:simple_quic_tools",
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
   }
+
+  static_library("epoll_test_support") {
+    testonly = true
+    sources = [
+      "overrides/quiche_platform_impl/epoll_address_test_utils_impl.h",
+      "overrides/quiche_platform_impl/epoll_expect_bug_impl.h",
+      "overrides/quiche_platform_impl/epoll_test_impl.h",
+      "overrides/quiche_platform_impl/quiche_epoll_test_tools_impl.h",
+      "src/quiche/common/platform/api/quiche_epoll_test_tools.h",
+      "src/quiche/epoll_server/fake_simple_epoll_server.cc",
+      "src/quiche/epoll_server/fake_simple_epoll_server.h",
+      "src/quiche/epoll_server/platform/api/epoll_address_test_utils.h",
+      "src/quiche/epoll_server/platform/api/epoll_expect_bug.h",
+      "src/quiche/epoll_server/platform/api/epoll_test.h",
+      "src/quiche/quic/test_tools/bad_packet_writer.cc",
+      "src/quiche/quic/test_tools/bad_packet_writer.h",
+      "src/quiche/quic/test_tools/limited_mtu_test_writer.cc",
+      "src/quiche/quic/test_tools/limited_mtu_test_writer.h",
+      "src/quiche/quic/test_tools/packet_dropping_test_writer.cc",
+      "src/quiche/quic/test_tools/packet_dropping_test_writer.h",
+      "src/quiche/quic/test_tools/packet_reordering_writer.cc",
+      "src/quiche/quic/test_tools/packet_reordering_writer.h",
+      "src/quiche/quic/test_tools/quic_client_peer.cc",
+      "src/quiche/quic/test_tools/quic_client_peer.h",
+      "src/quiche/quic/test_tools/quic_server_peer.cc",
+      "src/quiche/quic/test_tools/quic_server_peer.h",
+      "src/quiche/quic/test_tools/quic_test_client.cc",
+      "src/quiche/quic/test_tools/quic_test_client.h",
+      "src/quiche/quic/test_tools/quic_test_server.cc",
+      "src/quiche/quic/test_tools/quic_test_server.h",
+      "src/quiche/quic/test_tools/server_thread.cc",
+      "src/quiche/quic/test_tools/server_thread.h",
+    ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      ":epoll_tool_support",
+      ":quiche_test_support",
+      ":quiche_tool_support",
+      "//base",
+      "//net",
+      "//net:gtest_util",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }
 
-source_set("epoll_server_test_tools") {
+static_library("quiche_test_support") {
   testonly = true
   sources = [
-    "overrides/quiche_platform_impl/epoll_address_test_utils_impl.h",
-    "overrides/quiche_platform_impl/epoll_expect_bug_impl.h",
-    "overrides/quiche_platform_impl/epoll_test_impl.h",
-    "src/quiche/epoll_server/platform/api/epoll_address_test_utils.h",
-    "src/quiche/epoll_server/platform/api/epoll_expect_bug.h",
-    "src/quiche/epoll_server/platform/api/epoll_test.h",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("quiche_test_tools") {
-  testonly = true
-  sources = [
+    "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
+    "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
     "overrides/quiche_platform_impl/quiche_test_helpers_impl.cc",
     "overrides/quiche_platform_impl/quiche_test_helpers_impl.h",
     "overrides/quiche_platform_impl/quiche_test_impl.cc",
     "overrides/quiche_platform_impl/quiche_test_impl.h",
-    "src/quiche/common/platform/api/quiche_test.h",
-    "src/quiche/common/platform/api/quiche_test_helpers.h",
-    "src/quiche/common/test_tools/quiche_test_utils.cc",
-    "src/quiche/common/test_tools/quiche_test_utils.h",
-  ]
-  deps = [
-    "//net",
-    "//net:quic_test_flags_utils",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("quiche_file_utils") {
-  sources = [
-    "src/quiche/common/platform/api/quiche_file_utils.cc",
-    "src/quiche/common/platform/api/quiche_file_utils.h",
-    "src/quiche/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.cc",
-    "src/quiche/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.h",
-  ]
-  configs += [ ":quiche_config" ]
-  deps = [ "//base" ]
-}
-
-source_set("quic_test_tools_core") {
-  testonly = true
-  sources = [
-    "overrides/quiche_platform_impl/quiche_epoll_test_tools_impl.h",
-    "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
-    "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
     "overrides/quiche_platform_impl/quiche_test_output_impl.cc",
     "overrides/quiche_platform_impl/quiche_test_output_impl.h",
-    "src/quiche/common/platform/api/quiche_epoll_test_tools.h",
     "src/quiche/common/platform/api/quiche_expect_bug.h",
     "src/quiche/common/platform/api/quiche_mock_log.h",
     "src/quiche/common/platform/api/quiche_test.h",
+    "src/quiche/common/platform/api/quiche_test.h",
+    "src/quiche/common/platform/api/quiche_test_helpers.h",
     "src/quiche/common/platform/api/quiche_test_loopback.cc",
     "src/quiche/common/platform/api/quiche_test_loopback.h",
     "src/quiche/common/platform/api/quiche_test_output.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_test_loopback_impl.cc",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_test_loopback_impl.h",
+    "src/quiche/common/test_tools/quiche_test_utils.cc",
+    "src/quiche/common/test_tools/quiche_test_utils.h",
     "src/quiche/quic/core/quic_trace_visitor.cc",
     "src/quiche/quic/core/quic_trace_visitor.h",
     "src/quiche/quic/platform/api/quic_expect_bug.h",
@@ -1094,13 +1114,15 @@ source_set("quic_test_tools_core") {
     "src/quiche/quic/tools/quic_tcp_like_trace_converter.h",
   ]
 
+  configs += [ ":quiche_internal_config" ]
+  public_configs = [ ":quiche_config" ]
+
   deps = [
-    ":quiche_file_utils",
-    ":quiche_test_tools",
+    ":quiche",
+    ":quiche_tool_support",
     "//base",
     "//crypto:test_support",
-    "//net",
-    "//net:simple_quic_tools",
+    "//net:quic_test_flags_utils",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -1108,38 +1130,9 @@ source_set("quic_test_tools_core") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/quic_trace:quic_trace_proto",
   ]
-
-  if (is_linux || is_chromeos) {
-    sources += [
-      "src/quiche/epoll_server/fake_simple_epoll_server.cc",
-      "src/quiche/epoll_server/fake_simple_epoll_server.h",
-      "src/quiche/quic/test_tools/bad_packet_writer.cc",
-      "src/quiche/quic/test_tools/bad_packet_writer.h",
-      "src/quiche/quic/test_tools/limited_mtu_test_writer.cc",
-      "src/quiche/quic/test_tools/limited_mtu_test_writer.h",
-      "src/quiche/quic/test_tools/packet_dropping_test_writer.cc",
-      "src/quiche/quic/test_tools/packet_dropping_test_writer.h",
-      "src/quiche/quic/test_tools/packet_reordering_writer.cc",
-      "src/quiche/quic/test_tools/packet_reordering_writer.h",
-      "src/quiche/quic/test_tools/quic_client_peer.cc",
-      "src/quiche/quic/test_tools/quic_client_peer.h",
-      "src/quiche/quic/test_tools/quic_server_peer.cc",
-      "src/quiche/quic/test_tools/quic_server_peer.h",
-      "src/quiche/quic/test_tools/quic_test_client.cc",
-      "src/quiche/quic/test_tools/quic_test_client.h",
-      "src/quiche/quic/test_tools/quic_test_server.cc",
-      "src/quiche/quic/test_tools/quic_test_server.h",
-      "src/quiche/quic/test_tools/server_thread.cc",
-      "src/quiche/quic/test_tools/server_thread.h",
-    ]
-    deps += [
-      ":epoll_quic_tools",
-      ":epoll_server",
-    ]
-  }
 }
 
-source_set("simple_quic_tools_core") {
+static_library("quiche_tool_support") {
   sources = [
     "overrides/quiche_platform_impl/quiche_command_line_flags_impl.cc",
     "overrides/quiche_platform_impl/quiche_command_line_flags_impl.h",
@@ -1147,7 +1140,11 @@ source_set("simple_quic_tools_core") {
     "overrides/quiche_platform_impl/quiche_default_proof_providers_impl.h",
     "overrides/quiche_platform_impl/quiche_system_event_loop_impl.h",
     "src/quiche/common/platform/api/quiche_default_proof_providers.h",
+    "src/quiche/common/platform/api/quiche_file_utils.cc",
+    "src/quiche/common/platform/api/quiche_file_utils.h",
     "src/quiche/common/platform/api/quiche_system_event_loop.h",
+    "src/quiche/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.cc",
+    "src/quiche/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.h",
     "src/quiche/quic/core/chlo_extractor.cc",
     "src/quiche/quic/core/chlo_extractor.h",
     "src/quiche/quic/core/http/quic_spdy_server_stream_base.cc",
@@ -1191,8 +1188,11 @@ source_set("simple_quic_tools_core") {
     "src/quiche/quic/tools/simple_ticket_crypter.cc",
     "src/quiche/quic/tools/simple_ticket_crypter.h",
   ]
+
+  configs += [ ":quiche_internal_config" ]
+  public_configs = [ ":quiche_config" ]
+
   deps = [
-    ":quiche_file_utils",
     "//base",
     "//base/third_party/dynamic_annotations",
     "//net",
@@ -1201,35 +1201,50 @@ source_set("simple_quic_tools_core") {
   ]
 }
 
-source_set("quic_client_core") {
-  testonly = true
-  sources = [
-    "src/quiche/quic/tools/quic_toy_client.cc",
-    "src/quiche/quic/tools/quic_toy_client.h",
-  ]
-  deps = [
-    "//net",
-    "//net:quic_test_tools",
-    "//net:simple_quic_tools",
-  ]
-}
-
-source_set("quic_server_core") {
-  sources = [
-    "src/quiche/quic/tools/quic_toy_server.cc",
-    "src/quiche/quic/tools/quic_toy_server.h",
-  ]
-  deps = [
-    "//net",
-    "//net:simple_quic_tools",
-  ]
-}
-
+# QUICHE-provided CLI tools that don't use epoll.
 if (!is_ios) {
+  # The two libraries below, quic_client_core and quic_server_core, define
+  # mutually exclusive command-line flags, and thus any target depending
+  # directly on both will fail to build.  Only executable targets should depend
+  # on those.
+  source_set("quic_client_core") {
+    testonly = true
+    sources = [
+      "src/quiche/quic/tools/quic_toy_client.cc",
+      "src/quiche/quic/tools/quic_toy_client.h",
+    ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      "//net",
+      "//net:quic_test_tools",
+      "//net:simple_quic_tools",
+    ]
+  }
+  source_set("quic_server_core") {
+    sources = [
+      "src/quiche/quic/tools/quic_toy_server.cc",
+      "src/quiche/quic/tools/quic_toy_server.h",
+    ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
+    deps = [
+      "//net",
+      "//net:simple_quic_tools",
+    ]
+  }
+
   executable("quic_packet_printer") {
     sources = [ "src/quiche/quic/tools/quic_packet_printer_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     deps = [
-      ":quiche_file_utils",
       "//base",
       "//build/win:default_exe_manifest",
       "//net",
@@ -1241,6 +1256,10 @@ if (!is_ios) {
 
   executable("quic_crypto_message_printer") {
     sources = [ "src/quiche/quic/core/crypto/crypto_message_printer_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     deps = [
       "//base",
       "//build/win:default_exe_manifest",
@@ -1253,6 +1272,10 @@ if (!is_ios) {
 
   executable("quic_reject_reason_decoder") {
     sources = [ "src/quiche/quic/tools/quic_reject_reason_decoder_bin.cc" ]
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     deps = [
       "//base",
       "//build/win:default_exe_manifest",
@@ -1265,6 +1288,10 @@ if (!is_ios) {
 
   executable("qpack_offline_decoder") {
     testonly = true
+
+    configs += [ ":quiche_internal_config" ]
+    public_configs = [ ":quiche_config" ]
+
     sources = [ "src/quiche/quic/core/qpack/qpack_offline_decoder_bin.cc" ]
     deps = [
       "//base",
@@ -1560,10 +1587,9 @@ source_set("quiche_tests") {
   ]
 
   configs += [ ":quiche_internal_config" ]
+  public_configs = [ ":quiche_config" ]
 
   deps = [
-    ":quiche_file_utils",
-    ":quiche_test_tools",
     "//net",
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
@@ -1573,10 +1599,7 @@ source_set("quiche_tests") {
   ]
   public_deps = []
 
-  if (is_linux || is_chromeos_lacros) {
-    public_deps += [ ":epoll_quic_tools" ]
-  }
-  if (is_linux || is_chromeos) {
+  if (build_epoll_based_tools) {
     sources += [
       "overrides/quiche_platform_impl/quiche_command_line_flags_test.cc",
       "src/quiche/epoll_server/simple_epoll_server_test.cc",
@@ -1595,9 +1618,8 @@ source_set("quiche_tests") {
       "src/quiche/quic/tools/quic_url_test.cc",
     ]
     public_deps += [
-      ":epoll_quic_tools",
-      ":epoll_server",
-      ":epoll_server_test_tools",
+      ":epoll_test_support",
+      ":epoll_tool_support",
     ]
   }
 }
