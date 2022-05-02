@@ -70,13 +70,6 @@ static_library("enterprise") {
     "//services/network/public/cpp",
   ]
 
-  # Include certain intermediate targets as public deps so consumers
-  # can start using them as needed.
-  public_deps = [
-    "//components/reporting/client:report_queue_configuration",
-    "//components/reporting/util:status",
-  ]
-
   if (!is_chromeos_ash) {
     sources += [
       "browser/controller/chrome_browser_cloud_management_controller.cc",

@@ -1007,7 +1007,6 @@ static_library("extensions") {
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/missive:missive",
       "//remoting/host/it2me:chrome_os_host",
     ]
   } else {
