@@ -650,13 +650,7 @@ TEST_F(UDPSocketPosixTest, WriteAsyncNoBatchingError) {
   EXPECT_EQ(ERR_INVALID_HANDLE, rv);
 }
 
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteAsyncBasicDelay DISABLED_WriteAsyncBasicDelay
-#else
-#define MAYBE_WriteAsyncBasicDelay WriteAsyncBasicDelay
-#endif
-// TODO(crbug.com/934778) The test is flaky on iOS.
-TEST_F(UDPSocketPosixTest, MAYBE_WriteAsyncBasicDelay) {
+TEST_F(UDPSocketPosixTest, WriteAsyncBasicDelay) {
   socket_.SetWriteBatchingActive(true);
   socket_.SetWriteMultiCoreEnabled(true);
   DatagramBuffers buffers;
