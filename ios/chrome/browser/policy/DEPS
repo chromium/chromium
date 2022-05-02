@@ -2,7 +2,6 @@ specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^policy_watcher_browser_agent.mm": [
     "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
-    "+ios/chrome/browser/ui/commands/policy_change_commands.h",
     "+ios/chrome/browser/ui/main/scene_state.h",
     "+ios/chrome/browser/ui/main/scene_state_browser_agent.h",
   ],

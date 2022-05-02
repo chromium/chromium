@@ -1,8 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
-  "^upgrade_center.mm": [
-    "+ios/chrome/browser/ui/commands/application_commands.h",
-    "+ios/chrome/browser/ui/commands/open_new_tab_command.h",
-  ],
-}
-

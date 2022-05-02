@@ -152,9 +152,11 @@ include_rules = [
   "-components/metrics/gpu",
   "-components/sessions/content",
 
-  # ios/chrome/browser should not depend on ios/chrome/browser/ui
+  # ios/chrome/browser should not depend on ios/chrome/browser/ui except
+  # on commands.
   "-ios/chrome/browser/ui",
   "-ios/common/ui",
+  "+ios/chrome/browser/ui/commands",
 
   # For tests.
   "+ios/chrome/test",

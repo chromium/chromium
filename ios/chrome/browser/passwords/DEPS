@@ -9,11 +9,6 @@ specific_include_rules = {
   ],
   "^password_controller.mm": [
     "+ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h",
-    "+ios/chrome/browser/ui/commands/application_commands.h",
-    "+ios/chrome/browser/ui/commands/command_dispatcher.h",
-    "+ios/chrome/browser/ui/commands/password_breach_commands.h",
-    "+ios/chrome/browser/ui/commands/password_protection_commands.h",
-    "+ios/chrome/browser/ui/commands/password_suggestion_commands.h",
   ],
 
 }
