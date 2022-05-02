@@ -476,8 +476,14 @@ InputFieldContext CreateInputFieldContext(
 }
 
 mojom::TextPredictionMode GetTextPredictionMode(
-    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  return enabled_suggestions.multi_word_suggestions
+    const std::string& engine_id,
+    const InputFieldContext& context,
+    const PrefService& prefs) {
+  // TODO(crbug.com/1263335): Enable text prediction for Lacros.
+  return context.multiword_enabled && context.multiword_allowed &&
+                 !context.lacros_enabled &&
+                 prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
+                 IsUsEnglishEngine(engine_id)
              ? mojom::TextPredictionMode::kEnabled
              : mojom::TextPredictionMode::kDisabled;
 }
@@ -494,8 +500,10 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
 }
 
 mojom::InputFieldInfoPtr CreateInputFieldInfo(
+    const std::string& engine_id,
     const ui::IMEEngineHandlerInterface::InputContext& context,
-    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions,
+    const InputFieldContext& input_field_context,
+    const PrefService& prefs,
     bool is_normal_screen) {
   // Disable most features on the login screen.
   if (!is_normal_screen) {
@@ -508,12 +516,12 @@ mojom::InputFieldInfoPtr CreateInputFieldInfo(
         mojom::TextPredictionMode::kDisabled);
   }
 
-  return mojom::InputFieldInfo::New(TextInputTypeToMojoType(context.type),
-                                    AutocorrectFlagsToMojoType(context.flags),
-                                    context.should_do_learning
-                                        ? mojom::PersonalizationMode::kEnabled
-                                        : mojom::PersonalizationMode::kDisabled,
-                                    GetTextPredictionMode(enabled_suggestions));
+  return mojom::InputFieldInfo::New(
+      TextInputTypeToMojoType(context.type),
+      AutocorrectFlagsToMojoType(context.flags),
+      context.should_do_learning ? mojom::PersonalizationMode::kEnabled
+                                 : mojom::PersonalizationMode::kDisabled,
+      GetTextPredictionMode(engine_id, input_field_context, prefs));
 }
 
 void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
@@ -816,8 +824,8 @@ void NativeInputMethodEngine::ImeObserver::
   const bool is_normal_screen =
       InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
       InputMethodManager::UIStyle::kNormal;
-  mojom::InputFieldInfoPtr input_field_info =
-      CreateInputFieldInfo(context, enabled_suggestions, is_normal_screen);
+  mojom::InputFieldInfoPtr input_field_info = CreateInputFieldInfo(
+      engine_id, context, input_field_context, *prefs_, is_normal_screen);
 
   base::OnceCallback<void(bool)> on_focus_callback =
       base::BindOnce(&NativeInputMethodEngine::ImeObserver::ActivateTextClient,

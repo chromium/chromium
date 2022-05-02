@@ -106,6 +106,8 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       input_method_specific_pref
               .FindIntKey("physicalKeyboardAutoCorrectionLevel")
               .value_or(0) > 0;
+  // TODO(crbug.com/1263335): This should only look at the prefs and not the
+  // input field context.
   settings->predictive_writing =
       context.multiword_enabled && context.multiword_allowed &&
       !context.lacros_enabled &&
