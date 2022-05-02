@@ -1746,6 +1746,8 @@ def CheckNoPragmaOnce(input_api, output_api):
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
         if not f.LocalPath().endswith('.h'):
             continue
+        if f.LocalPath().endswith('com_imported_mstscax.h'):
+            continue
         contents = input_api.ReadFile(f)
         if pattern.search(contents):
             files.append(f)
@@ -4808,6 +4810,7 @@ def CheckForIncludeGuards(input_api, output_api):
         file_with_path = input_api.os_path.normpath(f.LocalPath())
         return (file_with_path.endswith('.h')
                 and not file_with_path.endswith('_message_generator.h')
+                and not file_with_path.endswith('com_imported_mstscax.h')
                 and (not file_with_path.startswith('third_party')
                      or file_with_path.startswith(
                          input_api.os_path.join('third_party', 'blink'))))
