@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/paint/paint_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -362,6 +364,43 @@ TEST_F(SVGImageSimTest, TwoImagesSameSVGImageDifferentSize) {
   // The previous frame should result in a stable state and should not schedule
   // new visual updates.
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
+}
+
+TEST_F(SVGImageSimTest, SVGWithXSLT) {
+  // To make "https" scheme counted as "Blink.UseCounter.Extensions.Features",
+  // we should make it recognized as an extension.
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension("https");
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/image.svg",
+                                       "image/svg+xml");
+
+  base::HistogramTester histograms;
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <img src="image.svg">
+  )HTML");
+  image_resource.Complete(R"SVG(<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#stylesheet"?>
+<!DOCTYPE svg [
+<!ATTLIST xsl:stylesheet
+id ID #REQUIRED>
+]>
+<svg>
+    <xsl:stylesheet id="stylesheet" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:svg="http://www.w3.org/2000/svg"></xsl:stylesheet>
+</svg>)SVG");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  // The previous frame should result in a stable state and should not schedule
+  // new visual updates.
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+
+  // Ensure |UseCounter.DidCommitLoad| is called once.
+  // Since we cannot use |UseCounter.IsCounted(WebFeature::kPageVisits)|, we
+  // check the histogram updated in |DidCommitLoad|.
+  histograms.ExpectBucketCount("Blink.UseCounter.Extensions.Features",
+                               WebFeature::kPageVisits, 1);
 }
 
 }  // namespace blink

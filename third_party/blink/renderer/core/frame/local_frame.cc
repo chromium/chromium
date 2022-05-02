@@ -2180,16 +2180,19 @@ void LocalFrame::ForceSynchronousDocumentInstall(
           .WithWindow(DomWindow(), nullptr)
           .WithTypeFrom(mime_type)
           .ForPrerendering(GetPage()->IsPrerendering()));
+  DCHECK_EQ(document, GetDocument());
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
   for (const auto& segment : *data)
     parser->AppendBytes(segment.data(), segment.size());
   parser->Finish();
 
-  // Upon loading of SVGImages, log PageVisits in UseCounter.
+  // Upon loading of SVGImages, log PageVisits in UseCounter if we did not
+  // replace the document in `parser->Finish()`, which may happen when XSLT
+  // finishes processing.
   // Do not track PageVisits for inspector, web page popups, and validation
   // message overlays (the other callers of this method).
-  if (document->IsSVGDocument())
+  if (document == GetDocument() && document->IsSVGDocument())
     loader_.GetDocumentLoader()->GetUseCounter().DidCommitLoad(this);
 }
 
