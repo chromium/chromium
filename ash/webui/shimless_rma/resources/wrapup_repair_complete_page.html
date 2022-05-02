@@ -110,6 +110,11 @@
     margin-inline-end: 8px;
   }
 
+  #rebootButton[disabled],
+  #shutDownButton[disabled] {
+    opacity: var(--cr-disabled-opacity);
+  }
+
   .navigation-icon {
     fill: var(--cros-icon-color-primary);
     height: 20px;
