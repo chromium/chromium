@@ -5,24 +5,16 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
 import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 
-/** @implements {ISearchHandler} */
 export class ISearchUI {
   /** @param {Element} input */
   constructor(input) {
-    /** @private {ChromeVoxState} */
-    this.background_ =
-        chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-    const panelBackground =
-        chrome.extension.getBackgroundPage().panelBackground;
-    panelBackground.createNewISearch();
-    panelBackground.setISearchHandler(this);
+    chrome.extension.getBackgroundPage().panelBackground.createNewISearch();
     this.input_ = input;
     this.dir_ = Dir.FORWARD;
 
@@ -94,42 +86,6 @@ export class ISearchUI {
     chrome.extension.getBackgroundPage().panelBackground.incrementalSearch(
         searchStr, this.dir_);
     return true;
-  }
-
-  /** @override */
-  onSearchReachedBoundary(boundaryNode) {
-    this.output_(boundaryNode);
-    ChromeVox.earcons.playEarcon(Earcon.WRAP);
-  }
-
-  /** @override */
-  onSearchResultChanged(node, start, end) {
-    this.output_(node, start, end);
-  }
-
-  /**
-   * @param {!AutomationNode} node
-   * @param {number=} opt_start
-   * @param {number=} opt_end
-   * @private
-   */
-  output_(node, opt_start, opt_end) {
-    Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-    const o = new Output();
-    if (opt_start && opt_end) {
-      o.withString([
-        node.name.substr(0, opt_start),
-        node.name.substr(opt_start, opt_end - opt_start),
-        node.name.substr(opt_end)
-      ].join(', '));
-      o.format('$role', node);
-    } else {
-      o.withRichSpeechAndBraille(
-          cursors.Range.fromNode(node), null, OutputEventType.NAVIGATE);
-    }
-    o.go();
-
-    this.background_.setCurrentRange(cursors.Range.fromNode(node));
   }
 
   /** Unregisters event handlers. */
