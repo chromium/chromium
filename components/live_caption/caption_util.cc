@@ -154,11 +154,6 @@ bool IsLiveCaptionFeatureSupported() {
   // The Speech On-Device API (SODA) component does not support Windows on
   // arm64.
   return false;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Disable Live Caption on LaCrOS. The feature has not been migrated there
-  // yet, and currently fails rather gracelessly (opening a non-existent .so).
-  // TODO(b/223493879): Remove this once it fails more gracefully.
-  return false;
 #else
   return true;
 #endif
