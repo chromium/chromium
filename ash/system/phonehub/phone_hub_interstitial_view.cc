@@ -29,122 +29,94 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
 namespace {
-
-// Appearance.
-constexpr gfx::Size kImageSizeDip = {216, 216};
-constexpr int kImageRowHeightDip = 256;
-constexpr int kButtonSpacingDip = 8;
-constexpr auto kButtonContainerPaddingDip = gfx::Insets::TLBR(16, 0, 25, 0);
-constexpr int kButtonContainerTopPaddingDip = 16;
-constexpr int kProgressBarHeightDip = 2;
-constexpr double kInfiniteLoadingProgressValue = -1.0;
-constexpr int kTitleLabelLineHeightDip = 48;
-constexpr int kDescriptionLabelLineHeightDip = 20;
-constexpr auto kTextLabelInsetsDip = gfx::Insets::TLBR(0, 4, 0, 4);
-
-// Adds a ColumnSet on |layout| with a single View column and padding columns
-// on either side of it with |padding| width.
-void AddColumnWithSidePadding(views::GridLayout* layout, int padding, int id) {
-  views::ColumnSet* column_set = layout->AddColumnSet(id);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, padding);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                        /*resize_precent=*/1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred,
-                        /*fixed_width=*/0, /*min_width=*/0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, padding);
+constexpr auto kLabelInsets = gfx::Insets::VH(0, 4);
 }
-
-}  // namespace
 
 PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
                                                    bool show_image) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  // Set up layout column.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  const int kFirstColumnSetId = 0;
-  // Set up the first column set to layout the progressing bar if needed.
-  views::ColumnSet* column_set = layout->AddColumnSet(kFirstColumnSetId);
-  column_set->AddColumn(views::GridLayout::Alignment::FILL,
-                        views::GridLayout::CENTER, /*resize_precent=*/1.0,
-                        views::GridLayout::ColumnSize::kFixed,
-                        /*fixed_width=*/0, /*min_width=*/0);
-  // Set up the second column set with horizontal paddings to layout the image,
-  // text and buttons.
-  const int kSecondColumnSetId = 1;
-  AddColumnWithSidePadding(layout, kBubbleHorizontalSidePaddingDip,
-                           kSecondColumnSetId);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   auto* color_provider = AshColorProvider::Get();
   if (show_progress) {
-    // Set up layout row for the progress bar if |show_progess| is true.
-    layout->StartRow(views::GridLayout::kFixedSize, kFirstColumnSetId);
-    progress_bar_ = layout->AddView(
-        std::make_unique<views::ProgressBar>(kProgressBarHeightDip));
+    auto* progress_bar_container =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
+    progress_bar_container->SetOrientation(
+        views::BoxLayout::Orientation::kVertical);
+    progress_bar_container->SetMainAxisAlignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    progress_bar_ = progress_bar_container->AddChildView(
+        std::make_unique<views::ProgressBar>(2));
     progress_bar_->SetForegroundColor(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorProminent));
-    progress_bar_->SetValue(kInfiniteLoadingProgressValue);
+    progress_bar_->SetValue(-1.0);
   }
 
-  // Set up layout row for the image if any.
+  auto* content_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  content_container->SetOrientation(views::LayoutOrientation::kVertical);
+  content_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  content_container->SetInteriorMargin(
+      gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip) +
+      (features::IsDarkLightModeEnabled() ? gfx::Insets::TLBR(0, 0, 16, 0)
+                                          : gfx::Insets()));
+
+  // Set up image if any.
   if (show_image) {
-    layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId,
-                     kImageRowHeightDip);
     image_ =
-        layout->AddView(std::make_unique<views::ImageView>(), 1, 1,
-                        views::GridLayout::CENTER, views::GridLayout::CENTER);
-    image_->SetImageSize(kImageSizeDip);
+        content_container->AddChildView(std::make_unique<views::ImageView>());
+    image_->SetProperty(views::kMarginsKey, gfx::Insets::VH(20, 0));
+    image_->SetProperty(views::kCrossAxisAlignmentKey,
+                        views::LayoutAlignment::kCenter);
+    image_->SetImageSize(gfx::Size(216, 216));
   }
 
-  // Set up layout row for the title view, which should be left-aligned.
-  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
-  title_ =
-      layout->AddView(std::make_unique<views::Label>(), 1, 1,
-                      views::GridLayout::LEADING, views::GridLayout::CENTER);
-  title_->SetLineHeight(kTitleLabelLineHeightDip);
-  title_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
+  // Set up title view, which should be left-aligned.
+  title_ = content_container->AddChildView(std::make_unique<views::Label>());
+  title_->SetProperty(views::kCrossAxisAlignmentKey,
+                      views::LayoutAlignment::kStart);
+  title_->SetProperty(views::kMarginsKey, kLabelInsets);
+  title_->SetLineHeight(48);
   auto label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   title_->SetEnabledColor(label_color);
   TrayPopupUtils::SetLabelFontList(title_,
                                    TrayPopupUtils::FontStyle::kSubHeader);
 
-  // Set up layout row for the multi-line description view.
-  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
-  description_ = layout->AddView(std::make_unique<views::Label>());
+  // Set up multi-line description view.
+  description_ =
+      content_container->AddChildView(std::make_unique<views::Label>());
+  description_->SetProperty(views::kMarginsKey,
+                            kLabelInsets + gfx::Insets::TLBR(0, 0, 12, 0));
+  description_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
   description_->SetEnabledColor(label_color);
   TrayPopupUtils::SetLabelFontList(
       description_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  description_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
   description_->SetMultiLine(true);
-  description_->SetLineHeight(kDescriptionLabelLineHeightDip);
+  description_->SetLineHeight(20);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  if (!features::IsDarkLightModeEnabled()) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          kButtonContainerTopPaddingDip);
-  }
-
-  // Set up the layout row for the button container view, which should be
-  // right-aligned.
-  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId,
-                   kTrayItemSize);
+  // Set up button container view, which should be right-aligned.
   button_container_ =
-      layout->AddView(std::make_unique<views::View>(), 1, 1,
-                      views::GridLayout::TRAILING, views::GridLayout::CENTER);
-  button_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      features::IsDarkLightModeEnabled() ? kButtonContainerPaddingDip
-                                         : gfx::Insets(),
-      kButtonSpacingDip));
+      content_container->AddChildView(std::make_unique<views::BoxLayoutView>());
+  button_container_->SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kEnd);
+  button_container_->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(16, 0, 0, 0));
+  button_container_->SetBetweenChildSpacing(8);
 }
 
 PhoneHubInterstitialView::~PhoneHubInterstitialView() = default;
@@ -170,6 +142,7 @@ void PhoneHubInterstitialView::SetDescription(const std::u16string& desc) {
 
 void PhoneHubInterstitialView::AddButton(
     std::unique_ptr<views::Button> button) {
+  description_->SetProperty(views::kMarginsKey, kLabelInsets);
   button_container_->AddChildView(std::move(button));
 }
 

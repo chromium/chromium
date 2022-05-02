@@ -18,6 +18,7 @@ class ImageModel;
 }  // namespace ui
 
 namespace views {
+class BoxLayoutView;
 class Button;
 class ImageView;
 class Label;
@@ -50,7 +51,7 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
   views::ImageView* image_ = nullptr;
   views::Label* title_ = nullptr;
   views::Label* description_ = nullptr;
-  views::View* button_container_ = nullptr;
+  views::BoxLayoutView* button_container_ = nullptr;
 };
 
 }  // namespace ash
