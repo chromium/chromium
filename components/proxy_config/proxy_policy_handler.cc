@@ -48,7 +48,7 @@ struct ProxyModeValidationEntry {
 
 // List of entries determining which proxy policies can be specified, depending
 // on the ProxyMode.
-const ProxyModeValidationEntry kProxyModeValidationMap[] = {
+constexpr ProxyModeValidationEntry kProxyModeValidationMap[] = {
     {ProxyPrefs::kDirectProxyModeName, false, false, false, false,
      IDS_POLICY_PROXY_MODE_DISABLED_ERROR},
     {ProxyPrefs::kAutoDetectProxyModeName, false, false, false, false,
@@ -61,7 +61,9 @@ const ProxyModeValidationEntry kProxyModeValidationMap[] = {
      IDS_POLICY_PROXY_MODE_SYSTEM_ERROR},
 };
 
-const char* kDeprecatedProxyPolicies[] = {
+// Cannot be constexpr because the values of the strings are defined in an
+// automatically generated .cc file.
+const char* const kDeprecatedProxyPolicies[] = {
     kProxyMode, kProxyServerMode, kProxyServer, kProxyPacUrl, kProxyBypassList,
 };
 
