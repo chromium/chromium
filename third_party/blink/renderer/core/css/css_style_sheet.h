@@ -27,12 +27,13 @@
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
-#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -49,6 +50,7 @@ class MediaQuerySet;
 class ScriptPromise;
 class ScriptState;
 class StyleSheetContents;
+class TreeScope;
 
 enum class CSSImportRules {
   kAllow,
@@ -146,13 +148,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   }
   void SetTitle(const String& title) { title_ = title; }
 
-  void AddedAdoptedToTreeScope(TreeScope& tree_scope) {
-    adopted_tree_scopes_.insert(&tree_scope);
-  }
-
-  void RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
-    adopted_tree_scopes_.erase(&tree_scope);
-  }
+  void AddedAdoptedToTreeScope(TreeScope& tree_scope);
+  void RemovedAdoptedFromTreeScope(TreeScope& tree_scope);
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.

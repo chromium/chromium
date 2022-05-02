@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -310,6 +311,14 @@ bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
       MediaQueryEvaluator::Results{&viewport_dependent_media_query_results_,
                                    &device_dependent_media_query_results_,
                                    &media_query_unit_flags_});
+}
+
+void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
+  adopted_tree_scopes_.insert(&tree_scope);
+}
+
+void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
+  adopted_tree_scopes_.erase(&tree_scope);
 }
 
 bool CSSStyleSheet::HasDynamicViewportDependentMediaQueries() const {
