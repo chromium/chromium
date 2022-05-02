@@ -249,6 +249,48 @@ TEST(ElementTrackerTest, GetAllMatchingElementsInAnyContext) {
       testing::IsEmpty());
 }
 
+TEST(ElementTrackerTest, GetElementInAnyContext) {
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e3 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext2);
+  test::TestElementPtr e4 = std::make_unique<test::TestElement>(
+      kElementIdentifier2, kElementContext1);
+
+  EXPECT_EQ(nullptr,
+            ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kElementIdentifier1));
+
+  e1->Show();
+  EXPECT_EQ(e1.get(),
+            ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kElementIdentifier1));
+
+  e2->Show();
+  e3->Show();
+  e4->Show();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                  kElementIdentifier1),
+              testing::AnyOf(testing::Eq(e1.get()), testing::Eq(e2.get()),
+                             testing::Eq(e3.get())));
+
+  e1->Hide();
+  EXPECT_THAT(ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                  kElementIdentifier1),
+              testing::AnyOf(testing::Eq(e2.get()), testing::Eq(e3.get())));
+
+  EXPECT_EQ(e4.get(),
+            ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kElementIdentifier2));
+
+  e4->Hide();
+  EXPECT_EQ(nullptr,
+            ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kElementIdentifier2));
+}
+
 TEST(ElementTrackerTest, IsElementVisible) {
   test::TestElementPtr e1 = std::make_unique<test::TestElement>(
       kElementIdentifier1, kElementContext1);
@@ -322,6 +364,27 @@ TEST(ElementTrackerTest, AddElementShownCallback) {
   EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Show());
   e2->Show();
   e3->Show();
+  e1->Activate();
+  e1->Hide();
+  EXPECT_CALL_IN_SCOPE(callback, Run(e4.get()), e4->Show());
+}
+
+TEST(ElementTrackerTest, AddElementShownInAnyContextCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddElementShownInAnyContextCallback(
+          kElementIdentifier1, callback.Get());
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier2, kElementContext1);
+  test::TestElementPtr e3 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier1, kElementContext2);
+  test::TestElementPtr e4 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Show());
+  e2->Show();
+  EXPECT_CALL_IN_SCOPE(callback, Run(e3.get()), e3->Show());
   e1->Activate();
   e1->Hide();
   EXPECT_CALL_IN_SCOPE(callback, Run(e4.get()), e4->Show());
@@ -456,6 +519,16 @@ TEST(ElementTrackerTest, CleanupAfterCallbacksRemoved) {
     element_tracker.NotifyElementShown(e1.get());
     EXPECT_EQ(1U, element_tracker.element_data_.size());
     element_tracker.NotifyElementHidden(e1.get());
+    EXPECT_EQ(1U, element_tracker.element_data_.size());
+  }
+  EXPECT_TRUE(element_tracker.element_data_.empty());
+
+  // Add element shown in any context callback.
+  {
+    base::MockCallback<ElementTracker::Callback> callback;
+    EXPECT_CALL(callback, Run).Times(testing::AnyNumber());
+    auto subscription = element_tracker.AddElementShownInAnyContextCallback(
+        kElementIdentifier1, callback.Get());
     EXPECT_EQ(1U, element_tracker.element_data_.size());
   }
   EXPECT_TRUE(element_tracker.element_data_.empty());
@@ -604,6 +677,46 @@ TEST(ElementTrackerTest, HideDuringShowCallback) {
 
   // Verify that cleanup still happens after all callbacks return.
   EXPECT_TRUE(element_tracker.element_data_.empty());
+}
+
+// Regression test for a case where an element disappears in the middle of shown
+// callbacks.
+TEST(ElementTrackerTest, HideDuringShowCallbackMultipleListeners) {
+  test::TestElement e1(kElementIdentifier1, kElementContext1);
+  bool called1 = false;
+  bool called2 = false;
+
+  // The first callback should be called normally.
+  ElementTracker::Subscription subscription1 =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          e1.identifier(), e1.context(),
+          base::BindLambdaForTesting([&](TrackedElement* element) {
+            EXPECT_EQ(&e1, element);
+            called1 = true;
+            e1.Hide();
+          }));
+
+  // The second callback will be called because of limitations with CallbackList
+  // but will receive a null argument.
+  ElementTracker::Subscription subscription2 =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          e1.identifier(), e1.context(),
+          base::BindLambdaForTesting([&](TrackedElement* element) {
+            EXPECT_EQ(nullptr, element);
+            called2 = true;
+          }));
+
+  // The any context callbacks happen after context-specific callbacks, so we
+  // don't bother calling them at all if the element is gone.
+  ElementTracker::Subscription subscription3 =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              e1.identifier(),
+              base::BindLambdaForTesting(
+                  [&](TrackedElement* element) { NOTREACHED(); }));
+  e1.Show();
+  EXPECT_TRUE(called1);
+  EXPECT_TRUE(called2);
 }
 
 TEST(SafeElementReferenceTest, ElementRemainsVisible) {

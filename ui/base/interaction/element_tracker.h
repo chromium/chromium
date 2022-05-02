@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_ELEMENT_TRACKER_H_
 #define UI_BASE_INTERACTION_ELEMENT_TRACKER_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <vector>
@@ -87,6 +88,10 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
 class COMPONENT_EXPORT(UI_BASE) ElementTracker
     : ElementTrackerFrameworkDelegate {
  public:
+  // Callback that subscribers receive when the specified event occurs.
+  // Note that if an element is destroyed in the middle of calling callbacks,
+  // some callbacks may not be called and others may be called with a null
+  // argument, so please check the validity of the element pointer.
   using Callback = base::RepeatingCallback<void(TrackedElement*)>;
   using Subscription = base::CallbackListSubscription;
   using ElementList = std::vector<TrackedElement*>;
@@ -124,6 +129,10 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   TrackedElement* GetFirstMatchingElement(ElementIdentifier id,
                                           ElementContext context);
 
+  // Returns an element with identifier `id` from any context, or null if not
+  // found. Contexts are not guaranteed to be searched in any particular order.
+  TrackedElement* GetElementInAnyContext(ElementIdentifier id);
+
   // Returns a list of all visible elements with identifier `id` in `context`.
   // The list may be empty.
   ElementList GetAllMatchingElements(ElementIdentifier id,
@@ -141,6 +150,11 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   Subscription AddElementShownCallback(ElementIdentifier id,
                                        ElementContext context,
                                        Callback callback);
+
+  // Adds a callback that will be called whenever an element with identifier
+  // `id` becomes visible in any context.
+  Subscription AddElementShownInAnyContextCallback(ElementIdentifier id,
+                                                   Callback callback);
 
   // Adds a callback that will be called whenever an element with identifier
   // `id` in `context` is activated by the user.
@@ -188,6 +202,11 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
 
   void MaybeCleanup(ElementData* data);
 
+  // Use a list to keep track of elements we're in the process of sending
+  // notifications for; this allows us to zero out the reference in realtime if
+  // the element is deleted. We use a list because the individual elements need
+  // to be memory-stable.
+  std::list<TrackedElement*> notification_elements_;
   std::map<LookupKey, ElementData> element_data_;
   std::unique_ptr<GarbageCollector> gc_;
 };

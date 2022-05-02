@@ -99,6 +99,10 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
       << " Only the initial step of a sequence may have a pre-set element.";
   DCHECK(!step->transition_only_on_event || !step->element)
       << " Pre-set element precludes transition_only_on_event.";
+  DCHECK(!step->any_context || (!step->uses_named_element() && !step->context))
+      << " Find in any context requires no context or name to be set.";
+  DCHECK(!step->any_context || step->type == StepType::kShown)
+      << " Currently, find in any context only supports StepType::kShown.";
 
   // Set reasonable defaults for must_be_visible based on step type and
   // parameters.
@@ -212,6 +216,12 @@ InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
     bool transition_only_on_event) {
   step_->transition_only_on_event = transition_only_on_event;
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetFindElementInAnyContext(bool any_context) {
+  step_->any_context = any_context;
   return *this;
 }
 
@@ -337,6 +347,10 @@ const TrackedElement* InteractionSequence::GetNamedElement(
 }
 
 void InteractionSequence::OnElementShown(TrackedElement* element) {
+  // If the element was destroyed before we got our callback, this could be
+  // null.
+  if (!element)
+    return;
   DCHECK_EQ(StepType::kShown, next_step()->type);
   DCHECK(element->identifier() == next_step()->id);
   // Note that we don't need to look for a named element here, as any named
@@ -346,6 +360,10 @@ void InteractionSequence::OnElementShown(TrackedElement* element) {
 }
 
 void InteractionSequence::OnElementActivated(TrackedElement* element) {
+  // If the element was destroyed before we got our callback, this could be
+  // null.
+  if (!element)
+    return;
   DCHECK_EQ(StepType::kActivated, next_step()->type);
   DCHECK(element->identifier() == next_step()->id);
   if (MatchesNameIfSpecified(element, next_step()->element_name))
@@ -409,7 +427,7 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
 
 void InteractionSequence::OnTriggerDuringStepTransition(
     TrackedElement* element) {
-  if (!next_step())
+  if (!next_step() || !element)
     return;
 
   switch (next_step()->type) {
@@ -443,7 +461,7 @@ void InteractionSequence::OnTriggerDuringStepTransition(
   // finish processing the current step.
   next_step()->subscription =
       ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-          element->identifier(), context(),
+          element->identifier(), element->context(),
           base::BindRepeating(
               &InteractionSequence::OnElementHiddenDuringStepTransition,
               base::Unretained(this)));
@@ -479,13 +497,24 @@ void InteractionSequence::MaybeWatchForTriggerDuringStepTransition() {
     return;
   }
 
+  // If the next element is named but we have not yet named it, don't add a
+  // listener; we can add one when we name the element.
+  TrackedElement* named_element = nullptr;
+  if (next_step()->uses_named_element()) {
+    const auto it = named_elements_.find(next_step()->element_name);
+    if (it != named_elements_.end())
+      named_element = it->second.get();
+    if (!named_element)
+      return;
+  }
+
   if (next_step()->type == StepType::kActivated && next_step()->id) {
     // If the next step is an activation step and we already know the ID (i.e.
     // it's either not a named element or the element in question has been
     // named) then add the appropriate temporary callback.
     next_step()->subscription =
         ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-            next_step()->id, context(),
+            next_step()->id, GetElementContext(named_element),
             base::BindRepeating(
                 &InteractionSequence::OnTriggerDuringStepTransition,
                 base::Unretained((this))));
@@ -495,7 +524,7 @@ void InteractionSequence::MaybeWatchForTriggerDuringStepTransition() {
     // filter out irrelevant elements in the callback itself.
     next_step()->subscription =
         ElementTracker::GetElementTracker()->AddCustomEventCallback(
-            next_step()->custom_event_type, context(),
+            next_step()->custom_event_type, GetElementContext(named_element),
             base::BindRepeating(
                 &InteractionSequence::OnTriggerDuringStepTransition,
                 base::Unretained((this))));
@@ -534,7 +563,8 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
         current_step_->type == StepType::kHidden ? nullptr : element;
     if (current_step_->element) {
       current_step_->subscription = tracker->AddElementHiddenCallback(
-          current_step_->element->identifier(), context(),
+          current_step_->element->identifier(),
+          current_step_->element->context(),
           base::BindRepeating(&InteractionSequence::OnElementHidden,
                               base::Unretained(this)));
     } else {
@@ -613,6 +643,8 @@ void InteractionSequence::StageNextStep() {
     DCHECK(!next_element || next->id == next_element->identifier());
   } else {
     next_element = tracker->GetFirstMatchingElement(next->id, context());
+    if (!next_element && next->any_context)
+      next_element = tracker->GetElementInAnyContext(next->id);
   }
 
   if (!trigger_during_callback_ && next->must_be_visible.value() &&
@@ -639,10 +671,13 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(next_element);
       } else {
         DCHECK(!next->uses_named_element());
-        next->subscription = tracker->AddElementShownCallback(
-            next->id, context(),
-            base::BindRepeating(&InteractionSequence::OnElementShown,
-                                base::Unretained(this)));
+        auto callback = base::BindRepeating(
+            &InteractionSequence::OnElementShown, base::Unretained(this));
+        next->subscription = next->any_context
+                                 ? tracker->AddElementShownInAnyContextCallback(
+                                       next->id, callback)
+                                 : tracker->AddElementShownCallback(
+                                       next->id, context(), callback);
       }
       break;
     case StepType::kHidden:
@@ -664,8 +699,9 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
+        const ElementContext target_context = GetElementContext(next_element);
         next->subscription = tracker->AddElementActivatedCallback(
-            next->id, context(),
+            next->id, target_context,
             base::BindRepeating(&InteractionSequence::OnElementActivated,
                                 base::Unretained(this)));
         // It's possible to have the element hidden between the time we stage
@@ -673,7 +709,7 @@ void InteractionSequence::StageNextStep() {
         // could be never). In this case, we should abort.
         if (next_step()->must_be_visible.value()) {
           next_step_hidden_subscription_ = tracker->AddElementHiddenCallback(
-              next->id, context(),
+              next->id, target_context,
               base::BindRepeating(
                   &InteractionSequence::OnElementHiddenWaitingForActivate,
                   base::Unretained(this)));
@@ -686,8 +722,9 @@ void InteractionSequence::StageNextStep() {
         DoStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
+        const ElementContext target_context = GetElementContext(next_element);
         next->subscription = tracker->AddCustomEventCallback(
-            next->custom_event_type, context(),
+            next->custom_event_type, target_context,
             base::BindRepeating(&InteractionSequence::OnCustomEvent,
                                 base::Unretained(this)));
         // It's possible to have the element hidden between the time we stage
@@ -696,7 +733,7 @@ void InteractionSequence::StageNextStep() {
         if (next_step()->must_be_visible.value()) {
           DCHECK(next->id);
           next_step_hidden_subscription_ = tracker->AddElementHiddenCallback(
-              next->id, context(),
+              next->id, target_context,
               base::BindRepeating(
                   &InteractionSequence::OnElementHiddenWaitingForActivate,
                   base::Unretained(this)));
@@ -770,6 +807,11 @@ InteractionSequence::Step* InteractionSequence::next_step() {
 
 ElementContext InteractionSequence::context() const {
   return configuration_->context;
+}
+
+ElementContext InteractionSequence::GetElementContext(
+    const TrackedElement* element) const {
+  return element ? element->context() : context();
 }
 
 }  // namespace ui

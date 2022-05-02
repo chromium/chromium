@@ -73,17 +73,22 @@ class ElementTracker::ElementData {
     return custom_event_callbacks_.Add(callback);
   }
 
-  void NotifyElementShown(TrackedElement* element) {
+  void NotifyElementShown(TrackedElement*& element) {
+    DCHECK(element);
     DCHECK_EQ(identifier(), element->identifier());
-    DCHECK_EQ(static_cast<intptr_t>(context()),
-              static_cast<intptr_t>(element->context()));
-    const auto it = elements_.insert(elements_.end(), element);
-    const bool success = element_lookup_.emplace(element, it).second;
-    DCHECK(success);
+    // Zero context data is the "all contexts" entry and doesn't actually store
+    // new elements, just calls callbacks.
+    if (context()) {
+      DCHECK_EQ(static_cast<intptr_t>(context()),
+                static_cast<intptr_t>(element->context()));
+      const auto it = elements_.insert(elements_.end(), element);
+      const bool success = element_lookup_.emplace(element, it).second;
+      DCHECK(success);
+    }
     shown_callbacks_.Notify(element);
   }
 
-  void NotifyElementActivated(TrackedElement* element) {
+  void NotifyElementActivated(TrackedElement*& element) {
     DCHECK(base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
   }
@@ -208,6 +213,14 @@ TrackedElement* ElementTracker::GetFirstMatchingElement(
   return it->second.elements().front();
 }
 
+TrackedElement* ElementTracker::GetElementInAnyContext(ElementIdentifier id) {
+  for (const auto& [key, data] : element_data_) {
+    if (key.first == id && !data.elements().empty())
+      return data.elements().front();
+  }
+  return nullptr;
+}
+
 ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
     ElementIdentifier id,
     ElementContext context) {
@@ -245,6 +258,14 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
   DCHECK(id);
   DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementShownCallback(callback);
+}
+
+ElementTracker::Subscription
+ElementTracker::AddElementShownInAnyContextCallback(ElementIdentifier id,
+                                                    Callback callback) {
+  DCHECK(id);
+  return GetOrAddElementData(id, ElementContext())
+      ->AddElementShownCallback(callback);
 }
 
 ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
@@ -285,26 +306,50 @@ ElementTracker::ElementTracker()
 ElementTracker::~ElementTracker() = default;
 
 void ElementTracker::NotifyElementShown(TrackedElement* element) {
+  notification_elements_.push_back(element);
+  TrackedElement*& safe_element = notification_elements_.back();
+
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
   ElementData* const element_data =
       GetOrAddElementData(element->identifier(), element->context());
   DCHECK(!element_data->HasElement(element));
-  element_data->NotifyElementShown(element);
+  element_data->NotifyElementShown(safe_element);
+
+  // Do "all contexts" notification:
+  if (safe_element) {
+    const auto it =
+        element_data_.find(LookupKey(element->identifier(), ElementContext()));
+    if (it != element_data_.end())
+      it->second.NotifyElementShown(safe_element);
+  }
+
+  notification_elements_.pop_back();
 }
 
 void ElementTracker::NotifyElementActivated(TrackedElement* element) {
+  notification_elements_.push_back(element);
+  TrackedElement*& safe_element = notification_elements_.back();
+
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
   DCHECK(it != element_data_.end());
-  it->second.NotifyElementActivated(element);
+  it->second.NotifyElementActivated(safe_element);
+
+  notification_elements_.pop_back();
 }
 
 void ElementTracker::NotifyElementHidden(TrackedElement* element) {
+  // Clear out any elements we're in the process of sending events for.
+  for (TrackedElement*& safe_element : notification_elements_) {
+    if (safe_element == element)
+      safe_element = nullptr;
+  }
+
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
