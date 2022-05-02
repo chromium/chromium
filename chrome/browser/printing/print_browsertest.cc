@@ -685,10 +685,15 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
       print_now_called_ = true;
     }
 
+    void OnScriptedPrint() override { scripted_print_called_ = true; }
+
     bool print_now_called() const { return print_now_called_; }
+
+    bool scripted_print_called() const { return scripted_print_called_; }
 
    private:
     bool print_now_called_ = false;
+    bool scripted_print_called_ = false;
   };
 
   static TestPrintViewManagerForContentAnalysis* CreateForWebContents(
@@ -717,6 +722,10 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   void WaitOnPreview() { preview_run_loop_.Run(); }
 
   bool print_now_called() const { return observer_.print_now_called(); }
+
+  bool scripted_print_called() const {
+    return observer_.scripted_print_called();
+  }
 
   const absl::optional<bool>& preview_allowed() const {
     return preview_allowed_;
@@ -781,6 +790,17 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
         rfh_id, std::move(callback), allowed_by_dlp_);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  void CompleteScriptedPrint(content::RenderFrameHost* rfh,
+                             mojom::ScriptedPrintParamsPtr params,
+                             ScriptedPrintCallback callback) override {
+    auto print_params = mojom::PrintPagesParams::New();
+    print_params->params = mojom::PrintParams::New();
+    std::move(callback).Run(std::move(print_params));
+
+    for (auto& observer : GetObservers())
+      observer.OnScriptedPrint();
+  }
 
  private:
   void PrintPreviewRejectedForTesting() override {
@@ -3328,7 +3348,35 @@ class ContentAnalysisPrintBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class ContentAnalysisScriptedPreviewlessPrintBrowserTest
+    : public ContentAnalysisPrintBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* cmd_line) override {
+    cmd_line->AppendSwitch(switches::kDisablePrintPreview);
+    ContentAnalysisPrintBrowserTest::SetUpCommandLine(cmd_line);
+  }
+
+  void RunScriptedPrintTest(const std::string& script) {
+    ASSERT_TRUE(embedded_test_server()->Started());
+    GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    auto* print_view_manager =
+        TestPrintViewManagerForContentAnalysis::CreateForWebContents(
+            web_contents);
+    content::ExecuteScriptAsync(web_contents->GetMainFrame(), script);
+
+    print_view_manager->WaitOnScanning();
+    ASSERT_EQ(print_view_manager->scripted_print_called(),
+              content_analysis_allows_print());
+  }
+};
+
 // TODO(crbug.com/1256506): Re-enable test on Windows
+// TODO(crbug.com/1321689): Re-enable test on Mac
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -3374,7 +3422,18 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
   ASSERT_EQ(print_view_manager->preview_allowed().value(),
             content_analysis_allows_print());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+                       DocumentExecPrint) {
+  RunScriptedPrintTest("document.execCommand('print');");
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+                       WindowPrint) {
+  RunScriptedPrintTest("window.print()");
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
@@ -3403,9 +3462,20 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1256506): Re-enable test on Windows
+// TODO(crbug.com/1321689): Re-enable test on Mac
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+
+// TODO(crbug.com/1256506): Re-enable test on Windows
+// TODO(crbug.com/1321689): Re-enable test on Mac
+// This test suite doesn't run on CrOS since it doesn't support non-print
+// preview scripted printing.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+                         testing::Bool());
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
 

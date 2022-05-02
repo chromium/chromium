@@ -50,6 +50,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
    public:
     virtual void OnPrintNow(const content::RenderFrameHost* rfh) {}
 
+    virtual void OnScriptedPrint() {}
+
     // This method is never called unless `ENABLE_PRINT_PREVIEW`.
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
   };
@@ -161,6 +163,13 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void OnFailed() override;
 
   base::ObserverList<Observer>& GetObservers() { return observers_; }
+
+  // Prints the document by posting on the IO thread. This should only be called
+  // by `ScriptedPrint()` and `CompleteScriptedPrintAfterContentAnalysis()`.
+  // This method is virtual for testing purposes.
+  virtual void CompleteScriptedPrint(content::RenderFrameHost* rfh,
+                                     mojom::ScriptedPrintParamsPtr params,
+                                     ScriptedPrintCallback callback);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // Helper method for scanning a page by sending requests and launching the
@@ -286,13 +295,20 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   // Prints the document by calling the `PrintRequestedPages()` renderer API and
   // notifies observers. This should only be called by `PrintNow()` or
-  // `CompleteContentAnalysis()`.
+  // `CompletePrintNowAfterContentAnalysis()`.
   void CompletePrintNow(content::RenderFrameHost* rfh);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Helper for scanning code that calls `CompletePrintNow()` if `allowed` is
-  // true and printing is still possible.
-  void CompleteContentAnalysis(bool allowed);
+  // Helper for content analysis code that calls `CompletePrintNow()` if
+  // `allowed` is true and printing is still possible.
+  void CompletePrintNowAfterContentAnalysis(bool allowed);
+
+  // Helper for content analysis code that calls `CompleteScriptedPrint()` if
+  // `allowed` is true and printing is still possible.
+  void CompleteScriptedPrintAfterContentAnalysis(
+      mojom::ScriptedPrintParamsPtr params,
+      ScriptedPrintCallback callback,
+      bool allowed);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // The current RFH that is printing with a system printing dialog.
