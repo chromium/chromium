@@ -2469,6 +2469,20 @@ const FeatureEntry::FeatureVariation
          std::size(kPasswordDomainCapabilitiesFetchingVariationLiveExperiment),
          nullptr}};
 
+// The variations of --password-change-support.
+const FeatureEntry::FeatureParam
+    kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission[] = {
+        {password_manager::features::
+             kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
+         "true"}};
+
+const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
+    {"Force dialog after every successful form submission.",
+     kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission,
+     std::size(
+         kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission),
+     nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 // The variations of --password-change-in-settings.
 const FeatureEntry::FeatureParam
@@ -2484,20 +2498,6 @@ const FeatureEntry::FeatureVariation
          std::size(
              kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
          nullptr}};
-
-// The variations of --password-change-support.
-const FeatureEntry::FeatureParam
-    kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission[] = {
-        {password_manager::features::
-             kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-         "true"}};
-
-const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
-    {"Force dialog after every successful form submission.",
-     kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission,
-     std::size(
-         kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission),
-     nullptr}};
 
 // The variations of --touch-to-fill-password-submission.
 const FeatureEntry::FeatureParam
@@ -6809,6 +6809,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kForceEnablePasswordDomainCapabilities)},
+    {"password-change-support", flag_descriptions::kPasswordChangeName,
+     flag_descriptions::kPasswordChangeDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
+                                    kPasswordChangeFeatureVariations,
+                                    "PasswordChangeFeatureVariations")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"password-change-in-settings",
@@ -6822,11 +6827,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
-    {"password-change-support", flag_descriptions::kPasswordChangeName,
-     flag_descriptions::kPasswordChangeDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
-                                    kPasswordChangeFeatureVariations,
-                                    "PasswordChangeFeatureVariations")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

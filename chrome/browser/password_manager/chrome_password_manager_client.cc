@@ -604,17 +604,15 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username) {
-#if BUILDFLAG(IS_ANDROID)
-  if (password_manager::features::IsPasswordScriptsFetchingEnabled() &&
-      GetPasswordFeatureManager()->IsGenerationEnabled()) {
+  if (GetPasswordFeatureManager()->IsGenerationEnabled() &&
+      password_manager::features::IsPasswordScriptsFetchingEnabled()) {
     // The prewarm is triggered so that script availability is prefetched in
     // case the user lands on the Password Check UI (after tapping the "Check
     // Passwords" button).
-    PasswordScriptsFetcherFactory::GetInstance()
-        ->GetForBrowserContext(web_contents()->GetBrowserContext())
-        ->PrewarmCache();
+    GetPasswordScriptsFetcher()->PrewarmCache();
   }
 
+#if BUILDFLAG(IS_ANDROID)
   if (messages::IsPasswordMessagesUiEnabled()) {
     save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
   } else {
@@ -683,12 +681,7 @@ ChromePasswordManagerClient::GetPasswordReuseManager() const {
 
 password_manager::PasswordScriptsFetcher*
 ChromePasswordManagerClient::GetPasswordScriptsFetcher() {
-  // PasswordScriptsFetcher exists only on Android.
-#if BUILDFLAG(IS_ANDROID)
   return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
-#else
-  return nullptr;
-#endif
 }
 
 password_manager::PasswordChangeSuccessTracker*

@@ -29,6 +29,7 @@ class CredentialLeakDialogChangeController
   std::u16string GetDescription() const override;
   std::u16string GetTitle() const override;
   bool ShouldCheckPasswords() const override;
+  bool ShouldOfferAutomatedPasswordChange() const override;
   bool ShouldShowCancelButton() const override;
 };
 

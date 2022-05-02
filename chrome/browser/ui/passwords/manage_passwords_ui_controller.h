@@ -230,6 +230,7 @@ class ManagePasswordsUIController
   // PasswordsLeakDialogDelegate:
   void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) override;
+  void StartAutomatedPasswordChange() override;
   void OnLeakDialogHidden() override;
 
   enum class BubbleStatus {

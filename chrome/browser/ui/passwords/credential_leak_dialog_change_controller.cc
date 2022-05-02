@@ -72,6 +72,11 @@ bool CredentialLeakDialogChangeController::ShouldCheckPasswords() const {
   return false;
 }
 
+bool CredentialLeakDialogChangeController::ShouldOfferAutomatedPasswordChange()
+    const {
+  return false;
+}
+
 bool CredentialLeakDialogChangeController::ShouldShowCancelButton() const {
   return false;
 }

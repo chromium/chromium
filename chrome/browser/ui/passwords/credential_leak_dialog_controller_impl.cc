@@ -42,7 +42,12 @@ void CredentialLeakDialogControllerImpl::OnCancelDialog() {
 }
 
 void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
-  if (ShouldCheckPasswords()) {
+  if (ShouldOfferAutomatedPasswordChange()) {
+    delegate_->StartAutomatedPasswordChange();
+    LogLeakDialogTypeAndDismissalReason(
+        password_manager::GetLeakDialogType(leak_type_),
+        LeakDialogDismissalReason::kClickedChangePasswordAutomatically);
+  } else if (ShouldCheckPasswords()) {
     LogLeakDialogTypeAndDismissalReason(
         password_manager::GetLeakDialogType(leak_type_),
         LeakDialogDismissalReason::kClickedCheckPasswords);
@@ -90,6 +95,11 @@ std::u16string CredentialLeakDialogControllerImpl::GetTitle() const {
 
 bool CredentialLeakDialogControllerImpl::ShouldCheckPasswords() const {
   return password_manager::ShouldCheckPasswords(leak_type_);
+}
+
+bool CredentialLeakDialogControllerImpl::ShouldOfferAutomatedPasswordChange()
+    const {
+  return password_manager::ShouldShowAutomaticChangePasswordButton(leak_type_);
 }
 
 bool CredentialLeakDialogControllerImpl::ShouldShowCancelButton() const {
