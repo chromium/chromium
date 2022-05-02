@@ -454,24 +454,6 @@
         android:noHistory="true"
         android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: 24aedc77
-    <activity  # DIFF-ANCHOR: bec48e1f
-        android:name="org.chromium.chrome.browser.printing.PrintShareActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:enabled="false"
-        android:excludeFromRecents="true"
-        android:exported="true"
-        android:icon="@drawable/sharing_print_baseline"
-        android:label="@string/print_share_activity_title"
-        android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="message/rfc822"/>
-        <data android:mimeType="multipart/related"/>
-        <data android:mimeType="text/plain"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
-    </activity>  # DIFF-ANCHOR: bec48e1f
     <activity  # DIFF-ANCHOR: 7468a722
         android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
         android:clearTaskOnLaunch="true"
@@ -485,22 +467,6 @@
         android:theme="@style/Theme.Chromium.SearchActivity"
         android:windowSoftInputMode="adjustResize">
     </activity>  # DIFF-ANCHOR: 7468a722
-    <activity  # DIFF-ANCHOR: f1aedff1
-        android:name="org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:enabled="false"
-        android:excludeFromRecents="true"
-        android:exported="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/send_tab_to_self_share_activity_title"
-        android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="text/plain"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
-    </activity>  # DIFF-ANCHOR: f1aedff1
     <activity  # DIFF-ANCHOR: d32b85df
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

@@ -101,17 +101,6 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
-     * Return whether the feature is available for the current user Profile and
-     * the current WebContents.
-     *
-     * @param WebContents The current WebContents.
-     * @return Whether the feature is available.
-     */
-    public static boolean isFeatureAvailable(WebContents webContents) {
-        return SendTabToSelfAndroidBridgeJni.get().isFeatureAvailable(webContents);
-    }
-
-    /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
      * @returns All {@link TargetDeviceInfo} for the user.
      */
@@ -157,8 +146,6 @@ public class SendTabToSelfAndroidBridge {
         void dismissEntry(Profile profile, String guid);
 
         void markEntryOpened(Profile profile, String guid);
-
-        boolean isFeatureAvailable(WebContents webContents);
 
         void getAllTargetDeviceInfos(Profile profile, List<TargetDeviceInfo> guids);
 

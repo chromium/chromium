@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -156,16 +155,6 @@ static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
     const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
     model->MarkEntryOpened(guid);
   }
-}
-
-// Returns whether the feature is available for the specified |web_contents|.
-static jboolean JNI_SendTabToSelfAndroidBridge_IsFeatureAvailable(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-
-  return ShouldOfferFeature(web_contents);
 }
 
 static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(

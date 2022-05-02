@@ -9,7 +9,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -147,15 +146,5 @@ public class SendTabToSelfAndroidBridgeTest {
     public void testUpdateActiveWebContents() {
         SendTabToSelfAndroidBridge.updateActiveWebContents(mWebContents);
         verify(mNativeMock).updateActiveWebContents(eq(mWebContents));
-    }
-
-    @Test
-    @SmallTest
-    public void testIsFeatureAvailable() {
-        boolean expected = true;
-        when(mNativeMock.isFeatureAvailable(eq(mWebContents))).thenReturn(expected);
-
-        boolean actual = SendTabToSelfAndroidBridge.isFeatureAvailable(mWebContents);
-        Assert.assertEquals(expected, actual);
     }
 }
