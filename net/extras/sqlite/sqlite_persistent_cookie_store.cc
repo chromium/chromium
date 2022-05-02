@@ -357,14 +357,6 @@ class SQLitePersistentCookieStore::Backend
                                       bool load_success,
                                       const base::Time& requested_at);
 
-  // Sends all metrics, including posting a ReportMetricsInBackground task.
-  // Called after all priority and regular loading is complete.
-  void ReportMetrics();
-
-  // Sends background-runner owned metrics (i.e., the combined duration of all
-  // BG-runner tasks).
-  void ReportMetricsInBackground();
-
   // Initialize the Cookies table.
   bool CreateDatabaseSchema() override;
 
@@ -773,10 +765,6 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   IncrementTimeDelta increment(&cookie_load_duration_);
 
-  UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeLoadDBQueueWait",
-                             base::Time::Now() - posted_at,
-                             base::Milliseconds(1), base::Minutes(1), 50);
-
   if (!InitializeDatabase()) {
     PostClientTask(FROM_HERE,
                    base::BindOnce(&Backend::CompleteLoadInForeground, this,
@@ -792,10 +780,6 @@ void SQLitePersistentCookieStore::Backend::LoadKeyAndNotifyInBackground(
     const base::Time& posted_at) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   IncrementTimeDelta increment(&cookie_load_duration_);
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeKeyLoadDBQueueWait",
-                             base::Time::Now() - posted_at,
-                             base::Milliseconds(1), base::Minutes(1), 50);
 
   bool success = false;
   if (InitializeDatabase()) {
@@ -837,36 +821,10 @@ void SQLitePersistentCookieStore::Backend::CompleteLoadForKeyInForeground(
   }
 }
 
-void SQLitePersistentCookieStore::Backend::ReportMetricsInBackground() {
-  UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeLoad", cookie_load_duration_,
-                             base::Milliseconds(1), base::Minutes(1), 50);
-}
-
-void SQLitePersistentCookieStore::Backend::ReportMetrics() {
-  PostBackgroundTask(
-      FROM_HERE,
-      base::BindOnce(
-          &SQLitePersistentCookieStore::Backend::ReportMetricsInBackground,
-          this));
-
-  {
-    base::AutoLock locked(metrics_lock_);
-    UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.PriorityBlockingTime",
-                               priority_wait_duration_, base::Milliseconds(1),
-                               base::Minutes(1), 50);
-
-    UMA_HISTOGRAM_COUNTS_100("Cookie.PriorityLoadCount",
-                             total_priority_requests_);
-  }
-}
-
 void SQLitePersistentCookieStore::Backend::CompleteLoadInForeground(
     LoadedCallback loaded_callback,
     bool load_success) {
   Notify(std::move(loaded_callback), load_success);
-
-  if (load_success)
-    ReportMetrics();
 }
 
 void SQLitePersistentCookieStore::Backend::Notify(

@@ -636,26 +636,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cookie.PriorityBlockingTime" units="ms"
-    expires_after="2020-05-10">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    This histogram records the total duration of time during which at least one
-    web request was blocked waiting for the cookie store to load. If no requests
-    were affected, the value is 0. If two requests are simultaneously blocked
-    for 1 second, the value is 1 second. If two requests are consecutively
-    blocked for 1 second each, the value is two seconds.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.PriorityLoadCount" units="units" expires_after="M77">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    The number of distinct Effective Top-Level Domains Plus One (ETLD+1, i.e.,
-    google.com, bbc.co.uk) for which a priority cookie load occurred.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
     expires_after="2022-10-23">
   <owner>bingler@chromium.org</owner>
@@ -888,14 +868,6 @@ chromium-metrics-reviews@google.com.
   <summary>The amount of time (ms) to migrate a v8 database to v9.</summary>
 </histogram>
 
-<histogram name="Cookie.TimeKeyLoadDBQueueWait" units="ms" expires_after="M81">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    This histogram records the wall-clock delay between a priority load task
-    being posted to the DB-thread and its execution.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.TimeKeyLoadTotalWait" units="ms"
     expires_after="2020-05-17">
   <owner>erikchen@chromium.org</owner>
@@ -903,23 +875,6 @@ chromium-metrics-reviews@google.com.
     This histogram records the the total amount of time spent fetching the
     cookies associated with an eTLD+1 from disk, including time spent waiting in
     task queues.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeLoad" units="ms" expires_after="2020-11-01">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    This histogram records the sum of the durations of all initial tasks loading
-    cookies from the database.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeLoadDBQueueWait" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    This histogram records the wall-clock delay between the Load task being
-    posted to the DB-thread and its execution.
   </summary>
 </histogram>
 
