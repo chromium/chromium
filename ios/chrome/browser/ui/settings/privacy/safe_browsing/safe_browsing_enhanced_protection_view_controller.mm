@@ -99,4 +99,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // TODO(crbug.com/1307428): Add UMA recording
 }
 
+#pragma mark - UITableViewDelegate
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  // None of the items in this page should be allowed to be highlighted. This
+  // also removes the ability to select a row since highlighting comes before
+  // selecting a row.
+  return NO;
+}
+
 @end
