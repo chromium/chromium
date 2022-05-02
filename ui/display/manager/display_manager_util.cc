@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/manager/display_util.h"
+#include "ui/display/manager/display_manager_util.h"
 
 #include <stddef.h>
 #include <algorithm>

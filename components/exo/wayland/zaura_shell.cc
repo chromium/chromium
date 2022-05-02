@@ -36,7 +36,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_util.h"
+#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"

@@ -19,7 +19,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_layout_manager.h"
-#include "ui/display/manager/display_util.h"
+#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/update_display_configuration_task.h"
 #include "ui/display/types/display_mode.h"

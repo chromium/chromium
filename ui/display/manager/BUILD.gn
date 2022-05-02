@@ -10,10 +10,10 @@ assert(is_chromeos_ash || is_chromecast)
 component("manager") {
   sources = [
     "display_manager_export.h",
+    "display_manager_util.cc",
+    "display_manager_util.h",
     "display_manager_utilities.cc",
     "display_manager_utilities.h",
-    "display_util.cc",
-    "display_util.h",
     "managed_display_info.cc",
     "managed_display_info.h",
   ]

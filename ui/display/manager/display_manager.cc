@@ -35,7 +35,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_layout_store.h"
-#include "ui/display/manager/display_util.h"
+#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"

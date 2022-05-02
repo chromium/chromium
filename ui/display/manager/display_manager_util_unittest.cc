@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/manager/display_util.h"
+#include "ui/display/manager/display_manager_util.h"
 
 #include <array>
 #include <vector>
@@ -25,9 +25,9 @@ bool WithinEpsilon(float a, float b) {
 }
 
 }  // namespace
-using DisplayUtilTest = testing::Test;
+using DisplayManagerUtilTest = testing::Test;
 
-TEST_F(DisplayUtilTest, DisplayZooms) {
+TEST_F(DisplayManagerUtilTest, DisplayZooms) {
   // The expected zoom list for the width given by |first| of the pair should be
   //  equal to the |second| of the pair.
   constexpr std::array<ZoomListBucket, 4> kTestData{{
@@ -56,7 +56,7 @@ TEST_F(DisplayUtilTest, DisplayZooms) {
   }
 }
 
-TEST_F(DisplayUtilTest, DisplayZoomsWithInternal) {
+TEST_F(DisplayManagerUtilTest, DisplayZoomsWithInternal) {
   std::vector<float> kDpis = {160, 200, 225, 240, 280, 320};
   float previous_dsf = 0.f;
   for (const auto& dpi : kDpis) {
