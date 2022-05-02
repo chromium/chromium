@@ -25,6 +25,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -63,6 +65,16 @@ class AccountSelectionMediator {
 
     // The account that the user has selected.
     private Account mSelectedAccount;
+
+    private KeyboardVisibilityListener mKeyboardVisibilityListener =
+            new KeyboardVisibilityListener() {
+                @Override
+                public void keyboardVisibilityChanged(boolean isShowing) {
+                    if (isShowing) {
+                        onDismissed(/*shouldEmbargo=*/false);
+                    }
+                }
+            };
 
     AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, PropertyModel model,
             ModelList sheetAccountItems, BottomSheetController bottomSheetController,
@@ -227,6 +239,8 @@ class AccountSelectionMediator {
 
             mVisible = true;
             mBottomSheetController.addObserver(mBottomSheetObserver);
+            KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
+                    mKeyboardVisibilityListener);
         } else {
             onDismissed(/*shouldEmbargo=*/false);
         }
@@ -237,6 +251,8 @@ class AccountSelectionMediator {
      */
     void hideContent() {
         mVisible = false;
+        KeyboardVisibilityDelegate.getInstance().removeKeyboardVisibilityListener(
+                mKeyboardVisibilityListener);
         mBottomSheetController.hideContent(mBottomSheetContent, true);
     }
 
