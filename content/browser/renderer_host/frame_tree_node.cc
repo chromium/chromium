@@ -667,10 +667,9 @@ void FrameTreeNode::DidFocus() {
 }
 
 void FrameTreeNode::BeforeUnloadCanceled() {
-  // TODO(clamy): Support BeforeUnload in subframes.
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify subframes. Follow up to
-  // confirm correctness.
+  // TODO(clamy): Support BeforeUnload in subframes. Fenced Frames don't run
+  // BeforeUnload. Maybe need to check whether other MPArch inner pages cases
+  // need beforeunload(e.g., portals, GuestView if it gets ported to MPArch).
   if (!IsOutermostMainFrame())
     return;
 
