@@ -92,6 +92,7 @@
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
@@ -1230,6 +1231,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ChromeVersionService::RegisterProfilePrefs(registry);
   chrome_browser_net::NetErrorTabHelper::RegisterProfilePrefs(registry);
   chrome_prefs::RegisterProfilePrefs(registry);
+  commerce::ShoppingService::RegisterPrefs(registry);
   DocumentProvider::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);

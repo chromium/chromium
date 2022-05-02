@@ -30,6 +30,7 @@ java_cpp_strings("java_pref_names_srcjar") {
   sources = [
     "//chrome/common/pref_names.cc",
     "//components/autofill/core/common/autofill_prefs.cc",
+    "//components/commerce/core/pref_names.cc",
     "//components/dom_distiller/core/pref_names.cc",
     "//components/embedder_support/pref_names.cc",
     "//components/feed/core/common/pref_names.cc",

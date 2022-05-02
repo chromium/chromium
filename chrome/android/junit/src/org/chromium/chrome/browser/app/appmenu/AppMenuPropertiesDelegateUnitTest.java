@@ -233,6 +233,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                     enabled);
         });
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
+        when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
+                .thenReturn(true);
     }
 
     private void setChromeManagementPageEnabled(boolean enabled) {

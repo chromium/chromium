@@ -243,7 +243,15 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         // If the feature is still eligible to work, we should re-init and fetch the fresh data.
         if (PriceTrackingUtilities.isPriceDropNotificationEligible()) {
             initTypes((status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
+            queryAndUpdateWaaEnabled();
         }
+    }
+
+    /**
+     * Query whether web and app activity is enabled on the server and update the local pref value.
+     */
+    public void queryAndUpdateWaaEnabled() {
+        mServiceProxy.queryAndUpdateWaaEnabled();
     }
 
     @Override
