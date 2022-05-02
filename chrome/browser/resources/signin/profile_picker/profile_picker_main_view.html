@@ -2,6 +2,7 @@
   :host {
     --banner-img-height: 400px;
     --banner-img-width: 169px;
+    --profile-item-border-width: 1px;
     --profile-item-margin: 4px;
   }
 
@@ -58,6 +59,8 @@
     margin-bottom: 4px;
     margin-inline-end: 140px;
     margin-inline-start: 140px;
+    min-height: calc(var(--profile-item-height) + 2*var(--profile-item-margin)
+      + 2*var(--profile-item-border-width));
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -100,7 +103,7 @@
 
   #addProfile.profile-item {
     --hover-bg-color: none;
-    border: 1px dashed var(--google-grey-300);
+    border: var(--profile-item-border-width) dashed var(--google-grey-300);
     box-shadow: none;
     position: relative;
   }
@@ -165,8 +168,9 @@
     <h2>$i18n{mainViewTitle}</h2>
     <h3>$i18n{mainViewSubtitle}</h3>
   </div>
-  <div id="wrapper" hidden$="[[!profilesListLoaded_]]">
-    <div id="profilesContainer" class="custom-scrollbar">
+  <div id="wrapper">
+    <div id="profilesContainer" class="custom-scrollbar"
+        hidden$="[[!profilesListLoaded_]]">
       <template is="dom-repeat" items="[[profilesList_]]">
         <profile-card
             class="profile-item" profile-state="[[item]]">

@@ -136,13 +136,13 @@ suite('ProfilePickerMainViewTest', function() {
     assertEquals(navigationElement.route, Routes.MAIN);
     await browserProxy.whenCalled('initializeMainView');
     // Hidden while profiles list is not yet defined.
-    assertTrue(mainViewElement.$.wrapper.hidden);
+    assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(6);
     webUIListenerCallback('profiles-list-changed', [...profiles]);
     flushTasks();
     // Profiles list defined.
-    assertTrue(!mainViewElement.$.wrapper.hidden);
+    assertTrue(!mainViewElement.$.profilesContainer.hidden);
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
     assertTrue(mainViewElement.$.askOnStartup.checked);
     // Verify profile card.
@@ -226,7 +226,7 @@ suite('ProfilePickerMainViewTest', function() {
   test('AskOnStartupSingleToMultipleProfiles', async function() {
     await browserProxy.whenCalled('initializeMainView');
     // Hidden while profiles list is not yet defined.
-    assertTrue(mainViewElement.$.wrapper.hidden);
+    assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     let profiles = generateProfilesList(1);
     webUIListenerCallback('profiles-list-changed', [...profiles]);
@@ -252,7 +252,7 @@ suite('ProfilePickerMainViewTest', function() {
   test('AskOnStartupMultipleToSingleProfile', async function() {
     await browserProxy.whenCalled('initializeMainView');
     // Hidden while profiles list is not yet defined.
-    assertTrue(mainViewElement.$.wrapper.hidden);
+    assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
     webUIListenerCallback('profiles-list-changed', [...profiles]);
@@ -276,7 +276,7 @@ suite('ProfilePickerMainViewTest', function() {
 
     await browserProxy.whenCalled('initializeMainView');
     // Hidden while profiles list is not yet defined.
-    assertTrue(mainViewElement.$.wrapper.hidden);
+    assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
     webUIListenerCallback('profiles-list-changed', [...profiles]);
