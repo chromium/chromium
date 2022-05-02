@@ -9,6 +9,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
@@ -57,8 +58,8 @@ void FollowTabHelper::PageLoaded(
             if (channel_recommended &&
                 tracker->ShouldTriggerHelpUI(
                     feature_engagement::kIPHFollowWhileBrowsingFeature)) {
-              // TODO(crbug.com/1318755): Trigger IPH UI. Call |Dismissed| when
-              // UI is dismissed.
+              DCHECK(follow_iph_presenter_);
+              [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
             }
           }));
   }

@@ -18,7 +18,9 @@
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
@@ -71,6 +73,7 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
+#import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
@@ -184,6 +187,9 @@
 
 // Coordinator for the First Follow modal.
 @property(nonatomic, strong) FirstFollowCoordinator* firstFollowCoordinator;
+
+// Coordinator for the Follow IPH feature.
+@property(nonatomic, strong) FollowIPHCoordinator* followIPHCoordinator;
 
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
@@ -495,6 +501,13 @@
                          browser:self.browser];
   [self.ARQuickLookCoordinator start];
 
+  if (IsWebChannelsEnabled()) {
+    self.followIPHCoordinator = [[FollowIPHCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [self.followIPHCoordinator start];
+  }
+
   self.formInputAccessoryCoordinator = [[FormInputAccessoryCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -594,6 +607,9 @@
 
   [self.firstFollowCoordinator stop];
   self.firstFollowCoordinator = nil;
+
+  [self.followIPHCoordinator stop];
+  self.followIPHCoordinator = nil;
 
   [self.formInputAccessoryCoordinator stop];
   self.formInputAccessoryCoordinator = nil;
@@ -1242,6 +1258,11 @@
     StoreKitTabHelper::FromWebState(webState)->SetLauncher(
         self.storeKitCoordinator);
   }
+
+  if (FollowTabHelper::FromWebState(webState)) {
+    FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(
+        self.followIPHCoordinator);
+  }
 }
 
 // Uninstalls delegates for |webState|.
@@ -1260,6 +1281,10 @@
 
   if (StoreKitTabHelper::FromWebState(webState)) {
     StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);
+  }
+
+  if (FollowTabHelper::FromWebState(webState)) {
+    FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(nil);
   }
 }
 

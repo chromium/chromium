@@ -22,6 +22,7 @@ source_set("follow") {
 
 source_set("tab_helper") {
   sources = [
+    "follow_iph_presenter.h",
     "follow_tab_helper.h",
     "follow_tab_helper.mm",
   ]

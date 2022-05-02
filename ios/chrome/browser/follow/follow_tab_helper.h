@@ -16,6 +16,8 @@ namespace web {
 class WebState;
 }
 
+@protocol FollowIPHPresenter;
+
 // FollowTabHelper encapsulates tab behavior related to following channels.
 class FollowTabHelper : public web::WebStateObserver,
                         public web::WebStateUserData<FollowTabHelper> {
@@ -29,6 +31,12 @@ class FollowTabHelper : public web::WebStateObserver,
   // null.
   static void CreateForWebState(web::WebState* web_state);
 
+  // Sets the presenter for follow in-product help (IPH). |presenter| is not
+  // retained by this tab helper.
+  void set_follow_iph_presenter(id<FollowIPHPresenter> presenter) {
+    follow_iph_presenter_ = presenter;
+  }
+
  private:
   friend class web::WebStateUserData<FollowTabHelper>;
 
@@ -41,6 +49,9 @@ class FollowTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   web::WebState* web_state_ = nullptr;
+
+  // Presenter for follow in-product help (IPH).
+  __weak id<FollowIPHPresenter> follow_iph_presenter_ = nil;
 
   // Manages this object as an observer of |web_state_|.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
