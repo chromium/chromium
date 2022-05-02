@@ -86,7 +86,6 @@ class ForcedEnterpriseSigninInterceptionHandle
             SigninInterceptionResult::kAcceptedWithExistingProfile);
         break;
       case signin::SIGNIN_CHOICE_CANCEL:
-        browser_->signin_view_controller()->CloseModalSignin();
         std::move(callback_).Run(SigninInterceptionResult::kDeclined);
         break;
       case signin::SIGNIN_CHOICE_SIZE:
