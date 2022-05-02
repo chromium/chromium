@@ -5,6 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_INL_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_INL_H_
 
+#include <algorithm>
 #include <cstring>
 
 #include "base/allocator/partition_allocator/partition_ref_count.h"
@@ -31,6 +32,16 @@ ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
   // might try to eliminate "superfluous" memsets. If there's an easy way to
   // detect memset_s, it would be better to use that.
   __asm__ __volatile__("" : : "r"(ptr) : "memory");
+}
+
+// Used to memset() memory for debugging purposes only.
+ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
+  // Only set the first 512kiB of the allocation. This is enough to detect uses
+  // of uininitialized / freed memory, and makes tests run significantly
+  // faster. Note that for direct-mapped allocations, memory is decomitted at
+  // free() time, so freed memory usage cannot happen.
+  size_t size_to_memset = std::min(size, size_t{1} << 19);
+  memset(ptr, value, size_to_memset);
 }
 
 // Returns true if we've hit the end of a random-length period. We don't want to
