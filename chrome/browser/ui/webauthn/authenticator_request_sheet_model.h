@@ -45,6 +45,7 @@ class AuthenticatorRequestSheetModel {
 
   virtual bool IsActivityIndicatorVisible() const = 0;
   virtual bool IsBackButtonVisible() const = 0;
+  virtual bool IsCloseButtonVisible() const;
 
   virtual bool IsCancelButtonVisible() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;

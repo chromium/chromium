@@ -131,6 +131,19 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
         image_with_overlays->AddChildView(std::move(back_arrow));
   }
 
+  if (model()->IsCloseButtonVisible()) {
+    auto close = views::CreateVectorImageButton(base::BindRepeating(
+        &AuthenticatorRequestSheetModel::OnCancel, base::Unretained(model())));
+    close->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP));
+    close->SizeToPreferredSize();
+    close->SetX(illustration_size.width() - close->GetPreferredSize().width() -
+                kActivityIndicatorHeight);
+    close->SetY(kActivityIndicatorHeight);
+    close_button_ = close.get();
+    image_with_overlays->AddChildView(std::move(close));
+  }
+
   if (GetWidget()) {
     UpdateIconImageFromModel();
     UpdateIconColors();
@@ -230,10 +243,16 @@ void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
 }
 
 void AuthenticatorRequestSheetView::UpdateIconColors() {
+  const auto* const cp = GetColorProvider();
   if (back_arrow_) {
-    const auto* const cp = GetColorProvider();
     views::SetImageFromVectorIconWithColor(
         back_arrow_, vector_icons::kBackArrowIcon,
+        cp->GetColor(kColorWebAuthnBackArrowButtonIcon),
+        cp->GetColor(kColorWebAuthnBackArrowButtonIconDisabled));
+  }
+  if (close_button_) {
+    views::SetImageFromVectorIconWithColor(
+        close_button_, vector_icons::kCloseIcon,
         cp->GetColor(kColorWebAuthnBackArrowButtonIcon),
         cp->GetColor(kColorWebAuthnBackArrowButtonIconDisabled));
   }

@@ -220,6 +220,24 @@ class AuthenticatorRequestDialogModel {
     CABLE_V2_2ND_FACTOR,
   };
 
+  // ExperimentServerLinkSheet controls the the arms of an experiment to tweak
+  // the behaviour and visibility of buttons on the server-link sheet.
+  enum class ExperimentServerLinkSheet {
+    CONTROL = 1,
+    ARM_2 = 2,
+    ARM_3 = 3,
+    ARM_4 = 4,
+    ARM_5 = 5,
+    ARM_6 = 6,
+  };
+
+  // ExperimentServerLinkTitle enumerates the arms of an experiment to tweak the
+  // title on the server-link sheet.
+  enum class ExperimentServerLinkTitle {
+    CONTROL = 11,
+    UNLOCK_YOUR_PHONE = 12,
+  };
+
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
 
   AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
@@ -559,6 +577,11 @@ class AuthenticatorRequestDialogModel {
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
+
+  ExperimentServerLinkTitle experiment_server_link_title_ =
+      ExperimentServerLinkTitle::CONTROL;
+  ExperimentServerLinkSheet experiment_server_link_sheet_ =
+      ExperimentServerLinkSheet::CONTROL;
 
  private:
   // Contains the state that will be reset when calling StartOver(). StartOver()

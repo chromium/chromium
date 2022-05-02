@@ -341,7 +341,19 @@ void AuthenticatorRequestDialogModel::OnOffTheRecordInterstitialAccepted() {
 
 void AuthenticatorRequestDialogModel::ShowCableUsbFallback() {
   DCHECK_EQ(current_step(), Step::kCableActivate);
-  SetCurrentStep(Step::kAndroidAccessory);
+
+  switch (experiment_server_link_sheet_) {
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
+      SetCurrentStep(Step::kAndroidAccessory);
+      break;
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
+      Cancel();
+      break;
+  }
 }
 
 void AuthenticatorRequestDialogModel::ShowCable() {
@@ -630,8 +642,18 @@ void AuthenticatorRequestDialogModel::SetCurrentStepForTesting(Step step) {
 }
 
 bool AuthenticatorRequestDialogModel::cable_should_suggest_usb() const {
-  return base::Contains(transport_availability_.available_transports,
-                        AuthenticatorTransport::kAndroidAccessory);
+  switch (experiment_server_link_sheet_) {
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
+      return base::Contains(transport_availability_.available_transports,
+                            AuthenticatorTransport::kAndroidAccessory);
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
+      return true;
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
+    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
+      return false;
+  }
 }
 
 void AuthenticatorRequestDialogModel::CollectPIN(

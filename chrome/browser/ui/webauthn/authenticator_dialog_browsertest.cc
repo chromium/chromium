@@ -54,7 +54,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     transport_availability.available_transports = {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
-        AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+        AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy,
+        AuthenticatorTransport::kAndroidAccessory,
+    };
     if (name == "cable_server_link_activate") {
       transport_availability.available_transports.insert(
           AuthenticatorTransport::kAndroidAccessory);
@@ -259,7 +261,34 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->RequestAttestationPermission(false, base::DoNothing());
     } else if (name == "request_enterprise_attestation_permission") {
       model->RequestAttestationPermission(true, base::DoNothing());
+    } else if (name == "server_link_title_UNLOCK_YOUR_PHONE") {
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/true, /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      model->experiment_server_link_title_ = AuthenticatorRequestDialogModel::
+          ExperimentServerLinkTitle::UNLOCK_YOUR_PHONE;
+      model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableActivate);
     }
+
+#define EXP_SHEET(x)                                                    \
+  else if (name == "server_link_sheet_" #x) {                           \
+    model->set_cable_transport_info(                                    \
+        /*extension_is_v2=*/true, /*paired_phones=*/{},                 \
+        /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode"); \
+    model->experiment_server_link_sheet_ =                              \
+        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::x;  \
+    model->SetCurrentStepForTesting(                                    \
+        AuthenticatorRequestDialogModel::Step::kCableActivate);         \
+  }
+
+    EXP_SHEET(CONTROL)
+    EXP_SHEET(ARM_2)
+    EXP_SHEET(ARM_3)
+    EXP_SHEET(ARM_4)
+    EXP_SHEET(ARM_5)
+    EXP_SHEET(ARM_6)
+#undef EXP_SHEET
 
     ShowAuthenticatorRequestDialog(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(model));
@@ -433,3 +462,22 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_request_enterprise_attestation_permission) {
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_server_link_title_UNLOCK_YOUR_PHONE) {
+  ShowAndVerifyUi();
+}
+
+#define EXP_SHEET(x)                                       \
+  IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,          \
+                         InvokeUi_server_link_sheet_##x) { \
+    ShowAndVerifyUi();                                     \
+  }
+
+EXP_SHEET(CONTROL)
+EXP_SHEET(ARM_2)
+EXP_SHEET(ARM_3)
+EXP_SHEET(ARM_4)
+EXP_SHEET(ARM_5)
+EXP_SHEET(ARM_6)
+#undef EXP_SHEET

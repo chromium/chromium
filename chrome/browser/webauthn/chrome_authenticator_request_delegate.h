@@ -113,7 +113,9 @@ class ChromeAuthenticatorRequestDelegate
 
     virtual void CableV2ExtensionSeen(
         base::span<const uint8_t> server_link_data,
-        base::span<const uint8_t> experiments) = 0;
+        base::span<const uint8_t> experiments,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) = 0;
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
