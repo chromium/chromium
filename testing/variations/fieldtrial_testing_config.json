@@ -1530,8 +1530,8 @@
                         "unload_support": "no"
                     },
                     "enable_features": [
-                        "BFCachePerformanceManagerPolicy",
                         "BackForwardCache",
+                        "FreezeWhileKeepActive",
                         "LoadingTasksUnfreezable"
                     ]
                 }
