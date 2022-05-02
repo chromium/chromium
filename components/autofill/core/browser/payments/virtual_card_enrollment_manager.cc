@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/strike_database_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {
@@ -86,15 +87,20 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
   risk_assessment_function_ = std::move(risk_assessment_function);
   virtual_card_enrollment_fields_loaded_callback_ =
       std::move(virtual_card_enrollment_fields_loaded_callback);
+
   // The |card_art_image| might not be synced yet from the sync server which
   // will result in a nullptr. This situation can occur in the upstream flow.
   // If it is not synced, GetCreditCardArtImageForUrl() will send a fetch
   // request to sync the |card_art_image|, and before showing the
   // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
   // from the local cache.
-  state_.virtual_card_enrollment_fields.card_art_image =
+  raw_ptr<gfx::Image> card_art_image =
       personal_data_manager_->GetCreditCardArtImageForUrl(
           credit_card.card_art_url());
+  if (card_art_image && !card_art_image->IsEmpty()) {
+    state_.virtual_card_enrollment_fields.card_art_image =
+        card_art_image->ToImageSkia();
+  }
 
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       virtual_card_enrollment_source;
@@ -366,15 +372,27 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   state_.vcn_context_token = response.vcn_context_token;
 
   // Tries to get the card art image again from the local cache. If the card art
-  // image is not available, then |state_|'s |virtual_card_enrollment_fields|'s
-  // |card_art_image| will be nullptr. The view will set it to the network image
-  // if it ends up being nullptr. The card art image might not be present
-  // in the upstream flow if the sync server has not synced the card art image
-  // yet.
+  // image is not available, then we fall back to the network image instead. The
+  // card art image might not be present in the upstream flow if the chrome sync
+  // server has not synced down the card art url yet for the card just uploaded.
   if (!state_.virtual_card_enrollment_fields.card_art_image) {
-    state_.virtual_card_enrollment_fields.card_art_image =
+    raw_ptr<gfx::Image> cached_card_art_image =
         personal_data_manager_->GetCachedCardArtImageForUrl(
             state_.virtual_card_enrollment_fields.credit_card.card_art_url());
+    if (cached_card_art_image && !cached_card_art_image->IsEmpty()) {
+      // We found a card art image in the cache, so set |state_|'s
+      // |virtual_card_enrollment_fields|'s |card_art_image| to it.
+      state_.virtual_card_enrollment_fields.card_art_image =
+          cached_card_art_image->ToImageSkia();
+    } else {
+      // We did not find a card art image in the cache, so set |state_|'s
+      // |virtual_card_enrollment_fields|'s |card_art_image| to the network
+      // image instead.
+      state_.virtual_card_enrollment_fields.card_art_image =
+          ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              CreditCard::IconResourceId(
+                  state_.virtual_card_enrollment_fields.credit_card.network()));
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)

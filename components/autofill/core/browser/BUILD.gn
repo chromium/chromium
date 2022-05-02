@@ -906,6 +906,7 @@ source_set("unit_tests") {
     "//third_party/libphonenumber",
     "//third_party/re2:re2",
     "//ui/base",
+    "//ui/base:test_support",
     "//ui/gfx:test_support",
     "//ui/resources",
     "//url",

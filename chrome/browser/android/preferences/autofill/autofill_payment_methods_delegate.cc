@@ -49,8 +49,7 @@ ScopedJavaLocalRef<jobject> GetVirtualCardEnrollmentFieldsJavaObject(
               env, virtual_card_enrollment_fields->credit_card
                        .CardIdentifierStringForAutofillDisplay()),
           gfx::ConvertToJavaBitmap(
-              *virtual_card_enrollment_fields->card_art_image->AsImageSkia()
-                   .bitmap()));
+              *virtual_card_enrollment_fields->card_art_image->bitmap()));
   // Add Google legal messages.
   for (const auto& legal_message_line :
        virtual_card_enrollment_fields->google_legal_message) {
