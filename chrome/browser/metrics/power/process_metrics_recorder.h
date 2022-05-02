@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_METRICS_RECORDER_H_
-#define CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_METRICS_RECORDER_H_
+#ifndef CHROME_BROWSER_METRICS_POWER_PROCESS_METRICS_RECORDER_H_
+#define CHROME_BROWSER_METRICS_POWER_PROCESS_METRICS_RECORDER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
-
-namespace performance_monitor {
+#include "chrome/browser/metrics/power/process_monitor.h"
 
 // This class receives the metrics gathered by the ProcessMonitor and records
 // some performance-related histograms about the different process types.
@@ -30,6 +28,4 @@ class ProcessMetricsRecorder final : public ProcessMonitor::Observer {
       process_monitor_observation_{this};
 };
 
-}  // namespace performance_monitor
-
-#endif  // CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_METRICS_RECORDER_H_
+#endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_METRICS_RECORDER_H_

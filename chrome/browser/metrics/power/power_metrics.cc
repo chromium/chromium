@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
+#include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -52,13 +52,12 @@ constexpr int kMaxGPUProportion = 1;
 }  // namespace
 
 void ReportAggregatedProcessMetricsHistograms(
-    const performance_monitor::ProcessMonitor::Metrics&
-        aggregated_process_metrics,
+    const ProcessMonitor::Metrics& aggregated_process_metrics,
     const std::vector<const char*>& suffixes) {
   for (const char* suffix : suffixes) {
     std::string complete_suffix = base::StrCat({"Total", suffix});
-    performance_monitor::RecordProcessHistograms(complete_suffix.c_str(),
-                                                 aggregated_process_metrics);
+    RecordProcessHistograms(complete_suffix.c_str(),
+                            aggregated_process_metrics);
   }
 }
 

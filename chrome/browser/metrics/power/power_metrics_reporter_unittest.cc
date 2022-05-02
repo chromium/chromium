@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -39,8 +39,8 @@ constexpr double kTolerableTimeElapsedRatio = 0.10;
 constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
 constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
 
-performance_monitor::ProcessMonitor::Metrics GetFakeProcessMetrics() {
-  performance_monitor::ProcessMonitor::Metrics metrics;
+ProcessMonitor::Metrics GetFakeProcessMetrics() {
+  ProcessMonitor::Metrics metrics;
   metrics.cpu_usage = 5;
   return metrics;
 }
@@ -88,7 +88,7 @@ class FakeBatteryLevelProvider : public BatteryLevelProvider {
   raw_ptr<std::queue<BatteryLevelProvider::BatteryState>> battery_states_;
 };
 
-class TestProcessMonitor : public performance_monitor::ProcessMonitor {
+class TestProcessMonitor : public ProcessMonitor {
  public:
   TestProcessMonitor() = default;
   TestProcessMonitor(const TestProcessMonitor& rhs) = delete;
@@ -150,9 +150,10 @@ class PowerMetricsReporterUnitTest : public testing::Test {
 #endif  // BUILDFLAG(IS_MAC)
     base::RunLoop run_loop;
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        &short_data_store_, &long_data_store_, std::move(battery_provider)
+        &process_monitor_, &short_data_store_, &long_data_store_,
+        std::move(battery_provider)
 #if BUILDFLAG(IS_MAC)
-                                                   ,
+            ,
         std::move(coalition_resource_usage_provider)
 #endif  // BUILDFLAG(IS_MAC)
     );
@@ -160,8 +161,7 @@ class PowerMetricsReporterUnitTest : public testing::Test {
     run_loop.Run();
   }
 
-  void WaitForNextSample(
-      const performance_monitor::ProcessMonitor::Metrics& metrics) {
+  void WaitForNextSample(const ProcessMonitor::Metrics& metrics) {
     base::RunLoop run_loop;
     power_metrics_reporter_->OnNextSampleForTesting(run_loop.QuitClosure());
     process_monitor_.NotifyObserversForOnAggregatedMetricsSampled(metrics);
@@ -228,7 +228,7 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
 
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.30, true, base::TimeTicks::Now()});
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   const char* kScenarioSuffix = ".VideoCapture";
@@ -249,7 +249,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
       base::Microseconds(1);
   task_environment_.FastForwardBy(kTooEarly);
 
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
@@ -268,7 +268,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
       base::Microseconds(1);
   task_environment_.FastForwardBy(kEarly);
 
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
@@ -286,7 +286,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
       base::Microseconds(1);
   task_environment_.FastForwardBy(kTooLate);
 
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
@@ -305,7 +305,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
       base::Microseconds(1);
   task_environment_.FastForwardBy(kLate);
 
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
@@ -349,7 +349,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = ++fake_value * 0.01;
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = ++fake_value;
@@ -458,7 +458,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
       1, 1, 0.50, true, base::TimeTicks::Now()});
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = 0.5;
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = 42;
@@ -723,7 +723,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.50, true, base::TimeTicks::Now()});
   long_data_store_.SetIntervalDataToReturn(fake_interval_data);
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  ProcessMonitor::Metrics fake_metrics = {};
   WaitForNextSample(fake_metrics);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
@@ -758,7 +758,7 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
 
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 0.30, true, base::TimeTicks::Now()});
-  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  ProcessMonitor::Metrics aggregated_process_metrics = {};
   WaitForNextSample(aggregated_process_metrics);
 
   histogram_tester_.ExpectUniqueSample(

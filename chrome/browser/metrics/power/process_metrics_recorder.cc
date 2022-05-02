@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_monitor/process_metrics_recorder.h"
+#include "chrome/browser/metrics/power/process_metrics_recorder.h"
 
-#include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
-
-namespace performance_monitor {
+#include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 
 ProcessMetricsRecorder::ProcessMetricsRecorder(
     ProcessMonitor* process_monitor) {
@@ -55,5 +53,3 @@ void ProcessMetricsRecorder::OnMetricsSampled(
       break;
   }
 }
-
-}  // namespace performance_monitor

@@ -62,7 +62,7 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
   base::HistogramTester histogram_tester;
   const std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
 
-  performance_monitor::ProcessMonitor::Metrics process_metrics;
+  ProcessMonitor::Metrics process_metrics;
   process_metrics.cpu_usage = 0.20;
 #if BUILDFLAG(IS_WIN)
   process_metrics.precise_cpu_usage = 0.30;

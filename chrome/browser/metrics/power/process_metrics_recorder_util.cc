@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
+#include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 
 #include <cmath>
 
@@ -10,8 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-
-namespace performance_monitor {
 
 namespace {
 
@@ -58,5 +56,3 @@ void RecordProcessHistograms(const char* histogram_suffix,
       metrics.energy_impact);
 #endif
 }
-
-}  // namespace performance_monitor

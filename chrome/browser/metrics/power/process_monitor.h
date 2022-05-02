@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_MONITOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_MONITOR_H_
+#ifndef CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_
+#define CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -22,8 +22,6 @@
 namespace base {
 class ProcessMetrics;
 }
-
-namespace performance_monitor {
 
 enum ProcessSubtypes {
   kProcessSubtypeUnknown,
@@ -110,15 +108,7 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
     virtual void OnAggregatedMetricsSampled(const Metrics& metrics) {}
   };
 
-  // Creates and returns the application-wide ProcessMonitor. Can only be called
-  // if no ProcessMonitor instances exists in the current process. The caller
-  // owns the created instance. The current process' instance can be retrieved
-  // with Get().
-  static std::unique_ptr<ProcessMonitor> Create();
-
-  // Returns the application-wide ProcessMonitor if one exists; otherwise
-  // returns nullptr.
-  static ProcessMonitor* Get();
+  ProcessMonitor();
 
   ProcessMonitor(const ProcessMonitor&) = delete;
   ProcessMonitor& operator=(const ProcessMonitor&) = delete;
@@ -133,8 +123,6 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   void RemoveObserver(Observer* observer);
 
  protected:
-  ProcessMonitor();
-
   base::ObserverList<Observer>& GetObserversForTesting() {
     return observer_list_;
   }
@@ -180,6 +168,4 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace performance_monitor
-
-#endif  // CHROME_BROWSER_PERFORMANCE_MONITOR_PROCESS_MONITOR_H_
+#endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_

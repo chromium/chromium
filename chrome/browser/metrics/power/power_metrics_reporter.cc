@@ -14,9 +14,9 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -54,6 +54,7 @@ bool IsWithinTolerance(base::TimeDelta value,
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
+    ProcessMonitor* process_monitor,
     UsageScenarioDataStore* short_usage_scenario_data_store,
     UsageScenarioDataStore* long_usage_scenario_data_store,
     std::unique_ptr<BatteryLevelProvider> battery_level_provider
@@ -63,23 +64,22 @@ PowerMetricsReporter::PowerMetricsReporter(
         coalition_resource_usage_provider
 #endif  // BUILDFLAG(IS_MAC)
     )
-    : short_usage_scenario_data_store_(short_usage_scenario_data_store),
+    : process_monitor_(process_monitor),
+      short_usage_scenario_data_store_(short_usage_scenario_data_store),
       long_usage_scenario_data_store_(long_usage_scenario_data_store),
       battery_level_provider_(std::move(battery_level_provider))
 #if BUILDFLAG(IS_MAC)
       ,
       short_interval_timer_(
           FROM_HERE,
-          performance_monitor::ProcessMonitor::kGatherInterval -
-              kShortIntervalDuration,
+          ProcessMonitor::kGatherInterval - kShortIntervalDuration,
           base::BindRepeating(&PowerMetricsReporter::OnShortIntervalBegin,
                               base::Unretained(this))),
       coalition_resource_usage_provider_(
           std::move(coalition_resource_usage_provider))
 #endif  // BUILDFLAG(IS_MAC)
 {
-  DCHECK(ProcessMonitor::Get());
-  ProcessMonitor::Get()->AddObserver(this);
+  process_monitor_->AddObserver(this);
 
   if (!short_usage_scenario_data_store_) {
     short_usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
@@ -108,9 +108,7 @@ PowerMetricsReporter::PowerMetricsReporter(
 }
 
 PowerMetricsReporter::~PowerMetricsReporter() {
-  if (auto* process_monitor = ProcessMonitor::Get()) {
-    process_monitor->RemoveObserver(this);
-  }
+  process_monitor_->RemoveObserver(this);
 }
 
 void PowerMetricsReporter::OnFirstSampleForTesting(base::OnceClosure closure) {
@@ -161,10 +159,9 @@ void PowerMetricsReporter::ReportLongIntervalHistograms(
   // |ProcessMonitor::kGatherInterval| without invalidating this sample.
   constexpr double kTolerableTimeElapsedRatio = 0.10;
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging &&
-      !IsWithinTolerance(interval_duration,
-                         performance_monitor::ProcessMonitor::kGatherInterval,
-                         performance_monitor::ProcessMonitor::kGatherInterval *
-                             kTolerableTimeElapsedRatio)) {
+      !IsWithinTolerance(
+          interval_duration, ProcessMonitor::kGatherInterval,
+          ProcessMonitor::kGatherInterval * kTolerableTimeElapsedRatio)) {
     battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
   ReportBatteryHistograms(interval_duration, battery_discharge, suffixes);

@@ -12,10 +12,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/power/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -35,16 +35,13 @@
 // only cover a few seconds and it is only possible to correctly analyze a trace
 // if it covers the full interval associated with the trigger metric.
 //
-// This class should be created shortly after
-// performance_monitor::ProcessMonitor.
+// This class should be created shortly after ProcessMonitor.
 //
 // Previous histograms reported by this class:
 // - Main screen brightness, removed by https://crrev.com/c/3431905
 // Historical data: go/chrome-historical-power-histograms
-class PowerMetricsReporter
-    : public performance_monitor::ProcessMonitor::Observer {
+class PowerMetricsReporter : public ProcessMonitor::Observer {
  public:
-  using ProcessMonitor = performance_monitor::ProcessMonitor;
 #if BUILDFLAG(IS_MAC)
   using CoalitionResourceUsageRate = power_metrics::CoalitionResourceUsageRate;
 #endif  // BUILDFLAG(IS_MAC)
@@ -62,6 +59,7 @@ class PowerMetricsReporter
   // PowerMetricsReporter. |battery_level_provider| is used to obtain the
   // battery level.
   explicit PowerMetricsReporter(
+      ProcessMonitor* process_monitor,
       UsageScenarioDataStore* short_usage_scenario_data_store = nullptr,
       UsageScenarioDataStore* long_usage_scenario_data_store = nullptr,
       std::unique_ptr<BatteryLevelProvider> battery_level_provider =
@@ -138,6 +136,8 @@ class PowerMetricsReporter
 
   void OnIOPMPowerSourceSamplingEvent();
 #endif  // BUILDFLAG(IS_MAC)
+
+  raw_ptr<ProcessMonitor> process_monitor_;
 
   // Track usage scenarios over 10-seconds and 2-minutes intervals. In
   // production, the data stores are obtained from the trackers, but in tests

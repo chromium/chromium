@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -20,8 +20,7 @@
 
 // Report aggregated process metrics to histograms with |suffixes|.
 void ReportAggregatedProcessMetricsHistograms(
-    const performance_monitor::ProcessMonitor::Metrics&
-        aggregated_process_metrics,
+    const ProcessMonitor::Metrics& aggregated_process_metrics,
     const std::vector<const char*>& suffixes);
 
 // Any change to this enum should be reflected in the corresponding enums.xml

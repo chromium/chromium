@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_monitor/process_monitor.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 
 #include <stddef.h>
 
@@ -39,12 +39,7 @@
 
 using content::BrowserThread;
 
-namespace performance_monitor {
-
 namespace {
-
-// The global instance.
-ProcessMonitor* g_process_monitor = nullptr;
 
 std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
     base::ProcessHandle process_handle) {
@@ -150,21 +145,23 @@ ProcessMonitor::Metrics& ProcessMonitor::Metrics::operator=(
     const ProcessMonitor::Metrics& other) = default;
 ProcessMonitor::Metrics::~Metrics() = default;
 
-// static
-std::unique_ptr<ProcessMonitor> ProcessMonitor::Create() {
-  DCHECK(!g_process_monitor);
-  return base::WrapUnique(new ProcessMonitor());
-}
+ProcessMonitor::ProcessMonitor()
+    : browser_process_info_(
+          content::PROCESS_TYPE_BROWSER,
+          kProcessSubtypeUnknown,
+          CreateProcessMetrics(base::GetCurrentProcessHandle())) {
+  // Ensure ProcessMonitor is created before any child process so that none is
+  // missed.
+  DCHECK(content::BrowserChildProcessHostIterator().Done());
+  DCHECK(content::RenderProcessHost::AllHostsIterator().IsAtEnd());
 
-// static
-ProcessMonitor* ProcessMonitor::Get() {
-  return g_process_monitor;
+  content::BrowserChildProcessObserver::Add(this);
+
+  // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
+  //                 returns meaningful data.
 }
 
 ProcessMonitor::~ProcessMonitor() {
-  DCHECK(g_process_monitor);
-  g_process_monitor = nullptr;
-
   content::BrowserChildProcessObserver::Remove(this);
 }
 
@@ -180,25 +177,6 @@ void ProcessMonitor::AddObserver(Observer* observer) {
 
 void ProcessMonitor::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-ProcessMonitor::ProcessMonitor()
-    : browser_process_info_(
-          content::PROCESS_TYPE_BROWSER,
-          kProcessSubtypeUnknown,
-          CreateProcessMetrics(base::GetCurrentProcessHandle())) {
-  DCHECK(!g_process_monitor);
-  g_process_monitor = this;
-
-  // Ensure ProcessMonitor is created before any child process so that none is
-  // missed.
-  DCHECK(content::BrowserChildProcessHostIterator().Done());
-  DCHECK(content::RenderProcessHost::AllHostsIterator().IsAtEnd());
-
-  content::BrowserChildProcessObserver::Add(this);
-
-  // TODO(pmonette): Do an initial call to SampleMetrics() so that the next one
-  //                 returns meaningful data.
 }
 
 void ProcessMonitor::OnRenderProcessHostCreated(
@@ -315,5 +293,3 @@ void ProcessMonitor::SampleAllProcesses() {
   for (auto& observer : observer_list_)
     observer.OnAggregatedMetricsSampled(aggregated_metrics);
 }
-
-}  // namespace performance_monitor
