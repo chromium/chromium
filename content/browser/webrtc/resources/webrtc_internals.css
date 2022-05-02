@@ -161,3 +161,8 @@ details[open] details summary {
 .candidategrid-candidate td:first-of-type {
     text-align: right;
 }
+
+#legacy-stats-warning {
+    display: none;
+}
+

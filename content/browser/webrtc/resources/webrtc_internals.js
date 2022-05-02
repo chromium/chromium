@@ -150,12 +150,14 @@ function initialize() {
 document.addEventListener('DOMContentLoaded', initialize);
 
 function createStatsSelectionOptionElements() {
-  const p = document.createElement('p');
-
-  const selectElement = document.createElement('select');
-  selectElement.setAttribute('id', 'statsSelectElement');
+  const statsElement = $('stats-template').content.cloneNode(true);
+  const selectElement = statsElement.getElementById('statsSelectElement');
+  const legacyStatsElement = statsElement.getElementById(
+      'legacy-stats-warning');
   selectElement.onchange = () => {
     currentGetStatsMethod = selectElement.value;
+    legacyStatsElement.style.display =
+        currentGetStatsMethod === OPTION_GETSTATS_LEGACY ? 'block' : 'none';
     Object.keys(peerConnectionDataStore).forEach(id => {
       const peerConnectionElement = $(id);
       statsTable.clearStatsLists(peerConnectionElement);
@@ -172,17 +174,7 @@ function createStatsSelectionOptionElements() {
   });
 
   selectElement.value = currentGetStatsMethod;
-
-  p.appendChild(document.createTextNode('Read Stats From: '));
-  p.appendChild(selectElement);
-
-  const statsDocumentation = document.createElement('p');
-  statsDocumentation.appendChild(
-    document.createTextNode('Note: computed stats are in []. ' +
-      'Experimental stats are marked with an * at the end.'));
-  p.appendChild(statsDocumentation);
-
-  return p;
+  return statsElement;
 }
 
 function requestStats() {

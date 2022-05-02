@@ -42,5 +42,14 @@
       <p>&lt;base filename&gt;_&lt;date&gt;_&lt;timestamp&gt;_&lt;render process ID&gt;_&lt;recording ID&gt;</p>
       <p class="audio-diagnostic-dumps-info">If a file with the same name already exists, it will be overwritten. No more than 5 logfiles  will be created, and each of them is limited to 60MB of storage.  On Android these limits are 3 files of at most 10MB each.  When the limit is reached, the checkbox must be unchecked and  rechecked to resume logging.</p>
     </template>
+    <template id="stats-template">
+      <div>
+        Read stats From:
+        <select id="statsSelectElement">
+        </select>
+        <p><b>Note:</b> computed stats are in []. Experimental stats are marked with an * at the end and do not show up in the getStats result.</p>
+        <p id="legacy-stats-warning"><b>Note:</b> the callback-based getStats API and many of its goog-prefixed values are non-standard and may be removed from the getStats() API in the future.</p>
+      </div>
+    </template>
   </body>
 </html>
