@@ -117,7 +117,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "Attribution-Reporting-Register-Source": {
         "source_event_id": "123",
         "destination": "https://a.d.test",
-        "expiry": "864000000",
+        "expiry": "864000",
         "priority": "-5",
         "debug_key": "14"
       }
@@ -140,7 +140,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "Attribution-Reporting-Register-Source": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
-        "expiry": "864000001",
+        "expiry": "864001",
         "filter_data": {
           "a": [],
           "b": ["c", "d"]
@@ -155,7 +155,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "Attribution-Reporting-Register-Source": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
-        "expiry": "864000001"
+        "expiry": "864001"
       },
       "Attribution-Reporting-Register-Aggregatable-Source": [{
         "id": "a",
@@ -250,7 +250,7 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
           "source_event_id": "123",
           "destination": "https://d.test",
           "filter_data": {"a": ["b", "c"]},
-          "expiry": "864000000",
+          "expiry": "864000",
           "priority": "-5",
           "debug_key": "14"
         }

@@ -538,13 +538,13 @@ class AttributionSimulatorInputParser {
     absl::optional<base::TimeDelta> expiry;
 
     if (const std::string* s = value->GetIfString()) {
-      int64_t milliseconds = 0;
-      if (base::StringToInt64(*s, &milliseconds))
-        expiry = base::Milliseconds(milliseconds);
+      int64_t seconds = 0;
+      if (base::StringToInt64(*s, &seconds))
+        expiry = base::Seconds(seconds);
     }
 
     if (!expiry || *expiry < base::TimeDelta()) {
-      *Error() << "must be a positive number of milliseconds formatted as a "
+      *Error() << "must be a positive number of seconds formatted as a "
                   "base-10 string";
     }
 

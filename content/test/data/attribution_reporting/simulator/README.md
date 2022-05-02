@@ -28,7 +28,7 @@ JSON schema for the input of the simulator.
         // Required site on which the source will be attributed.
         "destination": "https://destination.example",
 
-        // Optional int64 in milliseconds formatted as a base-10 string.
+        // Optional int64 in seconds formatted as a base-10 string.
         // Default to 30 days.
         "expiry": "86400000",
 
