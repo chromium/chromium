@@ -11,6 +11,7 @@
 #include "ash/webui/grit/ash_os_feedback_untrusted_resources_map.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/containers/span.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -19,6 +20,21 @@
 
 namespace ash {
 namespace feedback {
+
+namespace {
+
+void AddLocalizedStrings(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"suggestedHelpContent", IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT},
+      {"popularHelpContent", IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT},
+      {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
+  };
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
+}
+
+}  // namespace
 
 OsFeedbackUntrustedUIConfig::OsFeedbackUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
@@ -52,6 +68,8 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
 
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);
+
+  AddLocalizedStrings(untrusted_source);
 
   // Allow the chrome://os-feedback WebUI to embed the corresponding
   // chrome-untrusted://os-feedback WebUI.

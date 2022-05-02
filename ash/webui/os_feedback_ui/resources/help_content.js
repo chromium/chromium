@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 import './help_resources_icons.js';
+import './strings.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';
 
 /**
@@ -22,7 +26,18 @@ const ICON_NAME_FOR_FORUM = 'content-type:forum';
  * @fileoverview
  * 'help-content' displays list of help contents.
  */
-export class HelpContentElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @implements {I18nBehaviorInterface}
+ * @extends {PolymerElement}
+ */
+const HelpContentElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/**
+ * @polymer
+ */
+export class HelpContentElement extends HelpContentElementBase {
   static get is() {
     return 'help-content';
   }
@@ -55,14 +70,13 @@ export class HelpContentElement extends PolymerElement {
    * @protected
    */
   getLabel_(searchResult) {
-    // TODO(xiangdongkong): Use localized strings.
     if (!searchResult.isPopularContent) {
-      return 'Suggested help content';
+      return this.i18n('suggestedHelpContent');
     }
     if (searchResult.isQueryEmpty) {
-      return 'Popular help content';
+      return this.i18n('popularHelpContent');
     }
-    return 'No matched results, see popular help content';
+    return this.i18n('noMatchedResults');
   }
 
   /**
