@@ -481,6 +481,12 @@ bool ShouldAnnotateTitleInsteadOfPageContent() {
       kPageContentAnnotations, "annotate_title_instead_of_page_content", true);
 }
 
+bool ShouldPersistSearchMetadataForNonGoogleSearches() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kPageContentAnnotations,
+      "persist_search_metadata_for_non_google_searches", true);
+}
+
 bool ShouldWriteContentAnnotationsToHistoryService() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageContentAnnotations, "write_to_history_service", true);

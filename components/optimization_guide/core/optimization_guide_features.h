@@ -231,6 +231,10 @@ uint64_t MaxSizeForPageContentTextDump();
 // content text dump.
 bool ShouldAnnotateTitleInsteadOfPageContent();
 
+// Whether search metadata should be persisted for non-Google searches, as
+// identified by the TemplateURLService.
+bool ShouldPersistSearchMetadataForNonGoogleSearches();
+
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 

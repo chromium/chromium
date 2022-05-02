@@ -193,7 +193,8 @@ class PageContentAnnotationsWebContentsObserverTest
         features::kPageContentAnnotations,
         {{"extract_related_searches", "false"},
          {"annotate_title_instead_of_page_content", "false"},
-         {"fetch_remote_page_entities", "false"}});
+         {"fetch_remote_page_entities", "false"},
+         {"persist_search_metadata_for_non_google_searches", "true"}});
   }
 
   void SetUp() override {
@@ -307,6 +308,12 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       DoesNotRequestForNonGoogleSRP) {
+  EXPECT_EQ(RequestTextDumpForUrl(GURL("http://non-default-engine.com/?q=a")),
+            nullptr);
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
        RequestsForMainFrameHttpUrlCallbackDispatchesToService) {
   // Navigate and commit so there is an entry. In actual situations, we are
   // guaranteed that MaybeRequestFrameTextDump will only be called for
@@ -393,6 +400,28 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   ASSERT_TRUE(last_search_metadata_persisted.has_value());
   EXPECT_EQ(last_search_metadata_persisted->normalized_url,
             GURL("http://default-engine.com/search?q=a"));
+  EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest,
+       NonGoogleSRPURLsAnnotateSearchTerms) {
+  // Navigate and commit so there is an entry.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://non-default-engine.com/?q=a"));
+
+  // The search query should be what is requested to be annotated.
+  absl::optional<HistoryVisit> last_annotation_request =
+      service()->last_annotation_request();
+  ASSERT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->url,
+            GURL("http://non-default-engine.com/?q=a"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
+
+  absl::optional<SearchMetadata> last_search_metadata_persisted =
+      service()->last_search_metadata_persisted();
+  ASSERT_TRUE(last_search_metadata_persisted.has_value());
+  EXPECT_EQ(last_search_metadata_persisted->normalized_url,
+            GURL("http://non-default-engine.com/?q=a"));
   EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
 }
 
@@ -520,6 +549,57 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
                                       u"newtitle");
   EXPECT_FALSE(service()->last_annotation_request());
+}
+
+class
+    PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest
+    : public PageContentAnnotationsWebContentsObserverTest {
+ public:
+  PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"annotate_title_instead_of_page_content", "true"},
+         {"persist_search_metadata_for_non_google_searches", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(
+    PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest,
+    AnnotatesTitleInsteadOfSearchTerms) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://non-default-engine.com/?q=a"));
+
+  // Make sure we didn't register with the PageTextObserver.
+  EXPECT_EQ(page_text_observer()->outstanding_requests(), 0u);
+
+  // Set title.
+  std::u16string title(u"Title");
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      title);
+
+  // The title should be what is requested to be annotated.
+  absl::optional<HistoryVisit> last_annotation_request =
+      service()->last_annotation_request();
+  EXPECT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->url,
+            GURL("http://non-default-engine.com/?q=a"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
+
+  service()->ClearLastAnnotationRequest();
+
+  // Update title again - make sure we don't reannotate for same page.
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      u"newtitle");
+  EXPECT_FALSE(service()->last_annotation_request());
+
+  // Search metadata should not be persisted.
+  absl::optional<SearchMetadata> last_search_metadata_persisted =
+      service()->last_search_metadata_persisted();
+  ASSERT_FALSE(last_search_metadata_persisted.has_value());
 }
 
 class PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest

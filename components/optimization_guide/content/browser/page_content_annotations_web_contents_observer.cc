@@ -155,13 +155,21 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
                        weak_ptr_factory_.GetWeakPtr(), history_visit));
   }
 
-  if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
-    // Extract related searches.
-    if (optimization_guide::features::ShouldExtractRelatedSearches()) {
-      page_content_annotations_service_->ExtractRelatedSearches(history_visit,
-                                                                web_contents());
-    }
+  bool is_google_search_url =
+      google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
+  // Extract related searches.
+  if (is_google_search_url &&
+      optimization_guide::features::ShouldExtractRelatedSearches()) {
+    page_content_annotations_service_->ExtractRelatedSearches(history_visit,
+                                                              web_contents());
+  }
 
+  // Persist search metadata, if applicable if it's a Google search URL or if
+  // it's a search-y URL as determined by the TemplateURLService if the flag is
+  // enabled.
+  if (is_google_search_url ||
+      optimization_guide::features::
+          ShouldPersistSearchMetadataForNonGoogleSearches()) {
     absl::optional<SearchMetadata> search_metadata = ExtractSearchMetadata(
         template_url_service_, navigation_handle->GetURL());
     if (search_metadata) {
@@ -249,6 +257,13 @@ PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
 
   if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL()))
     return nullptr;
+
+  if (optimization_guide::features::
+          ShouldPersistSearchMetadataForNonGoogleSearches() &&
+      ExtractSearchMetadata(template_url_service_,
+                            navigation_handle->GetURL())) {
+    return nullptr;
+  }
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request =
       std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();
