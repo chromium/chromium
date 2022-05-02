@@ -43,7 +43,7 @@ void MockInputMethodManager::State::EnableLoginLayouts(
     const std::string& language_code,
     const std::vector<std::string>& initial_layout) {}
 
-void MockInputMethodManager::State::EnableLockScreenLayouts() {}
+void MockInputMethodManager::State::DisableNonLockScreenLayouts() {}
 
 void MockInputMethodManager::State::GetInputMethodExtensions(
     InputMethodDescriptors* result) {}

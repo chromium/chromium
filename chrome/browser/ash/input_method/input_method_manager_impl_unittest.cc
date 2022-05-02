@@ -734,7 +734,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
-  manager_->GetActiveIMEState()->EnableLockScreenLayouts();
+  manager_->GetActiveIMEState()->DisableNonLockScreenLayouts();
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(us_dvorak_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
@@ -781,7 +781,7 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
-  manager_->GetActiveIMEState()->EnableLockScreenLayouts();
+  manager_->GetActiveIMEState()->DisableNonLockScreenLayouts();
   EXPECT_EQ(2U,
             manager_->GetActiveIMEState()
                 ->GetNumEnabledInputMethods());  // hardware layout + id1
@@ -1239,7 +1239,7 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
-  manager_->GetActiveIMEState()->EnableLockScreenLayouts();
+  manager_->GetActiveIMEState()->DisableNonLockScreenLayouts();
   EXPECT_EQ(1U,
             manager_->GetActiveIMEState()
                 ->GetNumEnabledInputMethods());  // Qwerty. No Ext. IME
@@ -1550,7 +1550,7 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
-  manager_->GetActiveIMEState()->EnableLockScreenLayouts();
+  manager_->GetActiveIMEState()->DisableNonLockScreenLayouts();
   EXPECT_EQ(2u, ime_controller.available_imes_.size());  // id1, hardware layout
   EXPECT_EQ(id1, ime_controller.current_ime_id_);
 

@@ -174,7 +174,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::vector<std::string>& initial_layouts) = 0;
 
     // Filters current state layouts and leaves only suitable for lock screen.
-    virtual void EnableLockScreenLayouts() = 0;
+    virtual void DisableNonLockScreenLayouts() = 0;
 
     // Returns a list of descriptors for all Input Method Extensions.
     virtual void GetInputMethodExtensions(InputMethodDescriptors* result) = 0;

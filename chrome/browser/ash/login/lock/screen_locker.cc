@@ -213,7 +213,7 @@ void ScreenLocker::Init() {
       input_method::InputMethodManager::UIStyle::kLock);
   input_method::InputMethodManager::Get()
       ->GetActiveIMEState()
-      ->EnableLockScreenLayouts();
+      ->DisableNonLockScreenLayouts();
 
   authenticator_ = UserSessionManager::GetInstance()->CreateAuthenticator(this);
   extended_authenticator_ = ExtendedAuthenticator::Create(this);

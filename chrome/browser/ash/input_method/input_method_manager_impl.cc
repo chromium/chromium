@@ -319,7 +319,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
   }
 }
 
-void InputMethodManagerImpl::StateImpl::EnableLockScreenLayouts() {
+void InputMethodManagerImpl::StateImpl::DisableNonLockScreenLayouts() {
   std::set<std::string> added_ids;
 
   const std::vector<std::string>& hardware_keyboard_ids =
