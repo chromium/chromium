@@ -2107,6 +2107,19 @@ const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
     {"IPH recommendations", kWebFeed_IPH, std::size(kWebFeed_IPH), nullptr},
 };
 
+const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation[] = {
+    {"awareness_style", "new animation"}};
+
+const FeatureEntry::FeatureParam kWebFeedAwareness_IPH[] = {
+    {"awareness_style", "IPH"}};
+
+const FeatureEntry::FeatureVariation kWebFeedAwarenessVariations[] = {
+    {"new animation", kWebFeedAwareness_new_animation,
+     std::size(kWebFeedAwareness_new_animation), nullptr},
+    {"IPH and dot", kWebFeedAwareness_IPH, std::size(kWebFeedAwareness_IPH),
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_Immediate[] = {
     {"conditional_tab_strip_session_time_ms", "0"}};
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_60Minutes[] = {
@@ -4484,7 +4497,9 @@ const FeatureEntry kFeatureEntries[] = {
                                     "WebFeed")},
     {"web-feed-awareness", flag_descriptions::kWebFeedAwarenessName,
      flag_descriptions::kWebFeedAwarenessDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kWebFeedAwareness)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeedAwareness,
+                                    kWebFeedAwarenessVariations,
+                                    "WebFeedAwareness")},
     {"web-feed-onboarding", flag_descriptions::kWebFeedOnboardingName,
      flag_descriptions::kWebFeedOnboardingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kWebFeedOnboarding)},
