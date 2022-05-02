@@ -161,7 +161,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
       network_condition_service_, /*enabled=*/false);
   auto records = std::make_unique<std::vector<reporting::EncryptedRecord>>();
   for (auto& record : request.encrypted_record()) {
-    records->push_back(std::move(record));
+    records->push_back(record);
     // Check if we have uploaded enough records after adding each record
     event_upload_size_controller.AccountForRecord(record);
     if (event_upload_size_controller.IsMaximumUploadSizeReached()) {
