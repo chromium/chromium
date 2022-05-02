@@ -389,6 +389,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Like NavigationController::CreateNavigationEntry, but takes an extra
   // argument, |source_site_instance|.
+  // `rewrite_virtual_urls` is true when it needs to rewrite virtual urls
+  // (e.g., for outermost frames).
   static std::unique_ptr<NavigationEntryImpl> CreateNavigationEntry(
       const GURL& url,
       Referrer referrer,
@@ -398,7 +400,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_renderer_initiated,
       const std::string& extra_headers,
       BrowserContext* browser_context,
-      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+      bool rewrite_virtual_urls);
 
   // Called just before sending the commit to the renderer, or when restoring
   // from back/forward cache. Walks the session history entries for the relevant

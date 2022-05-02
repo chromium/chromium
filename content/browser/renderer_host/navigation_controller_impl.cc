@@ -543,7 +543,8 @@ std::unique_ptr<NavigationEntry> NavigationController::CreateNavigationEntry(
   return NavigationControllerImpl::CreateNavigationEntry(
       url, referrer, std::move(initiator_origin),
       nullptr /* source_site_instance */, transition, is_renderer_initiated,
-      extra_headers, browser_context, std::move(blob_url_loader_factory));
+      extra_headers, browser_context, std::move(blob_url_loader_factory),
+      true /* rewrite_virtual_urls */);
 }
 
 // static
@@ -557,13 +558,15 @@ NavigationControllerImpl::CreateNavigationEntry(
     bool is_renderer_initiated,
     const std::string& extra_headers,
     BrowserContext* browser_context,
-    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory) {
-  GURL url_to_load;
-  GURL virtual_url;
+    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+    bool rewrite_virtual_urls) {
+  GURL url_to_load = url;
+  GURL virtual_url = url;
   bool reverse_on_redirect = false;
-  RewriteUrlForNavigation(url, browser_context, &url_to_load, &virtual_url,
-                          &reverse_on_redirect);
-
+  if (rewrite_virtual_urls) {
+    RewriteUrlForNavigation(url, browser_context, &url_to_load, &virtual_url,
+                            &reverse_on_redirect);
+  }
   // Let the NTP override the navigation params and pretend that this is a
   // browser-initiated, bookmark-like navigation.
   GetContentClient()->browser()->OverrideNavigationParams(
@@ -2652,7 +2655,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           GURL(url::kAboutBlankURL), referrer, initiator_origin,
           source_site_instance, page_transition, is_renderer_initiated,
           extra_headers, browser_context_,
-          nullptr /* blob_url_loader_factory */));
+          nullptr /* blob_url_loader_factory */,
+          false /* rewrite_virtual_urls */));
     }
     // TODO(arthursonzogni): What about |is_renderer_initiated|?
     // Renderer-initiated navigation that target a remote frame are currently
@@ -2674,10 +2678,15 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         nullptr /* policy_container_policies */);
   } else {
     // Main frame case.
+    // If `node` is the outermost main frame, it rewrites a virtual url in order
+    // to adjust the original input url if needed. For inner frames such as
+    // fenced frames or subframes, they don't rewrite urls as the urls are not
+    // input urls by users.
+    bool rewrite_virtual_urls = node->IsOutermostMainFrame();
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         url, referrer, initiator_origin, source_site_instance, page_transition,
         is_renderer_initiated, extra_headers, browser_context_,
-        blob_url_loader_factory));
+        blob_url_loader_factory, rewrite_virtual_urls));
     entry->root_node()->frame_entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(source_site_instance));
     entry->root_node()->frame_entry->set_method(method);
@@ -3531,7 +3540,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
           GURL(url::kAboutBlankURL), params.referrer, params.initiator_origin,
           params.source_site_instance.get(), params.transition_type,
           params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-          blob_url_loader_factory));
+          blob_url_loader_factory, false /* rewrite_virtual_urls */));
     }
     entry->AddOrUpdateFrameEntry(
         node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
@@ -3546,11 +3555,16 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         nullptr /* policy_container_policies */);
   } else {
     // Otherwise, create a pending entry for the main frame.
+    // If `node` is the outermost main frame, it rewrites a virtual url in order
+    // to adjust the original input url if needed. For inner frames such as
+    // fenced frames or subframes, they don't rewrite urls as the urls are not
+    // input urls by users.
+    bool rewrite_virtual_urls = node->IsOutermostMainFrame();
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         params.url, params.referrer, params.initiator_origin,
         params.source_site_instance.get(), params.transition_type,
         params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-        blob_url_loader_factory));
+        blob_url_loader_factory, rewrite_virtual_urls));
     entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()));
     entry->SetRedirectChain(params.redirect_chain);
@@ -3614,9 +3628,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   // For main frames, rewrite the URL if necessary and compute the virtual URL
   // that should be shown in the address bar.
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify subframes. Follow up to
-  // confirm correctness.
   if (node->IsOutermostMainFrame()) {
     bool ignored_reverse_on_redirect = false;
     RewriteUrlForNavigation(params.url, browser_context_, &url_to_load,

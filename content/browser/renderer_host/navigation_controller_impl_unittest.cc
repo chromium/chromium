@@ -4520,4 +4520,70 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
   EXPECT_TRUE(controller_impl().GetPendingEntry());
 }
 
+class NavigationControllerFencedFrameTest : public NavigationControllerTest {
+ public:
+  NavigationControllerFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~NavigationControllerFencedFrameTest() override = default;
+
+ protected:
+  static constexpr char kTestRewriteURL[] = "http://test.com";
+  static constexpr char kRewrittenURL[] = "http://rewritten.com";
+
+  static bool URLRewriter(GURL* url, BrowserContext* browser_context) {
+    if (*url == GURL(kTestRewriteURL)) {
+      *url = GURL(kRewrittenURL);
+      return true;
+    }
+    return false;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that receiving a request to navigate a fenced frame will not rewrite
+// the fenced frame URL.
+TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
+  const GURL kUrl1("http://google.com");
+  const GURL kUrl2("http://chromium.org");
+
+  // First, set up a handler that will rewrite urls.
+  BrowserURLHandlerImpl::GetInstance()->AddHandlerPair(
+      &URLRewriter, BrowserURLHandler::null_handler());
+
+  // Simulate navigating to a page that has a fenced frame.
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, main_test_rfh());
+  RenderFrameHostImpl* fenced_frame_root = main_test_rfh()->AppendFencedFrame();
+  // Navigate fenced frame.
+  std::unique_ptr<NavigationSimulator> navigation_simulator =
+      NavigationSimulator::CreateForFencedFrame(kUrl2, fenced_frame_root);
+  navigation_simulator->Commit();
+
+  // Simulate the fenced frame receiving a request from a RenderFrameProxyHost
+  // to navigate to `kTestRewriteURL`.
+  FrameTree* fenced_frame_tree = fenced_frame_root->frame_tree();
+  fenced_frame_tree->controller().NavigateFromFrameProxy(
+      fenced_frame_root, GURL(kTestRewriteURL),
+      nullptr /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      url::Origin::Create(kUrl2), true /* is_renderer_initiated */,
+      fenced_frame_root->GetSiteInstance(), Referrer(),
+      ui::PAGE_TRANSITION_LINK, false /* should_replace_current_entry */,
+      blink::NavigationDownloadPolicy(), "GET", nullptr, "",
+      network::mojom::SourceLocation::New(), nullptr, absl::nullopt,
+      base::TimeTicks::Now() /* navigation_start_time */);
+
+  NavigationRequest* request =
+      fenced_frame_root->frame_tree_node()->navigation_request();
+  ASSERT_TRUE(request);
+  // Ensure that the URL is not rewritten.
+  EXPECT_EQ(GURL(kTestRewriteURL), request->GetURL());
+
+  // Clean up the handler.
+  BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(&URLRewriter);
+}
+
 }  // namespace content

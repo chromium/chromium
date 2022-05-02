@@ -1377,7 +1377,11 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
   SiteInstance* current_site_instance =
       frame_tree_node->current_frame_host()->GetSiteInstance();
   SiteInstance* source_site_instance = current_site_instance;
-
+  // If `frame_tree_node` is the outermost main frame, it rewrites a virtual
+  // url in order to adjust the original input url if needed. For inner frames
+  // such as fenced frames or subframes, they don't rewrite urls as the urls
+  // are not input urls by users.
+  bool rewrite_virtual_urls = frame_tree_node->IsOutermostMainFrame();
   std::unique_ptr<NavigationEntryImpl> entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationControllerImpl::CreateNavigationEntry(
@@ -1386,7 +1390,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
               ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */,
               std::string() /* extra_headers */,
               controller_.GetBrowserContext(),
-              nullptr /* blob_url_loader_factory */));
+              nullptr /* blob_url_loader_factory */, rewrite_virtual_urls));
 
   entry->set_reload_type(NavigationRequest::NavigationTypeToReloadType(
       common_params.navigation_type));
