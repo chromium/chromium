@@ -512,8 +512,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   params.SetBoolKey("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
-  params.SetBoolKey("enableCloseView",
-                    ash::features::IsGaiaCloseViewMessageEnabled());
 
   if (public_saml_url_fetcher_) {
     params.SetBoolKey("startsOnSamlPage", true);

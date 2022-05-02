@@ -104,7 +104,6 @@ cr.define('cr.login', function() {
    *   isSupervisedUser: boolean,
    *   isDeviceOwner: boolean,
    *   ssoProfile: string,
-   *   enableCloseView: boolean,
    *   enableAzureADIntegration: boolean
    * }}
    */
@@ -223,8 +222,6 @@ cr.define('cr.login', function() {
     'isSupervisedUser',  // True if the user is supervised user.
     'isDeviceOwner',     // True if the user is device owner.
     'doSamlRedirect',    // True if the authentication is done via external IdP.
-    'enableCloseView',   // True if authenticator should wait for the closeView
-                         // message from Gaia.
     'rart',              // Encrypted reauth request token.
     'enableAzureADIntegration'  // True if features specific to Azure AD are
                                 // enabled
@@ -348,16 +345,6 @@ cr.define('cr.login', function() {
       this.syncTrustedVaultKeys_ = msg.value;
     },
     'closeView'(msg) {
-      // We need to resend the message to make sure it comes after the API
-      // 'confirm' call. The API calls go via different channel.
-      window.postMessage({method: 'resendCloseView'}, window.origin);
-    },
-    'resendCloseView'(msg) {
-      if (!this.enableCloseView_) {
-        return;
-      }
-
-
       if (!this.authCompletedFired_) {
         if (!this.services_) {
           console.error('Authenticator: UserInfo should come before closeView');
@@ -428,7 +415,6 @@ cr.define('cr.login', function() {
           webview;
       assert(this.webview_);
       this.enableGaiaActionButtons_ = false;
-      this.enableCloseView_ = false;
       this.webviewEventManager_ = WebviewEventManager.create();
 
       this.clientId_ = null;
@@ -660,7 +646,6 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
-      this.enableCloseView_ = !!data.enableCloseView;
       this.isAzureADIntegrationEnabled_ = data.enableAzureADIntegration;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
@@ -998,28 +983,12 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Returns true if given HTML5 message is received from the current window.
-     * @param {Object} e Payload of the received HTML5 message.
-     */
-    isSelfMessage_(e) {
-      if (e.origin !== window.origin) {
-        return false;
-      }
-
-      if (typeof e.data !== 'object' || !e.data.hasOwnProperty('method')) {
-        return false;
-      }
-
-      return true;
-    }
-
-    /**
      * Invoked when an HTML5 message is received from the webview element.
      * @param {Object} e Payload of the received HTML5 message.
      * @private
      */
     onMessageFromWebview_(e) {
-      if (!this.isGaiaMessage_(e) && !this.isSelfMessage_(e)) {
+      if (!this.isGaiaMessage_(e)) {
         return;
       }
 
@@ -1092,8 +1061,7 @@ cr.define('cr.login', function() {
       // `onGaiaDoneTimeout_`.
       const userInfoAvailable = !!this.services_;
 
-      const gaiaDone = userInfoAvailable &&
-          (!this.enableCloseView_ || this.closeViewReceived_) &&
+      const gaiaDone = userInfoAvailable && this.closeViewReceived_ &&
           !this.waitApiPasswordConfirm_;
 
       if (gaiaDone) {
@@ -1447,7 +1415,7 @@ cr.define('cr.login', function() {
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);
       }
 
-      if (this.enableCloseView_ && !this.closeViewReceived_) {
+      if (!this.closeViewReceived_) {
         console.error('Gaia done timeout: closeView was not called.');
         this.closeViewReceived_ = true;
 

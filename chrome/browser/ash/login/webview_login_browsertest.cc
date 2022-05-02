@@ -399,52 +399,20 @@ class WebviewLoginTest : public OobeBaseTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-/* is kGaiaCloseViewMessage enabled */
-/* Does Gaia send the 'closeView' message */
-using CloseViewParam = std::tuple<bool, bool>;
-
-class WebviewCloseViewLoginTest
-    : public WebviewLoginTest,
-      public ::testing::WithParamInterface<CloseViewParam> {
+class WebviewCloseViewLoginTest : public WebviewLoginTest,
+                                  /* Does Gaia send the 'closeView' message */
+                                  public ::testing::WithParamInterface<bool> {
  public:
-  WebviewCloseViewLoginTest() {
-    scoped_feature_list_.Reset();
-    if (IsFeatureEnabled(GetParam())) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kGaiaCloseViewMessage);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kGaiaCloseViewMessage);
-    }
-  }
-
-  static std::string GetName(
-      const testing::TestParamInfo<CloseViewParam>& param) {
-    std::string result;
-    result +=
-        IsFeatureEnabled(param.param) ? "ClientEnabled" : "ClientDisabled";
-    result += "_";
-    result +=
-        GaiaSendsCloseView(param.param) ? "ServerEnabled" : "ServerDisabled";
-    return result;
+  static std::string GetName(const testing::TestParamInfo<bool>& param) {
+    return param.param ? "ServerEnabled" : "ServerDisabled";
   }
 
  protected:
-  static bool IsFeatureEnabled(const CloseViewParam& param) {
-    return std::get<0>(param);
-  }
-  static bool GaiaSendsCloseView(const CloseViewParam& param) {
-    return std::get<1>(param);
-  }
-
   void SendCloseViewOrEmulateTimeout() {
-    if (GaiaSendsCloseView(GetParam())) {
+    if (GetParam()) {
       SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendCloseView()");
       return;
     }
-
-    if (!IsFeatureEnabled(GetParam()))
-      return;
 
     EmulateGaiaDoneTimeout();
   }
@@ -510,8 +478,7 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, NativeTest) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  if (IsFeatureEnabled(GetParam()))
-    WaitForServicesSet();
+  WaitForServicesSet();
 
   SendCloseViewOrEmulateTimeout();
 
@@ -519,14 +486,8 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, NativeTest) {
 
   histogram_tester_.ExpectUniqueSample("ChromeOS.Gaia.Message.Gaia.UserInfo",
                                        true, 1);
-  if (!IsFeatureEnabled(GetParam())) {
-    histogram_tester_.ExpectTotalCount("ChromeOS.Gaia.Message.Gaia.CloseView",
-                                       0);
-    return;
-  }
-
   histogram_tester_.ExpectUniqueSample("ChromeOS.Gaia.Message.Gaia.CloseView",
-                                       GaiaSendsCloseView(GetParam()), 1);
+                                       GetParam(), 1);
 }
 
 // Basic signin with username and password.
@@ -551,8 +512,7 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, Basic) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  if (IsFeatureEnabled(GetParam()))
-    WaitForServicesSet();
+  WaitForServicesSet();
 
   SendCloseViewOrEmulateTimeout();
 
@@ -609,8 +569,7 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, BackButton) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  if (IsFeatureEnabled(GetParam()))
-    WaitForServicesSet();
+  WaitForServicesSet();
 
   SendCloseViewOrEmulateTimeout();
 
@@ -2196,7 +2155,7 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, UserInfoNeverSent) {
                                FakeGaiaMixin::kPasswordPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
 
-  if (GaiaSendsCloseView(GetParam()))
+  if (GetParam())
     SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendCloseView()");
 
   EmulateGaiaDoneTimeout();
@@ -2270,7 +2229,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginEnrolledTest, GaiaLoginVariantMetrics) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebviewCloseViewLoginTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         testing::Bool(),
                          &WebviewCloseViewLoginTest::GetName);
 
 }  // namespace ash

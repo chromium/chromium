@@ -291,8 +291,6 @@ extern const base::Feature kFullscreenAlertBubble;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFuseBox;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFuseBoxDebug;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kGuestOsFiles;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kGaiaCloseViewMessage;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kGaiaReauthEndpoint;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kGamepadVibration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -638,7 +636,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFirmwareUpdaterAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaCloseViewMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
