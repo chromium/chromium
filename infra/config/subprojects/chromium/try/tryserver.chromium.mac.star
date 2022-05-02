@@ -112,6 +112,10 @@ try_.compilator_builder(
 try_.orchestrator_builder(
     name = "mac11-arm64-rel",
     compilator = "mac11-arm64-rel-compilator",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac11-arm64-rel-tests",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 100,
