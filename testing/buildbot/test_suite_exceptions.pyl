@@ -574,7 +574,7 @@
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
         'swarming': {
-          'shards': 50,
+          'shards': 60,
         },
       },
       'Linux ChromiumOS MSan Focal': {
