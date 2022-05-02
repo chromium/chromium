@@ -261,6 +261,7 @@ void ResourcedClientImpl::HandleSetMemoryMarginBps(
   if (!reader.PopUint64(&critical) || !reader.PopUint64(&moderate)) {
     LOG(ERROR) << "Unable to read back uint64s from resourced";
     std::move(callback).Run(false, 0, 0);
+    return;
   }
 
   std::move(callback).Run(true, critical, moderate);
