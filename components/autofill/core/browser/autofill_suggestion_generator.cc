@@ -127,13 +127,17 @@ void AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
     base::Time min_last_used,
     std::vector<CreditCard*>* cards) {
   const size_t original_size = cards->size();
-  // Split the vector into [unexpired-or-expired-but-after-timestamp,
-  // expired-and-before-timestamp], then delete the latter.
+  // Split the vector into two groups
+  // 1. All server cards, unexpired local cards, or local cards that have been
+  // used after |min_last_used|;
+  // 2. Expired local cards that have not been used since |min_last_used|;
+  // then delete the latter.
   cards->erase(std::stable_partition(
                    cards->begin(), cards->end(),
                    [comparison_time, min_last_used](const CreditCard* c) {
                      return !c->IsExpired(comparison_time) ||
-                            c->use_date() >= min_last_used;
+                            c->use_date() >= min_last_used ||
+                            c->record_type() != CreditCard::LOCAL_CARD;
                    }),
                cards->end());
   const size_t num_cards_supressed = original_size - cards->size();

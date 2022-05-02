@@ -2071,43 +2071,33 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   ASSERT_EQ(0U, personal_data_.GetCreditCards().size());
 
   // Add a never used non expired local credit card.
-  CreditCard credit_card0("002149C1-EE28-4213-A3B9-DA243FFF021B",
+  CreditCard credit_card0("00000000-0000-0000-0000-000000000000",
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "Bonnie Parker",
                           "5105105105105100" /* Mastercard */, "04", "2999",
                           "1");
-  credit_card0.set_guid("00000000-0000-0000-0000-000000000000");
   personal_data_.AddCreditCard(credit_card0);
 
   auto now = AutofillClock::Now();
 
-  // Add an expired unmasked card last used 10 days ago
-  CreditCard credit_card1(CreditCard::FULL_SERVER_CARD, "c789");
+  // Add an expired local card last used 10 days ago
+  CreditCard credit_card1("00000000-0000-0000-0000-000000000001",
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "4234567890123456" /* Visa */, "04", "2010", "1");
   credit_card1.set_use_date(now - base::Days(10));
-  credit_card1.set_guid("00000000-0000-0000-0000-000000000001");
-  personal_data_.AddServerCreditCard(credit_card1);
-
-  // Add an expired masked card last used 180 days ago.
-  CreditCard credit_card2(CreditCard::MASKED_SERVER_CARD, "c987");
-  test::SetCreditCardInfo(&credit_card2, "Jane Doe", "6543", "01", "2010", "1");
-  credit_card2.set_use_date(now - base::Days(181));
-  credit_card2.SetNetworkForMaskedCard(kVisaCard);
-  credit_card2.set_guid("00000000-0000-0000-0000-000000000002");
-  personal_data_.AddServerCreditCard(credit_card2);
+  personal_data_.AddCreditCard(credit_card1);
 
   // Add an expired local card last used 180 days ago.
-  CreditCard credit_card3("1141084B-72D7-4B73-90CF-3D6AC154673B",
+  CreditCard credit_card2("00000000-0000-0000-0000-000000000002",
                           test::kEmptyOrigin);
-  credit_card3.set_use_date(now - base::Days(182));
-  test::SetCreditCardInfo(&credit_card3, "John Dillinger",
+  credit_card2.set_use_date(now - base::Days(182));
+  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "378282246310005" /* American Express */, "01",
                           "2010", "1");
-  credit_card3.set_guid("00000000-0000-0000-0000-000000000003");
-  personal_data_.AddCreditCard(credit_card3);
+  personal_data_.AddCreditCard(credit_card2);
 
-  ASSERT_EQ(4U, personal_data_.GetCreditCards().size());
+  ASSERT_EQ(3U, personal_data_.GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -2194,7 +2184,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                    browser_autofill_manager_->GetPackedCreditCardID(1)));
   }
 
-  // Query with name prefix for card3 returns card3.
+  // Query with name prefix for card2 returns card2.
   {
     FormFieldData field = form.fields[0];
     field.value = u"Jo";
@@ -2214,35 +2204,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
     CheckSuggestions(
         kDefaultPageID,
         Suggestion("John Dillinger", amex_label, kAmericanExpressCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(3)));
-  }
-
-  // Query with card number prefix for card1 returns card1 and card2.
-  // Expired masked card2 is shown when user starts to type credit card
-  // number because we are not sure if it is the masked card that they want.
-  {
-    FormFieldData field = form.fields[1];
-    field.value = u"4234";
-    GetAutofillSuggestions(form, field);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    const std::string visa_label1 = std::string("04/10");
-    const std::string visa_label2 = std::string("01/10");
-#else
-    const std::string visa_label1 = std::string("Expires on 04/10");
-    const std::string visa_label2 = std::string("Expires on 01/10");
-#endif
-
-    CheckSuggestions(
-        kDefaultPageID,
-        Suggestion(
-            std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-            visa_label1, kVisaCard,
-            browser_autofill_manager_->GetPackedCreditCardID(1)),
-        Suggestion(
-            std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("6543"),
-            visa_label2, kVisaCard,
-            browser_autofill_manager_->GetPackedCreditCardID(2)));
+                   browser_autofill_manager_->GetPackedCreditCardID(2)));
   }
 }
 

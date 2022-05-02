@@ -218,6 +218,27 @@ TEST_F(AutofillSuggestionGeneratorTest,
     histogram_tester.ExpectTotalCount(kHistogramName, 1);
     histogram_tester.ExpectBucketCount(kHistogramName, kNumCards, 1);
   }
+
+  // Verify all expired and disused server cards are not removed.
+  {
+    // Create a working copy of the card pointers. And set one card to be a
+    // masked server card.
+    std::vector<CreditCard*> cards(all_card_ptrs);
+    for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
+      (*it)->SetExpirationYear(2001);
+    }
+    cards[0]->set_record_type(CreditCard::MASKED_SERVER_CARD);
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, kNow + base::Days(1), &cards);
+
+    // Validate that we get the expected filtered cards and histograms.
+    EXPECT_EQ(1U, cards.size());
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, kNumCards - 1, 1);
+  }
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
