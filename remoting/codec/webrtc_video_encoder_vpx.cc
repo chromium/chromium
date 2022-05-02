@@ -140,6 +140,11 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
   vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, cpu_used);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
+  // Turn on row-based multi-threading if more than one thread is available.
+  if (codec->config.enc->g_threads > 1) {
+    vpx_codec_control(codec, VP9E_SET_ROW_MT, 1);
+  }
+
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
   ret = vpx_codec_control(codec, VP9E_SET_NOISE_SENSITIVITY, 0);
