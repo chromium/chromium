@@ -53,17 +53,12 @@ class IOSurfaceMemoryDumpProvider
 
 IOSurfaceMemoryDumpProvider::IOSurfaceMemoryDumpProvider() {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "command_buffer", nullptr);
+      this, "CommandBuffer", nullptr);
 }
 
 bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
-    return true;
-  }
-
   // Collect IOSurface total memory usage.
   size_t virtual_size = 0;
   size_t resident_size = 0;
@@ -127,7 +122,8 @@ bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
   dump->AddScalar("swapped_out_size", "bytes", swapped_out_size);
   dump->AddScalar("dirty_size", "bytes", dirty_size);
 
-  dump->AddScalar("size", "bytes", dirty_size);
+  dump->AddScalar("size", "bytes", virtual_size);
+
   return true;
 }
 }  // namespace

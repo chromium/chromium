@@ -11,6 +11,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace trace_event {
@@ -44,6 +45,9 @@ const char* const kDumpProviderAllowlist[] = {
     "GrShaderCache",
     "FontCaches",
     "HistoryReport",
+#if BUILDFLAG(IS_MAC)
+    "CommandBuffer",
+#endif
     "IPCChannel",
     "IndexedDBBackingStore",
     "IndexedDBFactoryImpl",
@@ -134,6 +138,9 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "gpu/transfer_cache/cache_0x?/avg_image_size",
     "history/delta_file_service/leveldb_0x?",
     "history/usage_reports_buffer/leveldb_0x?",
+#if BUILDFLAG(IS_MAC)
+    "iosurface",
+#endif
     "java_heap",
     "java_heap/allocated_objects",
     "leveldatabase",

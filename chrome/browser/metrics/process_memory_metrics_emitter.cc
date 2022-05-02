@@ -216,6 +216,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      ImageSizeMetricRange},
     {"history", "History", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetHistory},
+#if BUILDFLAG(IS_MAC)
+    {"iosurface", "IOSurface", MetricSize::kLarge, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
+#endif
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetJavaHeap},
     {"leveldatabase", "LevelDatabase", MetricSize::kSmall, kEffectiveSize,

@@ -227,6 +227,12 @@ void CheckExperimentalMemoryMetrics(
     CheckExperimentalMemoryMetricsForProcessType(
         histogram_tester, count, "Extension", number_of_extension_processes);
   }
+
+#if BUILDFLAG(IS_MAC)
+  CheckMemoryMetric("Memory.Experimental.Gpu2.IOSurface", histogram_tester, 1,
+                    ValueRestriction::ABOVE_ZERO);
+#endif
+
   CheckMemoryMetric("Memory.Experimental.Total2.PrivateMemoryFootprint",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO);
 }

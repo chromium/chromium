@@ -7806,6 +7806,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Extensions.ValueStore"
       label="Only counting memory used by Extension value store database."/>
   <suffix name="GpuMemory" label="Only counting memory allocated for the GPU."/>
+  <suffix name="IOSurface" label="Memory used for IOSurfaces, on macOS."/>
   <suffix name="JavaHeap"
       label="Only counting memory used by Java heap in Android."/>
   <suffix name="Malloc"
