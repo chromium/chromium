@@ -261,8 +261,8 @@ suite('input page', () => {
 
   suite('add input methods dialog', () => {
     let dialog;
-    let suggestedInputMethods;
-    let allInputMethods;
+    let suggestedList;
+    let allImesList;
     let cancelButton;
     let actionButton;
 
@@ -271,7 +271,8 @@ suite('input page', () => {
       inputPage.$$('#addInputMethod').click();
       flush();
 
-      dialog = inputPage.$$('os-settings-add-input-methods-dialog');
+      dialog = inputPage.$$('os-settings-add-input-methods-dialog')
+                   .$$('os-settings-add-items-dialog');
       assertTrue(!!dialog);
 
       actionButton = dialog.$$('.action-button');
@@ -279,11 +280,11 @@ suite('input page', () => {
       cancelButton = dialog.$$('.cancel-button');
       assertTrue(!!cancelButton);
 
-      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
-      assertTrue(!!suggestedInputMethods);
+      suggestedList = dialog.$$('#suggested-items-list');
+      assertTrue(!!suggestedList);
 
-      allInputMethods = dialog.$$('#allInputMethods');
-      assertTrue(!!allInputMethods);
+      allImesList = dialog.$$('#filtered-items-list');
+      assertTrue(!!allImesList);
 
       // No input methods has been selected, so the action button is disabled.
       assertTrue(actionButton.disabled);
@@ -291,7 +292,7 @@ suite('input page', () => {
     });
 
     test('has action button working correctly', () => {
-      const listItems = suggestedInputMethods.querySelectorAll('.list-item');
+      const listItems = suggestedList.querySelectorAll('.list-item');
       // selecting a language enables action button
       listItems[0].click();
       assertFalse(actionButton.disabled);
@@ -302,8 +303,7 @@ suite('input page', () => {
     });
 
     test('has correct structure and adds input methods', () => {
-      const suggestedItems =
-          suggestedInputMethods.querySelectorAll('.list-item');
+      const suggestedItems = suggestedList.querySelectorAll('.list-item');
       // input methods are based on and ordered by enabled languages
       // only allowed input methods are shown.
       assertEquals(2, suggestedItems.length);
@@ -312,7 +312,7 @@ suite('input page', () => {
       // selecting Swahili keyboard.
       suggestedItems[1].click();
 
-      const allItems = allInputMethods.querySelectorAll('.list-item');
+      const allItems = allImesList.querySelectorAll('.list-item');
       // All input methods should appear and ordered based on fake settings
       // data.
       assertEquals(4, allItems.length);
@@ -384,10 +384,9 @@ suite('input page', () => {
       languageHelper.setPrefValue('settings.language.preferred_languages', '');
       flush();
 
-      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
+      suggestedList = dialog.$$('#suggestedInputMethods');
       // suggested input methods is rendered previously.
-      assertTrue(!!suggestedInputMethods);
-      assertEquals('none', getComputedStyle(suggestedInputMethods).display);
+      assertFalse(isVisible(suggestedList));
     });
 
     test('suggested input methods hidden when no input methods left', () => {
@@ -401,29 +400,27 @@ suite('input page', () => {
           });
       flush();
 
-      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
-      // suggested input methods is rendered previously.
-      assertTrue(!!suggestedInputMethods);
-      assertEquals('none', getComputedStyle(suggestedInputMethods).display);
+      suggestedList = dialog.$$('#suggestedInputMethods');
+      assertFalse(isVisible(suggestedList));
     });
 
     test('searches input methods correctly', () => {
       const searchInput = dialog.$$('cr-search-field');
       const getItems = function() {
-        return allInputMethods.querySelectorAll('.list-item:not([hidden])');
+        return allImesList.querySelectorAll('.list-item:not([hidden])');
       };
 
-      assertFalse(dialog.$$('#allInputMethodsLabel').hidden);
-      assertEquals('block', getComputedStyle(suggestedInputMethods).display);
+      assertTrue(isVisible(dialog.$$('#filtered-items-label')));
+      assertTrue(isVisible(suggestedList));
 
       // Expecting a few languages to be displayed when no query exists.
       assertGE(getItems().length, 1);
 
-      // Search hides suggestedInputMethods and allInputMethodsLabel.
+      // Search hides the suggested list and the label for all IMEs.
       searchInput.setValue('v');
       flush();
-      assertTrue(dialog.$$('#allInputMethodsLabel').hidden);
-      assertEquals('none', getComputedStyle(suggestedInputMethods).display);
+      assertFalse(isVisible(dialog.$$('#filtered-items-label')));
+      assertFalse(isVisible(suggestedList));
 
       // Search input methods name
       searchInput.setValue('vietnamese');
@@ -1252,8 +1249,8 @@ suite('input page', () => {
 
   suite('add spell check languages dialog', () => {
     let dialog;
-    let suggestedLanguages;
-    let allLanguages;
+    let suggestedList;
+    let allLangsList;
     let cancelButton;
     let actionButton;
 
@@ -1270,12 +1267,12 @@ suite('input page', () => {
       // This function should return the *visible* items that the user can
       // select, so if the <iron-list> is hidden we should return an empty
       // list instead.
-      const list = allLanguages.querySelector('iron-list');
-      if (!isVisible(list)) {
+      if (!isVisible(allLangsList)) {
         return [];
       }
-      return [...allLanguages.querySelectorAll(
-          'cr-checkbox-with-policy:not([hidden])')];
+      return [
+        ...allLangsList.querySelectorAll('cr-checkbox-with-policy')
+      ].filter(checkbox => isVisible(checkbox));
     }
 
     /**
@@ -1303,14 +1300,15 @@ suite('input page', () => {
       inputPage.$$('#addSpellcheckLanguages').click();
       flush();
 
-      dialog = inputPage.$$('os-settings-add-spellcheck-languages-dialog');
+      dialog = inputPage.$$('os-settings-add-spellcheck-languages-dialog')
+                   .$$('os-settings-add-items-dialog');
       assertTrue(!!dialog);
       assertTrue(dialog.$.dialog.open);
 
-      suggestedLanguages = dialog.$$('#suggestedLanguages');
-      assertTrue(!!suggestedLanguages);
-      allLanguages = dialog.$$('#allLanguages');
-      assertTrue(!!allLanguages);
+      suggestedList = dialog.$$('#suggested-items-list');
+      assertTrue(!!suggestedList);
+      allLangsList = dialog.$$('#filtered-items-list');
+      assertTrue(!!allLangsList);
 
       actionButton = dialog.$$('.action-button');
       assertTrue(!!actionButton);
@@ -1343,7 +1341,7 @@ suite('input page', () => {
     test('initial expected layout', () => {
       // As Swahili is an enabled language, it should be shown as a suggested
       // language.
-      const suggestedItems = suggestedLanguages.querySelectorAll('cr-checkbox');
+      const suggestedItems = suggestedList.querySelectorAll('cr-checkbox');
       assertEquals(suggestedItems.length, 1);
       assertTrue(suggestedItems[0].textContent.includes('Swahili'));
 
@@ -1363,13 +1361,13 @@ suite('input page', () => {
       assertTrue(checkboxes.every(checkbox => !checkbox.checked));
 
       // There should be a label for both sections.
-      const suggestedLabel = suggestedLanguages.querySelector('.label');
+      const suggestedLabel = dialog.$$('#suggested-items-label');
       assertTrue(!!suggestedLabel);
-      assertFalse(suggestedLabel.hidden);
+      assertTrue(isVisible(suggestedLabel));
 
-      const allLanguagesLabel = allLanguages.querySelector('.label');
-      assertTrue(!!allLanguagesLabel);
-      assertFalse(allLanguagesLabel.hidden);
+      const allLangsLabel = dialog.$$('#filtered-items-label');
+      assertTrue(!!allLangsLabel);
+      assertTrue(isVisible(allLangsLabel));
     });
 
     test('can add single language and uncheck language', () => {
@@ -1445,9 +1443,9 @@ suite('input page', () => {
       flush();
 
       // Suggested languages should not show up whatsoever.
-      assertFalse(isVisible(suggestedLanguages));
+      assertFalse(isVisible(suggestedList));
       // The label for all languages should not appear either.
-      assertFalse(isVisible(allLanguages.querySelector('.label')));
+      assertFalse(isVisible(allLangsList.querySelector('.label')));
     });
 
     test('input method languages appear as suggested languages', () => {
@@ -1458,15 +1456,14 @@ suite('input page', () => {
 
       // Both Swahili (as it is an enabled language) and English (US) (as it is
       // enabled as an input method) should appear in the list.
-      const suggestedListItems =
-          suggestedLanguages.querySelectorAll('.list-item');
+      const suggestedListItems = suggestedList.querySelectorAll('.list-item');
       assertEquals(suggestedListItems.length, 2);
       assertTrue(suggestedListItems[0].textContent.includes(
           'English (United States)'));
       assertTrue(suggestedListItems[1].textContent.includes('Swahili'));
 
       // en-US should also appear in the all languages list now.
-      assertEquals(allLanguages.querySelectorAll('.list-item').length, 4);
+      assertEquals(allLangsList.querySelectorAll('.list-item').length, 4);
     });
 
     test('searches languages on display name', () => {
@@ -1491,7 +1488,7 @@ suite('input page', () => {
       searchInput.setValue('egaugnal');
       flush();
       assertEquals(getAllLanguagesCheckboxWithPolicies().length, 0);
-      assertFalse(dialog.$$('#no-search-results').hidden);
+      assertTrue(isVisible(dialog.$$('#no-search-results')));
     });
 
     test('has escape key behavior working correctly', function() {

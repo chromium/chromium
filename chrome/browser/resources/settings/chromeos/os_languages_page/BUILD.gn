@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":add_input_methods_dialog",
+    ":add_items_dialog",
     ":add_spellcheck_languages_dialog",
     ":change_device_language_dialog",
     ":cr_checkbox_with_policy",
@@ -72,24 +73,36 @@ js_library("languages_browser_proxy") {
 }
 
 js_library("add_input_methods_dialog") {
-  deps = [ ":cr_checkbox_with_policy" ]
-}
-
-js_library("add_spellcheck_languages_dialog") {
   deps = [
-    ":cr_checkbox_with_policy",
+    ":add_items_dialog",
     ":languages_types",
     "..:metrics_recorder",
-    "..:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("add_items_dialog") {
+  deps = [
+    ":cr_checkbox_with_policy",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
+}
+
+js_library("add_spellcheck_languages_dialog") {
+  deps = [
+    ":add_items_dialog",
+    ":languages_types",
+    "..:metrics_recorder",
+    "..:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("change_device_language_dialog") {
@@ -160,12 +173,10 @@ js_library("languages_metrics_proxy") {
 
 js_library("os_add_languages_dialog") {
   deps = [
-    ":languages",
+    ":add_items_dialog",
+    ":languages_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
   ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
 }
 
 js_library("os_edit_dictionary_page") {
@@ -232,6 +243,7 @@ js_library("smart_inputs_page") {
 
 html_to_js("web_components") {
   js_files = [
+    "add_items_dialog.js",
     "add_input_methods_dialog.js",
     "add_spellcheck_languages_dialog.js",
     "change_device_language_dialog.js",

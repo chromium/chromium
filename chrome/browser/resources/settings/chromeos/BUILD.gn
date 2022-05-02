@@ -555,6 +555,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_files_page/os_files_page.js",
     "chromeos/os_files_page/smb_shares_page.js",
     "chromeos/os_icons.js",
+    "chromeos/os_languages_page/add_items_dialog.js",
     "chromeos/os_languages_page/add_input_methods_dialog.js",
     "chromeos/os_languages_page/add_spellcheck_languages_dialog.js",
     "chromeos/os_languages_page/change_device_language_dialog.js",

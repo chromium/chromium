@@ -1,58 +1,10 @@
-<style include="settings-shared shared-style">
-  #dialog-body {
-    display: flex;
-    flex-direction: column;
-    height: 350px;
-    overflow: auto;
-  }
-
-  cr-search-field {
-    margin-bottom: 16px;
-  }
-
-  iron-list {
-    flex: 1;
-  }
-
-  cr-checkbox::part(label-container) {
-    white-space: nowrap;
-  }
-
-  .list-item {
-    min-height: 36px;
-  }
-</style>
-<cr-dialog id="dialog" close-text="$i18n{close}">
-  <div slot="title">$i18n{addLanguagesDialogTitle}</div>
-  <div id="dialog-body" slot="body" scrollable>
-    <cr-search-field label="$i18n{searchLanguages}" id="search"
-        on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
-        clear-label="$i18n{clearSearch}" autofocus>
-    </cr-search-field>
-    <iron-list scroll-target="[[$$('[slot=body]')]]"
-        items="[[displayedLanguages_]]"
-        hidden$="[[displayedLanguagesEmpty_]]">
-      <template>
-        <cr-checkbox class="list-item no-outline"
-            checked="[[willAdd_(item.code)]]" tab-index="[[tabIndex]]"
-            title$="[[item.nativeDisplayName]]"
-            on-change="onLanguageCheckboxChange_">
-          [[getDisplayText_(item)]]
-        </cr-checkbox>
-      </template>
-    </iron-list>
-    <div id="no-search-results" class="centered-message"
-        hidden$="[[!displayedLanguagesEmpty_]]">
-      $i18n{noSearchResults}
-    </div>
-  </div>
-  <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelButtonTap_">
-      $i18n{cancel}
-    </cr-button>
-    <cr-button class="action-button" on-click="onActionButtonTap_"
-        disabled="[[disableActionButton_]]">
-      $i18n{add}
-    </cr-button>
-  </div>
-</cr-dialog>
+<!-- TODO(crbug.com/1201535): Move everything to the parent element
+     (<os-settings-input-page>), as this element is trivial. -->
+<!-- Note: We currently don't display any "suggested items", nor do we
+      show the user languages prohibited by policy. -->
+<os-settings-add-items-dialog
+    items="[[getLanguages_(languages.supported, languages.enabled.*)]]"
+    header="$i18n{addLanguagesDialogTitle}"
+    search-label="$i18n{searchLanguages}"
+    on-items-added="onItemsAdded_">
+</os-settings-add-items-dialog>
