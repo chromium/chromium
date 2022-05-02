@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -612,6 +613,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kImportDataContinueButtonId);
 }
 
++ (id<GREYMatcher>)settingsSafetyCheckTableView {
+  return grey_accessibilityID(
+      SafetyCheckTableViewController.accessibilityIdentifier);
+}
+
 + (id<GREYMatcher>)settingsPrivacyTableView {
   return grey_accessibilityID(kPrivacyTableViewId);
 }
@@ -708,6 +714,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_allOf(
       grey_accessibilityID(kClearBrowsingHistoryCellAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)historyTableView {
+  return grey_accessibilityID(kHistoryTableViewIdentifier);
 }
 
 + (id<GREYMatcher>)clearCookiesButton {

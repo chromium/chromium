@@ -13,6 +13,7 @@ source_set("default_browser") {
     "resources:default_browser_world",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/resources:settings",
     "//ios/chrome/browser/ui/table_view:utils",

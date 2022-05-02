@@ -356,6 +356,10 @@ id<GREYMatcher> SettingsImportDataContinueButton() {
   return [ChromeMatchersAppInterface settingsImportDataContinueButton];
 }
 
+id<GREYMatcher> SettingsSafetyCheckTableView() {
+  return [ChromeMatchersAppInterface settingsSafetyCheckTableView];
+}
+
 id<GREYMatcher> SettingsPrivacyTableView() {
   return [ChromeMatchersAppInterface settingsPrivacyTableView];
 }
@@ -415,6 +419,10 @@ id<GREYMatcher> SettingsCollectionView() {
 
 id<GREYMatcher> ClearBrowsingHistoryButton() {
   return [ChromeMatchersAppInterface clearBrowsingHistoryButton];
+}
+
+id<GREYMatcher> HistoryTableView() {
+  return [ChromeMatchersAppInterface historyTableView];
 }
 
 id<GREYMatcher> ClearCookiesButton() {

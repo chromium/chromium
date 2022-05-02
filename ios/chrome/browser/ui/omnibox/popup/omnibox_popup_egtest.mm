@@ -43,7 +43,45 @@ id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
       grey_ancestor(PopupRowWithUrl(url)),
       grey_accessibilityID(kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
-      nil);
+      grey_interactable(), nil);
+}
+
+void TapSwitchToTabButton(const GURL& url) {
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier] tap];
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
+                                                   grey_interactable(), nil)]
+        performAction:grey_tap()];
+  }
+}
+
+void ScrollToSwitchToTabElement(const GURL& url) {
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+
+    XCUIElement* popup =
+        app.tables[kOmniboxPopupTableViewAccessibilityIdentifier];
+
+    NSInteger swipeCount = 0;
+    GREYAssert([app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
+                   waitForExistenceWithTimeout:5],
+               @"Switch to tab element not found");
+    while (swipeCount < 10 &&
+           !app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
+                .isHittable) {
+      [popup swipeUp];
+      ++swipeCount;
+    }
+    GREYAssert(swipeCount < 10, @"Couldn't find the switch to tab element");
+  } else {
+    [[[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
+                                                    grey_interactable(), nil)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+        onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
+        assertWithMatcher:grey_interactable()];
+  }
 }
 
 // Web page 1.
@@ -134,12 +172,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(kPage1URL)];
 
   // Switch to the first tab, scrolling the popup if necessary.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(firstPageURL),
-                                          grey_interactable(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      performAction:grey_tap()];
+  ScrollToSwitchToTabElement(firstPageURL);
+  TapSwitchToTabButton(firstPageURL);
 
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
@@ -186,10 +220,20 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
-      assertWithMatcher:grey_not(grey_interactable())];
+
+  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    NSString* urlString = base::SysUTF8ToNSString(URL2.GetContent());
+    GREYAssert(app.staticTexts[urlString].isHittable, @"The row doesn't exist");
+    GREYAssert(![app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
+                   waitForExistenceWithTimeout:1],
+               @"Switch to tab element found but it shouldn't have appeared");
+  } else {
+    [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
+        assertWithMatcher:grey_not(grey_interactable())];
+  }
 }
 
 // Tests that the incognito tabs aren't displayed as "opened" tab in the
@@ -270,11 +314,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad.");
   }
 
-  // TODO(crbug.com/1315304): Reenable.
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
-  }
-
   // Open the first page.
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:URL1];
@@ -292,14 +331,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(omniboxInput)];
 
-  // Omnibox can reorder itself in multiple animations, so add an extra wait
-  // here.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:SwitchTabElementForUrl(
-                                                       URL1)];
-  [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(URL1),
-                                                 grey_interactable(), nil)]
-      performAction:grey_tap()];
+  TapSwitchToTabButton(URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Check that the other tab is closed.
@@ -372,20 +404,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Make sure that the "Switch to Open Tab" element is visible, scrolling the
   // popup if necessary.
-  [[[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(URL1),
-                                                  grey_interactable(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      assertWithMatcher:grey_notNil()];
+  ScrollToSwitchToTabElement(URL1);
 
   // Close the first page.
   [ChromeEarlGrey closeTabAtIndex:0];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Try to switch to the first tab.
-  [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(URL1),
-                                                 grey_interactable(), nil)]
-      performAction:grey_tap()];
+  TapSwitchToTabButton(URL1);
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Check that the URL has been opened in a new foreground tab.
@@ -440,11 +467,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 - (void)testScrollingDismissesKeyboardOnPhones {
-  // TODO(crbug.com/1315304): Reenable.
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
-  }
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -455,16 +477,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> textMatcher =
       [ChromeEarlGrey isNewOmniboxPopupEnabled]
-          ? grey_accessibilityLabel(@"hello")
+          ? grey_descendant(grey_accessibilityLabel(@"hello"))
           : grey_descendant(
                 chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
   id<GREYMatcher> row =
-      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
-                 grey_sufficientlyVisible(), nil);
+      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher, nil);
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:row];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:row];
   GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
@@ -475,9 +496,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionUp,
                                                             0.5, 0.1)];
-
   [[EarlGrey selectElementWithMatcher:row]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_interactable()];
 
   // The keyboard should only be dismissed on phones. Ipads, even in
   // multitasking, are considered tall enough to fit all suggestions.
@@ -519,6 +539,30 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       std::string(kIOSOmniboxUpdatedPopupUIVariationName) + "/" + _variant);
 
   return config;
+}
+
+- (void)testCloseNTPWhenSwitching {
+  if (@available(iOS 15, *)) {
+    [super testCloseNTPWhenSwitching];
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
+  }
+}
+- (void)testNotSwitchButtonOnCurrentTab {
+  if (@available(iOS 15, *)) {
+    [super MAYBE_testNotSwitchButtonOnCurrentTab];
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
+  }
+}
+- (void)testSwitchToClosedTab {
+  // TODO(crbug.com/1315304): Reenable this test
+  EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
+}
+
+- (void)testSwitchToOpenTab {
+  // TODO(crbug.com/1315304): Reenable this test
+  EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
 }
 
 @end

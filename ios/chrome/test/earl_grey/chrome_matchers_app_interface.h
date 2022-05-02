@@ -273,6 +273,9 @@
 // view.
 + (id<GREYMatcher>)settingsImportDataContinueButton;
 
+// Returns matcher for the safety check table view.
++ (id<GREYMatcher>)settingsSafetyCheckTableView;
+
 // Returns matcher for the privacy table view.
 + (id<GREYMatcher>)settingsPrivacyTableView;
 
@@ -317,6 +320,9 @@
 
 // Returns matcher for the settings main menu view.
 + (id<GREYMatcher>)settingsCollectionView;
+
+// Returns matcher for the History table view.
++ (id<GREYMatcher>)historyTableView;
 
 // Returns matcher for the clear browsing history cell on the clear browsing
 // data panel.

@@ -38,7 +38,7 @@ struct PopupMatchTrailingButton: View {
     // tap on a non-accessible SwiftUI view in a test.
     // Create a new accessibility element that is non-accessible so tests
     // can find the button.
-    .accessibilityElement(children: .ignore)
+    //    .accessibilityElement(children: .ignore)
     .accessibilityIdentifier(
       match.isTabMatch
         ? kOmniboxPopupRowSwitchTabAccessibilityIdentifier

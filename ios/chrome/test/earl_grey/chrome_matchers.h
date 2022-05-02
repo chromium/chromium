@@ -282,6 +282,9 @@ id<GREYMatcher> SettingsImportDataKeepSeparateButton();
 // view.
 id<GREYMatcher> SettingsImportDataContinueButton();
 
+// Returns a matcher for the safety check table view.
+id<GREYMatcher> SettingsSafetyCheckTableView();
+
 // Returns a matcher for the privacy settings table view.
 id<GREYMatcher> SettingsPrivacyTableView();
 
@@ -331,6 +334,9 @@ id<GREYMatcher> SettingsCollectionView();
 // Returns a matcher for the clear browsing history cell on the clear browsing
 // data panel.
 id<GREYMatcher> ClearBrowsingHistoryButton();
+
+// Returns a matcher for the History table view.
+id<GREYMatcher> HistoryTableView();
 
 // Returns a matcher for the clear cookies cell on the clear browsing data
 // panel.

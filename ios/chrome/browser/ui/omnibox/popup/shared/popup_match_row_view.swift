@@ -47,7 +47,6 @@ struct PopupMatchRowView: View {
       .accessibilityElement()
       .accessibilityLabel(match.text.string)
       .accessibilityValue(match.detailText?.string ?? "")
-      .accessibilityRemoveTraits(.isButton)
 
     if match.isAppendable || match.isTabMatch {
       let trailingActionAccessibilityTitle =

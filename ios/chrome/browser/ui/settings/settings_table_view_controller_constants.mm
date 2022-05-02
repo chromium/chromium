@@ -52,3 +52,5 @@ NSString* const kSettingsHandoffCellId = @"kSettingsHandoffCellId";
 NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";
 NSString* const kSettingsDefaultSiteModeCellId =
     @"kSettingsDefaultSiteModeCellId";
+NSString* const kDefaultBrowserSettingsTableViewId =
+    @"kDefaultBrowserSettingsTableViewId";

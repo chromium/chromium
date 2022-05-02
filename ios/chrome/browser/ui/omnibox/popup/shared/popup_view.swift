@@ -180,7 +180,7 @@ struct PopupView: View {
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
           .listRowBackground(Color.clear)
-          .accessibilityElement(children: .contain)
+          .accessibilityElement(children: .combine)
           .accessibilityIdentifier(
             OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath))
         }
