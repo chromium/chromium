@@ -10,6 +10,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -187,6 +188,17 @@ class HistogramTester {
 struct Bucket {
   Bucket(HistogramBase::Sample min, HistogramBase::Count count)
       : min(min), count(count) {}
+
+  // A variant of the above constructor that accepts an `EnumType` for the `min`
+  // value. Typically, this `EnumType` is the C++ enum (class) that is
+  // associated with the metric this bucket is referring to.
+  //
+  // The constructor forwards to the above non-templated constructor. Therefore,
+  // `EnumType` must be implicitly convertible to `HistogramBase::Sample`.
+  template <typename MetricEnum,
+            typename = std::enable_if_t<std::is_enum_v<MetricEnum>>>
+  Bucket(MetricEnum min, HistogramBase::Count count)
+      : Bucket(static_cast<std::underlying_type_t<MetricEnum>>(min), count) {}
 
   bool operator==(const Bucket& other) const;
 

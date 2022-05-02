@@ -80,8 +80,9 @@
 #endif
 
 using ::autofill::metrics::kTestGuid;
-using base::ASCIIToUTF16;
-using base::TimeTicks;
+using ::base::ASCIIToUTF16;
+using ::base::Bucket;
+using ::base::TimeTicks;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::Matcher;
@@ -325,14 +326,8 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   return response_string;
 }
 
-template <typename MetricEnum>
-struct Bucket : public base::Bucket {
-  Bucket(MetricEnum bucket, base::HistogramBase::Count count)
-      : base::Bucket(static_cast<base::HistogramBase::Sample>(bucket), count) {}
-};
-
-template <typename... MetricEnum>
-auto AreBuckets(Bucket<MetricEnum>... buckets) {
+template <typename... Bucket>
+auto AreBuckets(Bucket... buckets) {
   return ::testing::UnorderedElementsAre(buckets...);
 }
 
