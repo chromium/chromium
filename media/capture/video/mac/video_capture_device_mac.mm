@@ -115,7 +115,7 @@ static bool FindDeviceWithVendorAndProductIds(int vendor_id,
   kern_return_t kr = IOServiceGetMatchingServices(
       kIOMasterPortDefault, query_dictionary.release(), usb_iterator);
   if (kr != kIOReturnSuccess) {
-    DLOG(ERROR) << "No devices found with specified Vendor and Product ID.";
+    VLOG(1) << "No devices found with specified Vendor and Product ID.";
     return false;
   }
   return true;
@@ -136,7 +136,7 @@ static bool FindDeviceInterfaceInUsbDevice(
       usb_device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID, &plugin,
       &score);
   if (kr != kIOReturnSuccess || !plugin) {
-    DLOG(ERROR) << "IOCreatePlugInInterfaceForService";
+    VLOG(1) << "IOCreatePlugInInterfaceForService";
     return false;
   }
   base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_ref(plugin);
@@ -146,7 +146,7 @@ static bool FindDeviceInterfaceInUsbDevice(
       plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
       reinterpret_cast<LPVOID*>(device_interface));
   if (!SUCCEEDED(res) || !*device_interface) {
-    DLOG(ERROR) << "QueryInterface, couldn't create interface to USB";
+    VLOG(1) << "QueryInterface, couldn't create interface to USB";
     return false;
   }
   return true;
@@ -171,7 +171,7 @@ static bool FindVideoControlInterfaceInDeviceInterface(
           ->CreateInterfaceIterator(device_interface, &interface_request,
                                     &interface_iterator);
   if (kr != kIOReturnSuccess) {
-    DLOG(ERROR) << "Could not create an iterator to the device's interfaces.";
+    VLOG(1) << "Could not create an iterator to the device's interfaces.";
     return false;
   }
   base::mac::ScopedIOObject<io_iterator_t> iterator_ref(interface_iterator);
@@ -180,7 +180,7 @@ static bool FindVideoControlInterfaceInDeviceInterface(
   io_service_t found_interface;
   found_interface = IOIteratorNext(interface_iterator);
   if (!found_interface) {
-    DLOG(ERROR) << "Could not find a Video-AVControl interface in the device.";
+    VLOG(1) << "Could not find a Video-AVControl interface in the device.";
     return false;
   }
   base::mac::ScopedIOObject<io_service_t> found_interface_ref(found_interface);
@@ -191,7 +191,7 @@ static bool FindVideoControlInterfaceInDeviceInterface(
       found_interface, kIOUSBInterfaceUserClientTypeID, kIOCFPlugInInterfaceID,
       video_control_interface, &score);
   if (kr != kIOReturnSuccess || !*video_control_interface) {
-    DLOG(ERROR) << "IOCreatePlugInInterfaceForService";
+    VLOG(1) << "IOCreatePlugInInterfaceForService";
     return false;
   }
   return true;
@@ -211,7 +211,7 @@ static void SetAntiFlickerInVideoControlInterface(
               plugin_interface, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID),
               reinterpret_cast<LPVOID*>(control_interface.InitializeInto()));
   if (!SUCCEEDED(res) || !control_interface) {
-    DLOG(ERROR) << "Couldn’t create control interface";
+    VLOG(1) << "Couldn’t create control interface";
     return;
   }
 
@@ -231,7 +231,7 @@ static void SetAntiFlickerInVideoControlInterface(
       break;
     }
   }
-  DVLOG_IF(1, real_unit_id == -1)
+  VLOG_IF(1, real_unit_id == -1)
       << "This USB device doesn't seem to have a "
       << " VC_PROCESSING_UNIT, anti-flicker not available";
   if (real_unit_id == -1)
@@ -239,7 +239,7 @@ static void SetAntiFlickerInVideoControlInterface(
 
   if ((*control_interface)->USBInterfaceOpen(control_interface) !=
       kIOReturnSuccess) {
-    DLOG(ERROR) << "Unable to open control interface";
+    VLOG(1) << "Unable to open control interface";
     return;
   }
 
@@ -263,10 +263,10 @@ static void SetAntiFlickerInVideoControlInterface(
 
   IOReturn ret =
       (*control_interface)->ControlRequest(control_interface, 0, &command);
-  DLOG_IF(ERROR, ret != kIOReturnSuccess) << "Anti-flicker control request"
+  VLOG_IF(1, ret != kIOReturnSuccess) << "Anti-flicker control request"
                                           << " failed (0x" << std::hex << ret
                                           << "), unit id: " << real_unit_id;
-  DVLOG_IF(1, ret == kIOReturnSuccess) << "Anti-flicker set to "
+  VLOG_IF(1, ret == kIOReturnSuccess) << "Anti-flicker set to "
                                        << static_cast<int>(frequency) << "Hz";
 
   (*control_interface)->USBInterfaceClose(control_interface);
@@ -355,7 +355,7 @@ static bool SendPanTiltControlRequest(
 
   IOReturn ret =
       (*control_interface)->ControlRequest(control_interface, 0, &command);
-  DLOG_IF(ERROR, ret != kIOReturnSuccess)
+  VLOG_IF(1, ret != kIOReturnSuccess)
       << "Control pan tilt request"
       << " failed (0x" << std::hex << ret << "), unit id: " << unit_id;
   if (ret != kIOReturnSuccess)
@@ -382,7 +382,7 @@ static bool SendZoomControlRequest(
 
   IOReturn ret =
       (*control_interface)->ControlRequest(control_interface, 0, &command);
-  DLOG_IF(ERROR, ret != kIOReturnSuccess)
+  VLOG_IF(1, ret != kIOReturnSuccess)
       << "Control zoom request"
       << " failed (0x" << std::hex << ret << "), unit id: " << unit_id;
   if (ret != kIOReturnSuccess)
@@ -476,12 +476,12 @@ static void SetPanTiltInUsbDevice(
 
   IOReturn ret =
       (*control_interface)->ControlRequest(control_interface, 0, &command);
-  DLOG_IF(ERROR, ret != kIOReturnSuccess)
+  VLOG_IF(1, ret != kIOReturnSuccess)
       << "Control request"
       << " failed (0x" << std::hex << ret << "), unit id: " << unit_id
       << " pan value: " << pan.value_or(pan_current)
       << " tilt value: " << tilt.value_or(tilt_current);
-  DVLOG_IF(1, ret == kIOReturnSuccess)
+  VLOG_IF(1, ret == kIOReturnSuccess)
       << "Setting pan value to " << pan.value_or(pan_current)
       << " and tilt value to " << tilt.value_or(tilt_current);
 }
@@ -497,11 +497,11 @@ static void SetZoomInUsbDevice(IOUSBInterfaceInterface220** control_interface,
 
   IOReturn ret =
       (*control_interface)->ControlRequest(control_interface, 0, &command);
-  DLOG_IF(ERROR, ret != kIOReturnSuccess)
+  VLOG_IF(1, ret != kIOReturnSuccess)
       << "Control request"
       << " failed (0x" << std::hex << ret << "), unit id: " << unit_id
       << " zoom value: " << zoom;
-  DVLOG_IF(1, ret == kIOReturnSuccess) << "Setting zoom value to " << zoom;
+  VLOG_IF(1, ret == kIOReturnSuccess) << "Setting zoom value to " << zoom;
 }
 
 // Open the pan, tilt, zoom interface in a USB webcam identified by
@@ -560,7 +560,7 @@ static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
               CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID220),
               reinterpret_cast<LPVOID*>(control_interface.InitializeInto()));
   if (!SUCCEEDED(res) || !control_interface) {
-    DLOG(ERROR) << "Couldn’t get control interface";
+    VLOG(1) << "Couldn’t get control interface";
     return ScopedIOUSBInterfaceInterface();
   }
 
@@ -580,7 +580,7 @@ static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
     }
   }
 
-  DVLOG_IF(1, *unit_id == -1)
+  VLOG_IF(1, *unit_id == -1)
       << "This USB device doesn't seem to have a "
       << " VC_INPUT_TERMINAL. Pan, tilt, zoom are not available.";
   if (*unit_id == -1)
@@ -588,7 +588,7 @@ static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
 
   if ((*control_interface)->USBInterfaceOpen(control_interface) !=
       kIOReturnSuccess) {
-    DLOG(ERROR) << "Unable to open control interface";
+    VLOG(1) << "Unable to open control interface";
     return ScopedIOUSBInterfaceInterface();
   }
 
@@ -841,7 +841,7 @@ void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,
 }
 
 void VideoCaptureDeviceMac::OnPhotoError() {
-  DLOG(ERROR) << __func__ << " error taking picture";
+  VLOG(1) << __func__ << " error taking picture";
   photo_callback_.Reset();
 }
 
