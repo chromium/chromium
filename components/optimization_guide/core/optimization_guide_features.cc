@@ -168,6 +168,10 @@ const base::Feature
 const base::Feature kOverrideNumThreadsForModelExecution{
     "OverrideNumThreadsForModelExecution", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite{
+    "OptGuideEnableXNNPACKDelegateWithTFLite",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -610,6 +614,10 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
 
   // Cap to the number of CPUs on the device.
   return std::min(num_threads, base::SysInfo::NumberOfProcessors());
+}
+
+bool TFLiteXNNPACKDelegateEnabled() {
+  return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
 }
 
 }  // namespace features

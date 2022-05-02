@@ -86,6 +86,7 @@ if (build_with_tflite_lib) {
       "tflite_op_resolver.h",
     ]
     deps = [
+      ":features",
       "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
@@ -105,8 +106,8 @@ static_library("features") {
     "optimization_guide_switches.cc",
     "optimization_guide_switches.h",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",

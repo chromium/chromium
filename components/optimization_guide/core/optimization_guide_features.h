@@ -43,6 +43,7 @@ extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
 extern const base::Feature kBatchAnnotationsValidation;
 extern const base::Feature kPreventLongRunningPredictionModels;
 extern const base::Feature kOverrideNumThreadsForModelExecution;
+extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -303,6 +304,10 @@ size_t MaxVisitAnnotationCacheSize();
 // optimization target.
 absl::optional<int> OverrideNumThreadsForOptTarget(
     proto::OptimizationTarget opt_target);
+
+// Whether XNNPACK should be used with TFLite, on platforms where it is
+// supported. This is a no-op on unsupported platforms.
+bool TFLiteXNNPACKDelegateEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide
