@@ -270,14 +270,14 @@ void ShowExtensionSigninPrompt(Profile* profile,
 
 void EnableSyncFromSingleAccountPromo(
     Browser* browser,
-    const AccountInfo& account,
+    const CoreAccountInfo& account,
     signin_metrics::AccessPoint access_point) {
   EnableSyncFromMultiAccountPromo(browser, account, access_point,
                                   /*is_default_promo_account=*/true);
 }
 
 void EnableSyncFromMultiAccountPromo(Browser* browser,
-                                     const AccountInfo& account,
+                                     const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -192,7 +192,7 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
     return IdentityManagerFactory::GetForProfile(profile());
   }
 
-  void EnableSync(const AccountInfo& account_info,
+  void EnableSync(const CoreAccountInfo& account_info,
                   bool is_default_promo_account) {
     EnableSyncFromMultiAccountPromo(browser(), account_info, access_point_,
                                     is_default_promo_account);
@@ -394,7 +394,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
   EXPECT_EQ(
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
-  EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
+  EnableSync(CoreAccountInfo(), false /* is_default_promo_account (not used)*/);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::
@@ -426,7 +426,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
   EXPECT_EQ(
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
-  EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
+  EnableSync(CoreAccountInfo(), false /* is_default_promo_account (not used)*/);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester,
@@ -447,7 +447,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
   EXPECT_EQ(
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
-  EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
+  EnableSync(CoreAccountInfo(), false /* is_default_promo_account (not used)*/);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::
@@ -478,12 +478,12 @@ TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
 
 TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
-  EnableSync(AccountInfo(), false);
+  EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   // Signin tab is reused.
-  EnableSync(AccountInfo(), false);
+  EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
@@ -498,14 +498,14 @@ TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
 
   // Extensions re-use the tab but do not take focus.
   access_point_ = signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS;
-  EnableSync(AccountInfo(), false);
+  EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
   EXPECT_EQ(0, tab_strip->active_index());
 
   // Other access points re-use the tab and take focus.
   access_point_ = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
-  EnableSync(AccountInfo(), false);
+  EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
   EXPECT_EQ(1, tab_strip->active_index());
@@ -734,7 +734,7 @@ TEST_F(MirrorSigninUiUtilTest, EnableSyncForNewAccount) {
       signin_metrics::PromoAction::
           PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
   EnableSyncFromMultiAccountPromo(
-      browser(), AccountInfo(),
+      browser(), CoreAccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       /*is_default_promo_account=*/false);
 }
@@ -750,7 +750,7 @@ TEST_F(MirrorSigninUiUtilTest, EnableSyncForNewAccountExisting) {
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT);
   EnableSyncFromMultiAccountPromo(
-      browser(), AccountInfo(),
+      browser(), CoreAccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       /*is_default_promo_account=*/false);
 }

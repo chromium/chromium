@@ -18,6 +18,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 struct AccountInfo;
+struct CoreAccountInfo;
 class Browser;
 class Profile;
 class ProfileAttributesEntry;
@@ -77,7 +78,7 @@ void ShowSigninPromptAndMaybeEnableSync(
 // * If token service has a valid refresh token for |account|, then it
 //   enables sync for |account|.
 void EnableSyncFromSingleAccountPromo(Browser* browser,
-                                      const AccountInfo& account,
+                                      const CoreAccountInfo& account,
                                       signin_metrics::AccessPoint access_point);
 
 // This function is used to enable sync for a given account. It has the same
@@ -88,7 +89,7 @@ void EnableSyncFromSingleAccountPromo(Browser* browser,
 // |is_default_promo_account| is true if |account| corresponds to the default
 // account in the promo. It is ignored if |account| is empty.
 void EnableSyncFromMultiAccountPromo(Browser* browser,
-                                     const AccountInfo& account,
+                                     const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account);
 

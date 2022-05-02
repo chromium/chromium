@@ -26,7 +26,7 @@ namespace views {
 class Button;
 }
 
-struct AccountInfo;
+struct CoreAccountInfo;
 class Browser;
 
 // This bubble view is displayed when the user clicks on the avatar button.
@@ -63,7 +63,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnExitProfileButtonClicked();
   void OnSyncSettingsButtonClicked();
   void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
-  void OnSigninAccountButtonClicked(AccountInfo account);
+  void OnSigninAccountButtonClicked(CoreAccountInfo account);
   void OnCookiesClearedOnExitLinkClicked();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnSignoutButtonClicked();
