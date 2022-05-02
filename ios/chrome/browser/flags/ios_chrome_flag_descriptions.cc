@@ -104,6 +104,11 @@ extern const char kBubbleRichIPHDescription[] =
     "When enabled, displays a rich description (ex: title, image, etc..) of "
     "the feature presented in the bubble view.";
 
+extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
+extern const char kCalendarExperienceKitDescription[] =
+    "When enabled, long pressing on dates will trigger Experience Kit Calendar "
+    "event handling";
+
 const char kContentSuggestionsHeaderMigrationName[] =
     "Content Suggestions header migration";
 const char kContentSuggestionsHeaderMigrationDescription[] =

@@ -82,6 +82,9 @@ extern const base::Feature kAddSettingForDefaultPageMode;
 // Feature flag to switch some images to SFSymbols when enabled.
 extern const base::Feature kUseSFSymbolsSamples;
 
+// Feature flag to enable Calandar event in experience kit.
+extern const base::Feature kCalendarExperienceKit;
+
 // Feature flag to use UIKit menus instead of custom ones.
 extern const base::Feature kUseUIKitPopupMenu;
 

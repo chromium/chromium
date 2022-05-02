@@ -67,6 +67,9 @@ const base::Feature kAddSettingForDefaultPageMode{
 const base::Feature kUseSFSymbolsSamples{"UseSFSymbolsSamples",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kUseUIKitPopupMenu{"UseUIKitPopupMenu",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

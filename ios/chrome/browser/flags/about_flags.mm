@@ -886,6 +886,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSuggestionsScrollingOnIPadName,
      flag_descriptions::kEnableSuggestionsScrollingOnIPadDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableSuggestionsScrollingOnIPad)},
+    {"experience-kit-calendar", flag_descriptions::kCalendarExperienceKitName,
+     flag_descriptions::kCalendarExperienceKitDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCalendarExperienceKit)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

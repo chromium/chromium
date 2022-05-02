@@ -88,6 +88,10 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kBubbleRichIPHName[];
 extern const char kBubbleRichIPHDescription[];
 
+// Title and description for the flag to enable experience kit calendar events.
+extern const char kCalendarExperienceKitName[];
+extern const char kCalendarExperienceKitDescription[];
+
 // Title and description for the flag that moves the Content Suggestions header
 // to the Discover feed ScrollView.
 extern const char kContentSuggestionsHeaderMigrationName[];

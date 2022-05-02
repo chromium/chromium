@@ -3130,6 +3130,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "experience-kit-calendar",
+    "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "explore-sites",
     "owners": [ "chili", "dewittj" ],
     "expiry_milestone": 102
