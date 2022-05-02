@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "chromeos/chromeos_export.h"
-#include "chromeos/scanning/scanner.h"
 
 namespace ash {
 
@@ -33,12 +33,12 @@ class CHROMEOS_EXPORT ScannerDetector {
   // Registers the callback used to provide notifications when scanners are
   // detected.
   using OnScannersDetectedCallback =
-      base::RepeatingCallback<void(std::vector<chromeos::Scanner> scanners)>;
+      base::RepeatingCallback<void(std::vector<Scanner> scanners)>;
   virtual void RegisterScannersDetectedCallback(
       OnScannersDetectedCallback callback) = 0;
 
   // Returns the detected scanners.
-  virtual std::vector<chromeos::Scanner> GetScanners() = 0;
+  virtual std::vector<Scanner> GetScanners() = 0;
 };
 
 }  // namespace ash

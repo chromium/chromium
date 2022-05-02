@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SCANNING_SCANNER_H_
-#define CHROMEOS_SCANNING_SCANNER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SCANNING_SCANNER_H_
+#define CHROMEOS_ASH_COMPONENTS_SCANNING_SCANNER_H_
 
 #include <string>
 
@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "net/base/ip_address.h"
 
-namespace chromeos {
+namespace ash {
 
 // The type of protocol used to communicate with a scanner.
 enum class COMPONENT_EXPORT(SCANNING) ScanProtocol {
@@ -64,6 +64,6 @@ struct COMPONENT_EXPORT(SCANNING) Scanner {
   base::flat_set<net::IPAddress> ip_addresses;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_SCANNING_SCANNER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SCANNING_SCANNER_H_

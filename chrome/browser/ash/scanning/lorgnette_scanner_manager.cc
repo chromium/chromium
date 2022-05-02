@@ -20,10 +20,10 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
-#include "chromeos/scanning/scanner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -82,9 +82,9 @@ constexpr char kEpsonNoFlipModels[] =
 // A prioritized list of scan protocols. Protocols that appear earlier in the
 // list are preferred over those that appear later in the list when
 // communicating with a connected scanner.
-constexpr std::array<chromeos::ScanProtocol, 4> kPrioritizedProtocols = {
-    chromeos::ScanProtocol::kEscls, chromeos::ScanProtocol::kEscl,
-    chromeos::ScanProtocol::kLegacyNetwork, chromeos::ScanProtocol::kLegacyUsb};
+constexpr std::array<ScanProtocol, 4> kPrioritizedProtocols = {
+    ScanProtocol::kEscls, ScanProtocol::kEscl, ScanProtocol::kLegacyNetwork,
+    ScanProtocol::kLegacyUsb};
 
 // Returns a pointer to LorgnetteManagerClient, which is used to detect and
 // interact with scanners via the lorgnette D-Bus service.
@@ -172,7 +172,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       const std::string& scanner_name,
       GetScannerCapabilitiesCallback callback) override {
     std::string device_name;
-    chromeos::ScanProtocol protocol;
+    ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -194,7 +194,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     }
 
     std::string device_name;
-    chromeos::ScanProtocol protocol;
+    ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
       LOG(ERROR) << "Failed to get device name for " << scanner_name;
       return false;
@@ -217,7 +217,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
             PageCallback page_callback,
             CompletionCallback completion_callback) override {
     std::string device_name;
-    chromeos::ScanProtocol protocol;  // Unused.
+    ScanProtocol protocol;  // Unused.
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
       std::move(completion_callback).Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
@@ -235,7 +235,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
  private:
   // Called when scanners are detected by a ScannerDetector.
-  void OnScannersDetected(std::vector<chromeos::Scanner> scanners) {
+  void OnScannersDetected(std::vector<Scanner> scanners) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     zeroconf_scanners_ = scanners;
   }
@@ -314,7 +314,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       GetScannerCapabilitiesCallback callback,
       const std::string& scanner_name,
       const std::string& device_name,
-      const chromeos::ScanProtocol protocol,
+      const ScanProtocol protocol,
       absl::optional<lorgnette::ScannerCapabilities> capabilities) {
     if (!capabilities) {
       LOG(WARNING) << "Failed to get scanner capabilities using device name: "
@@ -346,7 +346,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         GetKnownIpAddresses();
     for (const auto& lorgnette_scanner : response->scanners()) {
       std::string ip_address_str;
-      chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
+      ScanProtocol protocol = ScanProtocol::kUnknown;
       ParseScannerName(lorgnette_scanner.name(), ip_address_str, protocol);
       if (!ip_address_str.empty()) {
         net::IPAddress ip_address;
@@ -362,13 +362,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         }
       }
 
-      const bool is_usb_scanner =
-          protocol == chromeos::ScanProtocol::kLegacyUsb;
+      const bool is_usb_scanner = protocol == ScanProtocol::kLegacyUsb;
       const std::string base_name =
           CreateBaseName(lorgnette_scanner, is_usb_scanner);
       const std::string display_name = CreateUniqueDisplayName(base_name);
 
-      chromeos::Scanner scanner;
+      Scanner scanner;
       scanner.display_name = display_name;
       scanner.device_names[protocol].emplace(lorgnette_scanner.name());
       deduped_scanners_[display_name] = scanner;
@@ -427,7 +426,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // success, false on failure.
   bool GetUsableDeviceNameAndProtocol(const std::string& scanner_name,
                                       std::string& device_name_out,
-                                      chromeos::ScanProtocol& protocol_out) {
+                                      ScanProtocol& protocol_out) {
     const auto scanner_it = deduped_scanners_.find(scanner_name);
     if (scanner_it == deduped_scanners_.end()) {
       LOG(ERROR) << "Failed to find scanner with name " << scanner_name;
@@ -440,7 +439,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       if (device_names_it == scanner_it->second.device_names.end())
         continue;
 
-      for (const chromeos::ScannerDeviceName& name : device_names_it->second) {
+      for (const ScannerDeviceName& name : device_names_it->second) {
         if (name.usable) {
           device_name_out = name.device_name;
           protocol_out = protocol;
@@ -457,7 +456,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // calls to GetUsableDeviceNameAndProtocol().
   void MarkDeviceNameUnusable(const std::string& scanner_name,
                               const std::string& device_name,
-                              const chromeos::ScanProtocol protocol) {
+                              const ScanProtocol protocol) {
     auto scanner_it = deduped_scanners_.find(scanner_name);
     if (scanner_it == deduped_scanners_.end())
       return;
@@ -466,7 +465,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     if (device_names_it == scanner_it->second.device_names.end())
       return;
 
-    for (chromeos::ScannerDeviceName& name : device_names_it->second) {
+    for (ScannerDeviceName& name : device_names_it->second) {
       if (name.device_name == device_name) {
         name.usable = false;
         return;
@@ -479,12 +478,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
   // The deduplicated zeroconf scanners reported by the
   // zeroconf_scanner_detector_.
-  std::vector<chromeos::Scanner> zeroconf_scanners_;
+  std::vector<Scanner> zeroconf_scanners_;
 
   // Stores the deduplicated scanners from all sources in a map of display name
   // to Scanner. Clients are given display names and can use them to
   // interact with the corresponding scanners.
-  base::flat_map<std::string, chromeos::Scanner> deduped_scanners_;
+  base::flat_map<std::string, Scanner> deduped_scanners_;
 
   // Stores a list of scanner display names to check while filtering.
   std::vector<std::string> scanners_to_filter_;

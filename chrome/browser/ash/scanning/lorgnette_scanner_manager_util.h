@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 
 namespace ash {
 
@@ -18,7 +18,7 @@ namespace ash {
 // |ip_address_out|.
 void ParseScannerName(const std::string& scanner_name,
                       std::string& ip_address_out,
-                      chromeos::ScanProtocol& protocol_out);
+                      ScanProtocol& protocol_out);
 
 }  // namespace ash
 

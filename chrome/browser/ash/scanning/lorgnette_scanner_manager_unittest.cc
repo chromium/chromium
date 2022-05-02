@@ -19,10 +19,10 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
-#include "chromeos/scanning/scanner.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +33,6 @@ namespace ash {
 namespace {
 
 using ::chromeos::FakeLorgnetteManagerClient;
-using ::chromeos::Scanner;
 using local_discovery::ServiceDescription;
 using ::testing::ElementsAreArray;
 
@@ -359,7 +358,7 @@ TEST_F(LorgnetteScannerManagerTest, EsclEpsonZeroconfScanner) {
 // Test that the name of a detected non-ESCL zeroconf scanner does not generate
 // a scanner if it is not an Epson.
 TEST_F(LorgnetteScannerManagerTest, NonEsclNonEpsonZeroconfScanner) {
-  absl::optional<chromeos::Scanner> scanner = CreateSaneScanner(
+  absl::optional<Scanner> scanner = CreateSaneScanner(
       "Test MX3100", ZeroconfScannerDetector::kGenericScannerServiceType, "",
       net::IPAddress(192, 168, 0, 3), 5, true);
   EXPECT_FALSE(scanner.has_value());

@@ -20,7 +20,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,7 +76,7 @@ class ParsedMetadata {
 
 // Attempts to create a Scanner using the information in |service_description|
 // and |metadata|. Returns the Scanner on success, absl::nullopt on failure.
-absl::optional<chromeos::Scanner> CreateScanner(
+absl::optional<Scanner> CreateScanner(
     const std::string& service_type,
     const ServiceDescription& service_description,
     const ParsedMetadata& metadata) {
@@ -135,7 +135,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   }
 
   // ScannerDetector:
-  std::vector<chromeos::Scanner> GetScanners() override {
+  std::vector<Scanner> GetScanners() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     return GetDedupedScanners();
   }
@@ -200,31 +200,30 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   }
 
   // Returns the detected scanners after merging duplicates.
-  std::vector<chromeos::Scanner> GetDedupedScanners() {
+  std::vector<Scanner> GetDedupedScanners() {
     // Use a map of display name to Scanner to deduplicate the detected
     // scanners. If a Scanner has the same display name as one that's already
     // been added to the map, merge the two by adding the new Scanner's
     // information to the existing Scanner.
-    base::flat_map<std::string, chromeos::Scanner> deduped_scanners;
+    base::flat_map<std::string, Scanner> deduped_scanners;
     for (const auto& entry : scanners_) {
-      const chromeos::Scanner* scanner = &entry.second;
+      const Scanner* scanner = &entry.second;
       auto it = deduped_scanners.find(scanner->display_name);
       if (it == deduped_scanners.end()) {
         deduped_scanners.insert({scanner->display_name, *scanner});
       } else {
         // Each Scanner in scanners_ should have a single device name
         // corresponding to a known protocol.
-        chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
-        if (scanner->device_names.find(chromeos::ScanProtocol::kEscls) !=
+        ScanProtocol protocol = ScanProtocol::kUnknown;
+        if (scanner->device_names.find(ScanProtocol::kEscls) !=
             scanner->device_names.end()) {
-          protocol = chromeos::ScanProtocol::kEscls;
-        } else if (scanner->device_names.find(chromeos::ScanProtocol::kEscl) !=
+          protocol = ScanProtocol::kEscls;
+        } else if (scanner->device_names.find(ScanProtocol::kEscl) !=
                    scanner->device_names.end()) {
-          protocol = chromeos::ScanProtocol::kEscl;
-        } else if (scanner->device_names.find(
-                       chromeos::ScanProtocol::kLegacyNetwork) !=
+          protocol = ScanProtocol::kEscl;
+        } else if (scanner->device_names.find(ScanProtocol::kLegacyNetwork) !=
                    scanner->device_names.end()) {
-          protocol = chromeos::ScanProtocol::kLegacyNetwork;
+          protocol = ScanProtocol::kLegacyNetwork;
         } else {
           NOTREACHED() << "Zeroconf scanner with unknown protocol.";
         }
@@ -237,7 +236,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
       }
     }
 
-    std::vector<chromeos::Scanner> scanners;
+    std::vector<Scanner> scanners;
     scanners.reserve(deduped_scanners.size());
     for (const auto& entry : deduped_scanners)
       scanners.push_back(entry.second);
@@ -248,7 +247,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   SEQUENCE_CHECKER(sequence_);
 
   // Map from service name to Scanner.
-  base::flat_map<std::string, chromeos::Scanner> scanners_;
+  base::flat_map<std::string, Scanner> scanners_;
 
   // Keep a reference to the shared device client around for the lifetime of
   // this object.

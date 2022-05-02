@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 
-namespace chromeos {
+namespace ash {
 
 ScannerDeviceName::ScannerDeviceName(const std::string& device_name)
     : device_name(device_name) {}
@@ -36,4 +36,4 @@ Scanner::Scanner(const Scanner& other) = default;
 
 Scanner& Scanner::operator=(const Scanner& other) = default;
 
-}  // namespace chromeos
+}  // namespace ash

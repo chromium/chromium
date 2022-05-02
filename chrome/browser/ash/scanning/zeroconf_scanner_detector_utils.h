@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,13 +22,12 @@ namespace ash {
 // resolve host names it did not discover itself. See mdns_make_escl_endpoint()
 // at https://github.com/alexpevzner/sane-airscan/blob/master/airscan-mdns.c for
 // more details.
-absl::optional<chromeos::Scanner> CreateSaneScanner(
-    const std::string& name,
-    const std::string& service_type,
-    const std::string& rs,
-    const net::IPAddress& ip_address,
-    int port,
-    bool usable = true);
+absl::optional<Scanner> CreateSaneScanner(const std::string& name,
+                                          const std::string& service_type,
+                                          const std::string& rs,
+                                          const net::IPAddress& ip_address,
+                                          int port,
+                                          bool usable = true);
 
 }  // namespace ash
 

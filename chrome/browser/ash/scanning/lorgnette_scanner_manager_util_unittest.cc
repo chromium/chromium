@@ -6,12 +6,10 @@
 
 #include <string>
 
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-
-using ::chromeos::ScanProtocol;
 
 // Test that parsing a scanner name with an IP address successfully extracts the
 // IP address and sets the protocol to kLegacyNetwork.

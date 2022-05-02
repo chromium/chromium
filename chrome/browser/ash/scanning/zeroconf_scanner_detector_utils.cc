@@ -19,16 +19,16 @@ namespace {
 // Sets the values of |scheme| and |protocol| based on |service_type|.
 void SetSchemeAndProtocol(const std::string& service_type,
                           std::string& scheme_out,
-                          chromeos::ScanProtocol& protocol_out) {
+                          ScanProtocol& protocol_out) {
   if (service_type == ZeroconfScannerDetector::kEsclsServiceType) {
     scheme_out = "https";
-    protocol_out = chromeos::ScanProtocol::kEscls;
+    protocol_out = ScanProtocol::kEscls;
   } else if (service_type == ZeroconfScannerDetector::kEsclServiceType) {
     scheme_out = "http";
-    protocol_out = chromeos::ScanProtocol::kEscl;
+    protocol_out = ScanProtocol::kEscl;
   } else if (service_type ==
              ZeroconfScannerDetector::kGenericScannerServiceType) {
-    protocol_out = chromeos::ScanProtocol::kLegacyNetwork;
+    protocol_out = ScanProtocol::kLegacyNetwork;
   } else {
     NOTREACHED() << "Zeroconf scanner with unknown service type: "
                  << service_type;
@@ -71,15 +71,14 @@ std::string CreateDeviceName(const std::string& name,
 
 }  // namespace
 
-absl::optional<chromeos::Scanner> CreateSaneScanner(
-    const std::string& name,
-    const std::string& service_type,
-    const std::string& rs,
-    const net::IPAddress& ip_address,
-    int port,
-    bool usable) {
+absl::optional<Scanner> CreateSaneScanner(const std::string& name,
+                                          const std::string& service_type,
+                                          const std::string& rs,
+                                          const net::IPAddress& ip_address,
+                                          int port,
+                                          bool usable) {
   std::string scheme;
-  chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
+  ScanProtocol protocol = ScanProtocol::kUnknown;
   SetSchemeAndProtocol(service_type, scheme, protocol);
   std::string device_name = "";
   // If the name contains "EPSON" and is a generic service type, use the
@@ -94,10 +93,10 @@ absl::optional<chromeos::Scanner> CreateSaneScanner(
   if (device_name.empty())
     return absl::nullopt;
 
-  chromeos::Scanner scanner;
+  Scanner scanner;
   scanner.display_name = name;
   scanner.device_names[protocol].emplace(
-      chromeos::ScannerDeviceName(device_name, usable));
+      ScannerDeviceName(device_name, usable));
   scanner.ip_addresses.insert(ip_address);
   return scanner;
 }
