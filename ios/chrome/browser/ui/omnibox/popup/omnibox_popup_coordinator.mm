@@ -46,6 +46,7 @@
     UIViewController<ContentProviding>* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
 @property(nonatomic, strong) PopupModel* model;
+@property(nonatomic, strong) PopupUIConfiguration* uiConfiguration;
 
 @end
 
@@ -75,6 +76,8 @@
       std::make_unique<image_fetcher::ImageDataFetcher>(
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
 
+  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+
   self.mediator = [[OmniboxPopupMediator alloc]
       initWithFetcher:std::move(imageFetcher)
         faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
@@ -97,6 +100,10 @@
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
                                             delegate:self.pedalExtractor];
+    ToolbarConfiguration* toolbarConfiguration = [[ToolbarConfiguration alloc]
+        initWithStyle:isIncognito ? INCOGNITO : NORMAL];
+    self.uiConfiguration = [[PopupUIConfiguration alloc]
+        initWithToolbarConfiguration:toolbarConfiguration];
     BOOL popupShouldSelfSize =
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;
@@ -111,6 +118,7 @@
 
     self.popupViewController = [OmniboxPopupViewProvider
         makeViewControllerWithModel:self.model
+                    uiConfiguration:self.uiConfiguration
                    popupUIVariation:popupUIVariation
                 popupShouldSelfSize:popupShouldSelfSize
             appearanceContainerType:[OmniboxPopupContainerView class]];
@@ -132,8 +140,7 @@
     popupViewController.imageRetriever = self.mediator;
     popupViewController.faviconRetriever = self.mediator;
     popupViewController.delegate = self.mediator;
-    popupViewController.incognito =
-        self.browser->GetBrowserState()->IsOffTheRecord();
+    popupViewController.incognito = isIncognito;
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:popupViewController
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
@@ -143,7 +150,6 @@
     self.popupViewController = popupViewController;
   }
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.incognito = isIncognito;
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

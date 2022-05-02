@@ -14,31 +14,37 @@ import UIKit
   ///
   /// - Parameters:
   ///   - model: The popup model to be used by the popup view.
+  ///   - uiConfiguration: The model object holding ui configuration data for
+  ///     the popup view.
   ///   - popupUIVariation: The UI variant to use for the popup view.
   ///   - popupShouldSelfSize: Whether the popup should resize itself to fit its content.
   ///   - appearanceContainerType: The container type that will contain the popup view, so
   ///     its appearance can be properly styled.
   /// - Returns: The hosting controller which embeds the popup view.
   public static func makeViewController(
-    withModel model: PopupModel, popupUIVariation: PopupUIVariation, popupShouldSelfSize: Bool,
+    withModel model: PopupModel, uiConfiguration: PopupUIConfiguration,
+    popupUIVariation: PopupUIVariation, popupShouldSelfSize: Bool,
     appearanceContainerType: UIAppearanceContainer.Type?
   )
     -> UIViewController & ContentProviding
   {
     let rootView = PopupView(
-      model: model, shouldSelfSize: popupShouldSelfSize,
+      model: model, uiConfiguration: uiConfiguration, shouldSelfSize: popupShouldSelfSize,
       appearanceContainerType: appearanceContainerType
     ).environment(\.popupUIVariation, popupUIVariation)
-    return OmniboxPopupHostingController(rootView: rootView, model: model)
+    return OmniboxPopupHostingController(
+      rootView: rootView, model: model, uiConfiguration: uiConfiguration)
   }
 }
 
 class OmniboxPopupHostingController<Content>: UIHostingController<Content>, ContentProviding
 where Content: View {
   let model: PopupModel
+  let uiConfiguration: PopupUIConfiguration
 
-  init(rootView: Content, model: PopupModel) {
+  init(rootView: Content, model: PopupModel, uiConfiguration: PopupUIConfiguration) {
     self.model = model
+    self.uiConfiguration = uiConfiguration
     super.init(rootView: rootView)
   }
 
@@ -61,8 +67,8 @@ where Content: View {
     // Calculate the leading and trailing space here in UIKit world so SwiftUI
     // gets accurate spacing.
     let frameInView = guide.constrainedView.convert(guide.constrainedView.bounds, to: view)
-    model.omniboxLeadingSpace = frameInView.minX
-    model.omniboxTrailingSpace = view.bounds.width - frameInView.width - frameInView.minX
+    uiConfiguration.omniboxLeadingSpace = frameInView.minX
+    uiConfiguration.omniboxTrailingSpace = view.bounds.width - frameInView.width - frameInView.minX
   }
 
   var hasContent: Bool {
