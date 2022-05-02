@@ -438,8 +438,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
  public:
   WebAppLaunchHandlerDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kWebAppEnableLaunchHandler);
+    feature_list_.InitWithFeatures({},
+                                   {blink::features::kWebAppEnableLaunchHandler,
+                                    blink::features::kFileHandlingAPI});
   }
   ~WebAppLaunchHandlerDisabledBrowserTest() override = default;
 
@@ -574,8 +575,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
       }));
 
   // Install web app with origin trial token.
-  AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+  AppId app_id = InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
   // Origin trial should grant the app access.
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
