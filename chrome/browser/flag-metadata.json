@@ -1550,8 +1550,8 @@
   },
   {
     "name": "enable-async-dns",
-    "owners": [ "ericorth", "net-dev" ],
-    "expiry_milestone": 81
+    "owners": [ "horo", "net-dev" ],
+    "expiry_milestone": 106
   },
   {
     "name": "enable-auto-disable-accessibility",

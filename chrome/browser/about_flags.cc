@@ -5507,11 +5507,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPointerLockOptionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPointerLockOptions)},
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
     {"enable-async-dns", flag_descriptions::kAsyncDnsName,
-     flag_descriptions::kAsyncDnsDescription, kOsAndroid,
+     flag_descriptions::kAsyncDnsDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kAsyncDns)},
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
     {"download-auto-resumption-native",

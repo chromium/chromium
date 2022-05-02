@@ -2967,9 +2967,6 @@ const char kAssistantIntentTranslateInfoDescription[] =
     "intent. This includes the page's URL and its original, current, and "
     "default target language.";
 
-const char kAsyncDnsName[] = "Async DNS resolver";
-const char kAsyncDnsDescription[] = "Enables the built-in DNS resolver.";
-
 const char kAutofillAccessoryViewName[] =
     "Autofill suggestions as keyboard accessory view";
 const char kAutofillAccessoryViewDescription[] =
@@ -3871,6 +3868,9 @@ const char kSharingDesktopSharePreviewDescription[] =
 // Windows ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_WIN)
+
+const char kAsyncDnsName[] = "Async DNS resolver";
+const char kAsyncDnsDescription[] = "Enables the built-in DNS resolver.";
 
 const char kCalculateNativeWinOcclusionName[] =
     "Calculate window occlusion on Windows";

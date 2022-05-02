@@ -1672,9 +1672,6 @@ extern const char kAssistantIntentPageUrlDescription[];
 extern const char kAssistantIntentTranslateInfoName[];
 extern const char kAssistantIntentTranslateInfoDescription[];
 
-extern const char kAsyncDnsName[];
-extern const char kAsyncDnsDescription[];
-
 extern const char kAutofillAccessoryViewName[];
 extern const char kAutofillAccessoryViewDescription[];
 
@@ -2208,6 +2205,9 @@ extern const char kSharingDesktopSharePreviewDescription[];
 // Windows --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_WIN)
+
+extern const char kAsyncDnsName[];
+extern const char kAsyncDnsDescription[];
 
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
