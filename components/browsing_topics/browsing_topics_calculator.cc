@@ -77,15 +77,15 @@ void DeriveHostTopicsMapAndTopicHostsMap(
     const optimization_guide::BatchAnnotationResult& result = results[i];
     const std::string raw_host = raw_hosts[i];
 
-    // As long as the annotation didn't fail in general, the individual
-    // `result.topics()` should always be valid.
-    const std::vector<optimization_guide::WeightedIdentifier>&
-        annotation_result_topics = result.topics().value();
+    const absl::optional<std::vector<optimization_guide::WeightedIdentifier>>&
+        annotation_result_topics = result.topics();
+    if (!annotation_result_topics)
+      continue;
 
     HashedHost host = HashMainFrameHostForStorage(raw_host);
 
     for (const optimization_guide::WeightedIdentifier& annotation_result_topic :
-         annotation_result_topics) {
+         *annotation_result_topics) {
       // Note that `annotation_result_topic.weight()` is ignored. This is the
       // intended use of the model for the Topics API.
       Topic topic = Topic(annotation_result_topic.value());
@@ -187,7 +187,12 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
   // topics (https://github.com/jkarlin/topics/issues/42).
   std::map<Topic, size_t> topics_count;
   for (auto const& [host, host_count] : history_hosts_count) {
-    const std::set<Topic>& topics = host_topics_map.at(host);
+    // A host wouldn't be found if there were no topics associated with it.
+    auto it = host_topics_map.find(host);
+    if (it == host_topics_map.end())
+      continue;
+
+    const std::set<Topic>& topics = it->second;
     for (const Topic& topic : topics) {
       topics_count[topic] += host_count;
     }
