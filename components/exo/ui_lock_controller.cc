@@ -33,6 +33,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -68,6 +70,8 @@ constexpr float kExitPopupHideHeight = 150.f;
 // Once the pointer capture notification has finished showing without
 // being interrupted, don't show it again until this long has passed.
 constexpr auto kPointerCaptureNotificationCooldown = base::Minutes(5);
+
+constexpr auto kReshowNotificationsWhenIdleFor = base::Minutes(5);
 
 constexpr int kUILockControllerSeatObserverPriority = 1;
 static_assert(
@@ -484,6 +488,7 @@ constexpr auto kExcludedFlags = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
                                 ui::EF_ALTGR_DOWN | ui::EF_IS_REPEAT;
 
 UILockController::UILockController(Seat* seat) : seat_(seat) {
+  last_activity_time_ = base::TimeTicks::Now();
   WMHelper::GetInstance()->AddPreTargetHandler(this);
   seat_->AddObserver(this, kUILockControllerSeatObserverPriority);
 
@@ -492,9 +497,13 @@ UILockController::UILockController(Seat* seat) : seat_(seat) {
   auto* session_controller = ash::SessionController::Get();
   if (session_controller)
     session_controller->AddObserver(this);
+
+  ui::UserActivityDetector::Get()->AddObserver(this);
 }
 
 UILockController::~UILockController() {
+  ui::UserActivityDetector::Get()->RemoveObserver(this);
+
   auto* session_controller = ash::SessionController::Get();
   if (session_controller)
     session_controller->RemoveObserver(this);
@@ -589,6 +598,14 @@ void UILockController::OnPointerCaptureDisabled(Pointer* pointer,
     if (notifier)
       notifier->OnPointerCaptureDisabled();
   }
+}
+
+void UILockController::OnUserActivity(const ui::Event* event) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_activity_time_ >= kReshowNotificationsWhenIdleFor) {
+    ReshowAllNotifications();
+  }
+  last_activity_time_ = now;
 }
 
 views::Widget* UILockController::GetPointerCaptureNotificationForTesting(

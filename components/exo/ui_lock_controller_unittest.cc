@@ -625,6 +625,34 @@ TEST_F(UILockControllerTest, PointerLockNotificationReshownAfterSuspend) {
   EXPECT_TRUE(GetPointerCaptureNotification(test_surface));
 }
 
+TEST_F(UILockControllerTest, PointerLockNotificationReshownAfterIdle) {
+  // Arrange: Set up a pointer capture notification, then let it expire.
+  std::unique_ptr<ShellSurface> test_surface = BuildSurface(1024, 768);
+  test_surface->SetApplicationId(kOverviewToExitAppId);
+  test_surface->surface_for_testing()->Commit();
+  testing::NiceMock<MockPointerDelegate> delegate;
+  Pointer pointer(&delegate, seat_.get());
+  testing::NiceMock<MockPointerConstraintDelegate> constraint(
+      &pointer, test_surface->surface_for_testing());
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+  EXPECT_TRUE(GetPointerCaptureNotification(test_surface));
+  task_environment()->FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(GetPointerCaptureNotification(test_surface));
+
+  // Act: Simulate activity, then go idle.
+  seat_->GetUILockControllerForTesting()->OnUserActivity(/*event=*/nullptr);
+  task_environment()->FastForwardBy(base::Minutes(10));
+
+  // Assert: Notification not yet shown again.
+  EXPECT_FALSE(GetPointerCaptureNotification(test_surface));
+
+  // Act: Simulate activity after being idle.
+  seat_->GetUILockControllerForTesting()->OnUserActivity(/*event=*/nullptr);
+
+  // Assert: Notification shown again.
+  EXPECT_TRUE(GetPointerCaptureNotification(test_surface));
+}
+
 TEST_F(UILockControllerTest, PointerLockCooldownResetForAllWindows) {
   // Arrange: Create two surfaces, one with a pointer lock notification.
   std::unique_ptr<ShellSurface> other_surface = BuildSurface(1024, 768);
