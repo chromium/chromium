@@ -120,6 +120,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   frameBitDepth: 'number',
   qpSum: 'number',
   totalDecodeTime: 'number',
+  totalProcessingDelay: 'number',
   totalInterFrameDelay: 'number',
   totalSquaredInterFrameDelay: 'number',
   lastPacketReceivedTimestamp: 'number',
@@ -526,6 +527,7 @@ let kRTCTransportStats = new RTCStats(null, {
   remoteCertificateId: 'string',
   tlsVersion: 'string',
   dtlsCipher: 'string',
+  dtlsRole: 'string',
   srtpCipher: 'string',
   selectedCandidatePairChanges: 'number',
 });

@@ -7151,8 +7151,6 @@ crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-imag
 
 # Sheriff 2021-10-29
 crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
-crbug.com/1264775 [ Mac11-arm64 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
-crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
 
 # Sheriff 2021-11-02
 crbug.com/1265924 [ Fuchsia ] synthetic_gestures/smooth-scroll-tiny-delta.html [ Failure Pass ]
@@ -7722,6 +7720,9 @@ crbug.com/1318456 [ Win ] virtual/prerender/external/wpt/speculation-rules/prere
 
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
+
+# Temporarily allow pass or failure while new WebRTC stats are added and rolled into Chromium.
+crbug.com/webrtc/13984 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
 
 # Sheriff 2022-04-25
 crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Skip ]
