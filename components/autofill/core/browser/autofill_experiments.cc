@@ -276,7 +276,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
     return false;
   }
 
-  if (!autofill::payments::HasGooglePaymentsAccount(personal_data_manager))
+  if (!payments::HasGooglePaymentsAccount(personal_data_manager))
     return false;
 
   switch (personal_data_manager->GetSyncSigninState()) {

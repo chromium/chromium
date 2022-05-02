@@ -21,11 +21,11 @@
 
 namespace autofill {
 
-using autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
-using autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
-using autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
-using autofill::features::kAutofillEnableAblationStudy;
-using autofill::features::kAutofillShowTypePredictions;
+using ::autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
+using ::autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
+using ::autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
+using ::autofill::features::kAutofillEnableAblationStudy;
+using ::autofill::features::kAutofillShowTypePredictions;
 
 namespace {
 

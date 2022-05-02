@@ -19,7 +19,7 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs() = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
-    std::vector<autofill::Suggestion> suggestions,
+    std::vector<Suggestion> suggestions,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     PopupType popup_type)
     : element_bounds(element_bounds),

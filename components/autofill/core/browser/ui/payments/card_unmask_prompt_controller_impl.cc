@@ -194,11 +194,11 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   int ids;
   if (reason_ == AutofillClient::UnmaskCardReason::kAutofill &&
       ShouldRequestExpirationDate()) {
-    ids = card_.record_type() == autofill::CreditCard::LOCAL_CARD
+    ids = card_.record_type() == CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD
               : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
   } else {
-    ids = card_.record_type() == autofill::CreditCard::LOCAL_CARD
+    ids = card_.record_type() == CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
               : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
   }
@@ -208,7 +208,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
       ids, card_.CardIdentifierStringForAutofillDisplay());
 #else
   return l10n_util::GetStringUTF16(
-      card_.record_type() == autofill::CreditCard::LOCAL_CARD
+      card_.record_type() == CreditCard::LOCAL_CARD
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
           : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS);
 #endif

@@ -37,7 +37,7 @@ class RegionDataLoaderImpl : public RegionDataLoader {
 
   ~RegionDataLoaderImpl() override;
 
-  // autofill::RegionDataLoader.
+  // RegionDataLoader.
   void LoadRegionData(const std::string& country_code,
                       RegionDataLoader::RegionDataLoaded callback) override;
   void ClearCallback() override;

@@ -43,8 +43,7 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 
   // Create the AddressData from the profile.
   ::i18n::addressinput::AddressData address_data =
-      *autofill::i18n::CreateAddressDataFromAutofillProfile(*profile,
-                                                            app_locale);
+      *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale);
 
   // Normalize the address.
   if (!address_validator->NormalizeAddress(&address_data))
@@ -64,7 +63,7 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 void FormatPhoneNumberToE164(AutofillProfile* profile,
                              const std::string& region_code,
                              const std::string& app_locale) {
-  const std::string formatted_number = autofill::i18n::FormatPhoneForResponse(
+  const std::string formatted_number = i18n::FormatPhoneForResponse(
       base::UTF16ToUTF8(
           profile->GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), app_locale)),
       region_code);

@@ -121,7 +121,7 @@ class FormStructure {
   // included in |query| and |queried_form_signatures|.
   static bool EncodeQueryRequest(
       const std::vector<FormStructure*>& forms,
-      autofill::AutofillPageQueryRequest* query,
+      AutofillPageQueryRequest* query,
       std::vector<FormSignature>* queried_form_signatures);
 
   // Parses `payload` as AutofillQueryResponse proto and calls
@@ -567,7 +567,7 @@ class FormStructure {
   void EncodeFormFieldsForUpload(
       bool is_raw_metadata_uploading_enabled,
       absl::optional<FormGlobalId> filter_renderer_form_id,
-      autofill::AutofillUploadContents* upload) const;
+      AutofillUploadContents* upload) const;
 
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;

@@ -14,7 +14,7 @@ TestRegionDataLoader::~TestRegionDataLoader() = default;
 
 void TestRegionDataLoader::LoadRegionData(
     const std::string& country_code,
-    autofill::RegionDataLoader::RegionDataLoaded callback) {
+    RegionDataLoader::RegionDataLoaded callback) {
   if (synchronous_callback_) {
     SendRegionData(regions_, callback);
   } else {
@@ -42,7 +42,7 @@ void TestRegionDataLoader::SendAsynchronousData(
 
 void TestRegionDataLoader::SendRegionData(
     const std::vector<std::pair<std::string, std::string>>& regions,
-    autofill::RegionDataLoader::RegionDataLoaded callback) {
+    RegionDataLoader::RegionDataLoaded callback) {
   ::i18n::addressinput::RegionData root_region("");
   for (const auto& [key, value] : regions)
     root_region.AddSubRegion(key, value);

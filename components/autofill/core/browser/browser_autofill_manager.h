@@ -171,7 +171,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Called only from Autofill Assistant through
   // ContentAutofillDriver::FillFormForAssistant().
-  void FillProfileForm(const autofill::AutofillProfile& profile,
+  void FillProfileForm(const AutofillProfile& profile,
                        const FormData& form,
                        const FormFieldData& field) override;
 

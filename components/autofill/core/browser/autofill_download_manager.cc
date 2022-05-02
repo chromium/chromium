@@ -235,8 +235,8 @@ void LogExponentialBackoffDelay(
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
-    const autofill::AutofillDownloadManager::RequestType& request_type) {
-  if (request_type == autofill::AutofillDownloadManager::REQUEST_QUERY) {
+    const AutofillDownloadManager::RequestType& request_type) {
+  if (request_type == AutofillDownloadManager::REQUEST_QUERY) {
     return net::DefineNetworkTrafficAnnotation("autofill_query", R"(
         semantics {
           sender: "Autofill"
@@ -268,7 +268,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         })");
   }
 
-  DCHECK_EQ(request_type, autofill::AutofillDownloadManager::REQUEST_UPLOAD);
+  DCHECK_EQ(request_type, AutofillDownloadManager::REQUEST_UPLOAD);
   return net::DefineNetworkTrafficAnnotation("autofill_upload", R"(
       semantics {
         sender: "Autofill"
@@ -321,7 +321,7 @@ const char* RequestTypeToString(AutofillDownloadManager::RequestType type) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const autofill::AutofillPageQueryRequest& query) {
+                         const AutofillPageQueryRequest& query) {
   out << "client_version: " << query.client_version();
   for (const auto& form : query.forms()) {
     out << "\nForm\n signature: " << form.signature();
@@ -337,7 +337,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const autofill::AutofillUploadContents& upload) {
+                         const AutofillUploadContents& upload) {
   out << "client_version: " << upload.client_version() << "\n";
   out << "form_signature: " << upload.form_signature() << "\n";
   out << "data_present: " << upload.data_present() << "\n";
@@ -381,8 +381,7 @@ std::string FieldTypeToString(int type) {
        AutofillType(ToSafeServerFieldType(type, UNKNOWN_TYPE)).ToString()});
 }
 
-LogBuffer& operator<<(LogBuffer& out,
-                      const autofill::AutofillUploadContents& upload) {
+LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
   if (!out.active())
     return out;
   out << Tag{"div"} << Attrib{"class", "form"};

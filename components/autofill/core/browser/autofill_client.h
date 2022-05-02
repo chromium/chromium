@@ -251,7 +251,7 @@ class AutofillClient : public RiskDataLoader {
     PopupOpenArgs();
     PopupOpenArgs(const gfx::RectF& element_bounds,
                   base::i18n::TextDirection text_direction,
-                  std::vector<autofill::Suggestion> suggestions,
+                  std::vector<Suggestion> suggestions,
                   AutoselectFirstSuggestion autoselect_first_suggestion,
                   PopupType popup_type);
     PopupOpenArgs(const PopupOpenArgs&);
@@ -263,7 +263,7 @@ class AutofillClient : public RiskDataLoader {
     gfx::RectF element_bounds;
     base::i18n::TextDirection text_direction =
         base::i18n::TextDirection::UNKNOWN_DIRECTION;
-    std::vector<autofill::Suggestion> suggestions;
+    std::vector<Suggestion> suggestions;
     AutoselectFirstSuggestion autoselect_first_suggestion{false};
     PopupType popup_type = PopupType::kUnspecified;
   };
@@ -303,7 +303,7 @@ class AutofillClient : public RiskDataLoader {
 
   using AddressProfileSavePromptCallback =
       base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
-                              autofill::AutofillProfile profile)>;
+                              AutofillProfile profile)>;
 
   ~AutofillClient() override = default;
 

@@ -76,9 +76,8 @@ FieldCandidatesMap FormField::ParseFormFields(
                       page_language, prediction_source, log_manager);
 
   // Address pass.
-  ParseFormFieldsPass(autofill::AddressField::Parse, processed_fields,
-                      &field_candidates, page_language, prediction_source,
-                      log_manager);
+  ParseFormFieldsPass(AddressField::Parse, processed_fields, &field_candidates,
+                      page_language, prediction_source, log_manager);
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,

@@ -14,8 +14,6 @@ namespace re2 {
 class RE2;
 }  // namespace re2
 
-using autofill::structured_address::AddressComponent;
-
 namespace autofill {
 namespace structured_address {
 
@@ -53,7 +51,7 @@ class NameMiddle : public AddressComponent {
   bool ConvertAndSetValueForAdditionalFieldTypeName(
       const std::string& type_name,
       const std::u16string& value,
-      const VerificationStatus& status) override;
+      const structured_address::VerificationStatus& status) override;
 };
 
 // Atomic component that represents the first part of a last name.

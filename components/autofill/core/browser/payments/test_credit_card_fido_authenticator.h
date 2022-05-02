@@ -37,10 +37,10 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
                     absl::optional<std::string> context_token) override;
   void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
   bool IsUserOptedIn() override;
-  void GetAssertion(
-      PublicKeyCredentialRequestOptionsPtr request_options) override;
-  void MakeCredential(
-      PublicKeyCredentialCreationOptionsPtr creation_options) override;
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr
+                        request_options) override;
+  void MakeCredential(blink::mojom::PublicKeyCredentialCreationOptionsPtr
+                          creation_options) override;
   void OptOut() override;
 
   // Invokes fido_authenticator->OnDidGetAssertion().
@@ -76,8 +76,8 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTest;
 
-  PublicKeyCredentialRequestOptionsPtr request_options_;
-  PublicKeyCredentialCreationOptionsPtr creation_options_;
+  blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_;
+  blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options_;
   bool is_user_verifiable_ = false;
   absl::optional<bool> is_user_opted_in_;
   bool opt_out_called_ = false;

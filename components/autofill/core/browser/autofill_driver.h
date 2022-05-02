@@ -95,7 +95,7 @@ class AutofillDriver {
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
   virtual void PropagateAutofillPredictions(
-      const std::vector<autofill::FormStructure*>& forms) = 0;
+      const std::vector<FormStructure*>& forms) = 0;
 
   // Forwards parsed |forms| to the embedder.
   virtual void HandleParsedForms(const std::vector<const FormData*>& forms) = 0;

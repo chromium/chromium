@@ -25,7 +25,8 @@ namespace autofill {
 namespace {
 
 // Factory for the structured tree to be used in NameInfo.
-std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
+std::unique_ptr<structured_address::AddressComponent>
+CreateStructuredNameTree() {
   if (structured_address::HonorificPrefixEnabled()) {
     return std::make_unique<structured_address::NameFullWithPrefix>();
   }

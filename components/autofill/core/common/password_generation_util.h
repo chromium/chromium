@@ -115,7 +115,7 @@ struct PasswordGenerationUIData {
                            FieldRendererId generation_element_id,
                            bool is_generation_element_password_type,
                            base::i18n::TextDirection text_direction,
-                           const autofill::FormData& form_data);
+                           const FormData& form_data);
   PasswordGenerationUIData();
   PasswordGenerationUIData(const PasswordGenerationUIData& rhs);
   PasswordGenerationUIData(PasswordGenerationUIData&& rhs);
@@ -144,7 +144,7 @@ struct PasswordGenerationUIData {
   base::i18n::TextDirection text_direction;
 
   // The form associated with the password field.
-  autofill::FormData form_data;
+  FormData form_data;
 };
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);

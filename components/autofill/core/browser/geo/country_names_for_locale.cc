@@ -46,8 +46,7 @@ const std::string GetSortKey(const icu::Collator& collator,
 
 // Creates collator for |locale| and sets its attributes as needed.
 std::unique_ptr<icu::Collator> CreateCollator(const icu::Locale& locale) {
-  std::unique_ptr<icu::Collator> collator(
-      autofill::l10n::GetCollatorForLocale(locale));
+  std::unique_ptr<icu::Collator> collator(l10n::GetCollatorForLocale(locale));
   if (!collator)
     return nullptr;
 

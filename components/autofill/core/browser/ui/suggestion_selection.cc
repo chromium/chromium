@@ -107,10 +107,10 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         format_phone = base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseMobileLabelDisambiguation);
+            features::kAutofillUseMobileLabelDisambiguation);
 #else
         format_phone = base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseImprovedLabelDisambiguation);
+            features::kAutofillUseImprovedLabelDisambiguation);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
         if (format_phone) {
@@ -290,12 +290,11 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
   for (size_t i = 0; i < labels.size(); ++i) {
     std::u16string label = labels[i];
 
-    bool text_inserted =
-        suggestion_text
-            .insert(comparator.NormalizeForComparison(
-                (*suggestions)[i].value + label,
-                autofill::AutofillProfileComparator::DISCARD_WHITESPACE))
-            .second;
+    bool text_inserted = suggestion_text
+                             .insert(comparator.NormalizeForComparison(
+                                 (*suggestions)[i].value + label,
+                                 AutofillProfileComparator::DISCARD_WHITESPACE))
+                             .second;
 
     if (text_inserted) {
       if (index_to_add_suggestion != i) {

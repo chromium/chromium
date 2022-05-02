@@ -549,7 +549,7 @@ void PersonalDataManager::SyncStarted(syncer::ModelType model_type) {
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)) {
+          features::kAutofillEnableAccountWalletStorage)) {
     // Use the ephemeral account storage when the user didn't enable the sync
     // feature explicitly.
     database_helper_->SetUseAccountStorageForServerData(
@@ -587,7 +587,7 @@ bool PersonalDataManager::IsSyncFeatureEnabled() const {
 
 void PersonalDataManager::OnAccountsCookieDeletedByUserAction() {
   // Clear all the Sync Transport feature opt-ins.
-  ::autofill::prefs::ClearSyncTransportOptIns(pref_service_);
+  prefs::ClearSyncTransportOptIns(pref_service_);
 }
 
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
@@ -1267,10 +1267,10 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   use_formatter = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillUseImprovedLabelDisambiguation);
+      features::kAutofillUseImprovedLabelDisambiguation);
 #else
   use_formatter = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillUseMobileLabelDisambiguation);
+      features::kAutofillUseMobileLabelDisambiguation);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // The formatter stores a constant reference to |unique_matched_profiles|.
@@ -1363,15 +1363,15 @@ bool PersonalDataManager::IsAutofillEnabled() const {
 }
 
 bool PersonalDataManager::IsAutofillProfileEnabled() const {
-  return ::autofill::prefs::IsAutofillProfileEnabled(pref_service_);
+  return prefs::IsAutofillProfileEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillCreditCardEnabled() const {
-  return ::autofill::prefs::IsAutofillCreditCardEnabled(pref_service_);
+  return prefs::IsAutofillCreditCardEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
-  return ::autofill::prefs::IsPaymentsIntegrationEnabled(pref_service_);
+  return prefs::IsPaymentsIntegrationEnabled(pref_service_);
 }
 
 bool PersonalDataManager::ShouldSuggestServerCards() const {
@@ -1958,7 +1958,7 @@ bool PersonalDataManager::IsKnownCard(const CreditCard& credit_card) const {
 
 bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
   // Check whether the current card itself is a server card.
-  if (credit_card->record_type() != autofill::CreditCard::LOCAL_CARD)
+  if (credit_card->record_type() != CreditCard::LOCAL_CARD)
     return true;
 
   std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();

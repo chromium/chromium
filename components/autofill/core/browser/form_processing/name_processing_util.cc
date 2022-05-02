@@ -82,7 +82,7 @@ size_t FindLongestCommonPrefixLengthInStringsWithMinimalLength(
 }
 
 // Returns true if |parseable_name| is a valid parseable_name. Current criterion
-// is the |autofill::kParseableNameValidationRe| regex.
+// is the |kParseableNameValidationRe| regex.
 bool IsValidParseableName(const base::StringPiece16 parseable_name) {
   static const std::u16string kParseableNameValidationPattern =
       kParseableNameValidationRe;

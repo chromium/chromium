@@ -11,13 +11,13 @@ namespace autofill {
 
 // MockAlternativeStateNameMapUpdater for testing AlternativeStateNameMap
 class MockAlternativeStateNameMapUpdater
-    : public autofill::AlternativeStateNameMapUpdater {
+    : public AlternativeStateNameMapUpdater {
  public:
   ~MockAlternativeStateNameMapUpdater() override;
   MockAlternativeStateNameMapUpdater(
       base::OnceClosure callback,
       PrefService* local_state,
-      autofill::PersonalDataManager* personal_data_manager);
+      PersonalDataManager* personal_data_manager);
 
   // PersonalDataManagerObserver
   void OnPersonalDataFinishedProfileTasks() override;

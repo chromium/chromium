@@ -47,8 +47,8 @@ namespace autofill {
 
 namespace {
 
-using autofill::form_util::GetTextDirectionForElement;
-using Logger = autofill::SavePasswordProgressLogger;
+using ::autofill::form_util::GetTextDirectionForElement;
+using Logger = ::autofill::SavePasswordProgressLogger;
 
 // Returns the renderer id of the next password field in |control_elements|
 // after |new_password|. This field is likely to be the confirmation field.
@@ -378,19 +378,17 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
     // |IsPasswordFieldForAutofill()| is deliberately not used.
     bool is_generation_element_password_type =
         current_generation_item_->generation_element_.IsPasswordField();
-    autofill::password_generation::PasswordGenerationUIData
-        password_generation_ui_data(
-            render_frame()->ElementBoundsInWindow(
-                current_generation_item_->generation_element_),
-            current_generation_item_->generation_element_.MaxLength(),
-            current_generation_item_->generation_element_.NameForAutofill()
-                .Utf16(),
-            FieldRendererId(current_generation_item_->generation_element_
-                                .UniqueRendererFormControlId()),
-            is_generation_element_password_type,
-            GetTextDirectionForElement(
-                current_generation_item_->generation_element_),
-            current_generation_item_->form_data_);
+    password_generation::PasswordGenerationUIData password_generation_ui_data(
+        render_frame()->ElementBoundsInWindow(
+            current_generation_item_->generation_element_),
+        current_generation_item_->generation_element_.MaxLength(),
+        current_generation_item_->generation_element_.NameForAutofill().Utf16(),
+        FieldRendererId(current_generation_item_->generation_element_
+                            .UniqueRendererFormControlId()),
+        is_generation_element_password_type,
+        GetTextDirectionForElement(
+            current_generation_item_->generation_element_),
+        current_generation_item_->form_data_);
     std::move(callback).Run(std::move(password_generation_ui_data));
     current_generation_item_->generation_popup_shown_ = true;
   } else {
@@ -599,19 +597,16 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
   // |IsPasswordFieldForAutofill()| is deliberately not used.
   bool is_generation_element_password_type =
       current_generation_item_->generation_element_.IsPasswordField();
-  autofill::password_generation::PasswordGenerationUIData
-      password_generation_ui_data(
-          render_frame()->ElementBoundsInWindow(
-              current_generation_item_->generation_element_),
-          current_generation_item_->generation_element_.MaxLength(),
-          current_generation_item_->generation_element_.NameForAutofill()
-              .Utf16(),
-          FieldRendererId(current_generation_item_->generation_element_
-                              .UniqueRendererFormControlId()),
-          is_generation_element_password_type,
-          GetTextDirectionForElement(
-              current_generation_item_->generation_element_),
-          current_generation_item_->form_data_);
+  password_generation::PasswordGenerationUIData password_generation_ui_data(
+      render_frame()->ElementBoundsInWindow(
+          current_generation_item_->generation_element_),
+      current_generation_item_->generation_element_.MaxLength(),
+      current_generation_item_->generation_element_.NameForAutofill().Utf16(),
+      FieldRendererId(current_generation_item_->generation_element_
+                          .UniqueRendererFormControlId()),
+      is_generation_element_password_type,
+      GetTextDirectionForElement(current_generation_item_->generation_element_),
+      current_generation_item_->form_data_);
   current_generation_item_->generation_popup_shown_ = true;
   GetPasswordGenerationDriver().AutomaticGenerationAvailable(
       password_generation_ui_data);

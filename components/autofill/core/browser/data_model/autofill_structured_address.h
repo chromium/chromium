@@ -10,8 +10,6 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
-using autofill::structured_address::AddressComponent;
-
 namespace autofill {
 namespace structured_address {
 

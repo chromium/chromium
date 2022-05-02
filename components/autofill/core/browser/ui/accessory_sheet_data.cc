@@ -174,7 +174,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 FooterCommand::FooterCommand(std::u16string display_text,
-                             autofill::AccessoryAction action)
+                             AccessoryAction action)
     : display_text_(std::move(display_text)),
       accessory_action_(action),
       estimated_memory_use_by_strings_(
@@ -208,7 +208,7 @@ std::ostream& operator<<(std::ostream& os, const FooterCommand& fc) {
 
 OptionToggle::OptionToggle(std::u16string display_text,
                            bool enabled,
-                           autofill::AccessoryAction action)
+                           AccessoryAction action)
     : display_text_(display_text),
       enabled_(enabled),
       accessory_action_(action),
@@ -347,7 +347,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::SetWarning(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::SetOptionToggle(
     std::u16string display_text,
     bool enabled,
-    autofill::AccessoryAction action) && {
+    AccessoryAction action) && {
   // Calls SetOptionToggle(...)& since |this| is an lvalue.
   return std::move(SetOptionToggle(std::move(display_text), enabled, action));
 }
@@ -355,7 +355,7 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::SetOptionToggle(
 AccessorySheetData::Builder& AccessorySheetData::Builder::SetOptionToggle(
     std::u16string display_text,
     bool enabled,
-    autofill::AccessoryAction action) & {
+    AccessoryAction action) & {
   accessory_sheet_data_.set_option_toggle(
       OptionToggle(std::move(display_text), enabled, action));
   return *this;
@@ -464,14 +464,14 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddPromoCodeInfo(
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendFooterCommand(
     std::u16string display_text,
-    autofill::AccessoryAction action) && {
+    AccessoryAction action) && {
   // Calls AppendFooterCommand(...)& since |this| is an lvalue.
   return std::move(AppendFooterCommand(std::move(display_text), action));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendFooterCommand(
     std::u16string display_text,
-    autofill::AccessoryAction action) & {
+    AccessoryAction action) & {
   accessory_sheet_data_.add_footer_command(
       FooterCommand(std::move(display_text), action));
   return *this;

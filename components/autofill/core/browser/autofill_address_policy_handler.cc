@@ -24,7 +24,7 @@ void AutofillAddressPolicyHandler::ApplyPolicySettings(
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (value && !value->GetBool())
-    prefs->SetBoolean(autofill::prefs::kAutofillProfileEnabled, false);
+    prefs->SetBoolean(prefs::kAutofillProfileEnabled, false);
 }
 
 }  // namespace autofill

@@ -142,7 +142,7 @@ class ContentAutofillDriver : public AutofillDriver,
   webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
       override;
   void PropagateAutofillPredictions(
-      const std::vector<autofill::FormStructure*>& forms) override;
+      const std::vector<FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;

@@ -375,7 +375,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const autofill::AutofillQueryResponse& response) {
+                         const AutofillQueryResponse& response) {
   for (const auto& form : response.form_suggestions()) {
     out << "\nForm";
     for (const auto& field : form.field_suggestions()) {
@@ -669,7 +669,7 @@ FormStructure::FormStructure(const FormData& form)
     fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
-  form_signature_ = autofill::CalculateFormSignature(form);
+  form_signature_ = CalculateFormSignature(form);
   // Do further processing on the fields, as needed.
   ProcessExtractedFields();
 }
@@ -730,7 +730,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
                               ? submission_event_
                               : ToSubmissionIndicatorEvent(submission_source_);
 
-  DCHECK(autofill::mojom::IsKnownEnumValue(triggering_event));
+  DCHECK(mojom::IsKnownEnumValue(triggering_event));
   upload.set_submission_event(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
@@ -1011,7 +1011,7 @@ std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
   for (const auto* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
-          autofill::GroupTypeOfServerFieldType(field->server_type());
+          GroupTypeOfServerFieldType(field->server_type());
       // In order to trigger the payments bottom sheet that assists users to
       // manually fill the form, credit card form fields are marked eligible for
       // manual filling. Also, if a field is not classified to a type, we can

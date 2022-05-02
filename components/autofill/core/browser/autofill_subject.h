@@ -10,14 +10,14 @@
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/autofill_observer.h"
 
-using NotificationType = autofill::AutofillObserver::NotificationType;
-
 namespace autofill {
 
 // Subject that can emit notifications of specific types to observers that were
 // opted-in.
 class AutofillSubject {
  public:
+  using NotificationType = AutofillObserver::NotificationType;
+
   AutofillSubject();
   ~AutofillSubject();
 

@@ -99,12 +99,12 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageActionText() const {
                         : IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION);
 }
 
-const autofill::AutofillProfile*
-AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile() const {
+const AutofillProfile* AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile()
+    const {
   return &profile_;
 }
 
-const autofill::AutofillProfile*
+const AutofillProfile*
 AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
   return base::OptionalOrNullptr(original_profile_);
 }
@@ -146,16 +146,15 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
     const std::u16string& value) {
   // Since the country field is a text field, we should use SetInfo() to make
   // sure they get converted to country codes.
-  if (type == autofill::ADDRESS_HOME_COUNTRY) {
+  if (type == ADDRESS_HOME_COUNTRY) {
     profile_.SetInfoWithVerificationStatus(
         type, value, locale_,
-        autofill::structured_address::VerificationStatus::kUserVerified);
+        structured_address::VerificationStatus::kUserVerified);
     return;
   }
 
   profile_.SetRawInfoWithVerificationStatus(
-      type, value,
-      autofill::structured_address::VerificationStatus::kUserVerified);
+      type, value, structured_address::VerificationStatus::kUserVerified);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {

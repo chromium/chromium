@@ -69,8 +69,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // Updates |profile_| |type| value to |value|.
   void SetProfileInfo(const ServerFieldType& type, const std::u16string& value);
 
-  const autofill::AutofillProfile* GetProfile() const;
-  const autofill::AutofillProfile* GetOriginalProfile() const;
+  const AutofillProfile* GetProfile() const;
+  const AutofillProfile* GetOriginalProfile() const;
 
   // ConfirmInfoBarDelegate
   int GetIconId() const override;

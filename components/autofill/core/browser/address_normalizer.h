@@ -15,7 +15,7 @@ namespace autofill {
 class AutofillProfile;
 
 // A class used to normalize addresses.
-class AddressNormalizer : public autofill::LoadRulesListener {
+class AddressNormalizer : public LoadRulesListener {
  public:
   using NormalizationCallback =
       base::OnceCallback<void(bool /*success*/,

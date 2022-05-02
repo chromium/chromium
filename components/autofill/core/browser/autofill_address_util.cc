@@ -26,8 +26,6 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using autofill::AutofillCountry;
-using autofill::ServerFieldType;
 using i18n::addressinput::AddressField;
 using i18n::addressinput::AddressUiComponent;
 using i18n::addressinput::Localization;
@@ -146,8 +144,7 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
         component.field == ::i18n::addressinput::RECIPIENT) {
       continue;
     }
-    ServerFieldType type =
-        autofill::AddressFieldToServerFieldType(component.field);
+    ServerFieldType type = AddressFieldToServerFieldType(component.field);
     if (type == NAME_FULL)
       type = NAME_FULL_WITH_HONORIFIC_PREFIX;
     address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
@@ -208,8 +205,8 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
           first_profile, second_profile,
-          autofill::ServerFieldTypeSet(std::begin(kTypeToCompare),
-                                       std::end(kTypeToCompare)),
+          ServerFieldTypeSet(std::begin(kTypeToCompare),
+                             std::end(kTypeToCompare)),
           app_locale);
 
   std::u16string first_address = GetEnvelopeStyleAddress(

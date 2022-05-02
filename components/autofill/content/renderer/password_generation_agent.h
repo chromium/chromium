@@ -86,7 +86,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   bool ShouldIgnoreBlur() const;
 
 #if defined(UNIT_TEST)
-  // This method requests the autofill::mojom::PasswordManagerClient which binds
+  // This method requests the mojom::PasswordManagerClient which binds
   // requests the binding if it wasn't bound yet.
   void RequestPasswordManagerClientForTesting() {
     GetPasswordGenerationDriver();
@@ -145,8 +145,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
       blink::WebInputElement element,
       FieldRendererId confirmation_password_renderer_id);
 
-  void LogMessage(autofill::SavePasswordProgressLogger::StringID message_id);
-  void LogBoolean(autofill::SavePasswordProgressLogger::StringID message_id,
+  void LogMessage(SavePasswordProgressLogger::StringID message_id);
+  void LogBoolean(SavePasswordProgressLogger::StringID message_id,
                   bool truth_value);
 
   // Creates a FormData to presave a generated password. It copies behavior

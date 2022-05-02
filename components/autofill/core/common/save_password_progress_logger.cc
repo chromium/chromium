@@ -38,20 +38,18 @@ bool IsUnwantedInElementID(char c) {
 SavePasswordProgressLogger::SavePasswordProgressLogger() = default;
 SavePasswordProgressLogger::~SavePasswordProgressLogger() = default;
 
-std::string FormSignatureToDebugString(autofill::FormSignature form_signature) {
-  return base::StrCat(
-      {NumberToString(form_signature.value()), " - ",
-       NumberToString(autofill::HashFormSignature(form_signature))});
+std::string FormSignatureToDebugString(FormSignature form_signature) {
+  return base::StrCat({NumberToString(form_signature.value()), " - ",
+                       NumberToString(HashFormSignature(form_signature))});
 }
 
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
   std::string message = GetStringFromID(label) + ": {\n";
-  message +=
-      GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
-      FormSignatureToDebugString(autofill::CalculateFormSignature(form_data)) +
-      "\n";
+  message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
+             FormSignatureToDebugString(CalculateFormSignature(form_data)) +
+             "\n";
   message +=
       GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
   message +=

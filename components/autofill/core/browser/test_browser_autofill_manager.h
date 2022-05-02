@@ -16,8 +16,6 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using base::TimeTicks;
-
 namespace autofill {
 
 class AutofillClient;

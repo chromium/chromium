@@ -298,7 +298,7 @@ AutofillField* GetBestPossibleCVCFieldForUpload(
 
 // Some autofill types are detected based on values and not based on form
 // features. We may decide that it's an autofill form after submission.
-bool ContainsAutofillableValue(const autofill::FormStructure& form) {
+bool ContainsAutofillableValue(const FormStructure& form) {
   return base::ranges::any_of(form, [](const auto& field) {
     return base::Contains(field->possible_types(), UPI_VPA) ||
            IsUPIVirtualPaymentAddress(field->value);
@@ -1188,10 +1188,9 @@ void BrowserAutofillManager::FillCreditCardForm(int query_id,
                              autofill_field);
 }
 
-void BrowserAutofillManager::FillProfileForm(
-    const autofill::AutofillProfile& profile,
-    const FormData& form,
-    const FormFieldData& field) {
+void BrowserAutofillManager::FillProfileForm(const AutofillProfile& profile,
+                                             const FormData& form,
+                                             const FormFieldData& field) {
   FillOrPreviewProfileForm(mojom::RendererFormDataAction::kFill,
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
@@ -1345,7 +1344,7 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
   }
 
   if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard &&
-      ::autofill::IsCreditCardFidoAuthenticationEnabled()) {
+      IsCreditCardFidoAuthenticationEnabled()) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
   }
 }
@@ -1538,11 +1537,11 @@ bool BrowserAutofillManager::IsAutofillEnabled() const {
 }
 
 bool BrowserAutofillManager::IsAutofillProfileEnabled() const {
-  return ::autofill::prefs::IsAutofillProfileEnabled(client()->GetPrefs());
+  return prefs::IsAutofillProfileEnabled(client()->GetPrefs());
 }
 
 bool BrowserAutofillManager::IsAutofillCreditCardEnabled() const {
-  return ::autofill::prefs::IsAutofillCreditCardEnabled(client()->GetPrefs());
+  return prefs::IsAutofillCreditCardEnabled(client()->GetPrefs());
 }
 
 const FormData& BrowserAutofillManager::last_query_form() const {

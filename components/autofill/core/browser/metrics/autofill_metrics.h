@@ -941,14 +941,13 @@ class AutofillMetrics {
   };
 
   // For measuring the frequency of "required actions" returned by the Wallet
-  // server.  This is similar to the autofill::wallet::RequiredAction enum;
-  // but unlike that enum, the values in this one must remain constant over
-  // time, so that the metrics can be consistently interpreted on the
-  // server-side.
+  // server. This is similar to the wallet::RequiredAction enum; but unlike
+  // that enum, the values in this one must remain constant over time, so that
+  // the metrics can be consistently interpreted on the server-side.
   enum WalletRequiredActionMetric {
     // Baseline metric: Issued a request to the Wallet server.
     WALLET_REQUIRED_ACTION_BASELINE_ISSUED_REQUEST = 0,
-    // Values from the autofill::wallet::RequiredAction enum:
+    // Values from the wallet::RequiredAction enum:
     UNKNOWN_REQUIRED_ACTION,  // Catch all type.
     GAIA_AUTH,
     PASSIVE_GAIA_AUTH,

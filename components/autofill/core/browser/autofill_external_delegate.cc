@@ -153,7 +153,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   // Send to display.
   if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
-    autofill::AutofillClient::PopupOpenArgs open_args(
+    AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction, suggestions,
         AutoselectFirstSuggestion(autoselect_first_suggestion), popup_type_);
     manager_->client()->ShowAutofillPopup(open_args, GetWeakPtr());
@@ -392,7 +392,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // yet.
   // TODO(crbug.com/1274134): Clean up once improvements are launched.
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi) &&
+          features::kAutofillVisualImprovementsForSuggestionUi) &&
       !suggestions->empty()) {
     suggestions->push_back(Suggestion());
     suggestions->back().frontend_id = POPUP_ITEM_ID_SEPARATOR;

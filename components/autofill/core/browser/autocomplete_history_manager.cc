@@ -26,9 +26,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
-using NotificationType = autofill::AutofillObserver::NotificationType;
-
 namespace autofill {
+
+using NotificationType = AutofillObserver::NotificationType;
+
 namespace {
 
 // Limit on the number of suggestions to appear in the pop-up menu under an

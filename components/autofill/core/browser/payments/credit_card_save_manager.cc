@@ -894,7 +894,7 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     // |should_request_name_from_user_|.
     DCHECK(should_request_name_from_user_ ||
            base::FeatureList::IsEnabled(
-               autofill::features::kAutofillSaveCardInfobarEditSupport));
+               features::kAutofillSaveCardInfobarEditSupport));
 #else
     DCHECK(should_request_name_from_user_);
 #endif
@@ -914,7 +914,7 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     // |should_request_expiration_date_from_user_|.
     DCHECK(should_request_expiration_date_from_user_ ||
            base::FeatureList::IsEnabled(
-               autofill::features::kAutofillSaveCardInfobarEditSupport));
+               features::kAutofillSaveCardInfobarEditSupport));
 #else
     DCHECK(should_request_expiration_date_from_user_);
 #endif

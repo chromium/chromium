@@ -196,10 +196,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
   // The kAutofillKeyboardAccessory feature is only available on Android. So for
   // other platforms, we'd always use the obfuscation_length of 4.
-  int obfuscation_length = base::FeatureList::IsEnabled(
-                               autofill::features::kAutofillKeyboardAccessory)
-                               ? 2
-                               : 4;
+  int obfuscation_length =
+      base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) ? 2
+                                                                         : 4;
   // If the value is the card number, the label is the expiration date.
   // Otherwise the label is the card number, or if that is empty the
   // cardholder name. The label should never repeat the value.

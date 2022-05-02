@@ -220,7 +220,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
-  friend class ::autofill::metrics::AutofillMetricsBaseTest;
+  friend class metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
 
 #if !BUILDFLAG(IS_IOS)

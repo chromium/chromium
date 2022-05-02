@@ -134,8 +134,7 @@ bool IsValidCreditCardNumberForBasicCardNetworks(
 
   // The type check is cheaper than the credit card number check.
   const std::string basic_card_issuer_network =
-      autofill::data_util::GetPaymentRequestData(
-          CreditCard::GetCardNetwork(text))
+      data_util::GetPaymentRequestData(CreditCard::GetCardNetwork(text))
           .basic_card_issuer_network;
   if (!supported_basic_card_networks.count(basic_card_issuer_network)) {
     *error_message = l10n_util::GetStringUTF16(

@@ -56,11 +56,10 @@ void AutofillMetricsBaseTest::SetUp() {
   TestCreditCardSaveManager* credit_card_save_manager =
       new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
                                     payments_client, personal_data_.get());
-  autofill::TestFormDataImporter* test_form_data_importer =
-      new TestFormDataImporter(
-          &autofill_client_, payments_client,
-          std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
-          personal_data_.get(), "en-US");
+  TestFormDataImporter* test_form_data_importer = new TestFormDataImporter(
+      &autofill_client_, payments_client,
+      std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
+      personal_data_.get(), "en-US");
   autofill_client_.set_test_form_data_importer(
       std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
   autofill_client_.set_autofill_offer_manager(

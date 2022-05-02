@@ -12,14 +12,14 @@
 
 namespace autofill {
 
-using Link = LegalMessageLine::Link;
-
 // A legal message line that allows for modifications.
 class TestLegalMessageLine : public LegalMessageLine {
  public:
-  TestLegalMessageLine() {}
+  TestLegalMessageLine() = default;
 
-  TestLegalMessageLine(const std::string& ascii_text) { set_text(ascii_text); }
+  explicit TestLegalMessageLine(const std::string& ascii_text) {
+    set_text(ascii_text);
+  }
 
   TestLegalMessageLine(const std::string& ascii_text, const Links& links) {
     set_text(ascii_text);
@@ -29,7 +29,7 @@ class TestLegalMessageLine : public LegalMessageLine {
   TestLegalMessageLine(const TestLegalMessageLine&) = delete;
   TestLegalMessageLine& operator=(const TestLegalMessageLine&) = delete;
 
-  ~TestLegalMessageLine() override {}
+  ~TestLegalMessageLine() override = default;
 
   void set_text(const std::string& ascii_text) {
     text_ = base::ASCIIToUTF16(ascii_text);

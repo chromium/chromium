@@ -9,8 +9,6 @@
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/autofill_observer.h"
 
-using NotificationType = autofill::AutofillObserver::NotificationType;
-
 namespace autofill {
 
 AutofillSubject::AutofillSubject() = default;

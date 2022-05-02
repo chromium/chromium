@@ -309,10 +309,10 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
       if (it->second == kMigrationResultPermanentFailure ||
           it->second == kMigrationResultTemporaryFailure) {
         card.set_migration_status(
-            autofill::MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
+            MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
       } else if (it->second == kMigrationResultSuccess) {
         card.set_migration_status(
-            autofill::MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD);
+            MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD);
         migrated_cards.push_back(card.credit_card());
       } else {
         NOTREACHED();

@@ -19,7 +19,7 @@ PasswordGenerationUIData::PasswordGenerationUIData(
     FieldRendererId generation_element_id,
     bool is_generation_element_password_type,
     base::i18n::TextDirection text_direction,
-    const autofill::FormData& form_data)
+    const FormData& form_data)
     : bounds(bounds),
       max_length(max_length),
       generation_element(generation_element),

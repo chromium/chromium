@@ -547,10 +547,8 @@ const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAutofillManualFallbackEnabled() {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillKeyboardAccessory) &&
-         base::FeatureList::IsEnabled(
-             autofill::features::kAutofillManualFallbackAndroid);
+  return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory) &&
+         base::FeatureList::IsEnabled(kAutofillManualFallbackAndroid);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

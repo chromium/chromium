@@ -15,13 +15,13 @@ MockAlternativeStateNameMapUpdater::~MockAlternativeStateNameMapUpdater() =
 MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
     base::OnceClosure callback,
     PrefService* local_state,
-    autofill::PersonalDataManager* personal_data_manager)
+    PersonalDataManager* personal_data_manager)
     : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
       callback_(std::move(callback)) {}
 
 void MockAlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillUseAlternativeStateNameMap)) {
+          features::kAutofillUseAlternativeStateNameMap)) {
     PopulateAlternativeStateNameMap(std::move(callback_));
   }
 }

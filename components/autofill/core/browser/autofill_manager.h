@@ -140,7 +140,7 @@ class AutofillManager
                                   const FormFieldData& field,
                                   const CreditCard& credit_card,
                                   const std::u16string& cvc) = 0;
-  virtual void FillProfileForm(const autofill::AutofillProfile& profile,
+  virtual void FillProfileForm(const AutofillProfile& profile,
                                const FormData& form,
                                const FormFieldData& field) = 0;
 
