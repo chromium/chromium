@@ -14,6 +14,7 @@
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +47,7 @@ class SubscriberCrosapi : public KeyedService,
   void OnApps(const std::vector<AppPtr>& deltas);
 
   void InitializePreferredApps(PreferredApps preferred_apps);
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes);
 
  protected:
   // apps::mojom::Subscriber overrides.

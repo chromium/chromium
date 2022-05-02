@@ -10,7 +10,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
-#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -340,9 +339,10 @@ void AppServiceMojomImpl::InitializePreferredAppsForAllSubscribers() {
 }
 
 void AppServiceMojomImpl::OnPreferredAppsChanged(
-    apps::mojom::PreferredAppChangesPtr changes) {
+    PreferredAppChangesPtr changes) {
   for (auto& subscriber : subscribers_) {
-    subscriber->OnPreferredAppsChanged(changes->Clone());
+    subscriber->OnPreferredAppsChanged(
+        ConvertPreferredAppChangesToMojomPreferredAppChanges(changes));
   }
 }
 

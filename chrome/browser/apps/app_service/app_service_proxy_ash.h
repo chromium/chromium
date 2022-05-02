@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -165,6 +166,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;

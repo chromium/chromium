@@ -38,8 +38,7 @@ class PreferredAppsImpl {
 
     virtual void InitializePreferredAppsForAllSubscribers() = 0;
 
-    virtual void OnPreferredAppsChanged(
-        apps::mojom::PreferredAppChangesPtr changes) {}
+    virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) = 0;
 
     virtual void OnPreferredAppSet(
         const std::string& app_id,

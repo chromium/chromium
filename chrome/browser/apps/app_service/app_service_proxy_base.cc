@@ -237,6 +237,11 @@ void AppServiceProxyBase::InitializePreferredAppsForAllSubscribers() {
   }
 }
 
+void AppServiceProxyBase::OnPreferredAppsChanged(
+    PreferredAppChangesPtr changes) {
+  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
+}
+
 void AppServiceProxyBase::OnPreferredAppSet(
     const std::string& app_id,
     IntentFilterPtr intent_filter,

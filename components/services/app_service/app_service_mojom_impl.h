@@ -133,8 +133,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   // PreferredApps::Host overrides.
   void InitializePreferredAppsForAllSubscribers() override;
 
-  void OnPreferredAppsChanged(
-      apps::mojom::PreferredAppChangesPtr changes) override;
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
 
   void OnPreferredAppSet(
       const std::string& app_id,

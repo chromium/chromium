@@ -98,6 +98,7 @@ class AppServiceProxyBase : public KeyedService,
 
   // PreferredApps::Host overrides.
   void InitializePreferredAppsForAllSubscribers() override;
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,
