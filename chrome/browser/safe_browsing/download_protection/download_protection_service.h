@@ -321,6 +321,13 @@ class DownloadProtectionService {
   SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
       content::WebContents* web_contents);
 
+  // Callback when deep scanning has finished, but we may want to do the
+  // metadata check anyway.
+  void MaybeCheckMetdataAfterDeepScanning(
+      download::DownloadItem* item,
+      CheckDownloadRepeatingCallback callback,
+      DownloadCheckResult result);
+
   raw_ptr<SafeBrowsingService> sb_service_;
   // These pointers may be NULL if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;

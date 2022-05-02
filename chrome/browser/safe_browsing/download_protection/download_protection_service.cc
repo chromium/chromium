@@ -250,10 +250,13 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     // scanning request and not with a consumer check, the pre-deep scanning
     // DownloadCheckResult is considered UNKNOWN. This shouldn't trigger on
     // report-only scans to avoid skipping the consumer check.
-    UploadForDeepScanning(item, std::move(callback),
-                          DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-                          DownloadCheckResult::UNKNOWN,
-                          std::move(settings.value()));
+    UploadForDeepScanning(
+        item,
+        base::BindRepeating(
+            &DownloadProtectionService::MaybeCheckMetdataAfterDeepScanning,
+            weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
+        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::UNKNOWN, std::move(settings.value()));
     return true;
   }
 
@@ -807,6 +810,17 @@ DownloadProtectionService::GetNavigationObserverManager(
     content::WebContents* web_contents) {
   return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
+}
+
+void DownloadProtectionService::MaybeCheckMetdataAfterDeepScanning(
+    download::DownloadItem* item,
+    CheckDownloadRepeatingCallback callback,
+    DownloadCheckResult result) {
+  if (result == DownloadCheckResult::UNKNOWN) {
+    CheckClientDownload(item, callback);
+  } else {
+    std::move(callback).Run(result);
+  }
 }
 
 }  // namespace safe_browsing

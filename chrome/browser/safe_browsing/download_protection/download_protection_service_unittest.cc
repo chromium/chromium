@@ -4771,6 +4771,51 @@ TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
             flag_enabled());
 }
 
+TEST_P(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  SetAnalysisConnector(profile()->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       R"({
+                           "service_provider": "google",
+                           "enable": [
+                             {"url_list": ["*"], "tags": ["malware"]}
+                           ],
+                           "block_until_verdict": 1
+                         })");
+
+  TestBinaryUploadService* test_upload_service =
+      static_cast<TestBinaryUploadService*>(
+          BinaryUploadServiceFactory::GetForProfile(profile()));
+
+  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
+  test_upload_service->SetResponse(
+      BinaryUploadService::Result::FILE_TOO_LARGE,
+      enterprise_connectors::ContentAnalysisResponse());
+
+  RunLoop run_loop;
+  download_service_->MaybeCheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_TRUE(test_upload_service->was_called());
+  EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+}
+
 INSTANTIATE_TEST_SUITE_P(, EnterpriseCsdDownloadTest, testing::Bool());
 
 }  // namespace safe_browsing
