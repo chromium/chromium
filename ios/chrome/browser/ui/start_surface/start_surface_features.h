@@ -15,12 +15,18 @@ extern const char kStartSurfaceReturnToRecentTabParam[];
 // The feature to enable or disable the Start Surface.
 extern const base::Feature kStartSurface;
 
+// The feature to use the new logic to open a new tab to show the Start Surface.
+extern const base::Feature kStartSurfaceSplashStartup;
+
 // The feature parameter to indicate inactive duration to return to the Start
 // Surface in seconds.
 extern const char kReturnToStartSurfaceInactiveDurationInSeconds[];
 
 // Checks whether the Start Surface should be enabled.
 bool IsStartSurfaceEnabled();
+
+// Checks whether the Start Splash Startup change should be enabled.
+bool IsStartSurfaceSplashStartupEnabled();
 
 // Returns the inactive duration to show the Start Surface.
 double GetReturnToStartSurfaceDuration();

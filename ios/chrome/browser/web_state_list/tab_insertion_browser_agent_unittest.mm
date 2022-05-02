@@ -53,35 +53,43 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
 }  // namespace
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {
-  web::WebState* web_state = agent_->InsertWebState(Params(GURL(kURL1)),
-                                                    /*parent=*/nil,
-                                                    /*opened_by_dom=*/false,
-                                                    /*index=*/0,
-                                                    /*in_background=*/false,
-                                                    /*inherit_opener=*/false);
+  web::WebState* web_state =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
 }
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
-  web::WebState* web_state0 = agent_->InsertWebState(Params(GURL(kURL1)),
-                                                     /*parent=*/nil,
-                                                     /*opened_by_dom=*/false,
-                                                     /*index=*/0,
-                                                     /*in_background=*/false,
-                                                     /*inherit_opener=*/false);
-  web::WebState* web_state1 = agent_->InsertWebState(Params(GURL(kURL1)),
-                                                     /*parent=*/nil,
-                                                     /*opened_by_dom=*/false,
-                                                     /*index=*/0,
-                                                     /*in_background=*/false,
-                                                     /*inherit_opener=*/false);
-  web::WebState* web_state2 = agent_->InsertWebState(Params(GURL(kURL1)),
-                                                     /*parent=*/nil,
-                                                     /*opened_by_dom=*/false,
-                                                     /*index=*/1,
-                                                     /*in_background=*/false,
-                                                     /*inherit_opener=*/false);
+  web::WebState* web_state0 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/0,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(Params(GURL(kURL1)),
+                             /*parent=*/nil,
+                             /*opened_by_dom=*/false,
+                             /*index=*/1,
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -96,7 +104,8 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlSingle) {
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -109,21 +118,24 @@ TEST_F(TabInsertionBrowserAgentTest, AppendUrlMultiple) {
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   web::WebState* web_state1 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   web::WebState* web_state2 =
       agent_->InsertWebState(Params(GURL(kURL1)),
                              /*parent=*/nil,
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(0));
@@ -139,19 +151,22 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   agent_->InsertWebState(Params(GURL(kURL1)),
                          /*parent=*/nil,
                          /*opened_by_dom=*/false,
                          /*index=*/browser_->GetWebStateList()->count(),
                          /*in_background=*/false,
-                         /*inherit_opener=*/false);
+                         /*inherit_opener=*/false,
+                         /*should_show_start_surface=*/false);
   agent_->InsertWebState(Params(GURL(kURL1)),
                          /*parent=*/nil,
                          /*opened_by_dom=*/false,
                          /*index=*/browser_->GetWebStateList()->count(),
                          /*in_background=*/false,
-                         /*inherit_opener=*/false);
+                         /*inherit_opener=*/false,
+                         /*should_show_start_surface=*/false);
 
   // Add a new tab, it should be added behind the parent.
   web::WebState* child =
@@ -160,7 +175,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(parent), 0);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(child), 1);
 
@@ -171,7 +187,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state),
             browser_->GetWebStateList()->count() - 1);
 
@@ -182,7 +199,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/browser_->GetWebStateList()->count(),
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state2),
             browser_->GetWebStateList()->count() - 1);
 
@@ -193,7 +211,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state3),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state) + 1);
 
@@ -204,7 +223,8 @@ TEST_F(TabInsertionBrowserAgentTest, AddWithOrderController) {
                              /*opened_by_dom=*/false,
                              /*index=*/TabInsertion::kPositionAutomatically,
                              /*in_background=*/false,
-                             /*inherit_opener=*/false);
+                             /*inherit_opener=*/false,
+                             /*should_show_start_surface=*/false);
   EXPECT_EQ(browser_->GetWebStateList()->GetIndexOfWebState(web_state4),
             browser_->GetWebStateList()->GetIndexOfWebState(web_state3) + 1);
 }

@@ -78,6 +78,7 @@ source_set("agents") {
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/snapshots",

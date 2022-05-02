@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_scene_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -359,6 +360,10 @@ bool IsSigninForcedByPolicy() {
 
 - (BOOL)isPresentingSigninView {
   return self.signinCoordinator != nil;
+}
+
+- (BOOL)tabGridVisible {
+  return self.mainCoordinator.isTabGridActive;
 }
 
 - (UIViewController*)activeViewController {
@@ -711,7 +716,9 @@ bool IsSigninForcedByPolicy() {
       [self finishActivatingBrowserDismissingTabSwitcher:YES];
     }
 
-    [self handleShowStartSurfaceIfNecessary];
+    if (!IsStartSurfaceSplashStartupEnabled()) {
+      [self handleShowStartSurfaceIfNecessary];
+    }
   }
 
   [self recordWindowCreationForSceneState:self.sceneState];
@@ -977,7 +984,9 @@ bool IsSigninForcedByPolicy() {
   // currentInterface is set in case a new tab needs to be opened. Since this is
   // synchronous with |setActivePage:| above, then the user should not see the
   // last tab if the Start Surface is opened.
-  [self handleShowStartSurfaceIfNecessary];
+  if (!IsStartSurfaceSplashStartupEnabled()) {
+    [self handleShowStartSurfaceIfNecessary];
+  }
 
   // Figure out what UI to show initially.
 
@@ -3039,7 +3048,8 @@ bool IsSigninForcedByPolicy() {
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams {
   TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
       urlLoadParams.web_params, nil, false, browser->GetWebStateList()->count(),
-      /*in_background=*/false, /*inherit_opener=*/false);
+      /*in_background=*/false, /*inherit_opener=*/false,
+      /*should_show_start_surface=*/false);
   [self beginActivatingBrowser:browser dismissTabSwitcher:YES focusOmnibox:NO];
 }
 

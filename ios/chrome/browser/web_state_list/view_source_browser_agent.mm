@@ -66,5 +66,6 @@ void ViewSourceBrowserAgent::InsertSourceViewTab(NSString* source,
       TabInsertionBrowserAgent::FromBrowser(browser_);
   insertionAgent->InsertWebState(
       loadParams, web_state, true, TabInsertion::kPositionAutomatically,
-      /*in_background=*/false, /*inherit_opener=*/false);
+      /*in_background=*/false, /*inherit_opener=*/false,
+      /*should_show_start_surface=*/false);
 }

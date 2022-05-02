@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
@@ -27,7 +28,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     bool opened_by_dom,
     int index,
     bool in_background,
-    bool inherit_opener) {
+    bool inherit_opener,
+    bool should_show_start_surface) {
   DCHECK(index == TabInsertion::kPositionAutomatically ||
          (index >= 0 && index <= web_state_list_->count()));
 
@@ -56,6 +58,11 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
 
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(create_params);
+  if (should_show_start_surface) {
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
+    NewTabPageTabHelper::FromWebState(web_state.get())
+        ->SetShowStartSurface(true);
+  }
   web_state->GetNavigationManager()->LoadURLWithParams(params);
 
   int inserted_index =
