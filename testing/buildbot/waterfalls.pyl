@@ -3503,15 +3503,6 @@
           'isolated_scripts': 'chromium_web_tests_high_dpi_isolated_scripts',
         },
       },
-      'linux-blink-v8-sandbox-future-dbg': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'linux-blink-v8-sandbox-future-rel': {
         'mixins': [
           'linux-bionic',

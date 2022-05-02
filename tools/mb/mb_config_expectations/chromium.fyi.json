@@ -1000,18 +1000,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-blink-v8-sandbox-future-dbg": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_rbe": true,
-      "use_remoteexec": true,
-      "v8_enable_sandbox_future": true
-    }
-  },
   "linux-blink-v8-sandbox-future-rel": {
     "gn_args": {
       "dcheck_always_on": true,
