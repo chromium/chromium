@@ -2794,6 +2794,12 @@ crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/datetimelocal-s
 crbug.com/1299212 fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Failure Pass Timeout ]
 crbug.com/1299212 fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Failure Pass Timeout ]
 crbug.com/1299212 fast/forms/select/menulist-popup-type-ahead-style-change.html [ Failure Pass Timeout ]
+crbug.com/1299212 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Pass Failure ]
+crbug.com/1299212 fast/forms/calendar-picker/date-picker-input-change-events.html [ Pass Timeout Crash ]
+crbug.com/1299212 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Pass Timeout Crash ]
+crbug.com/1299212 fast/forms/month/month-picker-input-change-events.html [ Pass Timeout ]
+crbug.com/1299212 fast/forms/time/time-picker-input-change-events.html [ Pass Timeout ]
+crbug.com/1299212 fast/forms/week/week-picker-input-change-events.html [ Pass Timeout Crash ]
 # This might be just flaky on Windows:
 crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/* [ Failure Pass Timeout ]
 # At least scrollbars, if not window sizes, are flaky on Win7:
@@ -7748,12 +7754,7 @@ crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-inter
 
 # Sheriff 2022-04-29
 crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
-crbug.com/1321229 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Skip ]
-crbug.com/1321229 fast/forms/calendar-picker/date-picker-input-change-events.html [ Skip ]
-crbug.com/1321229 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Skip ]
-crbug.com/1321229 fast/forms/month/month-picker-input-change-events.html [ Skip ]
-crbug.com/1321229 fast/forms/time/time-picker-input-change-events.html [ Skip ]
-crbug.com/1321229 fast/forms/week/week-picker-input-change-events.html [ Skip ]
+
 crbug.com/1321245 paint/invalidation/svg/image-with-clip-path.svg [ Skip ]
 
 # Sheriff 2022-05-02
