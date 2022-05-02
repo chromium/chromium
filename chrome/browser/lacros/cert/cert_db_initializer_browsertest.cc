@@ -18,7 +18,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -31,12 +34,29 @@
 #include "net/test/cert_test_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+// NOTE: Tests in this file modify the certificate store. That is potentially a
+// lasting side effect that can affect other tests.
+// * To prevent interference with tests that are run in parallel, these tests
+// are a part of lacros_chrome_browsertests_run_in_series test suite.
+// * To prevent interference with following tests, they try to clean up all the
+// side effects themself, e.g. if a test adds a cert, it is also responsible for
+// deleting it.
+// Subsequent runs of lacros browser tests share the same ash-chrome instance
+// and thus also the same user certificate database. The certificate database is
+// not cleaned automatically between tests because of performance concerns.
+
 namespace {
 
 constexpr char kRootCaCert[] = "root_ca_cert.pem";
 // A PEM-encoded certificate which was signed by the Authority specified in
 // |kRootCaCert|.
 constexpr char kServerCert[] = "ok_cert.pem";
+
+bool IsMojoCertDatabaseVersionAtLeast(int required_version) {
+  DCHECK(chromeos::LacrosService::Get());
+  return (chromeos::LacrosService::Get()->GetInterfaceVersion(
+              crosapi::mojom::CertDatabase::Uuid_) >= required_version);
+}
 
 base::FilePath GetTestCertsPath() {
   base::FilePath test_data_dir;
@@ -58,22 +78,49 @@ void WaitUnitCertDbReady(Profile* profile) {
   run_loop.Run();
 }
 
-void ImportCaCertWithDb(base::OnceClosure done_callback,
-                        net::NSSCertDatabase* nss_db) {
-  ASSERT_TRUE(nss_db);
-
-  std::string cert_bytes;
-  {
+net::ScopedCERTCertificateList GetCaCert() {
+  static std::string cert_bytes;
+  if (cert_bytes.empty()) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::ReadFileToString(
-        GetTestCertsPath().AppendASCII(kRootCaCert), &cert_bytes));
+    base::ReadFileToString(GetTestCertsPath().AppendASCII(kRootCaCert),
+                           &cert_bytes);
   }
 
-  auto cert = net::x509_util::CreateCERTCertificateListFromBytes(
+  return net::x509_util::CreateCERTCertificateListFromBytes(
       cert_bytes.data(), cert_bytes.size(), net::X509Certificate::FORMAT_AUTO);
+}
+
+void GetNssDatabaseOnIO(NssCertDatabaseGetter nss_getter,
+                        base::OnceCallback<void(net::NSSCertDatabase*)> task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  auto splitted_task = base::SplitOnceCallback(std::move(task));
+  net::NSSCertDatabase* nss_db =
+      std::move(nss_getter).Run(std::move(splitted_task.first));
+  if (nss_db) {
+    std::move(splitted_task.second).Run(nss_db);
+  }
+}
+
+void GetNssDatabase(Profile* profile,
+                    base::OnceCallback<void(net::NSSCertDatabase*)> task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  NssService* nss_service =
+      NssServiceFactory::GetInstance()->GetForContext(profile);
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetNssDatabaseOnIO,
+                     nss_service->CreateNSSCertDatabaseGetterForIOThread(),
+                     std::move(task)));
+}
+
+void ImportCaCertWithDb(base::OnceClosure done_callback,
+                        net::NSSCertDatabase* nss_db) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  ASSERT_TRUE(nss_db);
 
   net::NSSCertDatabase::ImportCertFailureList failure_list;
-  nss_db->ImportCACerts(std::move(cert),
+  nss_db->ImportCACerts(GetCaCert(),
                         /*trust_bits=*/net::NSSCertDatabase::TRUSTED_SSL,
                         &failure_list);
 
@@ -87,28 +134,30 @@ void ImportCaCertWithDb(base::OnceClosure done_callback,
   std::move(done_callback).Run();
 }
 
-void GetNssDatabase(base::OnceClosure done_callback,
-                    NssCertDatabaseGetter nss_getter) {
-  auto on_got_db = base::SplitOnceCallback(
-      base::BindOnce(&ImportCaCertWithDb, std::move(done_callback)));
-  net::NSSCertDatabase* nss_db =
-      std::move(nss_getter).Run(std::move(on_got_db.first));
-  if (nss_db) {
-    std::move(on_got_db.second).Run(nss_db);
-  }
+void ImportCaCert(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::RunLoop run_loop;
+  GetNssDatabase(profile,
+                 base::BindOnce(&ImportCaCertWithDb, run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
-void ImportCaCert(Profile* profile) {
+void DeleteCaCertWithDb(base::OnceClosure done_callback,
+                        net::NSSCertDatabase* nss_db) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  ASSERT_TRUE(nss_db);
+  auto cert = GetCaCert();
+  ASSERT_EQ(cert.size(), 1u);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(nss_db->DeleteCertAndKey(cert[0].get()));
+  std::move(done_callback).Run();
+}
+
+void DeleteCaCert(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::RunLoop run_loop;
-
-  NssService* nss_service =
-      NssServiceFactory::GetInstance()->GetForContext(profile);
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GetNssDatabase, run_loop.QuitClosure(),
-                     nss_service->CreateNSSCertDatabaseGetterForIOThread()));
-
+  GetNssDatabase(profile,
+                 base::BindOnce(&DeleteCaCertWithDb, run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -127,8 +176,8 @@ void ImportCaCert(Profile* profile) {
   return future.Get();
 }
 
-// Generates an x509 client certificate for the `public_key_spki` and returns it
-// as a DER-encoded certificate.
+// Generates an x509 client certificate for the `public_key_spki` and returns
+// it as a DER-encoded certificate.
 [[nodiscard]] std::vector<uint8_t> GenerateClientCertForPublicKey(
     const std::vector<uint8_t>& public_key_spki) {
   net::CertBuilder issuer(/*orig_cert=*/nullptr, /*issuer=*/nullptr);
@@ -146,6 +195,9 @@ void ImportCaCert(Profile* profile) {
 // Observes notifications about cert database changes during its lifetime.
 class ScopedCertDatabaseObserver : public net::CertDatabase::Observer {
  public:
+  static std::unique_ptr<ScopedCertDatabaseObserver> Create() {
+    return std::make_unique<ScopedCertDatabaseObserver>();
+  }
   ScopedCertDatabaseObserver() {
     net::CertDatabase::GetInstance()->AddObserver(this);
   }
@@ -158,10 +210,10 @@ class ScopedCertDatabaseObserver : public net::CertDatabase::Observer {
     run_loop_.Quit();
   }
 
-  // Waits for the next CertDBChanged notification if none were observed so far.
-  // Returns the amount of notifications received since creation. The counter is
-  // mostly used to detect unexpected notifications that could cause flakiness /
-  // false positives.
+  // Waits for the next CertDBChanged notification if none were observed so
+  // far. Returns the amount of notifications received since creation. The
+  // counter is mostly used to detect unexpected notifications that could
+  // cause flakiness / false positives.
   size_t Wait() {
     // Noop if Quit() was ever called.
     run_loop_.Run();
@@ -183,52 +235,56 @@ class CertDbInitializerTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(b/219968355): At the moment Lacros browser tests don't clear user
-// directory in Ash in between tests. Because of that, these tests interfere
-// with each other (because they import certs into the software nss database
-// that is stored there) and fail when run all in the same batch. They can be
-// run one a time for semi-manual testing and should be re-enabled when the bug
-// is fixed.
-
 // Tests that CertDbInitializer eventually reports that cert database is ready
 // for the main profile.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, DISABLED_EventuallyReady) {
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, EventuallyReady) {
   EXPECT_TRUE(browser()->profile()->IsMainProfile());
   WaitUnitCertDbReady(browser()->profile());
 }
 
 // Tests that a CA certificate can be imported and used for cert verification.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, DISABLED_CanImportCaCert) {
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, CanImportAndDeleteCaCert) {
   WaitUnitCertDbReady(browser()->profile());
   ImportCaCert(browser()->profile());
   EXPECT_EQ(net::OK, VerifyServerCert(browser()->profile()));
+  DeleteCaCert(browser()->profile());
+  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
+            VerifyServerCert(browser()->profile()));
 }
 
-// Tests that without importing a CA certificate, Chrome rejects unknown server
-// certs.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, DISABLED_CertRejectedByDefault) {
+// Tests that without importing a CA certificate, Chrome rejects unknown
+// server certs.
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, CertRejectedByDefault) {
   WaitUnitCertDbReady(browser()->profile());
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyServerCert(browser()->profile()));
 }
 
 // Imports a CA certs that will be available in ImmediatelyAfterLaunch test.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
-                       DISABLED_PRE_ImmediatelyAfterLaunch) {
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, PRE_ImmediatelyAfterLaunch) {
   WaitUnitCertDbReady(browser()->profile());
   ImportCaCert(browser()->profile());
 }
 
-// Tests that Chrome waits until certs are initialized and the imported CA cert
-// from the PRE_ test is available before verifying server certs.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, DISABLED_ImmediatelyAfterLaunch) {
+// Tests that Chrome waits until certs are initialized and the imported CA
+// cert from the PRE_ test is available before verifying server certs.
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, ImmediatelyAfterLaunch) {
   EXPECT_EQ(net::OK, VerifyServerCert(browser()->profile()));
+  // Cleanup side effects of the test.
+  DeleteCaCert(browser()->profile());
 }
 
 // Tests that when Ash imports a new certificate, Lacros receives a
 // notification about it.
-IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
-                       DISABLED_CertsChangedNotificationFromAsh) {
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, CertsChangedNotificationFromAsh) {
+  if (!IsMojoCertDatabaseVersionAtLeast(
+          crosapi::mojom::CertDatabase::
+              kAddAshCertDatabaseObserverMinVersion) &&
+      !chromeos::IsAshVersionAtLeastForTesting(base::Version({101, 0, 4917}))) {
+    LOG(WARNING) << "Ash is too old, skipping the test.";
+    return;
+  }
+
   auto& keystore_crosapi = chromeos::LacrosService::Get()
                                ->GetRemote<crosapi::mojom::KeystoreService>();
 
@@ -247,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
   std::vector<uint8_t> client_cert =
       GenerateClientCertForPublicKey(generate_key_result.Get()->get_blob());
 
-  ScopedCertDatabaseObserver observer;
+  auto observer = ScopedCertDatabaseObserver::Create();
 
   // Generate and import a certificate.
   base::test::TestFuture<bool /*is_error*/, crosapi::mojom::KeystoreError>
@@ -258,9 +314,9 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
       << "Error: " << add_cert_result.Get<1>();
 
   // Wait for the notification from Ash about cert database changes.
-  // If there are more than one, most likely there are other sources of changes
-  // in the background and the test should be rewritten somehow.
-  EXPECT_EQ(1u, observer.Wait());
+  // If there are more than one, most likely there are other sources of
+  // changes in the background and the test should be rewritten somehow.
+  EXPECT_EQ(1u, observer->Wait());
 
   // Check that the cert was actually imported.
   base::test::TestFuture<crosapi::mojom::GetCertificatesResultPtr>
@@ -270,15 +326,28 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
   ASSERT_FALSE(get_certs_result.Get()->is_error());
   EXPECT_TRUE(
       base::Contains(get_certs_result.Get()->get_certificates(), client_cert));
+
+  observer = ScopedCertDatabaseObserver::Create();
+
+  base::test::TestFuture<bool /*is_error*/, crosapi::mojom::KeystoreError>
+      remove_cert_result;
+  keystore_crosapi->RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
+                                      client_cert,
+                                      remove_cert_result.GetCallback());
+  ASSERT_FALSE(remove_cert_result.Get<0>())
+      << "Error: " << remove_cert_result.Get<1>();
+
+  EXPECT_EQ(1u, observer->Wait());
 }
 
-// TODO(b/191336682): Add a test similar to CertsChangedNotificationFromAsh, but
-// about system keystore. Right now system slot is not available/emulated in
-// lacros browser tests.
+// TODO(b/191336682): Add a test similar to CertsChangedNotificationFromAsh,
+// but about system keystore. Right now system slot is not available/emulated
+// in lacros browser tests.
 
-// For a test that covers notifications in Ash when Lacros changes the database,
-// see network.CertSettingsPage tast test. Such a browser test could be written
-// by adding new methods into crosapi.TestController, but their implementation
-// would have a similar complexity to the notification mechanism itself.
+// For a test that covers notifications in Ash when Lacros changes the
+// database, see network.CertSettingsPage tast test. Such a browser test could
+// be written by adding new methods into crosapi.TestController, but their
+// implementation would have a similar complexity to the notification
+// mechanism itself.
 
 }  // namespace
