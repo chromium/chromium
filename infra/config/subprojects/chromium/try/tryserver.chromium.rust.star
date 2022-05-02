@@ -36,9 +36,9 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-rust-x64-dbg",
+    name = "linux-rust-x64-rel-android-toolchain",
 )
 
 try_.builder(
-    name = "linux-rust-intree-x64-rel",
+    name = "linux-rust-x64-dbg",
 )
