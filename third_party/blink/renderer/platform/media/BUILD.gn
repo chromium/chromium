@@ -119,7 +119,6 @@ source_set("unit_tests") {
     "cache_util_unittest.cc",
     "interval_map_unittest.cc",
     "key_system_config_selector_unittest.cc",
-    "lru_unittest.cc",
     "multi_buffer_unittest.cc",
     "power_status_helper_unittest.cc",
     "resource_multi_buffer_data_provider_unittest.cc",

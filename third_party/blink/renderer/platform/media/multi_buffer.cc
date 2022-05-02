@@ -56,40 +56,41 @@ MultiBuffer::GlobalLRU::GlobalLRU(
     : max_size_(0),
       data_size_(0),
       background_pruning_pending_(false),
+      lru_(lru_.NO_AUTO_EVICT),
       task_runner_(std::move(task_runner)) {}
 
 MultiBuffer::GlobalLRU::~GlobalLRU() {
   // By the time we're freed, all blocks should have been removed,
   // and our sums should be zero.
-  DCHECK(lru_.Empty());
+  DCHECK(lru_.empty());
   DCHECK_EQ(max_size_, 0);
   DCHECK_EQ(data_size_, 0);
 }
 
 void MultiBuffer::GlobalLRU::Use(MultiBuffer* multibuffer,
                                  MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  lru_.Use(id);
+  lru_.Put(GlobalBlockId{multibuffer, block_id});
   SchedulePrune();
 }
 
 void MultiBuffer::GlobalLRU::Insert(MultiBuffer* multibuffer,
                                     MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  lru_.Insert(id);
+  lru_.Put(GlobalBlockId{multibuffer, block_id});
   SchedulePrune();
 }
 
 void MultiBuffer::GlobalLRU::Remove(MultiBuffer* multibuffer,
                                     MultiBufferBlockId block_id) {
   GlobalBlockId id(multibuffer, block_id);
-  lru_.Remove(id);
+  auto iter = lru_.Peek(id);
+  if (iter != lru_.end()) {
+    lru_.Erase(iter);
+  }
 }
 
 bool MultiBuffer::GlobalLRU::Contains(MultiBuffer* multibuffer,
                                       MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  return lru_.Contains(id);
+  return lru_.Peek(GlobalBlockId{multibuffer, block_id}) != lru_.end();
 }
 
 void MultiBuffer::GlobalLRU::IncrementDataSize(int64_t blocks) {
@@ -105,7 +106,7 @@ void MultiBuffer::GlobalLRU::IncrementMaxSize(int64_t blocks) {
 }
 
 bool MultiBuffer::GlobalLRU::Pruneable() const {
-  return data_size_ > max_size_ && !lru_.Empty();
+  return data_size_ > max_size_ && !lru_.empty();
 }
 
 void MultiBuffer::GlobalLRU::SchedulePrune() {
@@ -129,9 +130,11 @@ void MultiBuffer::GlobalLRU::TryFree(int64_t max_to_free) {
   // when their available ranges change.
   std::map<MultiBuffer*, std::vector<MultiBufferBlockId>> to_free;
   int64_t freed = 0;
-  while (!lru_.Empty() && freed < max_to_free) {
-    GlobalBlockId block_id = lru_.Pop();
+  auto lru_iter = lru_.rbegin();
+  while (lru_iter != lru_.rend() && freed < max_to_free) {
+    GlobalBlockId block_id = *lru_iter;
     to_free[block_id.first].push_back(block_id.second);
+    lru_iter = lru_.Erase(lru_iter);
     freed++;
   }
   for (const auto& to_free_pair : to_free) {
@@ -157,15 +160,17 @@ void MultiBuffer::GlobalLRU::Prune(int64_t max_to_free) {
 }
 
 int64_t MultiBuffer::GlobalLRU::Size() const {
-  return lru_.Size();
+  return lru_.size();
 }
 
 //
 // MultiBuffer
 //
 MultiBuffer::MultiBuffer(int32_t block_size_shift,
-                         const scoped_refptr<GlobalLRU>& global_lru)
-    : max_size_(0), block_size_shift_(block_size_shift), lru_(global_lru) {}
+                         scoped_refptr<GlobalLRU> global_lru)
+    : max_size_(0),
+      block_size_shift_(block_size_shift),
+      lru_(std::move(global_lru)) {}
 
 MultiBuffer::~MultiBuffer() {
   CHECK(pinned_.empty());
