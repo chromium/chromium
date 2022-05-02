@@ -219,7 +219,10 @@ InputMethodEngine* GetEngineIfActive(Profile* profile,
                                      std::string* error) {
   extensions::InputImeEventRouter* event_router =
       extensions::GetInputImeEventRouter(profile);
-  DCHECK(event_router) << kErrorRouterNotAvailable;
+  if (!event_router) {
+    *error = kErrorRouterNotAvailable;
+    return nullptr;
+  }
   InputMethodEngine* engine = static_cast<InputMethodEngine*>(
       event_router->GetEngineIfActive(extension_id, error));
   return engine;
