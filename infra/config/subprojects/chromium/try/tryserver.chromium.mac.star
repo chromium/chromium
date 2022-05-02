@@ -255,6 +255,9 @@ ios_builder(
 
 ios_builder(
     name = "ios-device",
+    mirrors = [
+        "ci/ios-device",
+    ],
 )
 
 ios_builder(

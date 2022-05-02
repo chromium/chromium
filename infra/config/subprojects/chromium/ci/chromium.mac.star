@@ -405,6 +405,22 @@ ios_builder(
 
 ios_builder(
     name = "ios-device",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-mac-archive",
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios|default",
