@@ -2099,25 +2099,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-transform-scrolled.html"));
 }
 
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1265293): test is flaky on linux.
-#define MAYBE_AccessibilityIframeWithInvalidChildren \
-  DISABLED_AccessibilityIframeWithInvalidChildren
-#elif BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1269123): test is flaky on chromeos.
-#define MAYBE_AccessibilityIframeWithInvalidChildren \
-  DISABLED_AccessibilityIframeWithInvalidChildren
-#else
-#define MAYBE_AccessibilityIframeWithInvalidChildren \
-  AccessibilityIframeWithInvalidChildren
-#endif
+// TODO(crbug.com/1265293): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityIframeWithInvalidChildren) {
+                       DISABLED_AccessibilityIframeWithInvalidChildren) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children.html"));
 }
 
+// TODO(crbug.com/1265293): test is flaky on all platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityIframeWithInvalidChildrenAdded) {
+                       DISABLED_AccessibilityIframeWithInvalidChildrenAdded) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children-added.html"));
 }
 
