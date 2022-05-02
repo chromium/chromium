@@ -80,7 +80,8 @@ promise_test(t => {
     });
 }, "BroadcastChannel messages from opaque origins should be self-contained");
 
-const worker_src = (channel_name, worker_name) => `data:,
+const data_url_worker_src = (channel_name, worker_name) => {
+  const source = `
 const handler = (reply) => {
   let bc2 = new BroadcastChannel("${channel_name}");
   bc2.onmessage = (e) => {
@@ -96,8 +97,13 @@ const handler = (reply) => {
 // For dedicated workers:
 self.addEventListener("message", () => handler(self.postMessage));
 // For shared workers:
-self.addEventListener("connect", (e) => handler(e.ports[0].postMessage));
+self.addEventListener("connect", (e) => {
+  var port = e.ports[0];
+  handler(msg => port.postMessage(msg));
+});
 `;
+  return "data:,".concat(encodeURIComponent(source));
+}
 
 promise_test(t => {
   return new Promise((resolve, reject) => {
@@ -113,7 +119,7 @@ promise_test(t => {
 
     const handler = e => {
       if(e.data == `${worker_1_name}-done`) {
-        const worker2 = new Worker(worker_src(channel_name, worker_2_name));
+        const worker2 = new Worker(data_url_worker_src(channel_name, worker_2_name));
         t.add_cleanup(() => worker2.terminate());
         worker2.addEventListener("message", handler);
         worker2.postMessage("go!");
@@ -126,7 +132,7 @@ promise_test(t => {
       }
     };
 
-    let worker1 = new Worker(worker_src(channel_name, worker_1_name));
+    let worker1 = new Worker(data_url_worker_src(channel_name, worker_1_name));
     t.add_cleanup(() => worker1.terminate());
     worker1.addEventListener("message", handler);
     worker1.postMessage("go!");
@@ -147,9 +153,10 @@ promise_test(() => {
 
     const handler = e => {
       if(e.data == `${worker_1_name}-done`) {
-        const worker_script = worker_src(channel_name, worker_2_name);
+        const worker_script = data_url_worker_src(channel_name, worker_2_name);
         const worker2 = new SharedWorker(worker_script, worker_2_name);
         worker2.port.addEventListener("message", handler);
+        worker2.port.start();
         worker2.port.postMessage("go!");
       } else if(e.data == `${worker_2_name}-done`) {
         resolve();
@@ -160,9 +167,10 @@ promise_test(() => {
       }
     };
 
-    const worker_script = worker_src(channel_name, worker_2_name);
+    const worker_script = data_url_worker_src(channel_name, worker_2_name);
     const worker1 = new SharedWorker(worker_script, worker_1_name);
     worker1.port.addEventListener("message", handler);
+    worker1.port.start();
     worker1.port.postMessage("go!");
     });
 }, "BroadcastChannel messages from data URL shared workers should be self-contained");
