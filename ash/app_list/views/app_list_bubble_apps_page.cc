@@ -209,7 +209,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   if (features::IsLauncherAppSortEnabled()) {
     toast_container_ = scroll_contents->AddChildView(
         std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(), a11y_announcer, /*delegate=*/this,
+            app_list_nudge_controller_.get(), a11y_announcer, view_delegate,
+            /*delegate=*/this,
             /*tablet_mode=*/false));
   }
 

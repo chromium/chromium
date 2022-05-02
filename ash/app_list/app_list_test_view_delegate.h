@@ -125,6 +125,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool HasValidProfile() const override;
   bool ShouldHideContinueSection() const override;
   void SetHideContinueSection(bool hide) override;
+  void CommitTemporarySortOrder() override {}
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

@@ -134,6 +134,7 @@ class AppListClientImpl
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition disposition) override;
+  void CommitTemporarySortOrder() override;
 
   // Associates this client with the current active user, called when this
   // client is accessed or active user is changed.

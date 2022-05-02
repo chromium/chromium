@@ -130,6 +130,9 @@ class AppListModelUpdater {
   // Notifies when the app list gets hidden.
   virtual void OnAppListHidden() = 0;
 
+  // Handles the request to commit the app list temporary sort order from ash.
+  virtual void CommitTemporarySortOrder() = 0;
+
   virtual void AddObserver(AppListModelUpdaterObserver* observer) = 0;
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;
 

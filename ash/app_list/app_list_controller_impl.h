@@ -206,6 +206,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   bool HasValidProfile() const override;
   bool ShouldHideContinueSection() const override;
   void SetHideContinueSection(bool hide) override;
+  void CommitTemporarySortOrder() override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;

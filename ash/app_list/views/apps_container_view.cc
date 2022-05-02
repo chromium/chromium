@@ -322,7 +322,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     if (features::IsLauncherAppSortEnabled()) {
       toast_container_ = scrollable_container_->AddChildView(
           std::make_unique<AppListToastContainerView>(
-              app_list_nudge_controller_.get(), a11y_announcer,
+              app_list_nudge_controller_.get(), a11y_announcer, view_delegate,
               /*delegate=*/this, /*tablet_mode=*/true));
       toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }

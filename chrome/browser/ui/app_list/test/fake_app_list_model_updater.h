@@ -76,6 +76,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   }
 
   void OnAppListHidden() override {}
+  void CommitTemporarySortOrder() override {}
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;

@@ -223,6 +223,11 @@ class ASH_EXPORT AppListTestApi {
   void ClickOnRedoButtonAndWaitForAnimation(
       ui::test::EventGenerator* event_generator);
 
+  // Clicks on the close button and waits until the toast fade out animation
+  // completes.
+  void ClickOnCloseButtonAndWaitForToastAnimation(
+      ui::test::EventGenerator* event_generator);
+
  private:
   // Adds a callback that runs at the end of the reorder animation.
   void RegisterReorderAnimationDoneCallback(

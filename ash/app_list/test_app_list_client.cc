@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -96,6 +97,13 @@ TestAppListClient::GetAndClearInvokedResultActions() {
 ash::AppListSortOrder TestAppListClient::GetPermanentSortingOrder() const {
   NOTIMPLEMENTED();
   return ash::AppListSortOrder::kCustom;
+}
+
+void TestAppListClient::CommitTemporarySortOrder() {
+  // Committing the temporary sort order should not introduce item reorder so
+  // reset the sort order without reorder animation.
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      /*new_order=*/absl::nullopt, /*animate=*/false, base::NullCallback());
 }
 
 void TestAppListClient::OnZeroStateSearchDone(base::OnceClosure on_done) {

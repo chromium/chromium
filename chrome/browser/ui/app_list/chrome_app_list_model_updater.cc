@@ -1070,6 +1070,10 @@ void ChromeAppListModelUpdater::OnAppListHidden() {
   EndTemporarySortAndTakeAction(EndAction::kCommit);
 }
 
+void ChromeAppListModelUpdater::CommitTemporarySortOrder() {
+  EndTemporarySortAndTakeAction(EndAction::kCommit);
+}
+
 // Private methods -------------------------------------------------------------
 
 void ChromeAppListModelUpdater::MaybeNotifyObserversOfItemChange(

@@ -226,6 +226,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Sets whether the user wants to hide the continue section and recent apps.
   // Used by productivity launcher only.
   virtual void SetHideContinueSection(bool hide) = 0;
+
+  // Commits the app list item positions under the temporary sort order.
+  virtual void CommitTemporarySortOrder() = 0;
 };
 
 }  // namespace ash

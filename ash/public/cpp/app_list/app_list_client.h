@@ -139,6 +139,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // among synced devices.
   virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
 
+  // Invoked to commit the app list temporary sort order.
+  virtual void CommitTemporarySortOrder() = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

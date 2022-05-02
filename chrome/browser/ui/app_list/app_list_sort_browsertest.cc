@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -139,6 +140,23 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
   std::vector<std::string> GetAppIdsInOrdinalOrder() {
     return GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_});
+  }
+
+  // Similar to `GetAppIdsInOrdinalOrder()` but app ordinal positions are
+  // fetched from the app list syncable service rather than the model updater.
+  std::vector<std::string> GetAppIdsInPermanentOrdinalOrder() {
+    app_list::AppListSyncableService* app_list_syncable_service =
+        app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+    std::vector<std::string> ids({app1_id_, app2_id_, app3_id_});
+    std::sort(
+        ids.begin(), ids.end(),
+        [app_list_syncable_service](const std::string& id1,
+                                    const std::string& id2) {
+          return app_list_syncable_service->GetSyncItem(id1)
+              ->item_ordinal.LessThan(
+                  app_list_syncable_service->GetSyncItem(id2)->item_ordinal);
+        });
+    return ids;
   }
 
   ash::AppListSortOrder GetPermanentSortingOrder() {
@@ -978,6 +996,40 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
       ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
+}
+
+// Verifies that clicking at the toast close button to commit the temporary sort
+// order works as expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       CommitTemporaryOrderByClickingAtToastCloseButton) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderTopLevelAppsGridAndWaitForCompletion(
+      ash::AppListSortOrder::kNameAlphabetical,
+      MenuType::kAppListNonFolderItemMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Before committing the temporary order, the permanent ordinal order should
+  // not change.
+  EXPECT_EQ(GetAppIdsInPermanentOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  // Commit the temporary order by clicking at the close button. Check that
+  // the permanent ordinal order changes accordingly.
+  app_list_test_api_.ClickOnCloseButtonAndWaitForToastAnimation(
+      event_generator_.get());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+  EXPECT_EQ(GetAppIdsInPermanentOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 }
 
 // Verify that switching to clamshell mode when the fade in animation in tablet

@@ -22,6 +22,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
@@ -741,6 +742,20 @@ void AppListTestApi::ClickOnRedoButtonAndWaitForAnimation(
 
   WaitForReorderAnimationAndVerifyItemVisibility();
   EXPECT_EQ(ReorderAnimationEndState::kCompleted, actual_state);
+}
+
+void AppListTestApi::ClickOnCloseButtonAndWaitForToastAnimation(
+    ui::test::EventGenerator* event_generator) {
+  AppListToastContainerView* toast_container =
+      ShouldUseBubbleAppList() ? GetToastContainerViewFromBubble()
+                               : GetToastContainerViewFromFullscreenAppList();
+  views::View* close_button = toast_container->GetCloseButton();
+  event_generator->MoveMouseTo(close_button->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+
+  // Wait until the toast fade out animation ends.
+  LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(toast_container->toast_view()->layer());
 }
 
 void AppListTestApi::RegisterReorderAnimationDoneCallback(

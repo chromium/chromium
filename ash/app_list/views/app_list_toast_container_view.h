@@ -23,6 +23,7 @@ class AppListA11yAnnouncer;
 class AppListNudgeController;
 class AppListToastView;
 class AppsGridContextMenu;
+class AppListViewDelegate;
 enum class AppListSortOrder;
 enum class AppListToastType;
 
@@ -63,6 +64,7 @@ class AppListToastContainerView : public views::View {
 
   AppListToastContainerView(AppListNudgeController* nudge_controller_,
                             AppListA11yAnnouncer* a11y_announcer,
+                            AppListViewDelegate* view_delegate,
                             Delegate* delegate,
                             bool tablet_mode);
   AppListToastContainerView(const AppListToastContainerView&) = delete;
@@ -121,8 +123,11 @@ class AppListToastContainerView : public views::View {
   AppListA11yAnnouncer* a11y_announcer_for_test() { return a11y_announcer_; }
 
  private:
-  // Called when the `toast_view_`'s dismiss button is clicked.
+  // Called when the `toast_view_`'s reorder undo button is clicked.
   void OnReorderUndoButtonClicked();
+
+  // Called when the `toast_view_`'s close button is clicked.
+  void OnReorderCloseButtonClicked();
 
   // Calculates the toast text based on the temporary sorting order.
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
@@ -148,6 +153,7 @@ class AppListToastContainerView : public views::View {
 
   AppListToastView* toast_view_ = nullptr;
 
+  AppListViewDelegate* const view_delegate_;
   Delegate* const delegate_;
   AppListNudgeController* const nudge_controller_;
 
@@ -161,6 +167,9 @@ class AppListToastContainerView : public views::View {
   // Caches the column of previously focused app. Used when passing focus
   // between apps grid view and recent apps.
   int focused_app_column_ = 0;
+
+  // True if committing the sort order via the close button is in progress.
+  bool committing_sort_order_ = false;
 
   base::WeakPtrFactory<AppListToastContainerView> weak_factory_{this};
 };

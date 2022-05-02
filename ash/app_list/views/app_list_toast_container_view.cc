@@ -52,10 +52,12 @@ constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
     AppListA11yAnnouncer* a11y_announcer,
+    AppListViewDelegate* view_delegate,
     Delegate* delegate,
     bool tablet_mode)
     : a11y_announcer_(a11y_announcer),
       tablet_mode_(tablet_mode),
+      view_delegate_(view_delegate),
       delegate_(delegate),
       nudge_controller_(nudge_controller),
       current_toast_(AppListToastType::kNone) {
@@ -220,7 +222,13 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
     const absl::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!GetVisibilityForSortOrder(new_order)) {
-    RemoveCurrentView();
+    if (committing_sort_order_) {
+      // When the toast view is closed due to committing the sort  order via the
+      // close button , the toast view should be faded out with animation.
+      FadeOutToastView();
+    } else {
+      RemoveCurrentView();
+    }
     return;
   }
 
@@ -246,7 +254,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
   if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
     toast_view_builder.SetCloseButton(base::BindRepeating(
-        &AppListToastContainerView::FadeOutToastView, base::Unretained(this)));
+        &AppListToastContainerView::OnReorderCloseButtonClicked,
+        base::Unretained(this)));
   }
 
   toast_view_ = AddChildView(
@@ -295,6 +304,11 @@ views::Button* AppListToastContainerView::GetCloseButton() {
 
 void AppListToastContainerView::OnReorderUndoButtonClicked() {
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSortRevert();
+}
+
+void AppListToastContainerView::OnReorderCloseButtonClicked() {
+  base::AutoReset auto_reset(&committing_sort_order_, true);
+  view_delegate_->CommitTemporarySortOrder();
 }
 
 void AppListToastContainerView::FadeOutToastView() {
