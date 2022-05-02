@@ -28,7 +28,8 @@ library_widevine_cdm_available =
      (target_cpu == "x64" || target_cpu == "arm" || target_cpu == "arm64")) ||
     (target_os == "linux" && target_cpu == "x64") ||
     (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
-    (target_os == "win" && (target_cpu == "x86" || target_cpu == "x64"))
+    (target_os == "win" &&
+     (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm64"))
 
 # Widevine CDM is available as a library CDM and it's supported by Chromium.
 # This does not define how the CDM will be deployed. It can be bundled or
@@ -59,6 +60,10 @@ declare_args() {
   # Relative root directory to //third_party/widevine/cdm for CDM files.
   # Can be overridden if the CDM files are located in other places.
   widevine_root = "."
+}
+
+if (target_os == "win" && target_cpu == "arm64") {
+  bundle_widevine_cdm = false
 }
 
 # Enable Widevine CDM host verification, which will sign additional binaries
