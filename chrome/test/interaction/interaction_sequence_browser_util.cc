@@ -770,9 +770,11 @@ void InteractionSequenceBrowserUtil::MaybeCreateElement(bool force) {
   }
 
   // Ignore events on a page we're navigating away from.
-  if (navigating_away_from_.EqualsIgnoringRef(web_contents()->GetURL()))
+  if (navigating_away_from_ &&
+      navigating_away_from_->EqualsIgnoringRef(web_contents()->GetURL())) {
     return;
-  navigating_away_from_ = GURL();
+  }
+  navigating_away_from_.reset();
 
   current_element_ =
       std::make_unique<TrackedElementWebPage>(page_identifier_, context, this);

@@ -347,7 +347,7 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
 
   // When we force a page load, we might still get events for the old page.
   // We'll ignore those events.
-  GURL navigating_away_from_;
+  absl::optional<GURL> navigating_away_from_;
 
   // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
   std::unique_ptr<WebViewData> web_view_data_;

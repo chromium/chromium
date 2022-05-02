@@ -1499,3 +1499,52 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
+
+// This is a regression test for the case where we open a new tab in a way that
+// causes it not to have a URL; previously, it would not create an element
+// because navigating_away_from_ was empty.
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       CreatesElementForPageWithBlankURL) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kExistingTabElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
+
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  std::unique_ptr<InteractionSequenceBrowserUtil> existing_tab =
+      InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+          browser(), kExistingTabElementId);
+  std::unique_ptr<InteractionSequenceBrowserUtil> new_tab;
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetContext(browser()->window()->GetElementContext())
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          // Get the first tab and inject code to pop up a second window.
+          // Because the second window is created using a javascript: URL, it
+          // will not report a valid URL.
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kExistingTabElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*, ui::TrackedElement*) {
+                        new_tab =
+                            InteractionSequenceBrowserUtil::ForNextTabInBrowser(
+                                browser(), kNewTabElementId);
+                        // Cause a tab to come into being and do some stuff.
+                        existing_tab->Evaluate(
+                            "() => window.open('javascript:window.foo=1')");
+                      }))
+                  .Build())
+          // Verify that the element for the second tab is still created,
+          // despite it not having a URL.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kNewTabElementId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
