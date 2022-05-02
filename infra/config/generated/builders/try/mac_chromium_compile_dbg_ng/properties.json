@@ -1,4 +1,80 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Mac Builder (dbg)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-mac-archive",
+              "builder_group": "chromium.mac",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Mac11 Tests (dbg)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-mac-archive",
+              "builder_group": "chromium.mac",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Mac Builder (dbg)",
+                "project": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "Mac Builder (dbg)",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Mac11 Tests (dbg)",
+          "project": "chromium"
+        }
+      ],
+      "is_compile_only": true
+    }
+  },
   "$build/goma": {
     "jobs": 150,
     "rpc_extra_params": "?prod",
