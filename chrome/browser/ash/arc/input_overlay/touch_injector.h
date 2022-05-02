@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -39,7 +40,11 @@ gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 // events.
 class TouchInjector : public ui::EventRewriter {
  public:
-  explicit TouchInjector(aura::Window* top_level_window);
+  using OnSaveProtoFileCallback =
+      base::RepeatingCallback<void(std::unique_ptr<AppDataProto>,
+                                   const std::string&)>;
+  TouchInjector(aura::Window* top_level_window,
+                OnSaveProtoFileCallback save_file_callback);
   TouchInjector(const TouchInjector&) = delete;
   TouchInjector& operator=(const TouchInjector&) = delete;
   ~TouchInjector() override;
@@ -85,7 +90,8 @@ class TouchInjector : public ui::EventRewriter {
   void UnRegisterEventRewriter();
   // Change bindings.
   void OnBindingChange(Action* target_action,
-                       std::unique_ptr<InputElement> input_element);
+                       std::unique_ptr<InputElement> input_element,
+                       DisplayMode mode = DisplayMode::kEdit);
   // Save customized input binding and go back from edit mode to view mode.
   void OnBindingSave();
   // Set input binding back to previous status before entering to the edit mode
@@ -94,6 +100,7 @@ class TouchInjector : public ui::EventRewriter {
   // Set input binding back to original binding.
   void OnBindingRestore();
   const std::string* GetPackageName() const;
+  void OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto);
 
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
@@ -144,6 +151,12 @@ class TouchInjector : public ui::EventRewriter {
       int managed_touch_id,
       gfx::PointF root_location_f);
 
+  // Search action by its id.
+  Action* GetActionById(int id);
+
+  // Save proto file.
+  void OnSaveProtoFile();
+
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
@@ -175,9 +188,12 @@ class TouchInjector : public ui::EventRewriter {
   // post MVP.
   bool enable_mouse_lock_ = false;
 
-  // Key is the original touch id.
-  // Value is a struct containing required info for this touch event.
+  // Key is the original touch id. Value is a struct containing required info
+  // for this touch event.
   base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
+
+  // Callback when saving proto file.
+  OnSaveProtoFileCallback save_file_callback_;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

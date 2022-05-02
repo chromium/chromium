@@ -131,8 +131,10 @@ class TouchInjector::KeyCommand {
   base::RepeatingClosure callback_;
 };
 
-TouchInjector::TouchInjector(aura::Window* top_level_window)
-    : target_window_(top_level_window) {}
+TouchInjector::TouchInjector(aura::Window* top_level_window,
+                             OnSaveProtoFileCallback save_file_callback)
+    : target_window_(top_level_window),
+      save_file_callback_(save_file_callback) {}
 
 TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
@@ -168,10 +170,11 @@ void TouchInjector::UnRegisterEventRewriter() {
   observation_.Reset();
 }
 
-void TouchInjector::OnBindingChange(
-    Action* target_action,
-    std::unique_ptr<InputElement> input_element) {
-  display_overlay_controller_->RemoveEditErrorMsg();
+void TouchInjector::OnBindingChange(Action* target_action,
+                                    std::unique_ptr<InputElement> input_element,
+                                    DisplayMode mode) {
+  if (display_overlay_controller_)
+    display_overlay_controller_->RemoveEditErrorMsg();
   Action* overlapped_action = nullptr;
   for (auto& action : actions_) {
     if (action.get() == target_action)
@@ -187,13 +190,15 @@ void TouchInjector::OnBindingChange(
   if (overlapped_action)
     overlapped_action->Unbind(*input_element);
 
-  target_action->PrepareToBind(std::move(input_element));
+  target_action->PrepareToBind(std::move(input_element), mode);
 }
 
 void TouchInjector::OnBindingSave() {
   for (auto& action : actions_)
     action->BindPending();
-  display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+  if (display_overlay_controller_)
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+  OnSaveProtoFile();
 }
 
 void TouchInjector::OnBindingCancel() {
@@ -211,6 +216,20 @@ void TouchInjector::OnBindingRestore() {
 
 const std::string* TouchInjector::GetPackageName() const {
   return target_window_->GetProperty(ash::kArcPackageNameKey);
+}
+
+void TouchInjector::OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto) {
+  for (const ActionProto& action_proto : proto->actions()) {
+    auto* action = GetActionById(action_proto.id());
+    DCHECK(action);
+    if (!action)
+      return;
+    auto input_element =
+        InputElement::ConvertFromProto(action_proto.input_element());
+    DCHECK(input_element);
+    OnBindingChange(action, std::move(input_element), DisplayMode::kView);
+  }
+  OnBindingSave();
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {
@@ -507,6 +526,26 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::CreateTouchEvent(
       touch_event->type(), root_location_f, root_location_f,
       touch_event->time_stamp(),
       ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+}
+
+Action* TouchInjector::GetActionById(int id) {
+  for (auto& action : actions_) {
+    if (action->id() == id)
+      return action.get();
+  }
+  return nullptr;
+}
+
+void TouchInjector::OnSaveProtoFile() {
+  auto app_data_proto = std::make_unique<AppDataProto>();
+  for (auto& action : actions_) {
+    auto customized_proto = action->ConvertToProtoIfCustomized();
+    if (customized_proto)
+      *app_data_proto->add_actions() = *customized_proto;
+  }
+
+  std::string package_name(*GetPackageName());
+  save_file_callback_.Run(std::move(app_data_proto), package_name);
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {

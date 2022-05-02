@@ -7,7 +7,9 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -285,7 +287,10 @@ class TouchInjectorTest : public views::ViewsTestBase {
                            ->frame_view()
                            ->GetWindowBoundsForClientBounds(gfx::Rect())
                            .y();
-    injector_ = std::make_unique<TouchInjector>(widget_->GetNativeWindow());
+    injector_ = std::make_unique<TouchInjector>(
+        widget_->GetNativeWindow(),
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
   }
 
   void TearDown() override {
@@ -465,13 +470,13 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
 
   auto* primary_action = injector_->actions()[0].get();
   auto* primary_binding = primary_action->current_binding();
-  EXPECT_EQ(primary_binding->mouse_action(), "primary_click");
+  EXPECT_EQ(primary_binding->mouse_action(), MouseAction::PRIMARY_CLICK);
   EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, primary_binding->mouse_flags());
   auto* secondary_action = injector_->actions()[1].get();
   auto* secondary_binding = secondary_action->current_binding();
-  EXPECT_EQ(secondary_binding->mouse_action(), "secondary_click");
+  EXPECT_EQ(secondary_binding->mouse_action(), MouseAction::SECONDARY_CLICK);
   EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, secondary_binding->mouse_flags());
@@ -623,7 +628,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->RegisterEventRewriter();
   auto* hover_action = static_cast<ActionMove*>(injector_->actions()[0].get());
   auto* hover_binding = hover_action->current_binding();
-  EXPECT_EQ(hover_binding->mouse_action(), "hover_move");
+  EXPECT_EQ(hover_binding->mouse_action(), MouseAction::HOVER_MOVE);
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_ENTERED));
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_MOVED));
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_EXITED));
@@ -632,7 +637,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   auto* right_action =
       static_cast<input_overlay::ActionMove*>(injector_->actions()[1].get());
   auto* right_binding = right_action->current_binding();
-  EXPECT_EQ(right_binding->mouse_action(), "secondary_drag_move");
+  EXPECT_EQ(right_binding->mouse_action(), MouseAction::SECONDARY_DRAG_MOVE);
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_DRAGGED));
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));

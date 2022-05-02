@@ -23,7 +23,7 @@ constexpr gfx::Size kImageButtonSize(32, 32);
 
 class ActionTag::ActionImage : public views::ImageButton {
  public:
-  explicit ActionImage(std::string mouse_action)
+  explicit ActionImage(MouseAction mouse_action)
       : views::ImageButton(), mouse_action_(mouse_action) {
     SetToViewMode();
   }
@@ -48,9 +48,9 @@ class ActionTag::ActionImage : public views::ImageButton {
   }
 
   void SetToViewMode() {
-    if (mouse_action_.empty())
+    if (mouse_action_ == MouseAction::NONE)
       return;
-    if (mouse_action_ == kPrimaryClick) {
+    if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
       auto left_click_icon = gfx::CreateVectorIcon(
           gfx::IconDescription(kMouseLeftClickViewIcon, kIconSize));
       SetImage(views::Button::STATE_NORMAL, left_click_icon);
@@ -64,7 +64,7 @@ class ActionTag::ActionImage : public views::ImageButton {
   }
 
   void SetToEditMode() {
-    if (mouse_action_ == kPrimaryClick) {
+    if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
       auto left_click_icon = gfx::CreateVectorIcon(
           gfx::IconDescription(kMouseLeftClickEditIcon, kIconSize));
       SetImage(views::Button::STATE_NORMAL, left_click_icon);
@@ -78,7 +78,7 @@ class ActionTag::ActionImage : public views::ImageButton {
   }
 
  private:
-  std::string mouse_action_;
+  MouseAction mouse_action_;
 };
 
 ActionTag::ActionTag() : views::View() {}
@@ -100,7 +100,7 @@ void ActionTag::SetTextActionTag(const std::string& text) {
   label_->SetSize(label_->GetPreferredSize());
 }
 
-void ActionTag::SetImageActionTag(const std::string& mouse_action) {
+void ActionTag::SetImageActionTag(MouseAction mouse_action) {
   RemoveAllChildViews();
   label_ = nullptr;
   image_ = nullptr;
@@ -124,10 +124,13 @@ std::unique_ptr<ActionTag> ActionTag::CreateTextActionTag(std::string text) {
 
 // static
 std::unique_ptr<ActionTag> ActionTag::CreateImageActionTag(
-    std::string mouse_action) {
-  DCHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick);
-  if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
+    MouseAction mouse_action) {
+  DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
+         mouse_action == MouseAction::SECONDARY_CLICK);
+  if (mouse_action != MouseAction::PRIMARY_CLICK &&
+      mouse_action != MouseAction::SECONDARY_CLICK) {
     return nullptr;
+  }
   auto tag = std::make_unique<ActionTag>();
   tag->SetImageActionTag(mouse_action);
 

@@ -1,0 +1,53 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package arc.input_overlay;
+
+option optimize_for = LITE_RUNTIME;
+
+// Input device source for each action. Each type of the actions can be bound
+// to different types of input device sources. Some actions may be bound to
+// different types of device sources.
+enum InputSource {
+  IS_NONE = 0;
+  IS_KEYBOARD = 1;  // 1 << 0
+  IS_MOUSE = 2;     // 1 << 1
+  // TODO(cuicuiruan): Add Gamepad support.
+}
+
+// Mouse action enum.
+enum MouseAction {
+  NONE = 0;
+  PRIMARY_CLICK = 1;
+  SECONDARY_CLICK = 2;
+  HOVER_MOVE = 3;
+  PRIMARY_DRAG_MOVE = 4;
+  SECONDARY_DRAG_MOVE = 5;
+}
+
+message InputElementProto {
+  // Input sources for each action. One input binding may have more than one
+  // source. For example, the action type may need to combine key input and
+  // mouse input together.
+  required uint32 input_sources = 1;
+  // DomCode/key strings for the input binding. For reference of the name
+  // list, please refer to ui/events/keycodes/dom/dom_code_data.inc.
+  repeated string dom_codes = 2;
+  // Mouse action for the input binding.
+  optional MouseAction mouse_action = 3;
+}
+
+message ActionProto {
+  // Action ID. Each action has a unique ID within the game/app.
+  required uint32 id = 1;
+  // Input Element. Customized input binding for this action.
+  required InputElementProto input_element = 2;
+}
+
+message AppDataProto {
+  // Actions. A list of actions for one game.
+  repeated ActionProto actions = 1;
+}

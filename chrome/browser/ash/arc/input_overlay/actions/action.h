@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
@@ -85,8 +86,10 @@ class Action {
   // partially overlapped, then we only unbind the overlapped input.
   virtual void Unbind(const InputElement& input_element) = 0;
 
-  // This is called for editing the actions before change is saved.
-  void PrepareToBind(std::unique_ptr<InputElement> input_element);
+  // This is called for editing the actions before change is saved. Or for
+  // loading the customized data to override the default input mapping.
+  void PrepareToBind(std::unique_ptr<InputElement> input_element,
+                     DisplayMode mode = DisplayMode::kEdit);
   // Save |pending_binding_| as |current_binding_|.
   void BindPending();
   // Cancel |pending_binding_|.
@@ -99,6 +102,8 @@ class Action {
   // Check if there is any overlap between |input_element| and current
   // displayed binding.
   bool IsOverlapped(const InputElement& input_element);
+  // Return the proto object if the action is customized.
+  std::unique_ptr<ActionProto> ConvertToProtoIfCustomized();
 
   InputElement* current_binding() const { return current_binding_.get(); }
   InputElement* original_binding() const { return original_binding_.get(); }

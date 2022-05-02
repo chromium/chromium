@@ -149,8 +149,10 @@ class ActionTap::ActionTapView : public ActionView {
     if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
       return;
     const auto& binding = action_->GetCurrentDisplayedBinding();
-    if (IsMouseBound(binding) && binding.mouse_action() == mouse_action)
+    if (IsMouseBound(binding) &&
+        binding.mouse_action() == ConvertToMouseActionEnum(mouse_action)) {
       return;
+    }
 
     auto input_element =
         InputElement::CreateActionTapMouseElement(mouse_action);
@@ -261,9 +263,6 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
 }
 
 void ActionTap::Unbind(const InputElement& input_element) {
-  DCHECK(action_view_);
-  if (!action_view_)
-    return;
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::make_unique<InputElement>();

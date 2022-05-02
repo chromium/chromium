@@ -30,16 +30,6 @@ enum class DisplayMode {
   kEditedUnbound,
 };
 
-// Input device source for each action. Each type of the actions can be bound
-// to different types of input device sources. Some actions may be bound to
-// different types of device sources.
-enum InputSource {
-  IS_NONE = 0,
-  IS_KEYBOARD = 1 << 0,
-  IS_MOUSE = 1 << 1,
-  // TODO(cuicuiruan): Add Gamepad support.
-};
-
 // Binding options for different ui display stages.
 enum class BindingOption {
   // Current input binding in active.

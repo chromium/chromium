@@ -46,7 +46,7 @@ void ActionView::SetDisplayMode(DisplayMode mode) {
     return;
   if (mode == DisplayMode::kView) {
     RemoveEditButton();
-    if (!IsBound(*action_->current_binding()))
+    if (!IsBound(action_->GetCurrentDisplayedBinding()))
       SetVisible(false);
   }
   if (mode == DisplayMode::kEdit) {

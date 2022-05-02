@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
 
@@ -31,6 +32,8 @@ constexpr int kActionMoveKeysSize = 4;
 // |code| is not modifier DomCode.
 int ModifierDomCodeToEventFlag(ui::DomCode code);
 bool IsSameDomCode(ui::DomCode a, ui::DomCode b);
+// Convert mouse action strings to enum values.
+MouseAction ConvertToMouseActionEnum(const std::string& mouse_action);
 
 // InputElement creates input elements bound for each action.
 // TODO(cuicuiruan): It only supports ActionTap and ActionMove now. Supports
@@ -54,16 +57,23 @@ class InputElement {
   // Create mouse binding for move action.
   static std::unique_ptr<InputElement> CreateActionMoveMouseElement(
       const std::string& mouse_action);
+  // Create input binding from Proto object.
+  static std::unique_ptr<InputElement> ConvertFromProto(
+      const InputElementProto& proto);
 
   // Return true if there is key overlapped or the mouse action is overlapped.
   bool IsOverlapped(const InputElement& input_element) const;
   // Set key in the |keys_| list at the |index| to |code|.
   void SetKey(int index, ui::DomCode code);
+  // Set keys to |keys|.
+  void SetKeys(std::vector<ui::DomCode>& keys);
+  std::unique_ptr<InputElementProto> ConvertToProto();
 
   int input_sources() const { return input_sources_; }
+  void set_input_sources(int input_sources) { input_sources_ = input_sources; }
   const std::vector<ui::DomCode>& keys() const { return keys_; }
   bool is_modifier_key() { return is_modifier_key_; }
-  const std::string& mouse_action() const { return mouse_action_; }
+  const MouseAction mouse_action() const { return mouse_action_; }
   const base::flat_set<ui::EventType>& mouse_types() const {
     return mouse_types_;
   }
@@ -90,9 +100,9 @@ class InputElement {
 
   // For mouse binding.
   bool mouse_lock_required_ = false;
-  // Tap action: "primary_click" and "secondary_click".
-  // Move action: "hover_move", "left_drag_move" and "right_drag_move".
-  std::string mouse_action_;
+  // Tap action: PRIMARY_CLICK and SECONDARY_CLICK.
+  // Move action: HOVER_MOVE, PRIMARY_DRAG_MOVE and SECONDARY_DRAG_MOVE.
+  MouseAction mouse_action_ = MouseAction::NONE;
   // Tap action for mouse primary/secondary click: ET_MOUSE_PRESSED,
   // ET_MOUSE_RELEASED. Move action for primary/secondary drag move:
   // ET_MOUSE_PRESSED, ET_MOUSE_DRAGGED, ET_MOUSE_RELEASED.

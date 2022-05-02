@@ -210,26 +210,26 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
-  DCHECK(action_view_);
-  if (!action_view_)
-    return;
+void Action::PrepareToBind(std::unique_ptr<InputElement> input_element,
+                           DisplayMode mode) {
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::move(input_element);
   auto bounds = CalculateWindowContentBounds(target_window_);
+
+  if (!action_view_)
+    return;
   action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEdited);
+  action_view_->SetDisplayMode(mode);
 }
 
 void Action::BindPending() {
   if (!pending_binding_)
     return;
-  DCHECK(action_view_);
-  if (!action_view_)
-    return;
+
   current_binding_.reset();
   current_binding_ = std::move(pending_binding_);
+  DCHECK(!pending_binding_);
 }
 
 void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
@@ -357,9 +357,22 @@ void Action::OnTouchCancelled() {
 }
 
 void Action::PostUnbindProcess() {
+  if (!action_view_)
+    return;
   auto bounds = CalculateWindowContentBounds(target_window_);
   action_view_->SetViewContent(BindingOption::kPending, bounds);
   action_view_->SetDisplayMode(DisplayMode::kEditedUnbound);
+}
+
+std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
+  if (*original_binding_ == *current_binding_)
+    return nullptr;
+
+  auto proto = std::make_unique<ActionProto>();
+  proto->set_id(id_);
+  proto->set_allocated_input_element(
+      current_binding_->ConvertToProto().release());
+  return proto;
 }
 
 }  // namespace input_overlay

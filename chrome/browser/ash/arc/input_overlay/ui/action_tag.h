@@ -7,6 +7,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/views/view.h"
 
@@ -24,10 +25,10 @@ class ActionTag : public views::View {
 
   static std::unique_ptr<ActionTag> CreateTextActionTag(std::string text);
   static std::unique_ptr<ActionTag> CreateImageActionTag(
-      std::string mouse_action);
+      MouseAction mouse_action);
 
   void SetTextActionTag(const std::string& text);
-  void SetImageActionTag(const std::string& mouse_action);
+  void SetImageActionTag(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
   void ShowErrorMsg(base::StringPiece error_msg);
   void OnKeyBindingChange(ui::DomCode code);

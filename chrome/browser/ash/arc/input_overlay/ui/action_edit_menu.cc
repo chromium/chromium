@@ -155,12 +155,15 @@ void ActionEditMenu::InitActionTapEditMenu() {
   if (IsKeyboardBound(binding))
     keyboard_key_->OnBinding();
   if (IsMouseBound(binding)) {
-    if (binding.mouse_action() == kPrimaryClick) {
-      mouse_left_->OnBinding();
-    } else if (binding.mouse_action() == kSecondaryClick) {
-      mouse_right_->OnBinding();
-    } else {
-      NOTREACHED();
+    switch (binding.mouse_action()) {
+      case MouseAction::PRIMARY_CLICK:
+        mouse_left_->OnBinding();
+        break;
+      case MouseAction::SECONDARY_CLICK:
+        mouse_right_->OnBinding();
+        break;
+      default:
+        NOTREACHED();
     }
   }
 }

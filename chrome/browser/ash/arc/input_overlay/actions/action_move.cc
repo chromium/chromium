@@ -348,10 +348,6 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
 }
 
 void ActionMove::Unbind(const InputElement& input_element) {
-  DCHECK(action_view_);
-  if (!action_view_)
-    return;
-
   if (!pending_binding_)
     pending_binding_ = std::make_unique<InputElement>(*current_binding_);
   if (IsKeyboardBound(input_element)) {
