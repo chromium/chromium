@@ -1102,6 +1102,27 @@ TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, EntireImageTagIsTapTarget) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a href="about:blank">
+      <img style="width: 400px;height: 400px; margin: 0px">
+    </a>
+    <a href="about:blank">
+      <div style="width: 10px;height: 10px; margin: 0px">
+        A
+      </div>
+    </a>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVerticalEventListener) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>

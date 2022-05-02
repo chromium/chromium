@@ -182,6 +182,24 @@ bool ShouldSkipSubtree(const LayoutObject* object) {
          !style.IsContentVisibilityVisible();
 }
 
+void UnionAllChildren(const LayoutObject* parent, gfx::RectF& rect) {
+  const LayoutObject* obj = parent;
+  while (obj) {
+    blink::GetRootNodeOptions options;
+    if (obj->GetNode() &&
+        obj->GetNode()->getRootNode(&options)->IsInUserAgentShadowRoot()) {
+      obj = obj->NextInPreOrderAfterChildren(parent);
+    } else if (ShouldSkipSubtree(obj)) {
+      obj = obj->NextInPreOrderAfterChildren(parent);
+    } else {
+      if (auto* element = DynamicTo<HTMLElement>(obj->GetNode())) {
+        rect.Union(element->GetBoundingClientRectNoLifecycleUpdate());
+      }
+      obj = obj->NextInPreOrder(parent);
+    }
+  }
+}
+
 // Appends |object| to evaluation targets if the object is a tap target.
 // Returns false only if |object| is already inserted.
 bool AddElement(const LayoutObject* object,
@@ -202,7 +220,10 @@ bool AddElement(const LayoutObject* object,
     if (!tap_targets->insert(object).is_new_entry)
       return false;
 
-    const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
+    gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
+    if (auto* anchor = DynamicTo<HTMLAnchorElement>(element))
+      UnionAllChildren(object, rect);
+
     if (!rect.IsEmpty() && !isnan(rect.x()) && !isnan(rect.y()) &&
         !isnan(rect.right()) && !isnan(rect.bottom())) {
       // Expand each corner by the size of fingertips.
