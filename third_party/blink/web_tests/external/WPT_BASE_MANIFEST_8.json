@@ -301302,7 +301302,7 @@
        []
       ],
       "requirements.txt": [
-       "c28e0a8b96f5010c97e8fc4060de35b15b08f898",
+       "7849e929b9850c88682200e000ef178320432fe4",
        []
       ],
       "templates": {
@@ -333011,6 +333011,10 @@
       ],
       "activation-start.html": [
        "456f15ff699eb36b230b5079f918cbd57ea2705a",
+       []
+      ],
+      "battery-status.https.html": [
+       "eb611175381240b483bb8776a1610286bd3b7219",
        []
       ],
       "broadcast-channel.html": [
@@ -528026,6 +528030,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "restriction-battery-status.https.html": [
+      "80e25b08e723a73a75235608c9d902065b96eadd",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "restriction-broadcast-channel.html": [
