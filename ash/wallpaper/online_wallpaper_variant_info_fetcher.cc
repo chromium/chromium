@@ -194,8 +194,9 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
   auto request = std::make_unique<OnlineWallpaperRequest>(
       account_id, info.collection_id, info.layout, daily, mode);
 
+  auto collection_id = request->collection_id;
   wallpaper_controller_client_->FetchImagesForCollection(
-      request->collection_id,
+      collection_id,
       base::BindOnce(
           &OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants,
           weak_factory_.GetWeakPtr(), std::move(request), *info.asset_id,
@@ -238,8 +239,9 @@ void OnlineWallpaperVariantInfoFetcher::OnSingleFetch(
   if (!wallpaper_controller_client_)
     return;
 
+  auto collection_id = request->collection_id;
   wallpaper_controller_client_->FetchImagesForCollection(
-      request->collection_id,
+      collection_id,
       base::BindOnce(
           &OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants,
           weak_factory_.GetWeakPtr(), std::move(request), image.asset_id(),
