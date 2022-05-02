@@ -302,7 +302,7 @@ CertificateTrust TrustStoreWin::GetTrust(
   // Found at least one instance of the cert in the root store, and all
   // instances found are trusted for TLS server auth.
   if (root_found && root_is_trusted) {
-    return CertificateTrust::ForTrustAnchor();
+    return CertificateTrust::ForTrustAnchorEnforcingExpiration();
   }
 
   cert_from_store = nullptr;

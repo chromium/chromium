@@ -127,7 +127,7 @@ TEST(TrustStoreWin, GetTrust) {
     CertificateTrustType expected_result;
   } kTestData[] = {
       // Explicitly trusted root should be trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
       // Intermediate for path building should not be trusted.
       {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
       // Unknown roots should not be trusted (e.g. just because they're
@@ -185,7 +185,7 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
   } kTestData[] = {
       // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
       // trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
       // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
       // cert for server auth.
       {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
@@ -279,7 +279,7 @@ TEST(TrustStoreWin, GetTrustDisallowedCerts) {
   } kTestData[] = {
       // dByD in root, also in distrusted but without szOID_PKIX_KP_SERVER_AUTH
       // set.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
       // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
       {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
   };
