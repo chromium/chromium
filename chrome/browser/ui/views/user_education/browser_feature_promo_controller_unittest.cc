@@ -601,7 +601,11 @@ TEST_F(BrowserFeaturePromoControllerTest,
       controller_->ShowCriticalPromo(DefaultBubbleParams(), GetAnchorElement());
   ASSERT_TRUE(bubble);
   ASSERT_EQ(GetPromoBubble(bubble.get()), GetCriticalPromoBubble());
-  GetPromoBubble(bubble.get())->GetWidget()->Close();
+  auto* widget = GetPromoBubble(bubble.get())->GetWidget();
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  widget->Close();
+  waiter.Wait();
+
   EXPECT_FALSE(GetCriticalPromoBubble());
 
   bubble =

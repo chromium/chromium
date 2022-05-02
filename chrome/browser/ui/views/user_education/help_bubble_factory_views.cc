@@ -140,15 +140,11 @@ void HelpBubbleViews::CloseBubbleImpl() {
   help_bubble_view_ = nullptr;
 }
 
-void HelpBubbleViews::OnWidgetClosing(views::Widget* widget) {
+void HelpBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   scoped_observation_.Reset();
   MaybeResetAnchorView();
   help_bubble_view_ = nullptr;
   NotifyBubbleClosed();
-}
-
-void HelpBubbleViews::OnWidgetDestroying(views::Widget* widget) {
-  OnWidgetClosing(widget);
 }
 
 HelpBubbleFactoryViews::HelpBubbleFactoryViews(

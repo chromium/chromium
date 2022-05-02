@@ -79,7 +79,6 @@ class HelpBubbleViews : public HelpBubble,
   void CloseBubbleImpl() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   raw_ptr<HelpBubbleView> help_bubble_view_;
