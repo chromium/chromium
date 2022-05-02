@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -23,10 +24,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/port_util.h"
-#include "net/base/test_completion_callback.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
-#include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/test/test_data_directory.h"
@@ -157,33 +156,13 @@ std::string BaseTestServer::GetScheme() const {
 }
 
 bool BaseTestServer::GetAddressList(AddressList* address_list) const {
+  // Historically, this function did a DNS lookup because `host_port_pair_`
+  // could specify something other than localhost. Now it is always localhost.
+  DCHECK(host_port_pair_.host() == "127.0.0.1" ||
+         host_port_pair_.host() == "localhost");
   DCHECK(address_list);
-
-  std::unique_ptr<HostResolver> resolver(
-      HostResolver::CreateStandaloneResolver(nullptr));
-
-  // Limit the lookup to IPv4 (DnsQueryType::A). When started with the default
-  // address of kLocalhost, testserver.py only supports IPv4.
-  // If a custom hostname is used, it's possible that the test
-  // server will listen on both IPv4 and IPv6, so this will
-  // still work. The testserver does not support explicit
-  // IPv6 literal hostnames.
-  HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::A;
-
-  std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      resolver->CreateRequest(host_port_pair_, NetworkIsolationKey(),
-                              NetLogWithSource(), parameters);
-
-  TestCompletionCallback callback;
-  int rv = request->Start(callback.callback());
-  rv = callback.GetResult(rv);
-  if (rv != OK) {
-    LOG(ERROR) << "Failed to resolve hostname: " << host_port_pair_.host();
-    return false;
-  }
-
-  *address_list = *request->GetAddressResults();
+  *address_list = AddressList(
+      IPEndPoint(IPAddress::IPv4Localhost(), host_port_pair_.port()));
   return true;
 }
 
