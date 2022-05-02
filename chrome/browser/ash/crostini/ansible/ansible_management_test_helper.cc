@@ -71,4 +71,27 @@ void AnsibleManagementTestHelper::SendSucceededApplySignal() {
   fake_cicerone_client_->NotifyApplyAnsiblePlaybookProgress(signal);
 }
 
+void AnsibleManagementTestHelper::SendFailedInstallSignal() {
+  vm_tools::cicerone::InstallLinuxPackageProgressSignal signal;
+  signal.set_owner_id(CryptohomeIdForProfile(profile_));
+  signal.set_vm_name(kCrostiniDefaultVmName);
+  signal.set_container_name(kCrostiniDefaultContainerName);
+  signal.set_status(
+      vm_tools::cicerone::InstallLinuxPackageProgressSignal::FAILED);
+  signal.set_failure_details("banana");
+
+  fake_cicerone_client_->InstallLinuxPackageProgress(signal);
+}
+
+void AnsibleManagementTestHelper::SendFailedApplySignal() {
+  vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
+  signal.set_owner_id(CryptohomeIdForProfile(profile_));
+  signal.set_vm_name(kCrostiniDefaultVmName);
+  signal.set_container_name(kCrostiniDefaultContainerName);
+  signal.set_status(
+      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::FAILED);
+  signal.set_failure_details("apple");
+
+  fake_cicerone_client_->NotifyApplyAnsiblePlaybookProgress(signal);
+}
 }  // namespace crostini

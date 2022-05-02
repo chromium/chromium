@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
@@ -16,9 +17,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+void ExpectResult(base::OnceClosure closure,
+                  bool expected_result,
+                  bool actual_result) {
+  EXPECT_EQ(expected_result, actual_result);
+  std::move(closure).Run();
+}
+}  // namespace
+
 namespace crostini {
 
-class AnsibleManagementServiceTest : public testing::Test {
+class AnsibleManagementServiceTest : public testing::Test,
+                                     public AnsibleManagementService::Observer {
  public:
   AnsibleManagementServiceTest() {
     chromeos::DBusThreadManager::Initialize();
@@ -58,31 +69,74 @@ class AnsibleManagementServiceTest : public testing::Test {
     chromeos::DBusThreadManager::Shutdown();
   }
 
+  void SetUp() override {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    is_install_ansible_success_ = true;
+    is_apply_ansible_success_ = true;
+    ansible_management_service_->AddObserver(this);
+  }
+
+  void TearDown() override {
+    run_loop_.reset();
+    ansible_management_service_->RemoveObserver(this);
+  }
+
+  void ExpectTrueResult(bool success) {
+    EXPECT_TRUE(success);
+    run_loop()->Quit();
+  }
+
+  void ExpectFalseResult(bool success) {
+    EXPECT_FALSE(success);
+    run_loop()->Quit();
+  }
+
+  // AnsibleManagementService::Observer
+  void OnAnsibleSoftwareConfigurationStarted(
+      const ContainerId& container_id) override {}
+  void OnAnsibleSoftwareConfigurationFinished(const ContainerId& container_id,
+                                              bool success) override {}
+  void OnAnsibleSoftwareInstall(const ContainerId& container_id) override {
+    if (is_install_ansible_success_) {
+      test_helper_->SendSucceededInstallSignal();
+    } else {
+      test_helper_->SendFailedInstallSignal();
+    }
+  }
+  void OnApplyAnsiblePlaybook(const ContainerId& container_id) override {
+    if (is_apply_ansible_success_) {
+      test_helper_->SendSucceededApplySignal();
+    } else {
+      test_helper_->SendFailedApplySignal();
+    }
+  }
+
+ private:
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  CrostiniManager* crostini_manager_;
+  AnsibleManagementService* ansible_management_service_;
+  bool is_install_ansible_success_;
+  bool is_apply_ansible_success_;
+
  protected:
   AnsibleManagementService* ansible_management_service() {
     return ansible_management_service_;
   }
 
-  void ExecuteSuccessfulConfigurationFlow() {
-    ansible_management_service()->ConfigureDefaultContainer(
-        configuration_finished_mock_callback_.Get());
-    // Should wait for Cicerone response for Linux package install request.
-    base::RunLoop().RunUntilIdle();
-    test_helper_->SendSucceededInstallSignal();
-    // AnsibleManagementService should read playbook file content.
-    task_environment_.RunUntilIdle();
-    test_helper_->SendSucceededApplySignal();
+  base::RunLoop* run_loop() { return run_loop_.get(); }
+
+  void SetInstallAnsibleStatus(bool status) {
+    is_install_ansible_success_ = status;
+  }
+  void SetApplyAnsibleStatus(bool status) {
+    is_apply_ansible_success_ = status;
   }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AnsibleManagementTestHelper> test_helper_;
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      configuration_finished_mock_callback_;
 
- private:
-  std::unique_ptr<TestingProfile> profile_;
-  CrostiniManager* crostini_manager_;
-  AnsibleManagementService* ansible_management_service_;
+  base::WeakPtrFactory<AnsibleManagementServiceTest> weak_ptr_factory_{this};
 };
 
 TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerSuccess) {
@@ -91,27 +145,32 @@ TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerSuccess) {
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(true)).Times(1);
-
   ansible_management_service()->ConfigureDefaultContainer(
-      configuration_finished_mock_callback_.Get());
-  base::RunLoop().RunUntilIdle();
-
-  test_helper_->SendSucceededInstallSignal();
-  task_environment_.RunUntilIdle();
-
-  test_helper_->SendSucceededApplySignal();
+      base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+  run_loop()->Run();
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerInstallFail) {
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(false)).Times(1);
+  ansible_management_service()->ConfigureDefaultContainer(
+      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+  run_loop()->Run();
+}
+
+TEST_F(AnsibleManagementServiceTest,
+       ConfigureDefaultContainerInstallSignalFail) {
+  test_helper_->SetUpAnsibleInstallation(
+      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
+  SetInstallAnsibleStatus(false);
 
   ansible_management_service()->ConfigureDefaultContainer(
-      configuration_finished_mock_callback_.Get());
-  base::RunLoop().RunUntilIdle();
+      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+  run_loop()->Run();
 }
 
 TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerApplyFail) {
@@ -120,14 +179,23 @@ TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerApplyFail) {
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(false)).Times(1);
+  ansible_management_service()->ConfigureDefaultContainer(
+      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+  run_loop()->Run();
+}
+
+TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerApplySignalFail) {
+  test_helper_->SetUpAnsibleInstallation(
+      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
+  test_helper_->SetUpPlaybookApplication(
+      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
+  SetApplyAnsibleStatus(false);
 
   ansible_management_service()->ConfigureDefaultContainer(
-      configuration_finished_mock_callback_.Get());
-  base::RunLoop().RunUntilIdle();
-
-  test_helper_->SendSucceededInstallSignal();
-  task_environment_.RunUntilIdle();
+      base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+  run_loop()->Run();
 }
 
 TEST_F(AnsibleManagementServiceTest,
@@ -137,14 +205,14 @@ TEST_F(AnsibleManagementServiceTest,
   test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(true)).Times(1);
-  ExecuteSuccessfulConfigurationFlow();
-
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(false)).Times(1);
-
   ansible_management_service()->ConfigureDefaultContainer(
-      configuration_finished_mock_callback_.Get());
-  base::RunLoop().RunUntilIdle();
+      base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
+        ansible_management_service()->ConfigureDefaultContainer(
+            base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }),
+                     true));
+  run_loop()->Run();
 }
 
 TEST_F(AnsibleManagementServiceTest,
@@ -152,22 +220,22 @@ TEST_F(AnsibleManagementServiceTest,
   test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(false)).Times(1);
-
   // Unsuccessful sequence of events.
   ansible_management_service()->ConfigureDefaultContainer(
-      configuration_finished_mock_callback_.Get());
-  base::RunLoop().RunUntilIdle();
+      base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
+        // Setup for success.
+        test_helper_->SetUpAnsibleInstallation(
+            vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
+        test_helper_->SetUpPlaybookApplication(
+            vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
+        ansible_management_service()->ConfigureDefaultContainer(
+            base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }),
+                     false));
   CloseCrostiniAnsibleSoftwareConfigViewForTesting();
 
-  // Setup for success.
-  test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  test_helper_->SetUpPlaybookApplication(
-      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
-
-  EXPECT_CALL(configuration_finished_mock_callback_, Run(true)).Times(1);
-  ExecuteSuccessfulConfigurationFlow();
+  run_loop()->Run();
 }
 
 }  // namespace crostini
