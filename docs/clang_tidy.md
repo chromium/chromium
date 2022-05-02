@@ -75,7 +75,7 @@ clang-tidy across all of Chromium is a single command:
 
 ```
 $ cd ${chromium}/src
-$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy.py \
+$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy_script.py \
     --base_path $PWD \
     --out_dir out/Linux \
     --findings_file all_findings.json \
@@ -90,7 +90,7 @@ All clang-tidy checks are run on Linux builds of Chromium, so please set up your
 `args.gn` to build Linux.
 
 `all_findings.json` is where all of clang-tidy's findings will be dumped. The
-format of this file is detailed in `tricium_clang_tidy.py`.
+format of this file is detailed in `tricium_clang_tidy_script.py`.
 
 **Note** that the above command will use Chromium's top-level `.clang-tidy` file
 (or `.clang-tidy` files scattered throughout `third_party/`, depending on the
