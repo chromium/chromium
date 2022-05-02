@@ -222,12 +222,11 @@ void ContentCaptureReceiver::UpdateFaviconURL(
 }
 
 void ContentCaptureReceiver::RetrieveFaviconURL() {
-  if (!rfh()->IsActive() || rfh()->GetMainFrame() != rfh() ||
+  if (!rfh()->IsActive() || !rfh()->IsInPrimaryMainFrame() ||
       disable_get_favicon_from_web_contents_for_testing()) {
     frame_content_capture_data_.favicon = std::string();
   } else {
-    frame_content_capture_data_.favicon = ToJSON(
-        content::WebContents::FromRenderFrameHost(rfh())->GetFaviconURLs());
+    frame_content_capture_data_.favicon = ToJSON(rfh()->FaviconURLs());
   }
 }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_reader.h"
 #include "components/content_capture/browser/content_capture_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -107,6 +108,58 @@ IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
   EXPECT_EQ(GetExpectedTestData(helper()->test_data2(),
                                 GetFrameId(false /* main_frame */)),
             consumer()->captured_data());
+}
+
+IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
+                       DoNotUpdateFaviconURLsInFencedFrame) {
+  // Simulate to capture the content from main frame.
+  main_frame_sender()->DidCaptureContent(helper()->test_data(),
+                                         true /* first_data */);
+
+  // Simulate to capture the content from fenced frame.
+  fenced_frame_sender()->DidCaptureContent(helper()->test_data2(),
+                                           true /* first_data */);
+
+  // Insert the favicon dynamically to the primary main frame.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "let l = document.createElement('link');"
+                     "l.rel='icon'; l.type='image/png'; "
+                     "l.href='https://example.com/favicon.ico';"
+                     "document.head.appendChild(l)"));
+
+  std::string expected_json =
+      R"JSON([{
+          "type":"favicon",
+          "url":"https://example.com/favicon.ico"
+      }])JSON";
+  absl::optional<base::Value> expected = base::JSONReader::Read(expected_json);
+
+  // Verify that the captured data's favicon url from the primary main frame is
+  // valid.
+  auto* main_frame_receiver =
+      provider()->ContentCaptureReceiverForFrameForTesting(main_frame_);
+  absl::optional<base::Value> main_frame_actual = base::JSONReader::Read(
+      main_frame_receiver->GetContentCaptureFrame().favicon);
+  EXPECT_TRUE(main_frame_actual);
+  EXPECT_EQ(expected, main_frame_actual);
+
+  // Verify that the captured data's favicon url from the fenced frame is empty.
+  auto* fenced_frame_receiver =
+      provider()->ContentCaptureReceiverForFrameForTesting(fenced_frame_);
+  EXPECT_FALSE(base::JSONReader::Read(
+      fenced_frame_receiver->GetContentCaptureFrame().favicon));
+
+  // Insert the favicon dynamically to the fenced frame.
+  ASSERT_TRUE(ExecJs(fenced_frame_.get(),
+                     "let l = document.createElement('link');"
+                     "l.rel='icon'; l.type='image/png'; "
+                     "l.href='https://example.com/favicon.ico';"
+                     "document.head.appendChild(l)"));
+
+  // Verify that the captured data's favicon url from the fenced frame is still
+  // empty.
+  EXPECT_FALSE(base::JSONReader::Read(
+      fenced_frame_receiver->GetContentCaptureFrame().favicon));
 }
 
 }  // namespace content_capture
