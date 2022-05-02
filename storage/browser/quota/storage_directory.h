@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) StorageDirectory {
   // true if creation succeeds or directory already exists.
   bool CreateBucket(const BucketLocator& bucket);
 
-  // Find and marks the storage directory for `bucket` and marks it for
+  // Finds and marks the storage directory for `bucket` and marks it for
   // deletion. Returns true on success.
   bool DoomBucket(const BucketLocator& bucket);
 

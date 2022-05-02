@@ -11,10 +11,14 @@
 
 namespace storage {
 
+// Constructs path where `bucket` data is persisted to disk for partitioned
+// storage given a `profile_path`.
 COMPONENT_EXPORT(STORAGE_BROWSER)
 base::FilePath CreateBucketPath(const base::FilePath& profile_path,
                                 const BucketLocator& bucket);
 
+// Constructs path where `client_type` data for a `bucket` is persisted to disk
+// for partitioned storage given a `profile_path`.
 COMPONENT_EXPORT(STORAGE_BROWSER)
 base::FilePath CreateClientBucketPath(const base::FilePath& profile_path,
                                       const BucketLocator& bucket,
