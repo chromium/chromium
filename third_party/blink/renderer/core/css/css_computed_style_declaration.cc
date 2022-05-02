@@ -270,9 +270,12 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
 
   if (is_for_layout_dependent_property) {
     auto& doc = styled_node->GetDocument();
-    doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
-    doc.UpdateStyleAndLayoutForNode(styled_node,
-                                    DocumentUpdateReason::kJavaScript);
+    // EditingStyle uses this class with DisallowTransitionScope.
+    if (!doc.Lifecycle().StateTransitionDisallowed()) {
+      doc.GetDisplayLockDocumentState().UnlockShapingDeferredElements();
+      doc.UpdateStyleAndLayoutForNode(styled_node,
+                                      DocumentUpdateReason::kJavaScript);
+    }
   }
 }
 
