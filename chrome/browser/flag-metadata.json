@@ -780,12 +780,12 @@
   },
   {
     "name": "chrome-share-long-screenshot",
-    "owners": [ "skare", "chrome-sharing-eng@google.com" ],
+    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104
   },
   {
     "name": "chrome-sharing-hub-launch-adjacent",
-    "owners": [ "skare", "chrome-sharing-eng@google.com" ],
+    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104
   },
   {
@@ -821,7 +821,7 @@
   },
   {
     "name": "chromeos-sharing-hub",
-    "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
+    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 98
   },
   {
@@ -3939,7 +3939,7 @@
   },
   {
     "name": "lightweight-reactions-android",
-    "owners": [ "gujen", "sophey" ],
+    "owners": [ "gujen", "sophey", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104
   },
   {
@@ -4843,7 +4843,7 @@
   },
   {
     "name": "persist-share-hub-on-app-switch",
-    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 100
   },
   {
@@ -5285,7 +5285,7 @@
   },
   {
     "name": "send-tab-to-self-v2",
-    "owners": ["ellyjones", "chrome-sharing-eng@google.com"],
+    "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 100
   },
   {
@@ -5302,7 +5302,7 @@
   },
   {
     "name": "share-button-in-top-toolbar",
-    "owners": [ "jeffreycohen", "chrome-sharing-eng@google.com" ],
+    "owners": [ "jeffreycohen", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 92
   },
   {
@@ -5322,17 +5322,17 @@
   },
   {
     "name": "shared-highlighting-v2",
-    "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com"],
+    "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 99
   },
   {
     "name": "sharing-desktop-screenshots",
-    "owners": ["skare", "jeffreycohen", "chrome-sharing-eng@google.com" ],
+    "owners": ["skare", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104
   },
   {
     "name": "sharing-desktop-screenshots-edit",
-    "owners": ["skare", "jeffreycohen", "chrome-sharing-eng@google.com" ],
+    "owners": ["skare", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104
   },
   {
@@ -5342,12 +5342,12 @@
   },
   {
     "name": "sharing-hub-desktop-app-menu",
-    "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
+    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 98
   },
   {
     "name": "sharing-hub-desktop-omnibox",
-    "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
+    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 98
   },
   {
@@ -5868,7 +5868,7 @@
   },
   {
     "name": "upcoming-sharing-features",
-    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 110
   },
   {
