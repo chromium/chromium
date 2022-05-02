@@ -130,7 +130,11 @@ const CSSFunctionValue* CSSPerspective::ToCSSValue() const {
     }
   }
 
-  DCHECK(length);
+  // TODO(crbug.com/983784): We currently don't fully support typed
+  // arithmetic, which can cause `length` to be nullptr here.
+  if (!length)
+    return nullptr;
+
   auto* result =
       MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPerspective);
   result->Append(*length);
