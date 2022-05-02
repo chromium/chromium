@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -18,11 +19,16 @@
 BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
-    BrowserView* browser_view)
+    BrowserView* browser_view,
+    BrowserFrame* browser_frame)
     : DesktopWindowTreeHostLinux(native_widget_delegate,
                                  desktop_native_widget_aura),
       browser_view_(browser_view),
       desktop_native_widget_aura_(desktop_native_widget_aura) {
+  auto* native_frame = static_cast<DesktopBrowserFrameLacros*>(
+      browser_frame->native_browser_frame());
+  native_frame->set_host(this);
+
   // Lacros receives occlusion information from exo via aura-shell.
   SetNativeWindowOcclusionEnabled(true);
 }
@@ -61,6 +67,45 @@ void BrowserDesktopWindowTreeHostLacros::TabDraggingKindChanged(
   wayland_extension->StartWindowDraggingSessionIfNeeded(allow_system_drag);
 }
 
+bool BrowserDesktopWindowTreeHostLacros::SupportsMouseLock() {
+  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  return wayland_extension->SupportsPointerLock();
+}
+
+void BrowserDesktopWindowTreeHostLacros::LockMouse(aura::Window* window) {
+  DesktopWindowTreeHostLinux::LockMouse(window);
+
+  if (SupportsMouseLock()) {
+    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    wayland_extension->LockPointer(true /*enabled*/);
+  }
+}
+
+void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
+  DesktopWindowTreeHostLinux::UnlockMouse(window);
+
+  if (SupportsMouseLock()) {
+    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    wayland_extension->LockPointer(false /*enabled*/);
+  }
+}
+
+void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
+    ui::PlatformWindowState old_window_show_state,
+    ui::PlatformWindowState new_window_show_state) {
+  DesktopWindowTreeHostLinux::OnWindowStateChanged(old_window_show_state,
+                                                   new_window_show_state);
+
+  bool fullscreen_changed =
+      new_window_show_state == ui::PlatformWindowState::kFullScreen ||
+      old_window_show_state == ui::PlatformWindowState::kFullScreen;
+  if (old_window_show_state != new_window_show_state && fullscreen_changed) {
+    // If the browser view initiated this state change,
+    // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
+    browser_view_->FullscreenStateChanging();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros,
 //     DesktopWindowTreeHostPlatform implementation:
@@ -88,6 +133,7 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
     BrowserFrame* browser_frame) {
-  return new BrowserDesktopWindowTreeHostLacros(
-      native_widget_delegate, desktop_native_widget_aura, browser_view);
+  return new BrowserDesktopWindowTreeHostLacros(native_widget_delegate,
+                                                desktop_native_widget_aura,
+                                                browser_view, browser_frame);
 }

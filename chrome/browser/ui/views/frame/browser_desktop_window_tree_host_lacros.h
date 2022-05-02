@@ -9,6 +9,7 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 class BrowserView;
+class BrowserFrame;
 enum class TabDragKind;
 
 namespace views {
@@ -22,7 +23,8 @@ class BrowserDesktopWindowTreeHostLacros
   BrowserDesktopWindowTreeHostLacros(
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
-      BrowserView* browser_view);
+      BrowserView* browser_view,
+      BrowserFrame* browser_frame);
   BrowserDesktopWindowTreeHostLacros(
       const BrowserDesktopWindowTreeHostLacros&) = delete;
   BrowserDesktopWindowTreeHostLacros& operator=(
@@ -41,6 +43,13 @@ class BrowserDesktopWindowTreeHostLacros
   // views::DesktopWindowTreeHostPlatform:
   SkPath GetWindowMaskForClipping() const override;
   void OnSurfaceFrameLockingChanged(bool lock) override;
+  bool SupportsMouseLock() override;
+  void LockMouse(aura::Window* window) override;
+  void UnlockMouse(aura::Window* window) override;
+
+  // ui::PlatformWindowDelegate
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override;
 
   BrowserView* const browser_view_;
   views::DesktopNativeWidgetAura* desktop_native_widget_aura_ = nullptr;
