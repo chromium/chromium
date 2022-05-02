@@ -157,18 +157,6 @@ void CoreOobeHandler::ReloadContent(base::Value::Dict dictionary) {
   CallJS("cr.ui.Oobe.reloadContent", base::Value(std::move(dictionary)));
 }
 
-void CoreOobeHandler::SetShelfHeight(int height) {
-  CallJS("cr.ui.Oobe.setShelfHeight", height);
-}
-
-void CoreOobeHandler::SetOrientation(bool is_horizontal) {
-  CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
-}
-
-void CoreOobeHandler::SetDialogSize(int width, int height) {
-  CallJS("cr.ui.Oobe.setDialogSize", width, height);
-}
-
 void CoreOobeHandler::HandleInitialized() {
   VLOG(3) << "CoreOobeHandler::HandleInitialized";
   GetOobeUI()->InitializeHandlers();
@@ -287,14 +275,16 @@ void CoreOobeHandler::OnTabletModeEnded() {
 }
 
 void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
-  SetShelfHeight(ash::ShelfConfig::Get()->shelf_size());
+  CallJS("cr.ui.Oobe.setShelfHeight", ash::ShelfConfig::Get()->shelf_size());
+
   const gfx::Size display_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().size();
   const bool is_horizontal = display_size.width() > display_size.height();
-  SetOrientation(is_horizontal);
+  CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
+
   const gfx::Size dialog_size = CalculateOobeDialogSize(
       size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
-  SetDialogSize(dialog_size.width(), dialog_size.height());
+  CallJS("cr.ui.Oobe.setDialogSize", dialog_size.width(), dialog_size.height());
 }
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
