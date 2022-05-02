@@ -424,9 +424,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
 // TODO(johnidel): SimulateMouseClickAt() does not work on Android, find a
 // different way to invoke the context menu that works on Android.
+// https://crbug.com/1219907 started flaking after Field Trial Testing Config
+// was enabled for content_browsertests.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
-                       ContextMenuShownForImpression_ImpressionSet) {
+                       DISABLED_ContextMenuShownForImpression_ImpressionSet) {
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
