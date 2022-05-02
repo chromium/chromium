@@ -38,7 +38,7 @@ CrosWindowManagement::GetCrosWindowManagementOrNull() {
   return cros_window_management_.get();
 }
 
-ScriptPromise CrosWindowManagement::windows(ScriptState* script_state) {
+ScriptPromise CrosWindowManagement::getWindows(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto* window_management = GetCrosWindowManagementOrNull();
   if (window_management) {

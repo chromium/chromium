@@ -132,7 +132,7 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetOrigin) {
   const char test_code[] = R"(
 async function cros_test() {
-  let [window] = await chromeos.windowManagement.windows();
+  let [window] = await chromeos.windowManagement.getWindows();
 
   const newBounds = DOMRect.fromRect(window.bounds);
   newBounds.x += 10;
@@ -140,7 +140,7 @@ async function cros_test() {
 
   window.setOrigin(newBounds.x, newBounds.y);
   {
-    let [window] = await chromeos.windowManagement.windows();
+    let [window] = await chromeos.windowManagement.getWindows();
     assert_weak_equals(window.bounds, newBounds,
         `SetOrigin should set origin without changing bounds`);
   }
@@ -153,7 +153,7 @@ async function cros_test() {
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetBounds) {
   const char test_code[] = R"(
 async function cros_test() {
-  let [window] = await chromeos.windowManagement.windows();
+  let [window] = await chromeos.windowManagement.getWindows();
 
   const newBounds = DOMRect.fromRect(window.bounds);
   newBounds.x += 10;
@@ -301,13 +301,13 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowFocusSingle) {
 async function cros_test() {
   await assertWindowState("normal");
   {
-    let [window] = await chromeos.windowManagement.windows();
+    let [window] = await chromeos.windowManagement.getWindows();
     assert_true(window.isFocused);
   }
 
   await minimizeAndTest();
   {
-    let [window] = await chromeos.windowManagement.windows();
+    let [window] = await chromeos.windowManagement.getWindows();
     assert_false(window.isFocused);
   }
 
@@ -329,10 +329,10 @@ async function cros_test() {
 
   {
     let [first_window, second_window] =
-        await chromeos.windowManagement.windows();
+        await chromeos.windowManagement.getWindows();
     getWindows = async function() {
       let [first_returned_window, second_returned_window] =
-          await chromeos.windowManagement.windows();
+          await chromeos.windowManagement.getWindows();
       assert_equals(first_window.id, first_returned_window.id);
       assert_equals(second_window.id, second_returned_window.id);
       return [first_returned_window, second_returned_window];
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
 
   std::string test_code = base::StringPrintf(R"(
 async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
+  let windows = await chromeos.windowManagement.getWindows();
   assert_equals(windows.length, 2);
 
   let window_to_close = windows.find(window => window.id === "%1$s");
@@ -452,7 +452,7 @@ async function cros_test() {
 
   // TODO(b/221123297): Currently test will flake on close under stress.
   // Defer testing until on close event implemented
-  // windows = await chromeos.windowManagement.windows();
+  // windows = await chromeos.windowManagement.getWindows();
   // assert_equals(windows.length, 1);
 }
   )",
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSWACrashTest) {
 
   std::string test_code = base::StringPrintf(R"(
 async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
+  let windows = await chromeos.windowManagement.getWindows();
   assert_equals(windows.length, 2);
 
   let swa_window = windows.find(window => window.id === "%1$s");

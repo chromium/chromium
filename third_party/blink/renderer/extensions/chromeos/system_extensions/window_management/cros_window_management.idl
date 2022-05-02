@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 interface CrosWindowManagement {
-  [CallWith=ScriptState] Promise<sequence<CrosWindow>> windows();
+  [CallWith=ScriptState] Promise<sequence<CrosWindow>> getWindows();
 };

@@ -27,7 +27,7 @@ class CrosWindowManagement : public ScriptWrappable,
   // implementation. May return null in error cases.
   mojom::blink::CrosWindowManagement* GetCrosWindowManagementOrNull();
 
-  ScriptPromise windows(ScriptState* script_state);
+  ScriptPromise getWindows(ScriptState* script_state);
   void WindowsCallback(ScriptPromiseResolver* resolver,
                        WTF::Vector<mojom::blink::CrosWindowPtr> windows);
 
