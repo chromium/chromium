@@ -164,7 +164,11 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
 
   # Generate the C++ constants.
   yield '// The patterns. Referred to by their index in MatchPatternRef.'
-  yield 'constexpr std::array kPatterns{'
+  yield '//'
+  yield '// We use C-style arrays rather than std::array because the template'
+  yield '// parameter inference may exceed the default bracket depth limit'
+  yield '// on some (?) clang versions. See crbug.com/1319987.'
+  yield 'constexpr MatchingPattern kPatterns[] {'
   for cpp_expr, index in sorted(
       pattern_to_index.items(), key=lambda item: item[1]):
     yield f'/*[{index}]=*/{cpp_expr},'
@@ -192,7 +196,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
           yield (f'constexpr auto {kPatterns(id, name, lang)} = '
                  f'base::make_span({kPatterns(other_id, name, lang)});')
         else:
-          yield (f'constexpr std::array {kPatterns(id, name, lang)}{{' +
+          yield (f'constexpr MatchPatternRef {kPatterns(id, name, lang)}[] {{' +
                  f', '.join(
                      f'MakeMatchPatternRef('+
                      f'{python_bool_to_cpp(is_supplementary)}, {index})'
