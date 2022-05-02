@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
@@ -31,11 +32,13 @@ namespace apps {
 AppServiceMojomImpl::AppServiceMojomImpl(
     const base::FilePath& profile_dir,
     base::OnceClosure read_completed_for_testing,
-    base::OnceClosure write_completed_for_testing)
-    : preferred_apps_(this,
-                      profile_dir,
-                      std::move(read_completed_for_testing),
-                      std::move(write_completed_for_testing)) {}
+    base::OnceClosure write_completed_for_testing) {
+  if (!base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
+    preferred_apps_impl_ = std::make_unique<PreferredAppsImpl>(
+        this, profile_dir, std::move(read_completed_for_testing),
+        std::move(write_completed_for_testing));
+  }
+}
 
 AppServiceMojomImpl::~AppServiceMojomImpl() = default;
 
@@ -82,10 +85,11 @@ void AppServiceMojomImpl::RegisterSubscriber(
   // TODO: store the opts somewhere.
 
   // Initialise the Preferred Apps in the Subscribers on register.
-  if (preferred_apps_.preferred_apps_list_.IsInitialized()) {
+  if (preferred_apps_impl_ &&
+      preferred_apps_impl_->preferred_apps_list_.IsInitialized()) {
     subscriber->InitializePreferredApps(
         ConvertPreferredAppsToMojomPreferredApps(
-            preferred_apps_.preferred_apps_list_.GetValue()));
+            preferred_apps_impl_->preferred_apps_list_.GetValue()));
   }
 
   // Add the new subscriber to the set.
@@ -250,35 +254,46 @@ void AppServiceMojomImpl::AddPreferredApp(
     apps::mojom::IntentFilterPtr intent_filter,
     apps::mojom::IntentPtr intent,
     bool from_publisher) {
-  preferred_apps_.AddPreferredApp(app_type, app_id, std::move(intent_filter),
-                                  std::move(intent), from_publisher);
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->AddPreferredApp(app_type, app_id,
+                                          std::move(intent_filter),
+                                          std::move(intent), from_publisher);
+  }
 }
 
 void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
                                              const std::string& app_id) {
-  preferred_apps_.RemovePreferredApp(app_type, app_id);
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->RemovePreferredApp(app_type, app_id);
+  }
 }
 
 void AppServiceMojomImpl::RemovePreferredAppForFilter(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
-  preferred_apps_.RemovePreferredAppForFilter(app_type, app_id,
-                                              std::move(intent_filter));
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->RemovePreferredAppForFilter(app_type, app_id,
+                                                      std::move(intent_filter));
+  }
 }
 
 void AppServiceMojomImpl::SetSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
-  preferred_apps_.SetSupportedLinksPreference(app_type, app_id,
-                                              std::move(all_link_filters));
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->SetSupportedLinksPreference(
+        app_type, app_id, std::move(all_link_filters));
+  }
 }
 
 void AppServiceMojomImpl::RemoveSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
-  preferred_apps_.RemoveSupportedLinksPreference(app_type, app_id);
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->RemoveSupportedLinksPreference(app_type, app_id);
+  }
 }
 
 void AppServiceMojomImpl::SetResizeLocked(apps::mojom::AppType app_type,
@@ -313,10 +328,14 @@ void AppServiceMojomImpl::SetRunOnOsLoginMode(
 }
 
 void AppServiceMojomImpl::InitializePreferredAppsForAllSubscribers() {
+  if (!preferred_apps_impl_) {
+    return;
+  }
+
   for (auto& subscriber : subscribers_) {
     subscriber->InitializePreferredApps(
         ConvertPreferredAppsToMojomPreferredApps(
-            preferred_apps_.preferred_apps_list_.GetValue()));
+            preferred_apps_impl_->preferred_apps_list_.GetValue()));
   }
 }
 
@@ -357,7 +376,7 @@ apps::mojom::Publisher* AppServiceMojomImpl::GetMojomPublisher(
 }
 
 PreferredAppsList& AppServiceMojomImpl::GetPreferredAppsListForTesting() {
-  return preferred_apps_.preferred_apps_list_;
+  return preferred_apps_impl_->preferred_apps_list_;
 }
 
 void AppServiceMojomImpl::OnPublisherDisconnected(

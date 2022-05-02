@@ -150,7 +150,7 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
     SubscriberCrosapi* subscriber) {
-  if (base::FeatureList::IsEnabled(AppServiceCrosApiOnAppsWithoutMojom)) {
+  if (base::FeatureList::IsEnabled(kAppServiceCrosApiOnAppsWithoutMojom)) {
     crosapi_subscriber_ = subscriber;
     crosapi_subscriber_->OnApps(app_registry_cache_.GetAllApps());
   }
@@ -375,7 +375,7 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
 }
 
 void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
-  if (!base::FeatureList::IsEnabled(AppServicePreferredAppsWithoutMojom)) {
+  if (!base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
     return;
   }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_MOJOM_IMPL_H_
 
 #include <map>
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
@@ -161,7 +162,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
 
-  PreferredAppsImpl preferred_apps_;
+  std::unique_ptr<PreferredAppsImpl> preferred_apps_impl_;
 };
 
 }  // namespace apps

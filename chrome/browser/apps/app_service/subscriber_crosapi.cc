@@ -92,7 +92,7 @@ void SubscriberCrosapi::InitializePreferredApps(PreferredApps preferred_apps) {
 void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType mojom_app_type,
                                bool should_notify_initialized) {
-  if (base::FeatureList::IsEnabled(AppServiceCrosApiOnAppsWithoutMojom)) {
+  if (base::FeatureList::IsEnabled(kAppServiceCrosApiOnAppsWithoutMojom)) {
     return;
   }
 
