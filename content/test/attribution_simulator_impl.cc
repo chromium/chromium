@@ -453,6 +453,9 @@ base::Value RunAttributionSimulation(
   if (!events)
     return base::Value();
 
+  if (events->empty())
+    return base::Value(base::Value::Dict());
+
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
 
   // Avoid creating an on-disk sqlite DB.
@@ -535,7 +538,9 @@ base::Value RunAttributionSimulation(
   }
 
   base::Value::Dict output;
-  output.Set("event_level_reports", std::move(event_level_reports));
+
+  if (!event_level_reports.empty())
+    output.Set("event_level_reports", std::move(event_level_reports));
 
   if (!debug_event_level_reports.empty()) {
     output.Set("debug_event_level_reports",
