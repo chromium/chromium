@@ -30,10 +30,6 @@ void _sanitizer_options_link_helper() { }
 
 #if defined(ADDRESS_SANITIZER)
 // Default options for AddressSanitizer in various configurations:
-//   check_printf=1 - check the memory accesses to printf (and other formatted
-//     output routines) arguments.
-//   use_sigaltstack=1 - handle signals on an alternate signal stack. Useful
-//     for stack overflow detection.
 //   strip_path_prefix=/../../ - prefixes up to and including this
 //     substring will be stripped from source file paths in symbolized reports
 //   fast_unwind_on_fatal=1 - use the fast (frame-pointer-based) stack unwinder
@@ -46,22 +42,21 @@ void _sanitizer_options_link_helper() { }
 //     relative to the main executable
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kAsanDefaultOptions[] =
-    "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
-    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
-    "symbolize=1 detect_leaks=0 allow_user_segv_handler=1 "
+    "strip_path_prefix=/../../ fast_unwind_on_fatal=1 "
+    "detect_stack_use_after_return=1 symbolize=1 detect_leaks=0 "
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer";
 
 #elif BUILDFLAG(IS_APPLE)
 const char* kAsanDefaultOptions =
-    "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
-    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 ";
+    "strip_path_prefix=/../../ fast_unwind_on_fatal=1 "
+    "detect_stack_use_after_return=1 ";
 
 #elif BUILDFLAG(IS_WIN)
 const char* kAsanDefaultOptions =
-    "check_printf=1 use_sigaltstack=1 strip_path_prefix=\\..\\..\\ "
-    "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
-    "symbolize=1 external_symbolizer_path=%d/../../third_party/"
+    "strip_path_prefix=\\..\\..\\ fast_unwind_on_fatal=1 "
+    "detect_stack_use_after_return=1 symbolize=1 "
+    "external_symbolizer_path=%d/../../third_party/"
     "llvm-build/Release+Asserts/bin/llvm-symbolizer.exe";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -88,7 +83,6 @@ SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_suppressions() {
 
 #if defined(THREAD_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 // Default options for ThreadSanitizer in various configurations:
-//   detect_deadlocks=1 - enable deadlock (lock inversion) detection.
 //   second_deadlock_stack=1 - more verbose deadlock reports.
 //   report_signal_unsafe=0 - do not report async-signal-unsafe functions
 //     called from signal handlers.
@@ -102,7 +96,7 @@ SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_suppressions() {
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
 //     relative to the main executable
 const char kTsanDefaultOptions[] =
-    "detect_deadlocks=1 second_deadlock_stack=1 report_signal_unsafe=0 "
+    "second_deadlock_stack=1 report_signal_unsafe=0 "
     "report_thread_leaks=0 print_suppressions=1 history_size=7 "
     "strip_path_prefix=/../../ external_symbolizer_path=%d/../../third_party/"
     "llvm-build/Release+Asserts/bin/llvm-symbolizer";
@@ -143,7 +137,6 @@ SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
 
 #if defined(LEAK_SANITIZER)
 // Default options for LeakSanitizer:
-//   print_suppressions=1 - print the list of matched suppressions.
 //   strip_path_prefix=/../../ - prefixes up to and including this
 //     substring will be stripped from source file paths in symbolized reports.
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
@@ -157,8 +150,7 @@ SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
 //     means that the garbage collector may be in a state with poisoned memory,
 //     leading to false-positive reports.
 const char kLsanDefaultOptions[] =
-    "print_suppressions=1 strip_path_prefix=/../../ "
-    "use_poisoned=1 "
+    "strip_path_prefix=/../../ use_poisoned=1 "
 
 #if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
