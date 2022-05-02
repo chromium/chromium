@@ -856,13 +856,16 @@ void LocalFrameView::PerformLayout() {
     } else {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
+
+      default_allow_deferred_shaping_ =
+          default_allow_deferred_shaping_ &&
+          RuntimeEnabledFeatures::DeferredShapingEnabled() &&
+          !frame_->PagePopupOwner() &&
+          !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
+               .SeenFirstMeaningfulPaint();
       base::AutoReset<bool> deferred_shaping(
           &allow_deferred_shaping_,
-          RuntimeEnabledFeatures::DeferredShapingEnabled() &&
-              default_allow_deferred_shaping_ && !frame_->PagePopupOwner() &&
-              !document->Printing() &&
-              !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
-                   .SeenFirstMeaningfulPaint() &&
+          default_allow_deferred_shaping_ && !document->Printing() &&
               // Locking many shaping-deferred elements is very slow if we have
               // ScopedForcedUpdate instances.
               // Without this check, PerformPostLayoutTasks() takes 200 seconds
