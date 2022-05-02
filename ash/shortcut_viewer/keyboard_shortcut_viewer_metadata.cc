@@ -367,6 +367,13 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {{ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN}}},
 
       {// |categories|
+       {ShortcutCategory::kAccessibility},
+       IDS_KSV_DESCRIPTION_FOCUS_PIP,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN}}},
+
+      {// |categories|
        {ShortcutCategory::kPageAndBrowser},
        IDS_KSV_DESCRIPTION_IDC_BOOKMARK_ALL_TABS,
        {},

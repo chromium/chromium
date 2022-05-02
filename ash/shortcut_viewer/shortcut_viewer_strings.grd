@@ -393,6 +393,9 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_SHELF" desc="Description of the command in keyboard shortcut viewer.">
     Highlight the launcher button on your shelf
   </message>
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_PIP" desc="Description of the command in keyboard shortcut viewer.">
+    Focus the picture-in-picture window
+  </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
     See your notifications
   </message>
