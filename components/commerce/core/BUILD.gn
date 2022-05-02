@@ -129,12 +129,15 @@ static_library("shopping_service") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
+    "shopping_bookmark_model_observer.cc",
+    "shopping_bookmark_model_observer.h",
     "shopping_service.cc",
     "shopping_service.h",
   ]
 
   deps = [
     "//base",
+    "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/prefs:prefs",
   ]

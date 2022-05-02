@@ -14,7 +14,6 @@ static_library("shopping_list") {
 
   deps = [
     "//base",
-    "//chrome/browser/commerce:shopping_service",
     "//chrome/browser/power_bookmarks:proto",
     "//chrome/common",
     "//components/commerce/core:proto",

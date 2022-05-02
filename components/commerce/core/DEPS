@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/bookmarks/browser",
   "+components/flags_ui",
   "+components/keyed_service",
   "+components/optimization_guide",

@@ -35,6 +35,7 @@ class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* state) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* state) const override;
+  bool ServiceIsCreatedWithBrowserState() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/commerce/shopping_service_factory.h"
 
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -33,16 +34,23 @@ ShoppingService* ShoppingServiceFactory::GetForBrowserContextIfExists(
 ShoppingServiceFactory::ShoppingServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ShoppingService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(BookmarkModelFactory::GetInstance());
+}
 
 KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ShoppingService();
+  return new ShoppingService(
+      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context));
 }
 
 content::BrowserContext* ShoppingServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextRedirectedInIncognito(context);
+}
+
+bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {
