@@ -238,6 +238,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
     const base::RepeatingClosure& schedule_save_closure,
     bookmarks::BookmarkModel* model) {
   DCHECK(model);
+  DCHECK(model->loaded());
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_tracker_);
   DCHECK(!bookmark_model_observer_);

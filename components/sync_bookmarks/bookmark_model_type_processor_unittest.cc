@@ -249,9 +249,6 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
       : processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_)),
         bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
-    // TODO(crbug.com/516866): This class assumes model is loaded and sync has
-    // started before running tests. We should test other variations (i.e. model
-    // isn't loaded yet and/or sync didn't start yet).
     processor_->SetFaviconService(&favicon_service_);
   }
 
