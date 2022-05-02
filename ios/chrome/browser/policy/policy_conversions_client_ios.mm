@@ -44,8 +44,8 @@ bool PolicyConversionsClientIOS::HasUserPolicies() const {
   return browser_state_ != nullptr;
 }
 
-base::Value PolicyConversionsClientIOS::GetExtensionPolicies(
+base::Value::List PolicyConversionsClientIOS::GetExtensionPolicies(
     policy::PolicyDomain policy_domain) {
   // Return an empty list since extensions are not supported on iOS.
-  return base::Value(base::Value::Type::LIST);
+  return base::Value::List();
 }

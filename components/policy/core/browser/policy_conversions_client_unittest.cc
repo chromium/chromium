@@ -25,12 +25,14 @@ class MockPolicyConversionsClient : public PolicyConversionsClient {
  private:
   // PolicyConversionsClient.
   bool HasUserPolicies() const override { return false; }
-  base::Value GetExtensionPolicies(PolicyDomain policy_domain) override {
-    return base::Value();
+  base::Value::List GetExtensionPolicies(PolicyDomain policy_domain) override {
+    return base::Value::List();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Value GetDeviceLocalAccountPolicies() override { return base::Value(); }
-  base::Value GetIdentityFields() override { return base::Value(); }
+  base::Value::List GetDeviceLocalAccountPolicies() override {
+    return base::Value::List();
+  }
+  base::Value::Dict GetIdentityFields() override { return base::Value::Dict(); }
 #endif
   PolicyService* GetPolicyService() const override { return nullptr; }
   SchemaRegistry* GetPolicySchemaRegistry() const override { return nullptr; }
@@ -51,7 +53,7 @@ class PolicyConversionsClientTest : public ::testing::Test {
     return entry;
   }
 
-  base::Value GetPolicyValues(
+  base::Value::Dict GetPolicyValues(
       const PolicyConversionsClient& client,
       const PolicyMap& map,
       const absl::optional<PolicyConversions::PolicyToSchemaMap>&
@@ -78,22 +80,22 @@ TEST_F(PolicyConversionsClientTest, SetDropDefaultValues) {
 
   // All policies should exist because |drop_default_values_enabled_| is false
   // by default.
-  base::Value policies1 = GetPolicyValues(client, policy_map, policy_schemas);
-  const base::Value::Dict& policies_dict1 = policies1.GetDict();
-  EXPECT_EQ(3u, policies_dict1.size());
-  EXPECT_NE(nullptr, policies_dict1.FindDict(kPolicyName1));
-  EXPECT_NE(nullptr, policies_dict1.FindDict(kPolicyName2));
-  EXPECT_NE(nullptr, policies_dict1.FindDict(kPolicyName3));
+  base::Value::Dict policies1 =
+      GetPolicyValues(client, policy_map, policy_schemas);
+  EXPECT_EQ(3u, policies1.size());
+  EXPECT_NE(nullptr, policies1.FindDict(kPolicyName1));
+  EXPECT_NE(nullptr, policies1.FindDict(kPolicyName2));
+  EXPECT_NE(nullptr, policies1.FindDict(kPolicyName3));
 
   // Enable dropping default values.
   client.SetDropDefaultValues(true);
-  base::Value policies2 = GetPolicyValues(client, policy_map, policy_schemas);
+  base::Value::Dict policies2 =
+      GetPolicyValues(client, policy_map, policy_schemas);
 
   // A default valued policy should not exist.
-  const base::Value::Dict& policies_dict2 = policies2.GetDict();
-  EXPECT_EQ(2u, policies_dict2.size());
-  EXPECT_NE(nullptr, policies_dict2.FindDict(kPolicyName1));
-  EXPECT_NE(nullptr, policies_dict2.FindDict(kPolicyName3));
+  EXPECT_EQ(2u, policies2.size());
+  EXPECT_NE(nullptr, policies2.FindDict(kPolicyName1));
+  EXPECT_NE(nullptr, policies2.FindDict(kPolicyName3));
 }
 
 }  // namespace policy
