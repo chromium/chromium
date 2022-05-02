@@ -32,7 +32,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/native_widget_types.h"
@@ -964,35 +963,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // this somewhat (maybe //content would be responsible for maintaining the
   // state, with some content client method used to update it).
   virtual void UpdateIsAdSubframe(bool is_ad_subframe) = 0;
-
-  // Perform security checks on Web Authentication requests. These can be
-  // called by other |Authenticator| mojo interface implementations in the
-  // browser process so that they don't have to duplicate security policies.
-  // For requests originating from the render process, |effective_origin| will
-  // be the same as the last committed origin. However, for request originating
-  // from the browser process, this may be different.
-  // |is_payment_credential_creation| indicates whether MakeCredential is making
-  // a payment credential.
-  // |remote_desktop_client_override| optionally contains a
-  // RemoteDesktopClientOverride client extension for the request.
-  // |PerformGetAssertionWebAuthSecurityChecks| returns a security check result
-  // and a boolean representing whether the given origin is cross-origin with
-  // any frame in this frame's ancestor chain. This extra cross-origin bit is
-  // relevant in case callers need it for crypto signature.
-  virtual std::pair<blink::mojom::AuthenticatorStatus, bool>
-  PerformGetAssertionWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override) = 0;
-  virtual blink::mojom::AuthenticatorStatus
-  PerformMakeCredentialWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_creation,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override) = 0;
 
   // Tells the host that this is part of setting up a WebXR DOM Overlay. This
   // starts a short timer that permits entering fullscreen mode, similar to a

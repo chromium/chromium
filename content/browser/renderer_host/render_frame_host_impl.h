@@ -440,19 +440,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool Reload() override;
   bool IsDOMContentLoaded() override;
   void UpdateIsAdSubframe(bool is_ad_subframe) override;
-  std::pair<blink::mojom::AuthenticatorStatus, bool>
-  PerformGetAssertionWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override) override;
-  blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
-      const std::string& relying_party_id,
-      const url::Origin& effective_origin,
-      bool is_payment_credential_creation,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override) override;
   void SetIsXrOverlaySetup() override;
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartitionImpl* GetStoragePartition() override;
@@ -2452,6 +2439,34 @@ class CONTENT_EXPORT RenderFrameHostImpl
   float GetPageScaleFactor() const;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Perform security checks on Web Authentication requests. These can be
+  // called by the Android Java |Authenticator| mojo interface implementation
+  // so that they don't have to duplicate security policies.
+  // For requests originating from the render process, |effective_origin| will
+  // be the same as the last committed origin. However, for request originating
+  // from the browser process, this may be different.
+  // |is_payment_credential_creation| indicates whether MakeCredential is making
+  // a payment credential.
+  // |remote_desktop_client_override| optionally contains a
+  // RemoteDesktopClientOverride client extension for the request.
+  // |PerformGetAssertionWebAuthSecurityChecks| returns a security check result
+  // and a boolean representing whether the given origin is cross-origin with
+  // any frame in this frame's ancestor chain. This extra cross-origin bit is
+  // relevant in case callers need it for crypto signature.
+  std::pair<blink::mojom::AuthenticatorStatus, bool>
+  PerformGetAssertionWebAuthSecurityChecks(
+      const std::string& relying_party_id,
+      const url::Origin& effective_origin,
+      bool is_payment_credential_get_assertion,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override);
+  blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
+      const std::string& relying_party_id,
+      const url::Origin& effective_origin,
+      bool is_payment_credential_creation,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override);
+
   // Provide a list of Web Authentication credentials that can be used to
   // fulfill a WebAuthn sign-in request. These can be passed to the embedder to
   // be displayed to the user, and the user's selection is returned through the

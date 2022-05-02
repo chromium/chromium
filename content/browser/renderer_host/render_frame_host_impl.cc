@@ -12808,6 +12808,7 @@ void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
   browsing_context_state_->SetIsAdSubframe(is_ad_subframe);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 std::pair<blink::mojom::AuthenticatorStatus, bool>
 RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
@@ -12865,7 +12866,6 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::WebAuthnConditionalUiRequestPending(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
