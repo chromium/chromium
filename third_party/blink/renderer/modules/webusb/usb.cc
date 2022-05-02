@@ -275,18 +275,17 @@ void USB::OnServiceConnectionError() {
   service_.reset();
   client_receiver_.reset();
 
-  // Move the set to a local variable to prevent script execution in Resolve()
-  // from invalidating the iterator used by the loop.
+  // This loop is resolving promises with a value and so it is possible for
+  // script to be executed in the process of determining if the value is a
+  // thenable. Move the set to a local variable to prevent such execution from
+  // invalidating the iterator used by the loop.
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_requests;
   get_devices_requests.swap(get_devices_requests_);
   for (auto& resolver : get_devices_requests)
     resolver->Resolve(HeapVector<Member<USBDevice>>(0));
 
-  // Move the set to a local variable to prevent script execution in Reject()
-  // from invalidating the iterator used by the loop.
-  HeapHashSet<Member<ScriptPromiseResolver>> get_permission_requests;
-  get_permission_requests.swap(get_permission_requests_);
-  for (auto& resolver : get_permission_requests) {
+  // Similar protection is unnecessary when rejecting a promise.
+  for (auto& resolver : get_permission_requests_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoDeviceSelected));
   }

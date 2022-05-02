@@ -1078,11 +1078,7 @@ void USBDevice::OnConnectionError() {
   device_.reset();
   opened_ = false;
 
-  // Move the set to a local variable to prevent script execution in Reject()
-  // from invalidating the iterator used by the loop.
-  HeapHashSet<Member<ScriptPromiseResolver>> device_requests;
-  device_requests.swap(device_requests_);
-  for (auto& resolver : device_requests) {
+  for (auto& resolver : device_requests_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kDeviceDisconnected));
   }
