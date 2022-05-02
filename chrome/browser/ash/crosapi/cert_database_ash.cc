@@ -126,13 +126,6 @@ void CertDatabaseAsh::GetCertDatabaseInfo(
   result->system_slot_id =
       result->enable_system_slot ? system_slot_id_.value() : 0;
 
-  // TODO(b/200784079): This is backwards compatibility code. It can be
-  // removed in ChromeOS-M100.
-  result->DEPRECATED_software_nss_db_path =
-      crypto::GetSoftwareNSSDBPath(
-          ProfileManager::GetPrimaryUserProfile()->GetPath())
-          .value();
-
   std::move(callback).Run(std::move(result));
 }
 

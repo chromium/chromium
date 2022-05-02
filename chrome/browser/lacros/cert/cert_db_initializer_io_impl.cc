@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "cert_db_initializer_io_impl.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -101,40 +100,6 @@ void LoadSlotsOnWorkerThread(
     // certificates from the private slot.
   }
   std::move(callback).Run(std::move(private_slot), std::move(system_slot));
-}
-
-// TODO(b/200784079): This is backwards compatibility code. It can be
-// removed in ChromeOS-M100.
-void LegacyInitializeCertDbOnWorkerThread(
-    crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info) {
-  crypto::EnsureNSSInit();
-
-  if (cert_db_info->should_load_chaps) {
-    // NSS functions may reenter //net via extension hooks. If the reentered
-    // code needs to synchronously wait for a task to run but the thread pool in
-    // which that task must run doesn't have enough threads to schedule it, a
-    // deadlock occurs. To prevent that, the base::ScopedBlockingCall below
-    // increments the thread pool capacity for the duration of the TPM
-    // initialization.
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-    // There's no need to save the result of `LoadChaps()`, chaps will stay
-    // loaded and can be used anyway. Using the result only to determine
-    // success/failure.
-    if (!crypto::LoadChaps()) {
-      return;
-    }
-  }
-
-  // The slot doesn't need to be saved either. `description` doesn't affect
-  // anything. `software_nss_db_path` file path should be already created by
-  // Ash-Chrome.
-  auto slot = crypto::OpenSoftwareNSSDB(
-      base::FilePath(cert_db_info->DEPRECATED_software_nss_db_path),
-      /*description=*/"cert_db");
-  if (!slot) {
-    LOG(ERROR) << "Failed to open user certificate database";
-  }
 }
 
 void NotifyCertsChangedInLacrosOnUIThread() {
@@ -251,32 +216,6 @@ void CertDbInitializerIOImpl::InitializeReadOnlyNssCertDatabase(
       /*private_slot=*/crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()));
   std::move(init_callback).Run();
   ready_callback_list_.Notify(nss_cert_database_.get());
-}
-
-// TODO(b/200784079): This is backwards compatibility code. It can be
-// removed in ChromeOS-M100.
-void CertDbInitializerIOImpl::InitializeLegacyNssCertDatabase(
-    crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info,
-    base::OnceClosure init_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!pending_public_slot_);
-  DCHECK(!nss_cert_database_);
-
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&LegacyInitializeCertDbOnWorkerThread,
-                     std::move(cert_db_info)),
-      base::BindOnce(&CertDbInitializerIOImpl::DidLegacyInitialize,
-                     weak_factory_.GetWeakPtr(), std::move(init_callback)));
-}
-
-// TODO(b/200784079): This is backwards compatibility code. It can be
-// removed in ChromeOS-M100.
-void CertDbInitializerIOImpl::DidLegacyInitialize(
-    base::OnceClosure init_callback) {
-  InitializeReadOnlyNssCertDatabase(std::move(init_callback));
 }
 
 void CertDbInitializerIOImpl::OnCertDBChanged() {

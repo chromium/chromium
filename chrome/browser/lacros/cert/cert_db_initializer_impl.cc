@@ -66,12 +66,6 @@ void CertDbInitializerImpl::Start() {
     return InitializeReadOnlyCertDb();
   }
 
-  // TODO(b/200784079): This is backwards compatibility code. It can be
-  // removed in ChromeOS-M100.
-  if (lacros_service->GetInterfaceVersion(CrosapiCertDb::Uuid_) == 0) {
-    return LegacyInitializeForMainProfile();
-  }
-
   if (lacros_service->GetInterfaceVersion(CrosapiCertDb::Uuid_) >=
       kAddAshCertDatabaseObserverMinVersion) {
     lacros_service->GetRemote<CrosapiCertDb>()->AddAshCertDatabaseObserver(
@@ -176,37 +170,4 @@ CertDbInitializerImpl::CreateNssCertDatabaseGetterForIOThread() {
 void CertDbInitializerImpl::OnCertsChangedInAsh() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
-}
-
-// ======================= Backwards compatibility code ========================
-
-// TODO(b/200784079): This is backwards compatibility code. It can be
-// removed in ChromeOS-M100.
-void CertDbInitializerImpl::LegacyInitializeForMainProfile() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::CertDatabase>()
-      ->GetCertDatabaseInfo(
-          base::BindOnce(&CertDbInitializerImpl::OnLegacyCertDbInfoReceived,
-                         weak_factory_.GetWeakPtr()));
-}
-
-// TODO(b/200784079): This is backwards compatibility code. It can be
-// removed in ChromeOS-M100.
-void CertDbInitializerImpl::OnLegacyCertDbInfoReceived(
-    crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  auto init_database_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
-                     weak_factory_.GetWeakPtr()));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CertDbInitializerIOImpl::InitializeLegacyNssCertDatabase,
-                     base::Unretained(cert_db_initializer_io_.get()),
-                     std::move(cert_db_info),
-                     std::move(init_database_callback)));
 }
