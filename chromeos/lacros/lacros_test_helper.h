@@ -6,6 +6,7 @@
 #define CHROMEOS_LACROS_LACROS_TEST_HELPER_H_
 
 #include "base/auto_reset.h"
+#include "base/version.h"
 #include "chromeos/lacros/lacros_service.h"
 
 namespace chromeos {
@@ -42,6 +43,12 @@ class ScopedLacrosServiceTestHelper {
   ScopedDisableCrosapiForTesting disable_crosapi_;
   LacrosService lacros_service_;
 };
+
+// Returns "true" if the version of Ash is `required_version` or newer.
+// This method was introduced in M-103. For older versions of Ash, its
+// version is unknowable and assumed to be 0.0.0.0 for comparison purposes.
+// Can perform a blocking async call inside.
+bool IsAshVersionAtLeastForTesting(base::Version required_version);
 
 }  // namespace chromeos
 

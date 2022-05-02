@@ -42,8 +42,8 @@ interface StandaloneBrowserTestController {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 13
-// Next method id: 22
+// Next version: 14
+// Next method id: 23
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -165,4 +165,13 @@ interface TestController {
   // Sharesheets.
   [MinVersion=12]
   SetSelectedSharesheetApp@21(string app_id) => ();
+
+  // Returns the version of ash-chrome, e.g. "103.0.5029.0". The returned string
+  // is intended to be compatible with the base::Version(StringPiece)
+  // constructor.
+  // Consider using the convenience wrapper
+  // lacros_test_helper.h:IsAshVersionAtLeastForTesting instead.
+  // Introduced in M-103.
+  [MinVersion=13]
+  GetAshVersion@22() => (string ash_version);
 };

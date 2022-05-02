@@ -14,6 +14,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -421,6 +423,10 @@ void TestControllerAsh::SetSelectedSharesheetApp(
       base::UTF8ToUTF16(app_id));
 
   std::move(callback).Run();
+}
+
+void TestControllerAsh::GetAshVersion(GetAshVersionCallback callback) {
+  std::move(callback).Run(version_info::GetVersion().GetString());
 }
 
 // This class waits for overview mode to either enter or exit and fires a

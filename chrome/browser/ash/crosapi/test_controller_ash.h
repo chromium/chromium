@@ -75,6 +75,7 @@ class TestControllerAsh : public mojom::TestController,
   void SetSelectedSharesheetApp(
       const std::string& app_id,
       SetSelectedSharesheetAppCallback callback) override;
+  void GetAshVersion(GetAshVersionCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
