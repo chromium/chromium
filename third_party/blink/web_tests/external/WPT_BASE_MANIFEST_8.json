@@ -335903,6 +335903,14 @@
       }
      },
      "global": {
+      "constructor.any-expected.txt": [
+       "9605e649b8a5917b1983c966953a5e3adcaaf913",
+       []
+      ],
+      "constructor.any.worker-expected.txt": [
+       "9605e649b8a5917b1983c966953a5e3adcaaf913",
+       []
+      ],
       "type.tentative.any-expected.txt": [
        "2aec539c575a8bc88c84d5608d0b74081054966b",
        []
@@ -541930,7 +541938,7 @@
      },
      "global": {
       "constructor.any.js": [
-       "f536f5d7b5df6c91d74b17f9512abfebe8ac9b35",
+       "c7b82d6b55fe85b0f8bd2ca202baea5dc1bb0356",
        [
         null,
         {
