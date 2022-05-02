@@ -71,11 +71,8 @@ namespace {
 // Parses an RSA public key or EC public key from SPKI to an EVP_PKEY. Returns
 // true on success.
 //
-// There are two flavors of RSA public key that this function should recognize
-// from RFC 5912 (however note that pk-rsaSSA-PSS is not supported in the
-// current implementation).
-// TODO(eroman): Support id-RSASSA-PSS and its associated parameters. See
-// https://crbug.com/522232
+// This function only recognizes the "pk-rsa" (rsaEncryption) flavor of RSA
+// public key from RFC 5912.
 //
 //     pk-rsa PUBLIC-KEY ::= {
 //      IDENTIFIER rsaEncryption
@@ -85,34 +82,6 @@ namespace {
 //      CERT-KEY-USAGE {digitalSignature, nonRepudiation,
 //      keyEncipherment, dataEncipherment, keyCertSign, cRLSign}
 //     }
-//
-//  ...
-//
-//     pk-rsaSSA-PSS PUBLIC-KEY ::= {
-//         IDENTIFIER id-RSASSA-PSS
-//         KEY RSAPublicKey
-//         PARAMS TYPE RSASSA-PSS-params ARE optional
-//          -- Private key format not in this module --
-//         CERT-KEY-USAGE { nonRepudiation, digitalSignature,
-//                              keyCertSign, cRLSign }
-//     }
-//
-// Any RSA signature algorithm can accept a "pk-rsa" (rsaEncryption). However a
-// "pk-rsaSSA-PSS" key is only accepted if the signature algorithm was for PSS
-// mode:
-//
-//     sa-rsaSSA-PSS SIGNATURE-ALGORITHM ::= {
-//         IDENTIFIER id-RSASSA-PSS
-//         PARAMS TYPE RSASSA-PSS-params ARE required
-//         HASHES { mda-sha1 | mda-sha224 | mda-sha256 | mda-sha384
-//                      | mda-sha512 }
-//         PUBLIC-KEYS { pk-rsa | pk-rsaSSA-PSS }
-//         SMIME-CAPS { IDENTIFIED BY id-RSASSA-PSS }
-//     }
-//
-// Moreover, if a "pk-rsaSSA-PSS" key was used and it optionally provided
-// parameters for the algorithm, they must match those of the signature
-// algorithm.
 //
 // COMPATIBILITY NOTE: RFC 5912 and RFC 3279 are in disagreement on the value
 // of parameters for rsaEncryption. Whereas RFC 5912 says they must be absent,
@@ -169,9 +138,6 @@ bool ParsePublicKey(const der::Input& public_key_spki,
   // Parse the SPKI to an EVP_PKEY.
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  // TODO(eroman): This is not strict enough. It accepts BER, other RSA
-  // OIDs, and does not check id-rsaEncryption parameters.
-  // See https://crbug.com/522228 and https://crbug.com/522232
   CBS cbs;
   CBS_init(&cbs, public_key_spki.UnsafeData(), public_key_spki.Length());
   public_key->reset(EVP_parse_public_key(&cbs));

@@ -163,8 +163,7 @@ TEST(VerifySignedDataTest, RsaPkcs1Sha1KeyParamsAbsent) {
 }
 
 TEST(VerifySignedDataTest, RsaPssSha1Salt20UsingPssKeyNoParams) {
-  // TODO(eroman): This should pass! (rsaPss not currently supported in key
-  // algorithm). See https://crbug.com/522232
+  // We do not support RSA-PSS SPKIs.
   RunTestCase(FAILURE, "rsa-pss-sha1-salt20-using-pss-key-no-params.pem");
 }
 
@@ -173,8 +172,7 @@ TEST(VerifySignedDataTest, RsaPkcs1Sha1UsingPssKeyNoParams) {
 }
 
 TEST(VerifySignedDataTest, RsaPssSha256Salt10UsingPssKeyWithParams) {
-  // TODO(eroman): This should pass! (rsaPss not currently supported in key
-  // algorithm). See https://crbug.com/522232
+  // We do not support RSA-PSS SPKIs.
   RunTestCase(FAILURE, "rsa-pss-sha256-salt10-using-pss-key-with-params.pem");
 }
 
