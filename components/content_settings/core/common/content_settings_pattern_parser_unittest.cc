@@ -359,3 +359,33 @@ TEST(ContentSettingsPatternParserTest, SerializePatterns) {
   EXPECT_EQ("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/",
             content_settings::PatternParser::ToString(parts));
 }
+
+TEST(ContentSettingsPatternParserTest, IdempotencyOfCanonicalization) {
+  const std::string pattern_specs[] = {
+      "abc",
+      "https://chromium.org",
+      "file:///foo/",
+      "file:///foo/:/bar/:/baz",
+      "https://foo/:/bar/:/baz",
+      "file://:/path",
+      "file://:/:",  // crbug.com/1196591
+      "file:///C:/Users/a.txt",
+  };
+
+  for (const std::string& spec : pattern_specs) {
+    SCOPED_TRACE("spec: " + spec);
+    auto builder = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse(spec, builder.get());
+    ContentSettingsPattern pattern = builder->Build();
+    EXPECT_TRUE(pattern.IsValid());
+    std::string canonical = pattern.ToString();
+
+    auto builder2 = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse(canonical, builder2.get());
+    ContentSettingsPattern pattern2 = builder2->Build();
+    EXPECT_TRUE(pattern2.IsValid());
+    std::string canonical2 = pattern2.ToString();
+
+    EXPECT_EQ(canonical, canonical2);
+  }
+}

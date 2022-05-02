@@ -545,8 +545,6 @@ TEST(ContentSettingsPatternTest, InvalidPatterns) {
   // Invalid file pattern strings.
   EXPECT_FALSE(Pattern("file://").IsValid());
   EXPECT_STREQ("", Pattern("file://").ToString().c_str());
-  EXPECT_FALSE(Pattern("file:///foo/bar.html:8080").IsValid());
-  EXPECT_STREQ("", Pattern("file:///foo/bar.html:8080").ToString().c_str());
 
   // Host having multiple ending dots.
   EXPECT_FALSE(Pattern("www.example.com..").IsValid());
