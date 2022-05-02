@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 
 namespace blink {
 
@@ -19,7 +20,8 @@ bool DocumentLayoutUpgrade::ShouldUpgrade() {
 }
 
 bool ParentLayoutUpgrade::ShouldUpgrade() {
-  return document_.GetStyleEngine().HasViewportDependentMediaQueries();
+  return document_.GetStyleEngine().HasViewportDependentMediaQueries() ||
+         NodeLayoutUpgrade(owner_).ShouldUpgrade();
 }
 
 NodeLayoutUpgrade::Reasons NodeLayoutUpgrade::GetReasons(const Node& node) {

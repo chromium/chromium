@@ -2030,7 +2030,7 @@ void Document::UpdateStyleAndLayoutTree(LayoutUpgrade& upgrade) {
   ScriptForbiddenScope forbid_script;
 
   if (HTMLFrameOwnerElement* owner = LocalOwner()) {
-    ParentLayoutUpgrade parent_upgrade(*this);
+    ParentLayoutUpgrade parent_upgrade(*this, *owner);
     owner->GetDocument().UpdateStyleAndLayoutTree(parent_upgrade);
   }
 

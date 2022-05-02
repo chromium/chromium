@@ -11,6 +11,7 @@ namespace blink {
 
 class Node;
 class Document;
+class HTMLFrameOwnerElement;
 
 // Various APIs require that style information is updated immediately, e.g.
 // getComputedStyle. This is done by calling Document::UpdateStyleAndLayoutTree-
@@ -48,12 +49,15 @@ class ParentLayoutUpgrade : public LayoutUpgrade {
   STACK_ALLOCATED();
 
  public:
-  explicit ParentLayoutUpgrade(Document& document) : document_(document) {}
+  explicit ParentLayoutUpgrade(Document& document, HTMLFrameOwnerElement& owner)
+      : document_(document), owner_(owner) {}
 
   bool ShouldUpgrade() override;
 
  private:
+  // That the `document_` is the inner Document, i.e. inside the iframe.
   Document& document_;
+  HTMLFrameOwnerElement& owner_;
 };
 
 // Upgrades whenever the (inclusive) ancestor chain has a relevant upgrade
