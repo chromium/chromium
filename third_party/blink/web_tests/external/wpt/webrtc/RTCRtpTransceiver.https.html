@@ -1968,14 +1968,14 @@
         {
           receiver: {track: {kind: "audio"}},
           sender: {track: track2},
-          direction: "sendrecv",
-          mid: null,
+          direction: "stopped",
+          mid: mid0,
           currentDirection: "stopped",
         }
       ]);
 
     // stop() cannot be rolled back!
-    // Transceiver should have [[stopping]]=true, [[stopped]]=false
+    // Transceiver should have [[stopping]]=true, [[stopped]]=false.
     await pc2.setRemoteDescription({type: "rollback"});
     hasProps(pc2.getTransceivers(),
       [
@@ -1983,8 +1983,8 @@
           receiver: {track: {kind: "audio"}},
           sender: {track: {kind: "audio"}},
           direction: "stopped",
-          mid: null,
-          currentDirection: "sendrecv",
+          mid: mid0,
+          currentDirection: "stopped",
         }
       ]);
   };
