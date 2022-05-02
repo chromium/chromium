@@ -499,16 +499,19 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
     Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
     if (!parsed_expiry.is_null()) {
       // Record metrics related to prevalence of clock skew.
-      int clock_skew = (current - server_time).magnitude().InMinutes();
-      if (clock_skew >= 0) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes", clock_skew,
-                                    1, kMinutesInTwelveHours, 100);
-      } else if (clock_skew < 0) {
+      base::TimeDelta clock_skew = (current - server_time);
+      // Record the magnitude (absolute value) of the skew in minutes.
+      int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
+      if (clock_skew.is_positive() || clock_skew.is_zero()) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes",
+                                    clock_skew_magnitude, 1,
+                                    kMinutesInTwelveHours, 100);
+      } else if (clock_skew.is_negative()) {
         // These histograms only support positive numbers, so negative skews
-        // will be converted to positive before recording.
+        // will be converted to positive (via magnitude) before recording.
         UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.SubtractMinutes",
-                                    -1 * clock_skew, 1, kMinutesInTwelveHours,
-                                    100);
+                                    clock_skew_magnitude, 1,
+                                    kMinutesInTwelveHours, 100);
       }
       Time adjusted_expiry = parsed_expiry + (current - server_time);
       // Record if we were going to expire the cookie before we added the clock
