@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
@@ -46,117 +47,169 @@ class SkottieLogWriter : public skottie::Logger {
   }
 };
 
-class PropertyHandler final : public skottie::PropertyObserver {
+// Methods for converting from a skottie::<Type>PropertyValue to its
+// corresponding representation in Chromium that gets circulated through the
+// graphics pipeline.
+class SkottiePropertyConversions {
  public:
-  PropertyHandler() = default;
-  PropertyHandler(const PropertyHandler&) = delete;
-  PropertyHandler& operator=(const PropertyHandler&) = delete;
-  ~PropertyHandler() override = default;
-
-  void ApplyColorMap(const SkottieColorMap& color_map) {
-    for (const auto& map_color : color_map) {
-      for (auto& handle : color_handles_[map_color.first]) {
-        DCHECK(handle);
-        handle->set(map_color.second);
-      }
-    }
+  // Convert skottie library representation to Chromium representation:
+  static SkColor ConvertToChromium(
+      const skottie::ColorPropertyValue& skottie_value) {
+    return skottie_value;
   }
 
-  void ApplyTextMap(const SkottieTextPropertyValueMap& text_map) {
-    for (const auto& [node_name_hash, new_text_val] : text_map) {
-      auto current_text_values_iter = current_text_values_.find(node_name_hash);
-      if (current_text_values_iter == current_text_values_.end()) {
-        LOG(WARNING) << "Encountered unknown text node with hash: "
+  static SkottieTextPropertyValue ConvertToChromium(
+      const skottie::TextPropertyValue& skottie_value) {
+    std::string text(skottie_value.fText.c_str());
+    return SkottieTextPropertyValue(std::move(text),
+                                    gfx::SkRectToRectF(skottie_value.fBox));
+  }
+
+  static SkottieTransformPropertyValue ConvertToChromium(
+      const skottie::TransformPropertyValue& skottie_value) {
+    SkottieTransformPropertyValue output = {
+        /*position*/ gfx::SkPointToPointF(skottie_value.fPosition)};
+    return output;
+  }
+
+  // Convert Chromium representation to skottie library representation:
+  static void ConvertToSkottie(const SkColor& chromium_value,
+                               skottie::ColorPropertyValue& skottie_value_out) {
+    skottie_value_out = chromium_value;
+  }
+
+  static void ConvertToSkottie(const SkottieTextPropertyValue& chromium_value,
+                               skottie::TextPropertyValue& skottie_value_out) {
+    skottie_value_out.fText.set(chromium_value.text().c_str());
+    skottie_value_out.fBox = gfx::RectFToSkRect(chromium_value.box());
+  }
+
+  static void ConvertToSkottie(
+      const SkottieTransformPropertyValue& chromium_value,
+      skottie::TransformPropertyValue& skottie_value_out) {
+    NOTIMPLEMENTED() << "No use case yet for modifying transform properties";
+  }
+};
+
+template <typename SkottiePropertyValueType,
+          typename SkottiePropertyHandleType,
+          typename ChromiumPropertyValueType>
+class PropertyManager {
+ public:
+  PropertyManager() = default;
+  PropertyManager(const PropertyManager&) = delete;
+  PropertyManager& operator=(const PropertyManager&) = delete;
+  ~PropertyManager() = default;
+
+  void OnNodeParsed(
+      const char node_name[],
+      const skottie::PropertyObserver::LazyHandle<SkottiePropertyHandleType>&
+          lh) {
+    if (!node_name)
+      return;
+
+    node_names_.insert(node_name);
+    SkottieResourceIdHash node_name_hash = HashSkottieResourceId(node_name);
+    auto skottie_property_handle = lh();
+    current_vals_as_chromium_.emplace(
+        node_name_hash, SkottiePropertyConversions::ConvertToChromium(
+                            skottie_property_handle->get()));
+    skottie_property_handles_[node_name_hash].push_back(
+        std::move(skottie_property_handle));
+  }
+
+  void SetNewValues(
+      const base::flat_map<SkottieResourceIdHash, ChromiumPropertyValueType>&
+          new_vals_as_chromium) {
+    for (const auto& [node_name_hash, new_val_as_chromium] :
+         new_vals_as_chromium) {
+      auto iter = current_vals_as_chromium_.find(node_name_hash);
+      if (iter == current_vals_as_chromium_.end()) {
+        LOG(WARNING) << "Encountered unknown property node with hash: "
                      << node_name_hash;
         continue;
       }
-      current_text_values_iter->second = new_text_val;
+      iter->second = new_val_as_chromium;
 
-      for (auto& handle : text_handles_[node_name_hash]) {
-        DCHECK(handle);
-        skottie::TextPropertyValue current_text_val = handle->get();
-        ConvertTextValueToSkottie(new_text_val, current_text_val);
-        handle->set(std::move(current_text_val));
+      for (auto& skottie_handle : skottie_property_handles_[node_name_hash]) {
+        DCHECK(skottie_handle);
+        SkottiePropertyValueType current_val_as_skottie = skottie_handle->get();
+        SkottiePropertyConversions::ConvertToSkottie(new_val_as_chromium,
+                                                     current_val_as_skottie);
+        skottie_handle->set(std::move(current_val_as_skottie));
       }
     }
   }
 
-  const SkottieTextPropertyValueMap& current_text_values() const {
-    return current_text_values_;
+  const base::flat_set<std::string>& node_names() const { return node_names_; }
+
+  const base::flat_map<SkottieResourceIdHash, ChromiumPropertyValueType>
+  current_vals_as_chromium() const {
+    return current_vals_as_chromium_;
   }
 
-  const SkottieTransformPropertyValueMap current_transform_values() const {
-    return current_transform_values_;
+ private:
+  base::flat_map<SkottieResourceIdHash,
+                 std::vector<std::unique_ptr<SkottiePropertyHandleType>>>
+      skottie_property_handles_;
+  base::flat_set<std::string> node_names_;
+  base::flat_map<SkottieResourceIdHash, ChromiumPropertyValueType>
+      current_vals_as_chromium_;
+};
+
+using ColorPropertyManager = PropertyManager<skottie::ColorPropertyValue,
+                                             skottie::ColorPropertyHandle,
+                                             SkColor>;
+using TextPropertyManager = PropertyManager<skottie::TextPropertyValue,
+                                            skottie::TextPropertyHandle,
+                                            SkottieTextPropertyValue>;
+using TransformPropertyManager =
+    PropertyManager<skottie::TransformPropertyValue,
+                    skottie::TransformPropertyHandle,
+                    SkottieTransformPropertyValue>;
+
+class GlobalPropertyManager final : public skottie::PropertyObserver {
+ public:
+  GlobalPropertyManager() = default;
+  GlobalPropertyManager(const GlobalPropertyManager&) = delete;
+  GlobalPropertyManager& operator=(const GlobalPropertyManager&) = delete;
+  ~GlobalPropertyManager() override = default;
+
+  ColorPropertyManager& color_property_manager() {
+    return color_property_manager_;
   }
 
-  const base::flat_set<std::string>& text_node_names() const {
-    return text_node_names_;
+  TextPropertyManager& text_property_manager() {
+    return text_property_manager_;
+  }
+
+  TransformPropertyManager& transform_property_manager() {
+    return transform_property_manager_;
   }
 
   // skottie::PropertyObserver:
   void onColorProperty(
       const char node_name[],
       const LazyHandle<skottie::ColorPropertyHandle>& lh) override {
-    if (node_name)
-      color_handles_[HashSkottieResourceId(node_name)].push_back(lh());
+    color_property_manager_.OnNodeParsed(node_name, lh);
   }
 
   void onTextProperty(
       const char node_name[],
       const LazyHandle<skottie::TextPropertyHandle>& lh) override {
-    if (!node_name)
-      return;
-
-    text_node_names_.insert(node_name);
-    SkottieResourceIdHash node_name_hash = HashSkottieResourceId(node_name);
-    auto text_handle = lh();
-    current_text_values_.emplace(
-        node_name_hash, ConvertTextValueToChromium(text_handle->get()));
-    text_handles_[node_name_hash].push_back(std::move(text_handle));
+    text_property_manager_.OnNodeParsed(node_name, lh);
   }
 
   void onTransformProperty(
       const char node_name[],
       const LazyHandle<skottie::TransformPropertyHandle>& lh) override {
-    if (!node_name)
-      return;
-
-    current_transform_values_.emplace(
-        HashSkottieResourceId(node_name),
-        ConvertTransformValueToChromium(lh()->get()));
+    transform_property_manager_.OnNodeParsed(node_name, lh);
   }
 
  private:
-  static SkottieTextPropertyValue ConvertTextValueToChromium(
-      const skottie::TextPropertyValue& value_in) {
-    std::string text(value_in.fText.c_str());
-    return SkottieTextPropertyValue(std::move(text),
-                                    gfx::SkRectToRectF(value_in.fBox));
-  }
-
-  static void ConvertTextValueToSkottie(
-      const SkottieTextPropertyValue& value_in,
-      skottie::TextPropertyValue& value_out) {
-    value_out.fText.set(value_in.text().c_str());
-    value_out.fBox = gfx::RectFToSkRect(value_in.box());
-  }
-
-  static SkottieTransformPropertyValue ConvertTransformValueToChromium(
-      const skottie::TransformPropertyValue& value_in) {
-    SkottieTransformPropertyValue output = {
-        /*position*/ gfx::SkPointToPointF(value_in.fPosition)};
-    return output;
-  }
-
-  base::flat_map<SkottieResourceIdHash,
-                 std::vector<std::unique_ptr<skottie::ColorPropertyHandle>>>
-      color_handles_;
-  base::flat_map<SkottieResourceIdHash,
-                 std::vector<std::unique_ptr<skottie::TextPropertyHandle>>>
-      text_handles_;
-  base::flat_set<std::string> text_node_names_;
-  SkottieTextPropertyValueMap current_text_values_;
-  SkottieTransformPropertyValueMap current_transform_values_;
+  ColorPropertyManager color_property_manager_;
+  TextPropertyManager text_property_manager_;
+  TransformPropertyManager transform_property_manager_;
 };
 
 class MarkerStore : public skottie::MarkerObserver {
@@ -212,19 +265,28 @@ class SkottieWrapperImpl : public SkottieWrapper {
   const base::flat_set<std::string>& GetTextNodeNames() const override
       LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
-    return property_handler_->text_node_names();
+    return property_manager_->text_property_manager().node_names();
   }
 
   SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const override
       LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
-    return property_handler_->current_text_values();
+    return property_manager_->text_property_manager()
+        .current_vals_as_chromium();
   }
 
   SkottieTransformPropertyValueMap GetCurrentTransformPropertyValues()
       const override LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
-    return property_handler_->current_transform_values();
+    return property_manager_->transform_property_manager()
+        .current_vals_as_chromium();
+  }
+
+  SkottieColorMap GetCurrentColorPropertyValues() const override
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock lock(lock_);
+    return property_manager_->color_property_manager()
+        .current_vals_as_chromium();
   }
 
   const std::vector<SkottieMarker>& GetAllMarkers() const override {
@@ -250,8 +312,8 @@ class SkottieWrapperImpl : public SkottieWrapper {
       LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
     current_frame_data_cb_ = std::move(frame_data_cb);
-    property_handler_->ApplyColorMap(color_map);
-    property_handler_->ApplyTextMap(text_map);
+    property_manager_->color_property_manager().SetNewValues(color_map);
+    property_manager_->text_property_manager().SetNewValues(text_map);
     animation_->seek(t);
     animation_->render(canvas, &rect);
   }
@@ -272,12 +334,12 @@ class SkottieWrapperImpl : public SkottieWrapper {
       base::span<const uint8_t> data,
       std::vector<uint8_t> raw_data,
       const sk_sp<SkottieMRUResourceProvider>& mru_resource_provider)
-      : property_handler_(sk_make_sp<PropertyHandler>()),
+      : property_manager_(sk_make_sp<GlobalPropertyManager>()),
         marker_store_(sk_make_sp<MarkerStore>()),
         animation_(
             skottie::Animation::Builder()
                 .setLogger(sk_make_sp<SkottieLogWriter>())
-                .setPropertyObserver(property_handler_)
+                .setPropertyObserver(property_manager_)
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
                     mru_resource_provider))
                 .setMarkerObserver(marker_store_)
@@ -305,7 +367,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
   mutable base::Lock lock_;
   FrameDataCallback current_frame_data_cb_ GUARDED_BY(lock_);
-  sk_sp<PropertyHandler> property_handler_ GUARDED_BY(lock_);
+  sk_sp<GlobalPropertyManager> property_manager_ GUARDED_BY(lock_);
   const sk_sp<MarkerStore> marker_store_;
   sk_sp<skottie::Animation> animation_;
 

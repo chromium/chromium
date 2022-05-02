@@ -63,16 +63,13 @@ class CC_PAINT_EXPORT SkottieWrapper
   // immutable and does not change during SkottieWrapper's lifetime.
   virtual const base::flat_set<std::string>& GetTextNodeNames() const = 0;
 
-  // Returns the set of all text nodes in the animation, along with their
-  // corresponding current values. The nodes' values can only be updated via
-  // the |text_map| argument in Draw().
+  // Returns a map from hashed animation node name to its current property
+  // value in the animation (see SkottieProperty.h). Some properties' values
+  // can be updated via its corresponding argument in Draw().
   virtual SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const = 0;
-
-  // Returns the set of all transform nodes in the animation, along with their
-  // corresponding current values. The nodes' values are not updateable via
-  // Draw() like other properties simply because there is no use case yet.
   virtual SkottieTransformPropertyValueMap GetCurrentTransformPropertyValues()
       const = 0;
+  virtual SkottieColorMap GetCurrentColorPropertyValues() const = 0;
 
   // Returns all markers present in the animation. The returned list is
   // immutable and does not change during SkottieWrapper's lifetime.

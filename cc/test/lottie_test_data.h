@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -28,6 +29,7 @@ constexpr base::StringPiece kLottieDataWithoutAssets1 =
       "assets": [],
       "layers": [
         {
+          "nm": "Color 1",
           "ty": 1,
           "sw": 400,
           "sh": 200,
@@ -36,6 +38,7 @@ constexpr base::StringPiece kLottieDataWithoutAssets1 =
           "op": 75
         },
         {
+          "nm": "Color 2",
           "ty": 1,
           "sw": 400,
           "sh": 200,
@@ -45,6 +48,11 @@ constexpr base::StringPiece kLottieDataWithoutAssets1 =
         }
       ]
     })";
+
+constexpr base::StringPiece kLottieDataWithoutAssets1Color1Node = "Color 1";
+constexpr base::StringPiece kLottieDataWithoutAssets1Color2Node = "Color 2";
+constexpr SkColor kLottieDataWithoutAssets1Color1 = SK_ColorGREEN;
+constexpr SkColor kLottieDataWithoutAssets1Color2 = SK_ColorBLUE;
 
 // A skottie animation with solid green color for the first second and then
 // a solid blue color for the next second.
