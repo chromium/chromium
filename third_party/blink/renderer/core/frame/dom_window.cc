@@ -379,7 +379,7 @@ void DOMWindow::close(v8::Isolate* isolate) {
 void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
   DCHECK(incumbent_window);
 
-  if (!GetFrame() || !GetFrame()->IsMainFrame())
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame())
     return;
 
   Page* page = GetFrame()->GetPage();
