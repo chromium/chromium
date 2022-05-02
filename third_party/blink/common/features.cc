@@ -715,9 +715,6 @@ const base::Feature kOffsetParentNewSpecBehavior{
 const base::Feature kCancelFormSubmissionInDefaultHandler{
     "CancelFormSubmissionInDefaultHandler", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kKeepScriptResourceAlive{"KeepScriptResourceAlive",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the JPEG XL Image File Format (JXL).
 const base::Feature kJXL{"JXL", base::FEATURE_DISABLED_BY_DEFAULT};
 

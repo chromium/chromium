@@ -272,8 +272,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kOffsetParentNewSpecBehavior;
 BLINK_COMMON_EXPORT extern const base::Feature
     kCancelFormSubmissionInDefaultHandler;
 
-BLINK_COMMON_EXPORT extern const base::Feature kKeepScriptResourceAlive;
-
 BLINK_COMMON_EXPORT extern const base::Feature
     kAlignFontDisplayAutoTimeoutWithLCPGoal;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

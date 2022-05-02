@@ -1126,9 +1126,7 @@ void ScriptLoader::NotifyFinished() {
   // memory cache. So we keep |resource_keep_alive_| to keep the resource in the
   // memory cache.
   if (resource_keep_alive_ &&
-      !resource_keep_alive_->GetResponse().IsSignedExchangeInnerResponse() &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kKeepScriptResourceAlive)) {
+      !resource_keep_alive_->GetResponse().IsSignedExchangeInnerResponse()) {
     resource_keep_alive_ = nullptr;
   }
 }
