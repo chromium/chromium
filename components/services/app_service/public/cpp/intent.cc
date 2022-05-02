@@ -51,47 +51,11 @@ bool IntentFile::MatchAnyConditionValue(
 
 Intent::Intent(const std::string& action) : action(action) {}
 
-Intent::Intent(const GURL& url)
-    : action(apps_util::kIntentActionView), url(url) {}
+Intent::Intent(const std::string& action, const GURL& url)
+    : action(action), url(url) {}
 
-Intent::Intent(const std::vector<GURL>& filesystem_urls,
-               const std::vector<std::string>& mime_types)
-    : action(filesystem_urls.size() == 1
-                 ? apps_util::kIntentActionSend
-                 : apps_util::kIntentActionSendMultiple),
-      mime_type(apps_util::CalculateCommonMimeType(mime_types)) {
-  DCHECK_EQ(filesystem_urls.size(), mime_types.size());
-  for (size_t i = 0; i < filesystem_urls.size(); i++) {
-    auto file = std::make_unique<IntentFile>(filesystem_urls[i]);
-    file->mime_type = mime_types.at(i);
-    files.push_back(std::move(file));
-  }
-}
-
-Intent::Intent(std::vector<IntentFilePtr> files)
-    : action(apps_util::kIntentActionView), files(std::move(files)) {}
-
-Intent::Intent(const std::vector<GURL>& filesystem_urls,
-               const std::vector<std::string>& mime_types,
-               const std::string& text,
-               const std::string& title)
-    : Intent(filesystem_urls, mime_types) {
-  if (!text.empty()) {
-    share_text = text;
-  }
-  if (!title.empty()) {
-    share_title = title;
-  }
-}
-
-Intent::Intent(const std::string& text, const std::string& title)
-    : Intent(apps_util::kIntentActionSend) {
-  mime_type = "text/plain";
-  share_text = text;
-  if (!title.empty()) {
-    share_title = title;
-  }
-}
+Intent::Intent(const std::string& action, std::vector<IntentFilePtr> files)
+    : action(action), files(std::move(files)) {}
 
 Intent::~Intent() = default;
 

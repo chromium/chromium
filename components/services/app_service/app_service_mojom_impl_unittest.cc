@@ -517,7 +517,7 @@ TEST_F(AppServiceMojomImplTest, PreferredAppsWriteBeforeInit) {
   std::vector<std::string> mime_types({"image/png"});
   ASSERT_EQ(kAppId1,
             impl.GetPreferredAppsListForTesting().FindPreferredAppForIntent(
-                std::make_unique<Intent>(filesystem_urls, mime_types)));
+                apps_util::MakeShareIntent(filesystem_urls, mime_types)));
   ASSERT_EQ(
       kAppId2,
       impl.GetPreferredAppsListForTesting().FindPreferredAppForUrl(filter_url));

@@ -95,6 +95,59 @@ const char kIntentActionEdit[] = "edit";
 
 const char kUseBrowserForLink[] = "use_browser";
 
+apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
+                                const std::vector<std::string>& mime_types) {
+  auto intent = std::make_unique<apps::Intent>(filesystem_urls.size() == 1
+                                                   ? kIntentActionSend
+                                                   : kIntentActionSendMultiple);
+  intent->mime_type = CalculateCommonMimeType(mime_types);
+
+  DCHECK_EQ(filesystem_urls.size(), mime_types.size());
+  for (size_t i = 0; i < filesystem_urls.size(); i++) {
+    auto file = std::make_unique<apps::IntentFile>(filesystem_urls[i]);
+    file->mime_type = mime_types.at(i);
+    intent->files.push_back(std::move(file));
+  }
+
+  return intent;
+}
+
+apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
+                                const std::vector<std::string>& mime_types,
+                                const std::string& text,
+                                const std::string& title) {
+  auto intent = MakeShareIntent(filesystem_urls, mime_types);
+  if (!text.empty()) {
+    intent->share_text = text;
+  }
+  if (!title.empty()) {
+    intent->share_title = title;
+  }
+  return intent;
+}
+
+apps::IntentPtr MakeShareIntent(const std::string& text,
+                                const std::string& title) {
+  auto intent = std::make_unique<apps::Intent>(kIntentActionSend);
+  intent->mime_type = "text/plain";
+  intent->share_text = text;
+  if (!title.empty()) {
+    intent->share_title = title;
+  }
+  return intent;
+}
+
+apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
+                               const std::string& mime_type) {
+  auto intent = std::make_unique<apps::Intent>(kIntentActionEdit);
+  intent->mime_type = mime_type;
+
+  auto file = std::make_unique<apps::IntentFile>(filesystem_url);
+  file->mime_type = mime_type;
+  intent->files.push_back(std::move(file));
+  return intent;
+}
+
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionView;

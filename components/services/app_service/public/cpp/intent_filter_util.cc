@@ -413,7 +413,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
 
 size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
                                   const GURL& url) {
-  apps::Intent intent(url);
+  apps::Intent intent(kIntentActionView, url);
   if (!intent.MatchFilter(intent_filter)) {
     return 0;
   }

@@ -39,6 +39,30 @@ struct SharedText {
   GURL url;
 };
 
+// Creates an intent for sharing |filesystem_urls|. |filesystem_urls| must be
+// co-indexed with |mime_types|.
+apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
+                                const std::vector<std::string>& mime_types);
+
+// Creates an intent for sharing |filesystem_urls|, along with |text| and a
+// |title|. |filesystem_urls| must be co-indexed with |mime_types|.
+apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
+                                const std::vector<std::string>& mime_types,
+                                const std::string& text,
+                                const std::string& title);
+
+// Creates an intent for sharing |text|, with |title|.
+apps::IntentPtr MakeShareIntent(const std::string& text,
+                                const std::string& title);
+
+// Create an edit intent for the file with a given |filesystem_url| and
+// |mime_type|.
+apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
+                               const std::string& mime_type);
+
+// TODO(crbug.com/1253250): Remove below functions after migrating to non-mojo
+// AppService.
+
 // Create an intent struct from URL.
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
 

@@ -33,6 +33,8 @@ enum class IntentFilterMatchLevel {
 
 // The type of a condition in an IntentFilter, which determines what Intent
 // field will be matched against.
+// Values are persisted to disk by preferred_apps_converter.h, so should not be
+// changed or removed without migrating existing data.
 ENUM(ConditionType,
      // Matches the URL scheme (e.g. https, tel).
      kScheme,
@@ -52,6 +54,8 @@ ENUM(ConditionType,
      kFile)
 
 // Describes what pattern matching rules are applied to a ConditionValue.
+// Values are persisted to disk by preferred_apps_converter.h, so should not be
+// changed or removed without migrating existing data.
 enum class PatternMatchType {
   kNone = 0,
   // The ConditionValue is a literal string which must match the value in the

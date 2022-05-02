@@ -241,7 +241,8 @@ bool PreferredAppsList::IsPreferredAppForSupportedLinks(
 
 absl::optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
     const GURL& url) const {
-  return FindPreferredAppForIntent(std::make_unique<Intent>(url));
+  return FindPreferredAppForIntent(
+      std::make_unique<Intent>(apps_util::kIntentActionView, url));
 }
 
 absl::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
