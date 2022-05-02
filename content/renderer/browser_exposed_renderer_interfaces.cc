@@ -149,11 +149,10 @@ void CreateEmbeddedWorker(
     mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
         receiver) {
   initiator_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&EmbeddedWorkerInstanceClientImpl::CreateForRequest,
-                     initiator_task_runner,
-                     render_thread->cors_exempt_header_list(),
-                     std::move(receiver)));
+      FROM_HERE, base::BindOnce(&EmbeddedWorkerInstanceClientImpl::Create,
+                                initiator_task_runner,
+                                render_thread->cors_exempt_header_list(),
+                                std::move(receiver)));
 }
 
 }  // namespace
