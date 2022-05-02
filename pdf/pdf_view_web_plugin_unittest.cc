@@ -21,9 +21,9 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "pdf/paint_ready_rect.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -63,10 +63,12 @@ namespace {
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Pointwise;
 using ::testing::Return;
+using ::testing::SizeIs;
 
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
 // testing.
@@ -569,6 +571,41 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshotsWithVariousRectPositions) {
     TestPaintSnapshots(params.device_scale, params.window_rect,
                        params.paint_rect, params.expected_clipped_rect);
   }
+}
+
+TEST_F(PdfViewWebPluginTest, OnPaintWithMultiplePaintRects) {
+  SetDocumentDimensions({100, 200});
+  UpdatePluginGeometryWithoutWaiting(/*device_scale=*/1.0f,
+                                     gfx::Rect(0, 0, 40, 40));
+
+  EXPECT_CALL(*engine_ptr_, Paint)
+      .WillRepeatedly(
+          [](const gfx::Rect& rect, SkBitmap& /*image_data*/,
+             std::vector<gfx::Rect>& ready,
+             std::vector<gfx::Rect>& /*pending*/) { ready.push_back(rect); });
+  std::vector<PaintReadyRect> ready;
+  std::vector<gfx::Rect> pending;
+  plugin_->OnPaint(
+      /*paint_rects=*/{gfx::Rect(5, 5, 10, 10), gfx::Rect(20, 20, 10, 10)},
+      ready, pending);
+
+  // Expect three paints: an initial background-clearing paint, and one for each
+  // requested paint rectangle.
+  ASSERT_THAT(ready, SizeIs(3));
+  EXPECT_THAT(pending, IsEmpty());
+
+  EXPECT_EQ(gfx::Rect(0, 0, 90, 90), ready[0].rect());
+  EXPECT_TRUE(ready[0].flush_now());
+
+  EXPECT_EQ(gfx::Rect(5, 5, 10, 10), ready[1].rect());
+  EXPECT_FALSE(ready[1].flush_now());
+
+  EXPECT_EQ(gfx::Rect(20, 20, 10, 10), ready[2].rect());
+  EXPECT_FALSE(ready[2].flush_now());
+
+  // All the requested paints should share the same `SkImage`.
+  EXPECT_NE(&ready[0].image(), &ready[1].image());
+  EXPECT_EQ(&ready[1].image(), &ready[2].image());
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithIdentity) {

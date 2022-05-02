@@ -1389,13 +1389,6 @@ void PdfViewPluginBase::SaveToFile(const std::string& token) {
   SaveAs();
 }
 
-// TODO(crbug.com/1263614): Minimize inefficient `SkBitmap::asImage()` calls
-// (which copy the underlying pixel memory) by only creating the `SkImage` after
-// making all changes to `image_data_` first.
-//
-// We probably can reduce this further by writing pixels directly into the
-// `SkSurface` in `PaintManager`, rather than using an intermediate `SkBitmap`
-// and `SkImage`.
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {
@@ -1411,6 +1404,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine()->PrePaint();
 
+  std::vector<gfx::Rect> ready_rects;
   for (const gfx::Rect& paint_rect : paint_rects) {
     // Intersect with plugin area since there could be pending invalidates from
     // when the plugin area was larger.
@@ -1427,10 +1421,9 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
       engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
-      sk_sp<SkImage> painted_image = image_data_.asImage();
       for (gfx::Rect& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area_.OffsetFromOrigin());
-        ready.emplace_back(ready_rect, painted_image);
+        ready_rects.push_back(ready_rect);
       }
       for (gfx::Rect& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area_.OffsetFromOrigin());
@@ -1445,8 +1438,8 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_rect_.width(), first_page_ypos)));
-      ready.emplace_back(region, image_data_.asImage());
       image_data_.erase(background_color_, gfx::RectToSkIRect(region));
+      ready_rects.push_back(region);
     }
 
     // Ensure the background parts are filled.
@@ -1456,12 +1449,18 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       if (!intersection.IsEmpty()) {
         image_data_.erase(background_part.color,
                           gfx::RectToSkIRect(intersection));
-        ready.emplace_back(intersection, image_data_.asImage());
+        ready_rects.push_back(intersection);
       }
     }
   }
 
   engine()->PostPaint();
+
+  // TODO(crbug.com/1263614): Write pixels directly to the `SkSurface` in
+  // `PaintManager`, rather than using an intermediate `SkBitmap` and `SkImage`.
+  sk_sp<SkImage> painted_image = image_data_.asImage();
+  for (const gfx::Rect& ready_rect : ready_rects)
+    ready.emplace_back(ready_rect, painted_image);
 
   InvalidateAfterPaintDone();
 }

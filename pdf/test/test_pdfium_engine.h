@@ -42,6 +42,14 @@ class TestPDFiumEngine : public PDFiumEngine {
   MOCK_METHOD(void, ScrolledToXPosition, (int), (override));
   MOCK_METHOD(void, ScrolledToYPosition, (int), (override));
 
+  MOCK_METHOD(void,
+              Paint,
+              (const gfx::Rect&,
+               SkBitmap&,
+               std::vector<gfx::Rect>&,
+               std::vector<gfx::Rect>&),
+              (override));
+
   MOCK_METHOD(bool,
               HandleInputEvent,
               (const blink::WebInputEvent&),
@@ -71,6 +79,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   // Returns an empty bookmark list.
   base::Value::List GetBookmarks() override;
+
+  MOCK_METHOD(gfx::Rect, GetPageScreenRect, (int), (const override));
 
   MOCK_METHOD(void, SetGrayscale, (bool), (override));
 
