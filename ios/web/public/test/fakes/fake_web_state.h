@@ -212,10 +212,10 @@ class FakeWebState : public WebState {
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
 
   // A list of observers notified when page state changes. Weak references.
-  base::ObserverList<WebStateObserver, true>::Unchecked observers_;
+  base::ObserverList<WebStateObserver, true> observers_;
   // All the WebStatePolicyDeciders asked for navigation decision. Weak
   // references.
-  base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
+  base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
 
   base::WeakPtrFactory<FakeWebState> weak_factory_{this};
 };
