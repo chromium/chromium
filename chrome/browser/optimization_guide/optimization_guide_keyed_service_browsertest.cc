@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -324,9 +325,10 @@ class OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
   OptimizationGuideKeyedServiceWithoutRegistrationsBrowserTest() {
-    feature_list_.InitWithFeatures({},
-                                   {page_info::kPageInfoAboutThisSiteEn,
-                                    page_info::kPageInfoAboutThisSiteNonEn});
+    feature_list_.InitWithFeatures(
+        {}, {history_clusters::features::kOnDeviceClusteringBlocklists,
+             page_info::kPageInfoAboutThisSiteEn,
+             page_info::kPageInfoAboutThisSiteNonEn});
   }
 
  private:
@@ -445,8 +447,13 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
   if (page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale()))
+          g_browser_process->GetApplicationLocale())) {
     expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
+  }
+  if (base::FeatureList::IsEnabled(
+          history_clusters::features::kOnDeviceClusteringBlocklists)) {
+    expected_types |= 1 << OptimizationType::HISTORY_CLUSTERS;
+  }
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
       expected_types);
@@ -486,8 +493,13 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
   int64_t expected_types = 1 << OptimizationType::NOSCRIPT;
   if (page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale()))
+          g_browser_process->GetApplicationLocale())) {
     expected_types |= 1 << OptimizationType::ABOUT_THIS_SITE;
+  }
+  if (base::FeatureList::IsEnabled(
+          history_clusters::features::kOnDeviceClusteringBlocklists)) {
+    expected_types |= 1 << OptimizationType::HISTORY_CLUSTERS;
+  }
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
       expected_types);
