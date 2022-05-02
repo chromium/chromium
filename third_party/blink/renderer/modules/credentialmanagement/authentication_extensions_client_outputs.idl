@@ -22,5 +22,5 @@ dictionary AuthenticationExtensionsClientOutputs {
 
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   boolean credBlob;
-  ArrayBuffer? getCredBlob;
+  ArrayBuffer getCredBlob;
 };

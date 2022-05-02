@@ -276,7 +276,7 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       /*echo_prf=*/false, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
       /*echo_large_blob=*/true,
       /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
-      /*large_blob_written=*/true, /*echo_get_cred_blob=*/true,
+      /*large_blob_written=*/true,
       /*get_cred_blob=*/kCredBlob);
 
   EXPECT_EQ(response->info, expected->info);
@@ -294,7 +294,6 @@ TEST(WebAuthenticationProxyValueConversionsTest,
   EXPECT_EQ(response->echo_large_blob_written,
             expected->echo_large_blob_written);
   EXPECT_EQ(response->large_blob_written, expected->large_blob_written);
-  EXPECT_EQ(response->echo_get_cred_blob, expected->echo_get_cred_blob);
   EXPECT_EQ(response->get_cred_blob, expected->get_cred_blob);
   // Produce a failure even if the list above is missing any fields. But this
   // will not print any meaningful error.

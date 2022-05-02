@@ -197,11 +197,8 @@ struct GetAssertionAuthenticatorResponse {
   bool echo_large_blob_written;
   bool large_blob_written;
 
-  // True if getClientExtensionResults() called on the returned
-  // PublicKeyCredential instance should contain a `getCredBlob` extension
-  // output.
-  bool echo_get_cred_blob;
-  // The value of the `getCredBlob` extension output, or empty if none.
+  // The value of the `getCredBlob` extension output, which maybe empty, or
+  // null if none.
   array<uint8>? get_cred_blob;
 };
 

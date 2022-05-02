@@ -733,13 +733,9 @@ void OnGetAssertionComplete(
       }
       extension_outputs->setLargeBlob(large_blob_outputs);
     }
-    if (credential->echo_get_cred_blob) {
-      if (credential->get_cred_blob) {
-        extension_outputs->setGetCredBlob(
-            VectorToDOMArrayBuffer(std::move(*credential->get_cred_blob)));
-      } else {
-        extension_outputs->setGetCredBlob(nullptr);
-      }
+    if (credential->get_cred_blob) {
+      extension_outputs->setGetCredBlob(
+          VectorToDOMArrayBuffer(std::move(*credential->get_cred_blob)));
     }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id,

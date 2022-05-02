@@ -1932,7 +1932,6 @@ AuthenticatorCommon::CreateGetAssertionResponse(
         response->large_blob_written = response_data.large_blob_written;
         break;
       case RequestExtension::kGetCredBlob: {
-        response->echo_get_cred_blob = true;
         const absl::optional<cbor::Value>& extensions =
             response_data.authenticator_data.extensions();
         if (extensions) {
@@ -1942,6 +1941,13 @@ AuthenticatorCommon::CreateGetAssertionResponse(
             response->get_cred_blob = it->second.GetBytestring();
           }
         }
+        if (!response->get_cred_blob.has_value()) {
+          // The authenticator is supposed to return an empty byte string if it
+          // does not have a credBlob for the credential. But in case it
+          // doesn't, we return one to the caller anyway.
+          response->get_cred_blob = std::vector<uint8_t>();
+        }
+
         break;
       }
       case RequestExtension::kHMACSecret:

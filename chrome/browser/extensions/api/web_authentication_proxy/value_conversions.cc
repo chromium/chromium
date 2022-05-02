@@ -670,7 +670,6 @@ GetAssertionResponseFromValue(const base::Value& value) {
       return {nullptr, "invalid credBlob extension"};
     }
     response->get_cred_blob = ToByteVector(*cred_blob);
-    response->echo_get_cred_blob = true;
   }
   const base::Value* large_blob =
       client_extension_results->FindDictKey("largeBlob");
