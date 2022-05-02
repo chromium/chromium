@@ -16,7 +16,8 @@ extern std::unique_ptr<UserNoteMetadata> GetTestUserNoteMetadata();
 
 extern std::unique_ptr<UserNoteBody> GetTestUserNoteBody();
 
-extern std::unique_ptr<UserNoteTarget> GetTestUserNotePageTarget();
+extern std::unique_ptr<UserNoteTarget> GetTestUserNotePageTarget(
+    const std::string& url = "https://www.example.com");
 
 }  // namespace user_notes
 

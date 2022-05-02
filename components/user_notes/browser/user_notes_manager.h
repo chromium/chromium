@@ -60,6 +60,7 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, RemoveNote);
   FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, AddNoteInstance);
   friend class content::PageUserData<UserNotesManager>;
+  friend class UserNoteUtilsTest;
 
   UserNotesManager(content::Page& page, base::SafeRef<UserNoteService> service);
 

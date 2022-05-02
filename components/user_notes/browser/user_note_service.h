@@ -76,6 +76,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   };
 
   friend class UserNoteServiceTest;
+  friend class UserNoteUtilsTest;
   friend class UserNotesManagerTest;
 
   // Source of truth for the in-memory note models. Any note currently being
