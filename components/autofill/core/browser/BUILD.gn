@@ -320,6 +320,7 @@ static_library("browser") {
     "strike_database_integrator_base.h",
     "strike_database_integrator_test_strike_database.cc",
     "strike_database_integrator_test_strike_database.h",
+    "suggestions_context.h",
     "sync_utils.h",
     "ui/accessory_sheet_data.cc",
     "ui/accessory_sheet_data.h",
