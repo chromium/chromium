@@ -1368,6 +1368,10 @@ class SSLClientSocketZeroRTTTest : public SSLClientSocketTest {
 
     SSLInfo ssl_info;
     EXPECT_TRUE(GetSSLInfo(&ssl_info));
+
+    // Make sure all asynchronous histogram logging is complete.
+    base::RunLoop().RunUntilIdle();
+
     return SSLInfo::HANDSHAKE_FULL == ssl_info.handshake_type;
   }
 
@@ -5535,8 +5539,7 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonNoResume) {
 }
 
 // Test 0-RTT logging in the standard ConfirmHandshake-after-acceptance case.
-// Disabled due to flakiness across all platforms: https://crbug.com/1247914.
-TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonZeroRTT) {
+TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonZeroRTT) {
   const char kReasonHistogram[] = "Net.SSLHandshakeEarlyDataReason";
 
   ASSERT_TRUE(StartServer());
@@ -5550,6 +5553,9 @@ TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonZeroRTT) {
   ASSERT_THAT(
       callback.GetResult(ssl_socket()->ConfirmHandshake(callback.callback())),
       IsOk());
+
+  base::RunLoop().RunUntilIdle();
+
   histograms.ExpectUniqueSample(kReasonHistogram, ssl_early_data_accepted, 1);
 }
 
