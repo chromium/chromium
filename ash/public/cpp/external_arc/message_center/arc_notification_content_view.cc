@@ -853,7 +853,7 @@ void ArcNotificationContentView::OnWindowDestroying(aura::Window* window) {
   SetSurface(nullptr);
 }
 
-void ArcNotificationContentView::OnWidgetClosing(views::Widget* widget) {
+void ArcNotificationContentView::OnWidgetDestroying(views::Widget* widget) {
   // Actually this code doesn't show copied surface. Since it looks it doesn't
   // work during closing. This just hides the surface and revails hidden
   // snapshot: https://crbug.com/890701.
