@@ -250,9 +250,13 @@ bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
 }
 
-void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
+void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator() {
   if (IsMenuShowing()) {
-    ExecuteSelectedMenuItem(ui::EF_COMMAND_DOWN);
+    // Before hiding the menu, paste the selected menu item, or the first item
+    // if none is selected.
+    PasteMenuItemData(context_menu_->GetSelectedMenuItemCommand().value_or(
+                          ClipboardHistoryUtil::kFirstItemCommandId),
+                      /*paste_plain_text=*/false);
     return;
   }
 
@@ -634,16 +638,6 @@ void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
     const std::vector<base::UnguessableToken>& menu_item_ids) {
   for (auto& observer : observers_)
     observer.OnClipboardHistoryItemsUpdated(menu_item_ids);
-}
-
-void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
-  DCHECK(IsMenuShowing());
-
-  auto command = context_menu_->GetSelectedMenuItemCommand();
-
-  // If no menu item is currently selected, we'll fallback to the first item.
-  PasteMenuItemData(command.value_or(ClipboardHistoryUtil::kFirstItemCommandId),
-                    event_flags);
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,

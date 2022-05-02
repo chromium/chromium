@@ -1172,7 +1172,7 @@ bool CanHandleToggleClipboardHistory() {
 
 void HandleToggleClipboardHistory() {
   DCHECK(Shell::Get()->clipboard_history_controller());
-  Shell::Get()->clipboard_history_controller()->ShowMenuByAccelerator();
+  Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
 }
 
 bool CanHandleToggleDictation() {

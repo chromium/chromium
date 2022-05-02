@@ -66,8 +66,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
 
-  // Shows the clipboard history menu through the keyboard accelerator.
-  void ShowMenuByAccelerator();
+  // Shows or hides the clipboard history menu through the keyboard accelerator.
+  // If the menu was already shown, pastes the selected menu item before hiding.
+  void ToggleMenuShownByAccelerator();
 
   // ClipboardHistoryController:
   void ShowMenu(const gfx::Rect& anchor_rect,
@@ -163,8 +164,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       GetHistoryValuesCallback callback,
       std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
           encoded_pngs);
-
-  void ExecuteSelectedMenuItem(int event_flags);
 
   // Executes the command specified by `command_id` with the given event flags.
   void ExecuteCommand(int command_id, int event_flags);

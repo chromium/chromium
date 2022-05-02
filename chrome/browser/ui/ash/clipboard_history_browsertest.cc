@@ -729,16 +729,18 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
     </html>
   )")));
 
-  // Cache a function to return the last paste.
+  // Cache a function to return all valid data formats for the last paste.
   auto GetLastPaste = [&]() {
     auto result = content::EvalJs(
         web_contents, "(function() { return window.getLastPaste(); })();");
     EXPECT_EQ(result.error, "");
-    return result.ExtractList();
+    auto paste_list_value = result.ExtractList();
+    EXPECT_TRUE(paste_list_value.is_list());
+    return std::move(paste_list_value.GetList());
   };
 
   // Confirm initial state.
-  ASSERT_TRUE(GetLastPaste().GetListDeprecated().empty());
+  ASSERT_TRUE(GetLastPaste().empty());
 
   // Write some things to the clipboard.
   SetClipboardTextAndHtml("A", "<span>A</span>");
@@ -752,9 +754,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   ui::ClipboardData clipboard_data(*clipboard->GetClipboardData(&data_dst));
 
   // Open clipboard history and paste the last history item.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
@@ -766,21 +767,20 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
       content::TitleWatcher(web_contents, u"Paste 1").WaitAndGetTitle();
 
   // Confirm the expected paste data.
-  base::Value last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.GetListDeprecated().size(), 2u);
-  EXPECT_EQ(last_paste.GetListDeprecated()[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste.GetListDeprecated()[1].GetString(),
-            "text/html: <span>A</span>");
+  base::Value::List last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 2u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
 
   // Wait for the clipboard buffer to be restored before performing another
   // paste. In production, this should happen faster than a user is able to
   // relaunch clipboard history UI (knock on wood).
   ClipboardDataWaiter().WaitFor(&clipboard_data);
 
-  // Open clipboard history and paste the middle history item as plain text.
-  PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
+  // Open clipboard history and paste the last history item while holding down
+  // the shift key. The item should paste as plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_SHIFT_DOWN);
@@ -793,8 +793,57 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
 
   // Confirm the expected paste data.
   last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.GetListDeprecated().size(), 1u);
-  EXPECT_EQ(last_paste.GetListDeprecated()[0].GetString(), "text/plain: A");
+  ASSERT_EQ(last_paste.size(), 1u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the last history item by toggling the
+  // clipboard history menu. The item should not paste as plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Wait for the paste event to propagate to the web contents.
+  // The web contents will notify us a paste occurred by updating page title.
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 3").WaitAndGetTitle();
+
+  // Confirm the expected paste data.
+  last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 2u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+
+  // Wait for the clipboard buffer to be restored before performing another
+  // paste.
+  ClipboardDataWaiter().WaitFor(&clipboard_data);
+
+  // Open clipboard history and paste the last history item while holding down
+  // a non-shift key (arbitrarily, the ALT key). The item should not paste as
+  // plain text.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
+  PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Wait for the paste event to propagate to the web contents.
+  // The web contents will notify us a paste occurred by updating page title.
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 4").WaitAndGetTitle();
+
+  // Confirm the expected paste data.
+  last_paste = GetLastPaste();
+  ASSERT_EQ(last_paste.size(), 2u);
+  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
 
   // Verify the clipboard buffer is restored to initial state.
   ClipboardDataWaiter().WaitFor(&clipboard_data);
