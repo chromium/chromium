@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/services/speech/buildflags/buildflags.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/contextual_search/buildflags.h"
@@ -128,8 +129,6 @@
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
-#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
-#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
@@ -137,9 +136,6 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "chrome/browser/payments/payment_request_factory.h"
-#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
-#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
-#include "chrome/browser/speech/speech_recognition_service.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
@@ -173,8 +169,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/search/ntp_features.h"
-#include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
@@ -189,7 +183,6 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -295,6 +288,20 @@
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
+#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
+#include "chrome/browser/speech/speech_recognition_service.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
+
+#if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
+#include "chrome/browser/speech/speech_recognition_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
@@ -542,19 +549,24 @@ void BindNetworkHintsHandler(
   predictors::NetworkHintsHandlerImpl::Create(frame_host, std::move(receiver));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
 void BindSpeechRecognitionContextHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   if (captions::IsLiveCaptionFeatureSupported()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
-        std::move(receiver));
-#else
+#if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
     SpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
         std::move(receiver));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
+        std::move(receiver));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(b:223493879): Provide LaCrOS implementation, via go/crosapi.
+#error "LaCrOS speech recognition service factory not implemented yet."
+#else
+#error "No speech recognition service factory on this platform."
 #endif
   }
 }
@@ -593,7 +605,7 @@ void BindMediaFoundationRendererNotifierHandler(
   captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
                                                       std::move(receiver));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
@@ -713,7 +725,7 @@ void PopulateChromeFrameBinders(
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   map->Add<media::mojom::SpeechRecognitionContext>(
       base::BindRepeating(&BindSpeechRecognitionContextHandler));
   map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(
@@ -722,7 +734,7 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindSpeechRecognitionRecognizerClientHandler));
   map->Add<media::mojom::MediaFoundationRendererNotifier>(
       base::BindRepeating(&BindMediaFoundationRendererNotifierHandler));
-#endif
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

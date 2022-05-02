@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
+#include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -151,11 +152,11 @@ class ChromeContentRendererClient
   std::unique_ptr<blink::WebContentSettingsClient>
   CreateWorkerContentSettingsClient(
       content::RenderFrame* render_frame) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   std::unique_ptr<media::SpeechRecognitionClient> CreateSpeechRecognitionClient(
       content::RenderFrame* render_frame,
       media::SpeechRecognitionClient::OnReadyCallback callback) override;
-#endif
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;

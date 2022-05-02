@@ -63,6 +63,7 @@
 #include "chrome/renderer/v8_unwinder.h"
 #include "chrome/renderer/websocket_handshake_throttle_provider_impl.h"
 #include "chrome/renderer/worker_content_settings_client.h"
+#include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_assistant_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
@@ -167,11 +168,14 @@
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #else
 #include "chrome/renderer/cart/commerce_hint_agent.h"
-#include "chrome/renderer/media/chrome_speech_recognition_client.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #include "components/search/ntp_features.h"  // nogncheck
 #endif
+
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+#include "chrome/renderer/media/chrome_speech_recognition_client.h"
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -1499,7 +1503,7 @@ ChromeContentRendererClient::CreateWorkerContentSettingsClient(
   return std::make_unique<WorkerContentSettingsClient>(render_frame);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
 std::unique_ptr<media::SpeechRecognitionClient>
 ChromeContentRendererClient::CreateSpeechRecognitionClient(
     content::RenderFrame* render_frame,
@@ -1507,7 +1511,7 @@ ChromeContentRendererClient::CreateSpeechRecognitionClient(
   return std::make_unique<ChromeSpeechRecognitionClient>(render_frame,
                                                          std::move(callback));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 bool ChromeContentRendererClient::IsPluginAllowedToUseCameraDeviceAPI(
     const GURL& url) {
