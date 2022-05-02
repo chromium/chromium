@@ -607,6 +607,8 @@ blink_core_sources_css = [
   "selector_filter.h",
   "selector_query.cc",
   "selector_query.h",
+  "selector_statistics.cc",
+  "selector_statistics.h",
   "shadow_tree_style_sheet_collection.cc",
   "shadow_tree_style_sheet_collection.h",
   "scoped_css_value.h",

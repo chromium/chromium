@@ -161,6 +161,12 @@ class CORE_EXPORT ElementRuleCollector {
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
 
+  // Writes out the collected selector statistics and clears the values.
+  // These values are gathered during rule matching and require higher-level
+  // control of when they are output - the statistics are designed to be
+  // aggregated per-rule for the entire style recalc pass.
+  static void DumpAndClearRulesPerfMap();
+
   // Temporarily swap the StyleRecalcContext with one which points to the
   // closest query container for matching ::slotted rules for a given slot.
   class SlottedRulesScope {
@@ -192,6 +198,15 @@ class CORE_EXPORT ElementRuleCollector {
     // ::placeholder.
     bool for_shadow_pseudo = false;
   };
+
+  template <typename RuleDataListType, bool perf_trace_enabled>
+  void CollectMatchingRulesForListInternal(const RuleDataListType*,
+                                           const MatchRequest&,
+                                           const RuleSet*,
+                                           const CSSStyleSheet*,
+                                           int,
+                                           const SelectorChecker&,
+                                           PartRequest* = nullptr);
 
   template <typename RuleDataListType>
   void CollectMatchingRulesForList(const RuleDataListType*,

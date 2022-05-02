@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
 #include "base/containers/span.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
+#include "third_party/blink/renderer/core/css/selector_statistics.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -170,6 +172,53 @@ class CascadeLayerSeeker {
 #endif
 };
 
+// The below `rule_map` is designed to aggregate the following values per-rule
+// between calls to `DumpAndClearRulesPerfMap`. This is currently done at the
+// UpdateStyleAndLayoutTreeForThisDocument level, which yields the statistics
+// aggregated across each style recalc pass.
+struct CumulativeRulePerfData {
+  int match_attempts;
+  int fast_reject_count;
+  int match_count;
+  base::TimeDelta elapsed;
+};
+
+using SelectorStatisticsRuleMap =
+    HashMap<Member<const RuleData>, CumulativeRulePerfData>;
+SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
+  DEFINE_STATIC_LOCAL(SelectorStatisticsRuleMap, rule_map, {});
+  return rule_map;
+}
+
+void AggregateRulePerfData(
+    const HeapVector<RulePerfDataPerRequest>& rules_statistics) {
+  SelectorStatisticsRuleMap& map = GetSelectorStatisticsRuleMap();
+  for (const auto& rule_stats : rules_statistics) {
+    auto it = map.find(rule_stats.rule);
+    if (it == map.end()) {
+      CumulativeRulePerfData data{
+          /*match_attempts*/ 1, (rule_stats.fast_reject) ? 1 : 0,
+          (rule_stats.did_match) ? 1 : 0, rule_stats.elapsed};
+      map.insert(rule_stats.rule, data);
+    } else {
+      it->value.elapsed += rule_stats.elapsed;
+      it->value.match_attempts++;
+      if (rule_stats.fast_reject)
+        it->value.fast_reject_count++;
+      if (rule_stats.did_match)
+        it->value.match_count++;
+    }
+  }
+}
+
+// This global caches a pointer to the trace-enabled state for selector
+// statistics gathering. This state is global to the process and comes from the
+// tracing subsystem. For performance reasons, we only grab the pointer once -
+// the value will be updated as tracing is enabled/disabled, which we read by
+// dereferencing this global variable. See comment in the definition of
+// `TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED` for more details.
+static const unsigned char* g_selector_stats_tracing_enabled = nullptr;
+
 }  // namespace
 
 ElementRuleCollector::ElementRuleCollector(
@@ -190,7 +239,13 @@ ElementRuleCollector::ElementRuleCollector(
       matching_ua_rules_(false),
       include_empty_rules_(false),
       inside_link_(inside_link),
-      result_(result) {}
+      result_(result) {
+  if (!g_selector_stats_tracing_enabled) {
+    g_selector_stats_tracing_enabled =
+        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+            TRACE_DISABLED_BY_DEFAULT("blink.debug"));
+  }
+}
 
 ElementRuleCollector::~ElementRuleCollector() = default;
 
@@ -249,8 +304,8 @@ static bool RulesApplicableInCurrentTreeScope(
          element->ContainingTreeScope() == scoping_node->ContainingTreeScope();
 }
 
-template <typename RuleDataListType>
-void ElementRuleCollector::CollectMatchingRulesForList(
+template <typename RuleDataListType, bool perf_trace_enabled>
+void ElementRuleCollector::CollectMatchingRulesForListInternal(
     const RuleDataListType* rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
@@ -275,12 +330,22 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   unsigned rejected = 0;
   unsigned fast_rejected = 0;
   unsigned matched = 0;
+  SelectorStatisticsCollector selector_statistics_collector;
+  if (perf_trace_enabled)
+    selector_statistics_collector.ReserveCapacity(rules->size());
 
   for (const auto& rule_data : *rules) {
+    if (perf_trace_enabled) {
+      selector_statistics_collector.EndCollectionForCurrentRule();
+      selector_statistics_collector.BeginCollectionForRule(rule_data);
+    }
+
     if (can_use_fast_reject_ &&
         selector_filter_.FastRejectSelector<RuleData::kMaximumIdentifierCount>(
             rule_data->DescendantSelectorIdentifierHashes())) {
       fast_rejected++;
+      if (perf_trace_enabled)
+        selector_statistics_collector.SetWasFastRejected();
       continue;
     }
 
@@ -354,10 +419,17 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       continue;
 
     matched++;
+    if (perf_trace_enabled)
+      selector_statistics_collector.SetDidMatch();
     unsigned layer_order =
         layer_seeker.SeekLayerOrder(rule_data->GetPosition());
     DidMatchRule(rule_data, layer_order, result.proximity, result, style_sheet,
                  style_sheet_index);
+  }
+
+  if (perf_trace_enabled) {
+    selector_statistics_collector.EndCollectionForCurrentRule();
+    AggregateRulePerfData(selector_statistics_collector.PerRuleStatistics());
   }
 
   StyleEngine& style_engine =
@@ -369,6 +441,29 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_fast_rejected,
                                 fast_rejected);
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_matched, matched);
+}
+
+template <typename RuleDataListType>
+void ElementRuleCollector::CollectMatchingRulesForList(
+    const RuleDataListType* rules,
+    const MatchRequest& match_request,
+    const RuleSet* rule_set,
+    const CSSStyleSheet* style_sheet,
+    int style_sheet_index,
+    const SelectorChecker& checker,
+    PartRequest* part_request) {
+  // To reduce branching overhead for the common case, we use a template
+  // parameter to eliminate branching in CollectMatchingRulesForListInternal
+  // when tracing is not enabled.
+  if (!*g_selector_stats_tracing_enabled) {
+    CollectMatchingRulesForListInternal<RuleDataListType, false>(
+        rules, match_request, rule_set, style_sheet, style_sheet_index, checker,
+        part_request);
+  } else {
+    CollectMatchingRulesForListInternal<RuleDataListType, true>(
+        rules, match_request, rule_set, style_sheet, style_sheet_index, checker,
+        part_request);
+  }
 }
 
 namespace {
@@ -767,6 +862,29 @@ void ElementRuleCollector::DidMatchRule(
         result_.SetMatchesNonUniversalHighlights();
     }
   }
+}
+
+void ElementRuleCollector::DumpAndClearRulesPerfMap() {
+  TRACE_EVENT1(
+      TRACE_DISABLED_BY_DEFAULT("blink.debug"), "SelectorStats",
+      "selector_stats", [&](perfetto::TracedValue context) {
+        perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+        {
+          perfetto::TracedArray array = dict.AddArray("selector_timings");
+          for (auto& it : GetSelectorStatisticsRuleMap()) {
+            perfetto::TracedValue item = array.AppendItem();
+            perfetto::TracedDictionary item_dict =
+                std::move(item).WriteDictionary();
+            const CSSSelector& selector = it.key->Selector();
+            item_dict.Add("selector", selector.SelectorText());
+            item_dict.Add("elapsed (us)", it.value.elapsed);
+            item_dict.Add("match_attempts", it.value.match_attempts);
+            item_dict.Add("fast_reject_count", it.value.fast_reject_count);
+            item_dict.Add("match_count", it.value.match_count);
+          }
+        }
+      });
+  GetSelectorStatisticsRuleMap().clear();
 }
 
 static inline bool CompareRules(const MatchedRule& matched_rule1,
