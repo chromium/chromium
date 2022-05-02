@@ -94,6 +94,11 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
   return std::make_unique<MediaCodecAudioDecoder>(std::move(task_runner));
 }
 
+std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return nullptr;
+}
+
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   return std::make_unique<AndroidCdmFactory>(

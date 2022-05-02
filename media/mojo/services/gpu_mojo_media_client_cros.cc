@@ -172,6 +172,11 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
   return nullptr;
 }
 
+std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return nullptr;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class CdmFactory {};
 #endif  // !BUILDFLAG(IS_CHROMEOS)

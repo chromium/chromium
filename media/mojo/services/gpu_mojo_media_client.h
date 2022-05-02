@@ -97,6 +97,11 @@ GetPlatformSupportedVideoDecoderConfigs(
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+// Creates a platform-specific media::AudioEncoder. Most platforms don't do
+// anything here.
+std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner);
+
 // Creates a CDM factory, right now only used on android and chromeos.
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces);

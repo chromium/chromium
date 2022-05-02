@@ -203,11 +203,18 @@ if (is_chromecast) {
 } else if (is_mac) {
   _default_mojo_media_services = [
     "audio_decoder",
+    "audio_encoder",
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_chromeos_ash || is_win || ((is_linux || is_chromeos_lacros) &&
-                                         (use_vaapi || use_v4l2_codec))) {
+} else if (is_win) {
+  _default_mojo_media_services = [
+    "audio_encoder",
+    "video_decoder",
+  ]
+  _default_mojo_media_host = "gpu"
+} else if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) &&
+                               (use_vaapi || use_v4l2_codec))) {
   _default_mojo_media_services = [ "video_decoder" ]
   _default_mojo_media_host = "gpu"
 }
@@ -217,10 +224,6 @@ if (is_chromecast) {
 # |_default_mojo_media_host| which controls where the MediaService runs in.
 if (enable_library_cdms) {
   _default_mojo_media_services += [ "cdm" ]
-}
-
-if (is_win) {
-  _default_mojo_media_services += [ "audio_encoder" ]
 }
 
 declare_args() {

@@ -12,10 +12,10 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "media/audio/audio_features.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "media/mojo/clients/mojo_audio_encoder.h"
@@ -151,30 +151,28 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
       return true;
     }
     case media::AudioCodec::kAAC: {
-#if BUILDFLAG(IS_WIN)
-      if (!VerifyParameterValues(config->options.channels, exception_state,
-                                 "Unsupported number of channels.",
-                                 {1, 2, 6})) {
-        return false;
-      }
-      if (config->options.bitrate.has_value()) {
-        if (!VerifyParameterValues(config->options.bitrate.value(),
-                                   exception_state, "Unsupported bitrate.",
-                                   {96000, 128000, 160000, 192000})) {
+      if (base::FeatureList::IsEnabled(media::kPlatformAudioEncoder)) {
+        if (!VerifyParameterValues(config->options.channels, exception_state,
+                                   "Unsupported number of channels.",
+                                   {1, 2, 6})) {
           return false;
         }
-      }
-      if (!VerifyParameterValues(config->options.sample_rate, exception_state,
-                                 "Unsupported sample rate.", {44100, 48000})) {
-        return false;
-      }
-      if (base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
+        if (config->options.bitrate.has_value()) {
+          if (!VerifyParameterValues(config->options.bitrate.value(),
+                                     exception_state, "Unsupported bitrate.",
+                                     {96000, 128000, 160000, 192000})) {
+            return false;
+          }
+        }
+        if (!VerifyParameterValues(config->options.sample_rate, exception_state,
+                                   "Unsupported sample rate.",
+                                   {44100, 48000})) {
+          return false;
+        }
+
         return true;
+      }
       [[fallthrough]];
-#else
-      // At this point we only support AAC on Windows.
-      return false;
-#endif  // IS_WIN
     }
     default:
       if (exception_state) {

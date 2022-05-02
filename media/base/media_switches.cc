@@ -318,6 +318,16 @@ const base::Feature kMediaCastOverlayButton{"MediaCastOverlayButton",
 const base::Feature kUseAndroidOverlayForSecureOnly{
     "UseAndroidOverlayForSecureOnly", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows usage of OS-level (platform) audio encoders.
+const base::Feature kPlatformAudioEncoder {
+  "PlatformAudioEncoder",
+#if BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
 // If enabled, RTCVideoDecoderAdapter will wrap a DecoderStream as a video
 // decoder, rather than using MojoVideoDecoder.  This causes the RTC external
 // decoder to have all the decoder selection / fallback/forward logic of the

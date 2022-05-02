@@ -4,11 +4,14 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
+#include "media/base/offloading_audio_encoder.h"
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
+#include "media/gpu/windows/mf_audio_encoder.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -49,6 +52,15 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
       GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(),
       hdr_enabled);
+}
+
+std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  auto encoding_runner = base::ThreadPool::CreateCOMSTATaskRunner({});
+  auto mf_encoder = std::make_unique<MFAudioEncoder>(encoding_runner);
+  return std::make_unique<OffloadingAudioEncoder>(std::move(mf_encoder),
+                                                  std::move(encoding_runner),
+                                                  std::move(task_runner));
 }
 
 absl::optional<SupportedVideoDecoderConfigs>
