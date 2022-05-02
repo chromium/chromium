@@ -28,6 +28,9 @@ class GameFetcher : public AppFetcher,
   void GetApps(ResultCallback callback) override;
   base::CallbackListSubscription RegisterForAppUpdates(
       RepeatingResultCallback callback) override;
+  void GetIcon(const std::string& app_id,
+               int32_t size_hint_in_dip,
+               GetIconCallback callback);
 
   // AppProvisioningDataManager::Observer:
   void OnAppDataUpdated(const proto::AppWithLocaleList& app_data) override;

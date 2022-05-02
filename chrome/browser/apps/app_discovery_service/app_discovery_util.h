@@ -11,6 +11,10 @@
 #include "base/callback_list.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
+
 namespace apps {
 
 enum class ResultType {
@@ -40,6 +44,9 @@ using RepeatingResultCallback =
 
 using ResultCallbackList =
     base::RepeatingCallbackList<void(const std::vector<Result>& results)>;
+
+using GetIconCallback =
+    base::OnceCallback<void(const gfx::ImageSkia& image, DiscoveryError error)>;
 
 }  // namespace apps
 

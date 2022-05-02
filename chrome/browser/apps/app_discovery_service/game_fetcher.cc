@@ -7,17 +7,24 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/country_codes/country_codes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 extern const char kDefaultLocale[] = "en-US";
@@ -98,6 +105,45 @@ absl::optional<std::vector<std::u16string>> GetPlatforms(
   return store_names;
 }
 
+std::string ReadFileToString(const base::FilePath& path) {
+  std::string result;
+  if (!base::ReadFileToString(path, &result)) {
+    result.clear();
+  }
+  return result;
+}
+
+void ReplyWithIcon(apps::GetIconCallback callback,
+                   const SkBitmap& decoded_image) {
+  if (decoded_image.empty()) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            apps::DiscoveryError::kErrorMalformedData);
+    return;
+  }
+
+  std::move(callback).Run(gfx::ImageSkia::CreateFrom1xBitmap(decoded_image),
+                          apps::DiscoveryError::kSuccess);
+}
+
+void DecodeIcon(apps::GetIconCallback callback,
+                int32_t size_hint_in_dip,
+                const std::string& icon_data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (icon_data.empty()) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            apps::DiscoveryError::kErrorRequestFailed);
+    return;
+  }
+
+  data_decoder::DecodeImageIsolated(
+      base::as_bytes(base::make_span(icon_data)),
+      data_decoder::mojom::ImageCodec::kDefault, true,
+      data_decoder::kDefaultMaxSizeInBytes,
+      gfx::Size(size_hint_in_dip, size_hint_in_dip),
+      base::BindOnce(&ReplyWithIcon, std::move(callback)));
+}
+
 }  // namespace
 
 namespace apps {
@@ -118,6 +164,41 @@ void GameFetcher::GetApps(ResultCallback callback) {
 base::CallbackListSubscription GameFetcher::RegisterForAppUpdates(
     RepeatingResultCallback callback) {
   return result_callback_list_.Add(std::move(callback));
+}
+
+void GameFetcher::GetIcon(const std::string& app_id,
+                          int32_t size_hint_in_dip,
+                          GetIconCallback callback) {
+  if (last_results_.empty()) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            DiscoveryError::kErrorRequestFailed);
+    return;
+  }
+
+  Result* app = nullptr;
+
+  for (Result& candidate : last_results_) {
+    if (candidate.GetAppId() == app_id) {
+      app = &candidate;
+    }
+  }
+
+  if (!app) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            DiscoveryError::kErrorRequestFailed);
+    return;
+  }
+
+  base::FilePath icon_path =
+      AppProvisioningDataManager::Get()->GetDataFilePath().Append(
+          app->GetSourceExtras()->AsGameExtras()->GetRelativeIconPath());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ReadFileToString, icon_path),
+      base::BindOnce(&DecodeIcon, std::move(callback), size_hint_in_dip));
 }
 
 void GameFetcher::OnAppDataUpdated(const proto::AppWithLocaleList& app_data) {
