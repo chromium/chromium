@@ -248,6 +248,9 @@ ios_builder(
 
 ios_builder(
     name = "ios-catalyst",
+    mirrors = [
+        "ci/ios-catalyst",
+    ],
 )
 
 ios_builder(
