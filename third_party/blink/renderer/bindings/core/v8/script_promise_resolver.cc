@@ -16,6 +16,27 @@
 
 namespace blink {
 
+class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ExceptionStateScope(ScriptPromiseResolver* resolver)
+      : ExceptionState(resolver->script_state_->GetIsolate(),
+                       resolver->exception_context_),
+        resolver_(resolver) {
+    CHECK_NE(resolver->exception_context_.GetContext(),
+             ExceptionContext::Context::kEmpty);
+  }
+  ~ExceptionStateScope() {
+    DCHECK(HadException());
+    resolver_->Reject(GetException());
+    ClearException();
+  }
+
+ private:
+  ScriptPromiseResolver* resolver_;
+};
+
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       state_(kPending),
@@ -25,6 +46,13 @@ ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
     state_ = kDetached;
     resolver_.Clear();
   }
+}
+
+ScriptPromiseResolver::ScriptPromiseResolver(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context)
+    : ScriptPromiseResolver(script_state) {
+  exception_context_ = exception_context;
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
@@ -59,6 +87,31 @@ void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
   DCHECK(exception_state.HadException());
   Reject(exception_state.GetException());
   exception_state.ClearException();
+}
+
+void ScriptPromiseResolver::RejectWithDOMException(
+    DOMExceptionCode exception_code,
+    const String& message) {
+  ExceptionStateScope(this).ThrowDOMException(exception_code, message);
+}
+
+void ScriptPromiseResolver::RejectWithSecurityError(
+    const String& sanitized_message,
+    const String& unsanitized_message) {
+  ExceptionStateScope(this).ThrowSecurityError(sanitized_message,
+                                               unsanitized_message);
+}
+
+void ScriptPromiseResolver::RejectWithTypeError(const String& message) {
+  ExceptionStateScope(this).ThrowTypeError(message);
+}
+
+void ScriptPromiseResolver::RejectWithRangeError(const String& message) {
+  ExceptionStateScope(this).ThrowRangeError(message);
+}
+
+void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
+  ExceptionStateScope(this).ThrowWasmCompileError(message);
 }
 
 void ScriptPromiseResolver::Detach() {
