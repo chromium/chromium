@@ -262,19 +262,6 @@ PolicyErrorMap::const_iterator PolicyErrorMap::end() {
 void PolicyErrorMap::Clear() {
   CheckReadyAndConvert();
   map_.clear();
-  debug_infos_.clear();
-}
-
-void PolicyErrorMap::SetDebugInfo(const std::string& policy,
-                                  const std::string& debug_infos) {
-  debug_infos_[policy] = debug_infos;
-}
-
-const std::string PolicyErrorMap::GetDebugInfo(const std::string& policy) {
-  auto it = debug_infos_.find(policy);
-  if (it != debug_infos_.end())
-    return it->second;
-  return std::string();
 }
 
 void PolicyErrorMap::AddError(std::unique_ptr<PendingError> error) {
