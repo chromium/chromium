@@ -37,7 +37,7 @@ WallpaperInfo::WallpaperInfo(
     type = WallpaperType::kDailyGooglePhotos;
     collection_id = google_photos_wallpaper_params.id;
   } else {
-    type = WallpaperType::kGooglePhotos;
+    type = WallpaperType::kOnceGooglePhotos;
     location = google_photos_wallpaper_params.id;
   }
 }
@@ -65,7 +65,7 @@ bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
              collection_id == other.collection_id && unit_id == other.unit_id &&
              (std::equal(variants.begin(), variants.end(),
                          other.variants.begin()));
-    case WallpaperType::kGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
       return location == other.location && layout == other.layout &&
              collection_id == other.collection_id;

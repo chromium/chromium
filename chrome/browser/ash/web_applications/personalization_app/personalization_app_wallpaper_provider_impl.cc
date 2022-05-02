@@ -403,7 +403,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 
       return;
     }
-    case ash::WallpaperType::kGooglePhotos:
+    case ash::WallpaperType::kOnceGooglePhotos:
       client->FetchGooglePhotosPhoto(
           GetAccountId(profile_), info.location,
           base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
@@ -531,7 +531,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
 
-  client->RecordWallpaperSourceUMA(ash::WallpaperType::kGooglePhotos);
+  client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnceGooglePhotos);
 
   client->SetGooglePhotosWallpaper(
       ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,

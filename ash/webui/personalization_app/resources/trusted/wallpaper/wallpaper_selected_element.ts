@@ -239,7 +239,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return !!image &&
         ((image.type === WallpaperType.kCustomized &&
               path === Paths.LocalCollection ||
-          (image.type === WallpaperType.kGooglePhotos &&
+          (image.type === WallpaperType.kOnceGooglePhotos &&
            path === Paths.GooglePhotosCollection)));
   }
 

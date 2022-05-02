@@ -324,7 +324,7 @@ suite('GooglePhotosPhotosTest', function() {
       url: photo.url,
       attribution: [],
       layout: WallpaperLayout.kCenter,
-      type: WallpaperType.kGooglePhotos,
+      type: WallpaperType.kOnceGooglePhotos,
       key: photo.id
     };
     personalizationStore.notifyObservers();
@@ -349,7 +349,7 @@ suite('GooglePhotosPhotosTest', function() {
       url: anotherPhoto.url,
       attribution: [],
       layout: WallpaperLayout.kCenter,
-      type: WallpaperType.kGooglePhotos,
+      type: WallpaperType.kOnceGooglePhotos,
       key: anotherPhoto.id
     };
     personalizationStore.notifyObservers();

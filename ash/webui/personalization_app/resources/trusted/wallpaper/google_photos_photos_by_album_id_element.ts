@@ -304,7 +304,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
       return true;
     }
     if (!pendingSelected && !!currentSelected &&
-        currentSelected.type === WallpaperType.kGooglePhotos &&
+        currentSelected.type === WallpaperType.kOnceGooglePhotos &&
         currentSelected.key === photo.id) {
       return true;
     }

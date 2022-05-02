@@ -41,10 +41,11 @@ enum WallpaperType {
                       // goes away when another wallpaper is shown or the
                       // browser process exits. Note: the image will never be
                       // blurred or dimmed.
-  kGooglePhotos = 9,       // WallpaperInfo.location contains the Google Photos
-                           // photo id.
+  // kGooglePhotos = 9,    // Deprecated: b/229788402
   kDailyGooglePhotos = 10, // WallpaperInfo.location contains the Google Photos
                            // album id.
+  kOnceGooglePhotos = 11,  // WallpaperInfo.location contains the Google Photos
+                           // photo id.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync

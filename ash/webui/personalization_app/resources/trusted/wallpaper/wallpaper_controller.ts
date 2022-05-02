@@ -301,7 +301,7 @@ export async function setCurrentWallpaperLayout(
   assert(image);
   assert(
       image.type === WallpaperType.kCustomized ||
-      image.type === WallpaperType.kGooglePhotos);
+      image.type === WallpaperType.kOnceGooglePhotos);
   assert(
       layout === WallpaperLayout.kCenter ||
       layout === WallpaperLayout.kCenterCropped);

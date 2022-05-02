@@ -656,7 +656,7 @@ bool GetWallpaperInfo(const AccountId& account_id,
 
   WallpaperType wallpaper_type = static_cast<WallpaperType>(type.value());
   if (!features::IsWallpaperGooglePhotosIntegrationEnabled() &&
-      (wallpaper_type == WallpaperType::kGooglePhotos ||
+      (wallpaper_type == WallpaperType::kOnceGooglePhotos ||
        wallpaper_type == WallpaperType::kDailyGooglePhotos)) {
     return false;
   }
@@ -1071,15 +1071,15 @@ bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info) {
   if (info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kGooglePhotos &&
+      info.type != WallpaperType::kOnceGooglePhotos &&
       info.type != WallpaperType::kDailyGooglePhotos) {
     update_wallpaper_timer_.Stop();
   }
 
-  if (info.type == WallpaperType::kGooglePhotos)
+  if (info.type == WallpaperType::kOnceGooglePhotos)
     StartGooglePhotosStalenessTimer();
 
-  if (info.type != WallpaperType::kGooglePhotos &&
+  if (info.type != WallpaperType::kOnceGooglePhotos &&
       info.type != WallpaperType::kDailyGooglePhotos) {
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
@@ -1373,7 +1373,7 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
       std::move(callback).Run(true);
 
       info.collection_id = std::string();
-      info.type = WallpaperType::kGooglePhotos;
+      info.type = WallpaperType::kOnceGooglePhotos;
       SetUserWallpaperInfo(params.account_id, info);
       return;
     } else {
@@ -1534,7 +1534,7 @@ void WallpaperControllerImpl::UpdateCurrentWallpaperLayout(
   WallpaperInfo info;
   if (!GetUserWallpaperInfo(account_id, &info) ||
       ((info.type != WallpaperType::kCustomized) &&
-       (info.type != WallpaperType::kGooglePhotos))) {
+       (info.type != WallpaperType::kOnceGooglePhotos))) {
     return;
   }
   if (info.layout == layout)
@@ -1854,7 +1854,7 @@ void WallpaperControllerImpl::OnActiveUserSessionChanged(
   // prevent us from ever checking.
   WallpaperInfo info;
   GetLocalWallpaperInfo(account_id, &info);
-  if (info.type == WallpaperType::kGooglePhotos)
+  if (info.type == WallpaperType::kOnceGooglePhotos)
     CheckGooglePhotosStaleness(account_id, info);
 }
 
@@ -1911,7 +1911,7 @@ void WallpaperControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
     case WallpaperType::kThirdParty:
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
-    case WallpaperType::kGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kCount:
       return;
@@ -2572,7 +2572,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                                                    bool show_wallpaper) {
   if (info.type != WallpaperType::kOnline &&
       info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kGooglePhotos &&
+      info.type != WallpaperType::kOnceGooglePhotos &&
       info.type != WallpaperType::kDailyGooglePhotos &&
       info.type != WallpaperType::kDefault) {
     // This method is meant to be used for `WallpaperType::kOnline` and
@@ -2611,7 +2611,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
                        info, show_wallpaper),
         wallpaper_path);
-  } else if (info.type == WallpaperType::kGooglePhotos ||
+  } else if (info.type == WallpaperType::kOnceGooglePhotos ||
              info.type == WallpaperType::kDailyGooglePhotos) {
     auto path =
         GetUserGooglePhotosWallpaperDir(account_id).Append(info.location);
@@ -3049,7 +3049,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     case WallpaperType::kOnline:
       HandleSettingOnlineWallpaperFromWallpaperInfo(account_id, info);
       break;
-    case WallpaperType::kGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
       HandleGooglePhotosWallpaperInfoSyncedIn(account_id, info);
       break;
@@ -3150,7 +3150,7 @@ constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
     case WallpaperType::kDaily:
     case WallpaperType::kCustomized:
     case WallpaperType::kOnline:
-    case WallpaperType::kGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
       return true;
     case WallpaperType::kDefault:
@@ -3234,7 +3234,7 @@ bool WallpaperControllerImpl::IsDailyGooglePhotosWallpaperSelected() {
 bool WallpaperControllerImpl::IsGooglePhotosWallpaperSet() const {
   WallpaperInfo info;
   GetUserWallpaperInfo(GetActiveAccountId(), &info);
-  return info.type == WallpaperType::kGooglePhotos;
+  return info.type == WallpaperType::kOnceGooglePhotos;
 }
 
 void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
@@ -3328,7 +3328,7 @@ void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
     case WallpaperType::kDailyGooglePhotos:
       UpdateDailyRefreshWallpaper();
       return;
-    case WallpaperType::kGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
       CheckGooglePhotosStaleness(account_id, info);
       return;
     case WallpaperType::kOnline:
@@ -3348,7 +3348,7 @@ void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
 void WallpaperControllerImpl::CheckGooglePhotosStaleness(
     const AccountId& account_id,
     const WallpaperInfo& info) {
-  DCHECK(info.type == WallpaperType::kGooglePhotos);
+  DCHECK(info.type == WallpaperType::kOnceGooglePhotos);
   wallpaper_controller_client_->FetchGooglePhotosPhoto(
       account_id, info.location,
       base::BindOnce(&WallpaperControllerImpl::HandleGooglePhotosStalenessCheck,

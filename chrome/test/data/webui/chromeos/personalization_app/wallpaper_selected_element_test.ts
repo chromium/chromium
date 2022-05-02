@@ -269,7 +269,7 @@ suite('WallpaperSelectedTest', function() {
       url: {url: 'url'},
       attribution: [],
       layout: WallpaperLayout.kStretch,
-      type: WallpaperType.kGooglePhotos,
+      type: WallpaperType.kOnceGooglePhotos,
       key: 'key',
     };
 
