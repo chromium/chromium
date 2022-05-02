@@ -42,7 +42,8 @@ public class PasswordEditDialogViewTest {
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
     private static final int INITIAL_USERNAME_INDEX = 1;
     private static final int SELECTED_USERNAME_INDEX = 2;
-    private static final String PASSWORD = "Password";
+    private static final String INITIAL_PASSWORD = "password";
+    private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String FOOTER = "Footer";
 
     @ClassRule
@@ -59,6 +60,7 @@ public class PasswordEditDialogViewTest {
     TextInputEditText mPasswordView;
     TextView mFooterView;
     int mSelectedUsernameIndex;
+    String mCurrentPassword;
 
     @BeforeClass
     public static void setupSuite() {
@@ -88,13 +90,19 @@ public class PasswordEditDialogViewTest {
         mSelectedUsernameIndex = selectedUsernameIndex;
     }
 
+    void handlePasswordChanged(String password) {
+        mCurrentPassword = password;
+    }
+
     PropertyModel.Builder populateDialogPropertiesBuilder() {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(USERNAMES))
                 .with(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX, INITIAL_USERNAME_INDEX)
-                .with(PasswordEditDialogProperties.PASSWORD, PASSWORD)
+                .with(PasswordEditDialogProperties.PASSWORD, INITIAL_PASSWORD)
                 .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
-                        this::handleUsernameSelection);
+                        this::handleUsernameSelection)
+                .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
+                        this::handlePasswordChanged);
     }
 
     /** Tests that all the properties propagated correctly. */
@@ -113,25 +121,6 @@ public class PasswordEditDialogViewTest {
         Assert.assertEquals("Username text doesn't match", USERNAMES[INITIAL_USERNAME_INDEX],
                 mUsernamesView.getSelectedItem().toString());
         Assert.assertNull(mPasswordView);
-        Assert.assertEquals("Footer should be visible", View.VISIBLE, mFooterView.getVisibility());
-    }
-
-    /** Tests that all the properties propagated correctly. */
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-    public void testPropertiesWithDetails() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PropertyModel model = populateDialogPropertiesBuilder()
-                                          .with(PasswordEditDialogProperties.FOOTER, FOOTER)
-                                          .build();
-            PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
-        });
-        Assert.assertEquals("Initial selected username index doesn't match", INITIAL_USERNAME_INDEX,
-                mUsernamesView.getSelectedItemPosition());
-        Assert.assertEquals("Username text doesn't match", USERNAMES[INITIAL_USERNAME_INDEX],
-                mUsernamesView.getSelectedItem().toString());
-        Assert.assertEquals("Password doesn't match", PASSWORD, mPasswordView.getText().toString());
         Assert.assertEquals("Footer should be visible", View.VISIBLE, mFooterView.getVisibility());
     }
 
@@ -164,6 +153,84 @@ public class PasswordEditDialogViewTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUsernameSelection() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder().build();
+            PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
+            mUsernamesView.setSelection(SELECTED_USERNAME_INDEX);
+        });
+        CriteriaHelper.pollUiThread(() -> mSelectedUsernameIndex == SELECTED_USERNAME_INDEX);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mUsernamesView.setSelection(INITIAL_USERNAME_INDEX); });
+        CriteriaHelper.pollUiThread(() -> mSelectedUsernameIndex == INITIAL_USERNAME_INDEX);
+    }
+
+    /** Tests that all the properties propagated correctly with detailed view flag enabled. */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testPropertiesFeatureEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder()
+                                          .with(PasswordEditDialogProperties.FOOTER, FOOTER)
+                                          .build();
+            PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
+        });
+        Assert.assertEquals("Initial selected username index doesn't match", INITIAL_USERNAME_INDEX,
+                mUsernamesView.getSelectedItemPosition());
+        Assert.assertEquals("Username text doesn't match", USERNAMES[INITIAL_USERNAME_INDEX],
+                mUsernamesView.getSelectedItem().toString());
+        Assert.assertEquals(
+                "Password doesn't match", INITIAL_PASSWORD, mPasswordView.getText().toString());
+        Assert.assertEquals("Footer should be visible", View.VISIBLE, mFooterView.getVisibility());
+    }
+
+    /** Tests password changed callback with detailed view flag enabled. */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testPasswordEditing() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder().build();
+            PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
+            mPasswordView.setText(INITIAL_PASSWORD);
+        });
+        CriteriaHelper.pollUiThread(() -> mCurrentPassword.equals(INITIAL_PASSWORD));
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPasswordView.setText(CHANGED_PASSWORD));
+        CriteriaHelper.pollUiThread(() -> mCurrentPassword.equals(CHANGED_PASSWORD));
+    }
+
+    /**
+     * Tests that when the footer property is empty footer view is hidden with detailed view flag
+     * enabled.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testEmptyFooterFeatureEnabled() {
+        // Test with null footer property.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel nullModel = populateDialogPropertiesBuilder().build();
+            PropertyModelChangeProcessor.create(
+                    nullModel, mDialogView, PasswordEditDialogView::bind);
+        });
+        Assert.assertEquals("Footer should not be visible", View.GONE, mFooterView.getVisibility());
+
+        // Test with footer property containing empty string.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel emptyModel = populateDialogPropertiesBuilder()
+                                               .with(PasswordEditDialogProperties.FOOTER, "")
+                                               .build();
+            PropertyModelChangeProcessor.create(
+                    emptyModel, mDialogView, PasswordEditDialogView::bind);
+        });
+        Assert.assertEquals("Footer should not be visible", View.GONE, mFooterView.getVisibility());
+    }
+
+    /** Tests username selected callback with detailed view flag enabled. */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testUsernameSelectionFeatureEnabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PropertyModel model = populateDialogPropertiesBuilder().build();
             PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);

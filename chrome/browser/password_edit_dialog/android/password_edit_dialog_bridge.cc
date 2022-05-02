@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+#include <jni.h>
 
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
@@ -70,9 +71,13 @@ void PasswordEditDialogBridge::Dismiss() {
   Java_PasswordEditDialogBridge_dismiss(env, java_password_dialog_);
 }
 
-void PasswordEditDialogBridge::OnDialogAccepted(JNIEnv* env,
-                                                jint selected_username_index) {
-  std::move(dialog_accepted_callback_).Run(selected_username_index);
+void PasswordEditDialogBridge::OnDialogAccepted(
+    JNIEnv* env,
+    jint selected_username_index,
+    const base::android::JavaParamRef<jstring>& password) {
+  std::move(dialog_accepted_callback_)
+      .Run(selected_username_index,
+           base::android::ConvertJavaStringToUTF16(password));
 }
 
 void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,

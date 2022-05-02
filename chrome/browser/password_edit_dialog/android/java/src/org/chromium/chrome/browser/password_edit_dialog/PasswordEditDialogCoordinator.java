@@ -39,8 +39,9 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
          * Called when the user taps the dialog positive button.
          *
          * @param selectedUsernameIndex The index of the username selected by the user.
+         * @param password The password to be saved
          */
-        void onDialogAccepted(int selectedUsernameIndex);
+        void onDialogAccepted(int selectedUsernameIndex, String password);
 
         /**
          * Called when the dialog is dismissed.
@@ -121,33 +122,37 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
     private void createDialogViewModel(
             String[] usernames, int selectedUsernameIndex, String password, String account) {
         Resources resources = mContext.getResources();
-        PropertyModel.Builder dialogProperties =
+        PropertyModel.Builder dialogViewModelBuilder =
                 new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                         .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(usernames))
                         .with(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX,
                                 selectedUsernameIndex)
-                        .with(PasswordEditDialogProperties.PASSWORD, password)
                         .with(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK,
-                                this::handleUsernameSelected);
+                                this::handleUsernameSelected)
+                        .with(PasswordEditDialogProperties.PASSWORD, password);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
-            dialogProperties.with(PasswordEditDialogProperties.FOOTER,
-                    resources.getString(getEditPasswordDialogFooterId(account), account));
+            dialogViewModelBuilder
+                    .with(PasswordEditDialogProperties.FOOTER,
+                            resources.getString(getEditPasswordDialogFooterId(account), account))
+                    .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
+                            this::handlePasswordChanged)
+                    .build();
         }
-        mDialogViewModel = dialogProperties.build();
+        mDialogViewModel = dialogViewModelBuilder.build();
     }
 
     private void createModelDialogModel() {
         Resources resources = mContext.getResources();
         PasswordManagerResourceProvider resourceProvider =
                 PasswordManagerResourceProviderFactory.create();
-        PropertyModel.Builder dialogModelBuilder =
+        PropertyModel.Builder dialogModeBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources, getTitleStringId())
-                        // TODO(crbug.com/1237077): Currently PasswordEditDialog is only used for
-                        // confirming username in update password flow. The positive button text is
-                        // set to "Update". In the future, when this dialog is used in other
-                        // scenarios, the buttontext should be set dynamically based on scenario.
+                        // TODO(crbug.com/1237077): Currently PasswordEditDialog is only
+                        // used for confirming username in update password flow. The
+                        // positive button text is set to "Update". In the future, when
+                        // this dialog is used in other scenarios, the buttontext should
+                        // be set dynamically based on scenario.
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.password_manager_update_button)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
@@ -156,11 +161,16 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
-            dialogModelBuilder.with(ModalDialogProperties.TITLE_ICON, mContext,
-                    resourceProvider.getPasswordManagerIcon());
+            dialogModeBuilder
+                    .with(ModalDialogProperties.TITLE, resources,
+                            R.string.password_update_dialog_title)
+                    .with(ModalDialogProperties.TITLE_ICON, mContext,
+                            resourceProvider.getPasswordManagerIcon());
+        } else {
+            dialogModeBuilder.with(
+                    ModalDialogProperties.TITLE, resources, R.string.confirm_username_dialog_title);
         }
-
-        mDialogModel = dialogModelBuilder.build();
+        mDialogModel = dialogModeBuilder.build();
     }
 
     /** Dismisses the displayed dialog. */
@@ -173,12 +183,18 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
                 PasswordEditDialogProperties.SELECTED_USERNAME_INDEX, selectedUsernameIndex);
     }
 
+    private void handlePasswordChanged(String password) {
+        mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD, password);
+        mDialogViewModel.set(PasswordEditDialogProperties.EMPTY_PASSWORD_ERROR, password.isEmpty());
+    }
+
     // ModalDialogProperties.Controller implementation.
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
             mDelegate.onDialogAccepted(
-                    mDialogViewModel.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+                    mDialogViewModel.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX),
+                    mDialogViewModel.get(PasswordEditDialogProperties.PASSWORD));
         }
         mModalDialogManager.dismissDialog(model,
                 buttonType == ButtonType.POSITIVE ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
@@ -188,12 +204,6 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mDelegate.onDialogDismissed(dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-    }
-
-    private @StringRes int getTitleStringId() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-                ? R.string.password_update_dialog_title
-                : R.string.confirm_username_dialog_title;
     }
 
     private @StringRes int getEditPasswordDialogFooterId(String account) {

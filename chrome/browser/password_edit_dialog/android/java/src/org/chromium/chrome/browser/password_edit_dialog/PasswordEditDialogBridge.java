@@ -42,9 +42,10 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     }
 
     @Override
-    public void onDialogAccepted(int selectedUsernameIndex) {
+    public void onDialogAccepted(int selectedUsernameIndex, String password) {
         assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onDialogAccepted(mNativeDialog, selectedUsernameIndex);
+        PasswordEditDialogBridgeJni.get().onDialogAccepted(
+                mNativeDialog, selectedUsernameIndex, password);
     }
 
     @Override
@@ -56,7 +57,8 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
 
     @NativeMethods
     interface Natives {
-        void onDialogAccepted(long nativePasswordEditDialogBridge, int selectedUsernameIndex);
+        void onDialogAccepted(
+                long nativePasswordEditDialogBridge, int selectedUsernameIndex, String password);
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
     }
 }

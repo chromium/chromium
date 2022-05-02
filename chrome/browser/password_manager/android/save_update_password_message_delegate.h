@@ -90,7 +90,8 @@ class SaveUpdatePasswordMessageDelegate {
   void DisplayUsernameConfirmDialog(std::vector<std::u16string> usernames,
                                     int selected_username_index);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
-  void HandleSavePasswordFromDialog(int selected_username);
+  void HandleSavePasswordFromDialog(int selected_username,
+                                    const std::u16string& password);
   void HandleDialogDismissed(bool dialogAccepted);
 
   void ClearState();

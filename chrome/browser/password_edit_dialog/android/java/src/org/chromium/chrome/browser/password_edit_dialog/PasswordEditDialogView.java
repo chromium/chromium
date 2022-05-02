@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +35,7 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
     private TextView mFooterView;
     private Callback<Integer> mUsernameSelectedCallback;
     private TextInputEditText mPasswordView;
+    private Callback<String> mPasswordChangedCallback;
 
     /**
      * The view binder method to propagate parameters from model to view
@@ -40,6 +43,9 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
     public static void bind(
             PropertyModel model, PasswordEditDialogView dialogView, PropertyKey propertyKey) {
         if (propertyKey == PasswordEditDialogProperties.USERNAMES) {
+            dialogView.setUsernames(model.get(PasswordEditDialogProperties.USERNAMES),
+                    model.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
+        } else if (propertyKey == PasswordEditDialogProperties.SELECTED_USERNAME_INDEX) {
             // Propagation of USERNAMES property triggers passing both USERNAMES and
             // SELECTED_USERNAME_INDEX properties to the view. This is safe because both properties
             // are set through property model builder and available by the time the property model
@@ -47,16 +53,20 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
             // maintains username index of the user, currently selected in UI. Updating the property
             // by itself doesn't get propagated to the view as the value originates in the view and
             // gets routed to coordinator through USERNAME_SELECTED_CALLBACK.
-            dialogView.setUsernames(model.get(PasswordEditDialogProperties.USERNAMES),
-                    model.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-                && propertyKey == PasswordEditDialogProperties.PASSWORD) {
-            dialogView.setPassword(model.get(PasswordEditDialogProperties.PASSWORD));
         } else if (propertyKey == PasswordEditDialogProperties.FOOTER) {
             dialogView.setFooter(model.get(PasswordEditDialogProperties.FOOTER));
         } else if (propertyKey == PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK) {
             dialogView.setUsernameSelectedCallback(
                     model.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK));
+        } else if (propertyKey == PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK) {
+            dialogView.setPasswordChangedCallback(
+                    model.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK));
+        } else if (propertyKey == PasswordEditDialogProperties.PASSWORD) {
+            dialogView.setPassword(model.get(PasswordEditDialogProperties.PASSWORD));
+        } else if (propertyKey == PasswordEditDialogProperties.EMPTY_PASSWORD_ERROR) {
+            // TODO(crbug.com/1315916): Handle displaying empty password error in the following CLs
+        } else {
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 
@@ -78,6 +88,19 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
             mPasswordView = findViewById(R.id.password);
             mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            mPasswordView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (mPasswordChangedCallback == null) return;
+                    mPasswordChangedCallback.onResult(charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {}
+            });
         }
     }
 
@@ -91,6 +114,7 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
     }
 
     void setPassword(String password) {
+        if (mPasswordView == null || mPasswordView.getText().toString().equals(password)) return;
         mPasswordView.setText(password);
     }
 
@@ -101,6 +125,10 @@ public class PasswordEditDialogView extends LinearLayout implements OnItemSelect
 
     void setUsernameSelectedCallback(Callback<Integer> callback) {
         mUsernameSelectedCallback = callback;
+    }
+
+    void setPasswordChangedCallback(Callback<String> callback) {
+        mPasswordChangedCallback = callback;
     }
 
     @Override
