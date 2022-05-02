@@ -393,10 +393,18 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuadResource(
     if (candidate->clip_rect.has_value())
       ApplyClip(candidate, gfx::RectF(*candidate->clip_rect));
 
+    if (quad->visible_rect != quad->rect) {
+      auto visible_rect = gfx::RectF(quad->visible_rect);
+      transform.TransformRect(&visible_rect);
+      ApplyClip(candidate, gfx::RectF(visible_rect));
+    }
     // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads and
     // the window by one pixel. Exo does not yet clip these quads so we need to
     // clip here with the |primary_rect|.
     ApplyClip(candidate, primary_rect);
+
+    if (candidate->display_rect.IsEmpty())
+      return CandidateStatus::kFailVisible;
   }
 
   candidate->tracking_id = base::Hash(&track_data, sizeof(track_data));

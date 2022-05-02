@@ -4720,6 +4720,41 @@ TEST_F(DelegatedTest, TestClipHandCrafted) {
   EXPECT_RECTF_NEAR(uv_rect, candidate_list[0].uv_rect, 0.01f);
 }
 
+TEST_F(DelegatedTest, TestVisibleRectClip) {
+  auto pass = CreateRenderPass();
+  const auto kSmallCandidateRect = gfx::Rect(0, 0, 100, 100);
+  const auto kTestClip = gfx::Rect(0, 50, 50, 50);
+  auto* tex_rect = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kSmallCandidateRect);
+  tex_rect->uv_bottom_right = gfx::PointF(1, 1);
+  tex_rect->uv_top_left = gfx::PointF(0, 0);
+  tex_rect->visible_rect = kTestClip;
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  // AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  const auto uv_rect = gfx::RectF(0, 0.5f, 0.5f, 0.5f);
+  EXPECT_EQ(1U, candidate_list.size());
+  EXPECT_RECTF_NEAR(gfx::RectF(kTestClip), candidate_list[0].display_rect,
+                    0.01f);
+  EXPECT_RECTF_NEAR(uv_rect, candidate_list[0].uv_rect, 0.01f);
+}
+
 TEST_F(DelegatedTest, TestClipComputed) {
   auto pass = CreateRenderPass();
   const auto kSmallCandidateRect = gfx::Rect(5, 10, 128, 64);
@@ -4831,7 +4866,8 @@ TEST_F(DelegatedTest, ScaledBufferDamage) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
   // Expected damage is basically the intersection of the rect with the screen

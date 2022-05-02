@@ -100,9 +100,11 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
 
+DBG_FLAG_FBOOL("delegated.enable.quad_split", quad_split)
+
 bool OverlayProcessorDelegated::DisableSplittingQuads() const {
-  // If there is quads to split these will happen delegee side.
-  return true;
+  // This determines if we will split quads on delegation or on delegee side.
+  return !quad_split();
 }
 
 constexpr size_t kTooManyQuads = 64;
