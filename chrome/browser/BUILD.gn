@@ -2570,6 +2570,7 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
+      "obsolete_system/obsolete_system_stub.cc",
       "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
       "policy/messaging_layer/util/manual_test_heartbeat_event.h",
       "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
@@ -5976,7 +5977,6 @@ static_library("browser") {
       "enterprise/signals/device_info_fetcher_linux.h",
       "first_run/first_run_internal_linux.cc",
       "memory_details_linux.cc",
-      "obsolete_system/obsolete_system_stub.cc",
       "policy/browser_dm_token_storage_linux.cc",
       "policy/browser_dm_token_storage_linux.h",
     ]
@@ -6367,6 +6367,7 @@ static_library("browser") {
     sources += [
       "chrome_browser_main_extra_parts_linux.cc",
       "chrome_browser_main_extra_parts_linux.h",
+      "obsolete_system/obsolete_system_linux.cc",
     ]
   }
 

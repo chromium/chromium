@@ -438,6 +438,11 @@ chromium_strings.grd. -->
           This computer will no longer receive Google Chrome updates because Windows XP and Windows Vista are no longer supported
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_LINUX_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the OS version they are using is no longer supported.">
+          Google Chrome may not function correctly because it is no longer supported on this Linux distribution
+        </message>
+      </if>
       <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu.">
         Chrome
       </message>

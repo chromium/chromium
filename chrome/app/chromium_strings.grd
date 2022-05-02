@@ -410,6 +410,11 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_LINUX_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the OS version they are using is no longer supported.">
+          Chromium may not function correctly because it is no longer supported on this Linux distribution
+        </message>
+      </if>
       <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu.">
         Chromium
       </message>
