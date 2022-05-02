@@ -36,7 +36,7 @@ class StrikeDatabaseIntegratorBase {
     kMaxStrikeLimitReached = 1,
     // Feature not offered due to required delay since last strike has not
     // passed yet.
-    kRequiredLatencyNotPassed = 2,
+    kRequiredDelayNotPassed = 2,
   };
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);

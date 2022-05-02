@@ -48,7 +48,7 @@ bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
            strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) <
           GetRequiredDelaySinceLastStrike()) {
     if (blocked_reason)
-      *blocked_reason = BlockedReason::kRequiredLatencyNotPassed;
+      *blocked_reason = BlockedReason::kRequiredDelayNotPassed;
 
     return true;
   }

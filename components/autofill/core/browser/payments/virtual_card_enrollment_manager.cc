@@ -206,7 +206,7 @@ bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
       LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
           virtual_card_enrollment_source);
       break;
-    case VirtualCardEnrollmentStrikeDatabase::kRequiredLatencyNotPassed:
+    case VirtualCardEnrollmentStrikeDatabase::kRequiredDelayNotPassed:
       LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
           virtual_card_enrollment_source);
       break;
