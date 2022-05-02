@@ -1134,7 +1134,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         if (!mShowDataSource) {
             message = mContext.getString(R.string.payments_card_and_address_settings);
         } else {
-            String email = getEmail();
+            String email = getSignedInUsersEmail();
             if (email != null) {
                 message = mContext.getString(
                         R.string.payments_card_and_address_settings_signed_in, email);
@@ -1162,9 +1162,19 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         parent.addView(view);
     }
 
-    /** @return The email of signed in user or null. */
+    /**
+     * Get the email of the signed-in user, if possible. This is not necessarily the email shown or
+     * being used for contact details (if they were requested), but is the email that
+     * cards/addresses are being synced to.
+     *
+     * @return The email of signed in user or null.
+     */
     @Nullable
-    private String getEmail() {
+    private String getSignedInUsersEmail() {
+        if (mProfile.isOffTheRecord()) {
+            return null;
+        }
+
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
