@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# Contributing to Chrome DevTools Protocol: https://docs.google.com/document/d/1c-COD2kaK__5iMM5SEx-PzNA7HFmgttcYfOHHX0HaOM/edit?usp=sharing
+# Contributing to Chrome DevTools Protocol: https://goo.gle/devtools-contribution-guide-cdp
 
 version
   major 1
@@ -3850,7 +3850,7 @@ experimental domain HeadlessExperimental
   # Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
   # screenshot from the resulting frame. Requires that the target was created with enabled
   # BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also
-  # https://goo.gl/3zHXhB for more background.
+  # https://goo.gle/chrome-headless-rendering for more background.
   command beginFrame
     parameters
       # Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set,

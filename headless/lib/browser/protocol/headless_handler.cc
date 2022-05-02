@@ -110,10 +110,10 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRunAllCompositorStagesBeforeDraw)) {
-    callback->sendFailure(
-        Response::ServerError("Command is only supported with "
-                              "--run-all-compositor-stages-before-draw, see "
-                              "https://goo.gl/3zHXhB for more info."));
+    callback->sendFailure(Response::ServerError(
+        "Command is only supported with "
+        "--run-all-compositor-stages-before-draw, see "
+        "https://goo.gle/chrome-headless-rendering for more info."));
     return;
   }
 

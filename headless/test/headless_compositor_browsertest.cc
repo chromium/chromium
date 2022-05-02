@@ -20,15 +20,17 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessProtocolBrowserTest::SetUpCommandLine(command_line);
     // The following switches are recommended for BeginFrameControl required by
-    // compositor tests, see https://goo.gl/3zHXhB for details
+    // compositor tests. See https://goo.gle/chrome-headless-rendering for
+    // details.
     static const char* const compositor_switches[] = {
         // We control BeginFrames ourselves and need all compositing stages to
         // run.
         ::switches::kRunAllCompositorStagesBeforeDraw,
         ::switches::kDisableNewContentRenderingTimeout,
 
-        // Animtion-only BeginFrames are only supported when updates from the
-        // impl-thread are disabled, see go/headless-rendering.
+        // Animation-only BeginFrames are only supported when updates from the
+        // impl-thread are disabled. See
+        // https://goo.gle/chrome-headless-rendering.
         cc::switches::kDisableThreadedAnimation,
         cc::switches::kDisableCheckerImaging,
         blink::switches::kDisableThreadedScrolling,
