@@ -45,7 +45,7 @@ import {PersonalizationStore} from './personalization_store.js';
  * `chrome://personalization/trusted/personalization_app.js`. These exports are
  * necessary so they can be imported in tests.
  */
-export {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
+export {kMaximumLocalImagePreviews} from '../common/constants.js';
 export {getCountText, getNumberOfGridItemsPerRow} from '../common/utils.js';
 export {CollectionsGrid} from '../untrusted/collections_grid.js';
 export {ImagesGrid} from '../untrusted/images_grid.js';

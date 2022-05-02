@@ -68,8 +68,6 @@ export function validateReceivedData(event: constants.Events): boolean {
       return typeof event.enabled === 'number' &&
           event.enabled >= GooglePhotosEnablementState.MIN_VALUE &&
           event.enabled <= GooglePhotosEnablementState.MAX_VALUE;
-    case constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
-      return isNullOrArray(event.photos);
     case constants.EventType.SEND_IMAGE_COUNTS:
       return typeof event.counts === 'object';
     case constants.EventType.SEND_LOCAL_IMAGE_DATA: {

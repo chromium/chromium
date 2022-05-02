@@ -10,7 +10,6 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import * as constants from '../common/constants.js';
 import {isNonEmptyArray} from '../common/utils.js';
@@ -44,17 +43,6 @@ export class IFrameApi {
     const event: constants.SendGooglePhotosEnabledEvent = {
       type: constants.EventType.SEND_GOOGLE_PHOTOS_ENABLED,
       enabled
-    };
-    target.onMessageReceived(event);
-  }
-
-  /**
-   * Sends the list of Google Photos photos to untrusted.
-   */
-  sendGooglePhotosPhotos(target: CollectionsGrid, photos: Array<Url>|null) {
-    const event: constants.SendGooglePhotosPhotosEvent = {
-      type: constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS,
-      photos
     };
     target.onMessageReceived(event);
   }

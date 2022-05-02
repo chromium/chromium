@@ -9,13 +9,11 @@ import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/perso
 
 export const trustedOrigin = 'chrome://personalization';
 
-export const kMaximumGooglePhotosPreviews = 4;
 export const kMaximumLocalImagePreviews = 3;
 
 export enum EventType {
   SEND_COLLECTIONS = 'send_collections',
   SEND_GOOGLE_PHOTOS_ENABLED = 'send_google_photos_enabled',
-  SEND_GOOGLE_PHOTOS_PHOTOS = 'send_google_photos_photos',
   SELECT_COLLECTION = 'select_collection',
   SELECT_GOOGLE_PHOTOS_COLLECTION = 'select_google_photos_collection',
   SELECT_LOCAL_COLLECTION = 'select_local_collection',
@@ -38,11 +36,6 @@ export type SendCollectionsEvent = {
 export type SendGooglePhotosEnabledEvent = {
   type: EventType.SEND_GOOGLE_PHOTOS_ENABLED,
   enabled: GooglePhotosEnablementState,
-};
-
-export type SendGooglePhotosPhotosEvent = {
-  type: EventType.SEND_GOOGLE_PHOTOS_PHOTOS,
-  photos: unknown[]|null,
 };
 
 export type SelectCollectionEvent = {
@@ -114,8 +107,8 @@ export type SendVisibleEvent = {
   visible: boolean,
 };
 
-export type Events = SendCollectionsEvent|SendGooglePhotosEnabledEvent|
-    SendGooglePhotosPhotosEvent|SelectCollectionEvent|
+export type Events =
+    SendCollectionsEvent|SendGooglePhotosEnabledEvent|SelectCollectionEvent|
     SelectGooglePhotosCollectionEvent|SelectLocalCollectionEvent|
     SendImageCountsEvent|SendImageTilesEvent|SendLocalImagesEvent|
     SendLocalImageDataEvent|SendCurrentWallpaperAssetIdEvent|
