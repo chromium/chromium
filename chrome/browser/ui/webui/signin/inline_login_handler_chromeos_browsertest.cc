@@ -57,9 +57,9 @@ constexpr char kEmailKey[] = "email";
 constexpr char kPasswordKey[] = "password";
 constexpr char kGaiaIdKey[] = "gaiaId";
 constexpr char kIsAvailableInArcKey[] = "isAvailableInArc";
-constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
-constexpr char kSecondaryAccount2Email[] = "secondary2@example.com";
-constexpr char kSecondaryAccount3Email[] = "secondary3@example.com";
+constexpr char kSecondaryAccount1Email[] = "secondary1@gmail.com";
+constexpr char kSecondaryAccount2Email[] = "secondary2@gmail.com";
+constexpr char kSecondaryAccount3Email[] = "secondary3@gmail.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
@@ -89,8 +89,8 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
-  return {signin::GetTestGaiaIdForEmail("primary@example.com") /*id*/,
-          "primary@example.com" /*email*/,
+  return {signin::GetTestGaiaIdForEmail("primary@gmail.com") /*id*/,
+          "primary@gmail.com" /*email*/,
           user_manager::USER_TYPE_REGULAR /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
@@ -98,7 +98,7 @@ DeviceAccountInfo GetGaiaDeviceAccountInfo() {
 
 DeviceAccountInfo GetChildDeviceAccountInfo() {
   return {supervised_users::kChildAccountSUID /*id*/,
-          "child@example.com" /*email*/,
+          "child@gmail.com" /*email*/,
           user_manager::USER_TYPE_CHILD /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
