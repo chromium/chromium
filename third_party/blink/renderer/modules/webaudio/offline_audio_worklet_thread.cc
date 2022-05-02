@@ -10,9 +10,21 @@
 
 namespace blink {
 
-template class WorkletThreadHolder<OfflineAudioWorkletThread>;
+namespace {
 
-int OfflineAudioWorkletThread::s_ref_count_ = 0;
+// Use for ref-counting of all OfflineAudioWorkletThread instances in a
+// process. Incremented by the constructor and decremented by destructor.
+static int ref_count = 0;
+
+static void EnsureSharedBackingThread(const ThreadCreationParams& params) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(ref_count, 1);
+  WorkletThreadHolder<OfflineAudioWorkletThread>::EnsureInstance(params);
+}
+
+}  // namespace
+
+template class WorkletThreadHolder<OfflineAudioWorkletThread>;
 
 OfflineAudioWorkletThread::OfflineAudioWorkletThread(
     WorkerReportingProxy& worker_reporting_proxy)
@@ -28,14 +40,15 @@ OfflineAudioWorkletThread::OfflineAudioWorkletThread(
   // OfflineAudioWorkletThread always uses a NORMAL priority thread.
   params.thread_priority = base::ThreadPriority::NORMAL;
 
-  if (++s_ref_count_ == 1) {
+  if (++ref_count == 1) {
     EnsureSharedBackingThread(params);
   }
 }
 
 OfflineAudioWorkletThread::~OfflineAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0) {
+  DCHECK_GT(ref_count, 0);
+  if (--ref_count == 0) {
     ClearSharedBackingThread();
   }
 }
@@ -45,15 +58,9 @@ WorkerBackingThread& OfflineAudioWorkletThread::GetWorkerBackingThread() {
       ->GetThread();
 }
 
-void OfflineAudioWorkletThread::EnsureSharedBackingThread(
-    const ThreadCreationParams& params) {
-  DCHECK(IsMainThread());
-  WorkletThreadHolder<OfflineAudioWorkletThread>::EnsureInstance(params);
-}
-
 void OfflineAudioWorkletThread::ClearSharedBackingThread() {
   DCHECK(IsMainThread());
-  CHECK_EQ(s_ref_count_, 0);
+  CHECK_EQ(ref_count, 0);
   WorkletThreadHolder<OfflineAudioWorkletThread>::ClearInstance();
 }
 

@@ -12,9 +12,21 @@
 
 namespace blink {
 
-template class WorkletThreadHolder<RealtimeAudioWorkletThread>;
+namespace {
 
-int RealtimeAudioWorkletThread::s_ref_count_ = 0;
+// Use for ref-counting of all RealtimeAudioWorkletThread instances in a
+// process. Incremented by the constructor and decremented by destructor.
+static int ref_count = 0;
+
+static void EnsureSharedBackingThread(const ThreadCreationParams& params) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(ref_count, 1);
+  WorkletThreadHolder<RealtimeAudioWorkletThread>::EnsureInstance(params);
+}
+
+}  // namespace
+
+template class WorkletThreadHolder<RealtimeAudioWorkletThread>;
 
 RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
     WorkerReportingProxy& worker_reporting_proxy)
@@ -42,14 +54,15 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
                  "RealtimeAudioWorkletThread() - NORMAL");
   }
 
-  if (++s_ref_count_ == 1) {
+  if (++ref_count == 1) {
     EnsureSharedBackingThread(params);
   }
 }
 
 RealtimeAudioWorkletThread::~RealtimeAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0) {
+  DCHECK_GT(ref_count, 0);
+  if (--ref_count == 0) {
     ClearSharedBackingThread();
   }
 }
@@ -59,15 +72,9 @@ WorkerBackingThread& RealtimeAudioWorkletThread::GetWorkerBackingThread() {
       ->GetThread();
 }
 
-void RealtimeAudioWorkletThread::EnsureSharedBackingThread(
-    const ThreadCreationParams& params) {
-  DCHECK(IsMainThread());
-  WorkletThreadHolder<RealtimeAudioWorkletThread>::EnsureInstance(params);
-}
-
 void RealtimeAudioWorkletThread::ClearSharedBackingThread() {
   DCHECK(IsMainThread());
-  CHECK_EQ(s_ref_count_, 0);
+  CHECK_EQ(ref_count, 0);
   WorkletThreadHolder<RealtimeAudioWorkletThread>::ClearInstance();
 }
 

@@ -12,7 +12,6 @@
 namespace blink {
 
 class WorkerReportingProxy;
-struct ThreadCreationParams;
 
 // RealtimeAudioWorkletThread is a per-AudioWorkletGlobalScope object that has
 // a reference count to the backing thread that performs AudioWorklet tasks.
@@ -26,7 +25,6 @@ class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
   WorkerBackingThread& GetWorkerBackingThread() final;
   void ClearWorkerBackingThread() final {}
 
-  static void EnsureSharedBackingThread(const ThreadCreationParams&);
   static void ClearSharedBackingThread();
 
  private:
@@ -36,10 +34,6 @@ class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
   ThreadType GetThreadType() const final {
     return ThreadType::kRealtimeAudioWorkletThread;
   }
-
-  // Use for ref-counting of all RealtimeAudioWorkletThread instances in a
-  // process. Incremented by the constructor and decremented by destructor.
-  static int s_ref_count_;
 };
 
 }  // namespace blink
