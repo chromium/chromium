@@ -220,7 +220,7 @@ void ExtensionTelemetryService::Shutdown() {
     active_report_ = CreateReport();
     std::string write_string;
     active_report_->SerializeToString(&write_string);
-    persister_->WriteReport(std::move(write_string));
+    persister_->WriteReportDuringShutdown(std::move(write_string));
   }
   timer_.Stop();
   pref_change_registrar_.RemoveAll();

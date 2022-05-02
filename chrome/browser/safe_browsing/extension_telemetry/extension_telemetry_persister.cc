@@ -74,7 +74,7 @@ void ExtensionTelemetryPersister::PersisterInit() {
 }
 
 void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
-  if (initialization_complete_) {
+  if (initialization_complete_ && !is_shut_down_) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ExtensionTelemetryPersister::SaveFile,
@@ -82,9 +82,21 @@ void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
   }
 }
 
+void ExtensionTelemetryPersister::WriteReportDuringShutdown(
+    const std::string write_string) {
+  if (initialization_complete_ && !is_shut_down_) {
+    is_shut_down_ = true;
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ExtensionTelemetryPersister::SaveFileDuringShutdown,
+                       std::move(write_string), dir_path_, write_index_));
+  }
+}
+
 void ExtensionTelemetryPersister::ReadReport(
     base::OnceCallback<void(std::string, bool)> callback) {
-  if (initialization_complete_ && read_index_ > kInitialReadIndex) {
+  if (initialization_complete_ && read_index_ > kInitialReadIndex &&
+      !is_shut_down_) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ExtensionTelemetryPersister::LoadFile,
@@ -116,6 +128,21 @@ void ExtensionTelemetryPersister::InitHelper() {
   }
   initialization_complete_ = true;
   RecordNumberOfFilesInCacheOnStartup(read_index_ + 1);
+}
+
+// Static
+void ExtensionTelemetryPersister::SaveFileDuringShutdown(
+    std::string write_string,
+    base::FilePath dir_path,
+    int write_index) {
+  // If the persister directory does not exist the persister
+  // will not write.
+  if (!base::DirectoryExists(dir_path))
+    return;
+  base::FilePath path = dir_path.AppendASCII(
+      ("CRXTelemetry_" + base::NumberToString(write_index)));
+  bool success = base::WriteFile(path, write_string);
+  RecordWriteResult(success);
 }
 
 void ExtensionTelemetryPersister::SaveFile(std::string write_string) {

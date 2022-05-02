@@ -37,6 +37,11 @@ class ExtensionTelemetryPersister {
   // exposed to the caller and is determined by `write_index_`.
   void WriteReport(const std::string write_string);
 
+  // Caller should use this method exactly once to write a telemetry report to
+  // disk during Chrome/Profile shutdown. The persister object should not be
+  // used after calling this method and should be destroyed.
+  void WriteReportDuringShutdown(const std::string write_string);
+
   // Reads a telemetry report from a file on disk. The file is deleted
   // regardless of if the read was successful or not. The filename
   // is not exposed to the caller. The callback passes back the result
@@ -54,6 +59,15 @@ class ExtensionTelemetryPersister {
 
   // Writes data to the file represented by `write_index_`.
   void SaveFile(std::string write_string);
+
+  // Writes data during a profile or Chrome shutdown. Persister
+  // tasks run on the threadpool but it's destructor runs on the
+  // main UI thread. This function is static to prevent threading
+  // errors when the persister's destructor and posted task execute
+  // at the same time but on different threads.
+  static void SaveFileDuringShutdown(std::string write_string,
+                                     base::FilePath dir_path,
+                                     int write_index);
 
   // Reads data from the file represented by `read_index_`.
   void LoadFile(base::OnceCallback<void(std::string, bool)> callback);
@@ -82,6 +96,10 @@ class ExtensionTelemetryPersister {
   // Ensures write and read operations are not called before the
   // persister is done initializing.
   bool initialization_complete_ = false;
+
+  // Ensures once the persister has run it's shutdown write function
+  // the persister will not post any other tasks.
+  bool is_shut_down_ = false;
 
   // Task runner for read and write operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
