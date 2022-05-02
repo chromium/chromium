@@ -6,7 +6,7 @@ import {CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver,
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setSelectedImageAction} from './wallpaper_actions.js';
-import {getDailyRefreshCollectionId} from './wallpaper_controller.js';
+import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 let instance: WallpaperObserver|null = null;
@@ -62,7 +62,7 @@ export class WallpaperObserver implements WallpaperObserverInterface {
     }
     store.dispatch(setSelectedImageAction(currentWallpaper));
     // Daily Refresh state should also get updated when wallpaper changes.
-    getDailyRefreshCollectionId(getWallpaperProvider(), store);
+    getDailyRefreshState(getWallpaperProvider(), store);
   }
 
   static shutdown() {

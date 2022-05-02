@@ -21,7 +21,7 @@ import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
-import {getDailyRefreshCollectionId, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
+import {getDailyRefreshState, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
 
@@ -167,7 +167,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
             state.wallpaper.dailyRefresh.id :
             null);
     this.updateFromStore();
-    getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
+    getDailyRefreshState(this.wallpaperProvider_, this.getStore());
   }
 
 

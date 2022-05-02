@@ -320,18 +320,39 @@ export async function setDailyRefreshCollectionId(
     store: PersonalizationStore): Promise<void> {
   await provider.setDailyRefreshCollectionId(collectionId);
   // Dispatch action to highlight enabled daily refresh.
-  getDailyRefreshCollectionId(provider, store);
+  getDailyRefreshState(provider, store);
+}
+
+export async function selectGooglePhotosAlbum(
+    albumId: GooglePhotosAlbum['id'], provider: WallpaperProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  await provider.selectGooglePhotosAlbum(albumId);
+  // Dispatch action to highlight enabled daily refresh.
+  getDailyRefreshState(provider, store);
 }
 
 /**
- * Get the daily refresh collection id. It can be empty if daily refresh is not
- * enabled.
+ * Get the currently active daily refresh id for Backdrop and Google Photos.
+ * One or both will be empty, depending on which, if either, is enabled.
  */
-export async function getDailyRefreshCollectionId(
+export async function getDailyRefreshState(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const {collectionId} = await provider.getDailyRefreshCollectionId();
-  store.dispatch(action.setDailyRefreshCollectionIdAction(collectionId));
+  const [{collectionId}, {albumId}] = await Promise.all([
+    provider.getDailyRefreshCollectionId(),
+    provider.getGooglePhotosDailyRefreshAlbumId()
+  ]);
+
+  // Daily refresh should only be active for either Backdrop or Google Photos
+  assert(!collectionId || !albumId);
+
+  if (collectionId) {
+    store.dispatch(action.setDailyRefreshCollectionIdAction(collectionId));
+  } else if (albumId) {
+    store.dispatch(action.setGooglePhotosDailyRefreshAlbumIdAction(albumId));
+  } else {
+    store.dispatch(action.clearDailyRefreshAction());
+  }
 }
 
 /** Refresh the wallpaper. Noop if daily refresh is not enabled. */

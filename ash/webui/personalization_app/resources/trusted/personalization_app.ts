@@ -97,7 +97,7 @@ export {LocalImages} from './wallpaper/local_images_element.js';
 
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollections} from './wallpaper/wallpaper_collections_element.js';
-export {cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchLocalData, getDailyRefreshCollectionId, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
+export {cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchLocalData, getDailyRefreshState, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperError} from './wallpaper/wallpaper_error_element.js';
 export {WallpaperFullscreen} from './wallpaper/wallpaper_fullscreen_element.js';
 export {WallpaperGridItem} from './wallpaper/wallpaper_grid_item_element.js';
