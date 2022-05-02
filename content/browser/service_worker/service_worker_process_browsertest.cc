@@ -124,8 +124,15 @@ class ServiceWorkerProcessBrowserTest
 
 // Tests that a service worker started due to a navigation shares the same
 // process as the navigation.
+// Flaky on Android; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServiceWorkerAndPageShareProcess \
+  DISABLED_ServiceWorkerAndPageShareProcess
+#else
+#define MAYBE_ServiceWorkerAndPageShareProcess ServiceWorkerAndPageShareProcess
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
-                       ServiceWorkerAndPageShareProcess) {
+                       MAYBE_ServiceWorkerAndPageShareProcess) {
   // Register the service worker.
   RegisterServiceWorker();
 
