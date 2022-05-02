@@ -234,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "enhancedNetworkVoices", "dictationCommands", "dictationHints" , "googleTtsLanguagePacks"],
+        "enum": [ "enhancedNetworkVoices", "googleTtsLanguagePacks"],
         "description": "Subset of accessibility features."
       },
       {

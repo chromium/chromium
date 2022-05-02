@@ -34,8 +34,6 @@ export const HintContext = {
  */
 export class UIController {
   constructor() {
-    /** @private {boolean} */
-    this.enabled_ = false;
     /** @private {?number} */
     this.showHintsTimeoutId_ = null;
   }
@@ -48,10 +46,6 @@ export class UIController {
    *     opt_properties
    */
   setState(state, opt_properties) {
-    if (!this.enabled_) {
-      return;
-    }
-
     const props = opt_properties || {};
     const {text, context} = props;
     // Whenever the UI state changes, we should clear the hint timeout.
@@ -87,11 +81,6 @@ export class UIController {
     const hints = UIController.GetHintsForContext_(context);
     this.showHintsTimeoutId_ =
         setTimeout(() => this.showHints_(hints), UIController.HINT_TIMEOUT_MS_);
-  }
-
-  /** @param {boolean} enabled */
-  setEnabled(enabled) {
-    this.enabled_ = enabled;
   }
 
   /** @private */

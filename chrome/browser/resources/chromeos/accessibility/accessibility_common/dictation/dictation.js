@@ -29,12 +29,6 @@ export class Dictation {
     /** @private {SpeechParser} */
     this.speechParser_ = null;
 
-    /** @private {boolean} */
-    this.commandsFeatureEnabled_ = false;
-
-    /** @private {boolean} */
-    this.hintsFeatureEnabled_ = false;
-
     /** @private {string} */
     this.localePref_ = '';
 
@@ -80,6 +74,9 @@ export class Dictation {
         new InputController(() => this.stopDictation_(/*notify=*/ true));
     this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
+    if (this.localePref_) {
+      this.speechParser_.initialize(this.localePref_);
+    }
 
     // Set default speech recognition properties. Locale will be updated when
     // `updateFromPrefs_` is called.
@@ -104,29 +101,6 @@ export class Dictation {
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         activated => this.onToggleDictation_(activated));
-
-    this.checkEnabledFeatures_();
-  }
-
-  /** @private */
-  checkEnabledFeatures_() {
-    const commandsFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS;
-    const hintsFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_HINTS;
-
-    chrome.accessibilityPrivate.isFeatureEnabled(commandsFeature, (result) => {
-      this.commandsFeatureEnabled_ = result;
-      if (this.commandsFeatureEnabled_ && this.localePref_) {
-        this.speechParser_.setCommandsEnabled(this.localePref_);
-      }
-      if (this.commandsFeatureEnabled_) {
-        chrome.accessibilityPrivate.isFeatureEnabled(hintsFeature, (result) => {
-          this.hintsFeatureEnabled_ = result;
-          this.uiController_.setEnabled(this.hintsFeatureEnabled_);
-        });
-      }
-    });
   }
 
   /**
@@ -193,10 +167,8 @@ export class Dictation {
     // Clear any timeouts.
     this.clearTimeoutIds_();
 
-    if (this.commandsFeatureEnabled_) {
-      this.inputController_.commitText(this.interimText_);
-      this.hideCommandsUI_();
-    }
+    this.inputController_.commitText(this.interimText_);
+    this.hideCommandsUI_();
     this.inputController_.disconnect();
     Dictation.removeAsInputMethod();
 
@@ -252,13 +224,7 @@ export class Dictation {
     this.inputController_.setCurrentComposition(transcript);
 
     if (!isFinal) {
-      if (this.commandsFeatureEnabled_) {
-        this.setInterimText_(transcript);
-      } else if (!this.chromeVoxEnabled_) {
-        // When ChromeVox is enabled, we shouldn't display interim
-        // composition results because it will increase the verbosity too much.
-        this.inputController_.displayCurrentComposition();
-      }
+      this.setInterimText_(transcript);
       return;
     }
 
@@ -357,9 +323,7 @@ export class Dictation {
             this.speechRecognitionOptions_.locale =
                 /** @type {string} */ (pref.value);
             this.localePref_ = this.speechRecognitionOptions_.locale;
-            if (this.commandsFeatureEnabled_) {
-              this.speechParser_.setCommandsEnabled(this.localePref_);
-            }
+            this.speechParser_.initialize(this.localePref_);
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:
@@ -381,10 +345,6 @@ export class Dictation {
    * @private
    */
   setInterimText_(text) {
-    if (!this.commandsFeatureEnabled_) {
-      return;
-    }
-
     // TODO(crbug.com/1252037): Need to find a way to show interim text that is
     // only whitespace. Google Cloud Speech can return a newline character
     // although SODA does not seem to do that. The newline character looks wrong
@@ -398,10 +358,6 @@ export class Dictation {
    * @private
    */
   clearInterimText_() {
-    if (!this.commandsFeatureEnabled_) {
-      return;
-    }
-
     this.interimText_ = '';
     this.uiController_.setState(UIState.STANDBY);
   }
@@ -414,10 +370,6 @@ export class Dictation {
    * @private
    */
   showMacroExecuted_(macro, transcript) {
-    if (!this.commandsFeatureEnabled_) {
-      return;
-    }
-
     MetricsUtils.recordMacroSucceeded(macro);
 
     if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
@@ -446,10 +398,6 @@ export class Dictation {
    * @private
    */
   showMacroExecutionFailed_(macro, transcript) {
-    if (!this.commandsFeatureEnabled_) {
-      return;
-    }
-
     MetricsUtils.recordMacroFailed(macro);
 
     this.interimText_ = '';
@@ -465,10 +413,6 @@ export class Dictation {
    * @private
    */
   hideCommandsUI_() {
-    if (!this.commandsFeatureEnabled_) {
-      return;
-    }
-
     this.interimText_ = '';
     this.uiController_.setState(UIState.HIDDEN);
   }

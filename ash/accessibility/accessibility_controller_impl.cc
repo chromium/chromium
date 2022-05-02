@@ -2317,11 +2317,8 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       UpdateAccessibilityHighlightingFromPrefs();
       break;
     case FeatureType::kDictation:
-      if (enabled &&
-          ::features::IsExperimentalAccessibilityDictationCommandsEnabled()) {
+      if (enabled) {
         if (!dictation_bubble_controller_) {
-          // The Dictation bubble is hidden behind a flag; only create the
-          // controller if the flag is enabled.
           dictation_bubble_controller_ =
               std::make_unique<DictationBubbleController>();
         }

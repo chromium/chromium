@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/accessibility/accessibility_features.h"
 
 namespace ash {
 
@@ -27,8 +26,6 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationCommands);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
@@ -95,9 +92,6 @@ class DictationBubbleControllerTest : public AshTestBase {
   std::vector<std::u16string> GetVisibleHints() {
     return GetView()->GetVisibleHintsForTesting();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DictationBubbleControllerTest, ShowText) {

@@ -4792,16 +4792,6 @@ const char kExoLockNotificationDescription[] =
     "Show a notification bubble once an application has switched to "
     "non-immersive fullscreen mode or obtained pointer lock.";
 
-const char kExperimentalAccessibilityDictationCommandsName[] =
-    "Experimental accessibility dictation commands";
-const char kExperimentalAccessibilityDictationCommandsDescription[] =
-    "Enables text editing commands for the accessibility dictation feature.";
-
-const char kExperimentalAccessibilityDictationHintsName[] =
-    "Experimental accessibility dictation UI hints.";
-const char kExperimentalAccessibilityDictationHintsDescription[] =
-    "Enables UI hints for the accessibility dictation feature.";
-
 const char kExperimentalAccessibilityDictationWithPumpkinName[] =
     "Experimental accessibility dictation using the pumpkin semantic parser.";
 const char kExperimentalAccessibilityDictationWithPumpkinDescription[] =

@@ -763,10 +763,6 @@ void AccessibilitySection::AddLoadTimeData(
       "isMagnifierContinuousMouseFollowingModeSettingEnabled",
       IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
-  html_source->AddBoolean(
-      "isDictationCommandsFeatureEnabled",
-      ::features::IsExperimentalAccessibilityDictationCommandsEnabled());
-
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 

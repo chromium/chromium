@@ -290,15 +290,6 @@ Polymer({
     },
 
     /** @private */
-    isDictationCommandsFeatureEnabled_: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.getBoolean('isDictationCommandsFeatureEnabled');
-      }
-    },
-
-    /** @private */
     dictationLearnMoreUrl_: {
       type: String,
       value: 'https://support.google.com/chromebook?p=text_dictation_m100',

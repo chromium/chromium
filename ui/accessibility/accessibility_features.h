@@ -97,21 +97,6 @@ AX_BASE_EXPORT bool IsDockedMagnifierResizingEnabled();
 
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
-// Enables text-editing commands in the dictation.
-AX_BASE_EXPORT extern const base::Feature
-    kExperimentalAccessibilityDictationCommands;
-
-// Returns true if the expeirmental accessibility feature to enable dictation
-// text editing commands is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationCommandsEnabled();
-
-// Enables accessibility Dictation UI hints.
-AX_BASE_EXPORT extern const base::Feature
-    kExperimentalAccessibilityDictationHints;
-
-// Returns true if experimental accessibility dictation hints is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationHintsEnabled();
-
 // Enables accessibility Dictation with the pumpkin semantic parser.
 AX_BASE_EXPORT extern const base::Feature
     kExperimentalAccessibilityDictationWithPumpkin;

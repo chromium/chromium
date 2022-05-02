@@ -2736,12 +2736,6 @@ extern const char kExoPointerLockDescription[];
 extern const char kExoLockNotificationName[];
 extern const char kExoLockNotificationDescription[];
 
-extern const char kExperimentalAccessibilityDictationCommandsName[];
-extern const char kExperimentalAccessibilityDictationCommandsDescription[];
-
-extern const char kExperimentalAccessibilityDictationHintsName[];
-extern const char kExperimentalAccessibilityDictationHintsDescription[];
-
 extern const char kExperimentalAccessibilityDictationWithPumpkinName[];
 extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
 

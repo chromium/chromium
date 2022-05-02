@@ -85,7 +85,6 @@ DictationUIE2ETest.PRINT_ERROR_MESSAGE_DELAY_MS = 3.5 * 1000;
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'ShownWhenSpeechRecognitionStarts', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,
@@ -95,7 +94,6 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'DisplaysInterimSpeechResults', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       // Send an interim speech result.
       this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
@@ -108,7 +106,6 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
-  await this.waitForDictationWithCommandsAndHints();
   await this.toggleDictationAndStartListening(1);
   // Perform a command.
   this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
@@ -123,7 +120,6 @@ SYNC_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
 SYNC_TEST_F(
     'DictationUIE2ETest', 'ResetsToStandbyModeAfterFinalSpeechResult',
     async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,
@@ -148,7 +144,6 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'HiddenWhenDictationDeactivates', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,
@@ -160,7 +155,6 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
-  await this.waitForDictationWithCommandsAndHints();
   await this.toggleDictationAndStartListening(1);
   await this.waitForUIProperties({
     visible: true,
@@ -176,7 +170,6 @@ SYNC_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'HintsShownWhenTextCommitted', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,
@@ -204,7 +197,6 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterTextSelected', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,
@@ -233,7 +225,6 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterCommandExecuted', async function() {
-      await this.waitForDictationWithCommandsAndHints();
       await this.toggleDictationAndStartListening(1);
       await this.waitForUIProperties({
         visible: true,

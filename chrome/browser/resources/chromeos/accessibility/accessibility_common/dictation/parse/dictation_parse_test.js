@@ -14,7 +14,7 @@ DictationParseTest = class extends DictationE2ETestBase {
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
 SYNC_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
-  await this.waitForDictationWithCommands();
+  await this.waitForDictationModule();
   const strategy = this.getInputTextStrategy();
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
@@ -28,7 +28,7 @@ SYNC_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
 // Tests that the SimpleParseStrategy returns the correct type of Macro given
 // speech input.
 SYNC_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
-  await this.waitForDictationWithCommands();
+  await this.waitForDictationModule();
   const strategy = this.getSimpleParseStrategy();
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
@@ -70,7 +70,7 @@ SYNC_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
 // arg, enable_pumpkin_for_dictation, is set to true.
 SYNC_TEST_F(
     'DictationParseTest', 'DISABLED_PumpkinDeleteCommand', async function() {
-      await this.waitForDictationWithCommands();
+      await this.waitForDictationModule();
       const strategy = this.getPumpkinParseStrategy();
       if (!strategy) {
         return;

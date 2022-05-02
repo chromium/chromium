@@ -694,18 +694,9 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::IsEnhancedNetworkVoicesEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_DICTATIONCOMMANDS:
-      enabled =
-          ::features::IsExperimentalAccessibilityDictationCommandsEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_GOOGLETTSLANGUAGEPACKS:
       enabled = ::features::
           IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_DICTATIONHINTS:
-      enabled = ::features::IsExperimentalAccessibilityDictationHintsEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
@@ -812,9 +803,6 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
-  if (!::features::IsExperimentalAccessibilityDictationCommandsEnabled())
-    return RespondNow(Error("Dictation commands feature is disabled."));
-
   std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
       accessibility_private::UpdateDictationBubble::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);

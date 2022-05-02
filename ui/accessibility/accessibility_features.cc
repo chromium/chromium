@@ -120,24 +120,6 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
-const base::Feature kExperimentalAccessibilityDictationCommands{
-    "ExperimentalAccessibilityDictationCommands",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilityDictationCommandsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationCommands);
-}
-
-const base::Feature kExperimentalAccessibilityDictationHints{
-    "ExperimentalAccessibilityDictationHints",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilityDictationHintsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationHints);
-}
-
 const base::Feature kExperimentalAccessibilityDictationWithPumpkin{
     "ExperimentalAccessibilityDictationWithPumpkin",
     base::FEATURE_DISABLED_BY_DEFAULT};

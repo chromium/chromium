@@ -128,32 +128,11 @@ export class InputController {
   }
 
   /**
-   * TODO(crbug.com/1247299): Remove this unused method once Dictation commands
-   * are successfully launched.
-   * Displays current composition text for the current IME context.
-   */
-  displayCurrentComposition() {
-    if (!this.isActive()) {
-      return;
-    }
-
-    // Set the composition text for interim results.
-    // Later we will do this in Chrome OS UI so that if the
-    // result will become a command it will not appear and
-    // disappear from the composition text.
-    chrome.input.ime.setComposition({
-      contextID: this.activeImeContextId_,
-      cursor: this.currentComposition_.length,
-      text: this.currentComposition_
-    });
-  }
-
-  /**
    * Commits the given text to the active IME context.
    * @param {string} text The text to commit
    */
   commitText(text) {
-    if (!this.isActive()) {
+    if (!this.isActive() || !text) {
       return;
     }
 

@@ -38,12 +38,6 @@ class AccessibilityPrivateApiTest
 
  protected:
   // ExtensionApiTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationCommands);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     dictation_bubble_test_helper_ =
@@ -60,7 +54,6 @@ class AccessibilityPrivateApiTest
 
  private:
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {

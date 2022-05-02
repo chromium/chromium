@@ -34,8 +34,8 @@ DictationE2ETestBase = class extends E2ETestBase {
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-    this.lastSetTimeoutCallback = null;
-    this.lastSetDelay = -1;
+    /** @private {!Array<Object{delay: number, callback: Function}} */
+    this.setTimeoutData_ = [];
 
     this.commandStrings = {
       DELETE_PREV_CHAR: 'delete',
@@ -87,19 +87,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kExperimentalAccessibilityDictationHints',
-        'features::kExperimentalAccessibilityDictationCommands',
-      ]
-    };
-  }
-
-  /**
-   * Waits for Dictation module to be loaded.
-   */
+  /** Waits for Dictation module to be loaded. */
   async waitForDictationModule() {
     await importModule(
         'Dictation', '/accessibility_common/dictation/dictation.js');
@@ -108,6 +96,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     await new Promise(resolve => {
       chrome.accessibilityFeatures.dictation.set({value: true}, resolve);
     });
+    await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
     return new Promise(resolve => {
       resolve();
     });
@@ -202,37 +191,25 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 
   mockSetTimeoutMethod() {
     setTimeout = (callback, delay) => {
-      this.lastSetTimeoutCallback = callback;
-      this.lastSetDelay = delay;
+      // setTimeout can be called from several different sources, so track
+      // them using an Array.
+      this.setTimeoutData_.push({delay, callback});
     };
   }
 
-  /**
-   * Enables commands feature for testing.
-   */
-  setCommandsEnabledForTest(enabled) {
-    this.mockAccessibilityPrivate.enableFeatureForTest(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        enabled);
+  /** @return {?Function} */
+  getCallbackWithDelay(delay) {
+    for (const data of this.setTimeoutData_) {
+      if (data.delay === delay) {
+        return data.callback;
+      }
+    }
+
+    return null;
   }
 
-  /** Enables hints feature for testing. */
-  setHintsEnabledForTest(enabled) {
-    this.mockAccessibilityPrivate.enableFeatureForTest(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
-        enabled);
-  }
-
-  /**
-   * Checks that the latest IME composition parameters match the expected
-   * values.
-   * @param {string} text
-   * @param {number} contextID
-   */
-  assertImeCompositionParameters(text, contextID) {
-    assertEquals(text, this.mockInputIme.getLastCompositionParameters().text);
-    assertEquals(
-        contextID, this.mockInputIme.getLastCompositionParameters().contextID);
+  clearSetTimeoutData() {
+    this.setTimeoutData_ = [];
   }
 
   /**
@@ -248,38 +225,6 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     assertEquals(text, this.mockInputIme.getLastCommittedParameters().text);
     assertEquals(
         contextID, this.mockInputIme.getLastCommittedParameters().contextID);
-  }
-
-  /** Sets up Dictation with commands enabled. */
-  async waitForDictationWithCommands() {
-    await this.waitForDictationModule();
-    await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-    this.setCommandsEnabledForTest(true);
-    this.mockAccessibilityPrivate.isFeatureEnabled(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        (enabled) => {
-          assertTrue(enabled);
-        });
-    accessibilityCommon.dictation_.initialize_();
-  }
-
-  /** Sets up Dictation with commands and hints enabled. */
-  async waitForDictationWithCommandsAndHints() {
-    await this.waitForDictationModule();
-    await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-    this.setCommandsEnabledForTest(true);
-    this.setHintsEnabledForTest(true);
-    this.mockAccessibilityPrivate.isFeatureEnabled(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        (enabled) => {
-          assertTrue(enabled);
-        });
-    this.mockAccessibilityPrivate.isFeatureEnabled(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
-        (enabled) => {
-          assertTrue(enabled);
-        });
-    accessibilityCommon.dictation_.initialize_();
   }
 
   /** @return {InputTextStrategy} */

@@ -193,27 +193,15 @@
     label="$i18n{onScreenKeyboardLabel}"
     deep-link-focus-id$="[[Setting.kOnScreenKeyboard]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isDictationCommandsFeatureEnabled_]]">
-  <settings-toggle-button
-      id="enableDictation"
-      class="hr"
-      pref="{{prefs.settings.a11y.dictation}}"
-      label="$i18n{dictationLabel}"
-      sub-label="[[dictationSubtitle_]]"
-      deep-link-focus-id$="[[Setting.kDictation]]"
-      learn-more-url="[[dictationLearnMoreUrl_]]">
-  </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[!isDictationCommandsFeatureEnabled_]]">
-  <settings-toggle-button
-        id="enableDictation"
-        class="hr"
-        pref="{{prefs.settings.a11y.dictation}}"
-        label="$i18n{dictationLabel}"
-        sub-label="[[dictationSubtitle_]]"
-        deep-link-focus-id$="[[Setting.kDictation]]">
-  </settings-toggle-button>
-</template>
+<settings-toggle-button
+    id="enableDictation"
+    class="hr"
+    pref="{{prefs.settings.a11y.dictation}}"
+    label="$i18n{dictationLabel}"
+    sub-label="[[dictationSubtitle_]]"
+    deep-link-focus-id$="[[Setting.kDictation]]"
+    learn-more-url="[[dictationLearnMoreUrl_]]">
+</settings-toggle-button>
 <template is="dom-if" if="[[prefs.settings.a11y.dictation.value]]">
   <div class="settings-box continuation indented">
     <div class="flex start settings-box-text" id="labelWrapper">

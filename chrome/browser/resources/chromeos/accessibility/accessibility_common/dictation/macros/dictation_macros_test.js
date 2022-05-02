@@ -12,7 +12,7 @@ DictationMacrosTest = class extends DictationE2ETestBase {
 };
 
 SYNC_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
-  await this.waitForDictationWithCommands();
+  await this.waitForDictationModule();
   // Toggle Dictation on so that the Macro will be runnable.
   this.toggleDictationOn(1);
   const macro = await this.getInputTextStrategy().parse('Hello world');
@@ -29,7 +29,7 @@ SYNC_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
 
 SYNC_TEST_F(
     'DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
-      await this.waitForDictationWithCommands();
+      await this.waitForDictationModule();
       await importModule(
           'MacroError', '/accessibility_common/dictation/macros/macro.js');
       // Do not toggle Dictation. The resulting macro will not be able to run.
@@ -45,7 +45,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
-  await this.waitForDictationWithCommands();
+  await this.waitForDictationModule();
   // DELETE_PREV_CHAR is one of many RepeatableKeyPressMacros.
   const macro = await this.getSimpleParseStrategy().parse('delete');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
@@ -59,7 +59,7 @@ SYNC_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
 });
 
 SYNC_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
-  await this.waitForDictationWithCommands();
+  await this.waitForDictationModule();
   this.toggleDictationOn(1);
   const macro = await this.getSimpleParseStrategy().parse('help');
   assertEquals('LIST_COMMANDS', macro.getMacroNameString());

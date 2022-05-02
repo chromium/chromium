@@ -20,11 +20,6 @@ var MockAccessibilityPrivate = {
     SOLID: 'solid',
   },
 
-  AccessibilityFeature: {
-    DICTATION_COMMANDS: 'dictation_commands',
-    DICTATION_HINTS: 'dictation_hints',
-  },
-
   DictationBubbleIconType: {
     HIDDEN: 'hidden',
     STANDBY: 'standby',
