@@ -253,6 +253,8 @@ def _FindTestCases():
 
 
 class GpuTestExpectationsValidation(unittest.TestCase):
+  maxDiff = None
+
   def testNoConflictsInGpuTestExpectations(self):
     webgl_conformance_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
