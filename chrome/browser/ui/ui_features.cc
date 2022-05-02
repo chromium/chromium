@@ -87,14 +87,17 @@ const base::Feature kQuickCommands{"QuickCommands",
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 // Enables the side search feature for Google Search. Presents recent Google
-// search results in a browser side panel (crbug.com/1242730).
+// search results in a browser side panel.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enable by default as the ChromeOS iteration of Side Search has launched (See
+// crbug.com/1242730).
+const base::Feature kSideSearch{"SideSearch", base::FEATURE_ENABLED_BY_DEFAULT};
+#else
+// Disable by default on remaining desktop platforms until desktop UX has
+// launched (See crbug.com/1279696).
 const base::Feature kSideSearch{"SideSearch",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether the side contents for all tabs in a given window are cleared
-// away when the side panel is closed.
-const base::Feature kSideSearchClearCacheWhenClosed{
-    "SideSearchClearCacheWhenClosed", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kSideSearchFeedback{"SideSearchFeedback",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

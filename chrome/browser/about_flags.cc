@@ -8057,11 +8057,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearch)},
 
-    {"side-search-clear-cache-when-closed",
-     flag_descriptions::kSideSearchClearCacheWhenClosedName,
-     flag_descriptions::kSideSearchClearCacheWhenClosedDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSideSearchClearCacheWhenClosed)},
-
     {"side-search-dse-support", flag_descriptions::kSideSearchDSESupportName,
      flag_descriptions::kSideSearchDSESupportDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchDSESupport)},

@@ -69,7 +69,6 @@ extern const base::Feature kSidePanelJourneys;
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 extern const base::Feature kSideSearch;
-extern const base::Feature kSideSearchClearCacheWhenClosed;
 extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchDSESupport;
 extern const base::Feature kClobberAllSideSearchSidePanels;

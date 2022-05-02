@@ -5462,11 +5462,6 @@
     "expiry_milestone" : 104
   },
   {
-    "name" : "side-search-clear-cache-when-closed",
-    "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 104
-  },
-  {
     "name" : "side-search-dse-support",
     "owners": [ "chrome-cros@google.com", "tluk" ],
     "expiry_milestone" : 104

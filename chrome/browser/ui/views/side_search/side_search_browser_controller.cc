@@ -483,8 +483,7 @@ void SideSearchBrowserController::CloseSidePanel(
   UpdateSidePanel();
 
   // Clear the side contents for the currently active tab.
-  if (base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed))
-    ClearSideContentsCacheForActiveTab();
+  ClearSideContentsCacheForActiveTab();
 }
 
 void SideSearchBrowserController::ClobberAllInCurrentBrowser() {

@@ -3357,9 +3357,6 @@ extern const char kPaintPreviewStartupDescription[];
 extern const char kSideSearchName[];
 extern const char kSideSearchDescription[];
 
-extern const char kSideSearchClearCacheWhenClosedName[];
-extern const char kSideSearchClearCacheWhenClosedDescription[];
-
 extern const char kSideSearchDSESupportName[];
 extern const char kSideSearchDSESupportDescription[];
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)

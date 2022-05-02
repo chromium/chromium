@@ -5816,11 +5816,6 @@ const char kSideSearchDescription[] =
     "Enables an easily accessible way to access your most recent Google search "
     "results page embedded in a browser side panel";
 
-const char kSideSearchClearCacheWhenClosedName[] =
-    "Side search clear cache when closed";
-const char kSideSearchClearCacheWhenClosedDescription[] =
-    "Clears the side search cache when the side panel is closed.";
-
 const char kSideSearchDSESupportName[] = "Side search DSE support";
 const char kSideSearchDSESupportDescription[] =
     "Side search with support for participating chrome search engines.";
