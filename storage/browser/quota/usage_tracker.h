@@ -69,6 +69,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void GetHostUsageWithBreakdown(const std::string& host,
                                  UsageWithBreakdownCallback callback);
 
+  // Requests bucket usage from each registered client. Returns cached bucket
+  // usage if one exists for a bucket.
+  void GetBucketUsageWithBreakdown(const BucketLocator& bucket,
+                                   UsageWithBreakdownCallback callback);
+
   // Updates usage for `bucket` in the ClientUsageTracker for `client_type`.
   void UpdateBucketUsageCache(QuotaClientType client_type,
                               const BucketLocator& bucket,
@@ -119,16 +124,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
                                    AccumulateInfo* info,
                                    int64_t total_usage,
                                    int64_t unlimited_usage);
-  void AccumulateClientHostUsage(base::OnceClosure barrier_callback,
-                                 AccumulateInfo* info,
-                                 const std::string& host,
-                                 QuotaClientType client,
-                                 int64_t total_usage,
-                                 int64_t unlimited_usage);
+  void AccumulateClientUsageWithBreakdown(base::OnceClosure barrier_callback,
+                                          AccumulateInfo* info,
+                                          QuotaClientType client,
+                                          int64_t total_usage,
+                                          int64_t unlimited_usage);
 
   void FinallySendGlobalUsage(std::unique_ptr<AccumulateInfo> info);
   void FinallySendHostUsageWithBreakdown(std::unique_ptr<AccumulateInfo> info,
                                          const std::string& host);
+  void FinallySendBucketUsageWithBreakdown(std::unique_ptr<AccumulateInfo> info,
+                                           const BucketLocator& bucket);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -143,6 +149,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   std::vector<UsageCallback> global_usage_callbacks_;
   std::map<std::string, std::vector<UsageWithBreakdownCallback>>
       host_usage_callbacks_;
+  std::map<BucketLocator, std::vector<UsageWithBreakdownCallback>>
+      bucket_usage_callbacks_;
 
   base::WeakPtrFactory<UsageTracker> weak_factory_{this};
 };

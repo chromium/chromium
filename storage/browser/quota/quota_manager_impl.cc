@@ -1636,6 +1636,17 @@ void QuotaManagerImpl::GetHostUsageWithBreakdown(
   usage_tracker->GetHostUsageWithBreakdown(host, std::move(callback));
 }
 
+void QuotaManagerImpl::GetBucketUsageWithBreakdown(
+    const BucketLocator& bucket,
+    UsageWithBreakdownCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  UsageTracker* usage_tracker = GetUsageTracker(bucket.type);
+  DCHECK(usage_tracker);
+  usage_tracker->GetBucketUsageWithBreakdown(bucket, std::move(callback));
+}
+
 void QuotaManagerImpl::GetHostUsageForInternals(
     const std::string& host,
     storage::mojom::StorageType storage_type,
