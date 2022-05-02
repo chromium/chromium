@@ -378,9 +378,7 @@ impl<'h, 't> RunLoop<'h, 't> {
                 // error.
                 let mut dummy = unsafe { system::acquire(info.handle()) };
                 self.handle_set.add(&dummy, signals, token.as_cookie(), wsflags!(Add::None));
-                unsafe {
-                    dummy.invalidate();
-                }
+                dummy.invalidate();
                 true
             }
             None => false,

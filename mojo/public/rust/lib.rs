@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#![feature(maybe_uninit_slice)]
+#![feature(new_uninit)]
+
 #[macro_use]
 mod macros {
     /// This macro must be used at the top-level in any

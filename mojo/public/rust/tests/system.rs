@@ -8,15 +8,19 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-use mojo::system;
 use mojo::system::core;
 use mojo::system::data_pipe;
 use mojo::system::message_pipe;
 use mojo::system::shared_buffer;
+use mojo::system::trap::{
+    ArmResult, Trap, TrapEvent, TriggerCondition, UnsafeTrap, UnsafeTrapEvent,
+};
 use mojo::system::wait_set;
+use mojo::system::{self, MojoResult};
 use mojo::system::{CastHandle, Handle};
 
 use std::string::String;
+use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::vec::Vec;
 
@@ -221,4 +225,239 @@ tests! {
         assert_eq!(output[0].result(), mojo::MojoResult::Okay);
         assert!(output[0].state().satisfied().is_readable());
     }
+
+    fn trap_signals_on_readable_unwritable() {
+        // These tests unfortunately need global state, so we have to ensure
+        // exclusive access (generally Rust tests run on multiple threads).
+        let _test_lock = TRAP_TEST_LOCK.lock().unwrap();
+
+        let trap = UnsafeTrap::new(test_trap_event_handler).unwrap();
+
+        let (cons, prod) = data_pipe::create_default().unwrap();
+        assert_eq!(MojoResult::Okay,
+            trap.add_trigger(cons.get_native_handle(),
+                             signals!(Signals::Readable),
+                             TriggerCondition::SignalsSatisfied,
+                             1));
+        assert_eq!(MojoResult::Okay,
+            trap.add_trigger(prod.get_native_handle(),
+                             signals!(Signals::Writable),
+                             TriggerCondition::SignalsUnsatisfied,
+                             2));
+
+        let mut blocking_events_buf = [Default::default(); 16];
+        // The trap should arm with no blocking events since nothing should be
+        // triggered yet.
+        match trap.arm(Some(&mut blocking_events_buf)) {
+            ArmResult::Armed => (),
+            ArmResult::Blocked(events) => panic!("unexpected blocking events {:?}", events),
+            ArmResult::Failed(e) => panic!("unexpected mojo error {:?}", e),
+        }
+
+        // Check that there are no events in the list (though of course this
+        // check is uncertain if a race condition bug exists).
+        assert_eq!(TRAP_EVENT_LIST.lock().unwrap().len(), 0);
+
+        // Write to `prod` making `cons` readable.
+        assert_eq!(prod.write(&[128u8], dpflags!(Write::None)).unwrap(), 1);
+        {
+            let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
+            assert_eq!(list.len(), 1);
+            let event = list[0];
+            assert_eq!(event.trigger_context(), 1);
+            assert_eq!(event.result(), MojoResult::Okay);
+            assert!(event.signals_state().satisfiable().is_readable(),
+                    "{:?}", event.signals_state());
+            assert!(event.signals_state().satisfied().is_readable(),
+                    "{:?}", event.signals_state());
+        }
+
+        // Once the above event has fired, `trap` is disarmed.
+
+        // Re-arming should block and return the event above.
+        match trap.arm(Some(&mut blocking_events_buf)) {
+            ArmResult::Blocked(events) => {
+                let event: &UnsafeTrapEvent = events.get(0).unwrap();
+                assert_eq!(event.trigger_context(), 1);
+                assert_eq!(event.result(), MojoResult::Okay);
+            }
+            ArmResult::Armed => panic!("expected event did not arrive"),
+            ArmResult::Failed(e) => panic!("unexpected Mojo error {:?}", e),
+        }
+
+        clear_trap_events(1);
+
+        // Read the data so we don't receive the same event again.
+        cons.read(dpflags!(Read::Discard)).unwrap();
+        match trap.arm(Some(&mut blocking_events_buf)) {
+            ArmResult::Armed => (),
+            ArmResult::Blocked(events) => panic!("unexpected blocking events {:?}", events),
+            ArmResult::Failed(e) => panic!("unexpected Mojo error {:?}", e),
+        }
+
+        // Close `cons` making `prod` unwritable.
+        drop(cons);
+
+        // Now we should have two events indicating `prod` is not writable.
+        {
+            let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
+            assert_eq!(list.len(), 2);
+            let (event1, event2) = (list[0], list[1]);
+            // Sort the events since the ordering isn't deterministic.
+            let (cons_event, prod_event) = if event1.trigger_context() == 1 {
+                (event1, event2)
+            } else {
+                (event2, event1)
+            };
+
+            // 1. `cons` was closed, yielding a `Cancelled` event.
+            assert_eq!(cons_event.trigger_context(), 1);
+            assert_eq!(cons_event.result(), MojoResult::Cancelled);
+
+            // 2. `prod`'s trigger condition (being unwritable) was met,
+            // yielding a normal event.
+            assert_eq!(prod_event.trigger_context(), 2);
+            assert_eq!(prod_event.result(), MojoResult::Okay);
+            assert!(!prod_event.signals_state().satisfiable().is_writable())
+        };
+
+        drop(trap);
+
+        // We should have 3 events: the two we saw above, plus one Cancelled
+        // event for `prod` corresponding to removing `prod` from `trap` (which
+        // happens automatically on `Trap` closure).
+        clear_trap_events(3);
+    }
+
+    fn trap_handle_closed_before_arm() {
+        let _test_lock = TRAP_TEST_LOCK.lock().unwrap();
+
+        let trap = UnsafeTrap::new(test_trap_event_handler).unwrap();
+
+        let (cons, _prod) = data_pipe::create_default().unwrap();
+        assert_eq!(MojoResult::Okay,
+            trap.add_trigger(cons.get_native_handle(),
+                             signals!(Signals::Readable),
+                             TriggerCondition::SignalsSatisfied, 1));
+
+        drop(cons);
+
+        // A cancelled event will be reported even without arming.
+        {
+            let events = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
+            assert_eq!(events.len(), 1, "unexpected events {:?}", *events);
+            let event = events[0];
+            assert_eq!(event.trigger_context(), 1);
+            assert_eq!(event.result(), MojoResult::Cancelled);
+        }
+
+        drop(trap);
+        clear_trap_events(1);
+    }
+
+    fn safe_trap() {
+        struct SharedContext {
+            events: Mutex<Vec<TrapEvent>>,
+            cond: Condvar,
+        }
+
+        let handler = |event: &TrapEvent, context: &Arc<SharedContext>| {
+            if let Ok(mut events) = context.events.lock() {
+                events.push(*event);
+                context.cond.notify_all();
+            }
+        };
+
+        let context = Arc::new(SharedContext {
+            events: Mutex::new(Vec::new()),
+            cond: Condvar::new(),
+        });
+        let trap = Trap::new(handler).unwrap();
+
+        let (cons, prod) = data_pipe::create_default().unwrap();
+        let _cons_token = trap.add_trigger(
+            cons.get_native_handle(),
+            signals!(Signals::Readable),
+            TriggerCondition::SignalsSatisfied,
+            context.clone());
+        let _prod_token = trap.add_trigger(
+            prod.get_native_handle(),
+            signals!(Signals::Writable),
+            TriggerCondition::SignalsUnsatisfied,
+            context.clone());
+
+        assert_eq!(trap.arm(), MojoResult::Okay);
+
+        // Make `cons` readable.
+        assert_eq!(prod.write(&[128u8], dpflags!(Write::None)), Ok(1));
+        {
+            let mut events =
+                context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
+            assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+            let event = events[0];
+            assert_eq!(event.handle(), cons.get_native_handle());
+            assert_eq!(event.result(), MojoResult::Okay);
+            assert!(event.signals_state().satisfied().is_readable(), "{:?}", event.signals_state());
+            events.clear();
+        }
+
+        // Close `cons` to get two events: unreadable on `prod`, and Cancelled on `cons`.
+        let cons_native = cons.get_native_handle();
+        drop(cons);
+        {
+            // We get the Cancelled event while unarmed.
+            let mut events =
+                context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
+            assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+            let event = events[0];
+            assert_eq!(event.handle(), cons_native);
+            assert_eq!(event.result(), MojoResult::Cancelled);
+            events.clear();
+        }
+
+        // When we try to arm, we'll get the `prod` event.
+        assert_eq!(trap.arm(), MojoResult::FailedPrecondition);
+        {
+            let mut events =
+                context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
+            assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+            let event = events[0];
+            assert_eq!(event.handle(), prod.get_native_handle());
+            assert_eq!(event.result(), MojoResult::Okay);
+            assert!(!event.signals_state().satisfied().is_writable(),
+                    "{:?}", event.signals_state());
+            events.clear();
+        }
+     }
+}
+
+fn clear_trap_events(expected_len: usize) {
+    let mut list = TRAP_EVENT_LIST.lock().unwrap();
+    assert_eq!(list.len(), expected_len, "unexpected events {:?}", *list);
+    list.clear();
+}
+
+fn wait_for_trap_events(
+    guard: std::sync::MutexGuard<'static, Vec<UnsafeTrapEvent>>,
+    expected_len: usize,
+) -> std::sync::MutexGuard<'static, Vec<UnsafeTrapEvent>> {
+    TRAP_EVENT_COND.wait_while(guard, |l| l.len() < expected_len).unwrap()
+}
+
+extern "C" fn test_trap_event_handler(event: &UnsafeTrapEvent) {
+    // If locking fails, it means another thread panicked. In this case we can
+    // simply do nothing. Note that we cannot panic here since this is called
+    // from C code.
+    if let Ok(mut list) = TRAP_EVENT_LIST.lock() {
+        list.push(*event);
+        TRAP_EVENT_COND.notify_all();
+    }
+}
+
+lazy_static::lazy_static! {
+    // We need globals for trap tests so we need mutual exclusion.
+    static ref TRAP_TEST_LOCK: Mutex<()> = Mutex::new(());
+    // The TrapEvents received by `test_trap_event_handler`.
+    static ref TRAP_EVENT_LIST: Mutex<Vec<UnsafeTrapEvent>> = Mutex::new(Vec::new());
+    static ref TRAP_EVENT_COND: Condvar = Condvar::new();
 }

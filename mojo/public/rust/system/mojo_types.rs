@@ -131,31 +131,36 @@ impl fmt::Display for MojoResult {
 /// This tuple struct represents a bit vector configuration of possible
 /// Mojo signals. Used in wait() and wait_many() primarily as a convenience.
 #[repr(transparent)]
-#[derive(Clone, Copy, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct HandleSignals(MojoHandleSignals);
 
 impl HandleSignals {
-    /// Create a new HandleSignals given the raw MojoHandleSignals
+    /// Create a new HandleSignals given the raw MojoHandleSignals.
     pub fn new(s: MojoHandleSignals) -> HandleSignals {
         HandleSignals(s)
     }
 
-    /// Check if the readable flag is set
+    /// Get the raw inner value.
+    pub fn as_raw(&self) -> &MojoHandleSignals {
+        &self.0
+    }
+
+    /// Check if the readable flag is set.
     pub fn is_readable(&self) -> bool {
         (self.0 & (Signals::Readable as u32)) != 0
     }
 
-    /// Check if the writable flag is set
+    /// Check if the writable flag is set.
     pub fn is_writable(&self) -> bool {
         (self.0 & (Signals::Writable as u32)) != 0
     }
 
-    /// Check if the peer-closed flag is set
+    /// Check if the peer-closed flag is set.
     pub fn is_peer_closed(&self) -> bool {
         (self.0 & (Signals::PeerClosed as u32)) != 0
     }
 
-    /// Pull the raw MojoHandleSignals out of the data structure
+    /// Pull the raw MojoHandleSignals out of the data structure.
     pub fn get_bits(&self) -> MojoHandleSignals {
         self.0
     }
@@ -164,6 +169,7 @@ impl HandleSignals {
 /// Represents the signals state of a handle: which signals are satisfied,
 /// and which are satisfiable.
 #[repr(transparent)]
+#[derive(Clone, Copy, Debug)]
 pub struct SignalsState(pub MojoHandleSignalsState);
 
 impl SignalsState {
@@ -182,11 +188,10 @@ impl SignalsState {
     pub fn satisfiable(&self) -> HandleSignals {
         HandleSignals(self.0.satisfiable_signals)
     }
-    /// Consume the SignalsState and release its tender interior
-    ///
-    /// Returns (satisfied, satisfiable)
-    pub fn unwrap(self) -> (HandleSignals, HandleSignals) {
-        (self.satisfied(), self.satisfiable())
+
+    /// Return the wrapped Mojo FFI struct.
+    pub fn to_raw(self) -> MojoHandleSignalsState {
+        self.0
     }
 }
 

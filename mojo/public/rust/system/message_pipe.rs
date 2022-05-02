@@ -224,10 +224,8 @@ impl MessageEndpoint {
         // "Append" to the message, getting a buffer to copy our data to.
         let mut raw_handles: vec::Vec<MojoHandle> = vec::Vec::with_capacity(handles.len());
         for handle in handles.iter_mut() {
-            unsafe {
-                raw_handles.push(handle.get_native_handle());
-                handle.invalidate();
-            }
+            raw_handles.push(handle.get_native_handle());
+            handle.invalidate();
         }
 
         let raw_handles_ptr;

@@ -27,16 +27,18 @@ pub mod raw_ffi {
 pub mod types {
     //! Defines some C-compatible types for the ffi layer of
     //! the bindings.
-    //!
     use super::raw_ffi;
 
+    pub use raw_ffi::MojoAddTriggerFlags;
     pub use raw_ffi::MojoAppendMessageDataFlags;
+    pub use raw_ffi::MojoArmTrapFlags;
     pub use raw_ffi::MojoBeginReadDataFlags;
     pub use raw_ffi::MojoBeginWriteDataFlags;
     pub use raw_ffi::MojoCreateDataPipeFlags;
     pub use raw_ffi::MojoCreateMessageFlags;
     pub use raw_ffi::MojoCreateMessagePipeFlags;
     pub use raw_ffi::MojoCreateSharedBufferFlags;
+    pub use raw_ffi::MojoCreateTrapFlags;
     pub use raw_ffi::MojoCreateWaitSetFlags;
     pub use raw_ffi::MojoDuplicateBufferHandleFlags;
     pub use raw_ffi::MojoEndReadDataFlags;
@@ -50,7 +52,11 @@ pub mod types {
     pub use raw_ffi::MojoMessageHandle;
     pub use raw_ffi::MojoReadDataFlags;
     pub use raw_ffi::MojoReadMessageFlags;
+    pub use raw_ffi::MojoRemoveTriggerFlags;
     pub use raw_ffi::MojoTimeTicks;
+    pub use raw_ffi::MojoTrapEventFlags;
+    pub use raw_ffi::MojoTrapEventHandler;
+    pub use raw_ffi::MojoTriggerCondition;
     pub use raw_ffi::MojoWaitSetAddFlags;
     pub use raw_ffi::MojoWaitSetHandle;
     pub use raw_ffi::MojoWriteDataFlags;
@@ -144,10 +150,16 @@ declare_mojo_options!(MojoReadMessageOptions, flags: MojoReadMessageFlags);
 declare_mojo_options!(MojoCreateMessageOptions, flags: MojoCreateMessageFlags);
 declare_mojo_options!(MojoAppendMessageDataOptions, flags: MojoAppendMessageDataFlags);
 declare_mojo_options!(MojoGetMessageDataOptions, flags: MojoGetMessageDataFlags);
+declare_mojo_options!(MojoCreateTrapOptions, flags: MojoCreateTrapFlags);
+declare_mojo_options!(MojoAddTriggerOptions, flags: MojoAddTriggerFlags);
+declare_mojo_options!(MojoRemoveTriggerOptions, flags: MojoRemoveTriggerFlags);
+declare_mojo_options!(MojoArmTrapOptions, flags: MojoArmTrapFlags);
 declare_mojo_options!(MojoCreateWaitSetOptions, flags: MojoCreateWaitSetFlags);
 declare_mojo_options!(MojoWaitSetAddOptions, flags: MojoWaitSetAddFlags);
 
+pub use raw_ffi::MojoAddTrigger;
 pub use raw_ffi::MojoAppendMessageData;
+pub use raw_ffi::MojoArmTrap;
 pub use raw_ffi::MojoBeginReadData;
 pub use raw_ffi::MojoBeginWriteData;
 pub use raw_ffi::MojoClose;
@@ -155,6 +167,7 @@ pub use raw_ffi::MojoCreateDataPipe;
 pub use raw_ffi::MojoCreateMessage;
 pub use raw_ffi::MojoCreateMessagePipe;
 pub use raw_ffi::MojoCreateSharedBuffer;
+pub use raw_ffi::MojoCreateTrap;
 pub use raw_ffi::MojoCreateWaitSet;
 pub use raw_ffi::MojoDestroyMessage;
 pub use raw_ffi::MojoDuplicateBufferHandle;
@@ -164,8 +177,10 @@ pub use raw_ffi::MojoGetBufferInfo;
 pub use raw_ffi::MojoGetMessageData;
 pub use raw_ffi::MojoGetTimeTicksNow;
 pub use raw_ffi::MojoMapBuffer;
+pub use raw_ffi::MojoQueryHandleSignalsState;
 pub use raw_ffi::MojoReadData;
 pub use raw_ffi::MojoReadMessage;
+pub use raw_ffi::MojoRemoveTrigger;
 pub use raw_ffi::MojoUnmapBuffer;
 pub use raw_ffi::MojoWait;
 pub use raw_ffi::MojoWaitMany;

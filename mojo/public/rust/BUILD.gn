@@ -63,7 +63,6 @@ source_set("mojo_c_system_wrapper") {
 rust_bindgen("mojo_c_system_binding") {
   header = "system/wrapper.h"
   deps = [ ":mojo_c_system_wrapper" ]
-
   visibility = [ ":*" ]
 }
 
@@ -94,6 +93,7 @@ rust_static_library("mojo_rust") {
     "system/mod.rs",
     "system/mojo_types.rs",
     "system/shared_buffer.rs",
+    "system/trap.rs",
     "system/wait_set.rs",
   ]
 
@@ -121,6 +121,7 @@ if (rustc_can_link) {
       ":c_test_support",
       ":mojo_rust",
       "//mojo/public/c/system",
+      "//third_party/rust/lazy_static/v1:lib",
     ]
   }
 }
