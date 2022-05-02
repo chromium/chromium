@@ -742,7 +742,8 @@ std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
   value->SetDouble("overall_max_distance", overall_max_distance_);
   value->SetDouble("frame_max_distance", frame_max_distance_);
   RegionToTracedValue(region_, *value);
-  value->SetBoolean("is_main_frame", frame_view_->GetFrame().IsMainFrame());
+  value->SetBoolean("is_main_frame",
+                    frame_view_->GetFrame().IsOutermostMainFrame());
   value->SetBoolean("had_recent_input", input_detected);
   value->SetDouble("last_input_timestamp", LastInputTimestamp());
   AttributionsToTracedValue(*value);
