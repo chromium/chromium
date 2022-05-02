@@ -7,21 +7,43 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_container.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
 
+const int kTotalTimeDuration = 4321;
+
+const int kConnectTimeDuration = 123;
+
+const char kHTMLMimeType[] = "text/html";
+
+const char kHTMLBody[] = R"(
+      <!DOCTYPE HTML>
+      <html>
+        <head></head>
+        <body></body>
+      </html>)";
+
 class PrefetchServiceTest : public RenderViewHostTestHarness {
  public:
+  PrefetchServiceTest()
+      : test_shared_url_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -30,8 +52,14 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
 
-    scoped_feature_list_.InitAndEnableFeature(
-        content::features::kPrefetchUseContentRefactor);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::features::kPrefetchUseContentRefactor,
+        {{"proxy_host", "https://testproxyhost.com"},
+         {"ineligible_decoy_request_probability", "0"},
+         {"prefetch_container_lifetime_s", "-1"}});
+
+    PrefetchService::SetURLLoaderFactoryForTesting(
+        test_shared_url_loader_factory_.get());
 
     PrefetchService::SetHostNonUniqueFilterForTesting(
         [](base::StringPiece) { return false; });
@@ -39,13 +67,98 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         &service_worker_context_);
 
     prefetch_service_ = PrefetchService::CreateIfPossible(browser_context());
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(
+        prefetch_service_.get());
   }
 
   void TearDown() override {
     prefetch_service_.reset();
+    PrefetchService::SetURLLoaderFactoryForTesting(nullptr);
     PrefetchService::SetHostNonUniqueFilterForTesting(nullptr);
     PrefetchService::SetServiceWorkerContextForTesting(nullptr);
+    PrefetchService::SetURLLoaderFactoryForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
+  }
+
+  // Creates a prefetch request for |url| on the current main frame.
+  void MakePrefetchOnMainFrame(const GURL& url,
+                               const PrefetchType& prefetch_type) {
+    PrefetchDocumentManager* prefetch_document_manager =
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+    prefetch_document_manager->PrefetchUrl(url, prefetch_type);
+  }
+
+  int RequestCount() { return test_url_loader_factory_.NumPending(); }
+
+  void VerifyCommonRequestState(const GURL& url, bool use_prefetch_proxy) {
+    SCOPED_TRACE(url.spec());
+    EXPECT_EQ(RequestCount(), 1);
+
+    network::TestURLLoaderFactory::PendingRequest* request =
+        test_url_loader_factory_.GetPendingRequest(0);
+
+    EXPECT_EQ(request->request.url, url);
+    EXPECT_EQ(request->request.method, "GET");
+    EXPECT_TRUE(request->request.enable_load_timing);
+    EXPECT_EQ(request->request.load_flags,
+              net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH);
+    EXPECT_EQ(request->request.credentials_mode,
+              network::mojom::CredentialsMode::kInclude);
+
+    std::string purpose_value;
+    EXPECT_TRUE(request->request.headers.GetHeader("Purpose", &purpose_value));
+    EXPECT_EQ(purpose_value, "prefetch");
+
+    std::string sec_purpose_value;
+    EXPECT_TRUE(
+        request->request.headers.GetHeader("Sec-Purpose", &sec_purpose_value));
+    EXPECT_EQ(sec_purpose_value,
+              use_prefetch_proxy ? "prefetch;anonymous-client-ip" : "prefetch");
+
+    EXPECT_TRUE(request->request.trusted_params.has_value());
+    VerifyIsolationInfo(request->request.trusted_params->isolation_info);
+  }
+
+  void VerifyIsolationInfo(const net::IsolationInfo& isolation_info) {
+    EXPECT_FALSE(isolation_info.IsEmpty());
+    EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
+    EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
+    EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+  }
+
+  void MakeResponseAndWait(
+      net::HttpStatusCode http_status,
+      net::Error net_error,
+      const std::string mime_type,
+      std::vector<std::pair<std::string, std::string>> headers,
+      const std::string& body) {
+    network::TestURLLoaderFactory::PendingRequest* request =
+        test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_TRUE(request);
+
+    auto head = network::CreateURLResponseHead(http_status);
+
+    head->response_time = base::Time::Now();
+    head->request_time =
+        head->response_time - base::Milliseconds(kTotalTimeDuration);
+
+    head->load_timing.connect_timing.connect_end =
+        base::TimeTicks::Now() - base::Minutes(2);
+    head->load_timing.connect_timing.connect_start =
+        head->load_timing.connect_timing.connect_end -
+        base::Milliseconds(kConnectTimeDuration);
+
+    head->mime_type = mime_type;
+    for (const auto& header : headers) {
+      head->headers->AddHeader(header.first, header.second);
+    }
+    network::URLLoaderCompletionStatus status(net_error);
+    test_url_loader_factory_.AddResponse(request->request.url, std::move(head),
+                                         body, status);
+    task_environment()->RunUntilIdle();
+    // Clear responses in the network service so we can inspect the next request
+    // that comes in before it is responded to.
+    test_url_loader_factory_.ClearResponses();
   }
 
   bool SetCookie(const GURL& url, const std::string& value) {
@@ -80,6 +193,10 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   FakeServiceWorkerContext service_worker_context_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefetchService> prefetch_service_;
 };
@@ -88,8 +205,9 @@ TEST_F(PrefetchServiceTest, CreateServiceWhenFeatureEnabled) {
   // Enable feature, which means that we should be able to create a
   // PrefetchService instance.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      content::features::kPrefetchUseContentRefactor);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      content::features::kPrefetchUseContentRefactor,
+      {{"proxy_host", "https://testproxyhost.com"}});
 
   EXPECT_TRUE(PrefetchService::CreateIfPossible(browser_context()));
 }
@@ -104,138 +222,223 @@ TEST_F(PrefetchServiceTest, DontCreateServiceWhenFeatureDisabled) {
   EXPECT_FALSE(PrefetchService::CreateIfPossible(browser_context()));
 }
 
-TEST_F(PrefetchServiceTest, PrefetchPassEligibilityTest) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+TEST_F(PrefetchServiceTest, SuccessCase) {
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchNotStarted);
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
   PrefetchService::SetHostNonUniqueFilterForTesting(
       [](base::StringPiece) { return true; });
 
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
+  EXPECT_EQ(RequestCount(), 0);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("http://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("http://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
+  EXPECT_EQ(RequestCount(), 0);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("http://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
 }
 
 TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("http://localhost"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/false));
-
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("http://localhost"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/false));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchNotStarted);
+  VerifyCommonRequestState(GURL("http://localhost"),
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("http://localhost")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey(url::Origin::Create(GURL("https://example.com"))));
 
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
+  EXPECT_EQ(RequestCount(), 0);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
 }
 
 TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey(url::Origin::Create(GURL("https://other.com"))));
 
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchNotStarted);
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
   ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
 
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
+  EXPECT_EQ(RequestCount(), 0);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 }
 
 TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
-  // TODO Double check these are in the "excluded" cookies list
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(), GURL("https://example.com"),
-      PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
-
   ASSERT_TRUE(SetCookie(GURL("https://other.com"), "testing"));
 
-  prefetch_service_->PrefetchUrl(prefetch_container.GetWeakPtr());
-
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
-  EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchNotStarted);
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+}
+
+TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
+  ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
+
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/false,
+                                       /*use_prefetch_proxy=*/false));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
 }
 
 // TODO(https://crbug.com/1299059): Add test for incognito mode.

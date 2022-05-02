@@ -71,7 +71,6 @@ enum class PrefetchStatus {
 
   // Variants of the first three statuses with the additional context of a
   // successfully completed NoStatePrefetch.
-  // TODO add note that these are deprecated in the new code?
   kPrefetchUsedNoProbeWithNSP = 16,
   kPrefetchUsedProbeSuccessWithNSP = 17,
   kPrefetchNotUsedProbeFailedWithNSP = 18,

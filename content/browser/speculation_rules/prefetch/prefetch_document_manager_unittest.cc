@@ -9,8 +9,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_service.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_web_contents.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
@@ -18,11 +21,25 @@
 namespace content {
 namespace {
 
+class TestPrefetchService : public PrefetchService {
+ public:
+  explicit TestPrefetchService(BrowserContext* browser_context)
+      : PrefetchService(browser_context) {}
+
+  void PrefetchUrl(
+      base::WeakPtr<PrefetchContainer> prefetch_container) override {
+    prefetches_.push_back(prefetch_container);
+  }
+
+  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
+};
+
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:
   PrefetchDocumentManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        content::features::kPrefetchUseContentRefactor);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::features::kPrefetchUseContentRefactor,
+        {{"proxy_host", "https://testproxyhost.com"}});
   }
 
   void SetUp() override {
@@ -33,11 +50,17 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
     web_contents_->NavigateAndCommit(GetSameOriginUrl("/"));
+
+    prefetch_service_ =
+        std::make_unique<TestPrefetchService>(browser_context_.get());
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(
+        prefetch_service_.get());
   }
 
   void TearDown() override {
     web_contents_.reset();
     browser_context_.reset();
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -51,11 +74,16 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     return GURL("https://other.example.com" + path);
   }
 
+  const std::vector<base::WeakPtr<PrefetchContainer>>& GetPrefetches() {
+    return prefetch_service_->prefetches_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
+  std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
 TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
@@ -108,8 +136,25 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   PrefetchDocumentManager::GetOrCreateForCurrentDocument(GetMainFrame())
       ->ProcessCandidates(candidates);
 
-  // Check that the candidates that should be prefetched were removed, and the
-  // others were kept.
+  // Check that the candidates that should be prefetched were sent to
+  // |PrefetchService|.
+  const auto& prefetch_urls = GetPrefetches();
+  ASSERT_EQ(prefetch_urls.size(), 3U);
+  EXPECT_EQ(prefetch_urls[0]->GetURL(), GetCrossOriginUrl("/candidate1.html"));
+  EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/true,
+                         /*use_prefetch_proxy=*/true));
+  EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
+  EXPECT_EQ(prefetch_urls[1]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/true,
+                         /*use_prefetch_proxy=*/false));
+  EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
+  EXPECT_EQ(prefetch_urls[2]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/false,
+                         /*use_prefetch_proxy=*/false));
+
+  // Check that the only remaining entries in candidates are those that
+  // shouldn't be prefetched by |PrefetchService|.
   ASSERT_EQ(candidates.size(), 2U);
   EXPECT_EQ(candidates[0]->url, GetCrossOriginUrl("/candidate4.html"));
   EXPECT_EQ(candidates[1]->url, GetCrossOriginUrl("/candidate5.html"));

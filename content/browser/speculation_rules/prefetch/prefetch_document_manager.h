@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "content/browser/speculation_rules/prefetch/prefetch_container.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
@@ -17,6 +17,9 @@
 #include "url/gurl.h"
 
 namespace content {
+
+class PrefetchContainer;
+class PrefetchService;
 
 // Manages the state of and tracks metrics about prefetches for a single page
 // load.
@@ -38,6 +41,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Starts the process to prefetch |url| with the given |prefetch_type|.
   void PrefetchUrl(const GURL& url, const PrefetchType& prefetch_type);
 
+  // Releases ownership of the |PrefetchContainer| associated with |url|. The
+  // prefetch is removed from |owned_prefetches_|, but a pointer to it remains
+  // in |all_prefetches_|.
+  std::unique_ptr<PrefetchContainer> ReleasePrefetchContainer(const GURL& url);
+
+  static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
+
  private:
   explicit PrefetchDocumentManager(RenderFrameHost* rfh);
   friend DocumentUserData;
@@ -51,6 +61,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // until |PrefetchService| starts the network request for the prefetch, at
   // which point |PrefetchService| takes ownership.
   std::map<GURL, std::unique_ptr<PrefetchContainer>> owned_prefetches_;
+
+  base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };

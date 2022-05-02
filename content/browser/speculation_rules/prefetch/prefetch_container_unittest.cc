@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/speculation_rules/prefetch/prefetch_container.h"
+
 #include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -17,7 +18,8 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
   PrefetchContainer prefetch_container(
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
+                   /*use_prefetch_proxy=*/true),
+      nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             GlobalRenderFrameHostId(1234, 5678));
@@ -35,7 +37,8 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
   PrefetchContainer prefetch_container(
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true));
+                   /*use_prefetch_proxy=*/true),
+      nullptr);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
 
@@ -44,6 +47,19 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
   EXPECT_TRUE(prefetch_container.HasPrefetchStatus());
   EXPECT_EQ(prefetch_container.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotStarted);
+}
+
+TEST_F(PrefetchContainerTest, IsDecoy) {
+  PrefetchContainer prefetch_container(
+      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true),
+      nullptr);
+
+  EXPECT_FALSE(prefetch_container.IsDecoy());
+
+  prefetch_container.SetIsDecoy(true);
+  EXPECT_TRUE(prefetch_container.IsDecoy());
 }
 
 }  // namespace

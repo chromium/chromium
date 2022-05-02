@@ -16,6 +16,10 @@
 
 namespace content {
 
+namespace {
+static PrefetchService* g_prefetch_service_for_testing = nullptr;
+}  // namespace
+
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh) {}
 
@@ -81,8 +85,15 @@ void PrefetchDocumentManager::PrefetchUrl(const GURL& url,
 
   // Create a new |PrefetchContainer| and take ownership of it
   owned_prefetches_[url] = std::make_unique<PrefetchContainer>(
-      render_frame_host().GetGlobalId(), url, prefetch_type);
+      render_frame_host().GetGlobalId(), url, prefetch_type,
+      weak_method_factory_.GetWeakPtr());
   all_prefetches_[url] = owned_prefetches_[url]->GetWeakPtr();
+
+  if (g_prefetch_service_for_testing) {
+    g_prefetch_service_for_testing->PrefetchUrl(
+        owned_prefetches_[url]->GetWeakPtr());
+    return;
+  }
 
   // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
   // start the prefetch process.
@@ -93,6 +104,21 @@ void PrefetchDocumentManager::PrefetchUrl(const GURL& url,
       ->PrefetchUrl(owned_prefetches_[url]->GetWeakPtr());
 
   // TODO(https://crbug.com/1299059): Track metrics about the prefetches.
+}
+
+std::unique_ptr<PrefetchContainer>
+PrefetchDocumentManager::ReleasePrefetchContainer(const GURL& url) {
+  DCHECK(owned_prefetches_.find(url) != owned_prefetches_.end());
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::move(owned_prefetches_[url]);
+  owned_prefetches_.erase(url);
+  return prefetch_container;
+}
+
+// static
+void PrefetchDocumentManager::SetPrefetchServiceForTesting(
+    PrefetchService* prefetch_service) {
+  g_prefetch_service_for_testing = prefetch_service;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

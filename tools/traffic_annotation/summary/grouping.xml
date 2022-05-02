@@ -150,12 +150,9 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="intranet_redirect_detector"/>
       <traffic_annotation unique_id="dial_url_fetcher"/>
       <traffic_annotation unique_id="browser_switcher_ieem_sitelist"/>
-      <traffic_annotation unique_id="prefetch_proxy_probe"/>
       <traffic_annotation unique_id="enterprise_safe_browsing_realtime_url_lookup"/>
       <traffic_annotation unique_id="port_forwarding_controller_socket"/>
       <traffic_annotation unique_id="pdf_plugin_placeholder"/>
-      <traffic_annotation unique_id="predictive_prefetch"/>
-      <traffic_annotation unique_id="navigation_predictor_srp_prefetch"/>
       <traffic_annotation unique_id="render_view_context_menu"/>
       <traffic_annotation unique_id="media_router_global_media_controls_image"/>
       <traffic_annotation unique_id="omnibox_navigation_observer"/>
@@ -412,6 +409,12 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Contextual Search">
       <traffic_annotation unique_id="contextual_search_resolve"/>
       <traffic_annotation unique_id="contextual_search_thumbnail"/>
+    </sender>
+    <sender name="Prefetch">
+      <traffic_annotation unique_id="navigation_predictor_srp_prefetch"/>
+      <traffic_annotation unique_id="predictive_prefetch"/>
+      <traffic_annotation unique_id="prefetch_proxy_probe"/>
+      <traffic_annotation unique_id="speculation_rules_prefetch"/>
     </sender>
   </group>
   <group name="Updates, Recovery, and Crash Reports">
