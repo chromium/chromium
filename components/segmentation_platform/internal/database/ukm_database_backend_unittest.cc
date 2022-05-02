@@ -391,13 +391,16 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   const GURL kUrl1("https://www.url1.com");
   const GURL kUrl2("https://www.url2.com");
   const GURL kUrl3("https://www.url3.com");
+  const GURL kUrl4("https://www.url4.com");
   const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
   const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
   const UrlId kUrlId3 = UkmUrlTable::GenerateUrlId(kUrl3);
+  const UrlId kUrlId4 = UkmUrlTable::GenerateUrlId(kUrl4);
   const ukm::SourceId kSourceId1 = 10;
   const ukm::SourceId kSourceId2 = 20;
   const ukm::SourceId kSourceId3 = 30;
   const ukm::SourceId kSourceId4 = 40;
+  const ukm::SourceId kSourceId5 = 50;
 
   ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry(kSourceId1);
   ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
@@ -408,6 +411,7 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
   backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true);
   backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true);
+  backend_->UpdateUrlForUkmSource(kSourceId5, kUrl4, true);
   backend_->StoreUkmEntry(std::move(entry1));
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
@@ -418,6 +422,7 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
                                    UrlMatcher{.url_id = kUrlId1, .url = kUrl1},
                                    UrlMatcher{.url_id = kUrlId2, .url = kUrl2},
                                    UrlMatcher{.url_id = kUrlId3, .url = kUrl3},
+                                   UrlMatcher{.url_id = kUrlId4, .url = kUrl4},
                                });
 
   backend_->DeleteEntriesOlderThan(base::Time::Max());

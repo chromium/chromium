@@ -38,10 +38,17 @@ class UkmUrlTable {
 
   // Writes `url` to database with `url_id`. It is invalid to call this method
   // when `url_id` exists in the database.
-  bool WriteUrl(const GURL& url, UrlId url_id);
+  bool WriteUrl(const GURL& url, UrlId url_id, base::Time timestamp);
+
+  // Update the last used timestamp for the URL.
+  bool UpdateUrlTimestamp(UrlId url_id, base::Time timestamp);
 
   // Removes all the URLs in `urls`.
   bool RemoveUrls(const std::vector<UrlId>& urls);
+
+  // Delete URLs whose last used timestamps were earlier than or equal to
+  // `time`.
+  bool DeleteUrlsBeforeTimestamp(base::Time time);
 
  private:
   raw_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);

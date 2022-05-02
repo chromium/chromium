@@ -89,8 +89,8 @@ class UkmDatabase {
   virtual void RunReadonlyQueries(QueryList&& queries,
                                   QueryCallback callback) = 0;
 
-  // Removes metrics older than the given time from the database. URLs are
-  // removed when there are no references to the metrics.
+  // Removes metrics older than or equal to the given `time` from the database.
+  // URLs are removed when there are no references to the metrics.
   virtual void DeleteEntriesOlderThan(base::Time time) = 0;
 };
 

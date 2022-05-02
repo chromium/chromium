@@ -76,9 +76,9 @@ class UkmMetricsTable {
   // Deletes all rows associated with any of the ID from |urls|.
   bool DeleteEventsForUrls(const std::vector<UrlId>& urls);
 
-  // Deletes all entries that have an event timestamp earlier to |time|. Returns
-  // a list of URL IDs that were removed by this task and no longer referred to
-  // by any other metrics.
+  // Deletes all entries that have an event timestamp earlier or equal to
+  // `time`. Returns a list of URL IDs that were removed by this task and no
+  // longer referred to by any other metrics.
   std::vector<UrlId> DeleteEventsBeforeTimestamp(base::Time time);
 
  private:

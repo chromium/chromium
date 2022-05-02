@@ -147,12 +147,14 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
 
   if (!url_table_.IsUrlInTable(url_id)) {
     if (is_validated) {
-      url_table_.WriteUrl(url, url_id);
+      url_table_.WriteUrl(url, url_id, base::Time::Now());
       // Remove from list so we don't add the URL again to table later.
       urls_not_validated_.erase(url_id);
     } else {
       urls_not_validated_.insert(url_id);
     }
+  } else {
+    url_table_.UpdateUrlTimestamp(url_id, base::Time::Now());
   }
   // Keep track of source to URL ID mapping for future metrics.
   source_to_url_[source_id] = url_id;
@@ -169,7 +171,7 @@ void UkmDatabaseBackend::OnUrlValidated(const GURL& url) {
   UrlId url_id = UkmUrlTable::GenerateUrlId(url);
   // Write URL to table only if it's needed and it's not already added.
   if (urls_not_validated_.count(url_id) && SanityCheckUrl(url, url_id)) {
-    url_table_.WriteUrl(url, url_id);
+    url_table_.WriteUrl(url, url_id, base::Time::Now());
     urls_not_validated_.erase(url_id);
   }
 }
@@ -236,6 +238,7 @@ void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
   std::vector<UrlId> deleted_urls =
       metrics_table_.DeleteEventsBeforeTimestamp(time);
   url_table_.RemoveUrls(deleted_urls);
+  url_table_.DeleteUrlsBeforeTimestamp(time);
 }
 
 void UkmDatabaseBackend::DeleteAllUrls() {

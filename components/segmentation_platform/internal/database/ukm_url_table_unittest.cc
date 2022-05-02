@@ -54,6 +54,7 @@ TEST_F(UkmUrlTableTest, CreateTable) {
 
 TEST_F(UkmUrlTableTest, InsertUrl) {
   const GURL kUrl("https://www.url1.com");
+  const base::Time kTimestamp1 = base::Time::Now();
   auto url_id_generator = UrlId::Generator();
   const UrlId kUrlId1 = url_id_generator.GenerateNextId();
   const UrlId kUrlId2 = url_id_generator.GenerateNextId();
@@ -62,12 +63,12 @@ TEST_F(UkmUrlTableTest, InsertUrl) {
   ASSERT_TRUE(url_table_->InitTable());
   EXPECT_FALSE(url_table_->IsUrlInTable(kUrlId1));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1));
   EXPECT_TRUE(url_table_->IsUrlInTable(kUrlId1));
   {
     sql::test::ScopedErrorExpecter error_expector;
     error_expector.ExpectError(SQLITE_CONSTRAINT_PRIMARYKEY);
-    EXPECT_FALSE(url_table_->WriteUrl(kUrl, kUrlId1));
+    EXPECT_FALSE(url_table_->WriteUrl(kUrl, kUrlId1, kTimestamp1));
     ASSERT_TRUE(error_expector.SawExpectedErrors());
   }
   EXPECT_TRUE(url_table_->IsUrlInTable(kUrlId1));
@@ -75,8 +76,8 @@ TEST_F(UkmUrlTableTest, InsertUrl) {
   test_util::AssertUrlsInTable(*db_, {UrlMatcher{kUrlId1, kUrl}});
   EXPECT_FALSE(url_table_->IsUrlInTable(kUrlId2));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId2));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId3));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId2, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl, kUrlId3, kTimestamp1));
 
   test_util::AssertUrlsInTable(
       *db_, {UrlMatcher{kUrlId1, kUrl}, UrlMatcher{kUrlId2, kUrl},
@@ -102,6 +103,7 @@ TEST_F(UkmUrlTableTest, RemoveUrls) {
   const GURL kUrl1("https://www.url1.com");
   const GURL kUrl2("https://www.url2.com");
   const GURL kUrl3("https://www.url3.com");
+  const base::Time kTimestamp1 = base::Time::Now();
   const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
   const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
   const UrlId kUrlId3 = UkmUrlTable::GenerateUrlId(kUrl3);
@@ -109,9 +111,9 @@ TEST_F(UkmUrlTableTest, RemoveUrls) {
   ASSERT_TRUE(url_table_->InitTable());
   EXPECT_TRUE(url_table_->RemoveUrls({kUrlId1}));
 
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2));
-  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp1));
 
   test_util::AssertUrlsInTable(
       *db_, {UrlMatcher{kUrlId1, kUrl1}, UrlMatcher{kUrlId2, kUrl2},
@@ -123,6 +125,41 @@ TEST_F(UkmUrlTableTest, RemoveUrls) {
 
   EXPECT_TRUE(url_table_->RemoveUrls({kUrlId1, kUrlId3}));
   test_util::AssertUrlsInTable(*db_, {});
+}
+
+TEST_F(UkmUrlTableTest, TimestampExpiration) {
+  const GURL kUrl1("https://www.url1.com");
+  const GURL kUrl2("https://www.url2.com");
+  const GURL kUrl3("https://www.url3.com");
+  const base::Time kTimestamp1 = base::Time::Now();
+  const base::Time kTimestamp2 = kTimestamp1 + base::Seconds(1);
+  const base::Time kTimestamp3 = kTimestamp1 + base::Seconds(2);
+  const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
+  const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
+  const UrlId kUrlId3 = UkmUrlTable::GenerateUrlId(kUrl3);
+
+  ASSERT_TRUE(url_table_->InitTable());
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl1, kUrlId1, kTimestamp1));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl2, kUrlId2, kTimestamp2));
+  EXPECT_TRUE(url_table_->WriteUrl(kUrl3, kUrlId3, kTimestamp3));
+
+  test_util::AssertUrlsInTable(
+      *db_, {UrlMatcher{kUrlId1, kUrl1}, UrlMatcher{kUrlId2, kUrl2},
+             UrlMatcher{kUrlId3, kUrl3}});
+
+  // Remove one URL using timestamp equal to the earliest URL:
+  EXPECT_TRUE(url_table_->DeleteUrlsBeforeTimestamp(kTimestamp1));
+  test_util::AssertUrlsInTable(
+      *db_, {UrlMatcher{kUrlId2, kUrl2}, UrlMatcher{kUrlId3, kUrl3}});
+
+  // Update timestamps of the URLs and then expire, only the older one should be
+  // removed.
+  const base::Time kTimestamp4 = kTimestamp1 + base::Seconds(4);
+  EXPECT_TRUE(url_table_->UpdateUrlTimestamp(kUrlId2, kTimestamp4));
+  EXPECT_TRUE(url_table_->UpdateUrlTimestamp(kUrlId3, kTimestamp2));
+  EXPECT_TRUE(url_table_->DeleteUrlsBeforeTimestamp(kTimestamp3));
+
+  test_util::AssertUrlsInTable(*db_, {UrlMatcher{kUrlId2, kUrl2}});
 }
 
 }  // namespace segmentation_platform
