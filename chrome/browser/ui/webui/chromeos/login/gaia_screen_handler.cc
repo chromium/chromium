@@ -318,11 +318,9 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler(
-    CoreOobeView* core_oobe_view,
     const scoped_refptr<NetworkStateInformer>& network_state_informer)
     : BaseScreenHandler(kScreenId),
-      network_state_informer_(network_state_informer),
-      core_oobe_view_(core_oobe_view) {
+      network_state_informer_(network_state_informer) {
   DCHECK(network_state_informer_.get());
 }
 
@@ -1312,7 +1310,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   }
 
   LoadAuthExtension(!gaia_silent_load_ /* force */);
-  core_oobe_view_->UpdateKeyboardState();
 
   if (gaia_silent_load_) {
     // The variable is assigned to false because silently loaded Gaia page was

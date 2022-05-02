@@ -26,7 +26,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -95,8 +94,6 @@ class ScopedArrowKeyTraversal {
 WebUILoginView::WebUILoginView(const WebViewSettings& settings,
                                base::WeakPtr<LoginDisplayHostWebUI> controller)
     : settings_(settings), controller_(controller) {
-  ChromeKeyboardControllerClient::Get()->AddObserver(this);
-
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllSources());
 
@@ -133,7 +130,6 @@ WebUILoginView::~WebUILoginView() {
   // TODO(crbug.com/1188526) - Improve the observation of the system tray
   if (observing_system_tray_focus_ && LoginScreenClientImpl::HasInstance())
     LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
-  ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
 
   // Clear any delegates we have set on the WebView.
   WebContents* web_contents = web_view_->GetWebContents();
@@ -323,17 +319,6 @@ void WebUILoginView::OnNetworkErrorScreenShown() {
 void WebUILoginView::OnLoginOrLockScreenVisible() {
   OnLoginPromptVisible();
   session_observation_.Reset();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ChromeKeyboardControllerClient::Observer
-
-void WebUILoginView::OnKeyboardVisibilityChanged(bool visible) {
-  if (!GetOobeUI())
-    return;
-  CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-  if (view)
-    view->SetVirtualKeyboardShown(visible);
 }
 
 // WebUILoginView private: -----------------------------------------------------

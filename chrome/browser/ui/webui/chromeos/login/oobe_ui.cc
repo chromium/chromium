@@ -488,8 +488,8 @@ void OobeUI::ConfigureOobeDisplay() {
   auto password_change_handler =
       std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>();
 
-  AddScreenHandler(std::make_unique<GaiaScreenHandler>(
-      core_handler_, network_state_informer_));
+  AddScreenHandler(
+      std::make_unique<GaiaScreenHandler>(network_state_informer_));
 
   AddScreenHandler(std::make_unique<SamlConfirmPasswordHandler>());
 

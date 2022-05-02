@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -45,7 +44,6 @@ class LoginDisplayHostWebUI;
 // View used to render a WebUI supporting Widget. This widget is used for the
 // WebUI based start up and lock screens. It contains a WebView.
 class WebUILoginView : public views::View,
-                       public ChromeKeyboardControllerClient::Observer,
                        public content::WebContentsDelegate,
                        public content::NotificationObserver,
                        public session_manager::SessionManagerObserver,
@@ -146,9 +144,6 @@ class WebUILoginView : public views::View,
  private:
   // Map type for the accelerator-to-identifier map.
   typedef std::map<ui::Accelerator, LoginAcceleratorAction> AccelMap;
-
-  // ChromeKeyboardControllerClient::Observer:
-  void OnKeyboardVisibilityChanged(bool visible) override;
 
   // Overridden from content::WebContentsDelegate.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
