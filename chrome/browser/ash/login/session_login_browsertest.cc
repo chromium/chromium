@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
 
   test::UserSessionManagerTestApi test_api(UserSessionManager::GetInstance());
   ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
 }
 
 IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersion) {
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
   login_mixin_.LoginAsNewRegularUser();
   user_creation_exit_waiter.Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
   AccountId account_id =
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
   login_mixin_.LoginWithDefaultContext(test_user);
   user_creation_exit_waiter.Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
   AccountId account_id =
@@ -227,7 +227,7 @@ class LockOnSuspendUsageTest : public LoginManagerTest {
 // user login.
 IN_PROC_BROWSER_TEST_F(LockOnSuspendUsageTest, RegularUser) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.WaitForActiveSession();
 

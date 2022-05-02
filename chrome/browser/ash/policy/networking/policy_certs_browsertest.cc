@@ -455,7 +455,6 @@ class PolicyProvidedCertsPublicSessionTest
   // TODO(crbug/874831): Consider migrating to LoggedInMixin and deprecating
   // this function.
   void StartLogin() {
-    ash::WizardController::SkipPostLoginScreensForTesting();
     auto* const wizard_controller = ash::WizardController::default_controller();
     ASSERT_TRUE(wizard_controller);
     wizard_controller->SkipToLoginForTesting();

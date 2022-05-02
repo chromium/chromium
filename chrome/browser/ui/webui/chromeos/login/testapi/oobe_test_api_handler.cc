@@ -105,7 +105,8 @@ void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
-  ash::WizardController::SkipPostLoginScreensForTesting();
+  ash::WizardController::default_controller()
+      ->SkipPostLoginScreensForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::LoginAsGuest() {

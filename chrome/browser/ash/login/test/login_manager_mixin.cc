@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "components/prefs/pref_service.h"
@@ -181,6 +182,9 @@ void LoginManagerMixin::AttemptLoginUsingAuthenticator(
       .InjectAuthenticatorBuilder(std::move(authenticator_builder));
   ExistingUserController::current_controller()->Login(user_context,
                                                       SigninSpecifics());
+  if (skip_post_login_screens_ && ash::WizardController::default_controller())
+    ash::WizardController::default_controller()
+        ->SkipPostLoginScreensForTesting();
 }
 
 void LoginManagerMixin::WaitForActiveSession() {
@@ -241,6 +245,13 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
   profile_prepared.Wait();
+}
+
+void LoginManagerMixin::SkipPostLoginScreens() {
+  skip_post_login_screens_ = true;
+  if (WizardController::default_controller()) {
+    WizardController::default_controller()->SkipPostLoginScreensForTesting();
+  }
 }
 
 }  // namespace ash

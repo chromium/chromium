@@ -667,7 +667,10 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   void WaitForSessionStart() {
     if (IsSessionStarted())
       return;
-    ash::WizardController::SkipPostLoginScreensForTesting();
+    if (ash::WizardController::default_controller()) {
+      ash::WizardController::default_controller()
+          ->SkipPostLoginScreensForTesting();
+    }
     ash::test::WaitForPrimaryUserSessionStart();
   }
 

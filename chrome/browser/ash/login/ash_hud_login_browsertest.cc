@@ -558,7 +558,7 @@ class AshHUDLoginTest
   }
 
   void Login() {
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(
         login_manager_mixin_.users()[0]);

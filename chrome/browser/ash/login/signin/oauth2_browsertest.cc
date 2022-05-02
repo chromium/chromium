@@ -9,6 +9,7 @@
 
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/auth/user_context.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -257,6 +258,8 @@ class OAuth2Test : public OobeBaseTest {
     // Disable sync since we don't really need this for these tests and it also
     // makes OAuth2Test.MergeSession test flaky http://crbug.com/408867.
     command_line->AppendSwitch(syncer::kDisableSync);
+    // Skip post login screens.
+    command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
   }
 
   void RegisterAdditionalRequestHandlers() override {
@@ -1150,7 +1153,7 @@ class MergeSessionTimeoutTest : public MergeSessionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MergeSessionTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kShortMergeSessionTimeoutForTest);
+    command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);
   }
 
   void RegisterAdditionalRequestHandlers() override {

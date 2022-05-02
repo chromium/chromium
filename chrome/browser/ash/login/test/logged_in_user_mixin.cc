@@ -75,7 +75,7 @@ void LoggedInUserMixin::SetUpOnMainThread() {
   // this.
   test_base_->host_resolver()->AddRule("*", "127.0.0.1");
   // Ensures logging in doesn't hang on the post login Gaia screens.
-  WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
 }
 
 void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,

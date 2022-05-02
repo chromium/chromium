@@ -65,6 +65,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
     command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+    command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
   }
 
   void SetUpOnMainThread() override {
@@ -166,7 +167,6 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   void WaitForSessionStart() {
     if (IsSessionStarted())
       return;
-    ash::WizardController::SkipPostLoginScreensForTesting();
     ash::test::WaitForPrimaryUserSessionStart();
   }
 

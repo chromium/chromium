@@ -108,7 +108,7 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
 }
 
 void LoginPolicyTestBase::SkipToLoginScreen() {
-  ash::WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
   OobeBaseTest::WaitForSigninScreen();
 }
 
@@ -120,7 +120,7 @@ void LoginPolicyTestBase::TriggerLogIn() {
 }
 
 void LoginPolicyTestBase::LogIn() {
-  ash::WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
   TriggerLogIn();
   ash::test::WaitForPrimaryUserSessionStart();
 }

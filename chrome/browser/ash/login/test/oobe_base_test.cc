@@ -203,8 +203,6 @@ void OobeBaseTest::WaitForSigninScreen() {
   if (wizard_controller && wizard_controller->is_initialized())
     wizard_controller->SkipToLoginForTesting();
 
-  WizardController::SkipPostLoginScreensForTesting();
-
   MaybeWaitForLoginScreenLoad();
 }
 void OobeBaseTest::CheckJsExceptionErrors(int number) {

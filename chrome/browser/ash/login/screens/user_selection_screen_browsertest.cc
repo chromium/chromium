@@ -283,7 +283,7 @@ class DarkLightEnabledTest : public LoginManagerTest {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->defer_oobe_flow_finished_for_tests = false;
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
     login_manager_mixin_.WaitForActiveSession();
   }
   LoginManagerMixin login_manager_mixin_{&mixin_host_};

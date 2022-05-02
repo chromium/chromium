@@ -90,7 +90,7 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
   }
 
   void LoginFamilyLinkUser() {
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_.SkipPostLoginScreens();
     UserContext user_context =
         LoginManagerMixin::CreateDefaultUserContext(family_link_user_);
     user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);

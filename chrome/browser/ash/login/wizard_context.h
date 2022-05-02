@@ -64,6 +64,10 @@ class WizardContext {
   // flag will ignore hid detection results.
   bool skip_to_update_for_tests = false;
 
+  // Whether the post login screens should be skipped. Used in MaybeSkip by
+  // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests.
+  bool skip_post_login_screens_for_tests = false;
+
   // Whether user creation screen is enabled (could be disabled due to disabled
   // feature or on managed device). It determines the behavior of back button
   // for GaiaScreen and OfflineLoginScreen. Value is set to true in

@@ -153,6 +153,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // proceeding into the session from the login screen.
   void LoginAsNewChildUser();
 
+  // Forces skipping post login screens.
+  void SkipPostLoginScreens();
+
  private:
   UserList initial_users_;
 
@@ -168,6 +171,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Whether the user session manager should try to obtain token handles.
   bool should_obtain_handles_ = false;
+
+  // Whether the user will skip post login screens.
+  bool skip_post_login_screens_ = false;
 
   LocalStateMixin local_state_mixin_;
   FakeGaiaMixin* fake_gaia_mixin_;

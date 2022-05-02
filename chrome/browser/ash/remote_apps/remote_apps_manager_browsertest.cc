@@ -171,12 +171,12 @@ class RemoteAppsManagerBrowsertest
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kLoginManager);
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
   }
 
   // DevicePolicyCrosBrowserTest:
   void SetUpOnMainThread() override {
     SetUpDeviceLocalAccountPolicy();
-    WizardController::SkipPostLoginScreensForTesting();
     SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
     user_manager::User* user =

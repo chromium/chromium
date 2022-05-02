@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   // Wait for blocking RLZ tasks to complete.
   {
     base::RunLoop loop;
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_.SkipPostLoginScreens();
     EXPECT_FALSE(UserSessionInitializer::Get()->get_inited_for_testing());
     UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
         loop.QuitClosure());

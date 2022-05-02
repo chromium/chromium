@@ -723,9 +723,9 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableCancel) {
-  WizardController::SkipPostLoginScreensForTesting();
   auto* wizard_controller = WizardController::default_controller();
   ASSERT_TRUE(wizard_controller);
+  wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
   EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
@@ -751,9 +751,9 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableCancel) {
 
 IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableConfirmed) {
   // Start UI, find menu entry for this app and launch it.
-  WizardController::SkipPostLoginScreensForTesting();
   auto* wizard_controller = WizardController::default_controller();
   ASSERT_TRUE(wizard_controller);
+  wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
   EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,
@@ -780,9 +780,9 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableConfirmed) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
-  WizardController::SkipPostLoginScreensForTesting();
   auto* wizard_controller = WizardController::default_controller();
   ASSERT_TRUE(wizard_controller);
+  wizard_controller->SkipPostLoginScreensForTesting();
 
   // Check Kiosk mode status.
   EXPECT_EQ(KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable,

@@ -73,6 +73,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kExtensionId);
+    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
   }
 
   // DevicePolicyCrosBrowserTest:
@@ -80,7 +81,6 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
     SetUpDeviceLocalAccountPolicy();
-    WizardController::SkipPostLoginScreensForTesting();
     SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
   }
 

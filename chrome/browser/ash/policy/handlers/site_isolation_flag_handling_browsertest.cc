@@ -256,7 +256,7 @@ class SiteIsolationFlagHandlingTest
     // Start user sign-in. We can't use |LoginPolicyTestBase::LogIn|, because
     // it waits for a user session start unconditionally, which will not happen
     // if chrome requests a restart to set user-session flags.
-    ash::WizardController::SkipPostLoginScreensForTesting();
+    login_manager_.SkipPostLoginScreens();
     OobeBaseTest::WaitForSigninScreen();
     login_manager_.LoginWithDefaultContext(user_);
 

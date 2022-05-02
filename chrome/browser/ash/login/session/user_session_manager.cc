@@ -1757,9 +1757,10 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
   if (start_session_type_ == StartSessionType::kPrimary) {
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-    bool skip_post_login_screens =
-        WizardController::skip_post_login_screens() ||
-        cmdline->HasSwitch(switches::kOobeSkipPostLogin);
+    const bool skip_post_login_screens =
+        cmdline->HasSwitch(switches::kOobeSkipPostLogin) ||
+        (WizardController::default_controller() &&
+         WizardController::default_controller()->skip_post_login_screens());
 
     user_manager::KnownUser known_user(g_browser_process->local_state());
     const user_manager::User* user =

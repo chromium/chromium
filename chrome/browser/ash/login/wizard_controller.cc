@@ -358,9 +358,6 @@ OobeScreenId PrefToScreenId(const std::string& pref_value) {
 const int WizardController::kMinAudibleOutputVolumePercent = 10;
 
 // static
-bool WizardController::skip_post_login_screens_ = false;
-
-// static
 bool WizardController::skip_enrollment_prompts_for_testing_ = false;
 
 // static
@@ -380,6 +377,8 @@ WizardController::WizardController(WizardContext* wizard_context)
     : screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context),
       network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
+  wizard_context_->skip_post_login_screens_for_tests =
+      switches::ShouldSkipOobePostLogin();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
     // accessibility_manager could be null in Tests.
@@ -2307,14 +2306,12 @@ bool WizardController::IsZeroDelayEnabled() {
   return g_using_zero_delays;
 }
 
-// static
 void WizardController::SkipPostLoginScreensForTesting() {
-  skip_post_login_screens_ = true;
-  if (!default_controller() || !default_controller()->current_screen())
+  wizard_context_->skip_post_login_screens_for_tests = true;
+  auto* current_screen = default_controller()->current_screen();
+  if (!current_screen)
     return;
-
-  const OobeScreenId current_screen_id =
-      default_controller()->current_screen()->screen_id();
+  const OobeScreenId current_screen_id = current_screen->screen_id();
   if (current_screen_id == LocaleSwitchView::kScreenId ||
       current_screen_id == TermsOfServiceScreenView::kScreenId ||
       current_screen_id == FamilyLinkNoticeView::kScreenId ||

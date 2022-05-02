@@ -180,7 +180,7 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
   DisplayPasswordButtonTest() : LoginManagerTest() {}
 
   void LoginAndLock(const LoginManagerMixin::TestUserInfo& test_user) {
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
@@ -321,7 +321,7 @@ class UserManagementDisclosureTest : public LoginManagerTest {
     if (user_policy_mixin)
       user_policy_mixin->RequestPolicyUpdate();
 
-    WizardController::SkipPostLoginScreensForTesting();
+    login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
     login_manager_mixin_.LoginAndWaitForActiveSession(context);

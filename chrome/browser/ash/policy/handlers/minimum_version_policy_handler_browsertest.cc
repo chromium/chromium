@@ -904,7 +904,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
   ~MinimumVersionPolicyChildUser() override = default;
 
   void LoginChildUser() {
-    ash::WizardController::SkipPostLoginScreensForTesting();
+    login_manager_.SkipPostLoginScreens();
     user_policy_mixin_.RequestPolicyUpdate();
     login_manager_.LoginAsNewChildUser();
     login_manager_.WaitForActiveSession();
