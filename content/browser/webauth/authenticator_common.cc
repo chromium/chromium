@@ -693,6 +693,18 @@ void AuthenticatorCommon::MakeCredential(
   caller_origin_ = caller_origin;
   relying_party_id_ = options->relying_party.id;
 
+  absl::optional<std::string> appid_exclude;
+  if (options->appid_exclude) {
+    appid_exclude = ProcessAppIdExtension(
+        GetRenderFrameHost()->GetBrowserContext(), *options->appid_exclude,
+        caller_origin, options->remote_desktop_client_override);
+    if (!appid_exclude) {
+      CompleteMakeCredentialRequest(
+          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
+      return;
+    }
+  }
+
   // If there is an active webAuthenticationProxy extension, let it handle the
   // request.
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
@@ -739,18 +751,6 @@ void AuthenticatorCommon::MakeCredential(
       CompleteMakeCredentialRequest(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
-  }
-
-  absl::optional<std::string> appid_exclude;
-  if (options->appid_exclude) {
-    appid_exclude = ProcessAppIdExtension(
-        GetRenderFrameHost()->GetBrowserContext(), *options->appid_exclude,
-        caller_origin, options->remote_desktop_client_override);
-    if (!appid_exclude) {
-      CompleteMakeCredentialRequest(
-          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
-      return;
-    }
   }
 
   if (options->user.icon_url) {
@@ -1017,6 +1017,19 @@ void AuthenticatorCommon::GetAssertion(
 
   caller_origin_ = caller_origin;
   relying_party_id_ = options->relying_party_id;
+
+  if (options->appid) {
+    requested_extensions_.insert(RequestExtension::kAppID);
+    app_id_ = ProcessAppIdExtension(GetRenderFrameHost()->GetBrowserContext(),
+                                    *options->appid, caller_origin_,
+                                    options->remote_desktop_client_override);
+    if (!app_id_) {
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
+      return;
+    }
+  }
+
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
     if (options->remote_desktop_client_override) {
@@ -1103,18 +1116,6 @@ void AuthenticatorCommon::GetAssertion(
       return;
     }
     empty_allow_list_ = true;
-  }
-
-  if (options->appid) {
-    requested_extensions_.insert(RequestExtension::kAppID);
-    app_id_ = ProcessAppIdExtension(GetRenderFrameHost()->GetBrowserContext(),
-                                    *options->appid, caller_origin_,
-                                    options->remote_desktop_client_override);
-    if (!app_id_) {
-      CompleteGetAssertionRequest(
-          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
-      return;
-    }
   }
 
   if (options->large_blob_read && options->large_blob_write) {
