@@ -45,13 +45,6 @@ constexpr char16_t kPlatformDelimiter[] = u", ";
 constexpr char16_t kDetailsDelimiter[] = u" - ";
 constexpr char16_t kA11yDelimiter[] = u", ";
 
-// TODO(crbug.com/1305880): Replace with launch URL once finalized.
-constexpr char kLaunchUrlPrefix[] = "https://todo.com?game=";
-
-GURL LaunchUrlFromId(const std::string& id) {
-  return GURL(base::StrCat({kLaunchUrlPrefix, id}));
-}
-
 bool IsDarkModeEnabled() {
   // TODO(crbug.com/1258415): Simplify this logic once the productivity launcher
   // is launched.
@@ -79,7 +72,7 @@ GameResult::GameResult(Profile* profile,
                        const std::u16string& query)
     : profile_(profile),
       list_controller_(list_controller),
-      launch_url_(LaunchUrlFromId(game.GetAppId())) {
+      launch_url_(game.GetSourceExtras()->AsGameExtras()->GetDeeplinkUrl()) {
   DCHECK(profile);
   DCHECK(list_controller);
   DCHECK(app_discovery_service);

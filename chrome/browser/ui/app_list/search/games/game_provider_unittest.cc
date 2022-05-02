@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace app_list {
 namespace {
@@ -35,7 +36,7 @@ apps::Result MakeAppsResult(const std::u16string& title) {
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
           u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png")));
+          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
 }
 
 }  // namespace

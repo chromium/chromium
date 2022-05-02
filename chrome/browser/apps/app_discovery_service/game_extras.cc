@@ -14,11 +14,13 @@ GameExtras::GameExtras(
     const absl::optional<std::vector<std::u16string>>& platforms,
     const std::u16string& source,
     const std::u16string& publisher,
-    const base::FilePath& relative_icon_path)
+    const base::FilePath& relative_icon_path,
+    const GURL& deeplink_url)
     : platforms_(platforms),
       source_(source),
       publisher_(publisher),
-      relative_icon_path_(relative_icon_path) {}
+      relative_icon_path_(relative_icon_path),
+      deeplink_url_(deeplink_url) {}
 
 GameExtras::GameExtras(const GameExtras&) = default;
 
@@ -43,6 +45,10 @@ const std::u16string& GameExtras::GetPublisher() const {
 
 const base::FilePath& GameExtras::GetRelativeIconPath() const {
   return relative_icon_path_;
+}
+
+const GURL& GameExtras::GetDeeplinkUrl() const {
+  return deeplink_url_;
 }
 
 GameExtras* GameExtras::AsGameExtras() {

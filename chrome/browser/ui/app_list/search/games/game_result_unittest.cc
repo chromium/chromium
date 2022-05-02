@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace app_list {
 
@@ -43,7 +44,7 @@ TEST_F(GameResultTest, Basic) {
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
           u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png")));
+          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,
                     apps_result, 0.6, u"SomeGame");
@@ -71,7 +72,8 @@ TEST_F(GameResultTest, NoPlatforms) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({})), u"SourceName",
-          u"TestGamePublisher", base::FilePath("/icons/test.png")));
+          u"TestGamePublisher", base::FilePath("/icons/test.png"),
+          GURL("https://game.com/game")));
 
   GameResult result1(profile_.get(), &list_controller_, app_discovery_service,
                      apps_result1, 0.6, u"SomeGame");
@@ -80,9 +82,9 @@ TEST_F(GameResultTest, NoPlatforms) {
 
   apps::Result apps_result2(
       apps::AppSource::kGames, "12345", u"Title",
-      std::make_unique<apps::GameExtras>(absl::nullopt, u"SourceName",
-                                         u"TestGamePublisher",
-                                         base::FilePath("/icons/test.png")));
+      std::make_unique<apps::GameExtras>(
+          absl::nullopt, u"SourceName", u"TestGamePublisher",
+          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
 
   GameResult result2(profile_.get(), &list_controller_, app_discovery_service,
                      apps_result1, 0.6, u"SomeGame");

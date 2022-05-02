@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace {
 extern const char kDefaultLocale[] = "en-US";
@@ -217,7 +218,8 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
         GetPlatforms(app_with_locale.app()),
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
         base::UTF8ToUTF16(app_with_locale.app().publisher_name()),
-        base::FilePath(app_with_locale.app().icon_info().icon_path()));
+        base::FilePath(app_with_locale.app().icon_info().icon_path()),
+        GURL(app_with_locale.app().deeplink()));
     results.push_back(Result(
         AppSource::kGames, app_with_locale.app().app_id_for_platform(),
         GetLocalisedName(app_with_locale.locale_availability(), profile_),
