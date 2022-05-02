@@ -18340,4 +18340,62 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
             collected_bounds.bounds().find(kFourthId)->second);
 }
 
+// Check if picturelayer's ScrollInteractionInProgress() return true even when
+// BrowserControl is consuming ScrollUpdate.
+TEST_P(LayerTreeHostImplBrowserControlsTest,
+       BrowserControlsScrollInteractionInProgress) {
+  gfx::Size inner_size = gfx::Size(100, 100);
+  gfx::Size outer_size = gfx::Size(100, 100);
+  gfx::Size content_size = gfx::Size(100, 200);
+  SetupBrowserControlsAndScrollLayerWithVirtualViewport(inner_size, outer_size,
+                                                        content_size);
+
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+
+  // Create a content layer beneath the outer viewport scroll layer.
+  scoped_refptr<FakeRasterSource> raster_source(
+      FakeRasterSource::CreateFilled(content_size));
+
+  auto* picture_layer =
+      AddLayer<FakePictureLayerImpl>(host_impl_->active_tree(), raster_source);
+  CopyProperties(OuterViewportScrollLayer(), picture_layer);
+  picture_layer->SetBounds(content_size);
+  picture_layer->SetDrawsContent(true);
+  picture_layer->SetNeedsPushProperties();
+  active_tree->PushPageScaleFromMainThread(1.0f, 1.0f, 2.0f);
+  DrawFrame();
+
+  EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
+            GetInputHandler()
+                .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 50),
+                                        ui::ScrollInputType::kTouchscreen)
+                                 .get(),
+                             ui::ScrollInputType::kTouchscreen)
+                .thread);
+  // shownratio == 1
+  EXPECT_EQ(1, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), false);
+
+  // 0 < shownratio <1
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(),
+                                             gfx::Vector2dF(0, 25),
+                                             ui::ScrollInputType::kTouchscreen)
+                                     .get());
+  EXPECT_GT(host_impl_->active_tree()->CurrentTopControlsShownRatio(), 0);
+  EXPECT_LT(host_impl_->active_tree()->CurrentTopControlsShownRatio(), 1);
+  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), true);
+
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(),
+                                             gfx::Vector2dF(0, 30),
+                                             ui::ScrollInputType::kTouchscreen)
+                                     .get());
+  // now shownratio == 0
+  EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), true);
+
+  GetInputHandler().ScrollEnd();
+  // scroll end, shownratio == 0
+  EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), false);
+}
 }  // namespace cc

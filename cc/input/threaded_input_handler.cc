@@ -418,6 +418,8 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   bool did_scroll_y = scroll_state->caused_scroll_y();
   did_scroll_x_for_scroll_gesture_ |= did_scroll_x;
   did_scroll_y_for_scroll_gesture_ |= did_scroll_y;
+  delta_consumed_for_scroll_gesture_ |=
+      scroll_state->delta_consumed_for_scroll_sequence();
   bool did_scroll_content = did_scroll_x || did_scroll_y;
   if (did_scroll_content) {
     bool is_animated_scroll = ShouldAnimateScroll(*scroll_state);
@@ -1188,10 +1190,7 @@ ActivelyScrollingType ThreadedInputHandler::GetActivelyScrollingType() const {
   if (!last_scroll_update_state_)
     return ActivelyScrollingType::kNone;
 
-  bool did_scroll_content =
-      did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_;
-
-  if (!did_scroll_content)
+  if (!delta_consumed_for_scroll_gesture_)
     return ActivelyScrollingType::kNone;
 
   if (ShouldAnimateScroll(last_scroll_update_state_.value()))
@@ -2163,6 +2162,7 @@ void ThreadedInputHandler::ClearCurrentlyScrollingNode() {
   accumulated_root_overscroll_ = gfx::Vector2dF();
   did_scroll_x_for_scroll_gesture_ = false;
   did_scroll_y_for_scroll_gesture_ = false;
+  delta_consumed_for_scroll_gesture_ = false;
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
   latched_scroll_type_.reset();
   last_scroll_update_state_.reset();
