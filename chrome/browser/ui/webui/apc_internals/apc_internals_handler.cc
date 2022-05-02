@@ -20,6 +20,8 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 
+using password_manager::PasswordScriptsFetcher;
+
 namespace {
 
 // TODO(1311324): Reduce the level of code duplication between
@@ -73,14 +75,15 @@ void APCInternalsHandler::OnScriptCacheRequested(
 
 void APCInternalsHandler::OnRefreshScriptCacheRequested(
     const base::Value::List& args) {
-#if BUILDFLAG(IS_ANDROID)
-  content::BrowserContext* browser_context =
-      web_ui()->GetWebContents()->GetBrowserContext();
-  password_manager::PasswordScriptsFetcher* scripts_fetcher =
-      PasswordScriptsFetcherFactory::GetForBrowserContext(browser_context);
-  if (scripts_fetcher)
+  if (PasswordScriptsFetcher* scripts_fetcher = GetPasswordScriptsFetcher();
+      scripts_fetcher) {
     scripts_fetcher->PrewarmCache();
-#endif
+  }
+}
+
+PasswordScriptsFetcher* APCInternalsHandler::GetPasswordScriptsFetcher() {
+  return PasswordScriptsFetcherFactory::GetForBrowserContext(
+      web_ui()->GetWebContents()->GetBrowserContext());
 }
 
 // Returns a list of dictionaries that contain the name and the state of
@@ -91,9 +94,10 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
   // base::FeatureList::IsEnabled) checks that there is only one memory address
   // per feature.
   const base::Feature* const apc_features[] = {
+      &password_manager::features::kPasswordChange,
       &password_manager::features::kPasswordChangeInSettings,
-      &password_manager::features::kPasswordDomainCapabilitiesFetching,
       &password_manager::features::kPasswordScriptsFetching,
+      &password_manager::features::kPasswordDomainCapabilitiesFetching,
       &password_manager::features::kForceEnablePasswordDomainCapabilities,
   };
 
@@ -121,24 +125,18 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
 }
 
 base::Value::Dict APCInternalsHandler::GetPasswordScriptFetcherInformation() {
-  content::BrowserContext* browser_context =
-      web_ui()->GetWebContents()->GetBrowserContext();
-  raw_ptr<password_manager::PasswordScriptsFetcher> scripts_fetcher =
-      PasswordScriptsFetcherFactory::GetForBrowserContext(browser_context);
-  if (scripts_fetcher)
+  if (PasswordScriptsFetcher* scripts_fetcher = GetPasswordScriptsFetcher();
+      scripts_fetcher) {
     return scripts_fetcher->GetDebugInformationForInternals();
+  }
   return base::Value::Dict();
 }
 
 base::Value::List APCInternalsHandler::GetPasswordScriptFetcherCache() {
-  content::BrowserContext* browser_context =
-      web_ui()->GetWebContents()->GetBrowserContext();
-  raw_ptr<password_manager::PasswordScriptsFetcher> scripts_fetcher =
-      PasswordScriptsFetcherFactory::GetForBrowserContext(browser_context);
-  if (scripts_fetcher) {
+  if (PasswordScriptsFetcher* scripts_fetcher = GetPasswordScriptsFetcher();
+      scripts_fetcher) {
     return scripts_fetcher->GetCacheEntries();
   }
-
   return base::Value::List();
 }
 
