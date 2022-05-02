@@ -11,7 +11,6 @@
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
-#include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
@@ -101,9 +100,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "media/audio/test_audio_thread.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/audio/public/cpp/fake_system_info.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/page_transition_types.h"
@@ -137,11 +134,6 @@ const char kTestLocalFsKioskApp[] = "abbjjkefakmllanciinhgjgjamdmlbdg";
 //     chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
 //         detail/enelnimkndkcejhjnpaofdlbbfmdnagi
 const char kTestGetVolumeListKioskApp[] = "enelnimkndkcejhjnpaofdlbbfmdnagi";
-
-// An app to test Kiosk virtual keyboard API chrome.virtualKeyboard.* .
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/virtual_keyboard/src/
-const char kTestVirtualKeyboardKioskApp[] = "bbkdjgcbpfjanhcdljmpddplpeehopdo";
 
 // Testing apps for testing kiosk multi-app feature. All the crx files are in
 //    chrome/test/data/chromeos/app_mode/webstore/downloads.
@@ -1859,125 +1851,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
   secondary_apps.push_back(secondary_ext);
 
   LaunchKioskWithSecondaryApps(primary_app, secondary_apps);
-}
-
-// A custom SoundsManagerTestImpl implements Initialize and Play only.
-// The difference with audio::SoundsManagerImpl is AudioStreamHandler is
-// only initialized upon Play is called, so the most recent AudioManager
-// instance could be used, to make sure of using MockAudioManager to play
-// bundled sounds.
-// It's not a nested class under KioskVirtualKeyboardTest because forward
-// declaration of a nested class is not possible.
-// TODO(crbug.com/805319): remove this fake impl for test.
-class KioskVirtualKeyboardTestSoundsManagerTestImpl
-    : public audio::SoundsManager {
- public:
-  KioskVirtualKeyboardTestSoundsManagerTestImpl() {}
-
-  KioskVirtualKeyboardTestSoundsManagerTestImpl(
-      const KioskVirtualKeyboardTestSoundsManagerTestImpl&) = delete;
-  KioskVirtualKeyboardTestSoundsManagerTestImpl& operator=(
-      const KioskVirtualKeyboardTestSoundsManagerTestImpl&) = delete;
-
-  bool Initialize(SoundKey key, const base::StringPiece& data) override {
-    sound_data_[key] = std::string(data);
-    return true;
-  }
-
-  bool Play(SoundKey key) override {
-    auto iter = sound_data_.find(key);
-    if (iter == sound_data_.end()) {
-      LOG(WARNING) << "Playing non-existent key = " << key;
-      return false;
-    }
-
-    auto handler = std::make_unique<audio::AudioStreamHandler>(
-        content::GetAudioServiceStreamFactoryBinder(), iter->second);
-    if (!handler->IsInitialized()) {
-      LOG(WARNING) << "Can't initialize AudioStreamHandler for key = " << key;
-      return false;
-    }
-    return handler->Play();
-  }
-
-  bool Stop(SoundKey key) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
-  base::TimeDelta GetDuration(SoundKey key) override {
-    NOTIMPLEMENTED();
-    return base::TimeDelta();
-  }
-
- private:
-  std::map<SoundKey, std::string> sound_data_;
-};
-
-// Specialized test fixture for testing kiosk mode where virtual keyboard is
-// enabled.
-class KioskVirtualKeyboardTest : public KioskDeviceOwnedTest,
-                                 public audio::FakeSystemInfo {
- public:
-  KioskVirtualKeyboardTest() {
-    audio::FakeSystemInfo::OverrideGlobalBinderForAudioService(this);
-  }
-
-  KioskVirtualKeyboardTest(const KioskVirtualKeyboardTest&) = delete;
-  KioskVirtualKeyboardTest& operator=(const KioskVirtualKeyboardTest&) = delete;
-
-  ~KioskVirtualKeyboardTest() override {
-    audio::FakeSystemInfo::ClearGlobalBinderForAudioService();
-  }
-
- protected:
-  // KioskVirtualKeyboardTest overrides:
-  void SetUp() override {
-    audio::SoundsManager::InitializeForTesting(
-        new KioskVirtualKeyboardTestSoundsManagerTestImpl());
-    KioskBaseTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    KioskBaseTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID,
-        kTestVirtualKeyboardKioskApp);
-    command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
-  }
-
-  // audio::FakeSystemInfo override.
-  void HasInputDevices(HasInputDevicesCallback callback) override {
-    std::move(callback).Run(true);
-  }
-};
-
-// Flaky. crbug.com/1094809
-#ifdef NDEBUG
-#define MAYBE_RestrictFeatures RestrictFeatures
-#else
-#define MAYBE_RestrictFeatures DISABLED_RestrictFeatures
-#endif
-IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, MAYBE_RestrictFeatures) {
-  set_test_app_id(kTestVirtualKeyboardKioskApp);
-  set_test_app_version("0.1");
-  set_test_crx_file(test_app_id() + ".crx");
-
-  // Reset the keyboard config in case these values are changed in the previous
-  // test cases.
-  keyboard::KeyboardConfig config;
-  EXPECT_TRUE(config.auto_capitalize);
-  EXPECT_TRUE(config.auto_complete);
-  EXPECT_TRUE(config.auto_correct);
-  EXPECT_TRUE(config.handwriting);
-  EXPECT_TRUE(config.spell_check);
-  EXPECT_TRUE(config.voice_input);
-  KeyboardController::Get()->SetKeyboardConfig(config);
-
-  extensions::ResultCatcher catcher;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 class KioskAutoLaunchViewsTest : public OobeBaseTest,
