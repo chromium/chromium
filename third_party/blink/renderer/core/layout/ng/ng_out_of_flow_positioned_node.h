@@ -32,11 +32,13 @@ class NGContainingBlock {
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
                     const NGPhysicalFragment* fragment,
-                    bool is_inside_column_spanner)
+                    bool is_inside_column_spanner,
+                    bool requires_content_before_breaking)
       : offset_(offset),
         relative_offset_(relative_offset),
         fragment_(std::move(fragment)),
-        is_inside_column_spanner_(is_inside_column_spanner) {}
+        is_inside_column_spanner_(is_inside_column_spanner),
+        requires_content_before_breaking_(requires_content_before_breaking) {}
 
   OffsetType Offset() const { return offset_; }
   void IncreaseBlockOffset(LayoutUnit block_offset) {
@@ -45,6 +47,13 @@ class NGContainingBlock {
   OffsetType RelativeOffset() const { return relative_offset_; }
   const NGPhysicalFragment* Fragment() const { return fragment_; }
   bool IsInsideColumnSpanner() const { return is_inside_column_spanner_; }
+
+  void SetRequiresContentBeforeBreaking(bool b) {
+    requires_content_before_breaking_ = b;
+  }
+  bool RequiresContentBeforeBreaking() const {
+    return requires_content_before_breaking_;
+  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment_); }
 
@@ -57,6 +66,10 @@ class NGContainingBlock {
   // True if there is a column spanner between the containing block and the
   // multicol container (or if the containing block is a column spanner).
   bool is_inside_column_spanner_ = false;
+  // True if we need to keep some child content in the current fragmentainer
+  // before breaking (even that overflows the fragmentainer). See
+  // NGBoxFragmentBuilder::SetRequiresContentBeforeBreaking() for more details.
+  bool requires_content_before_breaking_ = false;
 };
 
 // This holds the containing block for an out-of-flow positioned element

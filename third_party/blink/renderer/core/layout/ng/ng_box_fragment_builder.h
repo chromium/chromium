@@ -648,7 +648,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     math_italic_correction_ = italic_correction;
   }
 
-  void AdjustOffsetsForFragmentainerDescendant(
+  void AdjustFragmentainerDescendant(
       NGLogicalOOFNodeForFragmentation& descendant,
       bool only_fixedpos_containing_block = false);
   void AdjustFixedposContainingBlockForFragmentainerDescendants();

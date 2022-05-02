@@ -496,7 +496,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
               NGContainingBlock<LogicalOffset>(
                   fixedpos_containing_block_offset,
                   fixedpos_containing_block_rel_offset,
-                  fixedpos_containing_block_fragment, is_inside_column_spanner),
+                  fixedpos_containing_block_fragment, is_inside_column_spanner,
+                  multicol_info->fixedpos_containing_block
+                      .RequiresContentBeforeBreaking()),
               new_fixedpos_inline_container));
     }
   }
@@ -621,12 +623,15 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
          /* needs_block_offset_adjustment */ false,
          NGContainingBlock<LogicalOffset>(
              containing_block_offset, containing_block_rel_offset,
-             containing_block_fragment, container_inside_column_spanner),
+             containing_block_fragment, container_inside_column_spanner,
+             descendant.containing_block.RequiresContentBeforeBreaking()),
          NGContainingBlock<LogicalOffset>(
              fixedpos_containing_block_offset,
              fixedpos_containing_block_rel_offset,
              fixedpos_containing_block_fragment,
-             fixedpos_container_inside_column_spanner),
+             fixedpos_container_inside_column_spanner,
+             descendant.fixedpos_containing_block
+                 .RequiresContentBeforeBreaking()),
          new_fixedpos_inline_container});
 
     // Remove any descendants that were propagated to the next fragmentation

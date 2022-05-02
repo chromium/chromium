@@ -761,7 +761,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           if (layout_box != only_layout)
             container_builder_->InsertLegacyPositionedObject(candidate.Node());
           NGLogicalOOFNodeForFragmentation fragmentainer_descendant(candidate);
-          container_builder_->AdjustOffsetsForFragmentainerDescendant(
+          container_builder_->AdjustFragmentainerDescendant(
               fragmentainer_descendant);
           container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
           container_builder_->AddOutOfFlowFragmentainerDescendant(
@@ -985,12 +985,15 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
           NGContainingBlock<LogicalOffset>(
               containing_block_offset, containing_block_rel_offset,
               containing_block_fragment,
-              descendant.containing_block.IsInsideColumnSpanner()),
+              descendant.containing_block.IsInsideColumnSpanner(),
+              descendant.containing_block.RequiresContentBeforeBreaking()),
           NGContainingBlock<LogicalOffset>(
               fixedpos_containing_block_offset,
               fixedpos_containing_block_rel_offset,
               fixedpos_containing_block_fragment,
-              descendant.fixedpos_containing_block.IsInsideColumnSpanner()),
+              descendant.fixedpos_containing_block.IsInsideColumnSpanner(),
+              descendant.fixedpos_containing_block
+                  .RequiresContentBeforeBreaking()),
           fixedpos_inline_container};
       oof_nodes_to_layout.push_back(node);
     }
@@ -1249,6 +1252,8 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_content_size, default_writing_direction_.GetWritingMode());
 
+  bool requires_content_before_breaking = false;
+
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box). ng_absolute_utils expects the static position to
   // be relative to the container's padding-box. Since
@@ -1257,8 +1262,11 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   NGLogicalStaticPosition static_position = oof_node.static_position;
   static_position.offset -= container_info.rect.offset;
   if (containing_block_fragment) {
-    static_position.offset += To<NGLogicalOOFNodeForFragmentation>(oof_node)
-                                  .containing_block.Offset();
+    const auto& containing_block_for_fragmentation =
+        To<NGLogicalOOFNodeForFragmentation>(oof_node).containing_block;
+    static_position.offset += containing_block_for_fragmentation.Offset();
+    requires_content_before_breaking =
+        containing_block_for_fragmentation.RequiresContentBeforeBreaking();
   }
 
   NGLogicalStaticPosition oof_static_position =
@@ -1299,7 +1307,8 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
                   default_writing_direction_,
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   fixedpos_containing_block, fixedpos_inline_container,
-                  oof_node.inline_container.container);
+                  oof_node.inline_container.container,
+                  requires_content_before_breaking);
 }
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
@@ -1502,7 +1511,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
         node_info.node, container_content_size_in_candidate_writing_mode,
         offset_info.block_estimate, offset_info.node_dimensions,
         offset.block_offset, oof_node_to_layout.break_token,
-        fragmentainer_constraint_space, should_use_fixed_block_size);
+        fragmentainer_constraint_space, should_use_fixed_block_size,
+        node_info.requires_content_before_breaking);
   }
 
   if (layout_result->Status() != NGLayoutResult::kSuccess) {
@@ -1564,7 +1574,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
     const LayoutUnit block_offset,
     const NGBlockBreakToken* break_token,
     const NGConstraintSpace* fragmentainer_constraint_space,
-    bool should_use_fixed_block_size) {
+    bool should_use_fixed_block_size,
+    bool requires_content_before_breaking) {
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;
@@ -1575,10 +1586,9 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
 
   // As the |block_estimate| is always in the node's writing mode, we build the
   // constraint space in the node's writing mode.
-  NGConstraintSpaceBuilder builder(
-      style.GetWritingMode(), style.GetWritingDirection(),
-      /* is_new_fc */ true,
-      /* requires_content_before_breaking */ false);
+  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                   style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(
       container_content_size_in_candidate_writing_mode);
@@ -1586,12 +1596,6 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
   if (should_use_fixed_block_size)
     builder.SetIsFixedBlockSize(true);
   if (fragmentainer_constraint_space) {
-    // Unlike in-flow elements, OOFs are never pushed to the next fragmentainer
-    // even if there's monolithic content that doesn't fit inside. See
-    // RequiresContentBeforeBreaking(), which we need to call for in-flow
-    // elements. For OOFs we can just pass true unconditionally.
-    bool requires_content_before_breaking = true;
-
     SetupSpaceBuilderForFragmentation(
         *fragmentainer_constraint_space, node, block_offset, &builder,
         /* is_new_fc */ true, requires_content_before_breaking);

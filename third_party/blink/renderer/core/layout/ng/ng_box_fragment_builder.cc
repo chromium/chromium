@@ -584,13 +584,12 @@ void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
   SetLastBaseline(FragmentBlockSize() + margins.block_end);
 }
 
-void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
+void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
     NGLogicalOOFNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
-  if (!PreviousBreakToken())
-    return;
-  LayoutUnit previous_consumed_block_size =
-      PreviousBreakToken()->ConsumedBlockSize();
+  LayoutUnit previous_consumed_block_size;
+  if (PreviousBreakToken())
+    previous_consumed_block_size = PreviousBreakToken()->ConsumedBlockSize();
 
   // If the containing block is fragmented, adjust the offset to be from the
   // first containing block fragment to the fragmentation context root. Also,
@@ -602,6 +601,8 @@ void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
         -previous_consumed_block_size);
     descendant.static_position.offset.block_offset +=
         previous_consumed_block_size;
+    descendant.containing_block.SetRequiresContentBeforeBreaking(
+        RequiresContentBeforeBreaking());
   }
 
   // If the fixedpos containing block is fragmented, adjust the offset to be
@@ -611,6 +612,8 @@ void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
        descendant.fixedpos_inline_container.container)) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(
         -previous_consumed_block_size);
+    descendant.fixedpos_containing_block.SetRequiresContentBeforeBreaking(
+        RequiresContentBeforeBreaking());
   }
 }
 
@@ -623,12 +626,12 @@ LayoutUnit NGBoxFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
 
 void NGBoxFragmentBuilder::
     AdjustFixedposContainingBlockForFragmentainerDescendants() {
-  if (!HasOutOfFlowFragmentainerDescendants() || !PreviousBreakToken())
+  if (!HasOutOfFlowFragmentainerDescendants())
     return;
 
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
-    AdjustOffsetsForFragmentainerDescendant(
-        descendant, /* only_fixedpos_containing_block */ true);
+    AdjustFragmentainerDescendant(descendant,
+                                  /* only_fixedpos_containing_block */ true);
   }
 }
 

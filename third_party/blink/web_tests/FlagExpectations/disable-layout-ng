@@ -287,6 +287,8 @@ crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-bloc
 crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-002.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-003.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-004.tentative.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-005.tentative.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-006.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-line-in-short-fragmentainer-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-line-in-short-fragmentainer-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-line-in-short-fragmentainer-002.html [ Failure ]
