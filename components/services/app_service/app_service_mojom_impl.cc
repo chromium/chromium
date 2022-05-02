@@ -348,12 +348,13 @@ void AppServiceMojomImpl::OnPreferredAppsChanged(
 
 void AppServiceMojomImpl::OnPreferredAppSet(
     const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter,
-    apps::mojom::IntentPtr intent,
+    IntentFilterPtr intent_filter,
+    IntentPtr intent,
     ReplacedAppPreferences replaced_app_preferences) {
   for (const auto& iter : publishers_) {
     iter.second->OnPreferredAppSet(
-        app_id, intent_filter->Clone(), intent->Clone(),
+        app_id, ConvertIntentFilterToMojomIntentFilter(intent_filter),
+        ConvertIntentToMojomIntent(intent),
         ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(
             replaced_app_preferences));
   }

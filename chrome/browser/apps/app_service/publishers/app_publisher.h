@@ -15,6 +15,9 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 
 namespace apps {
 
@@ -84,6 +87,22 @@ class AppPublisher {
                               const std::string& shortcut_id,
                               int64_t display_id) {}
 
+  // Indicates that the app identified by |app_id| has been set as a preferred
+  // app for |intent_filter|, and the |replaced_app_preferences| is the apps
+  // that are no longer preferred apps for their corresponding |intent_filters|.
+  // This method is used by the App Service to sync the change to publishers.
+  // |intent| is needed to set the preferred app in ARC.
+  virtual void OnPreferredAppSet(
+      const std::string& app_id,
+      IntentFilterPtr intent_filter,
+      IntentPtr intent,
+      ReplacedAppPreferences replaced_app_preferences) {}
+
+  // Indicates that the app identified by |app_id| has had its supported links
+  // preference changed, so that all supported link filters are either preferred
+  // (|open_in_app| is true) or not preferred (|open_in_app| is false). This
+  // method is used by the App Service to sync changes to publishers, and is
+  // called instead of OnPreferredAppSet for supported links changes.
   virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                  bool open_in_app) {}
 

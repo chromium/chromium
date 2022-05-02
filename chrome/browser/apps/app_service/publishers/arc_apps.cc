@@ -712,6 +712,14 @@ void ArcApps::LaunchShortcut(const std::string& app_id,
   arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
 }
 
+void ArcApps::OnPreferredAppSet(
+    const std::string& app_id,
+    IntentFilterPtr intent_filter,
+    IntentPtr intent,
+    ReplacedAppPreferences replaced_app_preferences) {
+  // TODO(crbug.com/1253250): Add the implementation.
+}
+
 void ArcApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

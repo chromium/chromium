@@ -14,6 +14,19 @@ IntentFile::IntentFile(const GURL& url) : url(url) {}
 
 IntentFile::~IntentFile() = default;
 
+std::unique_ptr<IntentFile> IntentFile::Clone() const {
+  auto intent_file = std::make_unique<IntentFile>(url);
+  if (mime_type.has_value()) {
+    intent_file->mime_type = mime_type.value();
+  }
+  if (file_name.has_value()) {
+    intent_file->file_name = file_name.value();
+  }
+  intent_file->file_size = file_size;
+  intent_file->is_directory = is_directory;
+  return intent_file;
+}
+
 bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
   switch (condition_value->match_type) {
     case PatternMatchType::kNone:
@@ -58,6 +71,46 @@ Intent::Intent(const std::string& action, std::vector<IntentFilePtr> files)
     : action(action), files(std::move(files)) {}
 
 Intent::~Intent() = default;
+
+std::unique_ptr<Intent> Intent::Clone() const {
+  auto intent = std::make_unique<Intent>(action);
+
+  if (url.has_value()) {
+    intent->url = url.value();
+  }
+  if (mime_type.has_value()) {
+    intent->mime_type = mime_type.value();
+  }
+  for (const auto& file : files) {
+    intent->files.push_back(file->Clone());
+  }
+  if (activity_name.has_value()) {
+    intent->activity_name = activity_name.value();
+  }
+  if (drive_share_url.has_value()) {
+    intent->drive_share_url = drive_share_url.value();
+  }
+  if (share_text.has_value()) {
+    intent->share_text = share_text.value();
+  }
+  if (share_title.has_value()) {
+    intent->share_title = share_title.value();
+  }
+  if (start_type.has_value()) {
+    intent->start_type = start_type.value();
+  }
+  for (const auto& category : categories) {
+    intent->categories.push_back(category);
+  }
+  if (data.has_value()) {
+    intent->data = data.value();
+  }
+  intent->ui_bypassed = ui_bypassed;
+  for (const auto& extra : extras) {
+    intent->extras[extra.first] = extra.second;
+  }
+  return intent;
+}
 
 absl::optional<std::string> Intent::GetIntentConditionValueByType(
     ConditionType condition_type) {

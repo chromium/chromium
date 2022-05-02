@@ -25,6 +25,8 @@ struct IntentFile {
   IntentFile& operator=(const IntentFile&) = delete;
   ~IntentFile();
 
+  std::unique_ptr<IntentFile> Clone() const;
+
   // Returns true if matches `condition_value`, otherwise, returns false.
   bool MatchConditionValue(const ConditionValuePtr& condition_value);
 
@@ -67,6 +69,8 @@ struct Intent {
   Intent(const Intent&) = delete;
   Intent& operator=(const Intent&) = delete;
   ~Intent();
+
+  std::unique_ptr<Intent> Clone() const;
 
   // Gets the field that need to be checked/matched based on `condition_type`.
   absl::optional<std::string> GetIntentConditionValueByType(

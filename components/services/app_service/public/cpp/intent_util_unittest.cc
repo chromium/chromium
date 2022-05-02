@@ -65,7 +65,37 @@ class IntentUtilTest : public testing::Test {
     return files;
   }
 
-  apps::mojom::IntentPtr CreateIntent(
+  apps::IntentPtr CreateIntent(
+      const std::string& action,
+      const GURL& url,
+      const std::string& mime_type,
+      std::vector<apps::IntentFilePtr> files,
+      const std::string& activity_name,
+      const GURL& drive_share_url,
+      const std::string& share_text,
+      const std::string& share_title,
+      const std::string& start_type,
+      std::vector<std::string> categories,
+      const std::string& data,
+      bool ui_bypassed,
+      const base::flat_map<std::string, std::string>& extras) {
+    auto intent = std::make_unique<apps::Intent>(action);
+    intent->url = url;
+    intent->mime_type = mime_type;
+    intent->files = std::move(files);
+    intent->activity_name = activity_name;
+    intent->drive_share_url = drive_share_url;
+    intent->share_text = share_text;
+    intent->share_title = share_title;
+    intent->start_type = start_type;
+    intent->categories = categories;
+    intent->data = data;
+    intent->ui_bypassed = ui_bypassed;
+    intent->extras = extras;
+    return intent;
+  }
+
+  apps::mojom::IntentPtr CreateMojomIntent(
       const std::string& action,
       const GURL& url,
       const std::string& mime_type,
@@ -1355,9 +1385,9 @@ TEST_F(IntentUtilTest, Convert) {
   files.push_back(std::move(file2));
 
   auto src_intent =
-      CreateIntent(action, test_url1, mime_type, std::move(files),
-                   activity_name, test_url3, share_text, share_title,
-                   start_type, {category1}, data, ui_bypassed, extras);
+      CreateMojomIntent(action, test_url1, mime_type, std::move(files),
+                        activity_name, test_url3, share_text, share_title,
+                        start_type, {category1}, data, ui_bypassed, extras);
   base::Value value = apps_util::ConvertIntentToValue(src_intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
@@ -1643,6 +1673,57 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   EXPECT_FALSE(filter12->IsFileExtensionsFilter());
 }
 
+TEST_F(IntentUtilTest, CloneIntent) {
+  const std::string action = apps_util::kIntentActionSend;
+  auto src_intent = std::make_unique<apps::Intent>(action);
+  auto dst_intent = src_intent->Clone();
+  EXPECT_EQ(action, dst_intent->action);
+  EXPECT_FALSE(dst_intent->ui_bypassed.has_value());
+
+  GURL test_url1 = GURL("https://www.google.com/");
+  GURL test_url2 = GURL("https://www.abc.com/");
+  GURL test_url3 = GURL("https://www.foo.com/");
+  const std::string mime_type = "image/jpeg";
+  const std::string activity_name = "test";
+  const std::string share_text = "share text";
+  const std::string share_title = "share title";
+  const std::string start_type = "start type";
+  const std::string category1 = "category1";
+  const std::string data = "data";
+  const bool ui_bypassed = true;
+  base::flat_map<std::string, std::string> extras = {
+      {"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}};
+
+  auto file1 = std::make_unique<apps::IntentFile>(test_url1);
+  auto file2 = std::make_unique<apps::IntentFile>(test_url2);
+  std::vector<apps::IntentFilePtr> files;
+  files.push_back(std::move(file1));
+  files.push_back(std::move(file2));
+
+  src_intent = CreateIntent(action, test_url1, mime_type, std::move(files),
+                            activity_name, test_url3, share_text, share_title,
+                            start_type, {category1}, data, ui_bypassed, extras);
+  dst_intent = src_intent->Clone();
+
+  EXPECT_EQ(action, dst_intent->action);
+  EXPECT_EQ(test_url1, dst_intent->url.value());
+  EXPECT_EQ(mime_type, dst_intent->mime_type.value());
+  EXPECT_EQ(2u, dst_intent->files.size());
+  EXPECT_EQ(test_url1, dst_intent->files[0]->url);
+  EXPECT_EQ(test_url2, dst_intent->files[1]->url);
+  EXPECT_EQ(activity_name, dst_intent->activity_name.value());
+  EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
+  EXPECT_EQ(share_text, dst_intent->share_text.value());
+  EXPECT_EQ(share_title, dst_intent->share_title.value());
+  EXPECT_EQ(start_type, dst_intent->start_type.value());
+  EXPECT_EQ(1u, dst_intent->categories.size());
+  EXPECT_EQ(category1, dst_intent->categories[0]);
+  EXPECT_EQ(data, dst_intent->data.value());
+  EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
+  EXPECT_EQ(3u, dst_intent->extras.size());
+  EXPECT_EQ(extras, dst_intent->extras);
+}
+
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 TEST_F(IntentUtilTest, MojomConvert) {
   const std::string action = apps_util::kIntentActionSend;
@@ -1670,9 +1751,9 @@ TEST_F(IntentUtilTest, MojomConvert) {
   files.push_back(std::move(file2));
 
   auto src_intent =
-      CreateIntent(action, test_url1, mime_type, std::move(files),
-                   activity_name, test_url3, share_text, share_title,
-                   start_type, {category1}, data, ui_bypassed, extras);
+      CreateMojomIntent(action, test_url1, mime_type, std::move(files),
+                        activity_name, test_url3, share_text, share_title,
+                        start_type, {category1}, data, ui_bypassed, extras);
   auto dst_intent = apps::ConvertIntentToMojomIntent(
       apps::ConvertMojomIntentToIntent(src_intent));
 

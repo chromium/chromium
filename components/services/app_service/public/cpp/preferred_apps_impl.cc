@@ -267,8 +267,10 @@ void PreferredAppsImpl::AddPreferredAppImpl(
     return;
   }
 
-  auto replaced_apps = preferred_apps_list_.AddPreferredApp(
-      app_id, ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
+  IntentFilterPtr intent_filter =
+      ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter);
+  auto replaced_apps =
+      preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
 
   auto mojom_replaced_apps =
       ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(replaced_apps);
@@ -291,8 +293,9 @@ void PreferredAppsImpl::AddPreferredAppImpl(
   // TODO(crbug.com/853604): The |replaced_app_preference| can be really big,
   // update this logic to only call the relevant publisher for each app after
   // updating the storage structure.
-  host_->OnPreferredAppSet(app_id, std::move(mojom_intent_filter),
-                           std::move(intent), std::move(replaced_apps));
+  host_->OnPreferredAppSet(app_id, std::move(intent_filter),
+                           ConvertMojomIntentToIntent(intent),
+                           std::move(replaced_apps));
 }
 
 void PreferredAppsImpl::RemovePreferredAppImpl(apps::mojom::AppType app_type,

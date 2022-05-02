@@ -237,6 +237,18 @@ void AppServiceProxyBase::InitializePreferredAppsForAllSubscribers() {
   }
 }
 
+void AppServiceProxyBase::OnPreferredAppSet(
+    const std::string& app_id,
+    IntentFilterPtr intent_filter,
+    IntentPtr intent,
+    ReplacedAppPreferences replaced_app_preferences) {
+  for (const auto& iter : publishers_) {
+    iter.second->OnPreferredAppSet(
+        app_id, intent_filter->Clone(), intent->Clone(),
+        CloneIntentFiltersMap(replaced_app_preferences));
+  }
+}
+
 void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
     const std::string& app_id,
     bool open_in_app) {
