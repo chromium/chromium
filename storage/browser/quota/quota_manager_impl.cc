@@ -192,19 +192,19 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   void Run() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Start the async process of gathering the info we need.
-    // Gather 4 pieces of info before computing an answer:
-    // settings, device_storage_capacity, host_usage, and host_quota.
+    // Gather info before computing an answer:
+    // settings, host_usage, host_quota and device_storage_capacity if
+    // unlimited.
+    int callback_count = is_unlimited_ ? 4 : 3;
     base::RepeatingClosure barrier = base::BarrierClosure(
-        4, base::BindOnce(&UsageAndQuotaInfoGatherer::OnBarrierComplete,
-                          weak_factory_.GetWeakPtr()));
+        callback_count,
+        base::BindOnce(&UsageAndQuotaInfoGatherer::OnBarrierComplete,
+                       weak_factory_.GetWeakPtr()));
 
     const std::string& host = storage_key_.origin().host();
 
     manager()->GetQuotaSettings(
         base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotSettings,
-                       weak_factory_.GetWeakPtr(), barrier));
-    manager()->GetStorageCapacity(
-        base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
                        weak_factory_.GetWeakPtr(), barrier));
     manager()->GetHostUsageWithBreakdown(
         host, type_,
@@ -213,6 +213,9 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     // Determine host_quota differently depending on type.
     if (is_unlimited_) {
+      manager()->GetStorageCapacity(
+          base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
+                         weak_factory_.GetWeakPtr(), barrier));
       SetDesiredHostQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
                           kNoLimit);
     } else if (type_ == StorageType::kSyncable) {
@@ -246,13 +249,13 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     int64_t host_quota = quota_override_size_.has_value()
                              ? quota_override_size_.value()
                              : desired_host_quota_;
-    int64_t temp_pool_free_space =
-        std::max(static_cast<int64_t>(0),
-                 available_space_ - settings_.must_remain_available);
 
-    // Constrain the desired |host_quota| to something that fits.
-    if (host_quota > temp_pool_free_space) {
-      if (is_unlimited_) {
+    if (is_unlimited_) {
+      int64_t temp_pool_free_space =
+          std::max(static_cast<int64_t>(0),
+                   available_space_ - settings_.must_remain_available);
+      // Constrain the desired |host_quota| to something that fits.
+      if (host_quota > temp_pool_free_space) {
         host_quota = available_space_ + host_usage_;
       }
     }
