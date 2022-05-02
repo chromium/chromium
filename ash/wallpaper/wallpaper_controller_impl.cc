@@ -1388,8 +1388,8 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     wallpaper_controller_client_->FetchGooglePhotosPhoto(
         params.account_id, params.id,
         base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosPhotoFetched,
-                       set_wallpaper_weak_factory_.GetWeakPtr(),
-                       std::move(params), std::move(callback)));
+                       set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                       std::move(callback)));
   }
 }
 
