@@ -1182,12 +1182,16 @@ void BrowserManager::OnSessionStateChanged() {
 }
 
 void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {
+  DCHECK(store);
+
   // A new policy got installed for the current user, so we need to pass it to
   // the Lacros browser.
   std::string policy_blob;
-  bool success =
-      store->policy_fetch_response()->SerializeToString(&policy_blob);
-  DCHECK(success);
+  if (store->policy_fetch_response()) {
+    const bool success =
+        store->policy_fetch_response()->SerializeToString(&policy_blob);
+    DCHECK(success);
+  }
   SetDeviceAccountPolicy(policy_blob);
 }
 
