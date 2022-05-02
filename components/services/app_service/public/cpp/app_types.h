@@ -216,7 +216,7 @@ COMPONENT_EXPORT(APP_TYPES)
 AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type);
 
 COMPONENT_EXPORT(APP_TYPES)
-mojom::AppType ConvertAppTypeToMojomAppType(AppType mojom_app_type);
+mojom::AppType ConvertAppTypeToMojomAppType(AppType app_type);
 
 COMPONENT_EXPORT(APP_TYPES)
 Readiness ConvertMojomReadinessToReadiness(

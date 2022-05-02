@@ -366,13 +366,16 @@ void AppServiceMojomImpl::OnSupportedLinksPreferenceChanged(
   }
 }
 
-apps::mojom::Publisher* AppServiceMojomImpl::GetMojomPublisher(
-    apps::mojom::AppType app_type) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return nullptr;
-  }
-  return iter->second.get();
+void AppServiceMojomImpl::OnSupportedLinksPreferenceChanged(
+    AppType app_type,
+    const std::string& app_id,
+    bool open_in_app) {
+  publishers_[ConvertAppTypeToMojomAppType(app_type)]
+      ->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
+}
+
+bool AppServiceMojomImpl::HasPublisher(AppType app_type) {
+  return base::Contains(publishers_, ConvertAppTypeToMojomAppType(app_type));
 }
 
 PreferredAppsList& AppServiceMojomImpl::GetPreferredAppsListForTesting() {

@@ -78,11 +78,6 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 
 namespace apps {
 
-apps::mojom::Publisher* PreferredAppsImpl::Host::GetMojomPublisher(
-    apps::mojom::AppType app_type) {
-  return nullptr;
-}
-
 PreferredAppsImpl::PreferredAppsImpl(
     Host* host,
     const base::FilePath& profile_dir,
@@ -329,7 +324,7 @@ void PreferredAppsImpl::RemovePreferredAppForFilterImpl(
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
-    apps::mojom::AppType app_type,
+    apps::mojom::AppType mojom_app_type,
     const std::string& app_id,
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
   auto changes = apps::mojom::PreferredAppChanges::New();
@@ -381,10 +376,10 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
-  auto* publisher = host_->GetMojomPublisher(app_type);
-  if (publisher) {
-    publisher->OnSupportedLinksPreferenceChanged(app_id,
-                                                 /*open_in_app=*/true);
+  AppType app_type = ConvertMojomAppTypToAppType(mojom_app_type);
+  if (host_->HasPublisher(app_type)) {
+    host_->OnSupportedLinksPreferenceChanged(app_type, app_id,
+                                             /*open_in_app=*/true);
   }
   for (const auto& removed_app_and_filters : removed) {
     // We don't know what app type the app is, so we have to notify all
@@ -394,10 +389,10 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   }
 }
 void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
-    apps::mojom::AppType app_type,
+    apps::mojom::AppType mojom_app_type,
     const std::string& app_id) {
-  auto* publisher = host_->GetMojomPublisher(app_type);
-  if (!publisher) {
+  AppType app_type = ConvertMojomAppTypToAppType(mojom_app_type);
+  if (!host_->HasPublisher(app_type)) {
     return;
   }
 
@@ -413,8 +408,8 @@ void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
         ConvertPreferredAppChangesToMojomPreferredAppChanges(changes));
   }
 
-  publisher->OnSupportedLinksPreferenceChanged(app_id,
-                                               /*open_in_app=*/false);
+  host_->OnSupportedLinksPreferenceChanged(app_type, app_id,
+                                           /*open_in_app=*/false);
 }
 
 }  // namespace apps

@@ -249,6 +249,17 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
   }
 }
 
+void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
+    AppType app_type,
+    const std::string& app_id,
+    bool open_in_app) {
+  publishers_[app_type]->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
+}
+
+bool AppServiceProxyBase::HasPublisher(AppType app_type) {
+  return base::Contains(publishers_, app_type);
+}
+
 absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
     const std::string& app_id) {
   return outer_icon_loader_.GetIconKey(app_id);

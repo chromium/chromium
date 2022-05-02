@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -141,10 +142,13 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                          bool open_in_app) override;
 
-  // Returns publisher for `app_type`, or nullptr if there is no publisher for
-  // `app_type`.
-  apps::mojom::Publisher* GetMojomPublisher(
-      apps::mojom::AppType app_type) override;
+  void OnSupportedLinksPreferenceChanged(AppType app_type,
+                                         const std::string& app_id,
+                                         bool open_in_app) override;
+
+  // Returns true if there is a publisher for `app_type`. Otherwise, returns
+  // false.
+  bool HasPublisher(AppType app_type) override;
 
   // Retern the preferred_apps_list_ for testing.
   PreferredAppsList& GetPreferredAppsListForTesting();
