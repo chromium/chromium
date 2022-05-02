@@ -2101,7 +2101,10 @@ def CheckNoAbbreviationInPngFileName(input_api, output_api):
     """
     errors = []
     files_to_check = [r'.*_[a-z]_.*\.png$|.*_[a-z]\.png$']
-    files_to_skip = [r'^native_client_sdk[\\/]']
+    files_to_skip = [r'^native_client_sdk[\\/]',
+                     r'^services[\\/]test[\\/]',
+                     r'^third_party[\\/]blink[\\/]web_tests[\\/]',
+                    ]
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=files_to_check, files_to_skip=files_to_skip)
     for f in input_api.AffectedFiles(include_deletes=False,
