@@ -125,10 +125,10 @@ declare_args() {
   # Enables runtime selection of ALSA library for audio.
   use_alsa = false
 
-  # Alsa should be used on non-Android, non-Mac POSIX systems.
-  # Alsa should be used on desktop Chromecast and audio-only Chromecast builds.
+  # Alsa should be used on non-Android, non-Mac POSIX systems (excluding CastOS
+  # video builds).
   if (is_posix && !is_android && !is_mac &&
-      (!is_chromecast || is_cast_desktop_build || is_cast_audio_only)) {
+      (!is_castos || is_cast_audio_only)) {
     use_alsa = true
 
     # Pulse is not supported on Chromecast platforms.
@@ -164,14 +164,6 @@ declare_args() {
 }
 
 declare_args() {
-  # When enabled, this feature allows developers to use a runtime flag to
-  # choose the implementation of the renderer that is used. On a build which
-  # enables the mojo renderer, if --disable-mojo-renderer is passed at start-up,
-  # the "default" renderer will be used instead. Both renderer implementations
-  # will be linked if this feature is enabled, increasing the binary size. This
-  # feature does not make sense if the mojo renderer is not enabled.
-  enable_runtime_media_renderer_selection = is_cast_desktop_build
-
   # Enables host verification for CDMs.
   # Windows and Mac.
   enable_cdm_host_verification =

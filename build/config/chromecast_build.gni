@@ -34,32 +34,28 @@ declare_args() {
 
   # True to enable the cast audio renderer.
   #
-  # TODO(crbug.com/1293520):  Remove this buildflag.
+  # TODO(crbug.com/1293520): Remove this buildflag.
   enable_cast_audio_renderer = false
 }
 
 declare_args() {
   # Set this true for a Chromecast build. Chromecast builds are supported on
-  # Linux and Android.
+  # Linux, Android, ChromeOS, and Fuchsia.
   #
   # During the migration from is_chromecast, this must be set to the same value
   # as is_chromecast.
   enable_cast_receiver = is_chromecast
+
+  # Set this to true to build for Nest hardware running Linux (aka "CastOS").
+  # Set this to false to use the defaults for the target OS/platform.
+  #
+  # TODO(crbug.com/1314528): Change default to false and require is_linux.
+  is_castos = is_chromecast
 }
 
 declare_args() {
-  # True if Chromecast build is targeted for linux desktop. This type of build
-  # is useful for testing and development, but currently supports only a subset
-  # of Cast functionality. Though this defaults to true for x86 Linux devices,
-  # this should be overriden manually for an embedded x86 build.
-  # TODO(slan): Remove instances of this when x86 is a fully supported platform.
-  #
-  # TODO(crbug.com/1293569): Move is_cast_desktop_build to //chromecast.
-  is_cast_desktop_build = enable_cast_receiver && target_os == "linux" &&
-                          (target_cpu == "x86" || target_cpu == "x64")
-
-  # True to enable the cast renderer.  It is enabled by default for linux and
-  # android audio only builds.
+  # True to enable the cast renderer.  It is enabled by default for Linux and
+  # Android audio only builds.
   #
   # TODO(crbug.com/1293520):  Remove this buildflag.
   enable_cast_renderer =
@@ -124,12 +120,11 @@ assert(is_linux || is_chromeos || is_android || is_fuchsia ||
            !enable_cast_receiver,
        "Cast receiver builds are not supported on $target_os")
 
-# Assert that is_cast_audio_only and is_cast_desktop_build are both false on a
-# non-Chromecast build.
-#
-# NOTE: This restriction should be removed in the future as it should be
-# possible to build an audio-only Cast-enabled browser on any platform.
-assert(enable_cast_receiver || (!is_cast_audio_only && !is_cast_desktop_build))
+assert(enable_cast_receiver || !is_cast_audio_only,
+       "is_cast_audio_only = true requires enable_cast_receiver = true.")
 
 assert(enable_cast_receiver == is_chromecast,
        "enable_cast_receiver and is_chromecast must be set to the same value.")
+
+assert(enable_cast_receiver || !is_castos,
+       "is_castos = true requires enable_cast_receiver = true.")

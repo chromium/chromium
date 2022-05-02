@@ -8,9 +8,19 @@ import("//components/cast_streaming/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 
-# This args block should contain arguments used within the //chromecast
+# These args blocks should contain arguments used within the //chromecast
 # directory. Arguments which are used in other Chrome components should
 # be instead declared in //build/config/chromecast_build.gni.
+declare_args() {
+  # True if Chromecast build is targeted for linux desktop. This type of build
+  # is useful for testing and development, but currently supports only a subset
+  # of Cast functionality. Though this defaults to true for x86 Linux devices,
+  # this should be overridden manually for an embedded x86 build.
+  is_cast_desktop_build =
+      target_os == "linux" && (target_cpu == "x86" || target_cpu == "x64") &&
+      enable_cast_receiver
+}
+
 declare_args() {
   # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
   # it will evaluate to 0. Overriding this when is_debug=false is useful for

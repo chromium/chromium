@@ -10,7 +10,7 @@ declare_args() {
   # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux
   # that does not require X11.
   use_ozone =
-      is_chromeos || (is_chromecast && !is_android) || is_fuchsia || is_linux
+      is_chromeos || (is_castos && !is_android) || is_fuchsia || is_linux
 }
 
 declare_args() {
@@ -71,15 +71,15 @@ declare_args() {
 
     if (is_cast_audio_only) {
       # Just use headless for audio-only Cast platforms.
-    } else if (is_chromecast && !is_fuchsia) {
-      # Enable the Cast ozone platform on all A/V Cast builds except Fuchsia.
+    } else if (is_castos && !is_fuchsia) {
+      # Enable the Cast ozone platform on all video CastOS builds.
       ozone_platform_cast = true
 
       # For visual desktop Chromecast builds, override the default "headless"
       # platform with --ozone-platform=x11.
-      # TODO(halliwell): Create a libcast_graphics implementation for desktop
-      # using X11, and disable this platform.
-      if (is_cast_desktop_build && !is_cast_audio_only) {
+      # NOTE: The CQ is one such case.
+      if (target_os == "linux" &&
+          (target_cpu == "x86" || target_cpu == "x64")) {
         ozone_platform_x11 = true
       } else {
         ozone_platform = "cast"

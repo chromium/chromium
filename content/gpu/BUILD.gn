@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -135,7 +136,7 @@ target(link_target_type, "gpu_sources") {
 
   # Use DRI on desktop Linux builds.
   if (current_cpu != "s390x" && current_cpu != "ppc64" && is_linux &&
-      (!is_chromecast || is_cast_desktop_build)) {
+      !is_castos) {
     configs += [ "//build/config/linux/dri" ]
   }
 }

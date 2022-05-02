@@ -31,7 +31,10 @@ buildflag_header("branding_buildflags") {
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
-  flags = [ "IS_CHROMECAST=$is_chromecast" ]
+  flags = [
+    "IS_CHROMECAST=$is_chromecast",
+    "IS_CASTOS=$is_castos",
+  ]
 }
 
 buildflag_header("chromeos_buildflags") {
