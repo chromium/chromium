@@ -18,6 +18,14 @@ PageContentAnnotationJob::PageContentAnnotationJob(
       inputs_(inputs.begin(), inputs.end()),
       job_creation_time_(base::TimeTicks::Now()) {
   DCHECK(!inputs_.empty());
+
+  // Allow the results to be populated in any order by filling the output vector
+  // with placeholder objects.
+  results_.reserve(inputs_.size());
+  for (size_t i = 0; i < inputs_.size(); i++) {
+    results_.push_back(
+        BatchAnnotationResult::CreateEmptyAnnotationsResult(std::string()));
+  }
 }
 
 PageContentAnnotationJob::~PageContentAnnotationJob() {
@@ -46,24 +54,28 @@ PageContentAnnotationJob::~PageContentAnnotationJob() {
 }
 
 void PageContentAnnotationJob::FillWithNullOutputs() {
-  while (auto input = GetNextInput()) {
+  for (size_t i = 0; i < CountOfRemainingNonNullInputs(); i++) {
+    std::string input = *GetNextInput();
     switch (type()) {
       case AnnotationType::kPageTopics:
-        PostNewResult(BatchAnnotationResult::CreatePageTopicsResult(
-            *input, absl::nullopt));
+        PostNewResult(
+            BatchAnnotationResult::CreatePageTopicsResult(input, absl::nullopt),
+            i);
         break;
       case AnnotationType::kPageEntities:
         PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
-            *input, absl::nullopt));
+                          input, absl::nullopt),
+                      i);
         break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
-            *input, absl::nullopt));
+                          input, absl::nullopt),
+                      i);
         break;
       case AnnotationType::kUnknown:
         NOTREACHED();
         PostNewResult(
-            BatchAnnotationResult::CreateEmptyAnnotationsResult(*input));
+            BatchAnnotationResult::CreateEmptyAnnotationsResult(input), i);
         break;
     }
   }
@@ -97,8 +109,9 @@ absl::optional<std::string> PageContentAnnotationJob::GetNextInput() {
 }
 
 void PageContentAnnotationJob::PostNewResult(
-    const BatchAnnotationResult& result) {
-  results_.push_back(result);
+    const BatchAnnotationResult& result,
+    size_t index) {
+  results_[index] = result;
 }
 
 bool PageContentAnnotationJob::HadAnySuccess() const {

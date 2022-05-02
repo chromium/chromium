@@ -64,7 +64,7 @@ void PageContentAnnotationJobExecutor::ExecuteJob(
         job->type(), input,
         base::BindOnce(
             &PageContentAnnotationJobExecutor::OnSingleInputExecutionComplete,
-            weak_ptr_factory_.GetWeakPtr(), job, on_each_done_callback));
+            weak_ptr_factory_.GetWeakPtr(), job, i, on_each_done_callback));
   }
 }
 
@@ -82,9 +82,10 @@ void PageContentAnnotationJobExecutor::OnJobExecutionComplete(
 
 void PageContentAnnotationJobExecutor::OnSingleInputExecutionComplete(
     PageContentAnnotationJob* job,
+    size_t index,
     base::OnceClosure on_single_input_done_barrier_closure,
     const BatchAnnotationResult& output) {
-  job->PostNewResult(output);
+  job->PostNewResult(output, index);
 
   // Running |on_single_input_done_barrier_closure| may destroy |job|.
   std::move(on_single_input_done_barrier_closure).Run();

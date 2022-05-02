@@ -54,13 +54,17 @@ TEST_F(PageContentAnnotationJobTest, Callback) {
   }
 
   BatchAnnotationResult expected =
-      BatchAnnotationResult::CreatePageTopicsResult("input", absl::nullopt);
+      BatchAnnotationResult::CreatePageTopicsResult("1", absl::nullopt);
 
-  job.PostNewResult(expected);
+  job.PostNewResult(expected, 0);
   job.OnComplete();
 
-  ASSERT_EQ(1U, results.size());
+  ASSERT_EQ(3U, results.size());
   EXPECT_EQ(expected, results[0]);
+  EXPECT_EQ(BatchAnnotationResult::CreateEmptyAnnotationsResult(std::string()),
+            results[1]);
+  EXPECT_EQ(BatchAnnotationResult::CreateEmptyAnnotationsResult(std::string()),
+            results[2]);
 }
 
 TEST_F(PageContentAnnotationJobTest, DeathOnUncompleted) {

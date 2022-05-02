@@ -50,6 +50,7 @@ class PageContentAnnotationJobExecutor {
   // then destroy |job|. |input| is the original input of the model execution.
   void OnSingleInputExecutionComplete(
       PageContentAnnotationJob* job,
+      size_t index,
       base::OnceClosure on_single_input_done_barrier_closure,
       const BatchAnnotationResult& output);
 
