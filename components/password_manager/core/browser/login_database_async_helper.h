@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
 
 namespace syncer {
@@ -24,6 +23,9 @@ class UnsyncedCredentialsDeletionNotifier;
 
 struct FieldInfo;
 struct InteractionsStats;
+
+using PasswordChangesOrError =
+    absl::variant<PasswordStoreChangeList, PasswordStoreBackendError>;
 
 // Class which interacts directly with LoginDatabase. It is also responsible to
 // sync passwords. Works only on background sequence.
@@ -42,33 +44,22 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       base::RepeatingClosure sync_enabled_or_disabled_cb);
 
   // Synchronous implementation of PasswordStoreBackend interface.
-  LoginsResult GetAllLogins(
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  LoginsResult GetAutofillableLogins(
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  LoginsResult FillMatchingLogins(
+  LoginsResultOrError GetAllLogins();
+  LoginsResultOrError GetAutofillableLogins();
+  LoginsResultOrError FillMatchingLogins(
       const std::vector<PasswordFormDigest>& forms,
-      bool include_psl,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList AddLogin(
-      const PasswordForm& form,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList UpdateLogin(
-      const PasswordForm& form,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList RemoveLogin(
-      const PasswordForm& form,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList RemoveLoginsCreatedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList RemoveLoginsByURLAndTime(
+      bool include_psl);
+  // absl::nullopt is returned when operation has failed.
+  PasswordChangesOrError AddLogin(const PasswordForm& form);
+  PasswordChangesOrError UpdateLogin(const PasswordForm& form);
+  PasswordChangesOrError RemoveLogin(const PasswordForm& form);
+  PasswordChangesOrError RemoveLoginsCreatedBetween(base::Time delete_begin,
+                                                    base::Time delete_end);
+  PasswordChangesOrError RemoveLoginsByURLAndTime(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreBackendMetricsRecorder metrics_recorder);
+      base::OnceCallback<void(bool)> sync_completion);
   PasswordStoreChangeList DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 

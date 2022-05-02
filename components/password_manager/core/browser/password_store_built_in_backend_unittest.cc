@@ -281,71 +281,6 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   RunUntilIdle();
 }
 
-// Verify that operations on a PasswordStore with a bad database cause no
-// explosions, but fail without side effect, return no data and trigger no
-// notifications.
-TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
-  PasswordStoreBackend* bad_backend =
-      InitializeWithDatabase(std::make_unique<BadLoginDatabase>());
-  RunUntilIdle();
-
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-
-  // Add a new autofillable login + a blocked login.
-  std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormData());
-  std::unique_ptr<PasswordForm> blocked_form(new PasswordForm(*form));
-  blocked_form->signon_realm = "http://foo.example.com";
-  blocked_form->url = GURL("http://foo.example.com/origin");
-  blocked_form->action = GURL("http://foo.example.com/action");
-  blocked_form->blocked_by_user = true;
-
-  base::RepeatingCallback<void(absl::optional<PasswordStoreChangeList>)>
-      handle_changes =
-          base::BindRepeating(&MockPasswordStoreBackendTester::HandleChanges,
-                              base::Unretained(&tester));
-  base::RepeatingCallback<void(LoginsResult)> handle_logins =
-      base::BindRepeating(&MockPasswordStoreBackendTester::HandleLogins,
-                          base::Unretained(&tester));
-  base::RepeatingCallback<void(LoginsResultOrError)> handle_logins_or_error =
-      base::BindRepeating(&MockPasswordStoreBackendTester::HandleLoginsOrError,
-                          base::Unretained(&tester));
-
-  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
-  bad_backend->AddLoginAsync(*form, handle_changes);
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&tester);
-
-  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
-  bad_backend->AddLoginAsync(*blocked_form, handle_changes);
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&tester);
-
-  // Get PSL matched logins; all logins; autofillable logins.
-  EXPECT_CALL(tester, LoginsReceivedConstRef(IsEmpty()));
-  bad_backend->FillMatchingLoginsAsync(handle_logins, true,
-                                       {PasswordFormDigest(*form)});
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&tester);
-
-  EXPECT_CALL(tester, LoginsReceivedConstRef(IsEmpty()));
-  bad_backend->GetAutofillableLoginsAsync(handle_logins_or_error);
-  RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&tester);
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins;
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  bad_backend->GetAllLoginsAsync(mock_reply.Get());
-  RunUntilIdle();
-
-  testing::Mock::VerifyAndClearExpectations(&tester);
-
-  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
-  bad_backend->RemoveLoginAsync(*form, handle_changes);
-  RunUntilIdle();
-}
-
 TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   PasswordStoreBackend* backend = Initialize();
 
@@ -596,12 +531,9 @@ TEST_F(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
 }
 
-// crbug/1317092: The test is flaky on all the platforms.
-TEST_F(PasswordStoreBuiltInBackendTest, DISABLED_RemoveLoginAsyncFailsMetrics) {
+TEST_F(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncFailsMetrics) {
   const char kDurationMetric[] =
       "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginAsync.Latency";
-  const char kSuccessMetric[] =
-      "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
@@ -621,8 +553,6 @@ TEST_F(PasswordStoreBuiltInBackendTest, DISABLED_RemoveLoginAsyncFailsMetrics) {
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
   histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
 }
 
 TEST_F(PasswordStoreBuiltInBackendTest,
