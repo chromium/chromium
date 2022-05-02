@@ -197,6 +197,7 @@ source_set("zlib_inflate_chunk_simd") {
   # style function declarations, which triggers warning C4131.
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":zlib_warnings" ]
 
   public_configs = [ ":zlib_inflate_chunk_simd_config" ]
 
@@ -263,8 +264,11 @@ source_set("zlib_slide_hash_simd") {
 }
 
 config("zlib_warnings") {
-  if (is_clang && use_x86_x64_optimizations) {
-    cflags = [ "-Wno-incompatible-pointer-types" ]
+  if (is_clang) {
+    cflags = [ "-Wno-deprecated-non-prototype" ]
+    if (use_x86_x64_optimizations) {
+      cflags += [ "-Wno-incompatible-pointer-types" ]
+    }
   }
 }
 
@@ -367,8 +371,11 @@ config("minizip_warnings") {
   visibility = [ ":*" ]
 
   if (is_clang) {
-    # zlib uses `if ((a == b))` for some reason.
-    cflags = [ "-Wno-parentheses-equality" ]
+    cflags = [
+      # zlib uses `if ((a == b))` for some reason.
+      "-Wno-parentheses-equality",
+      "-Wno-deprecated-non-prototype",
+    ]
   }
 }
 
@@ -432,7 +439,11 @@ if (!is_win || target_os != "winuwp") {
     sources = [ "contrib/minizip/minizip.c" ]
 
     if (is_clang) {
-      cflags = [ "-Wno-incompatible-pointer-types-discards-qualifiers" ]
+      cflags = [
+        "-Wno-incompatible-pointer-types-discards-qualifiers",
+
+        "-Wno-deprecated-non-prototype",
+      ]
     }
 
     if (!is_debug) {
@@ -452,7 +463,10 @@ if (!is_win || target_os != "winuwp") {
     sources = [ "contrib/minizip/miniunz.c" ]
 
     if (is_clang) {
-      cflags = [ "-Wno-incompatible-pointer-types-discards-qualifiers" ]
+      cflags = [
+        "-Wno-incompatible-pointer-types-discards-qualifiers",
+        "-Wno-deprecated-non-prototype",
+      ]
     }
 
     if (!is_debug) {

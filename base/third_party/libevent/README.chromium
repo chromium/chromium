@@ -31,3 +31,4 @@ static library using GYP.
 6) Remove an unnecessary workaround for OS X 10.4 from kqueue.c. It was causing
    problems on macOS Sierra.
 7) Change buffer.c to not redefine _GNU_SOURCE.
+8) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
