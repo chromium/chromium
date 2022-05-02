@@ -19,6 +19,9 @@ const base::Feature kBluetoothSessionizedMetrics{
 const base::Feature kUseCrosApiInterface{"UseCrosApiInterface",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDelayUploadUntilHwid("DelayUploadUntilHwid",
+                                          base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kStructuredMetrics, "enable_independent_metrics_upload", true);

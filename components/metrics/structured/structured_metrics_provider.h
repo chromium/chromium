@@ -66,6 +66,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
  private:
   friend class Recorder;
   friend class StructuredMetricsProviderTest;
+  friend class StructuredMetricsProviderHwidTest;
 
   // State machine for step 4 of initialization. These are stored in three files
   // that are asynchronously read from disk at startup. When all files have
@@ -88,6 +89,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
   void OnReportingStateChanged(bool enabled) override;
+  void OnHardwareClassInitialized() override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   // metrics::MetricsProvider:
@@ -163,6 +165,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // but the files backing that state haven't been initialized yet. If set,
   // state will be purged upon initialization.
   bool purge_state_on_init_ = false;
+
+  // Tracks whether hardware class has been loaded.
+  bool hardware_class_initialized_ = false;
 
   // The last time we provided independent metrics.
   base::Time last_provided_independent_metrics_;

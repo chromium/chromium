@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
@@ -266,6 +267,45 @@ class StructuredMetricsProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+};
+
+// Test with kDelayUploadUntilHwid feature enabled.
+class StructuredMetricsProviderHwidTest : public StructuredMetricsProviderTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        metrics::structured::kDelayUploadUntilHwid);
+
+    StructuredMetricsProviderTest::SetUp();
+  }
+
+  void InitializeHwid() { provider_->OnHardwareClassInitialized(); }
+
+  bool events_retrieved() { return events_retrieved_; }
+
+  StructuredDataProto GetMetrics() {
+    // Independent metrics are only reported at intervals. So advance time to
+    // ensure HasIndependentMetrics will return true if there are recorded
+    // metrics.
+    task_environment_.AdvanceClock(base::Hours(1));
+
+    ChromeUserMetricsExtension uma_proto;
+
+    // Copy events from disk to proto.
+    if (provider_->HasIndependentMetrics()) {
+      provider_->ProvideIndependentMetrics(
+          base::BindLambdaForTesting(
+              [this](bool success) { events_retrieved_ = success; }),
+          &uma_proto, nullptr);
+      Wait();
+      return uma_proto.structured_data();
+    }
+
+    return StructuredDataProto::default_instance();
+  }
+
+ private:
+  bool events_retrieved_ = false;
 };
 
 // Simple test to ensure initialization works correctly in the case of a
@@ -792,6 +832,23 @@ TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
   // past, ie. the rotation period for this project.
   ASSERT_TRUE(last_rotation.has_value());
   EXPECT_GE(last_rotation, today - 90);
+}
+
+TEST_F(StructuredMetricsProviderHwidTest, EventsNotSentIfHwidNotInitialized) {
+  Init();
+
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
+
+  // HWID has not been set. Events should still persist in files.
+  EXPECT_EQ(GetMetrics().events_size(), 0);
+
+  InitializeHwid();
+
+  // HWID has been set. Events should be ready to upload.
+  EXPECT_EQ(GetMetrics().events_size(), 2);
+
+  ExpectNoErrors();
 }
 
 }  // namespace structured

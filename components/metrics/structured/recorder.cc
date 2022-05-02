@@ -95,6 +95,12 @@ void Recorder::OnReportingStateChanged(bool enabled) {
   }
 }
 
+void Recorder::OnHardwareClassInitialized() {
+  for (auto& observer : observers_) {
+    observer.OnHardwareClassInitialized();
+  }
+}
+
 void Recorder::SetUiTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;

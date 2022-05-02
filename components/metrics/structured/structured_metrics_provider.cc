@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
@@ -261,10 +262,18 @@ void StructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
   }
 }
 
+void StructuredMetricsProvider::OnHardwareClassInitialized() {
+  hardware_class_initialized_ = true;
+}
+
 void StructuredMetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   DCHECK(base::CurrentUIThread::IsSet());
-  if (!recording_enabled_ || init_state_ != InitState::kInitialized) {
+  if (!recording_enabled_ || init_state_ != InitState::kInitialized)
+    return;
+
+  if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
+      !hardware_class_initialized_) {
     return;
   }
 
@@ -291,6 +300,11 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
+      !hardware_class_initialized_) {
+    return false;
+  }
+
   return events_.get()->get()->non_uma_events_size() != 0;
 }
 
@@ -300,6 +314,12 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
     base::HistogramSnapshotManager*) {
   DCHECK(base::CurrentUIThread::IsSet());
   if (!recording_enabled_ || init_state_ != InitState::kInitialized) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
+      !hardware_class_initialized_) {
     std::move(done_callback).Run(false);
     return;
   }
