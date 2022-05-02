@@ -61,14 +61,6 @@ class OsTrial extends OsTrialScreenElementBase {
   }
 
   /**
-   * @param {string} locale
-   * @private
-   */
-  getSubtitleHtml_(locale) {
-    return this.i18nAdvanced('osTrialSubtitle');
-  }
-
-  /**
    * This is the 'on-click' event handler for the 'next' button.
    * @private
    */

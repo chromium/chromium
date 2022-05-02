@@ -81,15 +81,6 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
     this.setUIStep(step);
   }
 
-  /**
-   * @param {string} locale
-   * @return {string}
-   * @private
-   */
-  getTPMOwnedFailureContent_(locale) {
-    return this.i18nAdvanced('errorTPMOwnedContent');
-  }
-
   onRestartTap_() {
     this.userActed('reboot-system');
   }

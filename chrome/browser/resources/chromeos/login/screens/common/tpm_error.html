@@ -8,7 +8,6 @@
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="../../components/html_echo.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/multi_step_behavior.html">
@@ -44,9 +43,9 @@
       <p slot="subtitle" for-step="tpm-owned">
         [[i18nDynamic(locale, 'errorTPMOwnedSubtitle')]]
       </p>
-      <html-echo slot="content" for-step="tpm-owned" class="flex layout
+      <span slot="content" for-step="tpm-owned" class="flex layout
           vertical center center-justified"
-          content="[[getTPMOwnedFailureContent_(locale)]]"></html-echo>
+          inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'errorTPMOwnedContent')]]"></span>
       <div slot="bottom-buttons">
         <oobe-text-button id="restartButton" inverse class="focus-on-show"
             text-key="errorTpmFailureRebootButton" on-click="onRestartTap_">

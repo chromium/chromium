@@ -7,7 +7,6 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="../../components/display_manager_types.html">
-<link rel="import" href="../../components/html_echo.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
@@ -26,7 +25,7 @@
         [[i18nDynamic(locale, 'wrongHWIDScreenHeader')]]
       </h1>
       <p slot="content">
-        <html-echo content="[[formattedFirstPart_(locale)]]"></html-echo>
+        <span inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'wrongHWIDMessageFirstPart')]]"></span>
       </p>
       <p slot="content">
         [[i18nDynamic(locale, 'wrongHWIDMessageSecondPart')]]

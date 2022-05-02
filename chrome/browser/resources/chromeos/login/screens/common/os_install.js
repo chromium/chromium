@@ -128,15 +128,6 @@ class OsInstall extends OsInstallScreenElementBase {
    * @return {string}
    * @private
    */
-  getConfirmBodyHtml_(locale) {
-    return this.i18nAdvanced('osInstallDialogConfirmBody');
-  }
-
-  /**
-   * @param {string} locale
-   * @return {string}
-   * @private
-   */
   getErrorNoDestContentHtml_(locale) {
     return this.i18nAdvanced(
         'osInstallDialogErrorNoDestContent', {tags: ['p', 'ul', 'li']});

@@ -47,10 +47,6 @@ class WrongHWID extends WrongHWIDBase {
   onSkip_() {
     this.userActed('skip-screen');
   }
-
-  formattedFirstPart_(locale) {
-    return this.i18nAdvanced('wrongHWIDMessageFirstPart');
-  }
 }
 
 customElements.define(WrongHWID.is, WrongHWID);

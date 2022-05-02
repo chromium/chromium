@@ -4,6 +4,7 @@
 
 // clang-format off
 // #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+// #import {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.m.js';
 // #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -34,6 +35,18 @@ const OobeI18nBehaviorImpl = {
       return '';
     }
     return I18nBehavior.i18n.apply(this, arguments);
+  },
+
+  /**
+   * Similar to 'i18nAdvanced', with an unused |locale| parameter used to
+   * trigger updates when |this.locale| changes.
+   * @param {string} locale The UI language used.
+   * @param {string} id The ID of the string to translate.
+   * @param {SanitizeInnerHtmlOpts=} opts
+   * @return {string} A translated, sanitized, substituted string.
+   */
+  i18nAdvancedDynamic(locale, id, opts) {
+    return I18nBehavior.i18nAdvanced(id, opts);
   },
 
   i18nUpdateLocale() {

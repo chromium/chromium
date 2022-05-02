@@ -26,7 +26,6 @@ group("closure_compile") {
     ":gaia_header.m",
     ":gaia_input_form.m",
     ":hd_iron_icon.m",
-    ":html_echo.m",
     ":keyboard_utils_for_injection",
     ":keyboard_utils_for_injection.m",
     ":long_touch_detector.m",
@@ -64,7 +63,6 @@ group("polymer3_elements") {
                   ":gaia_header_module",
                   ":gaia_input_form_module",
                   ":hd_iron_icon_module",
-                  ":html_echo_module",
                   ":long_touch_detector_module",
                   ":network_select_login_module",
                   ":notification_card_module",
@@ -136,14 +134,6 @@ js_library("hd_iron_icon.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":hd_iron_icon_module" ]
-}
-
-js_library("html_echo.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/html_echo.m.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":html_echo_module" ]
 }
 
 js_library("keyboard_utils_for_injection.m") {
@@ -292,12 +282,6 @@ polymer_modulizer("gaia_input_form") {
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("html_echo") {
-  js_file = "html_echo.js"
-  html_file = "html_echo.html"
   html_type = "dom-module"
 }
 

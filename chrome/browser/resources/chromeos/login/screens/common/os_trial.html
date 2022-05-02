@@ -2,7 +2,6 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="../../components/html_echo.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
@@ -27,8 +26,8 @@
         aria-label$="[[i18nDynamic(locale, 'osTrialTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'osTrialTitle')]]</h1>
-      <html-echo slot="subtitle" content="[[getSubtitleHtml_(locale)]]">
-      </html-echo>
+      <span inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'osTrialSubtitle')]]"
+          slot="subtitle"></span>
 
       <div slot="content" class="layout vertical landscape-vertical-centered">
         <cr-radio-group selected="{{selectedTrialOption}}">

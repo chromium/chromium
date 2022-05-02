@@ -33,8 +33,7 @@
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'HWDataCollectionTitle')]]</h1>
       <div slot="content" class="flex layout vertical center-justified">
-        <html-echo content="[[getHWDataCollectionContent_(locale)]]">
-        </html-echo>
+        <span inner-h-t-m-l="[[getHWDataCollectionContent_(locale)]]"></span>
         <div id="logging" class="layout horizontal">
           <cr-checkbox id="dataUsage" class="layout self-center"
               checked="{{dataUsageChecked}}" on-change="onDataUsageChanged_"

@@ -6,7 +6,6 @@ found in the LICENSE file. -->
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="../../components/html_echo.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/multi_step_behavior.html">
@@ -95,8 +94,8 @@ found in the LICENSE file. -->
       <div slot="title" id="osInstallDialogConfirmTitleId">
         [[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]
       </div>
-      <html-echo slot="content" content="[[getConfirmBodyHtml_(locale)]]">
-      </html-echo>
+      <span slot="content"
+          inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'osInstallDialogConfirmBody')]]"></span>
       <div slot="buttons">
         <oobe-text-button id="closeConfirmDialogButton"
             on-click="onCloseConfirmDialogButtonPressed_"
@@ -129,16 +128,14 @@ found in the LICENSE file. -->
       </div>
       <div slot="content" for-step="no-destination-device-found"
           class="flex layout vertical center-justified">
-        <html-echo content="[[getErrorNoDestContentHtml_(locale)]]">
-        </html-echo>
+        <span inner-h-t-m-l="[[getErrorNoDestContentHtml_(locale)]]"></span>
         <a id="noDestLogsLink" is="action-link" class="oobe-local-link"
             on-click="onServiceLogsLinkClicked_">
           [[i18nDynamic(locale, 'osInstallDialogErrorViewLogs')]]
         </a>
       </div>
       <div slot="subtitle" for-step="failed">
-        <html-echo content="[[getErrorFailedSubtitleHtml_(locale)]]">
-        </html-echo>
+        <span inner-h-t-m-l="[[getErrorFailedSubtitleHtml_(locale)]]"></span>
         <a id="serviceLogsLink" is="action-link" class="oobe-local-link"
             on-click="onServiceLogsLinkClicked_">
           [[i18nDynamic(locale, 'osInstallDialogErrorViewLogs')]]
