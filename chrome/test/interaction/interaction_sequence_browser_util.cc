@@ -13,6 +13,8 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_auto_reset.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -290,6 +292,16 @@ class InteractionSequenceBrowserUtil::Poller {
 
  private:
   void Poll() {
+    // Callback can get called again if Evaluate() below stalls. We don't want
+    // to stack callbacks because of issues with message passing to/from web
+    // contents.
+    if (is_polling_)
+      return;
+
+    auto weak_ptr = weak_factory_.GetWeakPtr();
+    base::WeakAutoReset is_polling_auto_reset(weak_ptr, &Poller::is_polling_,
+                                              true);
+
     base::Value result;
     if (where_.empty()) {
       result = owner_->Evaluate(function_);
@@ -299,10 +311,15 @@ class InteractionSequenceBrowserUtil::Poller {
       result = owner_->EvaluateAt(where_, function_);
     }
 
-    if (IsTruthy(result)) {
-      owner_->OnPollEvent(this);
-    } else if (timeout_.has_value() && elapsed_.Elapsed() > timeout_.value()) {
-      owner_->OnPollTimeout(this);
+    // At this point, weak_ptr might be invalid since we could have been deleted
+    // while we were waiting for Evaluate[At]() to complete.
+    if (weak_ptr) {
+      if (IsTruthy(result)) {
+        owner_->OnPollEvent(this);
+      } else if (timeout_.has_value() &&
+                 elapsed_.Elapsed() > timeout_.value()) {
+        owner_->OnPollTimeout(this);
+      }
     }
   }
 
@@ -313,6 +330,8 @@ class InteractionSequenceBrowserUtil::Poller {
   const absl::optional<base::TimeDelta> timeout_;
   const base::raw_ptr<InteractionSequenceBrowserUtil> owner_;
   base::RepeatingTimer timer_;
+  bool is_polling_ = false;
+  base::WeakPtrFactory<Poller> weak_factory_{this};
 };
 
 struct InteractionSequenceBrowserUtil::PollerData {

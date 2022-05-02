@@ -106,10 +106,6 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
     ui::CustomElementEventType timeout_event;
   };
 
-  // As above, but with a specific WebContents.
-  // InteractionSequenceBrowserUtil(content::WebContents* web_contents,
-  //                                ui::ElementIdentifier page_identifier);
-
   ~InteractionSequenceBrowserUtil() override;
 
   // Creates an object associated with a WebContents in the Browser associated
