@@ -1756,12 +1756,6 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);
 
   if (start_session_type_ == StartSessionType::kPrimary) {
-    base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-    const bool skip_post_login_screens =
-        cmdline->HasSwitch(switches::kOobeSkipPostLogin) ||
-        (WizardController::default_controller() &&
-         WizardController::default_controller()->skip_post_login_screens());
-
     user_manager::KnownUser known_user(g_browser_process->local_state());
     const user_manager::User* user =
         ProfileHelper::Get()->GetUserByProfile(profile);
@@ -1786,7 +1780,8 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
           ->ClearOnboardingAuthSession();
     }
 
-    if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
+    // TODO(https://crbug.com/1313844): better structure different user flows
+    if (user_manager->IsCurrentUserNew()) {
       prefs->SetTime(prefs::kOobeOnboardingTime, base::Time::Now());
       prefs->SetBoolean(arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded,
                         true);

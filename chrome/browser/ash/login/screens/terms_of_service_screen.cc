@@ -134,7 +134,8 @@ bool TermsOfServiceScreen::MaybeSkip(WizardContext* context) {
   // Only show the Terms of Service when Terms of Service have been specified
   // through policy. In all other cases, advance to the post-ToS part
   // immediately.
-  if (!ProfileManager::GetActiveUserProfile()->GetPrefs()->IsManagedPreference(
+  if (context->skip_post_login_screens_for_tests ||
+      !ProfileManager::GetActiveUserProfile()->GetPrefs()->IsManagedPreference(
           prefs::kTermsOfServiceURL)) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

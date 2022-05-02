@@ -142,6 +142,11 @@ ArcTermsOfServiceScreen::~ArcTermsOfServiceScreen() {
 }
 
 bool ArcTermsOfServiceScreen::MaybeSkip(WizardContext* context) {
+  if (context->skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     // In demo mode, the ARC-ToS screen is skipped and shown later in the
     // consolidated consent screen,

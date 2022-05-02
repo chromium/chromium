@@ -127,7 +127,7 @@ bool PinSetupScreen::SkipScreen(WizardContext* context) {
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext* context) {
-  if (ShouldSkipBecauseOfPolicy())
+  if (context->skip_post_login_screens_for_tests || ShouldSkipBecauseOfPolicy())
     return SkipScreen(context);
 
   // Just a precaution:

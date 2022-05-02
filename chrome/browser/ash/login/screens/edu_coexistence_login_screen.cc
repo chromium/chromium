@@ -52,7 +52,8 @@ EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(
 EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() {}
 
 bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext* context) {
-  if (!ProfileManager::GetActiveUserProfile()->IsChild()) {
+  if (context->skip_post_login_screens_for_tests ||
+      !ProfileManager::GetActiveUserProfile()->IsChild()) {
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }

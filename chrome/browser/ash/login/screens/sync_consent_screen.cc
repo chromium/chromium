@@ -177,6 +177,11 @@ void SyncConsentScreen::Finish(Result result) {
 }
 
 bool SyncConsentScreen::MaybeSkip(WizardContext* context) {
+  if (context->skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   Init(context);
 
   switch (behavior_) {

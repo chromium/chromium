@@ -80,6 +80,16 @@ bool HWDataCollectionScreen::MaybeSkip(WizardContext* context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
+  if (context->skip_post_login_screens_for_tests) {
+    // Set a default value if the screen should be shown, but is skipped because
+    // of the test flow. This value is important, as we rely on it during update
+    // flow from CloudReady to Chrome OS Flex and it should be set after owner
+    // of the device has already logged in.
+    HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),
+                                      base::Value(false));
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
   return false;
 }
 

@@ -56,9 +56,10 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
   }
 }
 
-bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* /*context*/) {
+bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* context) {
   // Only attempt the setup flow for non-guest users.
-  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+  if (context->skip_post_login_screens_for_tests ||
+      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

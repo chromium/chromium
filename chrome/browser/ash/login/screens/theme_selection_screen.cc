@@ -41,10 +41,11 @@ ThemeSelectionScreen::ThemeSelectionScreen(
 ThemeSelectionScreen::~ThemeSelectionScreen() = default;
 
 bool ThemeSelectionScreen::MaybeSkip(WizardContext* context) {
-  if (!chromeos::features::IsOobeThemeSelectionEnabled()) {
+  if (context->skip_post_login_screens_for_tests ||
+      !chromeos::features::IsOobeThemeSelectionEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
-  };
+  }
   return false;
 }
 

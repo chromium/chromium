@@ -54,7 +54,7 @@ AssistantOptInFlowScreen::~AssistantOptInFlowScreen() {
 }
 
 bool AssistantOptInFlowScreen::MaybeSkip(WizardContext* context) {
-  if (!g_libassistant_enabled ||
+  if (context->skip_post_login_screens_for_tests || !g_libassistant_enabled ||
       chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

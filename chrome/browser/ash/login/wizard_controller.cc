@@ -2309,24 +2309,9 @@ bool WizardController::IsZeroDelayEnabled() {
 void WizardController::SkipPostLoginScreensForTesting() {
   wizard_context_->skip_post_login_screens_for_tests = true;
   auto* current_screen = default_controller()->current_screen();
-  if (!current_screen)
-    return;
-  const OobeScreenId current_screen_id = current_screen->screen_id();
-  if (current_screen_id == LocaleSwitchView::kScreenId ||
-      current_screen_id == TermsOfServiceScreenView::kScreenId ||
-      current_screen_id == FamilyLinkNoticeView::kScreenId ||
-      current_screen_id == EduCoexistenceLoginScreen::kScreenId ||
-      current_screen_id == SyncConsentScreenView::kScreenId ||
-      current_screen_id == FingerprintSetupScreenView::kScreenId ||
-      current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||
-      current_screen_id == PinSetupScreenView::kScreenId ||
-      current_screen_id == MarketingOptInScreenView::kScreenId ||
-      current_screen_id == ParentalHandoffScreenView::kScreenId ||
-      current_screen_id == ConsolidatedConsentScreenView::kScreenId) {
-    default_controller()->OnOobeFlowFinished();
-  } else {
-    LOG(WARNING) << "SkipPostLoginScreensForTesting(): Ignore screen "
-                 << current_screen_id.name;
+  if (current_screen && !current_screen->MaybeSkip(wizard_context_)) {
+    LOG(WARNING) << __func__ << ": Ignore screen "
+                 << current_screen->screen_id().name;
   }
 }
 

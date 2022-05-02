@@ -66,7 +66,8 @@ void ParentalHandoffScreen::OnViewDestroyed(ParentalHandoffScreenView* view) {
 }
 
 bool ParentalHandoffScreen::MaybeSkip(WizardContext* context) {
-  if (!IsFamilyLinkOobeHandoffEnabled()) {
+  if (context->skip_post_login_screens_for_tests ||
+      !IsFamilyLinkOobeHandoffEnabled()) {
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }

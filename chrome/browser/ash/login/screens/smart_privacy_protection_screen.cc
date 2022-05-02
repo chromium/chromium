@@ -58,8 +58,9 @@ bool SmartPrivacyProtectionScreen::MaybeSkip(WizardContext* context) {
   // SmartPrivacyProtectionScreen lets user set two settings simultaneously:
   // SnoopingProtection and QuickDim. The screen should be skipped if none of
   // them is enabled.
-  if (ash::features::IsSnoopingProtectionEnabled() ||
-      ash::features::IsQuickDimEnabled()) {
+  if (!context->skip_post_login_screens_for_tests &&
+      (ash::features::IsSnoopingProtectionEnabled() ||
+       ash::features::IsQuickDimEnabled())) {
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);

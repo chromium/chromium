@@ -48,7 +48,8 @@ void FamilyLinkNoticeScreen::OnViewDestroyed(FamilyLinkNoticeView* view) {
 }
 
 bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext* context) {
-  if (context->sign_in_as_child &&
+  if (!context->skip_post_login_screens_for_tests &&
+      context->sign_in_as_child &&
       !ProfileManager::GetActiveUserProfile()->IsChild()) {
     return false;
   }
