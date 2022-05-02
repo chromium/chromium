@@ -14,6 +14,9 @@ const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
     &kPrivacySandboxSettings3, "consent-required", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
     &kPrivacySandboxSettings3, "notice-required", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings3NewNotice{
+    &kPrivacySandboxSettings3, "new-notice", false};
+
 const base::FeatureParam<bool> kPrivacySandboxSettings3DisableDialogForTesting{
     &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
 const base::FeatureParam<bool>
