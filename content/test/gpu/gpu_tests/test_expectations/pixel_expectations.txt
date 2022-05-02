@@ -380,6 +380,10 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 # Flaky incorrect rendering on Windows Nvidia 1660
 crbug.com/1181126 [ win10 nvidia-0x2184 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
 
+# Green images produced on Mac FYI Release (Apple M1)
+crbug.com/1321305 [ mac release apple-apple-m1 ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1321305 [ mac release apple-apple-m1 ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
