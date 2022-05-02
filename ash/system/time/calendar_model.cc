@@ -16,12 +16,27 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace {
+
+using ::google_apis::calendar::CalendarEvent;
+
+constexpr auto kAllowedEventStatuses =
+    base::MakeFixedFlatSet<CalendarEvent::EventStatus>(
+        {CalendarEvent::EventStatus::kConfirmed,
+         CalendarEvent::EventStatus::kTentative});
+
+constexpr auto kAllowedResponseStatuses =
+    base::MakeFixedFlatSet<CalendarEvent::ResponseStatus>(
+        {CalendarEvent::ResponseStatus::kAccepted,
+         CalendarEvent::ResponseStatus::kNeedsAction,
+         CalendarEvent::ResponseStatus::kTentative});
 
 // Methods for debugging and gathering of metrics.
 
@@ -295,10 +310,18 @@ void CalendarModel::UpdateMaxDistanceBrowsed(const base::Time& start_of_month) {
                    first_on_screen_month_, start_of_month))));
 }
 
+bool CalendarModel::ShouldInsertEvent(const CalendarEvent* event) const {
+  if (!event)
+    return false;
+
+  return base::Contains(kAllowedEventStatuses, event->status()) &&
+         base::Contains(kAllowedResponseStatuses,
+                        event->self_response_status());
+}
+
 void CalendarModel::InsertEvent(
     const google_apis::calendar::CalendarEvent* event) {
-  if (!event)
-    return;
+  DCHECK(event);
 
   base::Time start_of_month =
       calendar_utils::GetStartOfMonthUTC(GetStartTimeMidnightAdjusted(event));
@@ -322,7 +345,7 @@ void CalendarModel::InsertEvent(
 void CalendarModel::InsertEventInMonth(
     SingleMonthEventMap& month,
     const google_apis::calendar::CalendarEvent* event) {
-  if (!event)
+  if (!ShouldInsertEvent(event))
     return;
 
   base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event);
@@ -397,7 +420,7 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   return it2->second;
 }
 
-CalendarModel::FetchingStatus CalendarModel::FindFetchingStaus(
+CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     base::Time start_time) const {
   if (pending_fetches_.count(start_time))
     return kFetching;

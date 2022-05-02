@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis {
@@ -31,9 +32,13 @@ class CalendarApiUrlGenerator {
   //                 return single one-off events and instances of recurring
   //                 events, but not the underlying recurring events
   //                 themselves
+  // |max_attendees| The maximum number of attendees to include in the response.
+  //                 If there are more than the specified number of attendees,
+  //                 only the participant is returned. Optional.
   GURL GetCalendarEventListUrl(const base::Time& start_time,
                                const base::Time& end_time,
-                               bool single_events) const;
+                               bool single_events,
+                               absl::optional<int> max_attendees) const;
 
   // Returns a URL to fetch a map of calendar color id to color code.
   GURL GetCalendarColorListUrl() const;

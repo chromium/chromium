@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
+#include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,20 +27,96 @@ namespace calendar {
 namespace {
 
 // EventList
-const char kTimeZone[] = "timeZone";
-const char kCalendarEventListKind[] = "calendar#events";
+constexpr char kTimeZone[] = "timeZone";
+constexpr char kCalendarEventListKind[] = "calendar#events";
 
 // DateTime
-const char kDateTime[] = "dateTime";
+constexpr char kDateTime[] = "dateTime";
 
 // CalendarEvent
-const char kSummary[] = "summary";
-const char kStart[] = "start";
-const char kEnd[] = "end";
-const char kColorId[] = "colorId";
-const char kStatus[] = "status";
-const char kHtmlLink[] = "htmlLink";
-const char kCalendarEventKind[] = "calendar#event";
+constexpr char kSummary[] = "summary";
+constexpr char kStart[] = "start";
+constexpr char kEnd[] = "end";
+constexpr char kColorId[] = "colorId";
+constexpr char kStatus[] = "status";
+constexpr char kHtmlLink[] = "htmlLink";
+constexpr char kCalendarEventKind[] = "calendar#event";
+constexpr char kAttendees[] = "attendees";
+constexpr char kAttendeesSelf[] = "self";
+constexpr char kAttendeesResponseStatus[] = "responseStatus";
+
+constexpr auto kEventStatuses =
+    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::EventStatus>(
+        {{"cancelled", CalendarEvent::EventStatus::kCancelled},
+         {"confirmed", CalendarEvent::EventStatus::kConfirmed},
+         {"tentative", CalendarEvent::EventStatus::kTentative}});
+
+constexpr auto kAttendeesResponseStatuses =
+    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::ResponseStatus>(
+        {{"accepted", CalendarEvent::ResponseStatus::kAccepted},
+         {"declined", CalendarEvent::ResponseStatus::kDeclined},
+         {"needsAction", CalendarEvent::ResponseStatus::kNeedsAction},
+         {"tentative", CalendarEvent::ResponseStatus::kTentative}});
+
+// Converts the event status to `EventStatus`. Returns false when it fails
+// (e.g. the value is structurally different from expected).
+bool ConvertEventStatus(const base::Value* value,
+                        CalendarEvent::EventStatus* result) {
+  DCHECK(value);
+  DCHECK(result);
+
+  const auto* status = value->GetIfString();
+  if (!status) {
+    return false;
+  }
+
+  const auto* it = kEventStatuses.find(*status);
+  if (it != kEventStatuses.end()) {
+    *result = it->second;
+  } else {
+    *result = CalendarEvent::EventStatus::kUnknown;
+  }
+  return true;
+}
+
+// Finds the self response status from the attendees list. Returns false when
+// it fails (e.g. the value is structurally different from expected).
+bool GetSelfResponseStatusFromAttendees(const base::Value* value,
+                                        CalendarEvent::ResponseStatus* result) {
+  DCHECK(value);
+  DCHECK(result);
+
+  const auto* attendees = value->GetIfList();
+  if (!attendees) {
+    return false;
+  }
+
+  for (const auto& x : *attendees) {
+    const auto* attendee = x.GetIfDict();
+    if (!attendee) {
+      return false;
+    }
+
+    const bool is_self = attendee->FindBool(kAttendeesSelf).value_or(false);
+    if (!is_self)
+      continue;
+
+    const auto* responseStatus = attendee->FindString(kAttendeesResponseStatus);
+    if (!responseStatus) {
+      return false;
+    }
+
+    const auto* it = kAttendeesResponseStatuses.find(*responseStatus);
+    if (it != kAttendeesResponseStatuses.end()) {
+      *result = it->second;
+    } else {
+      *result = CalendarEvent::ResponseStatus::kUnknown;
+    }
+    break;
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -82,7 +161,11 @@ void CalendarEvent::RegisterJSONConverter(
   converter->RegisterStringField(kSummary, &CalendarEvent::summary_);
   converter->RegisterStringField(kHtmlLink, &CalendarEvent::html_link_);
   converter->RegisterStringField(kColorId, &CalendarEvent::color_id_);
-  converter->RegisterStringField(kStatus, &CalendarEvent::status_);
+  converter->RegisterCustomValueField(kStatus, &CalendarEvent::status_,
+                                      &ConvertEventStatus);
+  converter->RegisterCustomValueField(kAttendees,
+                                      &CalendarEvent::self_response_status_,
+                                      &GetSelfResponseStatusFromAttendees);
   converter->RegisterCustomValueField(kStart, &CalendarEvent::start_time_,
                                       &DateTime::CreateDateTimeFromValue);
   converter->RegisterCustomValueField(kEnd, &CalendarEvent::end_time_,
@@ -111,7 +194,8 @@ int CalendarEvent::GetApproximateSizeInBytes() const {
   total_bytes += summary_.length();
   total_bytes += html_link_.length();
   total_bytes += color_id_.length();
-  total_bytes += status_.length();
+  total_bytes += sizeof(status_);
+  total_bytes += sizeof(self_response_status_);
 
   return total_bytes;
 }

@@ -9,7 +9,9 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
@@ -25,10 +27,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 
 namespace {
+
+using ::google_apis::calendar::CalendarEvent;
+using ::google_apis::calendar::EventList;
 
 const char* kStartTime0 = "23 Oct 2009 11:30 GMT";
 const char* kEndTime0 = "23 Oct 2009 12:30 GMT";
@@ -182,13 +188,16 @@ class TestableCalendarModel : public CalendarModel {
   TestableCalendarModel& operator=(const TestableCalendarModel& other) = delete;
   ~TestableCalendarModel() override = default;
 
-  std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
+  std::unique_ptr<CalendarEvent> CreateEvent(
       const char* id,
       const char* summary,
       base::Time start_time,
-      base::Time end_time) {
-    std::unique_ptr<google_apis::calendar::CalendarEvent> event =
-        std::make_unique<google_apis::calendar::CalendarEvent>();
+      base::Time end_time,
+      const CalendarEvent::EventStatus event_status =
+          CalendarEvent::EventStatus::kConfirmed,
+      const CalendarEvent::ResponseStatus self_response_status =
+          CalendarEvent::ResponseStatus::kAccepted) {
+    std::unique_ptr<CalendarEvent> event = std::make_unique<CalendarEvent>();
     google_apis::calendar::DateTime start_time_date, end_time_date;
     event->set_id(id);
     event->set_summary(summary);
@@ -197,6 +206,8 @@ class TestableCalendarModel : public CalendarModel {
     end_date.set_date_time(end_time);
     event->set_start_time(start_date);
     event->set_end_time(start_date);
+    event->set_status(event_status);
+    event->set_self_response_status(self_response_status);
     return event;
   }
 
@@ -249,7 +260,8 @@ class TestableCalendarModel : public CalendarModel {
         std::unique_ptr<google_apis::calendar::CalendarEvent> single_event =
             CreateEvent(event->id().c_str(), event->summary().c_str(),
                         event->start_time().date_time(),
-                        event->end_time().date_time());
+                        event->end_time().date_time(), event->status(),
+                        event->self_response_status());
         fetched_events->InjectItemForTesting(std::move(single_event));
       }
     }
@@ -1034,6 +1046,72 @@ TEST_F(CalendarModelTest, ClearEvents) {
   EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime5, &events));
 }
 
+// Test for filtering of events based on their statuses. Cancelled or declined
+// events shouldn't be inserted in a month.
+TEST_F(CalendarModelTest, ShouldFilterEvents) {
+  SetFakeNowFromStr(kStartTime0);
+  calendar_model_ = std::make_unique<TestableCalendarModel>();
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
+
+  std::unique_ptr<EventList> event_list = std::make_unique<EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  SingleDayEventList events;
+
+  // Haven't injected anything yet, so no events on `kStartTime0`.
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Inject events.
+  std::vector<std::tuple<const char*, CalendarEvent::EventStatus,
+                         CalendarEvent::ResponseStatus>>
+      events_to_create = {
+          std::make_tuple("cancelled+accepted",
+                          CalendarEvent::EventStatus::kCancelled,
+                          CalendarEvent::ResponseStatus::kAccepted),
+          std::make_tuple("confirmed+accepted",
+                          CalendarEvent::EventStatus::kConfirmed,
+                          CalendarEvent::ResponseStatus::kAccepted),
+          std::make_tuple("tentative+accepted",
+                          CalendarEvent::EventStatus::kTentative,
+                          CalendarEvent::ResponseStatus::kAccepted),
+          std::make_tuple("unknown+accepted",
+                          CalendarEvent::EventStatus::kUnknown,
+                          CalendarEvent::ResponseStatus::kAccepted),
+          std::make_tuple("confirmed+declined",
+                          CalendarEvent::EventStatus::kConfirmed,
+                          CalendarEvent::ResponseStatus::kDeclined),
+          std::make_tuple("confirmed+needs_action",
+                          CalendarEvent::EventStatus::kConfirmed,
+                          CalendarEvent::ResponseStatus::kNeedsAction),
+          std::make_tuple("confirmed+tentative",
+                          CalendarEvent::EventStatus::kConfirmed,
+                          CalendarEvent::ResponseStatus::kTentative),
+          std::make_tuple("confirmed+unknown",
+                          CalendarEvent::EventStatus::kConfirmed,
+                          CalendarEvent::ResponseStatus::kUnknown)};
+  for (auto& event_to_create : events_to_create) {
+    event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        std::get<0>(event_to_create), std::get<0>(event_to_create), kStartTime0,
+        kEndTime0, std::get<1>(event_to_create), std::get<2>(event_to_create)));
+  }
+  calendar_model_->InjectEvents(std::move(event_list));
+  calendar_model_->FetchEvents(months);
+
+  // Verify that events were filtered by their statuses.
+  EXPECT_EQ(4, EventsNumberOfDay(kStartTime0, &events));
+  EXPECT_FALSE(events.empty());
+
+  std::vector<std::string> filtered_event_ids;
+  std::transform(events.begin(), events.end(),
+                 std::back_inserter(filtered_event_ids),
+                 [](CalendarEvent& event) { return event.id(); });
+  EXPECT_THAT(filtered_event_ids,
+              testing::UnorderedElementsAreArray(std::vector<std::string>{
+                  "confirmed+accepted", "tentative+accepted",
+                  "confirmed+needs_action", "confirmed+tentative"}));
+}
+
 // A mock `CalendarClient`. This mock client's `GetEventList` waits for a short
 // duration to mock the fetching process.
 class CalendarClientTestImpl : public CalendarClient {
@@ -1100,7 +1178,7 @@ class CalendarModelFunctionTest : public AshTestBase {
   std::unique_ptr<CalendarClientTestImpl> calendar_client_;
 };
 
-TEST_F(CalendarModelFunctionTest, FindFetchingStaus) {
+TEST_F(CalendarModelFunctionTest, FindFetchingStatus) {
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
@@ -1127,33 +1205,33 @@ TEST_F(CalendarModelFunctionTest, FindFetchingStaus) {
 
   // The request for `fetching_date` is just sent out.
   EXPECT_EQ(CalendarModel::kFetching,
-            calendar_model()->FindFetchingStaus(
+            calendar_model()->FindFetchingStatus(
                 calendar_utils::GetStartOfMonthUTC(fetching_date)));
 
   // The request for kStartTime 0,1,2,3 are already finished (since the results
   // are injected).
   EXPECT_EQ(
       CalendarModel::kSuccess,
-      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+      calendar_model()->FindFetchingStatus(calendar_utils::GetStartOfMonthUTC(
           calendar_test_utils::GetTimeFromString(kStartTime0))));
   EXPECT_EQ(
       CalendarModel::kSuccess,
-      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+      calendar_model()->FindFetchingStatus(calendar_utils::GetStartOfMonthUTC(
           calendar_test_utils::GetTimeFromString(kStartTime1))));
   EXPECT_EQ(
       CalendarModel::kSuccess,
-      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+      calendar_model()->FindFetchingStatus(calendar_utils::GetStartOfMonthUTC(
           calendar_test_utils::GetTimeFromString(kStartTime2))));
   EXPECT_EQ(
       CalendarModel::kSuccess,
-      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+      calendar_model()->FindFetchingStatus(calendar_utils::GetStartOfMonthUTC(
           calendar_test_utils::GetTimeFromString(kStartTime3))));
 
   // The result of `kStartTime4` has never been injected. And the request has
   // never been sent either.
   EXPECT_EQ(
       CalendarModel::kNever,
-      calendar_model()->FindFetchingStaus(calendar_utils::GetStartOfMonthUTC(
+      calendar_model()->FindFetchingStatus(calendar_utils::GetStartOfMonthUTC(
           calendar_test_utils::GetTimeFromString(kStartTime4))));
 
   // Wait until the response is back. The sleep duration may be in `base::Time`
@@ -1164,7 +1242,7 @@ TEST_F(CalendarModelFunctionTest, FindFetchingStaus) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(CalendarModel::kSuccess,
-            calendar_model()->FindFetchingStaus(
+            calendar_model()->FindFetchingStatus(
                 calendar_utils::GetStartOfMonthUTC(fetching_date)));
 }
 

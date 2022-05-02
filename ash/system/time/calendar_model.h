@@ -105,7 +105,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   SingleDayEventList FindEvents(base::Time day) const;
 
   // Checks the `FetchingStatus` of a given start time.
-  FetchingStatus FindFetchingStaus(base::Time start_time) const;
+  FetchingStatus FindFetchingStatus(base::Time start_time) const;
 
   // Redistributes all the fetched events to the date map with the
   // `time_difference_minutes_`. This only happens once per calendar view's life
@@ -128,6 +128,10 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarViewEventListViewTest;
   friend class CalendarMonthViewTest;
   friend class CalendarModelFunctionTest;
+
+  // Checks if the event has allowed statuses and is eligible for insertion.
+  bool ShouldInsertEvent(
+      const google_apis::calendar::CalendarEvent* event) const;
 
   // Inserts a single `event` in the EventCache.
   void InsertEvent(const google_apis::calendar::CalendarEvent* event);

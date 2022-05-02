@@ -28,8 +28,28 @@ TEST(CalendarApiUrlGeneratorTest, GetEventListUrl) {
       "https://www.googleapis.com/calendar/v3/calendars/primary/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
       "&timeMax=2021-06-16T18%3A00%3A00.000Z"
+      "&singleEvents=true"
+      "&maxAttendees=1",
+      url_generator_
+          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
+                                   /*max_attendees=*/1)
+          .spec());
+}
+
+TEST(CalendarApiUrlGeneratorTest, GetEventListUrlWithDefaultMaxAttendees) {
+  CalendarApiUrlGenerator url_generator_;
+  base::Time start;
+  EXPECT_TRUE(base::Time::FromString("13 Jun 2021 10:00 PST", &start));
+  base::Time end;
+  EXPECT_TRUE(base::Time::FromString("16 Jun 2021 10:00 PST", &end));
+  EXPECT_EQ(
+      "https://www.googleapis.com/calendar/v3/calendars/primary/"
+      "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
+      "&timeMax=2021-06-16T18%3A00%3A00.000Z"
       "&singleEvents=true",
-      url_generator_.GetCalendarEventListUrl(start, end, /*single_events=*/true)
+      url_generator_
+          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
+                                   /*max_attendees=*/absl::nullopt)
           .spec());
 }
 

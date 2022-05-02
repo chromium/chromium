@@ -42,7 +42,52 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
       event.html_link(),
       "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest");
   EXPECT_EQ(event.color_id(), "3");
-  EXPECT_EQ(event.status(), "confirmed");
+  EXPECT_EQ(event.status(), CalendarEvent::EventStatus::kConfirmed);
+  EXPECT_EQ(event.self_response_status(),
+            CalendarEvent::ResponseStatus::kNeedsAction);
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_statuses.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(4U, event_list->items().size());
+
+  EXPECT_EQ(event_list->items()[0]->status(),
+            CalendarEvent::EventStatus::kConfirmed);
+  EXPECT_EQ(event_list->items()[1]->status(),
+            CalendarEvent::EventStatus::kCancelled);
+  EXPECT_EQ(event_list->items()[2]->status(),
+            CalendarEvent::EventStatus::kTentative);
+  EXPECT_EQ(event_list->items()[3]->status(),
+            CalendarEvent::EventStatus::kUnknown);
+}
+
+TEST(CalendarAPIResponseTypesTest,
+     ParseEventListWithCorrectSelfResponseStatus) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_self_response_statuses.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(5U, event_list->items().size());
+
+  EXPECT_EQ(event_list->items()[0]->self_response_status(),
+            CalendarEvent::ResponseStatus::kUnknown);
+  EXPECT_EQ(event_list->items()[1]->self_response_status(),
+            CalendarEvent::ResponseStatus::kAccepted);
+  EXPECT_EQ(event_list->items()[2]->self_response_status(),
+            CalendarEvent::ResponseStatus::kDeclined);
+  EXPECT_EQ(event_list->items()[3]->self_response_status(),
+            CalendarEvent::ResponseStatus::kNeedsAction);
+  EXPECT_EQ(event_list->items()[4]->self_response_status(),
+            CalendarEvent::ResponseStatus::kTentative);
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseFailed) {

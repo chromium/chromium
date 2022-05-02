@@ -14,9 +14,14 @@ namespace google_apis {
 
 namespace calendar {
 
-const char kCalendarEventListFields[] =
+constexpr char kFieldsParameterName[] = "fields";
+// According to the docs
+// (https://developers.google.com/calendar/api/v3/reference/events/list), it
+// should return the participant/requester only as an attendee.
+constexpr int kMaxAttendees = 1;
+constexpr char kCalendarEventListFields[] =
     "timeZone,etag,kind,items(id,summary,colorId, "
-    "status,start(dateTime),end(dateTime),htmlLink)";
+    "status,start(dateTime),end(dateTime),htmlLink,attendees)";
 
 CalendarApiGetRequest::CalendarApiGetRequest(RequestSender* sender,
                                              const std::string& fields)
@@ -27,8 +32,10 @@ CalendarApiGetRequest::~CalendarApiGetRequest() = default;
 
 GURL CalendarApiGetRequest::GetURL() const {
   GURL url = GetURLInternal();
-  if (!fields_.empty())
-    url = net::AppendOrReplaceQueryParameter(url, "fields", fields_);
+  if (!fields_.empty()) {
+    url =
+        net::AppendOrReplaceQueryParameter(url, kFieldsParameterName, fields_);
+  }
   return url;
 }
 
@@ -67,8 +74,10 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_,
-                                                /*single_events=*/true);
+  return url_generator_.GetCalendarEventListUrl(
+      start_time_, end_time_,
+      /*single_events=*/true,
+      /*max_attendees=*/kMaxAttendees);
 }
 
 void CalendarApiEventsRequest::ProcessURLFetchResults(
