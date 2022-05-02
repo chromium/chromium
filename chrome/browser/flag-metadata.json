@@ -5511,6 +5511,16 @@
     "expiry_milestone": 103
   },
   {
+    "name": "sync-standalone-invalidations",
+    "owners": [ "treib", "rushans" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "sync-standalone-invalidations-wallet-and-offer",
+    "owners": [ "treib", "rushans" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "sync-trusted-vault-passphrase-ios-rpc",
     "owners": [ "mastiz", "jlebel" ],
     "expiry_milestone": 105

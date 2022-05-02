@@ -855,6 +855,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"uiview-window-observing", flag_descriptions::kUIViewWindowObservingName,
      flag_descriptions::kUIViewWindowObservingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUIViewWindowObserving)},
+    {"sync-standalone-invalidations", flag_descriptions::kSyncInvalidationsName,
+     flag_descriptions::kSyncInvalidationsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidations)},
+    {"sync-standalone-invalidations-wallet-and-offer",
+     flag_descriptions::kSyncInvalidationsWalletAndOfferName,
+     flag_descriptions::kSyncInvalidationsWalletAndOfferDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidationsForWalletAndOffer)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
