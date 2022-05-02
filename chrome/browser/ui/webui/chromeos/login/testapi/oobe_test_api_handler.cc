@@ -38,6 +38,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.loginWithPin", &OobeTestAPIHandler::LoginWithPin);
   AddCallback("OobeTestApi.advanceToScreen",
               &OobeTestAPIHandler::AdvanceToScreen);
+  AddCallback("OobeTestApi.skipToLoginForTesting",
+              &OobeTestAPIHandler::SkipToLoginForTesting);
   AddCallback("OobeTestApi.skipPostLoginScreens",
               &OobeTestAPIHandler::SkipPostLoginScreens);
   AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
@@ -102,6 +104,11 @@ void OobeTestAPIHandler::LoginWithPin(const std::string& username,
 
 void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
   ash::LoginDisplayHost::default_host()->StartWizard(ash::OobeScreenId(screen));
+}
+
+void OobeTestAPIHandler::SkipToLoginForTesting() {
+  ash::WizardController::default_controller()
+      ->SkipToLoginForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {

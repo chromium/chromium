@@ -489,6 +489,10 @@ class OobeApiProvider {
       chrome.send('OobeTestApi.advanceToScreen', [screen]);
     };
 
+    this.skipToLoginForTesting = function() {
+      chrome.send('OobeTestApi.skipToLoginForTesting');
+    };
+
     this.skipPostLoginScreens = function() {
       chrome.send('OobeTestApi.skipPostLoginScreens');
     };
