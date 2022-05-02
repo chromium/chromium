@@ -329,6 +329,9 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-noncq",
+    mirrors = [
+        "ci/ios-simulator-noncq",
+    ],
     xcode = xcode.x13main,
     tryjob = try_.job(
         location_regexp = [
