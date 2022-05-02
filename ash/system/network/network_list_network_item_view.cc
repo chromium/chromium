@@ -530,8 +530,7 @@ NetworkListNetworkItemView::GenerateAccessibilityDescriptionForTether(
       base::FormatPercent(battery_percentage));
 }
 
-const char* NetworkListNetworkItemView::GetClassName() const {
-  return "NetworkListNetworkItemView";
-}
+BEGIN_METADATA(NetworkListNetworkItemView, NetworkListItemView)
+END_METADATA
 
 }  // namespace ash

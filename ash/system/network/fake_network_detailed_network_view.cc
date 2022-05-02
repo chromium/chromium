@@ -4,18 +4,14 @@
 
 #include "ash/system/network/fake_network_detailed_network_view.h"
 
-#include "ash/system/network/fake_network_list_mobile_header_view.h"
-#include "ash/system/network/fake_network_list_wifi_header_view.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_item_view.h"
-#include "ash/system/network/network_list_network_item_view.h"
 
 namespace ash {
 
 FakeNetworkDetailedNetworkView::FakeNetworkDetailedNetworkView(
     Delegate* delegate)
-    : NetworkDetailedNetworkView(delegate),
-      network_list_(std::make_unique<views::View>()) {}
+    : NetworkDetailedNetworkView(delegate) {}
 
 FakeNetworkDetailedNetworkView::~FakeNetworkDetailedNetworkView() = default;
 
@@ -26,23 +22,5 @@ views::View* FakeNetworkDetailedNetworkView::GetAsView() {
 void FakeNetworkDetailedNetworkView::OnViewClicked(views::View* view) {
   last_clicked_network_list_item_ = static_cast<NetworkListItemView*>(view);
 }
-
-NetworkListNetworkItemView*
-FakeNetworkDetailedNetworkView::AddNetworkListItem() {
-  return network_list_->AddChildView(
-      new NetworkListNetworkItemView(/*listener=*/nullptr));
-};
-
-NetworkListNetworkHeaderView*
-FakeNetworkDetailedNetworkView::AddWifiSectionHeader() {
-  return network_list_->AddChildView(
-      new FakeNetworkListWifiHeaderView(/*delegate=*/nullptr));
-};
-
-NetworkListNetworkHeaderView*
-FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
-  return network_list_->AddChildView(
-      new FakeNetworkListMobileHeaderView(/*delegate=*/nullptr));
-};
 
 }  // namespace ash

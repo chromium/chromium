@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_item_view.h"
-#include "ash/system/network/network_list_network_item_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -33,14 +32,10 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
  private:
   // NetworkDetailedNetworkView:
   views::View* GetAsView() override;
-  NetworkListNetworkItemView* AddNetworkListItem() override;
-  NetworkListNetworkHeaderView* AddWifiSectionHeader() override;
-  NetworkListNetworkHeaderView* AddMobileSectionHeader() override;
 
   // ViewClickListener:
   void OnViewClicked(views::View* view) override;
 
-  std::unique_ptr<views::View> network_list_;
   NetworkListItemView* last_clicked_network_list_item_ = nullptr;
 };
 

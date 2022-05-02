@@ -7,8 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_view.h"
-#include "ash/system/network/network_list_network_header_view.h"
-#include "ash/system/network/network_list_network_item_view.h"
 
 namespace ash {
 
@@ -58,20 +56,10 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // when testing, where the implementation might not inherit from views::View.
   virtual views::View* GetAsView() = 0;
 
-  // Creates, adds and returns a new network list item. The client is
-  // expected to use the returned pointer for removing and rearranging
-  // the list item.
-  virtual NetworkListNetworkItemView* AddNetworkListItem() = 0;
-
-  // Creates, adds and returns a Wifi sticky sub-header to the end of the
-  // network list. The client is expected to use the returned pointer for
-  // removing and rearranging the sub-header.
-  virtual NetworkListNetworkHeaderView* AddWifiSectionHeader() = 0;
-
-  // Creates, adds and returns a Mobile sticky sub-header to the end of the
-  // network list. The client is expected to use the returned pointer for
-  // removing and rearranging the sub-header.
-  virtual NetworkListNetworkHeaderView* AddMobileSectionHeader() = 0;
+  // TODO(b/207089013): Add AddNetworkListItem() when NetworkListNetworkItemView
+  // is available, return NetworkListNetworkItemView*, and also add a function
+  // that creates NetworkListNetworkHeaderView and returns view when
+  // NetworkListNetworkHeaderView is available.
 
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);

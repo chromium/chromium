@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/network/network_list_item_view.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tri_view.h"
@@ -50,8 +49,9 @@ void NetworkDetailedView::NotifyNetworkListChanged() {
 void NetworkDetailedView::HandleViewClicked(views::View* view) {
   if (login_ == LoginStatus::LOCKED)
     return;
-  delegate()->OnNetworkListItemSelected(
-      static_cast<NetworkListItemView*>(view)->network_properties());
+  // TODO(b/207089013): Call OnNetworkListItemSelected() on delegate() and pass
+  // in a cast of either NetworkListNetworkItemView or NetworkListVPNItemView
+  // when available, also add test for this.
 }
 
 views::View* NetworkDetailedView::network_list() {
