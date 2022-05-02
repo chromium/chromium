@@ -9,77 +9,98 @@
 import '../../settings_shared_css.js';
 import '../../controls/settings_dropdown_menu.js';
 
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'timezone-selector',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PrefsBehaviorInterface}
+ */
+const TimezoneSelectorElementBase =
+    mixinBehaviors([PrefsBehavior], PolymerElement);
 
-  behaviors: [PrefsBehavior],
+/** @polymer */
+class TimezoneSelectorElement extends TimezoneSelectorElementBase {
+  static get is() {
+    return 'timezone-selector';
+  }
 
-  properties: {
-    /**
-     * This stores active time zone display name to be used in other UI
-     * via bi-directional binding.
-     */
-    activeTimeZoneDisplayName: {
-      type: String,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * True if the account is supervised and doesn't get parent access code
-     * verification.
-     */
-    shouldDisableTimeZoneGeoSelector: {
-      type: Boolean,
-      notify: true,
-    },
-
-    /**
-     * Initialized with the current time zone so the menu displays the
-     * correct value. The full option list is fetched lazily if necessary by
-     * maybeGetTimeZoneList_.
-     * @private {!DropdownMenuOptionList}
-     */
-    timeZoneList_: {
-      type: Array,
-      value() {
-        return [{
-          name: loadTimeData.getString('timeZoneName'),
-          value: loadTimeData.getString('timeZoneID'),
-        }];
+  static get properties() {
+    return {
+      /**
+       * This stores active time zone display name to be used in other UI
+       * via bi-directional binding.
+       */
+      activeTimeZoneDisplayName: {
+        type: String,
+        notify: true,
       },
-    },
-  },
 
-  observers: [
-    'maybeGetTimeZoneListPerUser_(' +
-        'prefs.settings.timezone.value,' +
-        'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
-    'maybeGetTimeZoneListPerSystem_(' +
-        'prefs.cros.system.timezone.value,' +
-        'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
-    'updateActiveTimeZoneName_(prefs.cros.system.timezone.value)',
-  ],
+      /**
+       * True if the account is supervised and doesn't get parent access code
+       * verification.
+       */
+      shouldDisableTimeZoneGeoSelector: {
+        type: Boolean,
+        notify: true,
+      },
+
+      /**
+       * Initialized with the current time zone so the menu displays the
+       * correct value. The full option list is fetched lazily if necessary by
+       * maybeGetTimeZoneList_.
+       * @private {!DropdownMenuOptionList}
+       */
+      timeZoneList_: {
+        type: Array,
+        value() {
+          return [{
+            name: loadTimeData.getString('timeZoneName'),
+            value: loadTimeData.getString('timeZoneID'),
+          }];
+        },
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'maybeGetTimeZoneListPerUser_(' +
+          'prefs.settings.timezone.value,' +
+          'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
+      'maybeGetTimeZoneListPerSystem_(' +
+          'prefs.cros.system.timezone.value,' +
+          'prefs.generated.resolve_timezone_by_geolocation_on_off.value)',
+      'updateActiveTimeZoneName_(prefs.cros.system.timezone.value)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * True if getTimeZones request was sent to Chrome, but result is not
+     * yet received.
+     */
+    this.getTimeZonesRequestSent_ = false;
+  }
 
   /** @override */
-  attached() {
-    this.maybeGetTimeZoneList_();
-  },
+  connectedCallback() {
+    super.connectedCallback();
 
-  /**
-   * True if getTimeZones request was sent to Chrome, but result is not
-   * yet received.
-   */
-  getTimeZonesRequestSent_: false,
+    this.maybeGetTimeZoneList_();
+  }
 
   /**
    * Fetches the list of time zones if necessary.
@@ -129,7 +150,7 @@ Polymer({
         .finally(() => {
           this.getTimeZonesRequestSent_ = false;
         });
-  },
+  }
 
   /**
    * Prefs observer for Per-user time zone enabled mode.
@@ -137,7 +158,7 @@ Polymer({
    */
   maybeGetTimeZoneListPerUser_() {
     this.maybeGetTimeZoneList_(true);
-  },
+  }
 
   /**
    * Prefs observer for Per-user time zone disabled mode.
@@ -145,7 +166,7 @@ Polymer({
    */
   maybeGetTimeZoneListPerSystem_() {
     this.maybeGetTimeZoneList_(false);
-  },
+  }
 
   /**
    * Converts the C++ response into an array of menu options.
@@ -161,7 +182,7 @@ Polymer({
     });
     this.updateActiveTimeZoneName_(
         /** @type {!String} */ (this.getPref('cros.system.timezone').value));
-  },
+  }
 
   /**
    * Updates active time zone display name when changed.
@@ -174,8 +195,7 @@ Polymer({
     if (activeTimeZone) {
       this.activeTimeZoneDisplayName = activeTimeZone.name;
     }
-  },
-
+  }
 
   /**
    * Computes visibility of user timezone preference.
@@ -189,5 +209,7 @@ Polymer({
   isUserTimeZoneSelectorHidden_(prefUserTimezone, prefResolveOnOffValue) {
     return (prefUserTimezone && prefUserTimezone.controlledBy != null) ||
         prefResolveOnOffValue;
-  },
-});
+  }
+}
+
+customElements.define(TimezoneSelectorElement.is, TimezoneSelectorElement);

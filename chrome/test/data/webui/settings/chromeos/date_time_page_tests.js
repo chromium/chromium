@@ -244,7 +244,7 @@ suite('settings-date-time-page', function() {
 
   setup(function() {
     testBrowserProxy = new TestTimeZoneBrowserProxy();
-    TimeZoneBrowserProxyImpl.instance_ = testBrowserProxy;
+    TimeZoneBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     CrSettingsPrefs.resetForTesting();
   });

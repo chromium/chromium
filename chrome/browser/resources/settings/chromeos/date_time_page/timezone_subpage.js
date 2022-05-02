@@ -12,57 +12,73 @@ import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import './timezone_selector.js';
 
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'timezone-subpage',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const TimezoneSubpageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class TimezoneSubpageElement extends TimezoneSubpageElementBase {
+  static get is() {
+    return 'timezone-subpage';
+  }
 
-  properties: {
-    /**
-     * This is <timezone-selector> parameter.
-     */
-    activeTimeZoneDisplayName: {
-      type: String,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([chromeos.settings.mojom.Setting.kChangeTimeZone]),
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * This is <timezone-selector> parameter.
+       */
+      activeTimeZoneDisplayName: {
+        type: String,
+        notify: true,
+      },
 
-  /** @private {?TimeZoneBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([chromeos.settings.mojom.Setting.kChangeTimeZone]),
+      },
+    };
+  }
+
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?TimeZoneBrowserProxy} */
     this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * RouteObserverBehavior
@@ -72,9 +88,10 @@ Polymer({
    * 'access-code-validation-complete' event is triggered which invokes
    * enableTimeZoneSetting_.
    * @param {!Route} newRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
-  currentRouteChanged(newRoute) {
+  currentRouteChanged(newRoute, oldRoute) {
     if (newRoute !== routes.DATETIME_TIMEZONE_SUBPAGE) {
       return;
     }
@@ -89,7 +106,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * Returns value list for timeZoneResolveMethodDropdown menu.
@@ -128,7 +145,7 @@ Polymer({
           loadTimeData.getString('setTimeZoneAutomaticallyWithAllLocationInfo')
     });
     return result;
-  },
+  }
 
   /**
    * Enables all dropdowns and radio buttons.
@@ -145,7 +162,7 @@ Polymer({
     if (pref.value !== TimeZoneAutoDetectMethod.DISABLED) {
       this.$.timeZoneResolveMethodDropdown.disabled = false;
     }
-  },
+  }
 
   /**
    * Disables all dropdowns and radio buttons.
@@ -158,6 +175,7 @@ Polymer({
     for (const radio of radios) {
       radio.disabled = true;
     }
-  },
+  }
+}
 
-});
+customElements.define(TimezoneSubpageElement.is, TimezoneSubpageElement);
