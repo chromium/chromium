@@ -23,7 +23,6 @@ namespace {
 
 VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
-    .native_input_mode = false,
     .bitrate_control =
         VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate,
 };
@@ -164,12 +163,6 @@ class H264VaapiVideoEncoderDelegateTest
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
-  auto input_frame = VideoFrame::CreateFrame(
-      kDefaultVEAConfig.input_format, kDefaultVEAConfig.input_visible_size,
-      gfx::Rect(kDefaultVEAConfig.input_visible_size),
-      kDefaultVEAConfig.input_visible_size, base::TimeDelta());
-  LOG_ASSERT(input_frame) << " Failed to create VideoFrame";
-
   auto va_surface = base::MakeRefCounted<VASurface>(
       next_surface_id_++, kDefaultVEAConfig.input_visible_size,
       VA_RT_FORMAT_YUV420, base::DoNothing());
@@ -180,9 +173,11 @@ H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
       kDummyVABufferID, VAEncCodedBufferType,
       kDefaultVEAConfig.input_visible_size.GetArea());
 
+  // TODO(b/229358029): Set a valid timestamp and check the timestamp in
+  // metadata.
+  constexpr base::TimeDelta timestamp;
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, next_surface_id_++,
-      kDefaultVEAConfig.input_visible_size, picture,
+      keyframe, timestamp, next_surface_id_++, picture,
       std::move(scoped_va_buffer));
 }
 

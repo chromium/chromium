@@ -358,8 +358,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       },
       base::Unretained(this));
 
-  VaapiVideoEncoderDelegate::Config ave_config{.native_input_mode =
-                                                   native_input_mode_};
+  VaapiVideoEncoderDelegate::Config ave_config{};
   switch (output_codec_) {
     case VideoCodec::kH264:
       if (!IsConfiguredForTesting()) {
@@ -671,6 +670,12 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     return false;
   }
 
+  if (!vaapi_wrapper_->UploadVideoFrameToSurface(frame, (*input_surface)->id(),
+                                                 (*input_surface)->size())) {
+    NOTIFY_ERROR(kPlatformFailureError, "Failed to upload frame");
+    return false;
+  }
+
   *reconstructed_surface = CreateEncodeSurface(encode_size);
   return !!*reconstructed_surface;
 }
@@ -795,12 +800,11 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::ExecuteBlitSurface(
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VaapiVideoEncodeAccelerator::CreateEncodeJob(
-    scoped_refptr<VideoFrame> frame,
     bool force_keyframe,
+    base::TimeDelta frame_timestamp,
     const VASurface& input_surface,
     scoped_refptr<VASurface> reconstructed_surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  DCHECK(frame);
   DCHECK_NE(input_surface.id(), VA_INVALID_ID);
   DCHECK(!input_surface.size().IsEmpty());
   DCHECK(reconstructed_surface);
@@ -832,8 +836,8 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
       return nullptr;
   }
 
-  return std::make_unique<EncodeJob>(frame, force_keyframe, input_surface.id(),
-                                     input_surface.size(), std::move(picture),
+  return std::make_unique<EncodeJob>(force_keyframe, frame_timestamp,
+                                     input_surface.id(), std::move(picture),
                                      std::move(coded_buffer));
 }
 
@@ -892,7 +896,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       TRACE_EVENT0("media,gpu", "VAVEA::FromCreateEncodeJobToReturn");
       const bool force_key =
           (spatial_idx == 0 ? input_frame->force_keyframe : false);
-      job = CreateEncodeJob(input_frame->frame, force_key,
+      job = CreateEncodeJob(force_key, input_frame->frame->timestamp(),
                             *input_surfaces[spatial_idx],
                             std::move(reconstructed_surfaces[spatial_idx]));
       if (!job)

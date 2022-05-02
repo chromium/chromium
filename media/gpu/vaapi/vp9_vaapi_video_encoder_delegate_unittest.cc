@@ -50,7 +50,6 @@ constexpr uint8_t kTemporalLayerPattern[][4] = {
 
 VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
     .max_num_ref_frames = kDefaultMaxNumRefFrames,
-    .native_input_mode = false,
     .bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
         kConstantQuantizationParameter};
 
@@ -324,21 +323,16 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
     bool keyframe,
     const scoped_refptr<VASurface>& va_surface,
     const scoped_refptr<VP9Picture>& picture) {
-  auto input_frame = VideoFrame::CreateFrame(
-      kDefaultVideoEncodeAcceleratorConfig.input_format,
-      kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
-      gfx::Rect(kDefaultVideoEncodeAcceleratorConfig.input_visible_size),
-      kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
-      base::TimeDelta());
-  LOG_ASSERT(input_frame) << " Failed to create VideoFrame";
-
   constexpr VABufferID kDummyVABufferID = 12;
   auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(
       kDummyVABufferID, VAEncCodedBufferType,
       kDefaultVideoEncodeAcceleratorConfig.input_visible_size.GetArea());
 
+  // TODO(b/229358029): Set a valid timestamp and check the timestamp in
+  // metadata.
+  constexpr base::TimeDelta timestamp;
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, va_surface->id(), va_surface->size(), picture,
+      keyframe, timestamp, va_surface->id(), picture,
       std::move(scoped_va_buffer));
 }
 

@@ -178,8 +178,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // are available, and if so, claims them by associating them with
   // a EncodeJob, and returns the newly-created job, nullptr otherwise.
   std::unique_ptr<EncodeJob> CreateEncodeJob(
-      scoped_refptr<VideoFrame> frame,
       bool force_keyframe,
+      base::TimeDelta frame_timestamp,
       const VASurface& input_surface,
       scoped_refptr<VASurface> reconstructed_surface);
 

@@ -19,28 +19,26 @@
 namespace media {
 
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
-    scoped_refptr<VideoFrame> input_frame,
     bool keyframe,
+    base::TimeDelta timestamp,
     VASurfaceID input_surface_id,
-    const gfx::Size& input_surface_size,
     scoped_refptr<CodecPicture> picture,
     std::unique_ptr<ScopedVABuffer> coded_buffer)
-    : input_frame_(input_frame),
-      keyframe_(keyframe),
+    : keyframe_(keyframe),
+      timestamp_(timestamp),
       input_surface_id_(input_surface_id),
-      input_surface_size_(input_surface_size),
       picture_(std::move(picture)),
       coded_buffer_(std::move(coded_buffer)) {
   DCHECK(picture_);
   DCHECK(coded_buffer_);
 }
 
-VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
-    scoped_refptr<VideoFrame> input_frame,
-    bool keyframe)
-    : input_frame_(input_frame),
-      keyframe_(keyframe),
-      input_surface_id_(VA_INVALID_ID) {}
+VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(bool keyframe,
+                                                base::TimeDelta timestamp,
+                                                VASurfaceID input_surface_id)
+    : keyframe_(keyframe),
+      timestamp_(timestamp),
+      input_surface_id_(input_surface_id) {}
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
@@ -51,12 +49,7 @@ VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
 }
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
-  return input_frame_->timestamp();
-}
-
-const scoped_refptr<VideoFrame>&
-VaapiVideoEncoderDelegate::EncodeJob::input_frame() const {
-  return input_frame_;
+  return timestamp_;
 }
 
 VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
@@ -65,11 +58,6 @@ VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
 
 VASurfaceID VaapiVideoEncoderDelegate::EncodeJob::input_surface_id() const {
   return input_surface_id_;
-}
-
-const gfx::Size& VaapiVideoEncoderDelegate::EncodeJob::input_surface_size()
-    const {
-  return input_surface_size_;
 }
 
 const scoped_refptr<CodecPicture>&
@@ -128,15 +116,8 @@ bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
     return false;
   }
 
-  const VASurfaceID va_surface_id = encode_job.input_surface_id();
-  if (!native_input_mode_ && !vaapi_wrapper_->UploadVideoFrameToSurface(
-                                 *encode_job.input_frame(), va_surface_id,
-                                 encode_job.input_surface_size())) {
-    VLOGF(1) << "Failed to upload frame";
-    return false;
-  }
-
-  if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(va_surface_id)) {
+  if (!vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
+          encode_job.input_surface_id())) {
     VLOGF(1) << "Failed to execute encode";
     return false;
   }

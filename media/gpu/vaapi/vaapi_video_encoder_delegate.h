@@ -52,13 +52,11 @@ class VaapiVideoEncoderDelegate {
   };
 
   struct Config {
-    // Maxium number of reference frames.
+    // Maximum number of reference frames.
     // For H.264 encoding, the value represents the maximum number of reference
     // frames for both the reference picture list 0 (bottom 16 bits) and the
     // reference picture list 1 (top 16 bits).
     size_t max_num_ref_frames;
-
-    bool native_input_mode = false;
 
     BitrateControl bitrate_control = BitrateControl::kConstantBitrate;
   };
@@ -91,12 +89,13 @@ class VaapiVideoEncoderDelegate {
     // Creates an EncodeJob to encode |input_frame|, which will be executed by
     // calling ExecuteSetupCallbacks() in VaapiVideoEncoderDelegate::Encode().
     // If |keyframe| is true, requests this job to produce a keyframe.
-    EncodeJob(scoped_refptr<VideoFrame> input_frame, bool keyframe);
+    EncodeJob(bool keyframe,
+              base::TimeDelta timestamp,
+              VASurfaceID input_surface_id);
     // Constructor for VA-API.
-    EncodeJob(scoped_refptr<VideoFrame> input_frame,
-              bool keyframe,
+    EncodeJob(bool keyframe,
+              base::TimeDelta timestamp,
               VASurfaceID input_surface_id,
-              const gfx::Size& input_surface_size,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
 
@@ -121,25 +120,20 @@ class VaapiVideoEncoderDelegate {
 
     base::TimeDelta timestamp() const;
 
-    const scoped_refptr<VideoFrame>& input_frame() const;
-
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
     VASurfaceID input_surface_id() const;
-    const gfx::Size& input_surface_size() const;
     const scoped_refptr<CodecPicture>& picture() const;
 
    private:
-    // Input VideoFrame to be encoded.
-    const scoped_refptr<VideoFrame> input_frame_;
-
     // True if this job is to produce a keyframe.
     bool keyframe_;
+    // |timestamp_| to be added to the produced encoded chunk.
+    const base::TimeDelta timestamp_;
 
     // VA-API specific members.
     // Input surface ID and size for video frame data or scaled data.
     const VASurfaceID input_surface_id_;
-    const gfx::Size input_surface_size_;
     const scoped_refptr<CodecPicture> picture_;
     // Buffer that will contain the output bitstream data for this frame.
     std::unique_ptr<ScopedVABuffer> coded_buffer_;
@@ -191,8 +185,6 @@ class VaapiVideoEncoderDelegate {
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   base::RepeatingClosure error_cb_;
-
-  bool native_input_mode_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

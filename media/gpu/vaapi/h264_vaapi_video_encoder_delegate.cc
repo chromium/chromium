@@ -227,8 +227,6 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     }
   }
 
-  native_input_mode_ = ave_config.native_input_mode;
-
   visible_size_ = config.input_visible_size;
   // For 4:2:0, the pixel sizes have to be even.
   if ((visible_size_.width() % 2 != 0) || (visible_size_.height() % 2 != 0)) {

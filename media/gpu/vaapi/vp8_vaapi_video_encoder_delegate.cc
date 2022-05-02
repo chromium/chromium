@@ -310,8 +310,6 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
     }
   }
 
-  native_input_mode_ = ave_config.native_input_mode;
-
   visible_size_ = config.input_visible_size;
   coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
                           base::bits::AlignUp(visible_size_.height(), 16));
