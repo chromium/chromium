@@ -172,8 +172,13 @@ void RmadClientImpl::OnCheckIfRmaIsRequired(dbus::Response* response) {
     return;
   }
 
+  // TODO(b/230924565): Remove LOG statements after feature release.
   if (session_manager_callback_) {
+    VLOG(1) << "RmadClientImpl::OnCheckIfRmaIsRequired invoking session "
+               "manager callback";
     std::move(session_manager_callback_).Run();
+  } else {
+    VLOG(1) << "RmadClientImpl::OnCheckIfRmaIsRequired the callback is not set";
   }
 }
 
@@ -513,6 +518,13 @@ bool RmadClientImpl::WasRmaStateDetected() {
     LOG(WARNING) << "Checking if RMA state file exists not completed before "
                     "WasRmaStateDetected() called.";
   }
+
+  // TODO(b/230924565): Remove LOG statement after feature release.
+  VLOG(1) << "RmadClientImpl::WasRmaStateDetected rma_executable_exists_: "
+          << rma_executable_exists_.value_or(false)
+          << " is_rma_required_: " << is_rma_required_
+          << " rma_state_file_exists_: "
+          << rma_state_file_exists_.value_or(false);
 
   return rma_executable_exists_.value_or(false) &&
          (is_rma_required_ || rma_state_file_exists_.value_or(false));
