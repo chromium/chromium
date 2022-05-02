@@ -30,10 +30,10 @@ WindowManagementImpl::WindowManagementImpl(
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
-  std::vector<blink::mojom::CrosWindowPtr> windows;
+  std::vector<blink::mojom::CrosWindowInfoPtr> windows;
   proxy->InstanceRegistry().ForEachInstance(
       [&windows](const apps::InstanceUpdate& update) {
-        auto window = blink::mojom::CrosWindow::New();
+        auto window = blink::mojom::CrosWindowInfo::New();
         aura::Window* target = update.Window()->GetToplevelWindow();
         views::Widget* widget =
             views::Widget::GetTopLevelWidgetForNativeView(target);

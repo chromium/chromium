@@ -29,7 +29,7 @@ class CrosWindowManagement : public ScriptWrappable,
 
   ScriptPromise getWindows(ScriptState* script_state);
   void WindowsCallback(ScriptPromiseResolver* resolver,
-                       WTF::Vector<mojom::blink::CrosWindowPtr> windows);
+                       WTF::Vector<mojom::blink::CrosWindowInfoPtr> windows);
 
  private:
   HeapMojoRemote<mojom::blink::CrosWindowManagement> cros_window_management_;

@@ -16,7 +16,7 @@ static constexpr char kShown[] = "shown";
 static constexpr char kHidden[] = "hidden";
 
 CrosWindow::CrosWindow(CrosWindowManagement* manager,
-                       mojom::blink::CrosWindowPtr window)
+                       mojom::blink::CrosWindowInfoPtr window)
     : window_management_(manager), window_(std::move(window)) {}
 
 void CrosWindow::Trace(Visitor* visitor) const {

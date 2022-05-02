@@ -14,7 +14,7 @@ enum VisibilityState {
 
 // Represents a Chrome OS window which can be manipulated by a Window Management
 // System Extension.
-struct CrosWindow {
+struct CrosWindowInfo {
   // A unique identifier for this window.
   mojo_base.mojom.UnguessableToken id;
   // The App ID of the App that this window is an instance of.
@@ -38,7 +38,7 @@ struct CrosWindow {
 // Called by System Extensions Renderers and implemented by Ash Chrome.
 interface CrosWindowManagement {
   // Returns all windows visible to a window manager.
-  GetAllWindows() => (array<CrosWindow> result);
+  GetAllWindows() => (array<CrosWindowInfo> result);
 
   // Sets the bounds of a CrosWindow where |hash| is used as the window
   // identifier.

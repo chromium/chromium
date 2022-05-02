@@ -51,7 +51,7 @@ ScriptPromise CrosWindowManagement::getWindows(ScriptState* script_state) {
 
 void CrosWindowManagement::WindowsCallback(
     ScriptPromiseResolver* resolver,
-    WTF::Vector<mojom::blink::CrosWindowPtr> windows) {
+    WTF::Vector<mojom::blink::CrosWindowInfoPtr> windows) {
   HeapVector<Member<CrosWindow>> results;
   results.ReserveInitialCapacity(windows.size());
   for (auto& w : windows) {
