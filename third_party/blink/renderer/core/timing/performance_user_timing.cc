@@ -221,9 +221,9 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_start_time);
+        unsafe_start_time, "startTime", start_time);
     TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "blink.user_timing", measure_name.Utf8().c_str(), hash,
         unsafe_end_time);
