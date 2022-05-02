@@ -413,7 +413,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForLoginScreen) {
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
+  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
   EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
       .WillRepeatedly(testing::Return(false));
 
@@ -453,6 +453,45 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   // After the reboot, the current handler is destroyed and the new one is
   // created which will schedule reboot for the next day. Check that current
   // handler is not scheduling any more reboots.
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+}
+
+TEST_F(DeviceScheduledRebootHandlerTest,
+       VerifyLoginScreenRebootIsGuardedByFeatureFlag) {
+  // Disable the feature. Reboot should not occur.
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(false));
+
+  // Schedule reboot in 30 minutes. Reboot should not occur because the flag is
+  // disabled.
+  base::TimeDelta delay_from_now = base::Minutes(30);
+  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
+      scheduled_task_executor_->GetTimeZone(),
+      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+      ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
+
+  // Set a new scheduled reboot, fast forward to right before the
+  // expected reboot and then verify reboot timer has not yet expired.
+  const base::TimeDelta small_delay = base::Milliseconds(1);
+  cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledReboot,
+      std::move(policy_and_next_reboot_time.first));
+  int expected_scheduled_reboots = 0;
+  int expected_reboot_requests = 0;
+  task_environment_.FastForwardBy(delay_from_now - small_delay);
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+
+  // Fast forward to the expected reboot time and then check if the
+  // reboot timer has expired and the reboot is not executed.
+  expected_scheduled_reboots += 1;
+  task_environment_.FastForwardBy(small_delay);
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+
+  // Fast forward to the next day and then check if the reboot is scheduled
+  // again, but not executed.
+  expected_scheduled_reboots += 1;
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 }

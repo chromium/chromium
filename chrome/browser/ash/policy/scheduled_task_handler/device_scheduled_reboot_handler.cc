@@ -98,7 +98,9 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
 
   // If the device is on the sign-in screen, skip reboot only if the grace
   // period is applied.
-  if (!skip_reboot_ && !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+  if (!skip_reboot_ && !user_manager::UserManager::Get()->IsUserLoggedIn() &&
+      base::FeatureList::IsEnabled(
+          ash::features::kDeviceForceScheduledReboot)) {
     RebootDevice(kRebootDescriptionOnTimerExpired);
     return;
   }
