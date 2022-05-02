@@ -34,12 +34,11 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
+NSInteger kSymbolActionPointSize = 18;
 
-// The size of the symbol image.
-NSInteger kSymbolImagePointSize = 18;
-
-}  // namespace
+NSString* kQRCodeFinderSymbol = @"qrcode.viewfinder";
+NSString* kPlusSquareSymbol = @"plus.square";
+NSString* kClipboardSymbol = @"doc.on.clipboard";
 
 @interface BrowserActionFactory ()
 
@@ -207,8 +206,8 @@ NSInteger kSymbolImagePointSize = 18;
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
-                      image:DefaultSymbolWithPointSize(@"plus.square",
-                                                       kSymbolImagePointSize)
+                      image:DefaultSymbolWithPointSize(kPlusSquareSymbol,
+                                                       kSymbolActionPointSize)
                        type:MenuActionType::OpenNewTab
                       block:^{
                         [handler openURLInNewTab:[OpenNewTabCommand
@@ -244,8 +243,8 @@ NSInteger kSymbolImagePointSize = 18;
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
-                      image:DefaultSymbolWithPointSize(@"xmark",
-                                                       kSymbolImagePointSize)
+                      image:DefaultSymbolWithPointSize(kXMarkSymbol,
+                                                       kSymbolActionPointSize)
                        type:MenuActionType::CloseCurrentTabs
                       block:^{
                         [handler closeCurrentTab];
@@ -259,8 +258,8 @@ NSInteger kSymbolImagePointSize = 18;
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER)
-                image:DefaultSymbolWithPointSize(@"qrcode.viewfinder",
-                                                 kSymbolImagePointSize)
+                image:DefaultSymbolWithPointSize(kQRCodeFinderSymbol,
+                                                 kSymbolActionPointSize)
                  type:MenuActionType::ShowQRScanner
                 block:^{
                   [handler showQRScanner];
@@ -272,7 +271,8 @@ NSInteger kSymbolImagePointSize = 18;
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
-                image:DefaultSymbolWithPointSize(@"mic", kSymbolImagePointSize)
+                image:DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                                 kSymbolActionPointSize)
                  type:MenuActionType::StartVoiceSearch
                 block:^{
                   [handler startVoiceSearch];
@@ -284,8 +284,8 @@ NSInteger kSymbolImagePointSize = 18;
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)
-                image:DefaultSymbolWithPointSize(@"magnifyingglass",
-                                                 kSymbolImagePointSize)
+                image:DefaultSymbolWithPointSize(kSearchSymbol,
+                                                 kSymbolActionPointSize)
                  type:MenuActionType::StartNewSearch
                 block:^{
                   OpenNewTabCommand* command =
@@ -350,8 +350,8 @@ NSInteger kSymbolImagePointSize = 18;
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
-                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
-                                                          kSymbolImagePointSize)
+                         image:DefaultSymbolWithPointSize(
+                                   kClipboardSymbol, kSymbolActionPointSize)
                           type:MenuActionType::SearchCopiedImage
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -377,8 +377,8 @@ NSInteger kSymbolImagePointSize = 18;
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
-                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
-                                                          kSymbolImagePointSize)
+                         image:DefaultSymbolWithPointSize(
+                                   kClipboardSymbol, kSymbolActionPointSize)
                           type:MenuActionType::VisitCopiedLink
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -404,8 +404,8 @@ NSInteger kSymbolImagePointSize = 18;
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
-                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
-                                                          kSymbolImagePointSize)
+                         image:DefaultSymbolWithPointSize(
+                                   kClipboardSymbol, kSymbolActionPointSize)
                           type:MenuActionType::SearchCopiedText
                          block:^{
                            ClipboardRecentContent::GetInstance()

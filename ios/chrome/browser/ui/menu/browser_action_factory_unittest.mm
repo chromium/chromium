@@ -40,10 +40,6 @@
 
 namespace {
 MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
-
-// The size of the symbol image.
-NSInteger kSymbolImagePointSize = 18;
-
 }  // namespace
 
 // Test fixture for the BrowserActionFactory.
@@ -258,7 +254,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"plus.square", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kPlusSquareSymbol, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB);
 
   UIAction* action = [factory actionToOpenNewTab];
@@ -308,7 +304,7 @@ TEST_F(BrowserActionFactoryTest, CloseCurrentTabAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"xmark", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB);
 
@@ -326,7 +322,7 @@ TEST_F(BrowserActionFactoryTest, ShowQRScannerAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"qrcode.viewfinder", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kQRCodeFinderSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER);
 
@@ -343,7 +339,7 @@ TEST_F(BrowserActionFactoryTest, StartVoiceSearchAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"mic", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kMicrophoneSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
 
@@ -360,7 +356,7 @@ TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"magnifyingglass", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kSearchSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH);
 
@@ -411,7 +407,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedImageAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"doc.on.clipboard", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kClipboardSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE);
 
@@ -428,7 +424,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedURLAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"doc.on.clipboard", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kClipboardSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK);
 
@@ -445,7 +441,7 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedTextAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(@"doc.on.clipboard", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kClipboardSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT);
 

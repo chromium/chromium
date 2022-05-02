@@ -96,6 +96,9 @@ const CGFloat kSnoozeButtonTitleVerticalMargin = 16.0f;
 const CGFloat kSnoozeButtonMinimumSize = 48.0f;
 const CGFloat kSnoozeButtonFontSize = 15.0f;
 
+// The size of symbol action images.
+const NSInteger kSymbolBubblePointSize = 17;
+
 // Returns a background view for BubbleView.
 UIView* BubbleBackgroundView() {
   UIView* background = [[UIView alloc] initWithFrame:CGRectZero];
@@ -146,10 +149,8 @@ UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
 
 // Returns a close button for BubbleView.
 UIButton* BubbleCloseButton() {
-  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithScale:UIImageSymbolScaleMedium];
   UIImage* buttonImage =
-      DefaultSymbolWithConfiguration(@"xmark", configuration);
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolBubblePointSize);
   // Computes the paddings to position the button's image. The button is
   // bigger than the image for accessibility purposes.
   const CGFloat closeButtonBottomPadding = kCloseButtonSize -

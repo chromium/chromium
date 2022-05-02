@@ -154,8 +154,8 @@ const CGFloat kBadgeCornerRadius = 5.0;
                                                      kSymbolImagePointSize);
       break;
     case kBadgeTypePermissionsMicrophone:
-      badgeImage = [[UIImage systemImageNamed:@"mic"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      badgeImage = DefaultSymbolTemplateWithPointSize(kMicrophoneSymbol,
+                                                      kSymbolImagePointSize);
       break;
     case kBadgeTypeIncognito:
       NOTREACHED()

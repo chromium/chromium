@@ -101,8 +101,8 @@ UIAction* GetOverflowMenuElementForBadgeType(
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
-      image = [[UIImage systemImageNamed:@"mic"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = DefaultSymbolTemplateWithPointSize(kMicrophoneSymbol,
+                                                 kSymbolImagePointSize);
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;
     case kBadgeTypeIncognito:

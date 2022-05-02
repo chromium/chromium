@@ -13,6 +13,9 @@
 
 class GURL;
 
+// The size of symbol action images.
+extern NSInteger kSymbolActionPointSize;
+
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure.
 @interface ActionFactory : NSObject

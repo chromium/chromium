@@ -58,7 +58,7 @@
   UIImage* iconImage =
       config->is_camera_accessible()
           ? CustomSymbolWithPointSize(kCameraFillSymbol, kSymbolImagePointSize)
-          : DefaultSymbolWithPointSize(kMicrophoneSymbol,
+          : DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
                                        kSymbolImagePointSize);
   [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:NO];

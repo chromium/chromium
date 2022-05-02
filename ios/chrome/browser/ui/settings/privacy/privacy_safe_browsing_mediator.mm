@@ -209,7 +209,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
   }
   managedItem.image =
-      DefaultSymbolWithPointSize(@"checkmark", kSymbolImagePointSize);
+      DefaultSymbolWithPointSize(kCheckmarkSymbol, kSymbolImagePointSize);
   managedItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
                               ? [UIColor colorNamed:kBlueColor]
                               : [UIColor clearColor];

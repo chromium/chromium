@@ -49,10 +49,16 @@ NSString* const kCameraFillSymbol = @"camera_fill";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";
-NSString* const kMicrophoneSymbol = @"mic.fill";
+NSString* const kMicrophoneFillSymbol = @"mic.fill";
+NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kPinSymbol = @"pin";
 NSString* const kGearShapeSymbol = @"gearshape.fill";
+NSString* const kShareSymbol = @"square.and.arrow.up";
+NSString* const kXMarkSymbol = @"xmark";
+NSString* const kPlusSymbol = @"plus";
+NSString* const kSearchSymbol = @"magnifyingglass";
+NSString* const kCheckmarkSymbol = @"checkmark";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {

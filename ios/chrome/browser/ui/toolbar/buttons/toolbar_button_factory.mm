@@ -29,7 +29,11 @@
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 24;
+NSInteger kSymbolToolbarPointSize = 24;
+
+// Specific symbols used in the toolbar.
+NSString* kToolbarArrowBackwardSymbol = @"arrow.backward";
+NSString* kToolbarArrowForwardSymbol = @"arrow.forward";
 
 }  // namespace
 
@@ -48,9 +52,10 @@ NSInteger kSymbolImagePointSize = 24;
 
 - (ToolbarButton*)backButton {
   UIImage* backImage;
-  backImage = UseSymbols() ? DefaultSymbolWithPointSize(@"arrow.backward",
-                                                        kSymbolImagePointSize)
-                           : [UIImage imageNamed:@"toolbar_back"];
+  backImage = UseSymbols()
+                  ? DefaultSymbolWithPointSize(kToolbarArrowBackwardSymbol,
+                                               kSymbolToolbarPointSize)
+                  : [UIImage imageNamed:@"toolbar_back"];
   ToolbarButton* backButton = [ToolbarButton
       toolbarButtonWithImage:[backImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -66,9 +71,9 @@ NSInteger kSymbolImagePointSize = 24;
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(@"arrow.forward", kSymbolImagePointSize)
-          : [UIImage imageNamed:@"toolbar_forward"];
+      UseSymbols() ? DefaultSymbolWithPointSize(kToolbarArrowForwardSymbol,
+                                                kSymbolToolbarPointSize)
+                   : [UIImage imageNamed:@"toolbar_forward"];
   ToolbarButton* forwardButton = [ToolbarButton
       toolbarButtonWithImage:[forwardImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -86,7 +91,7 @@ NSInteger kSymbolImagePointSize = 24;
 - (ToolbarTabGridButton*)tabGridButton {
   UIImage* tabGridImage =
       UseSymbols() ? CustomSymbolWithPointSize(kSquareNumberSymbol,
-                                               kSymbolImagePointSize)
+                                               kSymbolToolbarPointSize)
                    : tabGridImage = [UIImage imageNamed:@"toolbar_switcher"];
   ToolbarTabGridButton* tabGridButton =
       [ToolbarTabGridButton toolbarButtonWithImage:tabGridImage];
@@ -123,10 +128,10 @@ NSInteger kSymbolImagePointSize = 24;
 }
 
 - (ToolbarButton*)shareButton {
-  UIImage* shareImage = UseSymbols()
-                            ? DefaultSymbolWithPointSize(@"square.and.arrow.up",
-                                                         kSymbolImagePointSize)
-                            : [UIImage imageNamed:@"toolbar_share"];
+  UIImage* shareImage =
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize)
+          : [UIImage imageNamed:@"toolbar_share"];
   ToolbarButton* shareButton =
       [ToolbarButton toolbarButtonWithImage:shareImage];
   [self configureButton:shareButton width:kAdaptiveToolbarButtonWidth];
@@ -142,10 +147,10 @@ NSInteger kSymbolImagePointSize = 24;
 }
 
 - (ToolbarButton*)reloadButton {
-  UIImage* reloadImage = UseSymbols()
-                             ? CustomSymbolWithPointSize(kArrowClockWiseSymbol,
-                                                         kSymbolImagePointSize)
-                             : [UIImage imageNamed:@"toolbar_reload"];
+  UIImage* reloadImage =
+      UseSymbols() ? CustomSymbolWithPointSize(kArrowClockWiseSymbol,
+                                               kSymbolToolbarPointSize)
+                   : [UIImage imageNamed:@"toolbar_reload"];
   ToolbarButton* reloadButton = [ToolbarButton
       toolbarButtonWithImage:[reloadImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -161,9 +166,9 @@ NSInteger kSymbolImagePointSize = 24;
 }
 
 - (ToolbarButton*)stopButton {
-  UIImage* stopImage =
-      UseSymbols() ? DefaultSymbolWithPointSize(@"xmark", kSymbolImagePointSize)
-                   : [UIImage imageNamed:@"toolbar_stop"];
+  UIImage* stopImage = UseSymbols() ? DefaultSymbolWithPointSize(
+                                          kXMarkSymbol, kSymbolToolbarPointSize)
+                                    : [UIImage imageNamed:@"toolbar_stop"];
   ToolbarButton* stopButton = [ToolbarButton toolbarButtonWithImage:stopImage];
   [self configureButton:stopButton width:kAdaptiveToolbarButtonWidth];
   stopButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
@@ -176,8 +181,9 @@ NSInteger kSymbolImagePointSize = 24;
 
 - (ToolbarButton*)openNewTabButton {
   UIImage* newTabImage =
-      UseSymbols() ? DefaultSymbolWithPointSize(@"plus", kSymbolImagePointSize)
-                   : [UIImage imageNamed:@"toolbar_new_tab_page"];
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kPlusSymbol, kSymbolToolbarPointSize)
+          : [UIImage imageNamed:@"toolbar_new_tab_page"];
   ToolbarNewTabButton* newTabButton =
       [ToolbarNewTabButton toolbarButtonWithImage:newTabImage];
 

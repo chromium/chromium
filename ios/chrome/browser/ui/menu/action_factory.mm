@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -16,6 +17,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+NSInteger kSymbolToolbarPointSize = 18;
 
 @interface ActionFactory ()
 
@@ -89,7 +92,8 @@
 - (UIAction*)actionToOpenAllTabsWithBlock:(ProceduralBlock)block {
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS)
-                         image:[UIImage systemImageNamed:@"plus"]
+                         image:DefaultSymbolWithPointSize(
+                                   kPlusSymbol, kSymbolActionPointSize)
                           type:MenuActionType::OpenAllInNewTabs
                          block:block];
 }

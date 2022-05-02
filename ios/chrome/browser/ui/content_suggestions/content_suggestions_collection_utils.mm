@@ -61,6 +61,10 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 // Height for the shrunk logo frame.
 // TODO(crbug.com/1170491): clean up post-launch.
 const CGFloat kGoogleSearchLogoShrunkHeight = 36;
+
+// The size of the symbol image.
+NSInteger kSymbolContentSuggestionsPointSize = 18;
+
 }
 
 namespace content_suggestions {
@@ -180,14 +184,12 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
 
   [voiceSearchButton setAdjustsImageWhenHighlighted:NO];
 
-  UIImage* micImage;
-  if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    micImage = [DefaultSymbolWithPointSize(@"mic.fill", 18)
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  } else {
-    micImage = [[UIImage imageNamed:@"location_bar_voice"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  UIImage* micImage = UseSymbols() ? DefaultSymbolWithPointSize(
+                                         kMicrophoneFillSymbol,
+                                         kSymbolContentSuggestionsPointSize)
+                                   : [UIImage imageNamed:@"location_bar_voice"];
+  micImage =
+      [micImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   [voiceSearchButton setImage:micImage forState:UIControlStateNormal];
   voiceSearchButton.tintColor = [UIColor colorNamed:kGrey500Color];

@@ -15,6 +15,14 @@
 class Browser;
 class GURL;
 
+// The size of symbol action images.
+extern NSInteger kSymbolActionPointSize;
+
+// Specific symbols used in the BrowserActionFactory.
+extern NSString* kQRCodeFinderSymbol;
+extern NSString* kPlusSquareSymbol;
+extern NSString* kClipboardSymbol;
+
 // Factory providing methods to create UIActions that depends on the provided
 // browser with consistent titles, images and metrics structure.
 @interface BrowserActionFactory : ActionFactory
