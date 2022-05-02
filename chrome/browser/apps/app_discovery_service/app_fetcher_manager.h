@@ -23,6 +23,9 @@ class AppFetcher {
   virtual void GetApps(ResultCallback callback) = 0;
   virtual base::CallbackListSubscription RegisterForAppUpdates(
       RepeatingResultCallback callback);
+  virtual void GetIcon(const std::string& app_id,
+                       int32_t size_hint_in_dip,
+                       GetIconCallback callback);
 };
 
 // Backend for app fetching requests.
@@ -37,6 +40,10 @@ class AppFetcherManager {
   base::CallbackListSubscription RegisterForAppUpdates(
       ResultType result_type,
       RepeatingResultCallback callback);
+  void GetIcon(const std::string& app_id,
+               int32_t size_hint_in_dip,
+               ResultType result_type,
+               GetIconCallback callback);
 
   static void SetOverrideFetcherForTesting(AppFetcher* fetcher);
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
 
 namespace apps {
@@ -15,16 +16,24 @@ AppDiscoveryService::AppDiscoveryService(Profile* profile)
 
 AppDiscoveryService::~AppDiscoveryService() = default;
 
-void AppDiscoveryService::GetApps(ResultType result_type,
-                                  ResultCallback callback) {
-  app_fetcher_manager_->GetApps(result_type, std::move(callback));
-}
-
 base::CallbackListSubscription AppDiscoveryService::RegisterForAppUpdates(
     ResultType result_type,
     RepeatingResultCallback callback) {
   return app_fetcher_manager_->RegisterForAppUpdates(result_type,
                                                      std::move(callback));
+}
+
+void AppDiscoveryService::GetApps(ResultType result_type,
+                                  ResultCallback callback) {
+  app_fetcher_manager_->GetApps(result_type, std::move(callback));
+}
+
+void AppDiscoveryService::GetIcon(const std::string& app_id,
+                                  int32_t size_hint_in_dip,
+                                  ResultType result_type,
+                                  GetIconCallback callback) {
+  app_fetcher_manager_->GetIcon(app_id, size_hint_in_dip, result_type,
+                                std::move(callback));
 }
 
 }  // namespace apps

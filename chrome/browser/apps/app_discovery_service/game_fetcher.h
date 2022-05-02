@@ -30,7 +30,7 @@ class GameFetcher : public AppFetcher,
       RepeatingResultCallback callback) override;
   void GetIcon(const std::string& app_id,
                int32_t size_hint_in_dip,
-               GetIconCallback callback);
+               GetIconCallback callback) override;
 
   // AppProvisioningDataManager::Observer:
   void OnAppDataUpdated(const proto::AppWithLocaleList& app_data) override;

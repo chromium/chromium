@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace apps {
 
@@ -15,6 +17,14 @@ base::CallbackListSubscription AppFetcher::RegisterForAppUpdates(
     RepeatingResultCallback callback) {
   NOTREACHED();
   return base::CallbackListSubscription();
+}
+
+void AppFetcher::GetIcon(const std::string& app_id,
+                         int32_t size_hint_in_dip,
+                         GetIconCallback callback) {
+  NOTREACHED();
+  std::move(callback).Run(gfx::ImageSkia(),
+                          DiscoveryError::kErrorRequestFailed);
 }
 
 // static
@@ -61,6 +71,28 @@ base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
     case ResultType::kGameSearchCatalog:
       DCHECK(game_fetcher_);
       return game_fetcher_->RegisterForAppUpdates(std::move(callback));
+  }
+}
+
+void AppFetcherManager::GetIcon(const std::string& app_id,
+                                int32_t size_hint_in_dip,
+                                ResultType result_type,
+                                GetIconCallback callback) {
+  switch (result_type) {
+    case ResultType::kRecommendedArcApps:
+      NOTREACHED();
+      std::move(callback).Run(gfx::ImageSkia(),
+                              DiscoveryError::kErrorRequestFailed);
+      return;
+    case ResultType::kTestType:
+      NOTREACHED();
+      std::move(callback).Run(gfx::ImageSkia(),
+                              DiscoveryError::kErrorRequestFailed);
+      return;
+    case ResultType::kGameSearchCatalog:
+      DCHECK(game_fetcher_);
+      game_fetcher_->GetIcon(app_id, size_hint_in_dip, std::move(callback));
+      return;
   }
 }
 
