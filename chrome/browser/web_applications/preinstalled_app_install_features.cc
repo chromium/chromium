@@ -40,24 +40,13 @@ bool IsMigrationFeature(const base::Feature& feature) {
 // Enables migration of default installed GSuite apps over to their replacement
 // web apps.
 const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
-  "MigrateDefaultChromeAppToWebAppsGSuite",
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-};
+    "MigrateDefaultChromeAppToWebAppsGSuite", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables migration of default installed non-GSuite apps over to their
 // replacement web apps.
 const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
-  "MigrateDefaultChromeAppToWebAppsNonGSuite",
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-};
+    "MigrateDefaultChromeAppToWebAppsNonGSuite",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables installing the PWA version of the chrome os calculator instead of the
 // deprecated chrome app.
