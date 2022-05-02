@@ -760,6 +760,9 @@ def CreateMetadata(*, native_spec, elf_info, shorten_path):
     native_metadata[models.METADATA_ELF_ARCHITECTURE] = elf_info.architecture
     native_metadata[models.METADATA_ELF_BUILD_ID] = elf_info.build_id
 
+  if native_spec.apk_so_path:
+    native_metadata[models.METADATA_ELF_APK_PATH] = native_spec.apk_so_path
+
   if native_spec.elf_path:
     native_metadata[models.METADATA_ELF_FILENAME] = shorten_path(
         native_spec.elf_path)

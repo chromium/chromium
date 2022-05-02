@@ -57,7 +57,7 @@ _TEST_SSARGS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.ssargs')
 
 # Generated file paths relative to apk
 _TEST_APK_SO_PATH = 'lib/armeabi-v7a/test.so'
-_TEST_APK_SMALL_SO_PATH = 'lib/armeabi-v7a/smalltest.so'
+_TEST_APK_SMALL_SO_PATH = 'lib/x86/smalltest.so'
 _TEST_APK_DEX_PATH = 'classes.dex'
 _TEST_APK_OTHER_FILE_PATH = 'assets/icudtl.dat'
 _TEST_APK_RES_FILE_PATH = 'res/drawable-v13/test.xml'
@@ -224,31 +224,56 @@ class IntegrationTest(unittest.TestCase):
         apk_spec = None
         if use_apk or use_minimal_apks:
           apk_spec = archive.ApkSpec(apk_path=_TEST_APK_PATH)
-        if use_minimal_apks:
-          apk_spec.minimal_apks_path = _TEST_MINIMAL_APKS_PATH
-          apk_spec.split_name = 'base'
-
-        if use_apk or use_minimal_apks:
-          native_spec.apk_so_path = _TEST_APK_SO_PATH
           apk_spec.path_defaults = _TEST_PATH_DEFAULTS
+          apk_spec.ignore_apk_paths.update(
+              ['classes.dex', _TEST_APK_SO_PATH, _TEST_APK_SMALL_SO_PATH])
+          if pak_spec and pak_spec.apk_pak_paths:
+            apk_spec.ignore_apk_paths.update(pak_spec.apk_pak_paths)
           if output_directory:
-            if use_apk:
-              orig_path = _TEST_APK_PATH
-            else:
+            orig_path = _TEST_APK_PATH
+            if use_minimal_apks:
               orig_path = _TEST_MINIMAL_APKS_PATH.replace(
                   '.minimal.apks', '.aab')
             apk_spec.size_info_prefix = os.path.join(
                 output_directory, 'size-info', os.path.basename(orig_path))
 
+          native_spec.apk_so_path = _TEST_APK_SO_PATH
+          small_native_spec = archive.NativeSpec(
+              apk_so_path=_TEST_APK_SMALL_SO_PATH)
+
+        if use_minimal_apks:
+          apk_spec.minimal_apks_path = _TEST_MINIMAL_APKS_PATH
+          apk_spec.split_name = 'base'
+
         container_name = ''
+        if use_apk:
+          container_name = 'test.apk'
         if use_minimal_apks:
           container_name = 'Bundle.minimal.apks/base.apk'
-        yield archive.ContainerSpec(container_name=container_name,
-                                    apk_spec=apk_spec,
-                                    pak_spec=pak_spec,
-                                    native_specs=[native_spec],
-                                    source_directory=_TEST_SOURCE_DIR,
-                                    output_directory=output_directory)
+        container_spec = archive.ContainerSpec(
+            container_name=container_name,
+            apk_spec=apk_spec,
+            pak_spec=pak_spec,
+            native_spec=native_spec,
+            source_directory=_TEST_SOURCE_DIR,
+            output_directory=output_directory)
+        if not apk_spec:
+          yield container_spec
+          return
+
+        container_spec.native_spec = None
+        yield container_spec
+        container_spec = copy.copy(container_spec)
+        container_spec.container_name = (
+            f'{container_name}/test.so (armeabi-v7a)')
+        container_spec.pak_spec = None
+        container_spec.native_spec = native_spec
+        yield container_spec
+        container_spec = copy.copy(container_spec)
+        container_spec.container_name = f'{container_name}/smalltest.so (x86)'
+        container_spec.native_spec = small_native_spec
+        yield container_spec
+        container_spec = None
 
         if use_minimal_apks:
           for split_name, apk_path in [
@@ -268,7 +293,7 @@ class IntegrationTest(unittest.TestCase):
             yield archive.ContainerSpec(container_name=container_name,
                                         apk_spec=apk_spec,
                                         pak_spec=None,
-                                        native_specs=[],
+                                        native_spec=None,
                                         source_directory=_TEST_SOURCE_DIR,
                                         output_directory=output_directory)
 
@@ -303,6 +328,8 @@ class IntegrationTest(unittest.TestCase):
         _TEST_SOURCE_DIR,
         '--json-config',
         _TEST_CONFIG_JSON,
+        '--abi-filter',
+        'armeabi-v7a',
     ]
 
     if use_output_directory:
@@ -617,7 +644,7 @@ def main():
     for f in glob.glob(os.path.join(_TEST_DATA_DIR, '*.golden')):
       os.unlink(f)
 
-  unittest.main(argv=argv, verbosity=2)
+  unittest.main(argv=argv)
 
 
 if __name__ == '__main__':

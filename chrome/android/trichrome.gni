@@ -232,13 +232,6 @@ template("trichrome_library_apk_tmpl") {
 # parameters, and is used by SuperSize-archive to create multi-container .size
 # files. This is used to support SuperSize on Trichrome.
 template("write_ssargs_trichrome") {
-  if (target_cpu == "arm64" || target_cpu == "x64") {
-    # Ignore secondary abi libmonochrome in library apk in favor of primary one
-    # in TrichromeWebView.
-    _library_args = " --no-native"
-  } else {
-    _library_args = ""
-  }
   _extra_args = " --abi-filter $android_app_abi"
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
@@ -247,9 +240,8 @@ template("write_ssargs_trichrome") {
   # by SuperSize.
   _lines = [
     "# Written by build target \"${target_name}.\"",
-    "Library -f ${invoker.trichrome_library_basename}$_extra_args$_library_args",
-    "# Add --no-native to Chrome as workaround for crbug.com/1103271.",
-    "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args --no-native",
+    "Library -f ${invoker.trichrome_library_basename}$_extra_args",
+    "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args",
     "WebView -f ${invoker.trichrome_webview_basename}$_extra_args",
   ]
 

@@ -89,18 +89,13 @@ class _ResourceSourceMapper:
     return ''
 
 
-def CreateApkOtherSymbols(*, apk_spec, native_spec):
+def CreateApkOtherSymbols(apk_spec):
   """Creates symbols for resources / assets within the apk.
-
-  Args:
-    apk_spec: Instance of ApkSpec or None.
-    native_spec: Instance of NativeSpec or None.
 
   Returns:
     A tuple of (section_ranges, raw_symbols, apk_metadata).
   """
   logging.info('Creating symbols for other APK entries')
-  apk_so_path = native_spec and native_spec.apk_so_path
   res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
                                             apk_spec.path_defaults)
   resource_deobfuscator = _ResourcePathDeobfuscator(
@@ -119,11 +114,7 @@ def CreateApkOtherSymbols(*, apk_spec, native_spec):
       # exist when using Android's zipalign. E.g. for bundle .apks files.
       zipalign_total += len(zip_info.extra)
       # Skip files that we explicitly analyze: .so, .dex, and .pak.
-      if zip_info.filename == apk_so_path:
-        continue
-      if apk_spec.analyze_dex and zip_info.filename.endswith('.dex'):
-        continue
-      if zip_info.filename.endswith('.pak'):
+      if zip_info.filename in apk_spec.ignore_apk_paths:
         continue
 
       resource_filename = resource_deobfuscator.MaybeRemapPath(
