@@ -164,7 +164,7 @@ void ServiceDiscardableManager::InsertLockedTexture(
   }
 
   total_size_ += texture_size;
-  entries_.Put({texture_id, texture_manager},
+  entries_.Put(GpuDiscardableEntryKey{texture_id, texture_manager},
                GpuDiscardableEntry{handle, texture_size});
   EnforceCacheSizeLimit(cache_size_limit_);
 }

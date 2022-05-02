@@ -50,7 +50,7 @@ void PassthroughDiscardableManager::InitializeTexture(
   entry.handle = std::move(handle);
   entry.size = texture_size;
 
-  cache_.Put({client_id, context_group}, std::move(entry));
+  cache_.Put(DiscardableCacheKey{client_id, context_group}, std::move(entry));
   EnforceCacheSizeLimit(cache_size_limit_);
 }
 bool PassthroughDiscardableManager::UnlockTexture(

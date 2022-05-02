@@ -6,7 +6,10 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/tracing_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +30,7 @@ struct CachedItem {
     cached_item_live_count++;
   }
 
-  explicit CachedItem(const CachedItem& other) : value(other.value) {
+  CachedItem(const CachedItem& other) : value(other.value) {
     cached_item_live_count++;
   }
 
@@ -38,8 +41,47 @@ struct CachedItem {
 
 }  // namespace
 
-TEST(LRUCacheTest, Basic) {
-  typedef base::LRUCache<int, CachedItem> Cache;
+template <typename LRUCacheTemplate>
+class LRUCacheTest : public testing::Test {};
+
+struct LRUCacheTemplate {
+  template <class Key, class Value, class KeyCompare = std::less<Key>>
+  using Type = base::LRUCache<Key, Value, KeyCompare>;
+};
+
+struct HashingLRUCacheTemplate {
+  template <class Key,
+            class Value,
+            class KeyHash = std::hash<Key>,
+            class KeyEqual = std::equal_to<Key>>
+  using Type = base::HashingLRUCache<Key, Value, KeyHash, KeyEqual>;
+};
+
+using LRUCacheTemplates =
+    testing::Types<LRUCacheTemplate, HashingLRUCacheTemplate>;
+TYPED_TEST_SUITE(LRUCacheTest, LRUCacheTemplates);
+
+template <typename LRUCacheSetTemplate>
+class LRUCacheSetTest : public testing::Test {};
+
+struct LRUCacheSetTemplate {
+  template <class Value, class Compare = std::less<Value>>
+  using Type = base::LRUCacheSet<Value, Compare>;
+};
+
+struct HashingLRUCacheSetTemplate {
+  template <class Value,
+            class Hash = std::hash<Value>,
+            class Equal = std::equal_to<Value>>
+  using Type = base::HashingLRUCacheSet<Value, Hash, Equal>;
+};
+
+using LRUCacheSetTemplates =
+    testing::Types<LRUCacheSetTemplate, HashingLRUCacheSetTemplate>;
+TYPED_TEST_SUITE(LRUCacheSetTest, LRUCacheSetTemplates);
+
+TYPED_TEST(LRUCacheTest, Basic) {
+  typedef typename TypeParam::template Type<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   // Check failure conditions
@@ -118,8 +160,8 @@ TEST(LRUCacheTest, Basic) {
   EXPECT_EQ(0U, cache.size());
 }
 
-TEST(LRUCacheTest, GetVsPeek) {
-  typedef base::LRUCache<int, CachedItem> Cache;
+TYPED_TEST(LRUCacheTest, GetVsPeek) {
+  typedef typename TypeParam::template Type<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   static const int kItem1Key = 1;
@@ -153,8 +195,8 @@ TEST(LRUCacheTest, GetVsPeek) {
   }
 }
 
-TEST(LRUCacheTest, KeyReplacement) {
-  typedef base::LRUCache<int, CachedItem> Cache;
+TYPED_TEST(LRUCacheTest, KeyReplacement) {
+  typedef typename TypeParam::template Type<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   static const int kItem1Key = 1;
@@ -190,9 +232,10 @@ TEST(LRUCacheTest, KeyReplacement) {
   EXPECT_EQ(item5.value, iter->second.value);
 }
 
-// Make sure that the owning version release its pointers properly.
-TEST(LRUCacheTest, Owning) {
-  using Cache = base::LRUCache<int, std::unique_ptr<CachedItem>>;
+// Make sure that the cache release its pointers properly.
+TYPED_TEST(LRUCacheTest, Owning) {
+  using Cache =
+      typename TypeParam::template Type<int, std::unique_ptr<CachedItem>>;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   int initial_count = cached_item_live_count;
@@ -234,9 +277,10 @@ TEST(LRUCacheTest, Owning) {
   }
 }
 
-TEST(LRUCacheTest, AutoEvict) {
-  using Cache = base::LRUCache<int, std::unique_ptr<CachedItem>>;
-  static const Cache::size_type kMaxSize = 3;
+TYPED_TEST(LRUCacheTest, AutoEvict) {
+  using Cache =
+      typename TypeParam::template Type<int, std::unique_ptr<CachedItem>>;
+  static const typename Cache::size_type kMaxSize = 3;
 
   int initial_count = cached_item_live_count;
 
@@ -258,9 +302,9 @@ TEST(LRUCacheTest, AutoEvict) {
   EXPECT_EQ(initial_count, cached_item_live_count);
 }
 
-TEST(LRUCacheTest, HashingLRUCache) {
+TYPED_TEST(LRUCacheTest, HashingLRUCache) {
   // Very simple test to make sure that the hashing cache works correctly.
-  typedef base::HashingLRUCache<std::string, CachedItem> Cache;
+  typedef typename TypeParam::template Type<std::string, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   CachedItem one(1);
@@ -276,8 +320,8 @@ TEST(LRUCacheTest, HashingLRUCache) {
   EXPECT_TRUE(cache.Get("First") == cache.end());
 }
 
-TEST(LRUCacheTest, Swap) {
-  typedef base::LRUCache<int, CachedItem> Cache;
+TYPED_TEST(LRUCacheTest, Swap) {
+  typedef typename TypeParam::template Type<int, CachedItem> Cache;
   Cache cache1(Cache::NO_AUTO_EVICT);
 
   // Insert two items into cache1.
@@ -380,9 +424,167 @@ TEST(LRUCacheTest, Swap) {
   }
 }
 
+TYPED_TEST(LRUCacheSetTest, SetTest) {
+  typedef typename TypeParam::template Type<std::string> Cache;
+  Cache cache(Cache::NO_AUTO_EVICT);
+
+  cache.Put("Hello");
+  cache.Put("world");
+  cache.Put("foo");
+  cache.Put("bar");
+
+  // Insert a duplicate element
+  cache.Put("foo");
+
+  // Iterate from oldest to newest
+  auto r_iter = cache.rbegin();
+  EXPECT_EQ(*r_iter, "Hello");
+  ++r_iter;
+  EXPECT_EQ(*r_iter, "world");
+  ++r_iter;
+  EXPECT_EQ(*r_iter, "bar");
+  ++r_iter;
+  EXPECT_EQ(*r_iter, "foo");
+  ++r_iter;
+  EXPECT_EQ(r_iter, cache.rend());
+
+  // Iterate from newest to oldest
+  auto iter = cache.begin();
+  EXPECT_EQ(*iter, "foo");
+  ++iter;
+  EXPECT_EQ(*iter, "bar");
+  ++iter;
+  EXPECT_EQ(*iter, "world");
+  ++iter;
+  EXPECT_EQ(*iter, "Hello");
+  ++iter;
+  EXPECT_EQ(iter, cache.end());
+}
+
+// Generalized dereference function. For the base case, this is the identity
+// function.
+template <typename T>
+struct Deref {
+  using Target = T;
+  static const Target& deref(const T& x) { return x; }
+};
+
+// `RefCountedData` wraps a type in an interface that supports refcounting.
+// Deref this as the wrapped type.
+template <typename T>
+struct Deref<RefCountedData<T>> {
+  using Target = typename Deref<T>::Target;
+  static const Target& deref(const RefCountedData<T>& x) {
+    return Deref<T>::deref(x.data);
+  }
+};
+
+// `scoped_refptr` is a smart pointer that implements reference counting.
+// Deref this as the pointee.
+template <typename T>
+struct Deref<scoped_refptr<T>> {
+  using Target = typename Deref<T>::Target;
+  static const Target& deref(const scoped_refptr<T>& x) {
+    return Deref<T>::deref(*x);
+  }
+};
+
+// Implementation of a `std::less`-like type that dereferences the given values
+// before comparison.
+template <typename T>
+struct DerefCompare {
+  bool operator()(const T& lhs, const T& rhs) const {
+    return Deref<T>::deref(lhs) < Deref<T>::deref(rhs);
+  }
+};
+
+// Implementation of a `std::equal_to`-like type that dereferences the given
+// values before comparison.
+template <typename T>
+struct DerefEqual {
+  bool operator()(const T& lhs, const T& rhs) const {
+    return Deref<T>::deref(lhs) == Deref<T>::deref(rhs);
+  }
+};
+
+// Implementation of a `std::hash`-like type that dereferences the given value
+// before calculating the hash.
+template <typename T, template <class> typename HashT = std::hash>
+struct DerefHash {
+  size_t operator()(const T& x) const {
+    return HashT<typename Deref<T>::Target>()(Deref<T>::deref(x));
+  }
+};
+
+// This tests that upon replacing a duplicate element in the cache with `Put`,
+// the element's identity is replaced as well.
+TYPED_TEST(LRUCacheSetTest, ReplacementIdentity) {
+  using Item = RefCountedData<std::string>;
+  using Ptr = scoped_refptr<Item>;
+
+  // Helper to create the correct type of base::*LRUCacheSet, since they have
+  // different template arguments.
+  constexpr auto kCreateCache = []() {
+    if constexpr (std::is_same_v<TypeParam, LRUCacheSetTemplate>) {
+      using Cache = typename TypeParam::template Type<Ptr, DerefCompare<Ptr>>;
+      return Cache(Cache::NO_AUTO_EVICT);
+    } else if constexpr (std::is_same_v<TypeParam,
+                                        HashingLRUCacheSetTemplate>) {
+      using Cache = typename TypeParam::template Type<Ptr, DerefHash<Ptr>,
+                                                      DerefEqual<Ptr>>;
+      return Cache(Cache::NO_AUTO_EVICT);
+    } else {
+      static_assert(!sizeof(TypeParam),
+                    "This test was only written to support "
+                    "`LRUCacheSetTemplate` and `HashingLRUCacheSetTemplate`");
+    }
+  };
+
+  auto cache = kCreateCache();
+  cache.Put(MakeRefCounted<Item>("Hello"));
+  cache.Put(MakeRefCounted<Item>("world"));
+  cache.Put(MakeRefCounted<Item>("foo"));
+  cache.Put(MakeRefCounted<Item>("bar"));
+
+  // Insert a duplicate element
+  {
+    auto foo = MakeRefCounted<Item>("foo");
+    const auto* new_foo_addr = foo.get();
+    const auto* old_foo_addr = cache.Peek(foo)->get();
+    auto iter = cache.Put(std::move(foo));
+    EXPECT_EQ(iter->get(), new_foo_addr);
+    EXPECT_NE(iter->get(), old_foo_addr);
+  }
+
+  // Iterate from oldest to newest
+  auto r_iter = cache.rbegin();
+  EXPECT_EQ((*r_iter)->data, "Hello");
+  ++r_iter;
+  EXPECT_EQ((*r_iter)->data, "world");
+  ++r_iter;
+  EXPECT_EQ((*r_iter)->data, "bar");
+  ++r_iter;
+  EXPECT_EQ((*r_iter)->data, "foo");
+  ++r_iter;
+  EXPECT_EQ(r_iter, cache.rend());
+
+  // Iterate from newest to oldest
+  auto iter = cache.begin();
+  EXPECT_EQ((*iter)->data, "foo");
+  ++iter;
+  EXPECT_EQ((*iter)->data, "bar");
+  ++iter;
+  EXPECT_EQ((*iter)->data, "world");
+  ++iter;
+  EXPECT_EQ((*iter)->data, "Hello");
+  ++iter;
+  EXPECT_EQ(iter, cache.end());
+}
+
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-TEST(LRUCacheTest, EstimateMemory) {
-  base::LRUCache<std::string, int> cache(10);
+TYPED_TEST(LRUCacheTest, EstimateMemory) {
+  typedef typename TypeParam::template Type<std::string, int> Cache;
+  Cache cache(10);
 
   const std::string key(100u, 'a');
   cache.Put(key, 1);

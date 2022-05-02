@@ -178,12 +178,17 @@ size_t EstimateMemoryUsage(const base::flat_set<T, C>& set);
 template <class K, class V, class C>
 size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map);
 
-template <class Key,
-          class Payload,
-          class HashOrComp,
-          template <typename, typename, typename>
-          class Map>
-size_t EstimateMemoryUsage(const LRUCacheBase<Key, Payload, HashOrComp, Map>&);
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const base::LRUCache<K, V, C>& lru);
+
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const base::HashingLRUCache<K, V, C>& lru);
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const base::LRUCacheSet<V, C>& lru);
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const base::HashingLRUCacheSet<V, C>& lru);
 
 // TODO(dskiba):
 //   std::forward_list
@@ -652,13 +657,23 @@ size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map) {
   return sizeof(value_type) * map.capacity() + EstimateIterableMemoryUsage(map);
 }
 
-template <class Key,
-          class Payload,
-          class HashOrComp,
-          template <typename, typename, typename>
-          class Map>
-size_t EstimateMemoryUsage(
-    const LRUCacheBase<Key, Payload, HashOrComp, Map>& lru_cache) {
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const LRUCache<K, V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const HashingLRUCache<K, V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const LRUCacheSet<V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const HashingLRUCacheSet<V, C>& lru_cache) {
   return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 

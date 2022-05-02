@@ -27,16 +27,8 @@ struct NSObjectHash {
   std::size_t operator()(id<NSObject> obj) const { return [obj hash]; }
 };
 
-template <class KeyType, class ValueType, class HashType>
-struct LRUCacheNSObjectHashMap {
-  using Type =
-      std::unordered_map<KeyType, ValueType, HashType, NSObjectEqualTo>;
-};
-
-using NSObjectLRUCache = base::LRUCacheBase<id<NSObject>,
-                                            id<NSObject>,
-                                            NSObjectHash,
-                                            LRUCacheNSObjectHashMap>;
+using NSObjectLRUCache = base::
+    HashingLRUCache<id<NSObject>, id<NSObject>, NSObjectHash, NSObjectEqualTo>;
 
 }  // namespace
 

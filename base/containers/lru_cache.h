@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 // This file contains a template for a Least Recently Used cache that allows
-// constant-time access to items using a key, but easy identification of the
-// least-recently-used items for removal.  Each key can only be associated with
-// one payload item at a time.
+// constant-time access to items, but easy identification of the
+// least-recently-used items for removal. Variations exist to support use as a
+// Map (`base::LRUCache`), HashMap (`base::HashingLRUCache`), Set
+// (`base::LRUCacheSet`), or HashSet (`base::HashingLRUCacheSet`). These are
+// implemented as aliases of `base::internal::LRUCacheBase`, defined at the
+// bottom of this file.
 //
-// The key object will be stored twice, so it should support efficient copying.
-//
-// NOTE: While all operations are O(1), this code is written for
-// legibility rather than optimality. If future profiling identifies this as
-// a bottleneck, there is room for smaller values of 1 in the O(1). :]
+// The key object (which is identical to the value, in the Set variations) will
+// be stored twice, so it should support efficient copying.
 
 #ifndef BASE_CONTAINERS_LRU_CACHE_H_
 #define BASE_CONTAINERS_LRU_CACHE_H_
@@ -22,56 +22,52 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/identity.h"
 
 namespace base {
-namespace trace_event {
-namespace internal {
+namespace trace_event::internal {
 
 template <class LruCacheType>
 size_t DoEstimateMemoryUsageForLruCache(const LruCacheType&);
 
-}  // namespace internal
-}  // namespace trace_event
+}  // namespace trace_event::internal
 
-// LRUCacheBase ----------------------------------------------------------------
+namespace internal {
 
-// This template is used to standardize map type containers that can be used
-// by LRUCacheBase. This level of indirection is necessary because of the way
-// that template template params and default template params interact.
-template <class KeyType, class ValueType, class CompareType>
-struct LRUCacheStandardMap {
-  using Type = std::map<KeyType, ValueType, CompareType>;
+struct GetKeyFromKVPair {
+  template <typename T1, typename T2>
+  constexpr const T1& operator()(const std::pair<T1, T2>& pair) {
+    return pair.first;
+  }
 };
 
 // Base class for the LRU cache specializations defined below.
-template <class KeyType,
-          class PayloadType,
-          class HashOrCompareType,
-          template <typename, typename, typename> class MapType =
-              LRUCacheStandardMap>
+template <class ValueType, class GetKeyFromValue, class KeyIndexTemplate>
 class LRUCacheBase {
  public:
-  // The payload of the list. This maintains a copy of the key so we can
-  // efficiently delete things given an element of the list.
-  using value_type = std::pair<KeyType, PayloadType>;
+  // The contents of the list. This must contain a copy of the key (that may be
+  // extracted via `GetKeyFromValue()(value)` so we can efficiently delete
+  // things given an element of the list.
+  using value_type = ValueType;
 
  private:
-  using PayloadList = std::list<value_type>;
-  using KeyIndex = typename MapType<KeyType,
-                                    typename PayloadList::iterator,
-                                    HashOrCompareType>::Type;
+  using ValueList = std::list<value_type>;
+  using KeyIndex =
+      typename KeyIndexTemplate::template Type<typename ValueList::iterator>;
 
  public:
-  using size_type = typename PayloadList::size_type;
+  using size_type = typename ValueList::size_type;
+  using key_type = typename KeyIndex::key_type;
 
-  using iterator = typename PayloadList::iterator;
-  using const_iterator = typename PayloadList::const_iterator;
-  using reverse_iterator = typename PayloadList::reverse_iterator;
-  using const_reverse_iterator = typename PayloadList::const_reverse_iterator;
+  using iterator = typename ValueList::iterator;
+  using const_iterator = typename ValueList::const_iterator;
+  using reverse_iterator = typename ValueList::reverse_iterator;
+  using const_reverse_iterator = typename ValueList::const_reverse_iterator;
 
   enum { NO_AUTO_EVICT = 0 };
 
@@ -84,18 +80,18 @@ class LRUCacheBase {
   LRUCacheBase(const LRUCacheBase&) = delete;
   LRUCacheBase& operator=(const LRUCacheBase&) = delete;
 
-  virtual ~LRUCacheBase() = default;
+  ~LRUCacheBase() = default;
 
   size_type max_size() const { return max_size_; }
 
-  // Inserts a payload item with the given key. If an existing item has
-  // the same key, it is removed prior to insertion. An iterator indicating the
-  // inserted item will be returned (this will always be the front of the list).
-  //
-  // The payload will be forwarded.
-  template <typename Payload>
-  iterator Put(const KeyType& key, Payload&& payload) {
-    // Remove any existing payload with that key.
+  // Inserts an item into the list. If an existing item has the same key, it is
+  // removed prior to insertion. An iterator indicating the inserted item will
+  // be returned (this will always be the front of the list).
+  // In the map variations of this container, `value_type` is a `std::pair` and
+  // it's preferred to use the `Put(k, v)` overload of this method.
+  iterator Put(value_type&& value) {
+    // Remove any existing item with that key.
+    key_type key = GetKeyFromValue{}(value);
     typename KeyIndex::iterator index_iter = index_.find(key);
     if (index_iter != index_.end()) {
       // Erase the reference to it. The index reference will be replaced in the
@@ -107,35 +103,47 @@ class LRUCacheBase {
       ShrinkToSize(max_size_ - 1);
     }
 
-    ordering_.emplace_front(key, std::forward<Payload>(payload));
-    index_.emplace(key, ordering_.begin());
+    ordering_.push_front(std::move(value));
+    index_.emplace(std::move(key), ordering_.begin());
     return ordering_.begin();
+  }
+
+  // Inserts an item into the list. If an existing item has the same key, it is
+  // removed prior to insertion. An iterator indicating the inserted item will
+  // be returned (this will always be the front of the list).
+  template <
+      class K,
+      class V,
+      class MapKeyGetter = GetKeyFromKVPair,
+      class = std::enable_if_t<std::is_same_v<MapKeyGetter, GetKeyFromValue>>>
+  iterator Put(K&& key, V&& value) {
+    return Put(value_type{std::forward<K>(key), std::forward<V>(value)});
   }
 
   // Retrieves the contents of the given key, or end() if not found. This method
   // has the side effect of moving the requested item to the front of the
   // recency list.
-  iterator Get(const KeyType& key) {
+  iterator Get(const key_type& key) {
     typename KeyIndex::iterator index_iter = index_.find(key);
     if (index_iter == index_.end())
       return end();
-    typename PayloadList::iterator iter = index_iter->second;
+    typename ValueList::iterator iter = index_iter->second;
 
     // Move the touched item to the front of the recency ordering.
     ordering_.splice(ordering_.begin(), ordering_, iter);
     return ordering_.begin();
   }
 
-  // Retrieves the payload associated with a given key and returns it via
+  // Retrieves the item associated with a given key and returns it via
   // result without affecting the ordering (unlike Get()).
-  iterator Peek(const KeyType& key) {
+  iterator Peek(const key_type& key) {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
     if (index_iter == index_.end())
       return end();
     return index_iter->second;
   }
 
-  const_iterator Peek(const KeyType& key) const {
+  const_iterator Peek(const key_type& key) const {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
     if (index_iter == index_.end())
       return end();
@@ -152,7 +160,7 @@ class LRUCacheBase {
   // Erases the item referenced by the given iterator. An iterator to the item
   // following it will be returned. The iterator must be valid.
   iterator Erase(iterator pos) {
-    index_.erase(pos->first);
+    index_.erase(GetKeyFromValue()(*pos));
     return ordering_.erase(pos);
   }
 
@@ -209,57 +217,72 @@ class LRUCacheBase {
   friend size_t trace_event::internal::DoEstimateMemoryUsageForLruCache(
       const LruCacheType&);
 
-  PayloadList ordering_;
+  ValueList ordering_;
   KeyIndex index_;
 
   size_type max_size_;
 };
 
-// LRUCache --------------------------------------------------------------------
+template <class KeyType, class KeyCompare>
+struct LRUCacheKeyIndex {
+  template <class ValueType>
+  using Type = std::map<KeyType, ValueType, KeyCompare>;
+};
 
-// A container that does not do anything to free its data. Use this when storing
-// value types (as opposed to pointers) in the list.
+template <class KeyType, class KeyHash, class KeyEqual>
+struct HashingLRUCacheKeyIndex {
+  template <class ValueType>
+  using Type = std::unordered_map<KeyType, ValueType, KeyHash, KeyEqual>;
+};
+
+}  // namespace internal
+
+// Implements an LRU cache of `ValueType`, where each value can be uniquely
+// referenced by `KeyType`. Entries can be iterated in order of
+// least-recently-used to most-recently-used by iterating from `rbegin()` to
+// `rend()`, where a "use" is defined as a call to `Put(k, v)` or `Get(k)`.
+template <class KeyType, class ValueType, class KeyCompare = std::less<KeyType>>
+using LRUCache =
+    internal::LRUCacheBase<std::pair<KeyType, ValueType>,
+                           internal::GetKeyFromKVPair,
+                           internal::LRUCacheKeyIndex<KeyType, KeyCompare>>;
+
+// Implements an LRU cache of `ValueType`, where each value can be uniquely
+// referenced by `KeyType`, and `KeyType` may be hashed for O(1) insertion,
+// removal, and lookup. Entries can be iterated in order of least-recently-used
+// to most-recently-used by iterating from `rbegin()` to `rend()`, where a "use"
+// is defined as a call to `Put(k, v)` or `Get(k)`.
 template <class KeyType,
-          class PayloadType,
-          class CompareType = std::less<KeyType>>
-class LRUCache : public LRUCacheBase<KeyType, PayloadType, CompareType> {
- private:
-  using ParentType = LRUCacheBase<KeyType, PayloadType, CompareType>;
+          class ValueType,
+          class KeyHash = std::hash<KeyType>,
+          class KeyEqual = std::equal_to<KeyType>>
+using HashingLRUCache = internal::LRUCacheBase<
+    std::pair<KeyType, ValueType>,
+    internal::GetKeyFromKVPair,
+    internal::HashingLRUCacheKeyIndex<KeyType, KeyHash, KeyEqual>>;
 
- public:
-  // See LRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
-  explicit LRUCache(typename ParentType::size_type max_size)
-      : ParentType(max_size) {}
-  LRUCache(const LRUCache&) = delete;
-  LRUCache& operator=(const LRUCache&) = delete;
-  ~LRUCache() override = default;
-};
+// Implements an LRU cache of `ValueType`, where each value is unique. Entries
+// can be iterated in order of least-recently-used to most-recently-used by
+// iterating from `rbegin()` to `rend()`, where a "use" is defined as a call to
+// `Put(v)` or `Get(v)`.
+template <class ValueType, class Compare = std::less<ValueType>>
+using LRUCacheSet =
+    internal::LRUCacheBase<ValueType,
+                           identity,
+                           internal::LRUCacheKeyIndex<ValueType, Compare>>;
 
-// HashingLRUCache ------------------------------------------------------------
-
-template <class KeyType, class ValueType, class HashType>
-struct LRUCacheHashMap {
-  using Type = std::unordered_map<KeyType, ValueType, HashType>;
-};
-
-// This class is similar to LRUCache, except that it uses std::unordered_map as
-// the map type instead of std::map. Note that your KeyType must be hashable to
-// use this cache or you need to provide a hashing class.
-template <class KeyType, class PayloadType, class HashType = std::hash<KeyType>>
-class HashingLRUCache
-    : public LRUCacheBase<KeyType, PayloadType, HashType, LRUCacheHashMap> {
- private:
-  using ParentType =
-      LRUCacheBase<KeyType, PayloadType, HashType, LRUCacheHashMap>;
-
- public:
-  // See LRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
-  explicit HashingLRUCache(typename ParentType::size_type max_size)
-      : ParentType(max_size) {}
-  HashingLRUCache(const HashingLRUCache&) = delete;
-  HashingLRUCache& operator=(const HashingLRUCache&) = delete;
-  ~HashingLRUCache() override = default;
-};
+// Implements an LRU cache of `ValueType`, where is value is unique, and may be
+// hashed for O(1) insertion, removal, and lookup. Entries can be iterated in
+// order of least-recently-used to most-recently-used by iterating from
+// `rbegin()` to `rend()`, where a "use" is defined as a call to `Put(v)` or
+// `Get(v)`.
+template <class ValueType,
+          class Hash = std::hash<ValueType>,
+          class Equal = std::equal_to<ValueType>>
+using HashingLRUCacheSet = internal::LRUCacheBase<
+    ValueType,
+    identity,
+    internal::HashingLRUCacheKeyIndex<ValueType, Hash, Equal>>;
 
 }  // namespace base
 
