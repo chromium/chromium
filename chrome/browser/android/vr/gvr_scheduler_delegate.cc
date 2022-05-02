@@ -1173,12 +1173,6 @@ void GvrSchedulerDelegate::SubmitFrame(int16_t frame_index,
                      weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
 }
 
-void GvrSchedulerDelegate::SubmitFrameWithTextureHandle(
-    int16_t frame_index,
-    mojo::PlatformHandle texture_handle) {
-  NOTREACHED();
-}
-
 void GvrSchedulerDelegate::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,

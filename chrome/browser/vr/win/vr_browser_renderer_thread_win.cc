@@ -476,8 +476,8 @@ void VRBrowserRendererThreadWin::SubmitFrame(int16_t frame_id) {
   graphics_->PostRender();
 
   overlay_->SubmitOverlayTexture(
-      frame_id, graphics_->GetTexture(), graphics_->GetLeft(),
-      graphics_->GetRight(),
+      frame_id, graphics_->GetTexture(), graphics_->GetSyncToken(),
+      graphics_->GetLeft(), graphics_->GetRight(),
       base::BindOnce(&VRBrowserRendererThreadWin::SubmitResult,
                      base::Unretained(this)));
 }

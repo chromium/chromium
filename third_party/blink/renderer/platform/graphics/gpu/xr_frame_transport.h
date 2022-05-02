@@ -20,6 +20,7 @@ class GpuFence;
 }
 
 namespace gpu {
+class SharedImageInterface;
 namespace gles2 {
 class GLES2Interface;
 }
@@ -55,6 +56,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   void FrameSubmit(device::mojom::blink::XRPresentationProvider*,
                    gpu::gles2::GLES2Interface*,
+                   gpu::SharedImageInterface*,
                    DrawingBuffer::Client*,
                    scoped_refptr<Image> image_ref,
                    int16_t vr_frame_id);

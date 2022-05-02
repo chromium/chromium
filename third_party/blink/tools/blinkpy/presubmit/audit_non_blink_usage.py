@@ -1111,6 +1111,7 @@ _CONFIG = [
             'gpu::raster::RasterInterface',
             'gpu::Mailbox',
             'gpu::MailboxHolder',
+            'gpu::SharedImageInterface',
             'gpu::SyncToken',
             'gpu::webgpu::ReservedTexture',
             'display::Display',

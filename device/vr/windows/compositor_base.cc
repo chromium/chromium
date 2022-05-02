@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -119,9 +120,11 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_WIN)
 void XRCompositorCommon::SubmitFrameWithTextureHandle(
     int16_t frame_index,
-    mojo::PlatformHandle texture_handle) {
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token) {
   TRACE_EVENT1("xr", "SubmitFrameWithTextureHandle", "frameIndex", frame_index);
   webxr_has_pose_ = false;
   // Tell the browser that WebXR has submitted a frame.
@@ -143,18 +146,17 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
   pending_frame_->waiting_for_webxr_ = false;
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
 
-#if BUILDFLAG(IS_WIN)
   base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
                                               ? texture_handle.TakeHandle()
                                               : base::win::ScopedHandle();
-  texture_helper_.SetSourceTexture(std::move(scoped_handle), left_webxr_bounds_,
-                                   right_webxr_bounds_);
+  texture_helper_.SetSourceTexture(std::move(scoped_handle), sync_token,
+                                   left_webxr_bounds_, right_webxr_bounds_);
   pending_frame_->webxr_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
-#endif
 }
+#endif
 
 void XRCompositorCommon::CleanUp() {
   submit_client_.reset();
@@ -489,6 +491,7 @@ void XRCompositorCommon::GetEnvironmentIntegrationProvider(
 void XRCompositorCommon::SubmitOverlayTexture(
     int16_t frame_id,
     mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
     SubmitOverlayTextureCallback overlay_submit_callback) {
@@ -507,8 +510,8 @@ void XRCompositorCommon::SubmitOverlayTexture(
   pending_frame_->waiting_for_overlay_ = false;
 
 #if BUILDFLAG(IS_WIN)
-  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), left_bounds,
-                                    right_bounds);
+  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), sync_token,
+                                    left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 
   // Regardless of success - try to composite what we have.

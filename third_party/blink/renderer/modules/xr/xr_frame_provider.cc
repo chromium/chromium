@@ -664,9 +664,10 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     // placeholder.
     scoped_refptr<Image> image_ref;
     DVLOG(3) << __FUNCTION__ << ": FrameSubmit for SharedBuffer mode";
-    frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                  webgl_context->ContextGL(), webgl_context,
-                                  std::move(image_ref), frame_id_);
+    frame_transport_->FrameSubmit(
+        immersive_presentation_provider_.get(), webgl_context->ContextGL(),
+        webgl_context->SharedImageInterface(), webgl_context,
+        std::move(image_ref), frame_id_);
     return;
   }
 
@@ -684,8 +685,9 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   }
 
   frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                webgl_context->ContextGL(), webgl_context,
-                                std::move(image_ref), frame_id_);
+                                webgl_context->ContextGL(),
+                                webgl_context->SharedImageInterface(),
+                                webgl_context, std::move(image_ref), frame_id_);
 
   // Reset our frame id, since anything we'd want to do (resizing/etc) can
   // no-longer happen to this frame.

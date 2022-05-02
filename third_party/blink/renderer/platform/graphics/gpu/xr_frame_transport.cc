@@ -101,6 +101,7 @@ void XRFrameTransport::FrameSubmitMissing(
 void XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     gpu::gles2::GLES2Interface* gl,
+    gpu::SharedImageInterface* sii,
     DrawingBuffer::Client* drawing_buffer_client,
     scoped_refptr<Image> image_ref,
     int16_t vr_frame_id) {
@@ -116,9 +117,9 @@ void XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification)
       WaitForPreviousTransfer();
     if (!frame_copier_ || !last_transfer_succeeded_) {
-      frame_copier_ = std::make_unique<GpuMemoryBufferImageCopy>(gl);
+      frame_copier_ = std::make_unique<GpuMemoryBufferImageCopy>(gl, sii);
     }
-    gfx::GpuMemoryBuffer* gpu_memory_buffer =
+    auto [gpu_memory_buffer, sync_token] =
         frame_copier_->CopyImage(image_ref.get());
     drawing_buffer_client->DrawingBufferClientRestoreTexture2DBinding();
     drawing_buffer_client->DrawingBufferClientRestoreFramebufferBinding();
@@ -140,7 +141,8 @@ void XRFrameTransport::FrameSubmit(
     // passed over IPC.
     gfx::GpuMemoryBufferHandle gpu_handle = gpu_memory_buffer->CloneHandle();
     vr_presentation_provider->SubmitFrameWithTextureHandle(
-        vr_frame_id, mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle)));
+        vr_frame_id, mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle)),
+        sync_token);
 #else
     NOTIMPLEMENTED();
 #endif

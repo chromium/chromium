@@ -6,14 +6,15 @@
 
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "device/vr/windows/compositor_base.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/common/constants.h"
 #include "mojo/public/c/system/platform_handle.h"
 
 namespace {
 #include "device/vr/windows/flip_pixel_shader.h"
 #include "device/vr/windows/geometry_shader.h"
 #include "device/vr/windows/vertex_shader.h"
-
-constexpr int kAcquireWaitMS = 2000;
 
 struct Vertex2D {
   float x;
@@ -71,7 +72,8 @@ D3D11TextureHelper::RenderState::~RenderState() {}
 D3D11TextureHelper::LayerData::LayerData() = default;
 D3D11TextureHelper::LayerData::~LayerData() = default;
 
-D3D11TextureHelper::D3D11TextureHelper() {}
+D3D11TextureHelper::D3D11TextureHelper(XRCompositorCommon* compositor)
+    : compositor_(compositor) {}
 
 D3D11TextureHelper::~D3D11TextureHelper() {}
 
@@ -198,7 +200,20 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
 
   HRESULT hr = S_OK;
   if (render_state_.source_.keyed_mutex_) {
-    hr = render_state_.source_.keyed_mutex_->AcquireSync(1, kAcquireWaitMS);
+    if (render_state_.source_.sync_token_.HasData()) {
+      // Ensure work has been issused to write to source texture by blocking
+      // until GPU process has passed the sync token. This must happen before
+      // AcquireSync(0) below otherwise the GPU process will be unable to
+      // acquire the mutex and work will happen out of order.
+      gpu::gles2::GLES2Interface* gl = compositor_->GetContextGL();
+      gl->WaitSyncTokenCHROMIUM(
+          render_state_.source_.sync_token_.GetConstData());
+      gl->Finish();
+      render_state_.source_.sync_token_.Clear();
+    }
+
+    hr = render_state_.source_.keyed_mutex_->AcquireSync(
+        gpu::kDXGIKeyedMutexAcquireKey, INFINITE);
     if (FAILED(hr) || hr == WAIT_TIMEOUT || hr == WAIT_ABANDONED) {
       // We failed to acquire the lock.  We'll drop this frame, but subsequent
       // frames won't be affected.
@@ -208,7 +223,20 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
   }
 
   if (render_state_.overlay_.keyed_mutex_) {
-    hr = render_state_.overlay_.keyed_mutex_->AcquireSync(1, kAcquireWaitMS);
+    if (render_state_.overlay_.sync_token_.HasData()) {
+      // Ensure work has been issused to write to overlay texture by blocking
+      // until GPU process has passed the sync token. This must happen before
+      // AcquireSync(0) below otherwise the GPU process will be unable to
+      // acquire the mutex and work will happen out of order.
+      gpu::gles2::GLES2Interface* gl = compositor_->GetContextGL();
+      gl->WaitSyncTokenCHROMIUM(
+          render_state_.overlay_.sync_token_.GetConstData());
+      gl->Finish();
+      render_state_.overlay_.sync_token_.Clear();
+    }
+
+    hr = render_state_.overlay_.keyed_mutex_->AcquireSync(
+        gpu::kDXGIKeyedMutexAcquireKey, INFINITE);
     if (FAILED(hr) || hr == WAIT_TIMEOUT || hr == WAIT_ABANDONED) {
       // We failed to acquire the lock.  We'll drop this frame, but subsequent
       // frames won't be affected.
@@ -491,11 +519,13 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer) {
 
 void D3D11TextureHelper::SetSourceTexture(
     base::win::ScopedHandle texture_handle,
+    const gpu::SyncToken& sync_token,
     gfx::RectF left,
     gfx::RectF right) {
   TRACE_EVENT0("xr", "SetSourceTexture");
   render_state_.source_.source_texture_ = nullptr;
   render_state_.source_.keyed_mutex_ = nullptr;
+  render_state_.source_.sync_token_.Clear();
   render_state_.source_.left_ = left;
   render_state_.source_.right_ = right;
   render_state_.source_.submitted_this_frame_ = true;
@@ -520,14 +550,17 @@ void D3D11TextureHelper::SetSourceTexture(
     render_state_.source_.keyed_mutex_ = nullptr;
     return;
   }
+  render_state_.source_.sync_token_ = sync_token;
 }
 
 bool D3D11TextureHelper::SetOverlayTexture(
     base::win::ScopedHandle texture_handle,
+    const gpu::SyncToken& sync_token,
     gfx::RectF left,
     gfx::RectF right) {
   render_state_.overlay_.source_texture_ = nullptr;
   render_state_.overlay_.keyed_mutex_ = nullptr;
+  render_state_.overlay_.sync_token_.Clear();
   render_state_.overlay_.left_ = left;
   render_state_.overlay_.right_ = right;
   render_state_.overlay_.submitted_this_frame_ = true;
@@ -547,6 +580,7 @@ bool D3D11TextureHelper::SetOverlayTexture(
     render_state_.overlay_.keyed_mutex_ = nullptr;
     return false;
   }
+  render_state_.overlay_.sync_token_ = sync_token;
 
   return true;
 }

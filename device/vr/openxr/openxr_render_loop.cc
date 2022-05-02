@@ -314,7 +314,8 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     return;
   }
 
-  SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle());
+  SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle(),
+                               gpu::SyncToken());
 
   // Calling SubmitFrameWithTextureHandle can cause openxr_ and
   // context_provider_ to become nullptr in ClearPendingFrameInternal if we
@@ -460,6 +461,11 @@ void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
     return;
   }
   anchor_manager->DetachAnchor(AnchorId(anchor_id));
+}
+
+gpu::gles2::GLES2Interface* OpenXrRenderLoop::GetContextGL() {
+  DCHECK(context_provider_);
+  return context_provider_->ContextGL();
 }
 
 void OpenXrRenderLoop::StartContextProviderIfNeeded(

@@ -51,6 +51,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
  private:
   // XRCompositorCommon:
+  gpu::gles2::GLES2Interface* GetContextGL() override;
   void ClearPendingFrameInternal() override;
   bool IsUsingSharedImages() const override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,

@@ -8,6 +8,7 @@ import "device/vr/public/mojom/browser_test_interfaces.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
@@ -138,9 +139,10 @@ interface ImmersiveOverlay {
 
   // Submit a frame to show in the headset.  Only can be called when an overlay
   // is visible.  The frame will be composited on top of WebXR content.
+  // |texture| should only be used after |sync_token| has passed.
   SubmitOverlayTexture(int16 frame_id, handle<platform> texture,
-      gfx.mojom.RectF left_bounds, gfx.mojom.RectF right_bounds) =>
-      (bool success);
+      gpu.mojom.SyncToken sync_token, gfx.mojom.RectF left_bounds,
+      gfx.mojom.RectF right_bounds) => (bool success);
 
   // Allows the browser to hide WebXR content or overlays temporarily.
   SetOverlayAndWebXRVisibility(bool overlay_visible, bool webxr_visible);

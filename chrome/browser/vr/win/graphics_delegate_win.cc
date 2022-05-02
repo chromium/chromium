@@ -10,6 +10,8 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace vr {
 
@@ -51,8 +53,11 @@ bool GraphicsDelegateWin::InitializeOnMainThread() {
 
 void GraphicsDelegateWin::InitializeOnGLThread() {
   DCHECK(context_provider_);
-  if (context_provider_->BindToCurrentThread() == gpu::ContextResult::kSuccess)
+  if (context_provider_->BindToCurrentThread() ==
+      gpu::ContextResult::kSuccess) {
     gl_ = context_provider_->ContextGL();
+    sii_ = context_provider_->SharedImageInterface();
+  }
 }
 
 bool GraphicsDelegateWin::BindContext() {
@@ -81,18 +86,21 @@ bool GraphicsDelegateWin::PreRender() {
   BindContext();
   gfx::Rect size = GetTextureSize();
 
-  // Create a memory buffer, and an image referencing that memory buffer.
+  // Create a memory buffer and a shared image referencing that memory buffer.
   if (!EnsureMemoryBuffer(size.width(), size.height()))
     return false;
 
-  // Create a texture id, and associate it with our image.
-  gl_->GenTextures(1, &dest_texture_id_);
+  // Create a texture id and associate it with shared image.
+  dest_texture_id_ =
+      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
+      dest_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+
   gl_->BindTexture(GL_TEXTURE_2D, dest_texture_id_);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  gl_->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, image_id_);
   gl_->BindTexture(GL_TEXTURE_2D, 0);
 
   // Bind our image/texture/memory buffer as the draw framebuffer.
@@ -115,12 +123,15 @@ void GraphicsDelegateWin::PostRender() {
   // Unbind the drawing buffer.
   gl_->BindFramebuffer(GL_FRAMEBUFFER, 0);
   gl_->DeleteFramebuffers(1, &draw_frame_buffer_);
-  gl_->BindTexture(GL_TEXTURE_2D, dest_texture_id_);
-  gl_->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, image_id_);
+
+  gl_->EndSharedImageAccessDirectCHROMIUM(dest_texture_id_);
   gl_->DeleteTextures(1, &dest_texture_id_);
   gl_->BindTexture(GL_TEXTURE_2D, 0);
   dest_texture_id_ = 0;
   draw_frame_buffer_ = 0;
+
+  // Generate a SyncToken after GPU is done accessing the texture.
+  gl_->GenSyncTokenCHROMIUM(access_done_sync_token_.GetData());
 
   // Flush.
   gl_->ShallowFlushCHROMIUM();
@@ -133,6 +144,10 @@ mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
 
   gfx::GpuMemoryBufferHandle gpu_handle = gpu_memory_buffer_->CloneHandle();
   return mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle));
+}
+
+const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
+  return access_done_sync_token_;
 }
 
 gfx::RectF GraphicsDelegateWin::GetLeft() {
@@ -155,9 +170,10 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
     if (!gpu_memory_buffer_manager_)
       return false;
 
-    if (image_id_) {
-      gl_->DestroyImageCHROMIUM(image_id_);
-      image_id_ = 0;
+    if (!mailbox_.IsZero()) {
+      sii_->DestroySharedImage(access_done_sync_token_, mailbox_);
+      mailbox_.SetZero();
+      access_done_sync_token_.Clear();
     }
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
@@ -169,12 +185,13 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
     last_width_ = width;
     last_height_ = height;
 
-    image_id_ = gl_->CreateImageCHROMIUM(gpu_memory_buffer_->AsClientBuffer(),
-                                         width, height, GL_RGBA);
-    if (!image_id_) {
-      gpu_memory_buffer_ = nullptr;
-      return false;
-    }
+    mailbox_ = sii_->CreateSharedImage(
+        gpu_memory_buffer_.get(), gpu_memory_buffer_manager_, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_GLES2 |
+            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT);
+
+    gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;
 }

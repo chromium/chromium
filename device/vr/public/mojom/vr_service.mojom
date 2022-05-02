@@ -1176,9 +1176,10 @@ interface XRPresentationProvider {
               mojo_base.mojom.TimeDelta time_waited);
 
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE
-  // TODO(https://crbug.com/676224): Support preprocessing of mojom files, since
-  // this is Windows only.
-  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture);
+  // |texture| should only be used after |sync_token| has passed.
+  [EnableIf=is_win]
+  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture,
+                               gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
   SubmitFrameDrawnIntoTexture(int16 frameId, gpu.mojom.SyncToken sync_token,

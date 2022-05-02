@@ -606,6 +606,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return nullptr;
     return d->ContextGL();
   }
+  gpu::SharedImageInterface* SharedImageInterface() const {
+    DrawingBuffer* d = GetDrawingBuffer();
+    if (!d)
+      return nullptr;
+    return d->ContextProvider()->SharedImageInterface();
+  }
+
   WebGLContextGroup* ContextGroup() const { return context_group_.Get(); }
   Extensions3DUtil* ExtensionsUtil();
 
