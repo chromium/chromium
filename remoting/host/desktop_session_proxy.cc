@@ -232,8 +232,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(DesktopSessionProxy, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_KeyboardChanged,
-                        OnKeyboardChanged)
     IPC_MESSAGE_FORWARD(ChromotingDesktopNetworkMsg_FileResult,
                         &ipc_file_operations_factory_,
                         IpcFileOperations::ResultHandler::OnResult)
@@ -759,7 +757,7 @@ void DesktopSessionProxy::OnMouseCursorChanged(
   }
 }
 
-void DesktopSessionProxy::OnKeyboardChanged(
+void DesktopSessionProxy::OnKeyboardLayoutChanged(
     const protocol::KeyboardLayout& layout) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

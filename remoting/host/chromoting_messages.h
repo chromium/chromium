@@ -8,14 +8,10 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/time/time.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_platform_file.h"
 #include "remoting/host/chromoting_param_traits.h"
-#include "remoting/proto/control.pb.h"
 #include "remoting/protocol/file_transfer_helpers.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 #endif  // REMOTING_HOST_CHROMOTING_MESSAGES_H_
 
@@ -38,10 +34,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
-
-// Notifies the network process that the active keyboard layout has changed.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
-                    remoting::protocol::KeyboardLayout /* layout */)
 
 // Informs the network process of the result of a file operation on the file
 // identified by |file_id|. If |result| is an error, the file ID is no longer

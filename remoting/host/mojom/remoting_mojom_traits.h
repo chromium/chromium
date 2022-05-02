@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -558,6 +559,411 @@ class mojo::StructTraits<remoting::mojom::ClipboardEventDataView,
 
   static bool Read(remoting::mojom::ClipboardEventDataView data_view,
                    ::remoting::protocol::ClipboardEvent* out_event);
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::KeyboardLayoutDataView,
+                         ::remoting::protocol::KeyboardLayout> {
+ public:
+  static const ::google::protobuf::
+      Map<uint32_t, ::remoting::protocol::KeyboardLayout_KeyBehavior>&
+      keys(const ::remoting::protocol::KeyboardLayout& layout) {
+    return layout.keys();
+  }
+
+  static bool Read(remoting::mojom::KeyboardLayoutDataView data_view,
+                   ::remoting::protocol::KeyboardLayout* out_layout);
+};
+
+template <>
+class mojo::UnionTraits<remoting::mojom::KeyActionDataView,
+                        ::remoting::protocol::KeyboardLayout_KeyAction> {
+ public:
+  static remoting::mojom::KeyActionDataView::Tag GetTag(
+      const ::remoting::protocol::KeyboardLayout_KeyAction& value) {
+    switch (value.action_case()) {
+      case ::remoting::protocol::KeyboardLayout_KeyAction::kFunction:
+        return remoting::mojom::KeyActionDataView::Tag::kFunction;
+      case ::remoting::protocol::KeyboardLayout_KeyAction::kCharacter:
+        return remoting::mojom::KeyActionDataView::Tag::kCharacter;
+      case ::remoting::protocol::KeyboardLayout_KeyAction::ACTION_NOT_SET:
+        NOTREACHED();
+        // Returning a value to make the compiler happy and ensure that any
+        // future enum values must be added to this switch.
+        return remoting::mojom::KeyActionDataView::Tag::kCharacter;
+    }
+  }
+
+  static ::remoting::protocol::LayoutKeyFunction function(
+      const ::remoting::protocol::KeyboardLayout_KeyAction& value) {
+    return value.function();
+  }
+
+  static const std::string& character(
+      const ::remoting::protocol::KeyboardLayout_KeyAction& value) {
+    return value.character();
+  }
+
+  static bool Read(remoting::mojom::KeyActionDataView data_view,
+                   ::remoting::protocol::KeyboardLayout_KeyAction* out_action);
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::KeyBehaviorDataView,
+                         ::remoting::protocol::KeyboardLayout_KeyBehavior> {
+ public:
+  static const ::google::protobuf::Map<
+      uint32_t,
+      ::remoting::protocol::KeyboardLayout_KeyAction>&
+  actions(const ::remoting::protocol::KeyboardLayout_KeyBehavior& behavior) {
+    return behavior.actions();
+  }
+  static bool Read(
+      remoting::mojom::KeyBehaviorDataView data_view,
+      ::remoting::protocol::KeyboardLayout_KeyBehavior* out_behavior);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::LayoutKeyFunction,
+                  ::remoting::protocol::LayoutKeyFunction> {
+  static remoting::mojom::LayoutKeyFunction ToMojom(
+      ::remoting::protocol::LayoutKeyFunction input) {
+    switch (input) {
+      case ::remoting::protocol::LayoutKeyFunction::UNKNOWN:
+        return remoting::mojom::LayoutKeyFunction::kUnknown;
+      case ::remoting::protocol::LayoutKeyFunction::CONTROL:
+        return remoting::mojom::LayoutKeyFunction::kControl;
+      case ::remoting::protocol::LayoutKeyFunction::ALT:
+        return remoting::mojom::LayoutKeyFunction::kAlt;
+      case ::remoting::protocol::LayoutKeyFunction::SHIFT:
+        return remoting::mojom::LayoutKeyFunction::kShift;
+      case ::remoting::protocol::LayoutKeyFunction::META:
+        return remoting::mojom::LayoutKeyFunction::kMeta;
+      case ::remoting::protocol::LayoutKeyFunction::ALT_GR:
+        return remoting::mojom::LayoutKeyFunction::kAltGr;
+      case ::remoting::protocol::LayoutKeyFunction::MOD5:
+        return remoting::mojom::LayoutKeyFunction::kMod5;
+      case ::remoting::protocol::LayoutKeyFunction::COMPOSE:
+        return remoting::mojom::LayoutKeyFunction::kCompose;
+      case ::remoting::protocol::LayoutKeyFunction::OPTION:
+        return remoting::mojom::LayoutKeyFunction::kOption;
+      case ::remoting::protocol::LayoutKeyFunction::COMMAND:
+        return remoting::mojom::LayoutKeyFunction::kCommand;
+      case ::remoting::protocol::LayoutKeyFunction::SEARCH:
+        return remoting::mojom::LayoutKeyFunction::kSearch;
+      case ::remoting::protocol::LayoutKeyFunction::NUM_LOCK:
+        return remoting::mojom::LayoutKeyFunction::kNumLock;
+      case ::remoting::protocol::LayoutKeyFunction::CAPS_LOCK:
+        return remoting::mojom::LayoutKeyFunction::kCapsLock;
+      case ::remoting::protocol::LayoutKeyFunction::SCROLL_LOCK:
+        return remoting::mojom::LayoutKeyFunction::kScrollLock;
+      case ::remoting::protocol::LayoutKeyFunction::BACKSPACE:
+        return remoting::mojom::LayoutKeyFunction::kBackspace;
+      case ::remoting::protocol::LayoutKeyFunction::ENTER:
+        return remoting::mojom::LayoutKeyFunction::kEnter;
+      case ::remoting::protocol::LayoutKeyFunction::TAB:
+        return remoting::mojom::LayoutKeyFunction::kTab;
+      case ::remoting::protocol::LayoutKeyFunction::INSERT:
+        return remoting::mojom::LayoutKeyFunction::kInsert;
+      case ::remoting::protocol::LayoutKeyFunction::DELETE_:
+        return remoting::mojom::LayoutKeyFunction::kDelete;
+      case ::remoting::protocol::LayoutKeyFunction::HOME:
+        return remoting::mojom::LayoutKeyFunction::kHome;
+      case ::remoting::protocol::LayoutKeyFunction::END:
+        return remoting::mojom::LayoutKeyFunction::kEnd;
+      case ::remoting::protocol::LayoutKeyFunction::PAGE_UP:
+        return remoting::mojom::LayoutKeyFunction::kPageUp;
+      case ::remoting::protocol::LayoutKeyFunction::PAGE_DOWN:
+        return remoting::mojom::LayoutKeyFunction::kPageDown;
+      case ::remoting::protocol::LayoutKeyFunction::CLEAR:
+        return remoting::mojom::LayoutKeyFunction::kClear;
+      case ::remoting::protocol::LayoutKeyFunction::ARROW_UP:
+        return remoting::mojom::LayoutKeyFunction::kArrowUp;
+      case ::remoting::protocol::LayoutKeyFunction::ARROW_DOWN:
+        return remoting::mojom::LayoutKeyFunction::kArrowDown;
+      case ::remoting::protocol::LayoutKeyFunction::ARROW_LEFT:
+        return remoting::mojom::LayoutKeyFunction::kArrowLeft;
+      case ::remoting::protocol::LayoutKeyFunction::ARROW_RIGHT:
+        return remoting::mojom::LayoutKeyFunction::kArrowRight;
+      case ::remoting::protocol::LayoutKeyFunction::F1:
+        return remoting::mojom::LayoutKeyFunction::kF1;
+      case ::remoting::protocol::LayoutKeyFunction::F2:
+        return remoting::mojom::LayoutKeyFunction::kF2;
+      case ::remoting::protocol::LayoutKeyFunction::F3:
+        return remoting::mojom::LayoutKeyFunction::kF3;
+      case ::remoting::protocol::LayoutKeyFunction::F4:
+        return remoting::mojom::LayoutKeyFunction::kF4;
+      case ::remoting::protocol::LayoutKeyFunction::F5:
+        return remoting::mojom::LayoutKeyFunction::kF5;
+      case ::remoting::protocol::LayoutKeyFunction::F6:
+        return remoting::mojom::LayoutKeyFunction::kF6;
+      case ::remoting::protocol::LayoutKeyFunction::F7:
+        return remoting::mojom::LayoutKeyFunction::kF7;
+      case ::remoting::protocol::LayoutKeyFunction::F8:
+        return remoting::mojom::LayoutKeyFunction::kF8;
+      case ::remoting::protocol::LayoutKeyFunction::F9:
+        return remoting::mojom::LayoutKeyFunction::kF9;
+      case ::remoting::protocol::LayoutKeyFunction::F10:
+        return remoting::mojom::LayoutKeyFunction::kF10;
+      case ::remoting::protocol::LayoutKeyFunction::F11:
+        return remoting::mojom::LayoutKeyFunction::kF11;
+      case ::remoting::protocol::LayoutKeyFunction::F12:
+        return remoting::mojom::LayoutKeyFunction::kF12;
+      case ::remoting::protocol::LayoutKeyFunction::F13:
+        return remoting::mojom::LayoutKeyFunction::kF13;
+      case ::remoting::protocol::LayoutKeyFunction::F14:
+        return remoting::mojom::LayoutKeyFunction::kF14;
+      case ::remoting::protocol::LayoutKeyFunction::F15:
+        return remoting::mojom::LayoutKeyFunction::kF15;
+      case ::remoting::protocol::LayoutKeyFunction::F16:
+        return remoting::mojom::LayoutKeyFunction::kF16;
+      case ::remoting::protocol::LayoutKeyFunction::F17:
+        return remoting::mojom::LayoutKeyFunction::kF17;
+      case ::remoting::protocol::LayoutKeyFunction::F18:
+        return remoting::mojom::LayoutKeyFunction::kF18;
+      case ::remoting::protocol::LayoutKeyFunction::F19:
+        return remoting::mojom::LayoutKeyFunction::kF19;
+      case ::remoting::protocol::LayoutKeyFunction::F20:
+        return remoting::mojom::LayoutKeyFunction::kF20;
+      case ::remoting::protocol::LayoutKeyFunction::F21:
+        return remoting::mojom::LayoutKeyFunction::kF21;
+      case ::remoting::protocol::LayoutKeyFunction::F22:
+        return remoting::mojom::LayoutKeyFunction::kF22;
+      case ::remoting::protocol::LayoutKeyFunction::F23:
+        return remoting::mojom::LayoutKeyFunction::kF23;
+      case ::remoting::protocol::LayoutKeyFunction::F24:
+        return remoting::mojom::LayoutKeyFunction::kF24;
+      case ::remoting::protocol::LayoutKeyFunction::ESCAPE:
+        return remoting::mojom::LayoutKeyFunction::kEscape;
+      case ::remoting::protocol::LayoutKeyFunction::CONTEXT_MENU:
+        return remoting::mojom::LayoutKeyFunction::kContextMenu;
+      case ::remoting::protocol::LayoutKeyFunction::PAUSE:
+        return remoting::mojom::LayoutKeyFunction::kPause;
+      case ::remoting::protocol::LayoutKeyFunction::PRINT_SCREEN:
+        return remoting::mojom::LayoutKeyFunction::kPrintScreen;
+      case ::remoting::protocol::LayoutKeyFunction::HANKAKU_ZENKAKU_KANJI:
+        return remoting::mojom::LayoutKeyFunction::kHankakuZenkakuKanji;
+      case ::remoting::protocol::LayoutKeyFunction::HENKAN:
+        return remoting::mojom::LayoutKeyFunction::kHenkan;
+      case ::remoting::protocol::LayoutKeyFunction::MUHENKAN:
+        return remoting::mojom::LayoutKeyFunction::kMuhenkan;
+      case ::remoting::protocol::LayoutKeyFunction::KATAKANA_HIRAGANA_ROMAJI:
+        return remoting::mojom::LayoutKeyFunction::kKatakanaHiriganaRomaji;
+      case ::remoting::protocol::LayoutKeyFunction::KANA:
+        return remoting::mojom::LayoutKeyFunction::kKana;
+      case ::remoting::protocol::LayoutKeyFunction::EISU:
+        return remoting::mojom::LayoutKeyFunction::kEisu;
+      case ::remoting::protocol::LayoutKeyFunction::HAN_YEONG:
+        return remoting::mojom::LayoutKeyFunction::kHanYeong;
+      case ::remoting::protocol::LayoutKeyFunction::HANJA:
+        return remoting::mojom::LayoutKeyFunction::kHanja;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::LayoutKeyFunction::kUnknown;
+  }
+
+  static bool FromMojom(remoting::mojom::LayoutKeyFunction input,
+                        ::remoting::protocol::LayoutKeyFunction* out) {
+    switch (input) {
+      case remoting::mojom::LayoutKeyFunction::kUnknown:
+        *out = ::remoting::protocol::LayoutKeyFunction::UNKNOWN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kControl:
+        *out = ::remoting::protocol::LayoutKeyFunction::CONTROL;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kAlt:
+        *out = ::remoting::protocol::LayoutKeyFunction::ALT;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kShift:
+        *out = ::remoting::protocol::LayoutKeyFunction::SHIFT;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kMeta:
+        *out = ::remoting::protocol::LayoutKeyFunction::META;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kAltGr:
+        *out = ::remoting::protocol::LayoutKeyFunction::ALT_GR;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kMod5:
+        *out = ::remoting::protocol::LayoutKeyFunction::MOD5;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kCompose:
+        *out = ::remoting::protocol::LayoutKeyFunction::COMPOSE;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kOption:
+        *out = ::remoting::protocol::LayoutKeyFunction::OPTION;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kCommand:
+        *out = ::remoting::protocol::LayoutKeyFunction::COMMAND;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kSearch:
+        *out = ::remoting::protocol::LayoutKeyFunction::SEARCH;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kNumLock:
+        *out = ::remoting::protocol::LayoutKeyFunction::NUM_LOCK;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kCapsLock:
+        *out = ::remoting::protocol::LayoutKeyFunction::CAPS_LOCK;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kScrollLock:
+        *out = ::remoting::protocol::LayoutKeyFunction::SCROLL_LOCK;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kBackspace:
+        *out = ::remoting::protocol::LayoutKeyFunction::BACKSPACE;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kEnter:
+        *out = ::remoting::protocol::LayoutKeyFunction::ENTER;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kTab:
+        *out = ::remoting::protocol::LayoutKeyFunction::TAB;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kInsert:
+        *out = ::remoting::protocol::LayoutKeyFunction::INSERT;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kDelete:
+        *out = ::remoting::protocol::LayoutKeyFunction::DELETE_;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kHome:
+        *out = ::remoting::protocol::LayoutKeyFunction::HOME;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kEnd:
+        *out = ::remoting::protocol::LayoutKeyFunction::END;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kPageUp:
+        *out = ::remoting::protocol::LayoutKeyFunction::PAGE_UP;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kPageDown:
+        *out = ::remoting::protocol::LayoutKeyFunction::PAGE_DOWN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kClear:
+        *out = ::remoting::protocol::LayoutKeyFunction::CLEAR;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kArrowUp:
+        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_UP;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kArrowDown:
+        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_DOWN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kArrowLeft:
+        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_LEFT;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kArrowRight:
+        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_RIGHT;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF1:
+        *out = ::remoting::protocol::LayoutKeyFunction::F1;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF2:
+        *out = ::remoting::protocol::LayoutKeyFunction::F2;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF3:
+        *out = ::remoting::protocol::LayoutKeyFunction::F3;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF4:
+        *out = ::remoting::protocol::LayoutKeyFunction::F4;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF5:
+        *out = ::remoting::protocol::LayoutKeyFunction::F5;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF6:
+        *out = ::remoting::protocol::LayoutKeyFunction::F6;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF7:
+        *out = ::remoting::protocol::LayoutKeyFunction::F7;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF8:
+        *out = ::remoting::protocol::LayoutKeyFunction::F8;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF9:
+        *out = ::remoting::protocol::LayoutKeyFunction::F9;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF10:
+        *out = ::remoting::protocol::LayoutKeyFunction::F10;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF11:
+        *out = ::remoting::protocol::LayoutKeyFunction::F11;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF12:
+        *out = ::remoting::protocol::LayoutKeyFunction::F12;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF13:
+        *out = ::remoting::protocol::LayoutKeyFunction::F13;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF14:
+        *out = ::remoting::protocol::LayoutKeyFunction::F14;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF15:
+        *out = ::remoting::protocol::LayoutKeyFunction::F15;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF16:
+        *out = ::remoting::protocol::LayoutKeyFunction::F16;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF17:
+        *out = ::remoting::protocol::LayoutKeyFunction::F17;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF18:
+        *out = ::remoting::protocol::LayoutKeyFunction::F18;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF19:
+        *out = ::remoting::protocol::LayoutKeyFunction::F19;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF20:
+        *out = ::remoting::protocol::LayoutKeyFunction::F20;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF21:
+        *out = ::remoting::protocol::LayoutKeyFunction::F21;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF22:
+        *out = ::remoting::protocol::LayoutKeyFunction::F22;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF23:
+        *out = ::remoting::protocol::LayoutKeyFunction::F23;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kF24:
+        *out = ::remoting::protocol::LayoutKeyFunction::F24;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kEscape:
+        *out = ::remoting::protocol::LayoutKeyFunction::ESCAPE;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kContextMenu:
+        *out = ::remoting::protocol::LayoutKeyFunction::CONTEXT_MENU;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kPause:
+        *out = ::remoting::protocol::LayoutKeyFunction::PAUSE;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kPrintScreen:
+        *out = ::remoting::protocol::LayoutKeyFunction::PRINT_SCREEN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kHankakuZenkakuKanji:
+        *out = ::remoting::protocol::LayoutKeyFunction::HANKAKU_ZENKAKU_KANJI;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kHenkan:
+        *out = ::remoting::protocol::LayoutKeyFunction::HENKAN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kMuhenkan:
+        *out = ::remoting::protocol::LayoutKeyFunction::MUHENKAN;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kKatakanaHiriganaRomaji:
+        *out =
+            ::remoting::protocol::LayoutKeyFunction::KATAKANA_HIRAGANA_ROMAJI;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kKana:
+        *out = ::remoting::protocol::LayoutKeyFunction::KANA;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kEisu:
+        *out = ::remoting::protocol::LayoutKeyFunction::EISU;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kHanYeong:
+        *out = ::remoting::protocol::LayoutKeyFunction::HAN_YEONG;
+        return true;
+      case remoting::mojom::LayoutKeyFunction::kHanja:
+        *out = ::remoting::protocol::LayoutKeyFunction::HANJA;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
 };
 
 template <>

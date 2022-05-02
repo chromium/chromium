@@ -7,4 +7,7 @@ specific_include_rules = {
   "array_traits_protobuf.h": [
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],
+  "map_traits_protobuf.h": [
+    "+third_party/protobuf/src/google/protobuf/map.h",
+  ],
 }

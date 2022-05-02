@@ -14,37 +14,6 @@
 
 namespace IPC {
 
-// remoting::protocol::KeyboardLayout
-
-// static
-void ParamTraits<remoting::protocol::KeyboardLayout>::Write(
-    base::Pickle* m,
-    const remoting::protocol::KeyboardLayout& p) {
-  std::string serialized_keyboard_layout;
-  bool result = p.SerializeToString(&serialized_keyboard_layout);
-  DCHECK(result);
-  m->WriteString(serialized_keyboard_layout);
-}
-
-// static
-bool ParamTraits<remoting::protocol::KeyboardLayout>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    remoting::protocol::KeyboardLayout* p) {
-  std::string serialized_keyboard_layout;
-  if (!iter->ReadString(&serialized_keyboard_layout))
-    return false;
-
-  return p->ParseFromString(serialized_keyboard_layout);
-}
-
-// static
-void ParamTraits<remoting::protocol::KeyboardLayout>::Log(
-    const remoting::protocol::KeyboardLayout& p,
-    std::string* l) {
-  l->append("[protocol::KeyboardLayout]");
-}
-
 // remoting::protocol::FileTransfer_Error
 
 // static

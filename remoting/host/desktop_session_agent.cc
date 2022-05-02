@@ -736,9 +736,9 @@ void DesktopSessionAgent::LockWorkstation() {
 void DesktopSessionAgent::OnKeyboardLayoutChange(
     const protocol::KeyboardLayout& layout) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  SendToNetwork(
-      std::make_unique<ChromotingDesktopNetworkMsg_KeyboardChanged>(layout));
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnKeyboardLayoutChanged(layout);
+  }
 }
 
 void DesktopSessionAgent::OnSharedMemoryRegionCreated(

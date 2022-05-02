@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "chromoting_host_services.mojom",
     "desktop_session.mojom",
+    "keyboard_layout.mojom",
     "remote_security_key.mojom",
     "remote_support.mojom",
     "remote_url_opener.mojom",
@@ -78,8 +79,24 @@ mojom("mojom") {
           cpp = "::webrtc::DesktopVector"
         },
         {
+          mojom = "remoting.mojom.KeyboardLayout"
+          cpp = "::remoting::protocol::KeyboardLayout"
+        },
+        {
+          mojom = "remoting.mojom.KeyAction"
+          cpp = "::remoting::protocol::KeyboardLayout::KeyAction"
+        },
+        {
+          mojom = "remoting.mojom.KeyBehavior"
+          cpp = "::remoting::protocol::KeyboardLayout::KeyBehavior"
+        },
+        {
           mojom = "remoting.mojom.KeyEvent"
           cpp = "::remoting::protocol::KeyEvent"
+        },
+        {
+          mojom = "remoting.mojom.LayoutKeyFunction"
+          cpp = "::remoting::protocol::LayoutKeyFunction"
         },
         {
           mojom = "remoting.mojom.MouseButton"

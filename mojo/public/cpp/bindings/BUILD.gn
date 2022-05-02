@@ -265,7 +265,10 @@ source_set("struct_traits") {
 # This is provided as a separate target so other targets can use Mojo bindings
 # without necessarily linking to protobuf.
 source_set("protobuf_support") {
-  public = [ "array_traits_protobuf.h" ]
+  public = [
+    "array_traits_protobuf.h",
+    "map_traits_protobuf.h",
+  ]
   public_deps = [
     ":bindings",
     "//third_party/protobuf:protobuf_lite",

@@ -6,6 +6,7 @@ module remoting.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
 import "remoting/host/mojom/wrapped_primitives.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -413,6 +414,9 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the mouse cursor has changed.
   OnMouseCursorChanged(MouseCursor mouse_cursor);
+
+  // Notifies the network process that the keyboard layout has changed.
+  OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

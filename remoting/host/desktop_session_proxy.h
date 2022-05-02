@@ -189,6 +189,7 @@ class DesktopSessionProxy
   void OnCaptureResult(mojom::CaptureResultPtr capture_result) override;
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
   void OnMouseCursorChanged(const webrtc::MouseCursor& mouse_cursor) override;
+  void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error) override;
@@ -223,9 +224,6 @@ class DesktopSessionProxy
   // Handles CaptureResult notification from the desktop session agent.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        const SerializedDesktopFrame& serialized_frame);
-
-  // Handles KeyboardChanged notification from the desktop session agent.
-  void OnKeyboardChanged(const protocol::KeyboardLayout& layout);
 
   // Sends a message to the desktop session agent. The message is silently
   // deleted if the channel is broken.

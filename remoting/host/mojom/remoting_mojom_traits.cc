@@ -140,6 +140,45 @@ bool mojo::StructTraits<remoting::mojom::DesktopVectorDataView,
 }
 
 // static
+bool mojo::StructTraits<remoting::mojom::KeyboardLayoutDataView,
+                        ::remoting::protocol::KeyboardLayout>::
+    Read(remoting::mojom::KeyboardLayoutDataView data_view,
+         ::remoting::protocol::KeyboardLayout* out_layout) {
+  return data_view.ReadKeys(out_layout->mutable_keys());
+}
+
+// static
+bool mojo::UnionTraits<remoting::mojom::KeyActionDataView,
+                       ::remoting::protocol::KeyboardLayout_KeyAction>::
+    Read(remoting::mojom::KeyActionDataView data_view,
+         ::remoting::protocol::KeyboardLayout_KeyAction* out_action) {
+  switch (data_view.tag()) {
+    case remoting::mojom::KeyActionDataView::Tag::kFunction:
+      ::remoting::protocol::LayoutKeyFunction function;
+      if (!data_view.ReadFunction(&function)) {
+        return false;
+      }
+      out_action->set_function(function);
+      return true;
+    case remoting::mojom::KeyActionDataView::Tag::kCharacter:
+      std::string character;
+      if (!data_view.ReadCharacter(&character)) {
+        return false;
+      }
+      out_action->set_character(std::move(character));
+      return true;
+  }
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::KeyBehaviorDataView,
+                        ::remoting::protocol::KeyboardLayout::KeyBehavior>::
+    Read(remoting::mojom::KeyBehaviorDataView data_view,
+         ::remoting::protocol::KeyboardLayout::KeyBehavior* out_behavior) {
+  return data_view.ReadActions(out_behavior->mutable_actions());
+}
+
+// static
 bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
                         ::remoting::protocol::KeyEvent>::
     Read(remoting::mojom::KeyEventDataView data_view,
