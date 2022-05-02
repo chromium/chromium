@@ -33,8 +33,8 @@ THREAD_COUNT = 16
 _LITERAL_CACHE = {}
 
 
-def is_literal_used(literal):
-  """Check if a given string literal is used in the codebase."""
+def is_literal_used(literal, code_files):
+  """Check if a given string literal is used in the passed code files."""
   if literal in _LITERAL_CACHE:
     return _LITERAL_CACHE[literal]
 
@@ -45,12 +45,13 @@ def is_literal_used(literal):
     _LITERAL_CACHE[literal] = True
     return True
 
-  bash_find_cmd = ('bash', '-c', 'find', '.', '-type', 'f', '|', 'grep', '-E',
-                   '\"\\.(h|cc)$\"', '|', 'grep', '-E',
-                   '\"(/out/|/build/|/gen/)\"', '|', 'xargs', 'grep', '-l',
-                   '\\\"%s\\\"' % literal)
-  bash_find_proc = subprocess.Popen(bash_find_cmd, stdout=subprocess.PIPE)
-  used = len(bash_find_proc.stdout.read().splitlines()) > 0
+  bash_files_using_literal = subprocess.Popen(
+      ('xargs', 'grep', '-s', '-l', '\\\"%s\\\"' % literal),
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE)
+
+  files_using_literal = bash_files_using_literal.communicate(code_files)[0]
+  used = len(files_using_literal.splitlines()) > 0
   _LITERAL_CACHE[literal] = used
   if not used:
     print('Did not find', repr(literal))
@@ -58,25 +59,25 @@ def is_literal_used(literal):
   return used
 
 
-def is_study_used(study_name, configs):
+def is_study_used(study_name, configs, code_files):
   """Checks if a given study is used in the codebase."""
   if study_name.startswith('WebRTC-'):
     return True  # Skip webrtc studies which give false positives.
 
-  if is_literal_used(study_name):
+  if is_literal_used(study_name, code_files):
     return True
   for config in configs:
     for experiment in config.get('experiments', []):
       for feature in experiment.get('enable_features', []):
-        if is_literal_used(feature):
+        if is_literal_used(feature, code_files):
           return True
       for feature in experiment.get('disable_features', []):
-        if is_literal_used(feature):
+        if is_literal_used(feature, code_files):
           return True
   return False
 
 
-def thread_func(thread_limiter, studies_map, study_name, configs):
+def thread_func(thread_limiter, studies_map, study_name, configs, code_files):
   """Runs a limited number of tasks and updates the map with the results.
 
   Args:
@@ -84,13 +85,14 @@ def thread_func(thread_limiter, studies_map, study_name, configs):
     studies_map: The map where confirmed studies are added to.
     study_name: The name of the study to check.
     configs: The configs for the given study.
+    code_files: A string with the paths to all code files (cc or h files).
 
   Side-effect:
     This function adds the study to |studies_map| if it used.
   """
   thread_limiter.acquire()
   try:
-    if is_study_used(study_name, configs):
+    if is_study_used(study_name, configs, code_files):
       studies_map[study_name] = configs
   finally:
     thread_limiter.release()
@@ -115,10 +117,22 @@ def main():
     studies = json.load(fin)
   print('Loaded config from', input_path)
 
+  bash_list_files = subprocess.Popen(['find', '.', '-type', 'f'],
+                                     stdout=subprocess.PIPE)
+  bash_code_files = subprocess.Popen(['grep', '-E', '\\.(h|cc)$'],
+                                     stdin=bash_list_files.stdout,
+                                     stdout=subprocess.PIPE)
+  bash_filtered_code_files = subprocess.Popen(
+      ('grep', '-Ev', '(/out/|/build/|/gen/)'),
+      stdin=bash_code_files.stdout,
+      stdout=subprocess.PIPE)
+  filtered_code_files = bash_filtered_code_files.stdout.read()
+
   threads = []
   clean_studies = {}
   for study_name, configs in studies.items():
-    args = (thread_limiter, clean_studies, study_name, configs)
+    args = (thread_limiter, clean_studies, study_name, configs,
+            filtered_code_files)
     threads.append(threading.Thread(target=thread_func, args=args))
 
   # Start all threads, then join all threads.
