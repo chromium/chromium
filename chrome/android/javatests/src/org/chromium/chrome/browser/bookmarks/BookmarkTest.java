@@ -1260,6 +1260,7 @@ public class BookmarkTest {
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
     @CommandLineFlags.
     Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testReadingListOpenInRegularTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -1293,6 +1294,7 @@ public class BookmarkTest {
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
     @CommandLineFlags.
     Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testReadingListOpenInIncognitoTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
