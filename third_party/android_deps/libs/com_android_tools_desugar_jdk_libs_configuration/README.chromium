@@ -4,6 +4,7 @@ URL: http://r8.googlesource.com/r8
 Version: 1.1.5
 License: BSD 3-Clause
 License File: LICENSE
+CPEPrefix: null
 Security Critical: yes
 
 Description:

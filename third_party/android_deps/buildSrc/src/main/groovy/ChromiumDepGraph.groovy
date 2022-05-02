@@ -585,6 +585,7 @@ class ChromiumDepGraph {
                 description = fallbackProperties.description ?: description
                 url = fallbackProperties.url ?: url
                 cipdSuffix = fallbackProperties.cipdSuffix ?: cipdSuffix
+                cpePrefix = fallbackProperties.cpePrefix ?: cpePrefix
                 // Boolean properties require explicit null checks instead of only when truish.
                 if (fallbackProperties.generateTarget != null) {
                     generateTarget = fallbackProperties.generateTarget
@@ -742,6 +743,7 @@ class ChromiumDepGraph {
         ComponentIdentifier componentId
         List<String> children
         String cipdSuffix
+        String cpePrefix
         // When set overrides the version downloaded by the 3pp fetch script to
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
@@ -757,6 +759,7 @@ class ChromiumDepGraph {
         String url
         String licenseName, licenseUrl, licensePath
         String cipdSuffix
+        String cpePrefix
         String resolveVersion
         Boolean isShipped
         // Set to true if this dependency is not needed.

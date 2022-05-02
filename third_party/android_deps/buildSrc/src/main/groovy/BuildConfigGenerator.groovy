@@ -183,6 +183,7 @@ class BuildConfigGenerator extends DefaultTask {
             Version: ${dependency.version}
             License: ${licenseString}
             License File: ${licenseFile}
+            CPEPrefix: ${dependency.cpePrefix}
             Security Critical: ${securityCritical ? 'yes' : 'no'}
             ${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes' : ''}
             Description:
