@@ -160,16 +160,12 @@ bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
     const {
   // If any phones are shown then also show a button that goes to the settings
   // page to manage them.
-  return base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) &&
-         std::any_of(
-             dialog_model()->mechanisms().begin(),
-             dialog_model()->mechanisms().end(),
-             [](const AuthenticatorRequestDialogModel::Mechanism& mechanism)
-                 -> bool {
-               return absl::holds_alternative<
-                   AuthenticatorRequestDialogModel::Mechanism::Phone>(
-                   mechanism.type);
-             });
+  return std::any_of(
+      dialog_model()->mechanisms().begin(), dialog_model()->mechanisms().end(),
+      [](const AuthenticatorRequestDialogModel::Mechanism& mechanism) -> bool {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Phone>(mechanism.type);
+      });
 }
 
 void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
@@ -1208,9 +1204,7 @@ const gfx::VectorIcon& AuthenticatorQRSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
-  return base::FeatureList::IsEnabled(device::kWebAuthPasskeysUIExperiment)
-             ? u"Add a new phone"
-             : l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {

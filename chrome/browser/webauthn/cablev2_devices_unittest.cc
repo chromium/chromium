@@ -163,9 +163,6 @@ TEST(CableV2DeviceMerging, Alphabetical) {
 }
 
 class CableV2DevicesProfileTest : public testing::Test {
-  // The `ScopedFeatureList` must be created before initializing any threads.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthPhoneSupport};
   // A `BrowserTaskEnvironment` needs to be in-scope in order to create a
   // `TestingProfile`.
   content::BrowserTaskEnvironment task_environment_;

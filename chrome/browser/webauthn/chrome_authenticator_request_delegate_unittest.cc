@@ -440,10 +440,6 @@ class ChromeAuthenticatorRequestDelegateWindowsBehaviorTest
 
   absl::optional<ChromeAuthenticatorRequestDelegate> delegate_;
   absl::optional<TestAuthenticatorModelObserver> observer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthPhoneSupport};
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,

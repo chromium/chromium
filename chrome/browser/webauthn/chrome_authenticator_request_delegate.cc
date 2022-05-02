@@ -625,17 +625,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
       contact_phone_callback = discovery_factory->get_cable_contact_callback();
     }
   }
-  const bool have_paired_phones = !paired_phones.empty();
 
   const bool non_extension_cablev2_enabled =
       (!cable_extension_permitted ||
-       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) &&
-      (have_paired_phones ||
-       base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
-
-  const bool android_accessory_possible =
-      base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      cablev2_extension_provided || !cable_extension_permitted;
+       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere));
 
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
@@ -662,16 +655,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     }
   }
 
-  if (android_accessory_possible) {
-    mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
-    if (!pass_empty_usb_device_manager_) {
-      content::GetDeviceService().BindUsbDeviceManager(
-          usb_device_manager.BindNewPipeAndPassReceiver());
-    }
-    discovery_factory->set_android_accessory_params(
-        std::move(usb_device_manager),
-        l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
+  mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
+  if (!pass_empty_usb_device_manager_) {
+    content::GetDeviceService().BindUsbDeviceManager(
+        usb_device_manager.BindNewPipeAndPassReceiver());
   }
+  discovery_factory->set_android_accessory_params(
+      std::move(usb_device_manager),
+      l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
 
   if (cable_extension_provided || non_extension_cablev2_enabled) {
     absl::optional<bool> extension_is_v2;

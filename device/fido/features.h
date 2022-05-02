@@ -24,14 +24,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthUseNativeWinApi;
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enable using a phone as a generic security key.
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthPhoneSupport;
-
-// Enable some experimental UI changes
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthPasskeysUI;
-
 // Support the caBLE extension in assertion requests from any origin.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableExtensionAnywhere;
@@ -53,10 +45,6 @@ extern const base::Feature kU2fPermissionPrompt;
 // `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege;
-
-// Enable some experimental UI changes
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthPasskeysUIExperiment;
 
 }  // namespace device
 

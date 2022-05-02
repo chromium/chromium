@@ -8187,9 +8187,8 @@ class AuthenticatorCableV2Test
         browser_client_(
             base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAuthCable, device::kWebAuthPhoneSupport},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable},
+                                          /*disabled_features=*/{});
   }
 
   void SetUp() override {

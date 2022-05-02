@@ -31,12 +31,10 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
-    if (loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage')) {
-      r.SECURITY_KEYS_PHONES =
-          r.SECURITY_KEYS.createChild('/securityKeys/phones');
-    }
+    r.SECURITY_KEYS_PHONES =
+        r.SECURITY_KEYS.createChild('/securityKeys/phones');
     // <if expr="is_win">
-  } else if (loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage')) {
+  } else {
     r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
     // </if>
   }

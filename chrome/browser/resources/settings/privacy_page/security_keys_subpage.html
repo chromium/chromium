@@ -1,38 +1,36 @@
 <style include="settings-shared"></style>
 
-<template is="dom-if" if="[[enableSecurityKeysPhonesSubpage_]]">
-  <cr-link-row
+<cr-link-row
     id="managePhonesButton"
     label="$i18n{securityKeysPhonesManage}"
     sub-label="$i18n{securityKeysPhonesManageDesc}"
     on-click="onManagePhonesClick_"></cr-link-row>
-</template>
 <cr-link-row
-  id="setPINButton"
-  class$="[[hrIfPhonesSubpageEnabled_]]"
-  label="$i18n{securityKeysSetPIN}"
-  sub-label="$i18n{securityKeysSetPINDesc}"
-  on-click="onSetPIN_"></cr-link-row>
+    id="setPINButton"
+    class="hr"
+    label="$i18n{securityKeysSetPIN}"
+    sub-label="$i18n{securityKeysSetPINDesc}"
+    on-click="onSetPIN_"></cr-link-row>
 <cr-link-row
-  id="credentialManagementButton"
-  class="hr"
-  label="$i18n{securityKeysCredentialManagementLabel}"
-  sub-label="$i18n{securityKeysCredentialManagementDesc}"
-  on-click="onCredentialManagement_"></cr-link-row>
+    id="credentialManagementButton"
+    class="hr"
+    label="$i18n{securityKeysCredentialManagementLabel}"
+    sub-label="$i18n{securityKeysCredentialManagementDesc}"
+    on-click="onCredentialManagement_"></cr-link-row>
 <template is="dom-if" if="[[enableBioEnrollment_]]">
   <cr-link-row
-    id="bioEnrollButton"
-    class="hr"
-    label="$i18n{securityKeysBioEnrollmentSubpageLabel}"
-    sub-label="$i18n{securityKeysBioEnrollmentSubpageDescription}"
-    on-click="onBioEnroll_"></cr-link-row>
+      id="bioEnrollButton"
+      class="hr"
+      label="$i18n{securityKeysBioEnrollmentSubpageLabel}"
+      sub-label="$i18n{securityKeysBioEnrollmentSubpageDescription}"
+      on-click="onBioEnroll_"></cr-link-row>
 </template>
 <cr-link-row
-  id="resetButton"
-  class="hr"
-  label="$i18n{securityKeysReset}"
-  sub-label="$i18n{securityKeysResetDesc}"
-  on-click="onReset_"></cr-link-row>
+    id="resetButton"
+    class="hr"
+    label="$i18n{securityKeysReset}"
+    sub-label="$i18n{securityKeysResetDesc}"
+    on-click="onReset_"></cr-link-row>
 
 <template is="dom-if" if="[[showSetPINDialog_]]" restamp>
   <settings-security-keys-set-pin-dialog on-close="onSetPINDialogClosed_">
@@ -41,8 +39,8 @@
 
 <template is="dom-if" if="[[showCredentialManagementDialog_]]" restamp>
   <settings-security-keys-credential-management-dialog
-    on-credential-management-set-pin="onSetPIN_"
-    on-close="onCredentialManagementDialogClosed_">
+      on-credential-management-set-pin="onSetPIN_"
+      on-close="onCredentialManagementDialogClosed_">
   </settings-security-keys-credential-management-dialog>
 </template>
 

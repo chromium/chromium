@@ -354,11 +354,6 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
-  if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    NOTREACHED();
-    return;
-  }
-
   ListPrefUpdate update(profile->GetPrefs(), kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The

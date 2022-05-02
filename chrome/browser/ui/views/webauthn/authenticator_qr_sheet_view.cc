@@ -51,9 +51,7 @@ class AuthenticatorQRViewCentered : public views::View {
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
     request->should_render = true;
-    request->render_dino =
-        !base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI) &&
-        !base::FeatureList::IsEnabled(device::kWebAuthPasskeysUIExperiment);
+    request->render_dino = true;
 
     request->render_module_style =
         qrcode_generator::mojom::ModuleStyle::CIRCLES;

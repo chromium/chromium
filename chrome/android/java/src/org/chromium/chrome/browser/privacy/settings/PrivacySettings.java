@@ -65,7 +65,6 @@ public class PrivacySettings
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
     private static final String PREF_PRIVACY_REVIEW = "privacy_review";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
-    private static final String PREF_PHONE_AS_A_SECURITY_KEY = "phone_as_a_security_key";
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private IncognitoLockSettings mIncognitoLockSettings;
@@ -143,10 +142,6 @@ public class PrivacySettings
 
         Preference syncAndServicesLink = findPreference(PREF_SYNC_AND_SERVICES_LINK);
         syncAndServicesLink.setSummary(buildSyncAndServicesLink());
-
-        Preference phoneAsASecurityKey = findPreference(PREF_PHONE_AS_A_SECURITY_KEY);
-        phoneAsASecurityKey.setVisible(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTH_PHONE_SUPPORT));
 
         updatePreferences();
     }

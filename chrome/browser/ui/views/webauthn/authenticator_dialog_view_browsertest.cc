@@ -112,8 +112,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
   void SetUp() override {
     // Enable all upcoming features to excerise them for tests.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAuthCable, device::kWebAuthPhoneSupport}, {});
+    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable}, {});
     DialogBrowserTest::SetUp();
   }
 

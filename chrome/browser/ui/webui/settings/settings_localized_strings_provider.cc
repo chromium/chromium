@@ -3033,9 +3033,6 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
                           !win_native_api_available);
-  html_source->AddBoolean(
-      "enableSecurityKeysPhonesSubpage",
-      base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
 }
 
 void AddIPHStrings(content::WebUIDataSource* html_source) {

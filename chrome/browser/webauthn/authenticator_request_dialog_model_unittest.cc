@@ -323,9 +323,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
   // Simulate the user canceling the Windows native UI, both with and without
   // that UI being immediately triggered. If it was immediately triggered then
   // canceling it should show the mechanism selection UI.
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthPhoneSupport};
-
   for (const bool prefer_native_api : {false, true}) {
     SCOPED_TRACE(prefer_native_api);
 

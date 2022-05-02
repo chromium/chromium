@@ -49,24 +49,6 @@ class SecurityKeysSubpageElement extends PolymerElement {
         }
       },
 
-      enableSecurityKeysPhonesSubpage_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage');
-        }
-      },
-
-      hrIfPhonesSubpageEnabled_: {
-        type: String,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage') ?
-              'hr' :
-              '';
-        }
-      },
-
       showSetPINDialog_: {
         type: Boolean,
         value: false,
@@ -90,8 +72,6 @@ class SecurityKeysSubpageElement extends PolymerElement {
   }
 
   private enableBioEnrollment_: boolean;
-  private enableSecurityKeysPhonesSubpage_: boolean;
-  private hrIfPhonesSubpageEnabled_: string;
   private showSetPINDialog_: boolean;
   private showCredentialManagementDialog_: boolean;
   private showResetDialog_: boolean;
