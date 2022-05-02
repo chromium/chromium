@@ -110,8 +110,7 @@ ProfilerGroup::ProfilerGroup(v8::Isolate* isolate)
     : isolate_(isolate),
       cpu_profiler_(nullptr),
       next_profiler_id_(0),
-      num_active_profilers_(0) {
-}
+      num_active_profilers_(0) {}
 
 void DiscardedSamplesDelegate::Notify() {
   if (profiler_group_) {
@@ -234,6 +233,8 @@ void ProfilerGroup::WillBeDestroyed() {
     DCHECK(!profilers_.Contains(profiler));
   }
 
+  StopDetachedProfilers();
+
   if (cpu_profiler_)
     TeardownV8Profiler();
 }
@@ -304,16 +305,47 @@ void ProfilerGroup::CancelProfiler(Profiler* profiler) {
 
 void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
                                         Profiler* profiler) {
+  DCHECK(IsMainThread());
   DCHECK(cpu_profiler_);
   DCHECK(!profiler->stopped());
   profilers_.erase(profiler);
+
+  // register the profiler to be cleaned up in case its associated context
+  // gets destroyed before the cleanup task is executed.
+  detached_profiler_ids_.push_back(profiler->ProfilerId());
 
   // Since it's possible for the profiler to get destructed along with its
   // associated context, dispatch a task to cleanup context-independent isolate
   // resources (rather than use the context's task runner).
   ThreadScheduler::Current()->V8TaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&ProfilerGroup::CancelProfilerImpl,
+      FROM_HERE, WTF::Bind(&ProfilerGroup::StopDetachedProfiler,
                            WrapPersistent(this), profiler->ProfilerId()));
+}
+
+void ProfilerGroup::StopDetachedProfiler(String profiler_id) {
+  DCHECK(IsMainThread());
+
+  // we use a vector instead of a map because the expected number of profiler
+  // is expected to be very small
+  auto* it = std::find(detached_profiler_ids_.begin(),
+                       detached_profiler_ids_.end(), profiler_id);
+
+  if (it == detached_profiler_ids_.end()) {
+    // Profiler already stopped
+    return;
+  }
+
+  CancelProfilerImpl(profiler_id);
+  detached_profiler_ids_.erase(it);
+}
+
+void ProfilerGroup::StopDetachedProfilers() {
+  DCHECK(IsMainThread());
+
+  for (auto& detached_profiler_id : detached_profiler_ids_) {
+    CancelProfilerImpl(detached_profiler_id);
+  }
+  detached_profiler_ids_.clear();
 }
 
 void ProfilerGroup::CancelProfilerImpl(String profiler_id) {

@@ -81,6 +81,10 @@ class CORE_EXPORT ProfilerGroup
   // Internal implementation of cancel.
   void CancelProfilerImpl(String profiler_id);
 
+  // Clean context independent resources for leaked profilers
+  void StopDetachedProfiler(String profiler_id);
+  void StopDetachedProfilers();
+
   // Generates an unused string identifier to use for a new profiling session.
   String NextProfilerId();
 
@@ -88,8 +92,10 @@ class CORE_EXPORT ProfilerGroup
   v8::CpuProfiler* cpu_profiler_;
   int next_profiler_id_;
   int num_active_profilers_;
-
   HeapHashSet<WeakMember<Profiler>> profilers_;
+
+  // Store the ids of leaked collected profilers that needs to be stopped
+  Vector<String> detached_profiler_ids_;
 
   // A set of observers, one for each ExecutionContext that has profiling
   // enabled.
