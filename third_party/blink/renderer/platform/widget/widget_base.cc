@@ -629,7 +629,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
                      std::move(render_frame_metadata_observer_remote),
                      std::move(render_frame_metadata_observer),
                      std::move(params), std::move(callback));
-  if (base::FeatureList::IsEnabled(features::kEstablishGpuChannelAsync)) {
+  bool needs_sync_composite_for_test =
+      layer_tree_view_ && LayerTreeHost()->in_composite_for_test();
+  if (base::FeatureList::IsEnabled(features::kEstablishGpuChannelAsync) &&
+      !needs_sync_composite_for_test) {
     Platform::Current()->EstablishGpuChannel(std::move(finish_callback));
   } else {
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =

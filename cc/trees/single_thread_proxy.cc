@@ -714,6 +714,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
   base::AutoReset<bool> inside_composite(&inside_synchronous_composite_, true);
 
   if (layer_tree_frame_sink_lost_) {
+    auto sync = layer_tree_host_->ForceSyncCompositeForTest();  // IN-TEST
     RequestNewLayerTreeFrameSink();
     // RequestNewLayerTreeFrameSink could have synchronously created an output
     // surface, so check again before returning.
@@ -1132,6 +1133,7 @@ void SingleThreadProxy::ScheduledActionBeginLayerTreeFrameSinkCreation() {
     ScheduleRequestNewLayerTreeFrameSink();
   } else {
     DebugScopedSetMainThread main(task_runner_provider_);
+    auto sync = layer_tree_host_->ForceSyncCompositeForTest();  // IN-TEST
     RequestNewLayerTreeFrameSink();
   }
 }

@@ -834,6 +834,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Returns a percentage representing average throughput of last X seconds.
   uint32_t GetAverageThroughput() const;
 
+  // TODO(szager): Remove these once threaded compositing is enabled for all
+  // web_tests.
+  bool in_composite_for_test() const { return in_composite_for_test_; }
+  [[nodiscard]] base::AutoReset<bool> ForceSyncCompositeForTest() {
+    return base::AutoReset<bool>(&in_composite_for_test_, true);
+  }
+
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 
@@ -1010,6 +1017,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Set if WaitForCommitCompletion() was called before commit completes. Used
   // for histograms.
   mutable bool waited_for_protected_sequence_ = false;
+
+  bool in_composite_for_test_ = false;
 
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.
