@@ -4297,6 +4297,8 @@ static_library("browser") {
       "sharing_hub/sharing_hub_service_factory.h",
       "signin/signin_promo.cc",
       "signin/signin_promo.h",
+      "signin/signin_ui_delegate.cc",
+      "signin/signin_ui_delegate.h",
       "signin/signin_ui_util.cc",
       "signin/signin_ui_util.h",
       "speech/chrome_speech_recognition_service.cc",
@@ -5355,6 +5357,8 @@ static_library("browser") {
       "notifications/notification_platform_bridge_lacros.cc",
       "notifications/notification_platform_bridge_lacros.h",
       "platform_util_lacros.cc",
+      "signin/signin_ui_delegate_impl_lacros.cc",
+      "signin/signin_ui_delegate_impl_lacros.h",
       "speech/tts_client_factory_lacros.cc",
       "speech/tts_client_factory_lacros.h",
       "speech/tts_client_lacros.cc",
@@ -6568,6 +6572,8 @@ static_library("browser") {
       "signin/logout_tab_helper.h",
       "signin/process_dice_header_delegate_impl.cc",
       "signin/process_dice_header_delegate_impl.h",
+      "signin/signin_ui_delegate_impl_dice.cc",
+      "signin/signin_ui_delegate_impl_dice.h",
     ]
     if (is_win) {
       sources += [
