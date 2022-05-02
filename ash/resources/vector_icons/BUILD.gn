@@ -12,6 +12,7 @@ aggregate_vector_icons("ash_vector_icons") {
   icon_directory = "."
 
   sources = [
+    "adaptive_charging_battery.icon",
     "adaptive_charging_nudge_dark.icon",
     "adaptive_charging_nudge_light.icon",
     "add_cellular_network.icon",

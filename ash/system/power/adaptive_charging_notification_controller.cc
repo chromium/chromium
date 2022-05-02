@@ -1,0 +1,93 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/power/adaptive_charging_notification_controller.h"
+
+#include <string>
+
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/i18n/time_formatting.h"
+#include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
+
+namespace ash {
+
+namespace {
+
+constexpr char kNotifierId[] = "adaptive-charging-notify";
+constexpr char kInfoNotificationId[] = "adaptive-charging-notify-info";
+
+}  // namespace
+
+AdaptiveChargingNotificationController::
+    AdaptiveChargingNotificationController() = default;
+
+AdaptiveChargingNotificationController::
+    ~AdaptiveChargingNotificationController() = default;
+
+void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
+    absl::optional<int> hours_to_full) {
+  if (!ShouldShowNotification())
+    return;
+
+  std::u16string notification_message;
+  if (hours_to_full.has_value()) {
+    DCHECK_GE(hours_to_full.value(), 0);
+    notification_message = l10n_util::GetStringFUTF16(
+        IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY,
+        base::TimeFormatTimeOfDayWithHourClockType(
+            base::Time::Now() + base::Hours(hours_to_full.value()),
+            base::GetHourClockType(), base::kKeepAmPm));
+  } else {
+    notification_message = l10n_util::GetStringUTF16(
+        IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_INDEFINITE);
+  }
+
+  message_center::RichNotificationData notification_data;
+  notification_data.buttons.push_back(
+      message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_FULLY_CHARGE_NOW_BUTTON_TEXT)));
+  auto notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kInfoNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_TITLE),
+      notification_message,
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId),
+      notification_data,
+      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+          weak_ptr_factory_.GetWeakPtr()),
+      kAdaptiveChargingBatteryIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+
+  if (hours_to_full.has_value())
+    notification->set_priority(message_center::SYSTEM_PRIORITY);
+
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+}
+
+bool AdaptiveChargingNotificationController::ShouldShowNotification() {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  return pref_service &&
+         pref_service->GetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled);
+}
+
+void AdaptiveChargingNotificationController::Click(
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
+  // TODO(b/216035329): Add logic to this function when "Charge now" function is
+  // available.
+}
+
+}  // namespace ash
