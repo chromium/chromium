@@ -1650,6 +1650,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWarnBeforeQuittingEnabled,
     prefs::kConfirmToQuitEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kScreenTimeEnabled,
+    policy_prefs::kScreenTimeEnabled,
+    base::Value::Type::BOOLEAN},
 #endif
   { key::kUrlParamFilterEnabled,
     policy_prefs::kUrlParamFilterEnabled,

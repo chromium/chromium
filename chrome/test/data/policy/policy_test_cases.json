@@ -15797,6 +15797,37 @@
       }
     ]
   },
+  "ScreenTimeEnabled": {
+    "os": [
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.screen_time_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": { "ScreenTimeEnabled": true },
+        "prefs": {
+          "policy.screen_time_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": { "ScreenTimeEnabled": false },
+        "prefs": {
+          "policy.screen_time_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "ShowFullUrlsInAddressBar": {
     "os": [
       "win",
@@ -18301,4 +18332,3 @@
   ]
 }
 }
-
