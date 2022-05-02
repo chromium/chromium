@@ -119,7 +119,7 @@ class CORE_EXPORT SelectorFilter {
 
   // With 100 unique strings in the filter, 2^12 slot table has false positive
   // rate of ~0.2%.
-  using IdentifierFilter = BloomFilter<12>;
+  using IdentifierFilter = CountingBloomFilter<12>;
   std::unique_ptr<IdentifierFilter> ancestor_identifier_filter_;
 };
 
