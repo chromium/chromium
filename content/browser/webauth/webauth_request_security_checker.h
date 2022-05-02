@@ -39,6 +39,13 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     kGetPaymentCredentialAssertion
   };
 
+  // Legacy App IDs, which google.com origins are allowed to assert for
+  // compatibility reasons.
+  static constexpr char kGstaticAppId[] =
+      "https://www.gstatic.com/securitykey/origins.json";
+  static constexpr char kGstaticCorpAppId[] =
+      "https://www.gstatic.com/securitykey/a/google.com/origins.json";
+
   explicit WebAuthRequestSecurityChecker(RenderFrameHost* host);
   WebAuthRequestSecurityChecker(const WebAuthRequestSecurityChecker&) = delete;
 
@@ -62,6 +69,10 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // Returns AuthenticatorStatus::SUCCESS if the origin domain is valid under
   // the referenced definitions, and also the requested RP ID is a registrable
   // domain suffix of, or is equal to, the origin's effective domain.
+  //
+  // If `remote_destop_client_override` is non-null, this method also validates
+  // whether `caller_origin` is authorized to use that extension.
+  //
   // References:
   //   https://url.spec.whatwg.org/#valid-domain-string
   //   https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain
@@ -72,6 +83,21 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       RequestType request_type,
       const blink::mojom::RemoteDesktopClientOverridePtr&
           remote_desktop_client_override);
+
+  // Validates whether `caller_origin` is authorized to claim the U2F AppID
+  // `appid`, which per U2F's processing rules may be empty.
+  // If `remote_destop_client_override` is non-null, this method also validates
+  // whether `caller_origin` is authorized to use that extension.
+  //
+  // On success, this method returns `AuthenticatorStatus::SUCCESS` and sets
+  // `out_app_id` to the AppID to use for the request. Otherwise, returns an
+  // error which should be passed to the renderer.
+  blink::mojom::AuthenticatorStatus ValidateAppIdExtension(
+      std::string appid,
+      url::Origin caller_origin,
+      const blink::mojom::RemoteDesktopClientOverridePtr&
+          remote_desktop_client_override,
+      std::string* out_app_id);
 
   // Checks whether a given URL is an a-priori authenticated URL.
   // https://w3c.github.io/webappsec-credential-management/#dom-credentialuserdata-iconurl

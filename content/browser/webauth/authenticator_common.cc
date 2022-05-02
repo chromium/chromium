@@ -92,11 +92,6 @@ enum class RequestExtension {
 
 namespace {
 
-constexpr char kGstaticAppId[] =
-    "https://www.gstatic.com/securitykey/origins.json";
-constexpr char kGstaticCorpAppId[] =
-    "https://www.gstatic.com/securitykey/a/google.com/origins.json";
-
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -108,106 +103,6 @@ std::string Base64UrlEncode(const base::span<const uint8_t> input) {
                         input.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
   return ret;
-}
-
-// Validates whether the given origin is authorized to use the provided App
-// ID value, mostly according to the rules in
-// https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-appid-and-facets-v1.2-ps-20170411.html#determining-if-a-caller-s-facetid-is-authorized-for-an-appid.
-//
-// Returns the App ID to use for the request, or absl::nullopt if the origin
-// is not authorized to use the provided value.
-absl::optional<std::string> ProcessAppIdExtension(
-    content::BrowserContext* browser_context,
-    std::string appid,
-    url::Origin caller_origin,
-    const blink::mojom::RemoteDesktopClientOverridePtr&
-        remote_desktop_client_override) {
-  // The CryptoToken U2F extension checks the appid before calling the WebAuthn
-  // API so there is no need to validate it here.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin)) {
-    DCHECK(!remote_desktop_client_override);
-    if (!GURL(appid).is_valid()) {
-      DCHECK(false) << "cryptotoken request did not set a valid App ID";
-      return absl::nullopt;
-    }
-    return appid;
-  }
-
-  if (remote_desktop_client_override) {
-    if (!GetContentClient()
-             ->browser()
-             ->GetWebAuthenticationDelegate()
-             ->OriginMayUseRemoteDesktopClientOverride(browser_context,
-                                                       caller_origin)) {
-      return absl::nullopt;
-    }
-    caller_origin = remote_desktop_client_override->origin;
-  }
-
-  // Step 1: "If the AppID is not an HTTPS URL, and matches the FacetID of the
-  // caller, no additional processing is necessary and the operation may
-  // proceed."
-
-  // Webauthn is only supported on secure origins and |ValidateEffectiveDomain|
-  // has already checked this property of |caller_origin| before this call. Thus
-  // this step is moot.
-  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
-  DCHECK(network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL()));
-
-  // Step 2: "If the AppID is null or empty, the client must set the AppID to be
-  // the FacetID of the caller, and the operation may proceed without additional
-  // processing."
-  if (appid.empty()) {
-    // While the U2F spec says to default the App ID to the Facet ID, which is
-    // the origin plus a trailing forward slash [1], cryptotoken and Firefox
-    // just use the site's Origin without trailing slash. We follow their
-    // implementations rather than the spec.
-    //
-    // [1]https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-appid-and-facets-v2.0-id-20180227.html#determining-the-facetid-of-a-calling-application
-    appid = caller_origin.Serialize();
-  }
-
-  // Step 3: "If the caller's FacetID is an https:// Origin sharing the same
-  // host as the AppID, (e.g. if an application hosted at
-  // https://fido.example.com/myApp set an AppID of
-  // https://fido.example.com/myAppId), no additional processing is necessary
-  // and the operation may proceed."
-  GURL appid_url = GURL(appid);
-  if (!appid_url.is_valid() || appid_url.scheme() != url::kHttpsScheme ||
-      appid_url.scheme_piece() != caller_origin.scheme()) {
-    return absl::nullopt;
-  }
-
-  // This check is repeated inside |SameDomainOrHost|, just after this. However
-  // it's cheap and mirrors the structure of the spec.
-  if (appid_url.host_piece() == caller_origin.host()) {
-    return appid;
-  }
-
-  // At this point we diverge from the specification in order to avoid the
-  // complexity of making a network request which isn't believed to be
-  // necessary in practice. See also
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1244959#c8
-  if (net::registry_controlled_domains::SameDomainOrHost(
-          appid_url, caller_origin,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    return appid;
-  }
-
-  // As a compatibility hack, sites within google.com are allowed to assert two
-  // special-case AppIDs. Firefox also does this:
-  // https://groups.google.com/forum/#!msg/mozilla.dev.platform/Uiu3fwnA2xw/201ynAiPAQAJ
-  const GURL gstatic_appid(kGstaticAppId);
-  const GURL gstatic_corp_appid(kGstaticCorpAppId);
-  DCHECK(gstatic_appid.is_valid() && gstatic_corp_appid.is_valid());
-  if (caller_origin.DomainIs("google.com") && !appid_url.has_ref() &&
-      (appid_url.EqualsIgnoringRef(gstatic_appid) ||
-       appid_url.EqualsIgnoringRef(gstatic_corp_appid))) {
-    return appid;
-  }
-
-  return absl::nullopt;
 }
 
 // Returns an App ID string if a U2F credential must be made for the request
@@ -226,9 +121,9 @@ absl::optional<std::string> MakeCredentialU2fAppIdOverride(
   if (options->google_legacy_app_id_support &&
       options->relying_party.id == "google.com") {
     if (caller_origin.DomainIs("login.corp.google.com")) {
-      return kGstaticCorpAppId;
+      return WebAuthRequestSecurityChecker::kGstaticCorpAppId;
     }
-    return kGstaticAppId;
+    return WebAuthRequestSecurityChecker::kGstaticAppId;
   }
   return absl::nullopt;
 }
@@ -695,14 +590,17 @@ void AuthenticatorCommon::MakeCredential(
 
   absl::optional<std::string> appid_exclude;
   if (options->appid_exclude) {
-    appid_exclude = ProcessAppIdExtension(
-        GetRenderFrameHost()->GetBrowserContext(), *options->appid_exclude,
-        caller_origin, options->remote_desktop_client_override);
-    if (!appid_exclude) {
-      CompleteMakeCredentialRequest(
-          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
+    appid_exclude = "";
+    auto status = security_checker_->ValidateAppIdExtension(
+        *options->appid_exclude, caller_origin,
+        options->remote_desktop_client_override, &appid_exclude.value());
+    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      CompleteMakeCredentialRequest(status);
       return;
     }
+    // `ValidateAppidExtension` must have set a value to use. If not, it would
+    // be a security bug, so crashing seems appropriate here.
+    CHECK(!appid_exclude->empty());
   }
 
   // If there is an active webAuthenticationProxy extension, let it handle the
@@ -1020,14 +918,18 @@ void AuthenticatorCommon::GetAssertion(
 
   if (options->appid) {
     requested_extensions_.insert(RequestExtension::kAppID);
-    app_id_ = ProcessAppIdExtension(GetRenderFrameHost()->GetBrowserContext(),
-                                    *options->appid, caller_origin_,
-                                    options->remote_desktop_client_override);
-    if (!app_id_) {
-      CompleteGetAssertionRequest(
-          blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
+    std::string app_id;
+    auto status = security_checker_->ValidateAppIdExtension(
+        *options->appid, caller_origin, options->remote_desktop_client_override,
+        &app_id);
+    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      CompleteGetAssertionRequest(status);
       return;
     }
+    // `ValidateAppidExtension` must have set a value to use. If not, it would
+    // be a security bug, so crashing seems appropriate here.
+    CHECK(!app_id.empty());
+    app_id_ = app_id;
   }
 
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
