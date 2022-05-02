@@ -4158,6 +4158,8 @@ static_library("ui") {
       "views/bookmarks/bookmark_menu_controller_views.h",
       "views/bookmarks/bookmark_menu_delegate.cc",
       "views/bookmarks/bookmark_menu_delegate.h",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_bar.cc",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_bar.h",
       "views/bookmarks/saved_tab_groups/saved_tab_group_button.cc",
       "views/bookmarks/saved_tab_groups/saved_tab_group_button.h",
       "views/browser_commands_views.cc",

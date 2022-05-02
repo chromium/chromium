@@ -1,0 +1,104 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
+
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/views/view_utils.h"
+
+namespace {
+
+SavedTabGroup kSavedTabGroup1(tab_groups::TabGroupId::GenerateNew(),
+                              std::u16string(u"test_title_1"),
+                              tab_groups::TabGroupColorId::kGrey,
+                              {});
+
+SavedTabGroup kSavedTabGroup2(tab_groups::TabGroupId::GenerateNew(),
+                              std::u16string(u"test_title_2"),
+                              tab_groups::TabGroupColorId::kGrey,
+                              {});
+
+std::u16string kNewTitle(u"kNewTitle");
+
+tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
+
+}  // anonymous namespace
+
+class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
+ public:
+  SavedTabGroupBarUnitTest()
+      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {}
+
+  SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
+  SavedTabGroupModel* saved_tab_group_model() {
+    return saved_tab_group_model_.get();
+  }
+
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+
+    saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
+    saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(
+        nullptr, saved_tab_group_model(), false);
+  }
+
+  void TearDown() override {
+    saved_tab_group_bar_.reset();
+    saved_tab_group_model_.reset();
+
+    ChromeViewsTestBase::TearDown();
+  }
+
+ private:
+  std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
+  std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
+};
+
+TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
+  // Verify the initial count of saved tab group buttons.
+  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+}
+
+TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+
+  SavedTabGroupBar another_tab_group_bar_on_same_model(
+      nullptr, saved_tab_group_model(), false);
+
+  EXPECT_EQ(saved_tab_group_bar()->children().size(),
+            another_tab_group_bar_on_same_model.children().size());
+}
+
+TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+
+  // Remove the group and expect no buttons.
+  saved_tab_group_model()->Remove(kSavedTabGroup1.group_id);
+  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
+}
+
+TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+  saved_tab_group_model()->Add(kSavedTabGroup2);
+
+  tab_groups::TabGroupVisualData saved_tab_group_visual_data(kNewTitle,
+                                                             kNewColor);
+
+  // Update the visual_data and expect the first button to be updated and the
+  // second button to stay the same.
+  saved_tab_group_model()->Update(kSavedTabGroup1.group_id,
+                                  &saved_tab_group_visual_data);
+
+  SavedTabGroupButton* new_button_1 = views::AsViewClass<SavedTabGroupButton>(
+      saved_tab_group_bar()->children()[0]);
+  ASSERT_TRUE(!!new_button_1);
+
+  EXPECT_EQ(new_button_1->GetText(), kNewTitle);
+  EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
+}

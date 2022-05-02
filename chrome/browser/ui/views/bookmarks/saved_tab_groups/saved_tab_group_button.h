@@ -45,6 +45,10 @@ class SavedTabGroupButton : public views::MenuButton {
   void RemoveButtonOutline();
   bool HasButtonOutline() const;
 
+  tab_groups::TabGroupColorId tab_group_color_id() {
+    return tab_group_color_id_;
+  }
+
  private:
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;

@@ -7063,6 +7063,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_BOOKMARKS" desc="The accessible name for the Bookmarks toolbar.">
         Bookmarks
       </message>
+      <message name="IDS_ACCNAME_SAVED_TAB_GROUPS" desc="The accessible name for the area in the bookmarks bar for saved tab groups.">
+        Saved Tab Groups
+      </message>
       <message name="IDS_ACCNAME_BOOKMARKS_CHEVRON" desc="The accessible name for the chevron visible if not all the bookmark buttons fit.">
         Menu containing hidden bookmarks
       </message>
