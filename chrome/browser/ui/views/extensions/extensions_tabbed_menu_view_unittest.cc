@@ -531,7 +531,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
 // TODO(crbug.com/1304959): Test is flaky.
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
-       InstalledTab_AddAndRemoveExtensionWhenMenuIsOpen) {
+       DISABLED_InstalledTab_AddAndRemoveExtensionWhenMenuIsOpen) {
   constexpr char kExtensionA[] = "A Extension";
   constexpr char kExtensionC[] = "C Extension";
   InstallExtension(kExtensionA);
@@ -748,7 +748,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 // TODO(crbug.com/1304951): Test is flaky.
 TEST_F(
     ExtensionsTabbedMenuViewUnitTest,
-    SiteAccessTab_ExtensionInCorrectSiteAccessSectionAfterChangingSiteAccessUsingCombobox) {
+    DISABLED_SiteAccessTab_ExtensionInCorrectSiteAccessSectionAfterChangingSiteAccessUsingCombobox) {
   constexpr char kExtensionName[] = "Has Access Extension";
   InstallExtensionWithHostPermissions(kExtensionName, {"<all_urls>"});
 
@@ -1046,7 +1046,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   EXPECT_FALSE(site_settings->GetVisible());
 }
 
-TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_SelectSiteSetting) {
+// TODO(crbug.com/1304959): Test is flaky.
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       DISABLED_SiteAccessTab_SelectSiteSetting) {
   auto extensionA =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extensionB =
