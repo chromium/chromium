@@ -277,7 +277,7 @@ source_set("scheduler_fuzzer_tests") {
     "//third_party/blink/renderer/platform/scheduler:test_support",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "test/fuzzer/sequence_manager_fuzzer_processor.cc",
       "test/fuzzer/sequence_manager_fuzzer_processor.h",
