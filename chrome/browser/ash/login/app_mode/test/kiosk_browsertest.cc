@@ -37,7 +37,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
@@ -56,8 +57,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -99,9 +98,7 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "media/audio/test_audio_thread.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/audio/public/cpp/fake_system_info.h"
@@ -115,17 +112,8 @@
 namespace ash {
 namespace {
 
-namespace em = ::enterprise_management;
-
 const test::UIPath kErrorMessageContinueButton = {"error-message",
                                                   "continueButton"};
-
-// This app creates a window and declares usage of the identity API in its
-// manifest, so we can test device robot token minting via the identity API.
-// Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/gcpjojfkologpegommokeppihdbcnahn
-const char kTestEnterpriseKioskApp[] = "gcpjojfkologpegommokeppihdbcnahn";
 
 // An offline enable test app. Webstore data json is in
 //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
@@ -211,15 +199,6 @@ const char kFakeUsbMountPathLowerCrxVersion[] =
 const char kFakeUsbMountPathBadCrx[] =
     "chromeos/app_mode/external_update/bad_crx";
 
-const char kTestEnterpriseAccountId[] = "enterprise-kiosk-app@localhost";
-const char kTestEnterpriseServiceAccountId[] = "service_account@example.com";
-const char kTestRefreshToken[] = "fake-refresh-token";
-const char kTestUserinfoToken[] = "fake-userinfo-token";
-const char kTestLoginToken[] = "fake-login-token";
-const char kTestAccessToken[] = "fake-access-token";
-const char kTestClientId[] = "fake-client-id";
-const char kTestAppScope[] = "https://www.googleapis.com/auth/userinfo.profile";
-
 bool IsAppInstalled(const std::string& app_id, const std::string& version) {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(app_profile);
@@ -267,113 +246,6 @@ class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
 
  private:
   std::string usb_mount_path_;
-};
-
-class AppDataLoadWaiter : public KioskAppManagerObserver {
- public:
-  AppDataLoadWaiter(KioskAppManager* manager,
-                    const std::string& app_id,
-                    const std::string& version)
-      : runner_(nullptr),
-        manager_(manager),
-        wait_type_(WAIT_FOR_CRX_CACHE),
-        loaded_(false),
-        quit_(false),
-        app_id_(app_id),
-        version_(version) {
-    manager_->AddObserver(this);
-  }
-
-  AppDataLoadWaiter(const AppDataLoadWaiter&) = delete;
-  AppDataLoadWaiter& operator=(const AppDataLoadWaiter&) = delete;
-
-  ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
-
-  void Wait() {
-    wait_type_ = WAIT_FOR_CRX_CACHE;
-    if (quit_)
-      return;
-    runner_ = new content::MessageLoopRunner;
-    runner_->Run();
-  }
-
-  void WaitForAppData() {
-    wait_type_ = WAIT_FOR_APP_DATA;
-    if (quit_ || IsAppDataLoaded())
-      return;
-    runner_ = new content::MessageLoopRunner;
-    runner_->Run();
-  }
-
-  bool loaded() const { return loaded_; }
-
- private:
-  enum WaitType {
-    WAIT_FOR_CRX_CACHE,
-    WAIT_FOR_APP_DATA,
-  };
-
-  // KioskAppManagerObserver overrides:
-  void OnKioskAppDataChanged(const std::string& app_id) override {
-    if (wait_type_ != WAIT_FOR_APP_DATA || app_id != app_id_ ||
-        !IsAppDataLoaded()) {
-      return;
-    }
-
-    loaded_ = true;
-    quit_ = true;
-    if (runner_.get())
-      runner_->Quit();
-  }
-
-  void OnKioskAppDataLoadFailure(const std::string& app_id) override {
-    if (wait_type_ != WAIT_FOR_APP_DATA || app_id != app_id_)
-      return;
-
-    loaded_ = false;
-    quit_ = true;
-    if (runner_.get())
-      runner_->Quit();
-  }
-
-  void OnKioskExtensionLoadedInCache(const std::string& app_id) override {
-    if (wait_type_ != WAIT_FOR_CRX_CACHE)
-      return;
-
-    std::string cached_version;
-    base::FilePath file_path;
-    if (!manager_->GetCachedCrx(app_id_, &file_path, &cached_version))
-      return;
-    if (version_ != cached_version)
-      return;
-    loaded_ = true;
-    quit_ = true;
-    if (runner_.get())
-      runner_->Quit();
-  }
-
-  void OnKioskExtensionDownloadFailed(const std::string& app_id) override {
-    if (wait_type_ != WAIT_FOR_CRX_CACHE)
-      return;
-
-    loaded_ = false;
-    quit_ = true;
-    if (runner_.get())
-      runner_->Quit();
-  }
-
-  bool IsAppDataLoaded() {
-    KioskAppManager::App app;
-    return manager_->GetApp(app_id_, &app) && !app.is_loading;
-  }
-
-  scoped_refptr<content::MessageLoopRunner> runner_;
-  KioskAppManager* manager_;
-  WaitType wait_type_;
-  bool loaded_;
-  bool quit_;
-  std::string app_id_;
-  std::string version_;
 };
 
 // Replaces settings urls for KioskSettingsNavigationThrottle.
@@ -596,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, ZoomSupport) {
 
   // Terminate the app.
   window->GetBaseWindow()->Close();
-  content::RunAllPendingInMessageLoop();
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
@@ -1234,7 +1106,7 @@ class KioskUpdateTest : public KioskBaseTest {
     set_test_crx_file(crx_file);
 
     KioskAppManager* manager = KioskAppManager::Get();
-    AppDataLoadWaiter waiter(manager, app_id, version);
+    TestAppDataLoadWaiter waiter(manager, app_id, version);
     ReloadKioskApps();
     if (wait_for_app_data)
       waiter.WaitForAppData();
@@ -1254,7 +1126,7 @@ class KioskUpdateTest : public KioskBaseTest {
     SetupTestAppUpdateCheck();
 
     KioskAppManager* manager = KioskAppManager::Get();
-    AppDataLoadWaiter waiter(manager, test_app_id(), version);
+    TestAppDataLoadWaiter waiter(manager, test_app_id(), version);
     KioskAppManager::Get()->UpdateExternalCache();
     waiter.Wait();
     EXPECT_TRUE(waiter.loaded());
@@ -1425,7 +1297,7 @@ class KioskUpdateTest : public KioskBaseTest {
     void Wait() {
       if (quit_)
         return;
-      runner_ = new content::MessageLoopRunner;
+      runner_ = std::make_unique<base::RunLoop>();
       runner_->Run();
     }
 
@@ -1448,7 +1320,7 @@ class KioskUpdateTest : public KioskBaseTest {
         runner_->Quit();
     }
 
-    scoped_refptr<content::MessageLoopRunner> runner_;
+    std::unique_ptr<base::RunLoop> runner_;
     KioskAppManager* manager_;
     const std::string app_id_;
     bool quit_;
@@ -1989,165 +1861,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
   LaunchKioskWithSecondaryApps(primary_app, secondary_apps);
 }
 
-class KioskEnterpriseTest : public KioskBaseTest {
- public:
-  KioskEnterpriseTest(const KioskEnterpriseTest&) = delete;
-  KioskEnterpriseTest& operator=(const KioskEnterpriseTest&) = delete;
-
- protected:
-  KioskEnterpriseTest() { set_use_consumer_kiosk_mode(false); }
-
-  // KioskBaseTest:
-  void SetUpOnMainThread() override {
-    KioskBaseTest::SetUpOnMainThread();
-
-    // Configure OAuth authentication.
-    GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
-
-    // This token satisfies the userinfo.email request from
-    // DeviceOAuth2TokenService used in token validation.
-    FakeGaia::AccessTokenInfo userinfo_token_info;
-    userinfo_token_info.token = kTestUserinfoToken;
-    userinfo_token_info.scopes.insert(
-        "https://www.googleapis.com/auth/userinfo.email");
-    userinfo_token_info.audience = gaia_urls->oauth2_chrome_client_id();
-    userinfo_token_info.email = kTestEnterpriseServiceAccountId;
-    fake_gaia_.fake_gaia()->IssueOAuthToken(kTestRefreshToken,
-                                            userinfo_token_info);
-
-    // The any-api access token for accessing the token minting endpoint.
-    FakeGaia::AccessTokenInfo login_token_info;
-    login_token_info.token = kTestLoginToken;
-    login_token_info.scopes.insert(GaiaConstants::kAnyApiOAuth2Scope);
-    login_token_info.audience = gaia_urls->oauth2_chrome_client_id();
-    fake_gaia_.fake_gaia()->IssueOAuthToken(kTestRefreshToken,
-                                            login_token_info);
-
-    // This is the access token requested by the app via the identity API.
-    FakeGaia::AccessTokenInfo access_token_info;
-    access_token_info.token = kTestAccessToken;
-    access_token_info.scopes.insert(kTestAppScope);
-    access_token_info.audience = kTestClientId;
-    access_token_info.email = kTestEnterpriseServiceAccountId;
-    fake_gaia_.fake_gaia()->IssueOAuthToken(kTestLoginToken, access_token_info);
-
-    DeviceOAuth2TokenService* token_service =
-        DeviceOAuth2TokenServiceFactory::Get();
-    token_service->SetAndSaveRefreshToken(
-        kTestRefreshToken, DeviceOAuth2TokenService::StatusCallback());
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void ConfigureKioskAppInPolicy(const std::string& account_id,
-                                 const std::string& app_id,
-                                 const std::string& update_url) {
-    std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.push_back(
-        policy::DeviceLocalAccount(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-                                   account_id, app_id, update_url));
-    policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
-    settings_helper_.SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
-                               account_id);
-    settings_helper_.SetString(kServiceAccountIdentity,
-                               kTestEnterpriseServiceAccountId);
-  }
-
- private:
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-};
-
-IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
-  // Prepare Fake CWS to serve app crx.
-  set_test_app_id(kTestEnterpriseKioskApp);
-  set_test_app_version("1.0.0");
-  set_test_crx_file(test_app_id() + ".crx");
-  SetupTestAppUpdateCheck();
-
-  // Configure kTestEnterpriseKioskApp in device policy.
-  ConfigureKioskAppInPolicy(kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
-                            "");
-
-  PrepareAppLaunch();
-  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskApp));
-
-  KioskSessionInitializedWaiter().Wait();
-
-  // Check installer status.
-  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
-  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
-
-  // Wait for the window to appear.
-  extensions::AppWindow* window =
-      apps::AppWindowWaiter(extensions::AppWindowRegistry::Get(
-                                ProfileManager::GetPrimaryUserProfile()),
-                            kTestEnterpriseKioskApp)
-          .Wait();
-  ASSERT_TRUE(window);
-  EXPECT_TRUE(content::WaitForLoadStop(window->web_contents()));
-
-  // Check whether the app can retrieve an OAuth2 access token.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      window->web_contents(),
-      "chrome.identity.getAuthToken({ 'interactive': false }, function(token) {"
-      "    window.domAutomationController.send(token);"
-      "});",
-      &result));
-  EXPECT_EQ(kTestAccessToken, result);
-
-  // Verify that the session is not considered to be logged in with a GAIA
-  // account.
-  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_TRUE(app_profile);
-  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(app_profile)
-                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Terminate the app.
-  window->GetBaseWindow()->Close();
-  content::RunAllPendingInMessageLoop();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
-  set_test_app_id(kTestEnterpriseKioskApp);
-
-  const char kPrivateStoreUpdate[] = "/private_store_update";
-  net::EmbeddedTestServer private_server;
-
-  // `private_server` serves crx from test data dir.
-  base::FilePath test_data_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  private_server.ServeFilesFromDirectory(test_data_dir);
-  ASSERT_TRUE(private_server.InitializeAndListen());
-
-  FakeCWS private_store;
-  private_store.InitAsPrivateStore(&private_server, kPrivateStoreUpdate);
-  private_store.SetUpdateCrx(kTestEnterpriseKioskApp,
-                             std::string(kTestEnterpriseKioskApp) + ".crx",
-                             "1.0.0");
-
-  private_server.StartAcceptingConnections();
-
-  // Configure kTestEnterpriseKioskApp in device policy.
-  ConfigureKioskAppInPolicy(kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
-                            private_server.GetURL(kPrivateStoreUpdate).spec());
-
-  // Meta should be able to be extracted from crx before launching.
-  KioskAppManager* manager = KioskAppManager::Get();
-  AppDataLoadWaiter waiter(manager, kTestEnterpriseKioskApp, std::string());
-  waiter.WaitForAppData();
-
-  PrepareAppLaunch();
-  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskApp));
-  WaitForAppLaunchWithOptions(false /* check_launch_data */,
-                              true /* terminate_app */);
-
-  // Private store should serve crx and CWS should not.
-  DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
-  DCHECK_EQ(0, fake_cws()->GetUpdateCheckCountAndReset());
-  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
-}
-
 // A custom SoundsManagerTestImpl implements Initialize and Play only.
 // The difference with audio::SoundsManagerImpl is AudioStreamHandler is
 // only initialized upon Play is called, so the most recent AudioManager
@@ -2286,9 +1999,9 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
 
     // Add a new device local account and set its id for auto login.
     std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.push_back(policy::DeviceLocalAccount(
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP, kTestEnterpriseAccountId,
-        kTestEnterpriseKioskApp, ""));
+    accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+                          kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
+                          "");
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
     scoped_testing_cros_settings_.device_settings()->SetString(
         kAccountsPrefDeviceLocalAccountAutoLoginId, kTestEnterpriseAccountId);

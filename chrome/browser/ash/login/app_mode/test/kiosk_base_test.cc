@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/app_mode/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 
 #include <string>
 #include <utility>
@@ -61,6 +61,9 @@ void OnNetworkWaitTimedOut(base::OnceClosure runner_quit_task) {
 }
 
 }  // namespace
+
+const char kTestEnterpriseKioskApp[] = "gcpjojfkologpegommokeppihdbcnahn";
+const char kTestEnterpriseAccountId[] = "enterprise-kiosk-app@localhost";
 
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
 const char kSizeChangedMessage[] = "size_changed";

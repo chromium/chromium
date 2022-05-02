@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_BASE_TEST_H_
-#define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_BASE_TEST_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_BASE_TEST_H_
+#define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_BASE_TEST_H_
 
 #include <memory>
 #include <string>
@@ -27,6 +27,15 @@
 namespace ash {
 
 using ::extensions::mojom::ManifestLocation;
+
+// This app creates a window and declares usage of the identity API in its
+// manifest, so we can test device robot token minting via the identity API.
+// Webstore data json is in
+//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
+//       detail/gcpjojfkologpegommokeppihdbcnahn
+extern const char kTestEnterpriseKioskApp[];
+
+extern const char kTestEnterpriseAccountId[];
 
 extern const test::UIPath kConfigNetwork;
 extern const char kSizeChangedMessage[];
@@ -147,4 +156,4 @@ class KioskBaseTest : public OobeBaseTest {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_BASE_TEST_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_BASE_TEST_H_
