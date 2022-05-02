@@ -16,4 +16,8 @@ NetworkListWifiHeaderView::NetworkListWifiHeaderView(
 
 NetworkListWifiHeaderView::~NetworkListWifiHeaderView() = default;
 
+const char* NetworkListWifiHeaderView::GetClassName() const {
+  return "NetworkListWifiHeaderView";
+}
+
 }  // namespace ash

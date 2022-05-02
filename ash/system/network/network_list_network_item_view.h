@@ -22,13 +22,14 @@ class ViewClickListener;
 // quick settings.
 class ASH_EXPORT NetworkListNetworkItemView : public NetworkListItemView {
  public:
-  METADATA_HEADER(NetworkListNetworkItemView);
-
   explicit NetworkListNetworkItemView(ViewClickListener* listener);
   NetworkListNetworkItemView(const NetworkListNetworkItemView&) = delete;
   NetworkListNetworkItemView& operator=(const NetworkListNetworkItemView&) =
       delete;
   ~NetworkListNetworkItemView() override;
+
+  // views::View:
+  const char* GetClassName() const override;
 
  private:
   friend class NetworkListNetworkItemViewTest;

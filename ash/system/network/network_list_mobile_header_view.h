@@ -22,6 +22,9 @@ class ASH_EXPORT NetworkListMobileHeaderView
       delete;
   ~NetworkListMobileHeaderView() override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
   virtual void SetAddESimButtonState(bool enabled, bool visible) = 0;
 };
 

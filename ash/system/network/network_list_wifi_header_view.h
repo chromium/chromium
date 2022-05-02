@@ -22,6 +22,9 @@ class ASH_EXPORT NetworkListWifiHeaderView
       delete;
   ~NetworkListWifiHeaderView() override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
   virtual void SetJoinWifiButtonState(bool enabled, bool visible) = 0;
 };
 

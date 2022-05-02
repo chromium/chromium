@@ -16,4 +16,8 @@ NetworkListMobileHeaderView::NetworkListMobileHeaderView(
 
 NetworkListMobileHeaderView::~NetworkListMobileHeaderView() = default;
 
+const char* NetworkListMobileHeaderView::GetClassName() const {
+  return "NetworkListMobileHeaderView";
+}
+
 }  // namespace ash
