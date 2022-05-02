@@ -292,7 +292,7 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+    public Tab getNextTabIfClosed(int id) {
         Tab tabToClose = TabModelUtils.getTabById(this, id);
         Tab currentTab = TabModelUtils.getCurrentTab(this);
         if (tabToClose == null) return currentTab;
@@ -301,14 +301,9 @@ public class TabModelImpl extends TabModelJniBridge {
         Tab adjacentTab = getTabAt((closingTabIndex == 0) ? 1 : closingTabIndex - 1);
         Tab parentTab =
                 findTabInAllTabModels(CriticalPersistedTabData.from(tabToClose).getParentId());
-        Tab nextMostRecentTab = null;
-        if (uponExit) {
-            nextMostRecentTab = TabModelUtils.getMostRecentTab(this, id);
-        }
 
         // Determine which tab to select next according to these rules:
         //   * If closing a background tab, keep the current tab selected.
-        //   * Otherwise, if closing the tab upon exit select the next most recent tab.
         //   * Otherwise, if not in overview mode, select the parent tab if it exists.
         //   * Otherwise, select an adjacent tab if one exists.
         //   * Otherwise, if closing the last incognito tab, select the current normal tab.
@@ -318,8 +313,6 @@ public class TabModelImpl extends TabModelJniBridge {
             nextTab = TabModelUtils.getCurrentTab(mModelDelegate.getCurrentModel());
         } else if (tabToClose != currentTab && currentTab != null && !currentTab.isClosing()) {
             nextTab = currentTab;
-        } else if (nextMostRecentTab != null && !nextMostRecentTab.isClosing()) {
-            nextTab = nextMostRecentTab;
         } else if (parentTab != null && !parentTab.isClosing()
                 && mNextTabPolicySupplier.get() == NextTabPolicy.HIERARCHICAL) {
             nextTab = parentTab;
@@ -605,9 +598,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
         Tab currentTabInModel = TabModelUtils.getCurrentTab(this);
         Tab adjacentTabInModel = getTabAt(closingTabIndex == 0 ? 1 : closingTabIndex - 1);
-        Tab nextTab = recommendedNextTab == null
-                ? getNextTabIfClosed(closingTabId, /*uponExit=*/false)
-                : recommendedNextTab;
+        Tab nextTab =
+                recommendedNextTab == null ? getNextTabIfClosed(closingTabId) : recommendedNextTab;
 
         // TODO(dtrainor): Update the list of undoable tabs instead of committing it.
         if (updatePendingTabClosureManager) commitAllTabClosures();

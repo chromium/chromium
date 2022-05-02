@@ -74,10 +74,9 @@ public interface TabModel extends TabList {
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
      * @param id The ID of tab which would be closed.
-     * @param uponExit If the next tab is being selected upon exit or backgrounding of the app.
      * @return The id of the next tab that would be visible.
      */
-    public Tab getNextTabIfClosed(int id, boolean uponExit);
+    public Tab getNextTabIfClosed(int id);
 
     /**
      * Close multiple tabs on this model.
