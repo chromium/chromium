@@ -162,6 +162,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
 
+  if (!_browser)
+    return;
+
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierSettings];
   [model addItem:[self blockPopupsItem]
@@ -236,6 +239,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewItem*)composeEmailItem {
+  if (!_browser)
+    return nil;
+
   _composeEmailDetailItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
@@ -254,6 +260,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewItem*)openedInAnotherWindowItem {
+  if (!_browser)
+    return nil;
+
   _openedInAnotherWindowItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
@@ -309,6 +318,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  if (!_browser)
+    return;
 
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
@@ -389,6 +400,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Verifies using the navigation stack if this is a return from mailTo settings
 // and this instance should reset |openedMailTo|.
 - (void)checkMailToOwnership {
+  if (!_browser)
+    return;
+
   // Since this doesn't know or have access to the mailTo controller code,
   // it detects if the flow is coming back from it, based on the navigation
   // bar stack items.
@@ -409,6 +423,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self.requestDesktopSetting.value
              ? l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP)
              : l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE);
+}
+
+- (void)settingsWillBeDismissed {
+  [_disablePopupsSetting stop];
+  [_requestDesktopSetting stop];
+  [_linkPreviewEnabled stop];
+  _browser = nullptr;
 }
 
 @end

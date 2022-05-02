@@ -28,6 +28,12 @@ class HostContentSettingsMap;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Stop observing the setting. Can be called before -dealloc to ensure
+// that the setting is no longer observed, even if the object survives
+// the HostContentSettingsMap (e.g. if the reference is captured by a
+// block).
+- (void)stop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
