@@ -171,7 +171,7 @@ void InputMenuView::Init() {
         gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
                       kTitleFontSize, gfx::Font::Weight::MEDIUM),
         /*line_height=*/kHeaderMinHeight);
-    header_view->AddChildView(std::move(menu_title));
+    header_view->AddChildView(menu_title);
 
     game_control_toggle_ =
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
@@ -220,7 +220,7 @@ void InputMenuView::Init() {
         gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
                       kBodyFontSize, gfx::Font::Weight::NORMAL),
         /*line_height=*/kRowMinHeight);
-    customize_view->AddChildView(std::move(key_mapping_label));
+    customize_view->AddChildView(key_mapping_label);
 
     customize_button_ =
         customize_view->AddChildView(std::make_unique<ash::PillButton>(
