@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 class BrowserView;
 class BrowserFrame;
@@ -18,7 +18,7 @@ class DesktopNativeWidgetAura;
 
 class BrowserDesktopWindowTreeHostLacros
     : public BrowserDesktopWindowTreeHost,
-      public views::DesktopWindowTreeHostLinux {
+      public views::DesktopWindowTreeHostLacros {
  public:
   BrowserDesktopWindowTreeHostLacros(
       views::internal::NativeWidgetDelegate* native_widget_delegate,

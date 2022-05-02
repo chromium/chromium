@@ -122,7 +122,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
 using content::BrowserThread;
@@ -410,7 +410,7 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
                              : chromeos::WindowPinType::kNone);
 
   auto* pinned_mode_extension =
-      views::DesktopWindowTreeHostLinux::From(window->GetHost())
+      views::DesktopWindowTreeHostLacros::From(window->GetHost())
           ->GetPinnedModeExtension();
   if (pinned) {
     pinned_mode_extension->Pin(/*trusted=*/true);

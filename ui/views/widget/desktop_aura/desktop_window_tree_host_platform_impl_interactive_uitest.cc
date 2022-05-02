@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host_platform.h"
@@ -20,6 +21,14 @@
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/native_frame_view.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLinux;
+#else
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
+using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLacros;
+#endif
 
 namespace views {
 
@@ -200,26 +209,27 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 };
 
 // Test host that can intercept calls to the real host.
-class TestDesktopWindowTreeHostLinux : public DesktopWindowTreeHostLinux {
+class TestDesktopWindowTreeHostPlatformImpl
+    : public DesktopWindowTreeHostPlatformImpl {
  public:
-  TestDesktopWindowTreeHostLinux(
+  TestDesktopWindowTreeHostPlatformImpl(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura)
-      : DesktopWindowTreeHostLinux(native_widget_delegate,
-                                   desktop_native_widget_aura) {}
+      : DesktopWindowTreeHostPlatformImpl(native_widget_delegate,
+                                          desktop_native_widget_aura) {}
 
-  TestDesktopWindowTreeHostLinux(const TestDesktopWindowTreeHostLinux&) =
-      delete;
-  TestDesktopWindowTreeHostLinux& operator=(
-      const TestDesktopWindowTreeHostLinux&) = delete;
+  TestDesktopWindowTreeHostPlatformImpl(
+      const TestDesktopWindowTreeHostPlatformImpl&) = delete;
+  TestDesktopWindowTreeHostPlatformImpl& operator=(
+      const TestDesktopWindowTreeHostPlatformImpl&) = delete;
 
-  ~TestDesktopWindowTreeHostLinux() override = default;
+  ~TestDesktopWindowTreeHostPlatformImpl() override = default;
 
   // PlatformWindowDelegate:
   // Instead of making these tests friends of the host, override the dispatch
   // method to make it public and nothing else.
   void DispatchEvent(ui::Event* event) override {
-    DesktopWindowTreeHostLinux::DispatchEvent(event);
+    DesktopWindowTreeHostPlatformImpl::DispatchEvent(event);
   }
 
   void ResetCalledMaximize() { called_maximize_ = false; }
@@ -227,7 +237,7 @@ class TestDesktopWindowTreeHostLinux : public DesktopWindowTreeHostLinux {
   // DesktopWindowTreeHost
   void Maximize() override {
     called_maximize_ = true;
-    DesktopWindowTreeHostLinux::Maximize();
+    DesktopWindowTreeHostPlatformImpl::Maximize();
   }
 
  private:
@@ -236,17 +246,17 @@ class TestDesktopWindowTreeHostLinux : public DesktopWindowTreeHostLinux {
 
 }  // namespace
 
-class DesktopWindowTreeHostLinuxTest
+class DesktopWindowTreeHostPlatformImplTest
     : public test::DesktopWidgetTestInteractive {
  public:
-  DesktopWindowTreeHostLinuxTest() = default;
+  DesktopWindowTreeHostPlatformImplTest() = default;
 
-  DesktopWindowTreeHostLinuxTest(const DesktopWindowTreeHostLinuxTest&) =
-      delete;
-  DesktopWindowTreeHostLinuxTest& operator=(
-      const DesktopWindowTreeHostLinuxTest&) = delete;
+  DesktopWindowTreeHostPlatformImplTest(
+      const DesktopWindowTreeHostPlatformImplTest&) = delete;
+  DesktopWindowTreeHostPlatformImplTest& operator=(
+      const DesktopWindowTreeHostPlatformImplTest&) = delete;
 
-  ~DesktopWindowTreeHostLinuxTest() override = default;
+  ~DesktopWindowTreeHostPlatformImplTest() override = default;
 
  protected:
   Widget* BuildTopLevelDesktopWidget(const gfx::Rect& bounds) {
@@ -256,7 +266,7 @@ class DesktopWindowTreeHostLinuxTest
         CreateParams(Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
-    host_ = new TestDesktopWindowTreeHostLinux(toplevel, native_widget);
+    host_ = new TestDesktopWindowTreeHostPlatformImpl(toplevel, native_widget);
     toplevel_params.desktop_window_tree_host = host_;
     toplevel_params.delegate = delegate_;
     toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -307,10 +317,10 @@ class DesktopWindowTreeHostLinuxTest
   }
 
   HitTestWidgetDelegate* delegate_ = nullptr;
-  TestDesktopWindowTreeHostLinux* host_ = nullptr;
+  TestDesktopWindowTreeHostPlatformImpl* host_ = nullptr;
 };
 
-TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, HitTest) {
   gfx::Rect widget_bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(widget_bounds));
   widget->Show();
@@ -407,7 +417,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
 }
 
 // Tests that the window is maximized in response to a double click event.
-TEST_F(DesktopWindowTreeHostLinuxTest, DoubleClickHeaderMaximizes) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, DoubleClickHeaderMaximizes) {
   gfx::Rect bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
   widget->Show();
@@ -440,7 +450,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest, DoubleClickHeaderMaximizes) {
 // Tests that the window does not maximize in response to a double click event,
 // if the first click was to a different target component than that of the
 // second click.
-TEST_F(DesktopWindowTreeHostLinuxTest,
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
        DoubleClickTwoDifferentTargetsDoesntMaximizes) {
   gfx::Rect bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
@@ -471,7 +481,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest,
 
 // Tests that the window does not maximize in response to a double click event,
 // if the double click was interrupted by a right click.
-TEST_F(DesktopWindowTreeHostLinuxTest,
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
        RightClickDuringDoubleClickDoesntMaximize) {
   gfx::Rect bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
@@ -505,7 +515,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest,
 // Test that calling Widget::Deactivate() sets the widget as inactive wrt to
 // Chrome even if it not possible to deactivate the window wrt to the x server.
 // This behavior is required by several interactive_ui_tests.
-TEST_F(DesktopWindowTreeHostLinuxTest, Deactivate) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, Deactivate) {
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   views::test::WidgetActivationWaiter waiter(widget.get(), true);
@@ -529,7 +539,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest, Deactivate) {
 // Chrome attempts to make mouse capture look synchronous on Linux. Test that
 // Chrome synchronously switches the window that mouse events are forwarded to
 // when capture is changed.
-TEST_F(DesktopWindowTreeHostLinuxTest, CaptureEventForwarding) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, CaptureEventForwarding) {
   ui_controls::EnableUIControls();
 
   std::unique_ptr<Widget> widget1(CreateWidget(gfx::Rect(100, 100, 100, 100)));
@@ -605,7 +615,7 @@ TEST_F(DesktopWindowTreeHostLinuxTest, CaptureEventForwarding) {
   window2->RemovePreTargetHandler(&recorder2);
 }
 
-TEST_F(DesktopWindowTreeHostLinuxTest, InputMethodFocus) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   std::unique_ptr<Textfield> textfield(new Textfield);

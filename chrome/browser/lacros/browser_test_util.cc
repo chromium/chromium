@@ -14,7 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 namespace browser_test_util {
 namespace {
@@ -115,9 +115,10 @@ std::string GetWindowId(aura::Window* window) {
   DCHECK(window_tree_host);
   // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
   // aura::WindowTreeHostPlatform.
-  auto* desktop_window_tree_host_linux =
-      views::DesktopWindowTreeHostLinux::From(window_tree_host);
-  return desktop_window_tree_host_linux->platform_window()->GetWindowUniqueId();
+  auto* desktop_window_tree_host_platform =
+      views::DesktopWindowTreeHostLacros::From(window_tree_host);
+  return desktop_window_tree_host_platform->platform_window()
+      ->GetWindowUniqueId();
 }
 
 void WaitForElementCreation(const std::string& element_name) {

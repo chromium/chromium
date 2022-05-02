@@ -64,13 +64,12 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) && defined(USE_OZONE)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#if BUILDFLAG(IS_WIN)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(views::internal::NativeWidgetPrivate*)
@@ -1153,8 +1152,7 @@ void NativeWidgetAura::SetInitialFocus(ui::WindowShowState show_state) {
 // Widget, public:
 
 namespace {
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) && (BUILDFLAG(IS_WIN) || defined(USE_OZONE))
 void CloseWindow(aura::Window* window) {
   if (window) {
     Widget* widget = Widget::GetWidgetForNativeView(window);
@@ -1184,9 +1182,8 @@ void Widget::CloseAllSecondaryWidgets() {
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, 0);
 #endif
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  DesktopWindowTreeHostLinux::CleanUpWindowList(CloseWindow);
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) && defined(USE_OZONE)
+  DesktopWindowTreeHostPlatform::CleanUpWindowList(CloseWindow);
 #endif
 }
 

@@ -15,9 +15,8 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #endif
 
 namespace views {
@@ -70,15 +69,14 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
 
 std::vector<aura::Window*> GetAllTopLevelWindows() {
   std::vector<aura::Window*> roots;
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
-  roots = DesktopWindowTreeHostLinux::GetAllOpenWindows();
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   {
     FindAllWindowsData data = {&roots};
     EnumThreadWindows(GetCurrentThreadId(), FindAllWindowsCallback,
                       reinterpret_cast<LPARAM>(&data));
   }
+#elif BUILDFLAG(ENABLE_DESKTOP_AURA)
+  roots = DesktopWindowTreeHostPlatform::GetAllOpenWindows();
 #endif
   aura::test::AuraTestHelper* aura_test_helper =
       aura::test::AuraTestHelper::GetInstance();

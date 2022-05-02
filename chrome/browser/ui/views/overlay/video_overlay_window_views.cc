@@ -66,7 +66,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/aura/window_tree_host.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
 
 namespace {

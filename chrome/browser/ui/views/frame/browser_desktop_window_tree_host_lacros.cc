@@ -21,8 +21,8 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
     BrowserFrame* browser_frame)
-    : DesktopWindowTreeHostLinux(native_widget_delegate,
-                                 desktop_native_widget_aura),
+    : DesktopWindowTreeHostLacros(native_widget_delegate,
+                                  desktop_native_widget_aura),
       browser_view_(browser_view),
       desktop_native_widget_aura_(desktop_native_widget_aura) {
   auto* native_frame = static_cast<DesktopBrowserFrameLacros*>(
@@ -73,7 +73,7 @@ bool BrowserDesktopWindowTreeHostLacros::SupportsMouseLock() {
 }
 
 void BrowserDesktopWindowTreeHostLacros::LockMouse(aura::Window* window) {
-  DesktopWindowTreeHostLinux::LockMouse(window);
+  DesktopWindowTreeHostLacros::LockMouse(window);
 
   if (SupportsMouseLock()) {
     auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
@@ -82,7 +82,7 @@ void BrowserDesktopWindowTreeHostLacros::LockMouse(aura::Window* window) {
 }
 
 void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
-  DesktopWindowTreeHostLinux::UnlockMouse(window);
+  DesktopWindowTreeHostLacros::UnlockMouse(window);
 
   if (SupportsMouseLock()) {
     auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
@@ -93,8 +93,8 @@ void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
 void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
     ui::PlatformWindowState old_window_show_state,
     ui::PlatformWindowState new_window_show_state) {
-  DesktopWindowTreeHostLinux::OnWindowStateChanged(old_window_show_state,
-                                                   new_window_show_state);
+  DesktopWindowTreeHostLacros::OnWindowStateChanged(old_window_show_state,
+                                                    new_window_show_state);
 
   bool fullscreen_changed =
       new_window_show_state == ui::PlatformWindowState::kFullScreen ||

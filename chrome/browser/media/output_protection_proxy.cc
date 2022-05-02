@@ -19,7 +19,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
 #include "ui/platform_window/platform_window.h"  // nogncheck
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -46,9 +46,9 @@ absl::optional<std::string> GetWindowId(int render_process_id,
   DCHECK(window_tree_host);
   // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
   // aura::WindowTreeHostPlatform.
-  auto* desktop_window_tree_host_linux =
-      views::DesktopWindowTreeHostLinux::From(window_tree_host);
-  return desktop_window_tree_host_linux->platform_window()->GetWindowUniqueId();
+  auto* desktop_window_tree_host =
+      views::DesktopWindowTreeHostLacros::From(window_tree_host);
+  return desktop_window_tree_host->platform_window()->GetWindowUniqueId();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

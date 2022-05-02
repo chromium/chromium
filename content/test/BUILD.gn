@@ -687,9 +687,7 @@ static_library("test_support") {
     ]
   }
 
-  # TODO(crbug.com/1290940): Should Fuchsia use this? If so, the condition can
-  # probably be changed to just `use_ozone`, especially after crbug.com/1293575.
-  if (is_linux || is_chromeos || is_fuchsia) {
+  if (use_ozone) {
     deps += [ "//ui/platform_window/common" ]
   }
 

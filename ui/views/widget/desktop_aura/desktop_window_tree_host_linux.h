@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,17 +23,15 @@ class ScopedWindowTargeter;
 }  // namespace aura
 
 namespace ui {
-class DeskExtension;
-class PinnedModeExtension;
 class X11Extension;
-class WaylandExtension;
 }  // namespace ui
 
 namespace views {
 
 class WindowEventFilterLinux;
 
-// Contains Linux specific implementation.
+// Contains Linux specific implementation, which supports both X11 and Wayland
+// backend.
 class VIEWS_EXPORT DesktopWindowTreeHostLinux
     : public DesktopWindowTreeHostPlatform,
       public ui::X11ExtensionDelegate {
@@ -49,37 +46,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   ~DesktopWindowTreeHostLinux() override;
 
-  // Get all open top-level windows. This includes windows that may not be
-  // visible. This list is sorted in their stacking order, i.e. the first window
-  // is the topmost window.
-  static std::vector<aura::Window*> GetAllOpenWindows();
-
-  // Runs the |func| callback for each content-window, and deallocates the
-  // internal list of open windows.
-  static void CleanUpWindowList(void (*func)(aura::Window* window));
-
-  // Casts from a base WindowTreeHost instance.
-  static DesktopWindowTreeHostLinux* From(WindowTreeHost* wth);
-
   // Returns the current bounds in terms of the X11 Root Window including the
   // borders provided by the window manager (if any). Not in use for Wayland.
   gfx::Rect GetXRootWindowOuterBounds() const;
 
-  // Tells the window manager to lower the |platform_window()| owned by this
-  // host down the stack so that it does not obscure any sibling windows.
-  void LowerWindow();
-
+  // DesktopWindowTreeHostPlatform:
+  void LowerWindow() override;
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
-
-  ui::WaylandExtension* GetWaylandExtension();
-  const ui::WaylandExtension* GetWaylandExtension() const;
-
-  ui::DeskExtension* GetDeskExtension();
-  const ui::DeskExtension* GetDeskExtension() const;
-
-  ui::PinnedModeExtension* GetPinnedModeExtension();
-  const ui::PinnedModeExtension* GetPinnedModeExtension() const;
 
  protected:
   // Overridden from DesktopWindowTreeHost:
@@ -94,17 +68,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // PlatformWindowDelegate:
   void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
-  void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
-  void OnActivationChanged(bool active) override;
 
   ui::X11Extension* GetX11Extension();
   const ui::X11Extension* GetX11Extension() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxTest, HitTest);
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxTest, MouseNCEvents);
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxHighDPITest,
-                           MouseNCEvents);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest, HitTest);
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(
@@ -129,9 +98,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Enables event listening after closing |dialog|.
   void EnableEventListening();
 
-  // See comment for variable open_windows_.
-  static std::list<gfx::AcceleratedWidget>& open_windows();
-
   // A handler for events intended for non client area.
   // A posthandler for events intended for non client area. Handles events if no
   // other consumer handled them.
@@ -142,10 +108,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   std::unique_ptr<aura::ScopedWindowTargeter> targeter_for_modal_;
 
   uint32_t modal_dialog_counter_ = 0;
-
-  // A list of all (top-level) windows that have been created but not yet
-  // destroyed.
-  static std::list<gfx::AcceleratedWidget>* open_windows_;
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLinux> weak_factory_{this};

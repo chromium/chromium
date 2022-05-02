@@ -55,7 +55,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "url/gurl.h"
 
 namespace {
@@ -548,9 +548,9 @@ void BrowserServiceLacros::NewWindowForDetachingTabWithProfile(
   new_browser->window()->Show();
 
   auto* native_window = new_browser->window()->GetNativeWindow();
-  auto* dwth_linux =
-      views::DesktopWindowTreeHostLinux::From(native_window->GetHost());
-  auto* platform_window = dwth_linux->platform_window();
+  auto* dwth_platform =
+      views::DesktopWindowTreeHostLacros::From(native_window->GetHost());
+  auto* platform_window = dwth_platform->platform_window();
   std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess,
                           platform_window->GetWindowUniqueId());
 }

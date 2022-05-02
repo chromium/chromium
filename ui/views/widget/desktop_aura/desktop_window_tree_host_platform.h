@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_PLATFORM_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_PLATFORM_H_
 
+#include <list>
 #include <memory>
 #include <set>
 #include <string>
@@ -48,6 +49,15 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // A way of converting a |widget| into this object.
   static DesktopWindowTreeHostPlatform* GetHostForWidget(
       gfx::AcceleratedWidget widget);
+
+  // Get all open top-level windows. This includes windows that may not be
+  // visible. This list is sorted in their stacking order, i.e. the first window
+  // is the topmost window.
+  static std::vector<aura::Window*> GetAllOpenWindows();
+
+  // Runs the |func| callback for each content-window, and deallocates the
+  // internal list of open windows.
+  static void CleanUpWindowList(void (*func)(aura::Window* window));
 
   // Accessor for DesktopNativeWidgetAura::content_window().
   aura::Window* GetContentWindow();
@@ -130,6 +140,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
   void OnCloseRequest() override;
+  void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
   void OnWillDestroyAcceleratedWidget() override;
   void OnActivationChanged(bool active) override;
   absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
@@ -148,7 +159,22 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
     return window_parent_;
   }
 
+  // Tells the window manager to lower the |platform_window()| owned by this
+  // host down the stack so that it does not obscure any sibling windows.
+  // This is supported when running on x11
+  virtual void LowerWindow() {}
+
  protected:
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
+                           MouseNCEvents);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplHighDPITest,
+                           MouseNCEvents);
+
+  // See comment for variable open_windows_.
+  static std::list<gfx::AcceleratedWidget>& open_windows();
+
+  static bool has_open_windows();
+
   // These are not general purpose methods and must be used with care. Please
   // make sure you understand the rounding direction before using.
   gfx::Rect ToDIPRect(const gfx::Rect& rect_in_pixels) const;

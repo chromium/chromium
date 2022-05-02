@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 namespace policy {
 

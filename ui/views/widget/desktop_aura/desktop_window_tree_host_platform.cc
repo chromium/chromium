@@ -4,11 +4,13 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -46,6 +48,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(DesktopWindowTreeHostPlatform*,
                              nullptr)
 
 namespace {
+
+// A list of all (top-level) windows that have been created but not yet
+// destroyed.
+std::list<gfx::AcceleratedWidget>* open_windows_ = nullptr;
 
 bool DetermineInactivity(ui::WindowShowState show_state) {
   if (show_state != ui::SHOW_STATE_DEFAULT &&
@@ -201,6 +207,30 @@ DesktopWindowTreeHostPlatform* DesktopWindowTreeHostPlatform::GetHostForWidget(
   aura::WindowTreeHost* host =
       aura::WindowTreeHost::GetForAcceleratedWidget(widget);
   return host ? host->window()->GetProperty(kHostForRootWindow) : nullptr;
+}
+
+// static
+std::vector<aura::Window*> DesktopWindowTreeHostPlatform::GetAllOpenWindows() {
+  std::vector<aura::Window*> windows(open_windows().size());
+  std::transform(open_windows().begin(), open_windows().end(), windows.begin(),
+                 DesktopWindowTreeHostPlatform::GetContentWindowForWidget);
+  return windows;
+}
+
+// static
+void DesktopWindowTreeHostPlatform::CleanUpWindowList(
+    void (*func)(aura::Window* window)) {
+  if (!open_windows_)
+    return;
+  while (!open_windows_->empty()) {
+    gfx::AcceleratedWidget widget = open_windows_->front();
+    func(DesktopWindowTreeHostPlatform::GetContentWindowForWidget(widget));
+    if (!open_windows_->empty() && open_windows_->front() == widget)
+      open_windows_->erase(open_windows_->begin());
+  }
+
+  delete open_windows_;
+  open_windows_ = nullptr;
 }
 
 aura::Window* DesktopWindowTreeHostPlatform::GetContentWindow() {
@@ -751,6 +781,7 @@ void DesktopWindowTreeHostPlatform::HideImpl() {
 }
 
 void DesktopWindowTreeHostPlatform::OnClosed() {
+  open_windows().remove(GetAcceleratedWidget());
   wm::SetWindowMoveClient(window(), nullptr);
   SetWmDropHandler(platform_window(), nullptr);
   desktop_native_widget_aura_->OnHostWillClose();
@@ -787,11 +818,23 @@ void DesktopWindowTreeHostPlatform::OnCloseRequest() {
   GetWidget()->Close();
 }
 
+void DesktopWindowTreeHostPlatform::OnAcceleratedWidgetAvailable(
+    gfx::AcceleratedWidget widget) {
+  DCHECK(!base::Contains(open_windows(), widget));
+  open_windows().push_front(widget);
+  aura::WindowTreeHostPlatform::OnAcceleratedWidgetAvailable(widget);
+}
+
 void DesktopWindowTreeHostPlatform::OnWillDestroyAcceleratedWidget() {
   desktop_native_widget_aura_->OnHostWillClose();
 }
 
 void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
+  if (active) {
+    auto widget = GetAcceleratedWidget();
+    open_windows().remove(widget);
+    open_windows().insert(open_windows().begin(), widget);
+  }
   if (is_active_ == active)
     return;
   is_active_ = active;
@@ -930,5 +973,18 @@ DesktopWindowTreeHost* DesktopWindowTreeHost::Create(
                                            desktop_native_widget_aura);
 }
 #endif
+
+// static
+std::list<gfx::AcceleratedWidget>&
+DesktopWindowTreeHostPlatform::open_windows() {
+  if (!open_windows_)
+    open_windows_ = new std::list<gfx::AcceleratedWidget>();
+  return *open_windows_;
+}
+
+// static
+bool DesktopWindowTreeHostPlatform::has_open_windows() {
+  return !!open_windows_;
+}
 
 }  // namespace views

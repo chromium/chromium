@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
 #include <utility>
 
@@ -14,6 +14,9 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
+
+// This tests the wayland and linux(x11) implementation of the
+// DesktopWindowTreeHostPlatform.
 
 namespace {
 // A NonClientFrameView with a window mask with the bottom right corner cut out.
@@ -109,14 +112,14 @@ class MouseEventRecorder : public ui::EventHandler {
 
 }  // namespace
 
-class DesktopWindowTreeHostLinuxTest : public ViewsTestBase {
+class DesktopWindowTreeHostPlatformImplTest : public ViewsTestBase {
  public:
-  DesktopWindowTreeHostLinuxTest() = default;
-  DesktopWindowTreeHostLinuxTest(const DesktopWindowTreeHostLinuxTest&) =
-      delete;
-  DesktopWindowTreeHostLinuxTest& operator=(
-      const DesktopWindowTreeHostLinuxTest&) = delete;
-  ~DesktopWindowTreeHostLinuxTest() override = default;
+  DesktopWindowTreeHostPlatformImplTest() = default;
+  DesktopWindowTreeHostPlatformImplTest(
+      const DesktopWindowTreeHostPlatformImplTest&) = delete;
+  DesktopWindowTreeHostPlatformImplTest& operator=(
+      const DesktopWindowTreeHostPlatformImplTest&) = delete;
+  ~DesktopWindowTreeHostPlatformImplTest() override = default;
 
   void SetUp() override {
     set_native_widget_type(NativeWidgetType::kDesktop);
@@ -138,7 +141,8 @@ class DesktopWindowTreeHostLinuxTest : public ViewsTestBase {
   }
 };
 
-TEST_F(DesktopWindowTreeHostLinuxTest, ChildWindowDestructionDuringTearDown) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       ChildWindowDestructionDuringTearDown) {
   Widget parent_widget;
   Widget::InitParams parent_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
@@ -158,10 +162,10 @@ TEST_F(DesktopWindowTreeHostLinuxTest, ChildWindowDestructionDuringTearDown) {
   ASSERT_NE(parent_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
             child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   Widget::CloseAllSecondaryWidgets();
-  EXPECT_TRUE(DesktopWindowTreeHostLinux::GetAllOpenWindows().empty());
+  EXPECT_TRUE(DesktopWindowTreeHostPlatform::GetAllOpenWindows().empty());
 }
 
-TEST_F(DesktopWindowTreeHostLinuxTest, MouseNCEvents) {
+TEST_F(DesktopWindowTreeHostPlatformImplTest, MouseNCEvents) {
   std::unique_ptr<Widget> widget = CreateWidget(new ShapedWidgetDelegate());
   widget->Show();
 
@@ -174,13 +178,13 @@ TEST_F(DesktopWindowTreeHostLinuxTest, MouseNCEvents) {
   MouseEventRecorder recorder;
   widget->GetNativeWindow()->AddPreTargetHandler(&recorder);
 
-  auto* host_linux = static_cast<DesktopWindowTreeHostLinux*>(
+  auto* host_platform = static_cast<DesktopWindowTreeHostPlatform*>(
       widget->GetNativeWindow()->GetHost());
-  ASSERT_TRUE(host_linux);
+  ASSERT_TRUE(host_platform);
 
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(500, 500),
                        gfx::PointF(500, 500), base::TimeTicks::Now(), 0, 0, {});
-  host_linux->DispatchEvent(&event);
+  host_platform->DispatchEvent(&event);
 
   ASSERT_EQ(1u, recorder.mouse_events().size());
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, recorder.mouse_events()[0].type());
@@ -189,22 +193,22 @@ TEST_F(DesktopWindowTreeHostLinuxTest, MouseNCEvents) {
   widget->GetNativeWindow()->RemovePreTargetHandler(&recorder);
 }
 
-class DesktopWindowTreeHostLinuxHighDPITest
-    : public DesktopWindowTreeHostLinuxTest {
+class DesktopWindowTreeHostPlatformImplHighDPITest
+    : public DesktopWindowTreeHostPlatformImplTest {
  public:
-  DesktopWindowTreeHostLinuxHighDPITest() = default;
-  ~DesktopWindowTreeHostLinuxHighDPITest() override = default;
+  DesktopWindowTreeHostPlatformImplHighDPITest() = default;
+  ~DesktopWindowTreeHostPlatformImplHighDPITest() override = default;
 
  private:
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
 
-    DesktopWindowTreeHostLinuxTest::SetUp();
+    DesktopWindowTreeHostPlatformImplTest::SetUp();
   }
 };
 
-TEST_F(DesktopWindowTreeHostLinuxHighDPITest, MouseNCEvents) {
+TEST_F(DesktopWindowTreeHostPlatformImplHighDPITest, MouseNCEvents) {
   std::unique_ptr<Widget> widget = CreateWidget(new ShapedWidgetDelegate());
   widget->Show();
 
@@ -214,14 +218,14 @@ TEST_F(DesktopWindowTreeHostLinuxHighDPITest, MouseNCEvents) {
   MouseEventRecorder recorder;
   widget->GetNativeWindow()->AddPreTargetHandler(&recorder);
 
-  auto* host_linux = static_cast<DesktopWindowTreeHostLinux*>(
+  auto* host_platform = static_cast<DesktopWindowTreeHostPlatform*>(
       widget->GetNativeWindow()->GetHost());
-  ASSERT_TRUE(host_linux);
+  ASSERT_TRUE(host_platform);
 
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(1001, 1001),
                        gfx::PointF(1001, 1001), base::TimeTicks::Now(), 0, 0,
                        {});
-  host_linux->DispatchEvent(&event);
+  host_platform->DispatchEvent(&event);
 
   EXPECT_EQ(1u, recorder.mouse_events().size());
   EXPECT_EQ(gfx::Point(500, 500), recorder.mouse_events()[0].location());

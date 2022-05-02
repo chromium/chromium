@@ -16,14 +16,14 @@
 #include "ui/events/event_utils.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/linux_ui/linux_ui.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
 
 WindowEventFilterLinux::WindowEventFilterLinux(
-    DesktopWindowTreeHostLinux* desktop_window_tree_host,
+    DesktopWindowTreeHostPlatform* desktop_window_tree_host,
     ui::WmMoveResizeHandler* handler)
     : desktop_window_tree_host_(desktop_window_tree_host), handler_(handler) {
   desktop_window_tree_host_->window()->AddPreTargetHandler(this);
@@ -173,7 +173,9 @@ void WindowEventFilterLinux::ToggleMaximizedState() {
 }
 
 void WindowEventFilterLinux::LowerWindow() {
+#if BUILDFLAG(OZONE_PLATFORM_X11)
   desktop_window_tree_host_->LowerWindow();
+#endif
 }
 
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(

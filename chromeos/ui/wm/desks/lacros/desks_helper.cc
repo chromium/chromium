@@ -9,13 +9,13 @@
 #include "ui/base/class_property.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 ui::DeskExtension* GetDeskExtension(aura::Window* window) {
-  return views::DesktopWindowTreeHostLinux::From(window->GetHost())
+  return views::DesktopWindowTreeHostLacros::From(window->GetHost())
       ->GetDeskExtension();
 }
 

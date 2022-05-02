@@ -17,14 +17,15 @@ class WmMoveResizeHandler;
 
 namespace views {
 
-class DesktopWindowTreeHostLinux;
+class DesktopWindowTreeHostPlatform;
 
 // An EventFilter that sets properties on native windows. Uses
 // WmMoveResizeHandler to dispatch move/resize requests.
 class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
  public:
-  WindowEventFilterLinux(DesktopWindowTreeHostLinux* desktop_window_tree_host,
-                         ui::WmMoveResizeHandler* handler);
+  WindowEventFilterLinux(
+      DesktopWindowTreeHostPlatform* desktop_window_tree_host,
+      ui::WmMoveResizeHandler* handler);
 
   WindowEventFilterLinux(const WindowEventFilterLinux&) = delete;
   WindowEventFilterLinux& operator=(const WindowEventFilterLinux&) = delete;
@@ -57,7 +58,7 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  DesktopWindowTreeHostLinux* const desktop_window_tree_host_;
+  DesktopWindowTreeHostPlatform* const desktop_window_tree_host_;
 
   // A handler, which is used for interactive move/resize events if set and
   // unless MaybeDispatchHostWindowDragMovement is overridden by a derived

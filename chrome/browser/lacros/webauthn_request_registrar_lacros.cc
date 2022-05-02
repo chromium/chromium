@@ -12,7 +12,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 WebAuthnRequestRegistrarLacros::WebAuthnRequestRegistrarLacros() = default;
 
@@ -27,7 +27,7 @@ WebAuthnRequestRegistrarLacros::GetRegisterCallback(aura::Window* window) {
   }
 
   std::string unique_id =
-      views::DesktopWindowTreeHostLinux::From(window->GetHost())
+      views::DesktopWindowTreeHostLacros::From(window->GetHost())
           ->platform_window()
           ->GetWindowUniqueId();
 
