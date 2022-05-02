@@ -1,0 +1,12 @@
+Test that clicking an anchor with attributionsrc triggers an issue when the attribution-reporting Permissions Policy is disabled.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            frame : <object>
+            violatingNodeId : <number>
+            violationType : PermissionPolicyDisabled
+        }
+    }
+}
+
