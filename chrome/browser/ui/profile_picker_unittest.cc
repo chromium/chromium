@@ -161,6 +161,38 @@ TEST_F(ProfilePickerParamsTest, FromEntryPoint_ProfilePath) {
             params.profile_path().BaseName());
 }
 
+TEST_F(ProfilePickerParamsTest, CanReuse) {
+  ProfilePicker::Params params = ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  EXPECT_TRUE(params.CanReusePickerWindow(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile)));
+  EXPECT_TRUE(
+      params.CanReusePickerWindow(ProfilePicker::Params::ForBackgroundManager(
+          GURL("https://google.com/"))));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ProfilePicker::Params select_account_params =
+      ProfilePicker::Params::ForLacrosSelectAvailableAccount(
+          base::FilePath(), base::OnceCallback<void(const std::string&)>());
+  ProfilePicker::Params first_run_params =
+      ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
+          ProfilePicker::FirstRunExitedCallback());
+  EXPECT_TRUE(first_run_params.CanReusePickerWindow(first_run_params));
+  EXPECT_TRUE(
+      select_account_params.CanReusePickerWindow(select_account_params));
+
+  // Cannot reuse because of the entry point.
+  EXPECT_FALSE(params.CanReusePickerWindow(select_account_params));
+  EXPECT_FALSE(params.CanReusePickerWindow(first_run_params));
+  EXPECT_FALSE(select_account_params.CanReusePickerWindow(first_run_params));
+  // Cannot reuse because of the path.
+  EXPECT_FALSE(select_account_params.CanReusePickerWindow(
+      ProfilePicker::Params::ForLacrosSelectAvailableAccount(
+          base::FilePath("Foo"),
+          base::OnceCallback<void(const std::string&)>())));
+#endif
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
   base::FilePath path = base::FilePath::FromASCII("/test/path");

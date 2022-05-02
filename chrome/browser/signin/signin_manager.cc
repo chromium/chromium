@@ -43,13 +43,8 @@ void SigninManager::StartLacrosSigninFlow(
     signin::ConsistencyCookieManager* consistency_cookie_manager,
     account_manager::AccountManagerFacade::AccountAdditionSource source,
     base::OnceCallback<void(const CoreAccountId&)> on_completion_callback) {
-  if (signin_helper_lacros_) {
-    // There is already a signin flow in progress.
-    // TODO(https://crbug.com/1260291): Activate the profile picker if it's
-    // already open.
-    std::move(on_completion_callback).Run(CoreAccountId());
-    return;
-  }
+  // If there is already a flow in progress, cancel it.
+  signin_helper_lacros_.reset();
 
   signin_helper_lacros_ = std::make_unique<SigninHelperLacros>(
       profile_path, account_profile_mapper, identity_manager_,

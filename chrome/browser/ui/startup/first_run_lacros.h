@@ -45,8 +45,8 @@ bool TryMarkFirstRunAlreadyFinished(Profile* primary_profile);
 //    will be considered 'completed' and `callback` will be run with `proceed`
 //    set to true. If the FRE flow is exited before the sync consent screen, the
 //    flow is considered 'aborted', and can be shown again at the next startup.
-// When this method is called again while FRE is in progress, the new `callback`
-// is aborted (called with false) right away.
+// When this method is called again while FRE is in progress, the previous
+// callback is aborted (called with false), and is replaced by `callback`.
 void OpenPrimaryProfileFirstRunIfNeeded(ResumeTaskCallback callback);
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_LACROS_H_

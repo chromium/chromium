@@ -152,7 +152,12 @@ class ProfilePicker {
     // empty URL is returned, the profile picker should not be shown until
     // another explicit call with a non-empty URL given to the view
     // (see `ProfilePickerView::ShowScreen()` for example)
-    GURL GetInitialURL();
+    GURL GetInitialURL() const;
+
+    // Returns whether the current profile picker window can be reused for
+    // different parameters. If this returns false, the picker cannot be reused
+    // and must be closed and repoen.
+    bool CanReusePickerWindow(const Params& other) const;
 
    private:
     // Constructor is private, use static functions instead.

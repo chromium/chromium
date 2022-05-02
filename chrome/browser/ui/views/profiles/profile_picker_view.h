@@ -60,6 +60,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ui::ColorProviderManager::ThemeInitializerSupplier*
   GetCustomThemeForProfileBeingCreated() const;
 
+  // Updates the parameters. This calls existing callbacks with error values,
+  // and requires `ProfilePicker::Params::CanReusePickerWindow()` to be true.
+  void UpdateParams(ProfilePicker::Params&& params);
+
   // Displays sign in error message that is created by Chrome but not GAIA
   // without browser window. If the dialog is not currently shown, this does
   // nothing.

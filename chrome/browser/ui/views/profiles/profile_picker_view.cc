@@ -134,7 +134,9 @@ void ProfilePicker::Show(Params&& params) {
   if (g_profile_picker_view && g_profile_picker_view->MaybeReopen(params))
     return;
 
-  if (!g_profile_picker_view)
+  if (g_profile_picker_view)
+    g_profile_picker_view->UpdateParams(std::move(params));
+  else
     g_profile_picker_view = new ProfilePickerView(std::move(params));
   g_profile_picker_view->Display();
 }
@@ -379,6 +381,19 @@ ProfilePickerView::GetCustomThemeForProfileBeingCreated() const {
   return nullptr;
 }
 
+void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
+  DCHECK(params_.CanReusePickerWindow(params));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Cancel any flow that was in progress.
+  params_.NotifyAccountSelected(std::string());
+  params_.NotifyFirstRunExited(ProfilePicker::FirstRunExitStatus::kQuitEarly,
+                               base::OnceClosure());
+#endif
+
+  params_ = std::move(params);
+}
+
 void ProfilePickerView::DisplayErrorMessage() {
   dialog_host_.DisplayErrorMessage();
 }
@@ -514,9 +529,8 @@ ProfilePickerView::~ProfilePickerView() {
 }
 
 bool ProfilePickerView::MaybeReopen(ProfilePicker::Params& params) {
-  // Need to reopen if already closing or if `profile_path()` differs
-  // from the current one (as we can't switch the profile during run-time).
-  if (state_ != kClosing && params_.profile_path() == params.profile_path())
+  // Re-open if already closing or if the picker cannot be reused with `params`.
+  if (state_ != kClosing && params.CanReusePickerWindow(params_))
     return false;
 
   restart_on_window_closing_ =

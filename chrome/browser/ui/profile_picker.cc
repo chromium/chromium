@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -48,11 +49,7 @@ const char ProfilePicker::kTaskManagerUrl[] =
 ProfilePicker::Params::~Params() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NotifyAccountSelected(std::string());
-
-  if (first_run_exited_callback_) {
-    std::move(first_run_exited_callback_)
-        .Run(FirstRunExitStatus::kQuitEarly, base::OnceClosure());
-  }
+  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly, base::OnceClosure());
 #endif
 }
 
@@ -113,7 +110,7 @@ void ProfilePicker::Params::NotifyFirstRunExited(
 }
 #endif
 
-GURL ProfilePicker::Params::GetInitialURL() {
+GURL ProfilePicker::Params::GetInitialURL() const {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kOnStartup: {
@@ -137,6 +134,25 @@ GURL ProfilePicker::Params::GetInitialURL() {
       NOTREACHED();
       return GURL();
   }
+}
+
+bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Some entry points have specific UIs that cannot be reused for other entry
+  // points.
+  base::flat_set<EntryPoint> exclusive_entry_points = {
+      EntryPoint::kLacrosPrimaryProfileFirstRun,
+      EntryPoint::kLacrosSelectAvailableAccount};
+  if (entry_point_ != other.entry_point_ &&
+      (exclusive_entry_points.contains(entry_point_) ||
+       exclusive_entry_points.contains(other.entry_point_))) {
+    return false;
+  }
+  return profile_path_ == other.profile_path_;
+#else
+  DCHECK_EQ(profile_path_, other.profile_path_);
+  return true;
+#endif
 }
 
 ProfilePicker::Params::Params(EntryPoint entry_point,
