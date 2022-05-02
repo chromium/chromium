@@ -278,8 +278,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
                       size,
                       l10n_util::GetStringUTF16(
                           IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME),
-                      on_press),
-        palette_(palette) {
+                      on_press) {
     image_ = AddChildView(new views::ImageView());
     SetEnabled(false);
   }
