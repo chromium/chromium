@@ -80,7 +80,7 @@ void InsertIconIdentifierToIconInfo(
   // use the smallest activation index for sorting purposes.
   if (!base::Contains(*out_icon_identifier_to_icon_info, identifier)) {
     (*out_icon_identifier_to_icon_info)[identifier] = {
-        app_id, base::UTF16ToASCII(app_title), activation_index,
+        app_id, base::UTF16ToUTF8(app_title), activation_index,
         /*count=*/1};
   } else {
     ++(*out_icon_identifier_to_icon_info)[identifier].count;
