@@ -112,7 +112,7 @@ def collection_filter(obj, title):
 
     members = []
     for name, value in obj.items():
-        if value is '':
+        if value == '':
             members.append(name)
         else:
             members.append('{}={}'.format(name, value))

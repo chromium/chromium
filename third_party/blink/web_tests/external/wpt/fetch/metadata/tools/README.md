@@ -33,29 +33,8 @@ this tool to build a test suite which spans the entire platform.
 
 ## Build script
 
-To generate the Fetch Metadata tests, use the `build.sh` script, which installs
-the dependencies and runs `generate.py` with the Fetch Metadata tests
-configuration file `fetch-metadata.conf.yml`, in a virtualenv.
-
-    $ build.sh
-
-If you don't want to use virtualenv, see the next two sections.
-
-## Setup instructions
-
-- [Install Python 3](https://www.python.org/download/releases/3.0/)
-- Install Python dependencies with the following command (issued from the
-  directory containing this document):
-
-      $ pip install -r ./requirements.txt
-
-## Execution
-
-Execute the following command to generate tests, making sure to replace
-`./path/to/configuration-file.yml` with a filesystem path to a valid
-configuration file (described in greater detail below):
-
-    $ python3 ./generate.py ./path/to/configuration-file.yml
+To generate the Fetch Metadata tests, run `./wpt update-built --include fetch`
+in the root of the repository.
 
 ## Configuration
 

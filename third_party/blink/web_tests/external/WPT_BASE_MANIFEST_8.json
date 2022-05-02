@@ -2707,6 +2707,13 @@
      }
     },
     "css-typed-om": {
+     "perspective-typed-arithmetic-crash.html": [
+      "b65625b28681d6adf4edf414700b8c8fd1dfb3a6",
+      [
+       null,
+       {}
+      ]
+     ],
      "set-css-wide-in-custom-property-crash.html": [
       "bc977c9889889bd8a35eccc48ac28e25871b1ec9",
       [
@@ -301286,11 +301293,7 @@
      },
      "tools": {
       "README.md": [
-       "678c09ac80005a2705b10078ea6e71d422075cf2",
-       []
-      ],
-      "build.sh": [
-       "a6f5afffe0d13e2d549309d7b1ffaa2ad52ffce4",
+       "1c3bac2be5b0cb7b9ad0a0129c1b1b292fc4c53c",
        []
       ],
       "fetch-metadata.conf.yml": [
@@ -301298,11 +301301,7 @@
        []
       ],
       "generate.py": [
-       "9475ab3e2b3fb984da8e4e585e2eaf5ee0b6733f",
-       []
-      ],
-      "requirements.txt": [
-       "7849e929b9850c88682200e000ef178320432fe4",
+       "fa850c8c8a0f4c22457f3a81e648021e63f78588",
        []
       ],
       "templates": {
@@ -378861,6 +378860,13 @@
       ],
       "idlharness.html": [
        "ac1a677bb94d045d9aa6ce8b49bb85cbff51cc92",
+       [
+        null,
+        {}
+       ]
+      ],
+      "iframe-in-container-invalidation.html": [
+       "f43d1ce7899cd78362b73bd048373b18e3f7229c",
        [
         null,
         {}
@@ -464818,7 +464824,7 @@
        ]
       ],
       "popup-same-origin-unsafe-allow-outgoing-with-cross-origin.https.html": [
-       "1f522f70e68c69b57a4aa94847895db97e779ebf",
+       "d45d9e4a086aece4531b36ccbf64e4bca12d1c0f",
        [
         null,
         {
@@ -464827,7 +464833,7 @@
        ]
       ],
       "popup-same-origin-unsafe-allow-outgoing-with-same-origin.https.html": [
-       "d7686f23d37cdb0cdee43573217353182bc2a671",
+       "1a09d5996faf24c650aa22bb4b3b93c053cb10d7",
        [
         null,
         {
@@ -464836,7 +464842,7 @@
        ]
       ],
       "popup-same-origin-unsafe-allow-outgoing-with-same-site.https.html": [
-       "9a1dc11b417a065dfb1bcf814c07f04b1ffe8ef6",
+       "e884d21622bdb851bf09731bc86ef6eb05f7cb25",
        [
         null,
         {
@@ -464845,7 +464851,7 @@
        ]
       ],
       "popup-same-site-unsafe-allow-outgoing-with-cross-origin.https.html": [
-       "b54ff2f49557ecedcbfceb68e1217bd1ef2c5aa8",
+       "d45d9e4a086aece4531b36ccbf64e4bca12d1c0f",
        [
         null,
         {
@@ -464854,7 +464860,7 @@
        ]
       ],
       "popup-same-site-unsafe-allow-outgoing-with-same-origin.https.html": [
-       "b2279094b170f908672c85ba3525ab6a3adc032c",
+       "1a09d5996faf24c650aa22bb4b3b93c053cb10d7",
        [
         null,
         {
@@ -464863,7 +464869,7 @@
        ]
       ],
       "popup-same-site-unsafe-allow-outgoing-with-same-site.https.html": [
-       "371aa41d0117c3e0ccd3317579b9bb8a78d31751",
+       "e884d21622bdb851bf09731bc86ef6eb05f7cb25",
        [
         null,
         {
@@ -464872,7 +464878,7 @@
        ]
       ],
       "popup-same-site-with-cross-origin.https.html": [
-       "af14446257ba12f1e0dbc6b30ea6d29ff7dd905b",
+       "d45d9e4a086aece4531b36ccbf64e4bca12d1c0f",
        [
         null,
         {
@@ -464881,7 +464887,7 @@
        ]
       ],
       "popup-same-site-with-same-origin.https.html": [
-       "ec463a17706509b1ae431c52e46ecdaee2c7452e",
+       "1a09d5996faf24c650aa22bb4b3b93c053cb10d7",
        [
         null,
         {
@@ -464890,7 +464896,7 @@
        ]
       ],
       "popup-same-site-with-same-site.https.html": [
-       "80ed35424c99e324aef7c1e58e4c585246ce14ba",
+       "e884d21622bdb851bf09731bc86ef6eb05f7cb25",
        [
         null,
         {
