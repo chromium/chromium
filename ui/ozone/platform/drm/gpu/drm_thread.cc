@@ -124,6 +124,13 @@ void DrmThread::Init() {
   std::move(complete_early_receiver_requests_).Run();
 }
 
+void DrmThread::CleanUp() {
+  TRACE_EVENT0("drm", "DrmThread::CleanUp");
+  display_manager_.reset();
+  screen_manager_.reset();
+  device_manager_.reset();
+}
+
 void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
                              const gfx::Size& size,
                              const gfx::Size& framebuffer_size,

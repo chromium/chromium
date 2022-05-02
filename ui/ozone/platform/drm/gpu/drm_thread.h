@@ -192,6 +192,7 @@ class DrmThread : public base::Thread,
 
   // base::Thread:
   void Init() override;
+  void CleanUp() override;
 
  private:
   struct TaskInfo {

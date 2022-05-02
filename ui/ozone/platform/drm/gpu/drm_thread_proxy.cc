@@ -13,6 +13,7 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
+#include "ui/ozone/platform/drm/gpu/drm_thread.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/gpu/gbm_pixmap.h"
 #include "ui/ozone/platform/drm/gpu/proxy_helpers.h"
