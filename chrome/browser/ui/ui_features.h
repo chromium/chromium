@@ -183,8 +183,6 @@ extern const base::Feature kWebUITabStrip;
 // tap gesture on the WebUI Tab Strip.
 extern const base::Feature kWebUITabStripContextMenuAfterTap;
 
-extern const base::Feature kWebUIFeedback;
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const base::Feature kChromeOSTabSearchCaptionButton;
 #endif

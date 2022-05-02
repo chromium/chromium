@@ -14,16 +14,8 @@
 using ShowFeedbackPageTest = BrowserWithTestWindowTest;
 
 // TODO(crbug.com/1128855): Fix the test for Lacros build.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UserFeedbackDisallowed DISABLED_UserFeedbackDisallowed
-#else
-#define MAYBE_UserFeedbackDisallowed UserFeedbackDisallowed
-#endif
-TEST_F(ShowFeedbackPageTest, MAYBE_UserFeedbackDisallowed) {
-  // TODO(crbug.com/1167223): Fix the test for WebUIFeedback
-  if (base::FeatureList::IsEnabled(features::kWebUIFeedback))
-    GTEST_SKIP() << "Skipped due to crash with webui feedback.";
-
+// TODO(crbug.com/1167223): Fix the test for WebUIFeedback.
+TEST_F(ShowFeedbackPageTest, DISABLED_UserFeedbackDisallowed) {
   base::HistogramTester histogram_tester;
   std::string unused;
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,

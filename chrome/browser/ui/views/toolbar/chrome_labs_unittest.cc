@@ -593,12 +593,10 @@ TEST_F(ChromeLabsViewControllerTest, SelectDefaultTwiceNoRestart) {
 
 // TODO(crbug.com/1128855)
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ChromeLabsViewControllerTest, ShowFeedbackPage) {
+// TODO(b/185480535): Fix the test for WebUIFeedback
+TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
   std::unique_ptr<ChromeLabsViewController> view_controller =
       CreateViewController();
-  // TODO(b/185480535): Fix the test for WebUIFeedback
-  if (base::FeatureList::IsEnabled(features::kWebUIFeedback))
-    GTEST_SKIP() << "Skipped due to crash with webui feedback.";
 
   base::HistogramTester histogram_tester;
 

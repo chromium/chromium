@@ -6167,11 +6167,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "webui-feedback",
-    "owners": [ "xiangdongkong@google.com", "dpapad@chromium.org" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "webui-tab-strip",
     "owners": [
       "yuhengh",

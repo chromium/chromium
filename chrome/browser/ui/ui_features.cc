@@ -255,11 +255,6 @@ const base::Feature kWebUITabStripContextMenuAfterTap {
 #endif
 };
 
-// Enables a WebUI Feedback UI, as opposed to the Chrome App UI. See
-// https://crbug.com/1167223.
-const base::Feature kWebUIFeedback{"WebUIFeedback",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kChromeOSTabSearchCaptionButton{
     "ChromeOSTabSearchCaptionButton", base::FEATURE_DISABLED_BY_DEFAULT};

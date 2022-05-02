@@ -5685,17 +5685,6 @@ const char kDownloadShelfWebUIDescription[] =
 // Random platform combinations -----------------------------------------------
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-
-const char kWebuiFeedbackName[] = "WebUI Feedback";
-const char kWebuiFeedbackDescription[] =
-    "If enabled, Chrome will show the Feedback WebUI, as opposed to Chrome "
-    "App Feedback UI, when clicking on \"Report an issue...\"";
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 
 const char kDesktopRestructuredLanguageSettingsName[] =

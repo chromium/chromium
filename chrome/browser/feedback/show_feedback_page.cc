@@ -119,23 +119,14 @@ void RequestFeedbackFlow(const GURL& page_url,
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
-    auto info = api->CreateFeedbackInfo(
-        description_template, description_placeholder_text, category_tag,
-        extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-        include_bluetooth_logs, show_questionnaire,
-        source == kFeedbackSourceChromeLabs ||
-            source == kFeedbackSourceKaleidoscope);
+  auto info = api->CreateFeedbackInfo(
+      description_template, description_placeholder_text, category_tag,
+      extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
+      include_bluetooth_logs, show_questionnaire,
+      source == kFeedbackSourceChromeLabs ||
+          source == kFeedbackSourceKaleidoscope);
 
-    FeedbackDialog::CreateOrShow(profile, *info);
-  } else {
-    api->RequestFeedbackForFlow(
-        description_template, description_placeholder_text, category_tag,
-        extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-        include_bluetooth_logs, show_questionnaire,
-        source == kFeedbackSourceChromeLabs ||
-            source == kFeedbackSourceKaleidoscope);
-  }
+  FeedbackDialog::CreateOrShow(profile, *info);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

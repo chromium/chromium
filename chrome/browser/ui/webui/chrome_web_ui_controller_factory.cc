@@ -860,12 +860,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
   }
-  if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
-    if (url.host_piece() == chrome::kChromeUIFeedbackHost)
-      return &NewWebUI<FeedbackUI>;
-  }
-    if (url.host_piece() == chrome::kChromeUIReadLaterHost)
-      return &NewWebUI<ReadingListUI>;
+  if (url.host_piece() == chrome::kChromeUIFeedbackHost)
+    return &NewWebUI<FeedbackUI>;
+  if (url.host_piece() == chrome::kChromeUIReadLaterHost)
+    return &NewWebUI<ReadingListUI>;
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
     return &NewWebUI<BookmarksSidePanelUI>;
   if (features::IsReadAnythingEnabled()) {
