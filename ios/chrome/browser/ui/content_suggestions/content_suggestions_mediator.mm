@@ -348,6 +348,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   DCHECK(IsStartSurfaceEnabled());
   if (self.showMostRecentTabStartSurfaceTile) {
     self.showMostRecentTabStartSurfaceTile = NO;
+    self.returnToRecentTabItem = nil;
     if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
       [self.consumer hideReturnToRecentTabTile];
     } else {
@@ -470,7 +471,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   web::WebState* web_state =
       StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
           ->most_recent_tab();
-  DCHECK(web_state);
+  if (!web_state) {
+    return;
+  }
   int index = web_state_list->GetIndexOfWebState(web_state);
   web_state_list->ActivateWebStateAt(index);
 }
