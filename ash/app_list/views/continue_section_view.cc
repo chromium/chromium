@@ -237,8 +237,8 @@ void ContinueSectionView::AnimateDismissToast(base::RepeatingClosure callback) {
   PrepareForLayerAnimation(privacy_toast_);
 
   views::AnimationBuilder animation_builder;
-  animation_builder.OnEnded(std::move(callback));
-  animation_builder.OnAborted(std::move(callback));
+  animation_builder.OnEnded(callback);
+  animation_builder.OnAborted(callback);
 
   animation_builder
       .SetPreemptionStrategy(
