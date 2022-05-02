@@ -151,6 +151,7 @@ struct SuggestionsResponse {
 };
 
 // A URL-Keyed Metric (UKM) entry.
+[Stable]
 union UkmEntry {
   NonCompliantApiMetric non_compliant_api;
 };
@@ -238,6 +239,7 @@ enum KoreanAction {
 // to communicate back to the browser process.
 //
 // Next ordinal: 14
+[Stable]
 interface InputMethodHost {
   // ========================================================
   // The following methods operate on the focused text field.
