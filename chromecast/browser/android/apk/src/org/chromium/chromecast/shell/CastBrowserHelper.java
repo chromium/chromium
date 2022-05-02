@@ -43,14 +43,11 @@ public class CastBrowserHelper {
         Log.d(TAG, "Performing one-time browser initialization");
 
         // Initializing the command line must occur before loading the library.
-        CastCommandLineHelper.initCommandLineWithSavedArgs(() -> {
-            CommandLineInitUtil.initCommandLine(COMMAND_LINE_FILE);
-            if (BundleUtils.isBundle()) {
-                // TODO(b/228878980): populate command line flags through intent.
-                CommandLine.getInstance().appendSwitchesAndArguments(COMMAND_LINE_FLAGS_FOR_BUNDLE);
-            }
-            return CommandLine.getInstance();
-        });
+        CommandLineInitUtil.initCommandLine(COMMAND_LINE_FILE);
+        if (BundleUtils.isBundle()) {
+            // TODO(b/228878980): populate command line flags through intent.
+            CommandLine.getInstance().appendSwitchesAndArguments(COMMAND_LINE_FLAGS_FOR_BUNDLE);
+        }
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
         LibraryLoader.getInstance().ensureInitialized();
