@@ -161,8 +161,9 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // site. Uninstall extension in unit tests is flaky.
 }
 
+// TODO(crbug.com/1321562) Disabled for flakiness.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       RequestAccessButtonVisibility_NavigationBetweenPages) {
+       DISABLED_RequestAccessButtonVisibility_NavigationBetweenPages) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL url_a("http://www.a.com");
@@ -187,8 +188,10 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
-TEST_F(ExtensionsToolbarControlsUnitTest,
-       RequestAccessButtonVisibility_ContextMenuChangesHostPermissions) {
+// TODO(crbug.com/1321562) Disabled for flakiness.
+TEST_F(
+    ExtensionsToolbarControlsUnitTest,
+    DISABLED_RequestAccessButtonVisibility_ContextMenuChangesHostPermissions) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL url_a("http://www.a.com");
@@ -238,8 +241,9 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   }
 }
 
+// TODO(crbug.com/1321562) Disabled for flakiness.
 TEST_F(ExtensionsToolbarControlsUnitTest,
-       RequestAccessButtonVisibility_MultipleExtensions) {
+       DISABLED_RequestAccessButtonVisibility_MultipleExtensions) {
   content::WebContentsTester* web_contents_tester =
       AddWebContentsAndGetTester();
   const GURL url_a("http://www.a.com");
