@@ -9,7 +9,6 @@ per-file check_static_initializers.py=thakis@chromium.org
 per-file check_static_initializers.py=thomasanderson@chromium.org
 
 per-file run_wpt_tests.py=smcgruer@chromium.org
-per-file run_android_wpt.py*=rmhasan@google.com
 per-file wpt_common*.py=smcgruer@chromium.org
 per-file wpt_common*.py=rmhasan@google.com
 

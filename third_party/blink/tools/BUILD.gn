@@ -70,7 +70,7 @@ if (is_android) {
     data_deps = [
       ":wpt_tests_isolate",
       "//build/android:test_runner_py",
-      "//testing:wpt_android_lib",
+      "//testing:run_wpt_tests",
     ]
   }
 }
