@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
 #include "ui/base/hit_test.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -20,7 +21,7 @@ class DesktopWindowTreeHostLinux;
 
 // An EventFilter that sets properties on native windows. Uses
 // WmMoveResizeHandler to dispatch move/resize requests.
-class VIEWS_EXPORT WindowEventFilterLinux {
+class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
  public:
   WindowEventFilterLinux(DesktopWindowTreeHostLinux* desktop_window_tree_host,
                          ui::WmMoveResizeHandler* handler);
@@ -28,7 +29,7 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   WindowEventFilterLinux(const WindowEventFilterLinux&) = delete;
   WindowEventFilterLinux& operator=(const WindowEventFilterLinux&) = delete;
 
-  ~WindowEventFilterLinux();
+  ~WindowEventFilterLinux() override;
 
   void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
 
@@ -52,6 +53,9 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // A signal to lower an attached to this filter window to the bottom of the
   // stack.
   void LowerWindow();
+
+  // ui::EventHandler overrides:
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   DesktopWindowTreeHostLinux* const desktop_window_tree_host_;
 

@@ -298,12 +298,12 @@ class DesktopWindowTreeHostLinuxTest
                               base::TimeTicks::Now(), flags, flag);
   }
 
-  ui::TouchEvent* GenerateTouchEvent(ui::EventType event_type,
-                                     const gfx::Point& touch_location,
-                                     int flags) {
-    return new ui::TouchEvent(event_type, touch_location,
-                              base::TimeTicks::Now(), ui::PointerDetails(),
-                              flags);
+  ui::GestureEvent* GenerateGestureEvent(ui::EventType event_type,
+                                         const gfx::Point& gesture_location) {
+    ui::GestureEventDetails gesture_details(event_type);
+    gesture_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+    return new ui::GestureEvent(gesture_location.x(), gesture_location.y(), 0,
+                                base::TimeTicks::Now(), gesture_details);
   }
 
   HitTestWidgetDelegate* delegate_ = nullptr;
@@ -375,8 +375,8 @@ TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
       // |hittest| value we specified.
 
       if (use_touch_event) {
-        DispatchEvent(GenerateTouchEvent(ui::ET_TOUCH_PRESSED,
-                                         pointer_location_in_px, 0));
+        DispatchEvent(GenerateGestureEvent(ui::ET_GESTURE_SCROLL_BEGIN,
+                                           pointer_location_in_px));
       } else {
         DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
                                          pointer_location_in_px,
@@ -395,8 +395,8 @@ TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
       // Dispatch mouse/touch release event to release a mouse/touch pressed
       // handler and be able to consume future events.
       if (use_touch_event) {
-        DispatchEvent(GenerateTouchEvent(ui::ET_TOUCH_RELEASED,
-                                         pointer_location_in_px, 0));
+        DispatchEvent(GenerateGestureEvent(ui::ET_GESTURE_SCROLL_END,
+                                           pointer_location_in_px));
       } else {
         DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
                                          pointer_location_in_px,

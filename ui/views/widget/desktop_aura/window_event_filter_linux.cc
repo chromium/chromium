@@ -25,17 +25,19 @@ namespace views {
 WindowEventFilterLinux::WindowEventFilterLinux(
     DesktopWindowTreeHostLinux* desktop_window_tree_host,
     ui::WmMoveResizeHandler* handler)
-    : desktop_window_tree_host_(desktop_window_tree_host), handler_(handler) {}
+    : desktop_window_tree_host_(desktop_window_tree_host), handler_(handler) {
+  desktop_window_tree_host_->window()->AddPreTargetHandler(this);
+}
 
-WindowEventFilterLinux::~WindowEventFilterLinux() = default;
+WindowEventFilterLinux::~WindowEventFilterLinux() {
+  desktop_window_tree_host_->window()->RemovePreTargetHandler(this);
+}
 
 void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
     int hit_test,
     ui::LocatedEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED &&
-      event->type() != ui::ET_TOUCH_PRESSED) {
+  if (event->type() != ui::ET_MOUSE_PRESSED)
     return;
-  }
 
   if (event->IsMouseEvent() &&
       HandleMouseEventWithHitTest(hit_test, event->AsMouseEvent())) {
@@ -177,7 +179,7 @@ void WindowEventFilterLinux::LowerWindow() {
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
     int hittest,
     ui::LocatedEvent* event) {
-  if (!event->IsMouseEvent() && !event->IsTouchEvent())
+  if (!event->IsMouseEvent() && !event->IsGestureEvent())
     return;
 
   if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton())
@@ -201,6 +203,21 @@ void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
   // long press.
   if (event->IsMouseEvent())
     event->StopPropagation();
+}
+
+void WindowEventFilterLinux::OnGestureEvent(ui::GestureEvent* event) {
+  auto* window = static_cast<aura::Window*>(event->target());
+  int hit_test_code =
+      window->delegate()
+          ? window->delegate()->GetNonClientComponent(event->location())
+          : HTNOWHERE;
+
+  // Interactive window move.
+  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+    MaybeDispatchHostWindowDragMovement(hit_test_code, event);
+
+  // TODO(https://crbug.com/1282318): Add support to other gestures,
+  // including double-tap-to-maximize.
 }
 
 }  // namespace views
