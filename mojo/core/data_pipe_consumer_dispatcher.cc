@@ -459,6 +459,7 @@ bool DataPipeConsumerDispatcher::InitializeNoLock() {
   if (!ring_buffer_mapping_.IsValid()) {
     DLOG(ERROR) << "Failed to map shared buffer.";
     shared_ring_buffer_ = base::UnsafeSharedMemoryRegion();
+    is_closed_ = true;
     return false;
   }
 
