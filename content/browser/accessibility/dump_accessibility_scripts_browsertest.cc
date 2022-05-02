@@ -346,6 +346,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRows) {
   RunTypedTest<kMacAttributes>("ax-rows.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectedRows) {
+  RunTypedTest<kMacAttributes>("ax-selected-rows.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTitleUIElement) {
   RunTypedTest<kMacAttributes>("ax-title-ui-element.html");
 }
@@ -434,6 +438,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRows) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelected) {
   RunTypedTest<kMacMethods>("accessibility-selected.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelectedRows) {
+  RunTypedTest<kMacMethods>("accessibility-selected-rows.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

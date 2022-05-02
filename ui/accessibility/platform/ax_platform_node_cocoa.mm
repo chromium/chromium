@@ -954,6 +954,10 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
   }
 
+  // Tree and grid (Outline role in Mac accessibility)
+  if (ui::IsGridLike(role))
+    [axAttributes addObject:NSAccessibilitySelectedRowsAttribute];
+
   // Popup
   if (_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
     [axAttributes addObjectsFromArray:@[
@@ -1356,6 +1360,10 @@ bool IsAXSetter(SEL selector) {
 
 - (NSNumber*)AXSelected {
   return [self accessibilitySelected];
+}
+
+- (NSArray*)AXSelectedRows {
+  return [self accessibilitySelectedRows];
 }
 
 - (NSString*)AXSubrole {
@@ -1768,6 +1776,22 @@ bool IsAXSetter(SEL selector) {
 
 - (NSAccessibilityRole)accessibilityRole {
   return [self AXRole];
+}
+
+- (NSArray*)accessibilitySelectedRows {
+  if (![self instanceActive])
+    return nil;
+
+  NSArray* rows = [self accessibilityRows];
+  // accessibilityRows returns an empty array unless instanceActive does,
+  // not exist, so we do not need to check if rows is nil at this time.
+  NSMutableArray* selectedRows = [[[NSMutableArray alloc] init] autorelease];
+  for (id row in rows) {
+    if ([[row accessibilitySelected] boolValue]) {
+      [selectedRows addObject:row];
+    }
+  }
+  return selectedRows;
 }
 
 - (NSAccessibilitySubrole)accessibilitySubrole {

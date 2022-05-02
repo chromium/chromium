@@ -283,6 +283,18 @@ bool IsDialog(const ax::mojom::Role role) {
   }
 }
 
+bool IsGridLike(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kListGrid:
+    case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsForm(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kForm:

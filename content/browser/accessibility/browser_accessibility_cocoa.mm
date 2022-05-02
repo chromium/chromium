@@ -2514,8 +2514,8 @@ bool content::IsNSRange(id value) {
     ]];
   } else if ([role isEqualToString:NSAccessibilityOutlineRole]) {
     [ret addObjectsFromArray:@[
-      NSAccessibilitySelectedRowsAttribute, NSAccessibilityRowsAttribute,
-      NSAccessibilityColumnsAttribute, NSAccessibilityOrientationAttribute
+      NSAccessibilityRowsAttribute, NSAccessibilityColumnsAttribute,
+      NSAccessibilityOrientationAttribute
     ]];
   }
 
