@@ -822,7 +822,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 #endif
 
   // Install a RunLoop timeout if none is present but do not override tests that
-  // set a ScopedLoopRunTimeout from their fixture's constructor (which
+  // set a ScopedRunLoopTimeout from their fixture's constructor (which
   // happens as part of setting up the test factory in gtest while
   // ProxyRunTestOnMainThreadLoop() happens later as part of SetUp()).
   absl::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
