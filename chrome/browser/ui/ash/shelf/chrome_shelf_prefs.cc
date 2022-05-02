@@ -66,10 +66,49 @@ using syncer::UserSelectableType;
 
 namespace {
 
-std::string GetBrowserAppId() {
-  return crosapi::browser_util::IsAshWebBrowserEnabled()
-             ? app_constants::kChromeAppId
-             : app_constants::kLacrosAppId;
+// Returns pinned app position even if app is not currently visible on device
+// that is leftmost item on the shelf. If |exclude_chrome| is true then Chrome
+// app is not processed. if nothing pinned found, returns an invalid ordinal.
+syncer::StringOrdinal GetFirstPinnedAppPosition(
+    app_list::AppListSyncableService* syncable_service,
+    bool exclude_chrome) {
+  syncer::StringOrdinal position;
+  for (const auto& sync_peer : syncable_service->sync_items()) {
+    if (!sync_peer.second->item_pin_ordinal.IsValid())
+      continue;
+    // We use kChromeAppId here because even when Lacros is the only web
+    // browser, the shelf id kLacrosAppId is transformed to the sync id
+    // kChromeAppId.
+    if (exclude_chrome && sync_peer.first == app_constants::kChromeAppId)
+      continue;
+    if (!position.IsValid() ||
+        sync_peer.second->item_pin_ordinal.LessThan(position)) {
+      position = sync_peer.second->item_pin_ordinal;
+    }
+  }
+  return position;
+}
+
+// Helper to create pin position that stays before any synced app, even if
+// app is not currently visible on a device.
+syncer::StringOrdinal CreateFirstPinPosition(
+    app_list::AppListSyncableService* syncable_service) {
+  const syncer::StringOrdinal position =
+      GetFirstPinnedAppPosition(syncable_service, false /* exclude_chrome */);
+  return position.IsValid() ? position.CreateBefore()
+                            : syncer::StringOrdinal::CreateInitialOrdinal();
+}
+
+// Ensures |app_id| is pinned. If it is not pinned, makes it pinned in the first
+// position.
+void EnsurePinnedOrMakeFirst(
+    const std::string& app_id,
+    app_list::AppListSyncableService* syncable_service) {
+  syncer::StringOrdinal position = syncable_service->GetPinPosition(app_id);
+  if (!position.IsValid()) {
+    position = CreateFirstPinPosition(syncable_service);
+    syncable_service->SetPinPosition(app_id, position);
+  }
 }
 
 const char kDefaultPinnedAppsKey[] = "default";
@@ -309,36 +348,6 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   return result;
 }
 
-// Returns pinned app position even if app is not currently visible on device
-// that is leftmost item on the shelf. If |exclude_chrome| is true then Chrome
-// app is not processed. if nothing pinned found, returns an invalid ordinal.
-syncer::StringOrdinal GetFirstPinnedAppPosition(
-    app_list::AppListSyncableService* syncable_service,
-    bool exclude_chrome) {
-  syncer::StringOrdinal position;
-  for (const auto& sync_peer : syncable_service->sync_items()) {
-    if (!sync_peer.second->item_pin_ordinal.IsValid())
-      continue;
-    if (exclude_chrome && sync_peer.first == GetBrowserAppId())
-      continue;
-    if (!position.IsValid() ||
-        sync_peer.second->item_pin_ordinal.LessThan(position)) {
-      position = sync_peer.second->item_pin_ordinal;
-    }
-  }
-  return position;
-}
-
-// Helper to create pin position that stays before any synced app, even if
-// app is not currently visible on a device.
-syncer::StringOrdinal CreateFirstPinPosition(
-    app_list::AppListSyncableService* syncable_service) {
-  const syncer::StringOrdinal position =
-      GetFirstPinnedAppPosition(syncable_service, false /* exclude_chrome */);
-  return position.IsValid() ? position.CreateBefore()
-                            : syncer::StringOrdinal::CreateInitialOrdinal();
-}
-
 // Helper to creates pin position that stays before any synced app, even if
 // app is not currently visible on a device.
 syncer::StringOrdinal CreateLastPinPosition(Profile* profile) {
@@ -368,11 +377,6 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   // Chrome must be pinned at this point.
   syncer::StringOrdinal chrome_position =
       syncable_service->GetPinPosition(app_constants::kChromeAppId);
-  // If the ash icon does not exist, then the Lacros icon must exist.
-  if (!chrome_position.IsValid()) {
-    chrome_position =
-        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
-  }
   DCHECK(chrome_position.IsValid());
 
   // New pins are inserted after this position.
@@ -464,11 +468,22 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
 
+    // kLacrosAppId is only valid when side-by-side Lacros is enabled. When
+    // either lacros or ash is the only browser, kChromeAppId is the only valid
+    // sync ID for the browser.
+    bool lacros_side_by_side = crosapi::browser_util::IsLacrosEnabled() &&
+                               crosapi::browser_util::IsAshWebBrowserEnabled();
+    if (!lacros_side_by_side && sync_peer.first == app_constants::kLacrosAppId)
+      continue;
+
     std::string app_id = GetShelfId(sync_peer.first);
 
-    if (!IsSyncItemValid(app_id, helper)) {
+    // All sync items must be valid app service apps to be added to the shelf
+    // with the exception of ash-chrome, which for legacy reasons does not use
+    // the app service.
+    bool is_ash_chrome = app_id == app_constants::kChromeAppId;
+    if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id))
       continue;
-    }
 
     pin_infos.emplace_back(std::move(app_id),
                            sync_peer.second->item_pin_ordinal);
@@ -497,6 +512,16 @@ void ChromeShelfPrefs::RemovePinPosition(Profile* profile,
     return;
   }
   DCHECK(!app_id.empty());
+
+  // There currently exists a side-case that only exists in lacros side-by-side
+  // where ash-chrome can be unpinned. This won't occur in the long-term because
+  // lacros will be the only browser. Until then, explicitly disallow pinning of
+  // ash-chrome here. This is simpler than letter the logic leak into various
+  // parts of shelf and context menu code.
+  if (app_id == app_constants::kChromeAppId) {
+    LOG(ERROR) << "ash cannot be unpinned";
+    return;
+  }
 
   app_list::AppListSyncableService* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile);
@@ -600,14 +625,20 @@ void ChromeShelfPrefs::MigrateFilesChromeAppToSWA(
 
 void ChromeShelfPrefs::EnsureChromePinned(
     app_list::AppListSyncableService* syncable_service) {
-  syncer::StringOrdinal chrome_position =
-      syncable_service->GetPinPosition(app_constants::kChromeAppId);
-  if (!chrome_position.IsValid()) {
-    chrome_position = CreateFirstPinPosition(syncable_service);
-    // If Lacros is the only browser, and Ash is not already pinned, then we pin
-    // Lacros.
-    syncable_service->SetPinPosition(GetBrowserAppId(), chrome_position);
+  // If ash is the only web browser or if lacros is the only web browser, ensure
+  // that ash-chrome is pinned. The sync<->shelf translation layer ensures that
+  // we will use the appropriate shelf id.
+  if (!crosapi::browser_util::IsLacrosEnabled() ||
+      !crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    EnsurePinnedOrMakeFirst(app_constants::kChromeAppId, syncable_service);
+    return;
   }
+
+  // Otherwise, we are in a transition situation where both the ash and lacros
+  // web browsers are available. To ensure consistency with legacy behavior, we
+  // ensure both web browsers are pinned.
+  EnsurePinnedOrMakeFirst(app_constants::kLacrosAppId, syncable_service);
+  EnsurePinnedOrMakeFirst(app_constants::kChromeAppId, syncable_service);
 }
 
 bool ChromeShelfPrefs::DidAddDefaultApps(PrefService* pref_service) {
@@ -660,13 +691,6 @@ PrefService* ChromeShelfPrefs::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-bool ChromeShelfPrefs::IsSyncItemValid(const std::string& id,
-                                       ShelfControllerHelper* helper) {
-  return id == app_constants::kChromeAppId ||
-         id == app_constants::kLacrosAppId ||
-         helper->IsValidIDForCurrentUser(id);
-}
-
 void ChromeShelfPrefs::ObserveSyncService() {
   if (!observed_sync_service_) {
     observed_sync_service_ = GetSyncableService();
@@ -700,6 +724,13 @@ bool ChromeShelfPrefs::IsAshKeepListApp(const std::string& app_id) {
 }
 
 std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
+  // If Lacros is the only web browser, transform the sync_id kChromeAppId to
+  // the shelf id kLacrosAppId.
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      sync_id == app_constants::kChromeAppId) {
+    return app_constants::kLacrosAppId;
+  }
+
   // No sync ids should begin with the lacros prefix, as it isn't stable.
   DCHECK(!base::StartsWith(sync_id, kLacrosChromeAppPrefix));
 
@@ -732,6 +763,13 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
 }
 
 std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
+  // If Lacros is the only web browser, transform the shelf id kLacrosAppId to
+  // the sync_id kChromeAppId.
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      shelf_id == app_constants::kLacrosAppId) {
+    return app_constants::kChromeAppId;
+  }
+
   // If Lacros is not publishing chrome apps, no transformation is necessary.
   if (!IsStandaloneBrowserPublishingChromeApps())
     return shelf_id;
