@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 interface ChromeOS {
-  [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement]
+  [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,CallWith=ExecutionContext]
   readonly attribute CrosWindowManagement windowManagement;
-  [RuntimeEnabled=BlinkExtensionChromeOSHID]
+  [RuntimeEnabled=BlinkExtensionChromeOSHID,CallWith=ExecutionContext]
   readonly attribute CrosHID hid;
 };

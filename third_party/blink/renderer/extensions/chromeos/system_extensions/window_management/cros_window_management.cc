@@ -12,12 +12,28 @@
 
 namespace blink {
 
-CrosWindowManagement::CrosWindowManagement(ExecutionContext* execution_context)
-    : ExecutionContextClient(execution_context),
-      cros_window_management_(execution_context) {}
+const char CrosWindowManagement::kSupplementName[] = "CrosWindowManagement";
+
+CrosWindowManagement& CrosWindowManagement::From(
+    ExecutionContext& execution_context) {
+  CHECK(!execution_context.IsContextDestroyed());
+  auto* supplement = Supplement<ExecutionContext>::From<CrosWindowManagement>(
+      execution_context);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<CrosWindowManagement>(execution_context);
+    ProvideTo(execution_context, supplement);
+  }
+  return *supplement;
+}
+
+CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
+    : Supplement(execution_context),
+      ExecutionContextClient(&execution_context),
+      cros_window_management_(&execution_context) {}
 
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

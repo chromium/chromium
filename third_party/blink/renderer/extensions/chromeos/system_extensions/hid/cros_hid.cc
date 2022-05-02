@@ -27,12 +27,28 @@ void RejectWithTypeError(const String& message,
 
 }  // namespace
 
-CrosHID::CrosHID(ExecutionContext* execution_context)
-    : ExecutionContextClient(execution_context), cros_hid_(execution_context) {}
+const char CrosHID::kSupplementName[] = "CrosHID";
+
+CrosHID& CrosHID::From(ExecutionContext& execution_context) {
+  CHECK(!execution_context.IsContextDestroyed());
+  auto* supplement =
+      Supplement<ExecutionContext>::From<CrosHID>(execution_context);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<CrosHID>(execution_context);
+    ProvideTo(execution_context, supplement);
+  }
+  return *supplement;
+}
+
+CrosHID::CrosHID(ExecutionContext& execution_context)
+    : Supplement(execution_context),
+      ExecutionContextClient(&execution_context),
+      cros_hid_(&execution_context) {}
 
 void CrosHID::Trace(Visitor* visitor) const {
   visitor->Trace(cros_hid_);
   visitor->Trace(device_cache_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

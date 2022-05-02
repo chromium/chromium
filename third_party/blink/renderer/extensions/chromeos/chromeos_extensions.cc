@@ -17,12 +17,8 @@ namespace {
 void ChromeOSDataPropertyGetCallback(
     v8::Local<v8::Name> v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Context> creation_context =
-      info.Holder()->GetCreationContextChecked();
-  bindings::V8SetReturnValue(
-      info,
-      MakeGarbageCollected<ChromeOS>(ExecutionContext::From(creation_context)),
-      creation_context);
+  bindings::V8SetReturnValue(info, MakeGarbageCollected<ChromeOS>(),
+                             info.Holder()->GetCreationContextChecked());
 }
 
 void InstallChromeOSExtensions(ScriptState* script_state) {
