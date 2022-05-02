@@ -380,6 +380,15 @@ void LinkStyle::OwnerRemoved() {
     ClearSheet();
 }
 
+void LinkStyle::UnblockRenderingForPendingSheet() {
+  DCHECK(StyleSheetIsLoading());
+  if (pending_sheet_type_ == PendingSheetType::kDynamicRenderBlocking) {
+    GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
+        *owner_, pending_sheet_type_);
+    pending_sheet_type_ = PendingSheetType::kNonBlocking;
+  }
+}
+
 void LinkStyle::Trace(Visitor* visitor) const {
   visitor->Trace(sheet_);
   LinkResource::Trace(visitor);

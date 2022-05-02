@@ -67,6 +67,8 @@ class CORE_EXPORT LinkLoader final : public GarbageCollected<LinkLoader> {
   void NotifyModuleLoadFinished(ModuleScript*);
   void NotifyFinished(Resource*);
 
+  void UnblockRenderingForPendingLinkPreload();
+
   void Trace(Visitor*) const;
 
  private:

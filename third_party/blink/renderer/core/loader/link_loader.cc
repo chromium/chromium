@@ -204,6 +204,11 @@ void LinkLoader::Abort() {
   }
 }
 
+void LinkLoader::UnblockRenderingForPendingLinkPreload() {
+  if (pending_preload_)
+    pending_preload_->UnblockRendering();
+}
+
 void LinkLoader::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(pending_preload_);

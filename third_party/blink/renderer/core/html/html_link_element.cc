@@ -85,7 +85,12 @@ void HTMLLinkElement::ParseAttribute(
              RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
     blocking_attribute_->DidUpdateAttributeValue(params.old_value, value);
     blocking_attribute_->CountTokenUsage();
-    Process();
+    if (!IsRenderBlocking()) {
+      if (GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading())
+        GetLinkStyle()->UnblockRenderingForPendingSheet();
+      if (link_loader_)
+        link_loader_->UnblockRenderingForPendingLinkPreload();
+    }
   } else if (name == html_names::kHrefAttr) {
     // Log href attribute before logging resource fetching in process().
     LogUpdateAttributeIfIsolatedWorldAndInDocument("link", params);
@@ -329,6 +334,15 @@ void HTMLLinkElement::ScheduleEvent() {
 void HTMLLinkElement::SetToPendingState() {
   DCHECK(GetLinkStyle());
   GetLinkStyle()->SetToPendingState();
+}
+
+bool HTMLLinkElement::IsImplicitlyRenderBlocking() const {
+  return IsCreatedByParser() && rel_attribute_.IsStyleSheet();
+}
+
+bool HTMLLinkElement::IsRenderBlocking() const {
+  return blocking_attribute_->IsExplicitlyRenderBlocking() ||
+         IsImplicitlyRenderBlocking();
 }
 
 bool HTMLLinkElement::IsURLAttribute(const Attribute& attribute) const {

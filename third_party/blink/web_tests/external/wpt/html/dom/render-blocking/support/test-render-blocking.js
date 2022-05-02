@@ -30,6 +30,22 @@ class LoadObserver {
   }
 }
 
+// Observes the insertion of a script/parser-blocking element into DOM via
+// MutationObserver, so that we can access the element before it's loaded.
+function nodeInserted(parentNode, predicate) {
+  return new Promise(resolve => {
+    function callback(mutationList) {
+      for (let mutation of mutationList) {
+        for (let node of mutation.addedNodes) {
+          if (predicate(node))
+            resolve(node);
+        }
+      }
+    }
+    new MutationObserver(callback).observe(parentNode, {childList: true});
+  });
+}
+
 function createAutofocusTarget() {
   const autofocusTarget = document.createElement('textarea');
   autofocusTarget.setAttribute('autofocus', '');

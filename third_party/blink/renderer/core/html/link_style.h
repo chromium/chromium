@@ -56,6 +56,8 @@ class LinkStyle final : public LinkResource, ResourceClient {
 
   CSSStyleSheet* Sheet() const { return sheet_.Get(); }
 
+  void UnblockRenderingForPendingSheet();
+
  private:
   // From ResourceClient
   void NotifyFinished(Resource*) override;
