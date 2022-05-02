@@ -90,6 +90,8 @@ def _CompareWithGolden(name=None):
 def _RunApp(name, args, debug_measures=False):
   argv = [os.path.join(_SCRIPT_DIR, 'main.py'), name]
   argv.extend(args)
+  if '-v' in sys.argv:
+    argv.append('-v')
   with test_util.AddMocksToPath():
     env = None
     if debug_measures:
@@ -430,7 +432,9 @@ class IntegrationTest(unittest.TestCase):
   def test_SaveDeltaSizeInfo(self):
     # Check that saving & loading is the same as directly parsing.
     orig_info1 = self._CloneSizeInfo(use_apk=True, use_aux_elf=True)
-    orig_info2 = self._CloneSizeInfo(use_elf=True)
+    orig_info2 = copy.deepcopy(orig_info1)
+    # Remove the last 5 symbols to ensure a small but non-empty diff.
+    orig_info2.raw_symbols._symbols[-5:] = []
     orig_delta = diff.Diff(orig_info1, orig_info2)
 
     with tempfile.NamedTemporaryFile(suffix='.sizediff') as sizediff_file:

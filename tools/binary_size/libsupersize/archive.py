@@ -6,6 +6,7 @@
 import argparse
 import collections
 import dataclasses
+import functools
 import logging
 import os
 import posixpath
@@ -394,8 +395,6 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
   for symbol in raw_symbols:
     symbol.container = container
 
-  if file_format.LogUnsortedSymbols(raw_symbols) > 0:
-    file_format.SortSymbols(raw_symbols)
   return raw_symbols
 
 
@@ -743,9 +742,9 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
   return abi_filters, ret
 
 
-def _DeduceAuxPaths(args, apk_prefix):
-  mapping_path = args.mapping_file
-  resources_pathmap_path = args.resources_pathmap_file
+# Cache to prevent excess log messages.
+@functools.lru_cache
+def _DeduceAuxPaths(mapping_path, resources_pathmap_path, apk_prefix):
   if apk_prefix:
     if not mapping_path:
       possible_mapping_path = apk_prefix + '.mapping'
@@ -828,7 +827,8 @@ def _CreateContainerSpec(apk_file_manager,
     apk_prefix = apk_prefix.replace('.minimal.apks', '.aab')
     apk_prefix = apk_prefix.replace('.apks', '.aab')
 
-  mapping_path, resources_pathmap_path = _DeduceAuxPaths(sub_args, apk_prefix)
+  mapping_path, resources_pathmap_path = _DeduceAuxPaths(
+      sub_args.mapping_file, sub_args.resources_pathmap_file, apk_prefix)
 
   apk_spec = None
   if apk_prefix:
@@ -998,10 +998,7 @@ def _FilterContainerSpecs(container_specs, container_re=None):
   return ret
 
 
-def CreateSizeInfo(container_specs,
-                   build_config,
-                   apk_file_manager,
-                   normalize_names=True):
+def CreateSizeInfo(container_specs, build_config, apk_file_manager):
   raw_symbols_list = []
   pak_id_map = pakfile.PakIdMap()
   apk_analyzer_results = {}
@@ -1022,21 +1019,26 @@ def CreateSizeInfo(container_specs,
 
     raw_symbols_list.append(raw_symbols)
 
-  all_raw_symbols = []
+  # Normalize names before sorting.
+  logging.info('Normalizing symbol names')
   for raw_symbols in raw_symbols_list:
-    file_format.CalculatePadding(raw_symbols)
+    _NormalizeNames(raw_symbols)
 
-    # Do not call _NormalizeNames() during archive since that method tends to
-    # need tweaks over time. Calling it only when loading .size files allows for
-    # more flexibility.
-    if normalize_names:
-      logging.info('Normalizing symbol names')
-      _NormalizeNames(raw_symbols)
+  # Sorting must happen after normalization.
+  logging.info('Sorting symbols')
+  for raw_symbols in raw_symbols_list:
+    if file_format.LogUnsortedSymbols(raw_symbols) > 0:
+      file_format.SortSymbols(raw_symbols)
 
-    all_raw_symbols += raw_symbols
-
+  logging.debug('Accumulating symbols')
   # Containers should always have at least one symbol.
   container_list = [syms[0].container for syms in raw_symbols_list]
+  all_raw_symbols = []
+  for raw_symbols in raw_symbols_list:
+    all_raw_symbols += raw_symbols
+
+  file_format.CalculatePadding(all_raw_symbols)
+
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 
 
@@ -1065,10 +1067,7 @@ def Run(top_args, on_config_error):
                                      top_args.source_directory,
                                      url=top_args.url,
                                      title=top_args.title)
-    size_info = CreateSizeInfo(container_specs,
-                               build_config,
-                               apk_file_manager,
-                               normalize_names=False)
+    size_info = CreateSizeInfo(container_specs, build_config, apk_file_manager)
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
     for line in data_quality.DescribeSizeInfoCoverage(size_info):

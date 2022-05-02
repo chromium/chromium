@@ -114,9 +114,9 @@ def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
       symbol.source_path = source_path
   # Majority of unmatched queries are for assembly source files (ex libav1d)
   # and v8 builtins.
-  assert dwarf_source_mapper.unmatched_queries_ratio < 0.1, (
+  assert dwarf_source_mapper.unmatched_queries_ratio < 0.2, (
       'Percentage of failing |dwarf_source_mapper| queries ' +
-      '({}%) >= 10% '.format(dwarf_source_mapper.unmatched_queries_ratio * 100)
+      '({}%) >= 20% '.format(dwarf_source_mapper.unmatched_queries_ratio * 100)
       + 'FindSourceForTextAddress() likely has a bug.')
 
 
@@ -205,9 +205,10 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
       'num_aliases_created=%d', num_found_paths, num_unknown_names,
       num_path_mismatches, num_aliases_created)
   # Currently: num_unknown_names=1246 out of 591206 (0.2%).
-  if num_unknown_names > len(raw_symbols) * 0.01:
-    logging.warning('Abnormal number of symbols not found in .o files (%d)',
-                    num_unknown_names)
+  if num_unknown_names > min(20, len(raw_symbols) * 0.01):
+    logging.warning(
+        'Abnormal number of symbols not found in .o files (%d of %d)',
+        num_unknown_names, len(raw_symbols))
   return ret
 
 
@@ -409,11 +410,11 @@ def _AddNmAliases(raw_symbols, names_by_address):
                        (name, address, ','.join('%x' % a
                                                 for a in missing_names[name])))
 
-  if float(num_new_symbols) / len(raw_symbols) < .05:
+  is_small_file = len(raw_symbols) < 1000
+  if not is_small_file and num_new_symbols / len(raw_symbols) < .05:
     logging.warning(
         'Number of aliases is oddly low (%.0f%%). It should '
-        'usually be around 25%%.',
-        float(num_new_symbols) / len(raw_symbols) * 100)
+        'usually be around 25%%.', num_new_symbols / len(raw_symbols) * 100)
 
   # Step 2: Create new symbols as siblings to each existing one.
   logging.debug('Creating %d new symbols from nm output', num_new_symbols)
@@ -912,10 +913,11 @@ def CreateSymbols(*,
   # ancestor paths do not mix generated and non-generated paths.
   archive_util.NormalizePaths(raw_symbols, native_spec.gen_dir_regex)
 
-  logging.info('Converting excessive aliases into shared-path symbols')
-  _CompactLargeAliasesIntoSharedSymbols(raw_symbols, _MAX_SAME_NAME_ALIAS_COUNT)
-
   if native_spec.elf_path or native_spec.map_path:
+    logging.info('Converting excessive aliases into shared-path symbols')
+    _CompactLargeAliasesIntoSharedSymbols(raw_symbols,
+                                          _MAX_SAME_NAME_ALIAS_COUNT)
+
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)
 
