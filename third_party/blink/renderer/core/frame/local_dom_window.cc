@@ -670,8 +670,16 @@ void LocalDOMWindow::CountPermissionsPolicyUsage(
 
 void LocalDOMWindow::CountUseOnlyInCrossOriginIframe(
     mojom::blink::WebFeature feature) {
-  if (GetFrame() && GetFrame()->IsCrossOriginToMainFrame())
+  if (GetFrame() && GetFrame()->IsCrossOriginToOutermostMainFrame())
     CountUse(feature);
+}
+
+void LocalDOMWindow::CountUseOnlyInSameOriginIframe(
+    mojom::blink::WebFeature feature) {
+  if (GetFrame() && !GetFrame()->IsOutermostMainFrame() &&
+      !GetFrame()->IsCrossOriginToOutermostMainFrame()) {
+    CountUse(feature);
+  }
 }
 
 void LocalDOMWindow::CountUseOnlyInCrossSiteIframe(
@@ -788,7 +796,7 @@ void LocalDOMWindow::EnqueueNonPersistedPageshowEvent() {
   // event to skip dispatch when the renderer exits. If this is not the case or
   // there are other cases, we need to fix this code to only record the metric
   // once the event is dispatched.
-  if (GetFrame() && GetFrame()->IsMainFrame()) {
+  if (GetFrame() && GetFrame()->IsOutermostMainFrame()) {
     RecordUMAEventPageShowPersisted(EventPageShowPersisted::kNoInRenderer);
   }
 }
@@ -801,7 +809,7 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
   DispatchEvent(*PageTransitionEvent::CreatePersistedPageshow(navigation_start),
                 document_.Get());
 
-  if (GetFrame() && GetFrame()->IsMainFrame()) {
+  if (GetFrame() && GetFrame()->IsOutermostMainFrame()) {
     RecordUMAEventPageShowPersisted(EventPageShowPersisted::kYesInRenderer);
   }
 }
@@ -1218,9 +1226,7 @@ void LocalDOMWindow::print(ScriptState* script_state) {
     return;
   }
 
-  if (!GetFrame()->IsMainFrame() && !GetFrame()->IsCrossOriginToMainFrame()) {
-    CountUse(WebFeature::kSameOriginIframeWindowPrint);
-  }
+  CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowPrint);
   CountUseOnlyInCrossOriginIframe(WebFeature::kCrossOriginWindowPrint);
 
   should_print_when_finished_loading_ = false;
@@ -1260,9 +1266,7 @@ void LocalDOMWindow::alert(ScriptState* script_state, const String& message) {
   if (!page)
     return;
 
-  if (!GetFrame()->IsMainFrame() && !GetFrame()->IsCrossOriginToMainFrame()) {
-    CountUse(WebFeature::kSameOriginIframeWindowAlert);
-  }
+  CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowAlert);
   Deprecation::CountDeprecationCrossOriginIframe(
       this, WebFeature::kCrossOriginWindowAlert);
 
@@ -1296,9 +1300,7 @@ bool LocalDOMWindow::confirm(ScriptState* script_state, const String& message) {
   if (!page)
     return false;
 
-  if (!GetFrame()->IsMainFrame() && !GetFrame()->IsCrossOriginToMainFrame()) {
-    CountUse(WebFeature::kSameOriginIframeWindowConfirm);
-  }
+  CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowConfirm);
   Deprecation::CountDeprecationCrossOriginIframe(
       this, WebFeature::kCrossOriginWindowConfirm);
 
@@ -1339,9 +1341,7 @@ String LocalDOMWindow::prompt(ScriptState* script_state,
                                                    default_value, return_value))
     return return_value;
 
-  if (!GetFrame()->IsMainFrame() && !GetFrame()->IsCrossOriginToMainFrame()) {
-    CountUse(WebFeature::kSameOriginIframeWindowPrompt);
-  }
+  CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowPrompt);
   Deprecation::CountDeprecationCrossOriginIframe(
       this, WebFeature::kCrossOriginWindowAlert);
 

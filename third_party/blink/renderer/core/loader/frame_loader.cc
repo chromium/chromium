@@ -1727,9 +1727,9 @@ void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
   document_loader_->GetUseCounter().Count(
       is_subresource
           ? WebFeature::kLegacyTLSVersionInSubresource
-          : (frame_->Tree().Parent()
-                 ? WebFeature::kLegacyTLSVersionInSubframeMainResource
-                 : WebFeature::kLegacyTLSVersionInMainFrameResource),
+          : (frame_->IsOutermostMainFrame()
+                 ? WebFeature::kLegacyTLSVersionInMainFrameResource
+                 : WebFeature::kLegacyTLSVersionInSubframeMainResource),
       frame_.Get());
 
   // For non-main-frame loads, we have to use the main frame's document for
@@ -1781,8 +1781,8 @@ void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
   // resources, and only use the warning level for main-frame resources.
   frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kOther,
-      frame_->IsMainFrame() ? mojom::ConsoleMessageLevel::kWarning
-                            : mojom::ConsoleMessageLevel::kVerbose,
+      frame_->IsOutermostMainFrame() ? mojom::ConsoleMessageLevel::kWarning
+                                     : mojom::ConsoleMessageLevel::kVerbose,
       console_message));
 }
 

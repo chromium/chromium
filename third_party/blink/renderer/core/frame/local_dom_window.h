@@ -198,6 +198,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // iframe.
   void CountUseOnlyInCrossOriginIframe(mojom::blink::WebFeature feature);
 
+  // Count |feature| only when this window is associated with a same-origin
+  // iframe with the outermost main frame.
+  void CountUseOnlyInSameOriginIframe(mojom::blink::WebFeature feature);
+
   // Count |feature| only when this window is associated with a cross-site
   // iframe. A "site" is a scheme and registrable domain.
   void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) override;
