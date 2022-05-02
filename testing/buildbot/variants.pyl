@@ -971,7 +971,7 @@
       'cros_img': 'hana-release/R102-14695.11.0',
     },
     'enabled': True,
-    'identifier': 'HANA_RELEASE_LKGM',
+    'identifier': 'HANA_RELEASE_DEV',
   },
   'CROS_HANA_RELEASE_BETA': {
     'skylab': {
@@ -980,7 +980,7 @@
       'cros_img': 'hana-release/R101-14588.67.0',
     },
     'enabled': True,
-    'identifier': 'HANA_RELEASE_LKGM',
+    'identifier': 'HANA_RELEASE_BETA',
   },
   'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
@@ -989,7 +989,7 @@
       'cros_img': 'hana-release/R101-14583.0.0',
     },
     'enabled': True,
-    'identifier': 'HANA_RELEASE_LKGM',
+    'identifier': 'HANA_RELEASE_STABLE',
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
