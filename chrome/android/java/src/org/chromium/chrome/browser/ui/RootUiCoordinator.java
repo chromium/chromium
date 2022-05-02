@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
@@ -711,7 +713,8 @@ public class RootUiCoordinator
     private void initHistoryClustersCoordinator(Profile profile) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
             mHistoryClustersCoordinator =
-                    new HistoryClustersCoordinator(profile, mActivity, mBottomSheetController);
+                    new HistoryClustersCoordinator(profile, mActivity, mBottomSheetController,
+                            () -> new Intent().setClass(mActivity, HistoryActivity.class));
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

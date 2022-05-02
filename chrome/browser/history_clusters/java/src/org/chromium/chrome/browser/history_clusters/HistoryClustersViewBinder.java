@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChromeImageButton;
 
 class HistoryClustersViewBinder {
     public static void bindVisitView(PropertyModel model, View view, PropertyKey key) {
@@ -23,7 +24,13 @@ class HistoryClustersViewBinder {
     }
 
     public static void bindBottomSheetToolbar(PropertyModel model, View view, PropertyKey key) {
-        if (key == HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT) {
+        if (key
+                == HistoryClustersBottomSheetToolbarProperties
+                           .OPEN_ACTIVITY_BUTTON_CLICK_LISTENER) {
+            ChromeImageButton openButton = view.findViewById(R.id.open_history_activity);
+            openButton.setOnClickListener(model.get(HistoryClustersBottomSheetToolbarProperties
+                                                            .OPEN_ACTIVITY_BUTTON_CLICK_LISTENER));
+        } else if (key == HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT) {
             TextView textView = view.findViewById(R.id.query);
             textView.setText(model.get(HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT));
         }

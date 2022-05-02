@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -67,6 +69,8 @@ public class HistoryClustersMediatorTest {
     private ModelList mModelList;
     private HistoryClustersBottomSheetContent mBottomSheetContent =
             new HistoryClustersBottomSheetContent();
+    private Intent mIntent = new Intent();
+    private Supplier<Intent> mHistoryActivityIntentFactory = () -> mIntent;
     private HistoryClustersMediator mMediator;
 
     @Before
@@ -76,7 +80,7 @@ public class HistoryClustersMediatorTest {
         mBottomSheetContent = new HistoryClustersBottomSheetContent();
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS),
-                mBottomSheetController, mBottomSheetContent);
+                mBottomSheetController, mBottomSheetContent, mHistoryActivityIntentFactory);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");

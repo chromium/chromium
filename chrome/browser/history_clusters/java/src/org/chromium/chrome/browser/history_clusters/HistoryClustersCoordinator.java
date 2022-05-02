@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -43,9 +45,12 @@ public class HistoryClustersCoordinator {
      *         derived.
      * @param bottomSheetController Controller for interacting with the bottom sheet system, e.g. to
      *         request to show our content.
+     * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
+     *         We can't directly set the class ourselves without creating a circular dependency.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController) {
+            @NonNull BottomSheetController bottomSheetController,
+            Supplier<Intent> historyActivityIntentFactory) {
         mContext = context;
         mModelList = new ModelList();
         mBottomSheetContent = new HistoryClustersBottomSheetContent();
@@ -53,7 +58,8 @@ public class HistoryClustersCoordinator {
                 new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
-                mBottomSheetToolbarModel, bottomSheetController, mBottomSheetContent);
+                mBottomSheetToolbarModel, bottomSheetController, mBottomSheetContent,
+                historyActivityIntentFactory);
     }
 
     public void destroy() {
@@ -80,6 +86,7 @@ public class HistoryClustersCoordinator {
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(null);
+        recyclerView.setAdapter(mAdapter);
 
         View bottomSheetToolbar =
                 layoutInflater.inflate(R.layout.history_clusters_bottom_sheet_toolbar, null);
