@@ -175,32 +175,6 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
   return action;
 }
 
-- (UIAction*)actionToShowLinkPreview {
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_CONTENT_CONTEXT_SHOWLINKPREVIEW)
-                image:[UIImage imageNamed:@"show_preview"]
-                 type:MenuActionType::ShowLinkPreview
-                block:^{
-                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, true);
-                }];
-  return action;
-}
-
-- (UIAction*)actionToHideLinkPreview {
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW)
-                image:[UIImage imageNamed:@"hide_preview"]
-                 type:MenuActionType::HideLinkPreview
-                block:^{
-                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, false);
-                }];
-  return action;
-}
-
 - (UIAction*)actionToOpenNewTab {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);

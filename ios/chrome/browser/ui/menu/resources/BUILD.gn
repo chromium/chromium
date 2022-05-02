@@ -60,14 +60,6 @@ imageset("edit") {
   ]
 }
 
-imageset("hide_preview") {
-  sources = [
-    "hide_preview.imageset/Contents.json",
-    "hide_preview.imageset/hide_preview@2x.png",
-    "hide_preview.imageset/hide_preview@3x.png",
-  ]
-}
-
 imageset("lens_icon") {
   sources = [
     "lens_icon.imageset/Contents.json",
@@ -137,14 +129,6 @@ imageset("share") {
     "share.imageset/Contents.json",
     "share.imageset/share@2x.png",
     "share.imageset/share@3x.png",
-  ]
-}
-
-imageset("show_preview") {
-  sources = [
-    "show_preview.imageset/Contents.json",
-    "show_preview.imageset/show_preview@2x.png",
-    "show_preview.imageset/show_preview@3x.png",
   ]
 }
 
