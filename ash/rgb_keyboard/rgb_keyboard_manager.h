@@ -6,7 +6,6 @@
 #define ASH_RGB_KEYBOARD_RGB_KEYBOARD_MANAGER_H_
 
 #include <stdint.h>
-#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -34,12 +33,6 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   // Returns the global instance if initialized. May return null.
   static RgbKeyboardManager* Get();
 
-  std::vector<uint8_t> recently_sent_rgb() const {
-    return recently_sent_rgb_for_testing_;
-  }
-
-  bool is_rainbow_mode_set() const { return is_rainbow_mode_set_for_testing_; }
-
   bool IsRgbKeyboardSupported() const {
     return capabilities_ != rgbkbd::RgbKeyboardCapabilities::kNone;
   }
@@ -54,10 +47,6 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   void OnGetRgbKeyboardCapabilities(
       absl::optional<rgbkbd::RgbKeyboardCapabilities> reply);
 
-  // TODO(jimmyxgong): Remove the following members after DBus client is
-  // available.
-  std::vector<uint8_t> recently_sent_rgb_for_testing_;
-  bool is_rainbow_mode_set_for_testing_ = false;
   rgbkbd::RgbKeyboardCapabilities capabilities_ =
       rgbkbd::RgbKeyboardCapabilities::kNone;
 

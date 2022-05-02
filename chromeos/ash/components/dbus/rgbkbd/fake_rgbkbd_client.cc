@@ -21,4 +21,19 @@ void FakeRgbkbdClient::SetCapsLockState(bool enabled) {
   caps_lock_state_ = enabled;
 }
 
+void FakeRgbkbdClient::SetStaticBackgroundColor(uint8_t r,
+                                                uint8_t g,
+                                                uint8_t b) {
+  rgb_color_ = std::make_tuple(r, g, b);
+  is_rainbow_mode_set_ = false;
+}
+
+void FakeRgbkbdClient::ResetStoredRgbColors() {
+  rgb_color_ = std::make_tuple(0u, 0u, 0u);
+}
+
+void FakeRgbkbdClient::SetRainbowMode() {
+  is_rainbow_mode_set_ = true;
+  ResetStoredRgbColors();
+}
 }  // namespace ash

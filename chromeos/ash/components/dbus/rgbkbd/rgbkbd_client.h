@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RGBKBD_RGBKBD_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_RGBKBD_RGBKBD_CLIENT_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -41,6 +43,10 @@ class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
       GetRgbKeyboardCapabilitiesCallback callback) = 0;
 
   virtual void SetCapsLockState(bool enabled) = 0;
+
+  virtual void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b) = 0;
+
+  virtual void SetRainbowMode() = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

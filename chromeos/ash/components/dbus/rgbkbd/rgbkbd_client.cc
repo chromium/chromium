@@ -54,6 +54,31 @@ class RgbkbdClientImpl : public RgbkbdClient {
                               base::DoNothing());
   }
 
+  void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b) override {
+    VLOG(1) << "rgbkbd: SetStaticBackgroundColor  R: " << static_cast<int>(r)
+            << "G: " << static_cast<int>(g) << "B: " << static_cast<int>(b);
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kSetStaticBackgroundColor);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendByte(r);
+    writer.AppendByte(g);
+    writer.AppendByte(b);
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(&method_call,
+                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                              base::DoNothing());
+  }
+
+  void SetRainbowMode() override {
+    VLOG(1) << "rgbkbd: SetRainbowMode";
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kSetRainbowMode);
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(&method_call,
+                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                              base::DoNothing());
+  }
+
  private:
   void GetRgbKeyboardCapabilitiesCallback(
       GetRgbKeyboardCapabilitiesCallback callback,
