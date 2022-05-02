@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,7 +137,12 @@ void RandomBitCorrelation(int random_bit) {
   if ((mask & (1ULL << random_bit)) == 0)
     return;  // bit is always 0.
 
-#ifdef DEBUG
+#if DCHECK_IS_ON()
+  // Do fewer checks when DCHECK_IS_ON(). Exercized code only changes when the
+  // random number generator does, which should be almost never. However it's
+  // expensive to run all the tests. So keep iterations faster for local
+  // development builds, while having the stricter version run on official build
+  // testers.
   constexpr int kHistory = 2;
   constexpr int kRepeats = 1000;
 #else
