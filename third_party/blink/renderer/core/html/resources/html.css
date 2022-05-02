@@ -933,8 +933,8 @@ select:-internal-list-box optgroup {
    it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
-    background-color: -internal-active-list-box-selection !important;
-    color: -internal-active-list-box-selection-text !important;
+    background-color: SelectedItem !important;
+    color: SelectedItemText !important;
 }
 
 /* TODO(crbug.com/1244986): We should be able to remove !important here, but

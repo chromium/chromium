@@ -671,8 +671,10 @@ Color LayoutTheme::DefaultSystemColor(
                                                               : 0xFF000000;
     case CSSValueID::kVisitedtext:
       return 0xFF551A8B;
+    case CSSValueID::kSelecteditem:
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);
+    case CSSValueID::kSelecteditemtext:
     case CSSValueID::kInternalActiveListBoxSelectionText:
       return ActiveListBoxSelectionForegroundColor(color_scheme);
     case CSSValueID::kInternalInactiveListBoxSelection:

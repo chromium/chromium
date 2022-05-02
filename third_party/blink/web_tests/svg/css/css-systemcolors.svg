@@ -459,6 +459,30 @@
             </feDiffuseLighting>
             <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
         </filter>
+        <filter x="0" y="0" width="1" height="1" id="f38">
+            <feFlood flood-color="currentColor" color="SelectedItem" />
+        </filter>
+        <linearGradient id="g38">
+            <stop stop-color="currentColor" color="SelectedItem" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl38">
+            <feDiffuseLighting color="SelectedItem" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+                <filter x="0" y="0" width="1" height="1" id="f39">
+            <feFlood flood-color="currentColor" color="SelectedItemText" />
+        </filter>
+        <linearGradient id="g39">
+            <stop stop-color="currentColor" color="SelectedItemText" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl39">
+            <feDiffuseLighting color="SelectedItemText" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
     </defs>
     <rect width="28" height="28" x="0" filter="url(#f0)" />
     <rect width="28" height="28" x="0" y="28" fill="url(#g0)" />
@@ -574,4 +598,10 @@
     <rect width="28" height="28" x="1036" filter="url(#f37)" />
     <rect width="28" height="28" x="1036" y="28" fill="url(#g37)" />
     <rect width="28" height="28" x="1036" y="56" fill="white" filter="url(#fl37)" />
+    <rect width="28" height="28" x="1064" filter="url(#f38)" />
+    <rect width="28" height="28" x="1064" y="28" fill="url(#g38)" />
+    <rect width="28" height="28" x="1064" y="56" fill="white" filter="url(#fl38)" />
+    <rect width="28" height="28" x="1092" filter="url(#f39)" />
+    <rect width="28" height="28" x="1092" y="28" fill="url(#g39)" />
+    <rect width="28" height="28" x="1092" y="56" fill="white" filter="url(#fl39)" />
 </svg>

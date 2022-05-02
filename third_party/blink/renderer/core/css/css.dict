@@ -208,6 +208,8 @@
 "marktext"
 "menutext"
 "scrollbar"
+"selecteditem"
+"selecteditemtext"
 "threeddarkshadow"
 "threedface"
 "threedhighlight"
