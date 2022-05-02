@@ -31,4 +31,8 @@ std::string GetUnsafeResourceMetricPrefix(
 SafeBrowsingUrlAllowList* GetAllowListForResource(
     const security_interstitials::UnsafeResource& resource);
 
+// Retrieves the main frame URL for |resource| in |web_state|.
+const GURL GetMainFrameUrl(
+    const security_interstitials::UnsafeResource& resource);
+
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_UNSAFE_RESOURCE_UTIL_H_

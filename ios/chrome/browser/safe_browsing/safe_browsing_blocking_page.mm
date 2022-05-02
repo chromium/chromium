@@ -21,7 +21,6 @@
 #include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #import "ios/web/public/web_state.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -37,13 +36,6 @@ using security_interstitials::IOSBlockingPageMetricsHelper;
 using security_interstitials::SafeBrowsingLoudErrorUI;
 
 namespace {
-// Retrieves the main frame URL for |resource| in |web_state|.
-const GURL GetMainFrameUrl(const UnsafeResource& resource) {
-  if (resource.request_destination ==
-      network::mojom::RequestDestination::kDocument)
-    return resource.url;
-  return resource.weak_web_state.get()->GetLastCommittedURL();
-}
 // Creates a metrics helper for |resource|.
 std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
     const UnsafeResource& resource) {

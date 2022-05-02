@@ -6,6 +6,7 @@
 
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/web/public/web_state.h"
+#import "services/network/public/mojom/fetch_api.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,4 +83,12 @@ SafeBrowsingUrlAllowList* GetAllowListForResource(
   if (!web_state)
     return nullptr;
   return SafeBrowsingUrlAllowList::FromWebState(web_state);
+}
+
+const GURL GetMainFrameUrl(
+    const security_interstitials::UnsafeResource& resource) {
+  if (resource.request_destination ==
+      network::mojom::RequestDestination::kDocument)
+    return resource.url;
+  return resource.weak_web_state.get()->GetLastCommittedURL();
 }
