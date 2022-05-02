@@ -112,6 +112,20 @@ ci.builder(
     # TODO(crbug.com/1186823): Expand to more branches when all M1 bots are
     # rosettaless.
     branch_selector = branches.MAIN,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "a64",

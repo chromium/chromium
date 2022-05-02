@@ -37,6 +37,9 @@ consoles.list_view(
 
 try_.builder(
     name = "mac-arm64-on-arm64-rel",
+    mirrors = [
+        "ci/mac-arm64-on-arm64-rel",
+    ],
     builderless = False,
     cpu = cpu.ARM64,
     os = os.MAC_11,
