@@ -533,8 +533,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
 
   void StartWebAppProvider(Profile* profile) {
-    web_app::FakeWebAppProvider::Get(profile)->SetDefaultFakeSubsystems();
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
+    auto system_web_app_manager =
+        std::make_unique<web_app::TestSystemWebAppManager>(profile);
+
+    auto* provider = web_app::FakeWebAppProvider::Get(profile);
+    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
+    provider->SetRunSubsystemStartupTasks(true);
+    provider->Start();
   }
 
   ui::BaseWindow* GetLastActiveWindowForItemController(
@@ -1712,7 +1717,14 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
   EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
 }
 
-TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
+// crbug.com/1312611 Test Failing on linux-cfm-rel
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ArcAppPinCrossPlatformWorkflow \
+  DISABLED_ArcAppPinCrossPlatformWorkflow
+#else
+#define MAYBE_ArcAppPinCrossPlatformWorkflow ArcAppPinCrossPlatformWorkflow
+#endif
+TEST_F(ChromeShelfControllerWithArcTest, MAYBE_ArcAppPinCrossPlatformWorkflow) {
   // Work on ARC disabled platform first.
   const std::string arc_app_id1 =
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[0]);
@@ -1726,7 +1738,6 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
   AddWebApp(web_app::kGmailAppId);
-  app_service_test().FlushMojoCalls();
   app_service_test().WaitForAppService();
 
   // extension 1, 3 are pinned by user
