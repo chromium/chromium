@@ -61,6 +61,9 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // devices.  Consent is obtained outside Chrome within Family Link flows.
       GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
 
+      // Required to fetch the ManagedAccounsSigninRestriction policy.
+      GaiaConstants::kSecureConnectOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,

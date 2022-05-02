@@ -20,6 +20,7 @@
 #include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -101,7 +102,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
   // `this`.
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, /*oauth_consumer_name=*/"cloud_policy", /*scopes=*/
-      {features::kUserCloudSigninRestrictionPolicyFetcherScope.Get()},
+      {GaiaConstants::kSecureConnectOAuth2Scope},
       base::BindOnce(
           &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
           base::Unretained(this), std::move(callback)),

@@ -92,6 +92,10 @@ const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
 // OAuth2 scope for access to the Photos API.
 const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
 
+// OAuth2 scope for access to the SecureConnect API.
+extern const char kSecureConnectOAuth2Scope[] =
+    "https://www.googleapis.com/auth/bce.secureconnect";
+
 // OAuth2 scope for access to Cast backdrop API.
 const char kCastBackdropOAuth2Scope[] =
     "https://www.googleapis.com/auth/cast.backdrop";
