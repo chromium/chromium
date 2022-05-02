@@ -14,7 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

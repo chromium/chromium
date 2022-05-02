@@ -8,8 +8,8 @@
 
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_
-#define CHROMEOS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_
 
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -19,8 +19,7 @@ namespace chromeos {
 class FakeCiceroneClient;
 
 // FakeConciergeClient is a light mock of ConciergeClient used for testing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
-    : public ConciergeClient {
+class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
  public:
   // Returns the fake global instance if initialized. May return null.
   static FakeConciergeClient* Get();
@@ -455,4 +454,4 @@ namespace ash {
 using ::chromeos::FakeConciergeClient;
 }
 
-#endif  // CHROMEOS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_

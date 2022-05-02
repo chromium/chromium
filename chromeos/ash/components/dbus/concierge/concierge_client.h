@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
-#define CHROMEOS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "dbus/object_proxy.h"
 
 namespace chromeos {
@@ -19,7 +19,7 @@ class FakeCiceroneClient;
 
 // ConciergeClient is used to communicate with Concierge, which is used to
 // start and stop VMs, as well as for disk image management.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
+class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
  public:
   static constexpr base::ObserverListPolicy kObserverListPolicy =
       base::ObserverListPolicy::EXISTING_ONLY;
@@ -324,4 +324,4 @@ namespace ash {
 using ::chromeos::ConciergeClient;
 }
 
-#endif  // CHROMEOS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_

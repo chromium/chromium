@@ -142,14 +142,6 @@ proto_library("cicerone_proto") {
   proto_out_dir = "chromeos/dbus/cicerone"
 }
 
-proto_library("concierge_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/concierge"
-}
-
 proto_library("metrics_event_proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
