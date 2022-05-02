@@ -6,12 +6,20 @@
 
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// The size of symbol images.
+NSInteger kSymbolLocationBarPointSize = 10;
+
+}  // namespace
 
 #pragma mark - Suggestion icons.
 
@@ -79,6 +87,11 @@ UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
 
 // Returns the asset with "always template" rendering mode.
 UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
+  if (UseSymbols()) {
+    return DefaultSymbolTemplateWithPointSize(
+        GetLocationBarSecuritySymbolName(iconType),
+        kSymbolLocationBarPointSize);
+  }
   NSString* imageName = GetLocationBarSecurityIconTypeAssetName(iconType);
   return [[UIImage imageNamed:imageName]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

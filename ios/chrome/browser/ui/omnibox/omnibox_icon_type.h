@@ -19,4 +19,8 @@ enum LocationBarSecurityIconType {
 NSString* GetLocationBarSecurityIconTypeAssetName(
     LocationBarSecurityIconType icon);
 
+// Returns the symbol name corresponding to the given iconType.
+NSString* GetLocationBarSecuritySymbolName(
+    LocationBarSecurityIconType iconType);
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_ICON_TYPE_H_

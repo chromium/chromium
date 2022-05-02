@@ -10,6 +10,15 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Specific symbol names for the location bar.
+NSString* kInfoLocationBarSymbol = @"info.circle.fill";
+NSString* kSecureLocationBarSymbol = @"lock.fill";
+NSString* kNotSecureLocationBarSymbol = @"exclamationmark.triangle.fill";
+
+}  // namespace
+
 NSString* GetLocationBarSecurityIconTypeAssetName(
     LocationBarSecurityIconType iconType) {
   switch (iconType) {
@@ -22,5 +31,20 @@ NSString* GetLocationBarSecurityIconTypeAssetName(
     case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
       NOTREACHED();
       return @"location_bar_connection_info";
+  }
+}
+
+NSString* GetLocationBarSecuritySymbolName(
+    LocationBarSecurityIconType iconType) {
+  switch (iconType) {
+    case INFO:
+      return kInfoLocationBarSymbol;
+    case SECURE:
+      return kSecureLocationBarSymbol;
+    case NOT_SECURE_WARNING:
+      return kNotSecureLocationBarSymbol;
+    case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
+      NOTREACHED();
+      return kInfoLocationBarSymbol;
   }
 }
