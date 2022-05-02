@@ -80,7 +80,8 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   struct Rule {
     explicit Rule(Type type,
                   absl::optional<std::vector<IPEndPoint>> expected_addresses =
-                      absl::nullopt);
+                      absl::nullopt,
+                  Error connect_error = ERR_CONNECTION_FAILED);
     ~Rule();
     Rule(const Rule&);
     Rule& operator=(const Rule&);
@@ -89,6 +90,9 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
     // If specified, the addresses that should be passed into
     // `CreateTransportClientSocket`.
     absl::optional<std::vector<IPEndPoint>> expected_addresses;
+    // The error to use if `type` specifies a failing connection. Ignored
+    // otherwise.
+    Error connect_error;
   };
 
   explicit MockTransportClientSocketFactory(NetLog* net_log);

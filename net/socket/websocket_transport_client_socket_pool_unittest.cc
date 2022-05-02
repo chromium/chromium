@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,6 +62,12 @@ namespace {
 const int kMaxSockets = 32;
 const int kMaxSocketsPerGroup = 6;
 const RequestPriority kDefaultPriority = LOW;
+
+IPAddress ParseIP(base::StringPiece ip) {
+  IPAddress address;
+  CHECK(address.AssignFromIPLiteral(ip));
+  return address;
+}
 
 // RunLoop doesn't support this natively but it is easy to emulate.
 void RunLoopForTimePeriod(base::TimeDelta period) {
@@ -863,6 +870,61 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
 
   EXPECT_GE(base::TimeTicks::Now() - start, delay * 5);
+}
+
+// Test that, if an address fails due to `ERR_NETWORK_IO_SUSPENDED`, we do not
+// try subsequent addresses.
+TEST_F(WebSocketTransportClientSocketPoolTest, Suspend) {
+  // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
+  host_resolver_->rules()->AddIPLiteralRule("*",
+                                            "1:abcd::3:4:ff,2:abcd::3:4:ff,"
+                                            "3:abcd::3:4:ff,4:abcd::3:4:ff,"
+                                            "1.1.1.1,2.2.2.2",
+                                            std::string());
+
+  // The first connection attempt will fail, after which no more will be
+  // attempted.
+  MockTransportClientSocketFactory::Rule rule(
+      MockTransportClientSocketFactory::Type::kFailing,
+      std::vector{IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80)},
+      ERR_NETWORK_IO_SUSPENDED);
+  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+
+  TestCompletionCallback callback;
+  ClientSocketHandle handle;
+  int rv =
+      handle.Init(group_id_, params_, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
+}
+
+// Same as above, but with a asynchronous failure.
+TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
+  // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
+  host_resolver_->rules()->AddIPLiteralRule("*",
+                                            "1:abcd::3:4:ff,2:abcd::3:4:ff,"
+                                            "3:abcd::3:4:ff,4:abcd::3:4:ff,"
+                                            "1.1.1.1,2.2.2.2",
+                                            std::string());
+
+  // The first connection attempt will fail, after which no more will be
+  // attempted.
+  MockTransportClientSocketFactory::Rule rule(
+      MockTransportClientSocketFactory::Type::kPendingFailing,
+      std::vector{IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80)},
+      ERR_NETWORK_IO_SUSPENDED);
+  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+
+  TestCompletionCallback callback;
+  ClientSocketHandle handle;
+  int rv =
+      handle.Init(group_id_, params_, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
 }
 
 // Global timeout for all connects applies. This test is disabled by default

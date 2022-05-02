@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_family.h"
@@ -37,7 +38,7 @@ namespace {
 
 const char kHostName[] = "unresolvable.host.name";
 
-IPAddress ParseIP(const std::string& ip) {
+IPAddress ParseIP(base::StringPiece ip) {
   IPAddress address;
   CHECK(address.AssignFromIPLiteral(ip));
   return address;
@@ -654,6 +655,37 @@ TEST_F(TransportConnectJobTest, MultipleRoutesIPV4Fallback) {
   EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1.1.1.1"), 8441));
   EXPECT_THAT(attempts[1].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("1::"), 8441));
+}
+
+// Test that `TransportConnectJob` will not continue trying routes given
+// ERR_NETWORK_IO_SUSPENDED.
+TEST_F(TransportConnectJobTest, MultipleRoutesSuspended) {
+  std::vector<HostResolverEndpointResult> endpoints(2);
+  endpoints[0].ip_endpoints = {IPEndPoint(ParseIP("1::"), 8443)};
+  endpoints[0].metadata.supported_protocol_alpns = {"h3", "h2", "http/1.1"};
+  endpoints[1].ip_endpoints = {IPEndPoint(ParseIP("2::"), 443)};
+  host_resolver_.rules()->AddRule(kHostName, endpoints);
+
+  // The first connect attempt will fail with `ERR_NETWORK_IO_SUSPENDED`.
+  // `TransportConnectJob` should not attempt routes after receiving this error.
+  MockTransportClientSocketFactory::Rule rule(
+      MockTransportClientSocketFactory::Type::kFailing,
+      endpoints[0].ip_endpoints, ERR_NETWORK_IO_SUSPENDED);
+  client_socket_factory_.SetRules(base::make_span(&rule, 1));
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job,
+                                        ERR_NETWORK_IO_SUSPENDED,
+                                        /*expect_sync_result=*/false);
+
+  // Check that failed connection attempts are reported.
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
+  ASSERT_EQ(1u, attempts.size());
+  EXPECT_THAT(attempts[0].result, test::IsError(ERR_NETWORK_IO_SUSPENDED));
+  EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1::"), 8443));
 }
 
 // Test that, if `HostResolver` supports SVCB for a scheme but the caller didn't

@@ -254,7 +254,9 @@ int WebSocketTransportConnectSubJob::DoTransportConnectComplete(int result) {
     // Drop the socket to release the endpoint lock.
     transport_socket_.reset();
 
-    if (current_address_index_ + 1 < addresses_.size()) {
+    // Don't try the next address if entering suspend mode.
+    if (result != ERR_NETWORK_IO_SUSPENDED &&
+        current_address_index_ + 1 < addresses_.size()) {
       // Try falling back to the next address in the list.
       next_state_ = STATE_OBTAIN_LOCK;
       ++current_address_index_;

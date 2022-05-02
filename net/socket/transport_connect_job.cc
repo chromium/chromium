@@ -471,11 +471,14 @@ int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
   } else {
     completed_socket.reset();
 
-    // If there is another endpoint available, try it.
-    current_endpoint_result_++;
-    if (current_endpoint_result_ < endpoint_results_.size()) {
-      next_state_ = STATE_TRANSPORT_CONNECT;
-      result = OK;
+    // Don't try the next route if entering suspend mode.
+    if (result != ERR_NETWORK_IO_SUSPENDED) {
+      // If there is another endpoint available, try it.
+      current_endpoint_result_++;
+      if (current_endpoint_result_ < endpoint_results_.size()) {
+        next_state_ = STATE_TRANSPORT_CONNECT;
+        result = OK;
+      }
     }
   }
 

@@ -251,6 +251,10 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
 
       default:
         ipv6_job_.reset();
+        if (result == ERR_NETWORK_IO_SUSPENDED) {
+          // Don't try other jobs if entering suspend mode.
+          ipv4_job_.reset();
+        }
     }
   }
 
@@ -285,6 +289,12 @@ void WebSocketTransportConnectJob::OnSubJobComplete(
     // deleted.
     ipv4_job_.reset();
     ipv6_job_.reset();
+    fallback_timer_.Stop();
+  } else if (result == ERR_NETWORK_IO_SUSPENDED) {
+    // Don't try other jobs if entering suspend mode.
+    ipv4_job_.reset();
+    ipv6_job_.reset();
+    fallback_timer_.Stop();
   } else {
     switch (job->type()) {
       case SUB_JOB_IPV4:
