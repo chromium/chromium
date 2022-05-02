@@ -90,8 +90,6 @@ _STABLE_ONLY_ALLOWLISTED_ENUMS = {
     'crosapi.mojom.RequestUrlHandlerListStatus',
     'crosapi.mojom.TriState',
     'network.mojom.ReferrerPolicy',
-    'skia.mojom.AlphaType',
-    'skia.mojom.ColorType',
 }
 
 

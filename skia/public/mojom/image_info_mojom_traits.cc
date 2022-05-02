@@ -52,19 +52,17 @@ SkImageInfo MakeSkImageInfo(SkColorType color_type,
 skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
     SkAlphaType type) {
   switch (type) {
-    // TODO(dcheng): Why do we support unknown types on the wire?
-    case kUnknown_SkAlphaType:
-      return skia::mojom::AlphaType::UNKNOWN;
     case kOpaque_SkAlphaType:
       return skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE;
     case kPremul_SkAlphaType:
       return skia::mojom::AlphaType::PREMUL;
     case kUnpremul_SkAlphaType:
       return skia::mojom::AlphaType::UNPREMUL;
+    case kUnknown_SkAlphaType:
+      // Unknown types should not be sent over mojo.
+      break;
   }
-  // TODO(dcheng): This should become a CHECK(false), as this represents a bug
-  // in the sender.
-  NOTREACHED();
+  CHECK(false);
   return skia::mojom::AlphaType::UNKNOWN;
 }
 
@@ -73,10 +71,6 @@ bool EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
     skia::mojom::AlphaType in,
     SkAlphaType* out) {
   switch (in) {
-    // TODO(dcheng): Why do we support unknown types on the wire?
-    case skia::mojom::AlphaType::UNKNOWN:
-      *out = kUnknown_SkAlphaType;
-      return true;
     case skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE:
       *out = kOpaque_SkAlphaType;
       return true;
@@ -86,6 +80,9 @@ bool EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
     case skia::mojom::AlphaType::UNPREMUL:
       *out = kUnpremul_SkAlphaType;
       return true;
+    case skia::mojom::AlphaType::UNKNOWN:
+      // Unknown types should not be sent over mojo.
+      return false;
   }
   return false;
 }
@@ -94,9 +91,6 @@ bool EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
 skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
     SkColorType type) {
   switch (type) {
-    // TODO(dcheng): Why do we support unknown types on the wire?
-    case kUnknown_SkColorType:
-      return skia::mojom::ColorType::UNKNOWN;
     case kAlpha_8_SkColorType:
       return skia::mojom::ColorType::ALPHA_8;
     case kRGB_565_SkColorType:
@@ -109,13 +103,13 @@ skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
       return skia::mojom::ColorType::BGRA_8888;
     case kGray_8_SkColorType:
       return skia::mojom::ColorType::GRAY_8;
+    case kUnknown_SkColorType:
+      // Fall through as unknown values should not be sent over the wire.
     default:
       // Skia has color types not used by Chrome.
       break;
   }
-  // TODO(dcheng): This should become a CHECK(false), as this represents a bug
-  // in the sender.
-  NOTREACHED();
+  CHECK(false);
   return skia::mojom::ColorType::UNKNOWN;
 }
 
@@ -124,10 +118,6 @@ bool EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
     skia::mojom::ColorType in,
     SkColorType* out) {
   switch (in) {
-    // TODO(dcheng): Why do we support unknown types on the wire?
-    case skia::mojom::ColorType::UNKNOWN:
-      *out = kUnknown_SkColorType;
-      return true;
     case skia::mojom::ColorType::ALPHA_8:
       *out = kAlpha_8_SkColorType;
       return true;
@@ -147,7 +137,8 @@ bool EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
       *out = kGray_8_SkColorType;
       return true;
     case skia::mojom::ColorType::DEPRECATED_INDEX_8:
-      // no longer supported
+    case skia::mojom::ColorType::UNKNOWN:
+      // UNKNOWN or unsupported values should not be sent over mojo.
       break;
   }
   return false;

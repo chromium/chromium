@@ -4,25 +4,26 @@
 
 module skia.mojom;
 
-// Mirror of SkColorType. Intentionally not marked [Extensible] as we want
-// unsupported image formats to fail to deserialize.
-[Stable]
+// Mirror of SkColorType. Unsupported values and `UNKNOWN` will raise
+// serialization and deserialization errors.
+[Stable, Extensible]
 enum ColorType {
-  UNKNOWN,
+  [Default] UNKNOWN,
   ALPHA_8,
   RGB_565,
   ARGB_4444,
   RGBA_8888,
   BGRA_8888,
+  // Note: this will fail traits deserialization.
   DEPRECATED_INDEX_8,
   GRAY_8,
 };
 
-// Mirror of SkAlphaType. Intentionally not marked [Extensible] as we want
-// unsupported image formats to fail to deserialize.
-[Stable]
+// Mirror of SkAlphaType. Unsupported values and `UNKNOWN` will raise
+// serialization and deserialization errors.
+[Stable, Extensible]
 enum AlphaType {
-  UNKNOWN,
+  [Default] UNKNOWN,
   ALPHA_TYPE_OPAQUE,
   PREMUL,
   UNPREMUL,
