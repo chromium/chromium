@@ -227,6 +227,7 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   if (!manually_specified_set_.value().has_value())
     return;
   ApplyReplacementOverrides({manually_specified_set_->value()});
+  RemoveAllSingletons();
 }
 
 void FirstPartySetsLoader::ApplyReplacementOverrides(
@@ -246,19 +247,6 @@ void FirstPartySetsLoader::ApplyReplacementOverrides(
                all_override_sites.contains(p.second);
       });
 
-  // Now remove singleton sets. We already removed any sites that were part
-  // of the intersection, or whose owner was part of the intersection. This
-  // leaves sites that *are* owners, which no longer have any (other)
-  // members.
-  std::set<net::SchemefulSite> owners_with_members;
-  for (const auto& it : sets_) {
-    if (it.first != it.second)
-      owners_with_members.insert(it.second);
-  }
-  base::EraseIf(sets_, [&owners_with_members](const auto& p) {
-    return p.first == p.second && !base::Contains(owners_with_members, p.first);
-  });
-
   // Next, we must add each site in the override_sets to |sets_|.
   for (auto& [owner, members] : override_sets) {
     sets_.emplace(owner, owner);
@@ -268,10 +256,77 @@ void FirstPartySetsLoader::ApplyReplacementOverrides(
   }
 }
 
+void FirstPartySetsLoader::ApplyAdditionOverrides(
+    const std::vector<SingleSet>& new_sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(HasAllInputs());
+
+  if (new_sets.empty())
+    return;
+
+  std::vector<SingleSet> normalized_additions =
+      NormalizeAdditionSets(sets_, new_sets);
+
+  FlattenedSets flattened_additions;
+  for (const auto& [owner, members] : normalized_additions) {
+    for (const net::SchemefulSite& member : members)
+      flattened_additions.emplace(member, owner);
+    flattened_additions.emplace(owner, owner);
+  }
+
+  // Identify intersections between addition sets and existing sets. This will
+  // be used to reparent existing sets if they intersect with an addition set.
+  //
+  // Since we reparent every member of an existing set (regardless of whether
+  // the intersection was via one of its members or its owner), we just keep
+  // track of the set itself, via its owner.
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> owners_in_intersection;
+  for (const auto& [site, owner] : flattened_additions) {
+    // Found an overlap with an existing set. Add the existing owner to the
+    // map.
+    if (auto it = sets_.find(site); it != sets_.end()) {
+      owners_in_intersection[it->second] = owner;
+    }
+  }
+
+  // Update the (site, owner) mappings in sets_ such that if owner is in the
+  // intersection, then the site is mapped to owners_in_intersection[owner].
+  //
+  // This reparents existing sets to their owner given by the normalized
+  // addition sets.
+  for (auto& [site, owner] : sets_) {
+    if (auto owner_entry = owners_in_intersection.find(owner);
+        owner_entry != owners_in_intersection.end()) {
+      owner = owner_entry->second;
+    }
+  }
+
+  // Since the intersection between sets_ and flattened_additions has already
+  // been updated above, we can insert flattened_additions into sets_ without
+  // affecting any existing mappings in sets_.
+  sets_.insert(flattened_additions.begin(), flattened_additions.end());
+}
+
+void FirstPartySetsLoader::RemoveAllSingletons() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Now remove singleton sets, which are sets that just contain sites that
+  // *are* owners, but no longer have any (other) members.
+  std::set<net::SchemefulSite> owners_with_members;
+  for (const auto& it : sets_) {
+    if (it.first != it.second)
+      owners_with_members.insert(it.second);
+  }
+  base::EraseIf(sets_, [&owners_with_members](const auto& p) {
+    return p.first == p.second && !base::Contains(owners_with_members, p.first);
+  });
+}
+
 void FirstPartySetsLoader::ApplyAllPolicyOverrides() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(HasAllInputs());
   ApplyReplacementOverrides(policy_overrides_.replacements);
+  ApplyAdditionOverrides(policy_overrides_.additions);
+  RemoveAllSingletons();
 }
 
 void FirstPartySetsLoader::MaybeFinishLoading() {

@@ -543,7 +543,9 @@ class FirstPartySetsLoaderTestWithPolicySets
 };
 
 TEST_P(FirstPartySetsLoaderTestWithPolicySets, EmptyPolicySetLists) {
-  FirstPartySetsLoader loader(callback(), MakePolicySetInputFromMap({}, {}));
+  FirstPartySetsLoader loader(
+      callback(),
+      MakePolicySetInputFromMap(/*replacements=*/{}, /*additions=*/{}));
   SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
                                         {"https://member1.test"});
   EXPECT_THAT(WaitAndGetResult(),
@@ -557,8 +559,10 @@ TEST_P(FirstPartySetsLoaderTestWithPolicySets, EmptyPolicySetLists) {
 TEST_P(FirstPartySetsLoaderTestWithPolicySets,
        Replacements__NoIntersection_NoRemoval) {
   FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      {{"https://owner2.test", {"https://member2.test"}}}, {}));
+      callback(),
+      MakePolicySetInputFromMap(
+          /*replacements=*/{{"https://owner2.test", {"https://member2.test"}}},
+          /*additions=*/{}));
   SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
                                         {"https://member1.test"});
 
@@ -581,7 +585,8 @@ TEST_P(FirstPartySetsLoaderTestWithPolicySets,
   FirstPartySetsLoader loader(
       callback(),
       MakePolicySetInputFromMap(
-          {{"https://owner2.test", {"https://member1b.test"}}}, {}));
+          /*replacements=*/{{"https://owner2.test", {"https://member1b.test"}}},
+          /*additions=*/{}));
   SetEitherPublicOrManuallySpecifiedSet(
       loader, "https://owner1.test",
       {"https://member1a.test", "https://member1b.test"});
@@ -603,8 +608,10 @@ TEST_P(FirstPartySetsLoaderTestWithPolicySets,
 TEST_P(FirstPartySetsLoaderTestWithPolicySets,
        Replacements_ReplacesExistingOwner_RemovesFormerMembers) {
   FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      {{"https://owner1.test", {"https://member2.test"}}}, {}));
+      callback(),
+      MakePolicySetInputFromMap(
+          /*replacements=*/{{"https://owner1.test", {"https://member2.test"}}},
+          /*additions=*/{}));
   SetEitherPublicOrManuallySpecifiedSet(
       loader, "https://owner1.test",
       {"https://member1a.test", "https://member1b.test"});
@@ -622,8 +629,10 @@ TEST_P(FirstPartySetsLoaderTestWithPolicySets,
 TEST_P(FirstPartySetsLoaderTestWithPolicySets,
        Replacements_ReplacesExistingMember_RemovesSingletons) {
   FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      {{"https://owner3.test", {"https://member1.test"}}}, {}));
+      callback(),
+      MakePolicySetInputFromMap(
+          /*replacements=*/{{"https://owner3.test", {"https://member1.test"}}},
+          /*additions=*/{}));
   SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
                                         {"https://member1.test"});
 
@@ -633,6 +642,134 @@ TEST_P(FirstPartySetsLoaderTestWithPolicySets,
                                    // Below are the owner self mappings.
                                    Pair(SerializesTo("https://owner3.test"),
                                         SerializesTo("https://owner3.test"))));
+}
+
+// The policy set and the existing set have nothing in common so the policy set
+// gets added in without updating the existing set.
+TEST_P(FirstPartySetsLoaderTestWithPolicySets,
+       Additions_NoIntersection_AddsWithoutUpdating) {
+  FirstPartySetsLoader loader(
+      callback(), MakePolicySetInputFromMap(
+                      /*replacements=*/{}, /*additions=*/{
+                          {"https://owner2.test", {"https://member2.test"}}}));
+  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
+                                        {"https://member1.test"});
+
+  EXPECT_THAT(WaitAndGetResult(),
+              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://owner2.test")),
+                                   // Below are the owner self mappings.
+                                   Pair(SerializesTo("https://owner1.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   Pair(SerializesTo("https://owner2.test"),
+                                        SerializesTo("https://owner2.test"))));
+}
+
+// The owner of a policy set is also a member in an existing set.
+// The policy set absorbs all sites in the existing set into its members.
+TEST_P(FirstPartySetsLoaderTestWithPolicySets,
+       Additions_PolicyOwnerIsExistingMember_PolicySetAbsorbsExistingSet) {
+  FirstPartySetsLoader loader(
+      callback(),
+      MakePolicySetInputFromMap(
+          /*replacements=*/{}, /*additions=*/{
+              {"https://member2.test",
+               {"https://member2a.test", "https://member2b.test"}}}));
+  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
+                                        {"https://member2.test"});
+
+  EXPECT_THAT(WaitAndGetResult(),
+              UnorderedElementsAre(Pair(SerializesTo("https://owner1.test"),
+                                        SerializesTo("https://member2.test")),
+                                   Pair(SerializesTo("https://member2b.test"),
+                                        SerializesTo("https://member2.test")),
+                                   Pair(SerializesTo("https://member2a.test"),
+                                        SerializesTo("https://member2.test")),
+                                   // Below are the owner self mappings.
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://member2.test"))));
+}
+
+// The owner of a policy set is also an owner of an existing set.
+// The policy set absorbs all of its owner's existing members into its members.
+TEST_P(FirstPartySetsLoaderTestWithPolicySets,
+       Additions_PolicyOwnerIsExistingOwner_PolicySetAbsorbsExistingMembers) {
+  FirstPartySetsLoader loader(
+      callback(), MakePolicySetInputFromMap(
+                      /*replacements=*/{}, /*additions=*/{
+                          {"https://owner1.test", {"https://member2.test"}}}));
+  SetEitherPublicOrManuallySpecifiedSet(
+      loader, "https://owner1.test",
+      {"https://member1.test", "https://member3.test"});
+
+  EXPECT_THAT(WaitAndGetResult(),
+              UnorderedElementsAre(Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   // Below are the owner self mappings.
+                                   Pair(SerializesTo("https://owner1.test"),
+                                        SerializesTo("https://owner1.test"))));
+}
+
+// Replacement & Addition policy set lists are required to be disjoint with
+// each other.
+TEST_P(FirstPartySetsLoaderTestWithPolicySets,
+       BothTypes_SetListsIntersect_NoOverridesApplied) {
+  FirstPartySetsLoader loader(
+      callback(), MakePolicySetInputFromMap(
+                      /*replacements=*/{{"https://owner0.test",
+                                         {"https://new-member.test"}}},
+                      /*additions=*/{{"https://owner42.test",
+                                      {"https://new-member.test"}}}));
+  SetEitherPublicOrManuallySpecifiedSet(
+      loader, "https://owner1.test",
+      {"https://member1.test", "https://member2.test"});
+
+  // The policy set overrides are ignored since the set lists were not disjoint,
+  // which violates a requirement of the policy.
+  EXPECT_THAT(WaitAndGetResult(),
+              UnorderedElementsAre(Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://owner1.test")),
+                                   // Below are the owner self mappings.
+                                   Pair(SerializesTo("https://owner1.test"),
+                                        SerializesTo("https://owner1.test"))));
+}
+
+// Replacement & Addition policy set lists are disjoint with each other.
+TEST_P(FirstPartySetsLoaderTestWithPolicySets,
+       BothTypes_SetListsDontIntersect_OverridesApplied) {
+  FirstPartySetsLoader loader(
+      callback(),
+      MakePolicySetInputFromMap(
+          /*replacements=*/{{"https://owner0.test", {"https://member1.test"}}},
+          /*additions=*/{
+              {"https://owner1.test", {"https://new-member1.test"}}}));
+  SetEitherPublicOrManuallySpecifiedSet(
+      loader, "https://owner1.test",
+      {"https://member1.test", "https://member2.test"});
+
+  // While the policy set lists are disjoint, they are able to affect the same
+  // existing set.
+  EXPECT_THAT(
+      WaitAndGetResult(),
+      UnorderedElementsAre(Pair(SerializesTo("https://member2.test"),
+                                SerializesTo("https://owner1.test")),
+                           Pair(SerializesTo("https://new-member1.test"),
+                                SerializesTo("https://owner1.test")),
+                           Pair(SerializesTo("https://member1.test"),
+                                SerializesTo("https://owner0.test")),
+                           // Below are the owner self mappings.
+                           Pair(SerializesTo("https://owner0.test"),
+                                SerializesTo("https://owner0.test")),
+                           Pair(SerializesTo("https://owner1.test"),
+                                SerializesTo("https://owner1.test"))));
 }
 
 INSTANTIATE_TEST_CASE_P(

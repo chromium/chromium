@@ -84,11 +84,27 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // `sets_` member variable, and then adds the `override_sets` into `sets_`.
   void ApplyReplacementOverrides(const std::vector<SingleSet>& override_sets);
 
+  // Updates the intersection between `sets_` and `override_sets` within the
+  // `sets_` member variable, and then adds the `override_sets` into
+  // `sets_`.
+  //
+  // The applied update ensures that invariants of First-Party Sets are
+  // maintained, and that all sets in sets_ are disjoint.
+  //
+  // This will add in the `override_sets` into `sets_` without removing
+  // any existing sites from the list of First-Party Sets.
+  void ApplyAdditionOverrides(const std::vector<SingleSet>& override_sets);
+
+  // Removes all singletons (owners that have no members) from sets_.
+  void RemoveAllSingletons();
+
   // Applies the First-Party Sets overrides provided by policy.
   //
   // Must not be called until the loader has already received the public sets
   // via `SetComponentSets` and the CLI-provided sets have been applied to
   // `sets_`.
+  //
+  // Applies "Replacement" overrides before applying "Addition" overrides.
   void ApplyAllPolicyOverrides();
 
   // Checks the required inputs have been received, and if so, invokes the
