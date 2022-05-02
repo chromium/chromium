@@ -72,7 +72,7 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       page_state_, method_, post_id_, nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */,
       nullptr /* subresource_web_bundle_navigation_info */,
-      policy_container_policies_ ? policy_container_policies_->Clone()
+      policy_container_policies_ ? policy_container_policies_->ClonePtr()
                                  : nullptr,
       protect_url_in_navigation_api_);
   // |bindings_| gets only updated through the SetBindings API, not through

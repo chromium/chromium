@@ -2794,7 +2794,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     return;
   }
 
-  auto policies = std::make_unique<PolicyContainerPolicies>();
+  PolicyContainerPolicies policies;
 
   // Main frames created by the browser are treated as belonging the `local`
   // address space, so that they can make requests to any address space
@@ -2812,7 +2812,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // TODO(https://crbug.com/1194421): Address the prerendering case.
   if (is_main_frame() && !renderer_initiated_creation_of_main_frame &&
       lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
-    policies->ip_address_space = network::mojom::IPAddressSpace::kLocal;
+    policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
   }
 
   SetPolicyContainerHost(

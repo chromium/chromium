@@ -3413,7 +3413,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
       if (previous_frame_entry &&
           previous_frame_entry->policy_container_policies()) {
         pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
-            previous_frame_entry->policy_container_policies()->Clone());
+            previous_frame_entry->policy_container_policies()->ClonePtr());
       }
     }
   }
@@ -3433,7 +3433,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
           node->current_frame_host()
               ->policy_container_host()
               ->policies()
-              .Clone());
+              .ClonePtr());
     }
   }
 
@@ -4261,10 +4261,10 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
       return nullptr;
 
     // Make a copy of the policy container for the new FrameNavigationEntry.
-    return previous_policies->Clone();
+    return previous_policies->ClonePtr();
   }
 
-  return rfh->policy_container_host()->policies().Clone();
+  return rfh->policy_container_host()->policies().ClonePtr();
 }
 
 void NavigationControllerImpl::BroadcastHistoryOffsetAndLength() {

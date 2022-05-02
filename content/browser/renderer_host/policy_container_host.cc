@@ -124,14 +124,24 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       cross_origin_embedder_policy(cross_origin_embedder_policy),
       sandbox_flags(sandbox_flags) {}
 
+PolicyContainerPolicies::PolicyContainerPolicies(PolicyContainerPolicies&&) =
+    default;
+
+PolicyContainerPolicies& PolicyContainerPolicies::operator=(
+    PolicyContainerPolicies&&) = default;
+
 PolicyContainerPolicies::~PolicyContainerPolicies() = default;
 
-std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
-    const {
-  return std::make_unique<PolicyContainerPolicies>(
+PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
+  return PolicyContainerPolicies(
       referrer_policy, ip_address_space, is_web_secure_context,
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
       cross_origin_embedder_policy, sandbox_flags);
+}
+
+std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::ClonePtr()
+    const {
+  return std::make_unique<PolicyContainerPolicies>(Clone());
 }
 
 void PolicyContainerPolicies::AddContentSecurityPolicies(
@@ -141,14 +151,10 @@ void PolicyContainerPolicies::AddContentSecurityPolicies(
                                    std::make_move_iterator(policies.end()));
 }
 
-PolicyContainerHost::PolicyContainerHost()
-    : PolicyContainerHost(std::make_unique<PolicyContainerPolicies>()) {}
+PolicyContainerHost::PolicyContainerHost() = default;
 
-PolicyContainerHost::PolicyContainerHost(
-    std::unique_ptr<PolicyContainerPolicies> policies)
-    : policies_(std::move(policies)) {
-  DCHECK(policies_);
-}
+PolicyContainerHost::PolicyContainerHost(PolicyContainerPolicies policies)
+    : policies_(std::move(policies)) {}
 
 PolicyContainerHost::~PolicyContainerHost() {
   // The PolicyContainerHost associated with |frame_token_| might have
@@ -179,7 +185,7 @@ PolicyContainerHost* PolicyContainerHost::FromFrameToken(
 
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  policies_->referrer_policy = referrer_policy;
+  policies_.referrer_policy = referrer_policy;
   if (frame_token_) {
     if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromFrameToken(
             process_id_, frame_token_.value())) {
@@ -191,7 +197,7 @@ void PolicyContainerHost::SetReferrerPolicy(
 void PolicyContainerHost::AddContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies) {
-  policies_->AddContentSecurityPolicies(std::move(content_security_policies));
+  policies_.AddContentSecurityPolicies(std::move(content_security_policies));
 }
 
 blink::mojom::PolicyContainerPtr
@@ -210,13 +216,13 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
 
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerPolicies::New(
-          policies_->referrer_policy, policies_->ip_address_space,
-          mojo::Clone(policies_->content_security_policies)),
+          policies_.referrer_policy, policies_.ip_address_space,
+          mojo::Clone(policies_.content_security_policies)),
       std::move(remote));
 }
 
 scoped_refptr<PolicyContainerHost> PolicyContainerHost::Clone() const {
-  return base::MakeRefCounted<PolicyContainerHost>(policies_->Clone());
+  return base::MakeRefCounted<PolicyContainerHost>(policies_.Clone());
 }
 
 void PolicyContainerHost::Bind(

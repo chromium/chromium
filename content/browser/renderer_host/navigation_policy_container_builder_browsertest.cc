@@ -213,8 +213,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
   EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
 
-  auto initiator_policies = std::make_unique<PolicyContainerPolicies>();
-  initiator_policies->ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  PolicyContainerPolicies initiator_policies;
+  initiator_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
 
   blink::LocalFrameToken token;
   auto initiator_host =
@@ -226,8 +226,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   EXPECT_NE(*builder.HistoryPolicies(), *builder.InitiatorPolicies());
 
-  std::unique_ptr<PolicyContainerPolicies> history_policies =
-      builder.HistoryPolicies()->Clone();
+  PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   // Deliver a Content Security Policy via `AddContentSecurityPolicy`. This
   // policy should not be incorporated in the final policies, since the builder
@@ -237,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone);
 
-  EXPECT_EQ(builder.FinalPolicies(), *history_policies);
+  EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
 
 // Verifies that when the URL of the document to commit is `about:srcdoc`, and
@@ -271,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   EXPECT_NE(*builder.HistoryPolicies(), *builder.ParentPolicies());
 
-  std::unique_ptr<PolicyContainerPolicies> history_policies =
-      builder.HistoryPolicies()->Clone();
+  PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   // Deliver a Content Security Policy via `AddContentSecurityPolicy`. This
   // policy should not be incorporated in the final policies, since the builder
@@ -282,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.ComputePolicies(AboutSrcdocUrl(), false,
                           network::mojom::WebSandboxFlags::kNone);
 
-  EXPECT_EQ(builder.FinalPolicies(), *history_policies);
+  EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
 
 // Verifies that history policies are ignored in the case of error pages.
@@ -321,16 +319,15 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  std::unique_ptr<PolicyContainerPolicies> history_policies =
-      builder.HistoryPolicies()->Clone();
+  PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone);
-  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePoliciesForError(false,
                                   network::mojom::WebSandboxFlags::kNone);
-  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 }
 
 // Verifies that history policies from a reused navigation entry aren't used for
@@ -418,8 +415,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  std::unique_ptr<PolicyContainerPolicies> history_policies =
-      builder.HistoryPolicies()->Clone();
+  PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(GURL("http://foo.test"), false,
                           network::mojom::WebSandboxFlags::kNone);
@@ -427,12 +423,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
 
   builder.ResetForCrossDocumentRestart();
-  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+  EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone);
 
-  EXPECT_EQ(builder.FinalPolicies(), *history_policies);
+  EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
 
 }  // namespace

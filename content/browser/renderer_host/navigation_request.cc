@@ -3615,7 +3615,7 @@ void NavigationRequest::OnResponseStarted(
               ? frame_entry->subresource_web_bundle_navigation_info()->Clone()
               : nullptr,
           frame_entry->policy_container_policies()
-              ? frame_entry->policy_container_policies()->Clone()
+              ? frame_entry->policy_container_policies()->ClonePtr()
               : nullptr);
     }
   }

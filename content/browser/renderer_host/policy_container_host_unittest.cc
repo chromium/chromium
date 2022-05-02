@@ -67,13 +67,12 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   coep.reporting_endpoint = "endpoint 1";
   coep.report_only_reporting_endpoint = "endpoint 2";
 
-  auto policies = std::make_unique<PolicyContainerPolicies>(
-      network::mojom::ReferrerPolicy::kAlways,
-      network::mojom::IPAddressSpace::kUnknown,
-      /*is_web_secure_context=*/true, std::move(csps), coop, coep,
-      sandbox_flags);
+  PolicyContainerPolicies policies(network::mojom::ReferrerPolicy::kAlways,
+                                   network::mojom::IPAddressSpace::kUnknown,
+                                   /*is_web_secure_context=*/true,
+                                   std::move(csps), coop, coep, sandbox_flags);
 
-  EXPECT_THAT(policies->Clone(), Pointee(Eq(ByRef(*policies))));
+  EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));
 }
 
 TEST(PolicyContainerHostTest, ReferrerPolicy) {

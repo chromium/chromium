@@ -26,6 +26,7 @@ namespace content {
 // The contents of a PolicyContainerHost.
 struct CONTENT_EXPORT PolicyContainerPolicies {
   PolicyContainerPolicies();
+
   PolicyContainerPolicies(
       network::mojom::ReferrerPolicy referrer_policy,
       network::mojom::IPAddressSpace ip_address_space,
@@ -35,13 +36,20 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       network::mojom::WebSandboxFlags sandbox_flags);
+
+  // Instances of this type are move-only.
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
-  PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
+  PolicyContainerPolicies& operator=(const PolicyContainerPolicies&) = delete;
+  PolicyContainerPolicies(PolicyContainerPolicies&&);
+  PolicyContainerPolicies& operator=(PolicyContainerPolicies&&);
+
   ~PolicyContainerPolicies();
 
-  // Creates a clone of this PolicyContainerPolicies. Always returns a non-null
-  // pointer.
-  std::unique_ptr<PolicyContainerPolicies> Clone() const;
+  // Returns an identical copy of this instance.
+  PolicyContainerPolicies Clone() const;
+
+  // Returns the result of `Clone()` stored on the heap.
+  std::unique_ptr<PolicyContainerPolicies> ClonePtr() const;
 
   // Helper function to append items to `content_security_policies`.
   void AddContentSecurityPolicies(
@@ -131,10 +139,8 @@ class CONTENT_EXPORT PolicyContainerHost
   // mojo receiver.
   PolicyContainerHost();
 
-  // Constructs a PolicyContainerHost containing the given |policies|, which
-  // must not be null.
-  explicit PolicyContainerHost(
-      std::unique_ptr<PolicyContainerPolicies> policies);
+  // Constructs a PolicyContainerHost containing the given |policies|.
+  explicit PolicyContainerHost(PolicyContainerPolicies policies);
 
   // PolicyContainerHost instances are neither copyable nor movable.
   PolicyContainerHost(const PolicyContainerHost&) = delete;
@@ -153,27 +159,27 @@ class CONTENT_EXPORT PolicyContainerHost
       const blink::LocalFrameToken& token,
       int process_id = ChildProcessHost::kInvalidUniqueID);
 
-  const PolicyContainerPolicies& policies() const { return *policies_; }
+  const PolicyContainerPolicies& policies() const { return policies_; }
 
   network::mojom::ReferrerPolicy referrer_policy() const {
-    return policies_->referrer_policy;
+    return policies_.referrer_policy;
   }
 
   network::mojom::IPAddressSpace ip_address_space() const {
-    return policies_->ip_address_space;
+    return policies_.ip_address_space;
   }
 
   network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
-    return policies_->cross_origin_opener_policy;
+    return policies_.cross_origin_opener_policy;
   }
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    return policies_->cross_origin_embedder_policy;
+    return policies_.cross_origin_embedder_policy;
   }
 
   network::mojom::WebSandboxFlags sandbox_flags() const {
-    return policies_->sandbox_flags;
+    return policies_.sandbox_flags;
   }
 
   void AddContentSecurityPolicies(
@@ -182,12 +188,12 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void set_cross_origin_opener_policy(
       const network::CrossOriginOpenerPolicy& policy) {
-    policies_->cross_origin_opener_policy = policy;
+    policies_.cross_origin_opener_policy = policy;
   }
 
   // Merges the provided sandbox flags with the existing flags.
   void set_sandbox_flags(network::mojom::WebSandboxFlags sandbox_flags) {
-    policies_->sandbox_flags = sandbox_flags;
+    policies_.sandbox_flags = sandbox_flags;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending
@@ -221,8 +227,8 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
 
-  // The policies of this PolicyContainerHost. This is never null.
-  std::unique_ptr<PolicyContainerPolicies> policies_;
+  // The policies of this PolicyContainerHost.
+  PolicyContainerPolicies policies_;
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};

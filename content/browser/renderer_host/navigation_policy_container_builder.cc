@@ -11,7 +11,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
 namespace content {
@@ -24,7 +24,7 @@ std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
     return nullptr;
   }
 
-  return parent->policy_container_host()->policies().Clone();
+  return parent->policy_container_host()->policies().ClonePtr();
 }
 
 // Returns a copy of the navigation initiator's policies, if any.
@@ -47,7 +47,7 @@ std::unique_ptr<PolicyContainerPolicies> GetInitiatorPolicies(
     return nullptr;
   }
 
-  return initiator_policy_container_host->policies().Clone();
+  return initiator_policy_container_host->policies().ClonePtr();
 }
 
 // Returns a copy of the given history |entry|'s policies, if any.
@@ -62,7 +62,7 @@ std::unique_ptr<PolicyContainerPolicies> GetHistoryPolicies(
     return nullptr;
   }
 
-  return policies->Clone();
+  return policies->ClonePtr();
 }
 
 }  // namespace
@@ -73,8 +73,7 @@ NavigationPolicyContainerBuilder::NavigationPolicyContainerBuilder(
     const FrameNavigationEntry* history_entry)
     : parent_policies_(GetParentPolicies(parent)),
       initiator_policies_(GetInitiatorPolicies(initiator_frame_token)),
-      history_policies_(GetHistoryPolicies(history_entry)),
-      delivered_policies_(std::make_unique<PolicyContainerPolicies>()) {}
+      history_policies_(GetHistoryPolicies(history_entry)) {}
 
 NavigationPolicyContainerBuilder::~NavigationPolicyContainerBuilder() = default;
 
@@ -96,13 +95,13 @@ NavigationPolicyContainerBuilder::HistoryPolicies() const {
 void NavigationPolicyContainerBuilder::SetIPAddressSpace(
     network::mojom::IPAddressSpace address_space) {
   DCHECK(!HasComputedPolicies());
-  delivered_policies_->ip_address_space = address_space;
+  delivered_policies_.ip_address_space = address_space;
 }
 
 void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
     bool value) {
   DCHECK(!HasComputedPolicies());
-  delivered_policies_->is_web_secure_context = value;
+  delivered_policies_.is_web_secure_context = value;
 }
 
 void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(
@@ -110,35 +109,35 @@ void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(
   DCHECK(!HasComputedPolicies());
   DCHECK(policy);
 
-  delivered_policies_->content_security_policies.push_back(std::move(policy));
+  delivered_policies_.content_security_policies.push_back(std::move(policy));
 }
 
 void NavigationPolicyContainerBuilder::AddContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
   DCHECK(!HasComputedPolicies());
 
-  delivered_policies_->AddContentSecurityPolicies(std::move(policies));
+  delivered_policies_.AddContentSecurityPolicies(std::move(policies));
 }
 
 void NavigationPolicyContainerBuilder::SetCrossOriginOpenerPolicy(
     network::CrossOriginOpenerPolicy coop) {
   DCHECK(!HasComputedPolicies());
 
-  delivered_policies_->cross_origin_opener_policy = coop;
+  delivered_policies_.cross_origin_opener_policy = coop;
 }
 
 void NavigationPolicyContainerBuilder::SetCrossOriginEmbedderPolicy(
     network::CrossOriginEmbedderPolicy coep) {
   DCHECK(!HasComputedPolicies());
 
-  delivered_policies_->cross_origin_embedder_policy = coep;
+  delivered_policies_.cross_origin_embedder_policy = coep;
 }
 
 const PolicyContainerPolicies&
 NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
 
-  return *delivered_policies_;
+  return delivered_policies_;
 }
 
 void NavigationPolicyContainerBuilder::ComputePoliciesForError(
@@ -153,15 +152,15 @@ void NavigationPolicyContainerBuilder::ComputePoliciesForError(
 
   // TODO(https://crbug.com/1175787): We should enforce strict policies on error
   // pages.
-  auto policies = std::make_unique<PolicyContainerPolicies>();
+  PolicyContainerPolicies policies;
 
   // We commit error pages with the same address space as the underlying page,
   // so that auto-reloading error pages does not show up as a private network
   // request (from the unknown/public address space to private). See also
   // crbug.com/1180140.
-  policies->ip_address_space = delivered_policies_->ip_address_space;
+  policies.ip_address_space = delivered_policies_.ip_address_space;
 
-  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies.get());
+  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies);
 
   SetFinalPolicies(std::move(policies));
 
@@ -177,20 +176,20 @@ void NavigationPolicyContainerBuilder::ComputeIsWebSecureContext() {
   }
 
   // The child can only be a secure context if the parent is too.
-  delivered_policies_->is_web_secure_context &=
+  delivered_policies_.is_web_secure_context &=
       parent_policies_->is_web_secure_context;
 }
 
 void NavigationPolicyContainerBuilder::ComputeSandboxFlags(
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags,
-    PolicyContainerPolicies* policies) {
+    PolicyContainerPolicies& policies) {
   DCHECK(!HasComputedPolicies());
 
   auto sandbox_flags_to_commit = frame_sandbox_flags;
 
   // The document can also restrict sandbox further, via its CSP.
-  for (const auto& csp : policies->content_security_policies) {
+  for (const auto& csp : policies.content_security_policies) {
     sandbox_flags_to_commit |= csp->sandbox;
   }
 
@@ -205,27 +204,24 @@ void NavigationPolicyContainerBuilder::ComputeSandboxFlags(
                                    kPropagatesToAuxiliaryBrowsingContexts;
   }
 
-  policies->sandbox_flags = sandbox_flags_to_commit;
+  policies.sandbox_flags = sandbox_flags_to_commit;
 }
 
-std::unique_ptr<PolicyContainerPolicies>
-NavigationPolicyContainerBuilder::IncorporateDeliveredPolicies(
+void NavigationPolicyContainerBuilder::IncorporateDeliveredPolicies(
     const GURL& url,
-    std::unique_ptr<PolicyContainerPolicies> policies) {
+    PolicyContainerPolicies& policies) {
   // Delivered content security policies must be appended.
-  policies->AddContentSecurityPolicies(
-      mojo::Clone(delivered_policies_->content_security_policies));
+  policies.AddContentSecurityPolicies(
+      mojo::Clone(delivered_policies_.content_security_policies));
 
   // The delivered IP address space (if any) overrides the IP address space.
-  if (delivered_policies_->ip_address_space !=
+  if (delivered_policies_.ip_address_space !=
       network::mojom::IPAddressSpace::kUnknown) {
-    policies->ip_address_space = delivered_policies_->ip_address_space;
+    policies.ip_address_space = delivered_policies_.ip_address_space;
   }
-
-  return policies;
 }
 
-std::unique_ptr<PolicyContainerPolicies>
+PolicyContainerPolicies
 NavigationPolicyContainerBuilder::ComputeInheritedPolicies(const GURL& url) {
   DCHECK(url.SchemeIsLocal()) << url << " should not inherit policies";
 
@@ -239,20 +235,19 @@ NavigationPolicyContainerBuilder::ComputeInheritedPolicies(const GURL& url) {
     return initiator_policies_->Clone();
   }
 
-  return std::make_unique<PolicyContainerPolicies>();
+  return PolicyContainerPolicies();
 }
 
-std::unique_ptr<PolicyContainerPolicies>
-NavigationPolicyContainerBuilder::ComputeFinalPolicies(
+PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     const GURL& url,
     bool is_inside_mhtml,
     network::mojom::WebSandboxFlags frame_sandbox_flags) {
-  std::unique_ptr<PolicyContainerPolicies> policies;
+  PolicyContainerPolicies policies;
 
   // Policies are either inherited from another document for local scheme, or
   // directly set from the delivered response.
   if (!url.SchemeIsLocal()) {
-    policies = delivered_policies_->Clone();
+    policies = delivered_policies_.Clone();
   } else if (history_policies_) {
     // For a local scheme, history policies should not incorporate delivered
     // ones as this may lead to duplication of some policies already stored in
@@ -262,10 +257,11 @@ NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     // history navigation we will have CSP: something twice.
     policies = history_policies_->Clone();
   } else {
-    policies = IncorporateDeliveredPolicies(url, ComputeInheritedPolicies(url));
+    policies = ComputeInheritedPolicies(url);
+    IncorporateDeliveredPolicies(url, policies);
   }
 
-  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies.get());
+  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies);
   return policies;
 }
 
@@ -284,7 +280,7 @@ bool NavigationPolicyContainerBuilder::HasComputedPolicies() const {
 }
 
 void NavigationPolicyContainerBuilder::SetFinalPolicies(
-    std::unique_ptr<PolicyContainerPolicies> policies) {
+    PolicyContainerPolicies policies) {
   DCHECK(!HasComputedPolicies());
 
   host_ = base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
@@ -313,7 +309,7 @@ NavigationPolicyContainerBuilder::TakePolicyContainerHost() && {
 
 void NavigationPolicyContainerBuilder::ResetForCrossDocumentRestart() {
   host_ = nullptr;
-  delivered_policies_ = std::make_unique<PolicyContainerPolicies>();
+  delivered_policies_ = PolicyContainerPolicies();
 }
 
 }  // namespace content
