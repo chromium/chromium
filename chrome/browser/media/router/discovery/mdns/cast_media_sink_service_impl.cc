@@ -523,8 +523,7 @@ void CastMediaSinkServiceImpl::OpenChannel(
       open_params,
       base::BindOnce(&CastMediaSinkServiceImpl::OnChannelOpened, GetWeakPtr(),
                      cast_sink, std::move(backoff_entry), sink_source,
-                     clock_->Now(), std::move(callback),
-                     std::move(open_params)));
+                     clock_->Now(), std::move(callback), open_params));
 }
 
 void CastMediaSinkServiceImpl::OnChannelOpened(
