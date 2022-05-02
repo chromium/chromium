@@ -4,7 +4,7 @@
 
 #include "components/autofill_assistant/browser/android/generic_ui_root_controller_android.h"
 
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/android/generic_ui_nested_controller_android.h"
 #include "components/autofill_assistant/browser/radio_button_controller.h"
 
@@ -29,7 +29,7 @@ GenericUiRootControllerAndroid::CreateFromProto(
     const GenericUserInterfaceProto& proto,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
     base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
-    const Dependencies& dependencies,
+    const DependenciesAndroid& dependencies,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate,
     EventHandler* event_handler,
     UserModel* user_model,

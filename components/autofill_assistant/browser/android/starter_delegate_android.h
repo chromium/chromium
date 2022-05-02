@@ -11,7 +11,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
@@ -123,14 +123,14 @@ class StarterDelegateAndroid
  private:
   friend class content::WebContentsUserData<StarterDelegateAndroid>;
   StarterDelegateAndroid(content::WebContents* web_contents,
-                         std::unique_ptr<Dependencies> dependencies);
+                         std::unique_ptr<DependenciesAndroid> dependencies);
 
   void CreateJavaDependenciesIfNecessary();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   base::WeakPtr<Starter> starter_;
   // Contains AssistantStaticDependencies which do not change.
-  const std::unique_ptr<const Dependencies> dependencies_;
+  const std::unique_ptr<const DependenciesAndroid> dependencies_;
   // Can change based on activity attachment.
   base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;
 

@@ -31,7 +31,7 @@
 #include "components/autofill_assistant/android/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantUiController_jni.h"
 #include "components/autofill_assistant/browser/android/client_android.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/android/generic_ui_root_controller_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
@@ -265,7 +265,8 @@ UiControllerAndroid::UiControllerAndroid(
       form_delegate_(this),
       generic_ui_delegate_(this),
       bottom_bar_delegate_(this),
-      dependencies_(Dependencies::CreateFromJavaDependencies(jdependencies)) {
+      dependencies_(
+          DependenciesAndroid::CreateFromJavaDependencies(jdependencies)) {
   java_object_ = Java_AutofillAssistantUiController_Constructor(
       env, reinterpret_cast<intptr_t>(this), jdependencies,
       /* allowTabSwitching= */

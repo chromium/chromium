@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -42,7 +42,7 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       BasicInteractions* basic_interactions,
       ViewHandlerAndroid* view_handler,
       RadioButtonController* radio_button_controller,
-      const Dependencies* dependencies,
+      const DependenciesAndroid* dependencies,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
       base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate);
@@ -108,7 +108,7 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
   raw_ptr<BasicInteractions> basic_interactions_ = nullptr;
   raw_ptr<ViewHandlerAndroid> view_handler_ = nullptr;
   raw_ptr<RadioButtonController> radio_button_controller_ = nullptr;
-  raw_ptr<const Dependencies> dependencies_ = nullptr;
+  raw_ptr<const DependenciesAndroid> dependencies_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jcontext_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jdelegate_ = nullptr;

@@ -25,7 +25,7 @@
 #include "components/autofill_assistant/android/jni_headers_public/AssistantAutofillCreditCard_jni.h"
 #include "components/autofill_assistant/android/jni_headers_public/AssistantAutofillProfile_jni.h"
 #include "components/autofill_assistant/browser/android/client_android.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
@@ -172,7 +172,7 @@ int GetPixelSizeOrDefault(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
     const JavaRef<jobject>& jcontext,
-    const Dependencies& dependencies,
+    const DependenciesAndroid& dependencies,
     const DrawableProto& proto,
     const UserModel* user_model) {
   switch (proto.drawable_case()) {

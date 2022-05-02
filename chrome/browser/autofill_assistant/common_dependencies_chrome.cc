@@ -1,15 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "chrome/browser/android/autofill_assistant/dependencies_chrome.h"
+#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 
-#include "base/android/scoped_java_ref.h"
-#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantStaticDependenciesChrome_jni.h"
-#include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
-#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util_chrome.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill_assistant/annotate_dom_model_service_factory.h"
+#include "chrome/browser/autofill_assistant/assistant_field_trial_util_chrome.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,49 +21,37 @@
 #include "content/public/browser/web_contents.h"
 
 using ::autofill::PersonalDataManager;
-using ::base::android::JavaParamRef;
-using ::base::android::ScopedJavaGlobalRef;
 using ::content::WebContents;
 using ::password_manager::PasswordManagerClient;
 using ::variations::VariationsService;
 
 namespace autofill_assistant {
 
-static jlong JNI_AssistantStaticDependenciesChrome_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jstatic_dependencies) {
-  // The dynamic_cast is necessary here to safely cast the resulting intptr back
-  // to Dependencies using reinterpret_cast.
-  return reinterpret_cast<intptr_t>(dynamic_cast<Dependencies*>(
-      new DependenciesChrome(env, jstatic_dependencies)));
-}
-
-DependenciesChrome::DependenciesChrome(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jstatic_dependencies)
-    : Dependencies(env, jstatic_dependencies) {}
+CommonDependenciesChrome::CommonDependenciesChrome() = default;
 
 std::unique_ptr<AssistantFieldTrialUtil>
-DependenciesChrome::CreateFieldTrialUtil() const {
+CommonDependenciesChrome::CreateFieldTrialUtil() const {
   return std::make_unique<AssistantFieldTrialUtilChrome>();
 }
 
-std::string DependenciesChrome::GetCountryCode() const {
+std::string CommonDependenciesChrome::GetCountryCode() const {
   return dependencies_util::GetCountryCode(
       g_browser_process->variations_service());
 }
 
-PersonalDataManager* DependenciesChrome::GetPersonalDataManager() const {
+PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager() const {
+  // TODO(b/201964911): Using |GetLastUsedProfile| is probably not the best
+  // option for desktop. Consider passing a profile on instantiation instead.
   return autofill::PersonalDataManagerFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
 }
 
-PasswordManagerClient* DependenciesChrome::GetPasswordManagerClient(
+PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
     WebContents* web_contents) const {
   return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
-std::string DependenciesChrome::GetSignedInEmail(
+std::string CommonDependenciesChrome::GetSignedInEmail(
     WebContents* web_contents) const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
@@ -78,21 +63,13 @@ std::string DependenciesChrome::GetSignedInEmail(
       .email;
 }
 
-AnnotateDomModelService* DependenciesChrome::GetOrCreateAnnotateDomModelService(
+AnnotateDomModelService*
+CommonDependenciesChrome::GetOrCreateAnnotateDomModelService(
     content::BrowserContext* browser_context) const {
   return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context);
 }
 
-bool DependenciesChrome::IsCustomTab(const WebContents& web_contents) const {
-  auto* tab_android = TabAndroid::FromWebContents(&web_contents);
-  if (!tab_android) {
-    return false;
-  }
-
-  return tab_android->IsCustomTab();
-}
-
-bool DependenciesChrome::IsWebLayer() const {
+bool CommonDependenciesChrome::IsWebLayer() const {
   return false;
 }
 

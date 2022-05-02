@@ -78,8 +78,8 @@ static_library("android") {
 
 static_library("dependencies_android") {
   sources = [
-    "dependencies.cc",
-    "dependencies.h",
+    "dependencies_android.cc",
+    "dependencies_android.h",
   ]
 
   deps = [

@@ -96,7 +96,8 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
 ClientAndroid::ClientAndroid(content::WebContents* web_contents,
                              const ScopedJavaGlobalRef<jobject>& jdependencies)
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
-      dependencies_(Dependencies::CreateFromJavaDependencies(jdependencies)),
+      dependencies_(
+          DependenciesAndroid::CreateFromJavaDependencies(jdependencies)),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -158,9 +159,11 @@ bool ClientAndroid::Start(
   // Register TTS Synthetic Field Trial.
   const bool enable_tts =
       trigger_context->GetScriptParameters().GetEnableTts().value_or(false);
-  dependencies_->CreateFieldTrialUtil()->RegisterSyntheticFieldTrial(
-      kAutofillAssistantTtsTrialName,
-      enable_tts ? kEnabledGroupName : kDisabledGroupName);
+  dependencies_->GetCommonDependencies()
+      .CreateFieldTrialUtil()
+      ->RegisterSyntheticFieldTrial(
+          kAutofillAssistantTtsTrialName,
+          enable_tts ? kEnabledGroupName : kDisabledGroupName);
 
   DCHECK(!trigger_context->GetDirectAction());
   if (VLOG_IS_ON(2)) {
@@ -248,7 +251,9 @@ void ClientAndroid::FetchWebsiteActions(
           /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
           /* jinitial_url = */ nullptr,
-          /* is_custom_tab = */ dependencies_->IsCustomTab(*GetWebContents())),
+          /* is_custom_tab = */
+          dependencies_->GetPlatformDependencies().IsCustomTab(
+              *GetWebContents())),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -359,7 +364,8 @@ bool ClientAndroid::PerformDirectAction(
       /* is_direct_action = */ true,
       /* jinitial_url = */
       nullptr,
-      /* is_custom_tab = */ dependencies_->IsCustomTab(*GetWebContents()));
+      /* is_custom_tab = */
+      dependencies_->GetPlatformDependencies().IsCustomTab(*GetWebContents()));
 
   int action_index = FindDirectAction(action_name);
   if (action_index == -1)
@@ -485,7 +491,8 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientAndroid::GetSignedInEmail() const {
-  return dependencies_->GetSignedInEmail(GetWebContents());
+  return dependencies_->GetCommonDependencies().GetSignedInEmail(
+      GetWebContents());
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
@@ -530,13 +537,14 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return dependencies_->GetPersonalDataManager();
+  return dependencies_->GetCommonDependencies().GetPersonalDataManager();
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
     auto* password_manager_client =
-        dependencies_->GetPasswordManagerClient(GetWebContents());
+        dependencies_->GetCommonDependencies().GetPasswordManagerClient(
+            GetWebContents());
     if (password_manager_client) {
       website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
           password_manager_client, GetWebContents());
@@ -558,7 +566,7 @@ std::string ClientAndroid::GetLocale() const {
 }
 
 std::string ClientAndroid::GetCountryCode() const {
-  return dependencies_->GetCountryCode();
+  return dependencies_->GetCommonDependencies().GetCountryCode();
 }
 
 DeviceContext ClientAndroid::GetDeviceContext() const {
@@ -614,7 +622,7 @@ bool ClientAndroid::MustUseBackendData() const {
   // data and must use data from our backend. Similarly the client can not use
   // e.g. Autofill's data editors and must rely on GMS Core provided
   // replacements.
-  return dependencies_->IsWebLayer();
+  return dependencies_->GetCommonDependencies().IsWebLayer();
 }
 
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
@@ -691,7 +699,7 @@ void ClientAndroid::CreateController(
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), ukm::UkmRecorder::Get(),
-      dependencies_->GetOrCreateAnnotateDomModelService(
+      dependencies_->GetCommonDependencies().GetOrCreateAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));

@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -63,7 +63,7 @@ int GetPixelSizeOrDefault(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jcontext,
-    const Dependencies& dependencies,
+    const DependenciesAndroid& dependencies,
     const DrawableProto& proto,
     const UserModel* user_model = nullptr);
 

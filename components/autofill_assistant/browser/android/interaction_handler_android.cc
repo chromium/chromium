@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/android/generic_ui_interactions_android.h"
 #include "components/autofill_assistant/browser/android/generic_ui_nested_controller_android.h"
 #include "components/autofill_assistant/browser/android/view_handler_android.h"
@@ -90,7 +90,7 @@ InteractionHandlerAndroid::InteractionHandlerAndroid(
     BasicInteractions* basic_interactions,
     ViewHandlerAndroid* view_handler,
     RadioButtonController* radio_button_controller,
-    const Dependencies* dependencies,
+    const DependenciesAndroid* dependencies,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
     base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate)

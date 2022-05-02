@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -18,14 +18,16 @@ using ::base::android::ScopedJavaGlobalRef;
 
 namespace autofill_assistant {
 
-std::unique_ptr<Dependencies> Dependencies::CreateFromJavaStaticDependencies(
+std::unique_ptr<DependenciesAndroid>
+DependenciesAndroid::CreateFromJavaStaticDependencies(
     const JavaRef<jobject>& jstatic_dependencies) {
-  return base::WrapUnique(reinterpret_cast<Dependencies*>(
+  return base::WrapUnique(reinterpret_cast<DependenciesAndroid*>(
       Java_AssistantStaticDependencies_createNative(AttachCurrentThread(),
                                                     jstatic_dependencies)));
 }
 
-std::unique_ptr<Dependencies> Dependencies::CreateFromJavaDependencies(
+std::unique_ptr<DependenciesAndroid>
+DependenciesAndroid::CreateFromJavaDependencies(
     const JavaRef<jobject>& jdependencies) {
   const auto jstatic_dependencies =
       Java_AssistantDependencies_getStaticDependencies(AttachCurrentThread(),
@@ -33,43 +35,46 @@ std::unique_ptr<Dependencies> Dependencies::CreateFromJavaDependencies(
   return CreateFromJavaStaticDependencies(jstatic_dependencies);
 }
 
-Dependencies::Dependencies(JNIEnv* env,
-                           const JavaParamRef<jobject>& jstatic_dependencies)
+DependenciesAndroid::DependenciesAndroid(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jstatic_dependencies)
     : jstatic_dependencies_(jstatic_dependencies) {}
 
-ScopedJavaGlobalRef<jobject> Dependencies::GetJavaStaticDependencies() const {
+ScopedJavaGlobalRef<jobject> DependenciesAndroid::GetJavaStaticDependencies()
+    const {
   return jstatic_dependencies_;
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::CreateInfoPageUtil() const {
+ScopedJavaGlobalRef<jobject> DependenciesAndroid::CreateInfoPageUtil() const {
   return ScopedJavaGlobalRef<jobject>(
       Java_AssistantStaticDependencies_createInfoPageUtil(
           AttachCurrentThread(), jstatic_dependencies_));
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::CreateAccessTokenUtil() const {
+ScopedJavaGlobalRef<jobject> DependenciesAndroid::CreateAccessTokenUtil()
+    const {
   return ScopedJavaGlobalRef<jobject>(
       Java_AssistantStaticDependencies_createAccessTokenUtil(
           AttachCurrentThread(), jstatic_dependencies_));
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::CreateImageFetcher() const {
+ScopedJavaGlobalRef<jobject> DependenciesAndroid::CreateImageFetcher() const {
   return ScopedJavaGlobalRef<jobject>(
       Java_AssistantStaticDependencies_createImageFetcher(
           AttachCurrentThread(), jstatic_dependencies_));
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::CreateIconBridge() const {
+ScopedJavaGlobalRef<jobject> DependenciesAndroid::CreateIconBridge() const {
   return ScopedJavaGlobalRef<jobject>(
       Java_AssistantStaticDependencies_createIconBridge(AttachCurrentThread(),
                                                         jstatic_dependencies_));
 }
 
-bool Dependencies::IsAccessibilityEnabled() const {
+bool DependenciesAndroid::IsAccessibilityEnabled() const {
   return Java_AssistantStaticDependencies_isAccessibilityEnabled(
       AttachCurrentThread(), jstatic_dependencies_);
 }
 
-Dependencies::~Dependencies() = default;
+DependenciesAndroid::~DependenciesAndroid() = default;
 
 }  // namespace autofill_assistant

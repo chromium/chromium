@@ -37,7 +37,7 @@ static jlong JNI_Starter_FromWebContents(
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
 
-  auto dependencies = Dependencies::CreateFromJavaStaticDependencies(
+  auto dependencies = DependenciesAndroid::CreateFromJavaStaticDependencies(
       ScopedJavaGlobalRef<jobject>(env, jstatic_dependencies));
   StarterDelegateAndroid::CreateForWebContents(web_contents,
                                                std::move(dependencies));
@@ -52,15 +52,16 @@ static jlong JNI_Starter_FromWebContents(
 
 StarterDelegateAndroid::StarterDelegateAndroid(
     content::WebContents* web_contents,
-    std::unique_ptr<Dependencies> dependencies)
+    std::unique_ptr<DependenciesAndroid> dependencies)
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
-          dependencies_->GetPasswordManagerClient(web_contents),
+          dependencies_->GetCommonDependencies().GetPasswordManagerClient(
+              web_contents),
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.
-  dependencies_->GetOrCreateAnnotateDomModelService(
+  dependencies_->GetCommonDependencies().GetOrCreateAnnotateDomModelService(
       web_contents->GetBrowserContext());
 }
 
@@ -248,15 +249,17 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
-  return !dependencies_->GetSignedInEmail(&GetWebContents()).empty();
+  return !dependencies_->GetCommonDependencies()
+              .GetSignedInEmail(&GetWebContents())
+              .empty();
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {
-  return dependencies_->IsCustomTab(GetWebContents());
+  return dependencies_->GetPlatformDependencies().IsCustomTab(GetWebContents());
 }
 
 bool StarterDelegateAndroid::GetIsWebLayer() const {
-  return dependencies_->IsWebLayer();
+  return dependencies_->GetCommonDependencies().IsWebLayer();
 }
 
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
@@ -345,7 +348,7 @@ bool StarterDelegateAndroid::IsRegularScriptVisible() const {
 
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateAndroid::CreateFieldTrialUtil() {
-  return dependencies_->CreateFieldTrialUtil();
+  return dependencies_->GetCommonDependencies().CreateFieldTrialUtil();
 }
 
 bool StarterDelegateAndroid::IsAttached() {

@@ -5,13 +5,18 @@
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
 #include "base/android/jni_string.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
+#include "components/autofill_assistant/browser/platform_dependencies.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
 #include "weblayer/browser/profile_impl.h"
 
-using ::autofill_assistant::Dependencies;
+using ::autofill_assistant::CommonDependencies;
+using ::autofill_assistant::DependenciesAndroid;
+using ::autofill_assistant::PlatformDependencies;
 using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::JavaParamRef;
@@ -23,15 +28,24 @@ static jlong JNI_WebLayerAssistantStaticDependencies_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& jstatic_dependencies) {
   // The dynamic_cast is necessary here to safely cast the resulting intptr back
-  // to Dependencies using reinterpret_cast.
-  return reinterpret_cast<intptr_t>(dynamic_cast<Dependencies*>(
+  // to DependenciesAndroid using reinterpret_cast.
+  return reinterpret_cast<intptr_t>(dynamic_cast<DependenciesAndroid*>(
       new WebLayerDependencies(env, jstatic_dependencies)));
 }
 
 WebLayerDependencies::WebLayerDependencies(
     JNIEnv* env,
     const JavaParamRef<jobject>& jstatic_dependencies)
-    : Dependencies(env, jstatic_dependencies) {}
+    : DependenciesAndroid(env, jstatic_dependencies) {}
+
+const CommonDependencies& WebLayerDependencies::GetCommonDependencies() const {
+  return *this;
+}
+
+const PlatformDependencies& WebLayerDependencies::GetPlatformDependencies()
+    const {
+  return *this;
+}
 
 std::unique_ptr<::autofill_assistant::AssistantFieldTrialUtil>
 WebLayerDependencies::CreateFieldTrialUtil() const {

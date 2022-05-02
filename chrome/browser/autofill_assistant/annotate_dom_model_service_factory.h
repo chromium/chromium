@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
 
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -38,4 +38,4 @@ class AnnotateDomModelServiceFactory
       content::BrowserContext* context) const override;
 };
 
-#endif  //  CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_
+#endif  //  CHROME_BROWSER_AUTOFILL_ASSISTANT_ANNOTATE_DOM_MODEL_SERVICE_FACTORY_H_

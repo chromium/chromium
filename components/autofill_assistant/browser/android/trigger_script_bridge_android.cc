@@ -8,7 +8,7 @@
 #include "base/android/jni_string.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "components/autofill_assistant/browser/android/assistant_header_model.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
+#include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 
 using base::android::AttachCurrentThread;
@@ -23,7 +23,8 @@ TriggerScriptBridgeAndroid::TriggerScriptBridgeAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
     const base::android::JavaRef<jobject>& jassistant_deps)
-    : dependencies_(Dependencies::CreateFromJavaDependencies(jassistant_deps)) {
+    : dependencies_(
+          DependenciesAndroid::CreateFromJavaDependencies(jassistant_deps)) {
   java_object_ = Java_AssistantTriggerScriptBridge_Constructor(
       env, jweb_contents, jassistant_deps);
   Java_AssistantTriggerScriptBridge_setNativePtr(

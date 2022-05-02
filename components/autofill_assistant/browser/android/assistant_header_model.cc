@@ -6,7 +6,6 @@
 
 #include "base/android/jni_string.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantHeaderModel_jni.h"
-#include "components/autofill_assistant/browser/android/dependencies.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 
@@ -76,7 +75,7 @@ void AssistantHeaderModel::SetProgressBarErrorState(bool error) {
 void AssistantHeaderModel::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration,
     const base::android::JavaRef<jobject>& jcontext,
-    const Dependencies& dependencies) {
+    const DependenciesAndroid& dependencies) {
   JNIEnv* env = AttachCurrentThread();
   if (!configuration.annotated_step_icons().empty()) {
     auto jlist = Java_AssistantHeaderModel_createIconList(env);

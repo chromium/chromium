@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util_chrome.h"
+#include "chrome/browser/autofill_assistant/assistant_field_trial_util_chrome.h"
 
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 
