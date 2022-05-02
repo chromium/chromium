@@ -1212,6 +1212,40 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       EvaluateAtNotExistElement) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery{
+      "settings-ui", "settings-main#main", "not-exists-element"};
+
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  util->LoadPage(GURL("chrome://settings"));
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             const auto result =
+                                 util->EvaluateAt(kQuery, "(el, err) => !!el");
+                             EXPECT_TRUE(result.is_bool());
+                             EXPECT_FALSE(result.GetBool());
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        ExistsInStandardPage) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);

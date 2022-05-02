@@ -290,11 +290,16 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   bool Exists(const DeepQuery& query, std::string* not_found = nullptr);
 
   // Evaluates `function` on the element returned by finding the element at
-  // `where`; generates an error if `where` doesn't exist. The `function`
-  // parameter should be the text of a valid javascript unnamed function that
-  // takes a single DOM element parameter and optionally returns a value.
+  // `where`; throw an error if `where` doesn't exist or capture with a second
+  // argument.
+  // The `function` parameter should be the text of a valid javascript unnamed
+  // function that takes a DOM element and/or an error parameter if occurs and
+  // optionally returns a value.
   //
-  // Example: "function(el) { return el.innterText; }"
+  // Example:
+  //   function(el) { return el.innterText; }
+  // Or capture the error instead of throw:
+  //   (el, err) => !err && !!el
   base::Value EvaluateAt(const DeepQuery& where, const std::string& function);
 
   // The following are convenience methods that do not use the Shadow DOM and

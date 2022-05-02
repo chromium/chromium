@@ -165,14 +165,8 @@ content::EvalJsResult EvalJsLocal(
 
 std::string CreateDeepQuery(
     const InteractionSequenceBrowserUtil::DeepQuery& where,
-    const std::string& function,
-    bool is_exists) {
-  const std::string not_found_action =
-      is_exists ? "return selector"
-                : "throw new Error('Selector not found: ' + selector)";
-  const std::string deepquery_return_expression = is_exists ? "''" : "cur";
-  const std::string final_return_expression =
-      is_exists ? "el" : "(" + function + ")(el)";
+    const std::string& function) {
+  DCHECK(!function.empty());
 
   // Safely convert the selector list in `where` to a JSON/JS list.
   base::Value::List selector_list;
@@ -191,17 +185,28 @@ std::string CreateDeepQuery(
              }
              cur = cur.querySelector(selector);
              if (!cur) {
-               %s;
+               const err = new Error('Selector not found: ' + selector);
+               err.selector = selector;
+               throw err;
              }
            }
-           return %s;
+           return cur;
          }
 
-         let el = deepQuery(%s);
-         return %s;
+         let el, err;
+         try {
+           el = deepQuery(%s);
+         } catch (error) {
+           err = error;
+         }
+
+         const func = (%s);
+         if (err && func.length <= 1) {
+           throw err;
+         }
+         return func(el, err);
        })",
-      not_found_action.c_str(), deepquery_return_expression.c_str(),
-      selectors.c_str(), final_return_expression.c_str());
+      selectors.c_str(), function.c_str());
 }
 
 }  // namespace
@@ -619,7 +624,11 @@ void InteractionSequenceBrowserUtil::SendEventOnStateChange(
 
 bool InteractionSequenceBrowserUtil::Exists(const DeepQuery& query,
                                             std::string* not_found) {
-  const std::string full_query = CreateDeepQuery(query, "", true);
+  const std::string full_query = CreateDeepQuery(query, R"((el, err) => {
+        if (err?.selector) return err.selector;
+        if (err) throw err;
+        return '';
+      })");
   const std::string result = Evaluate(full_query).GetString();
   if (not_found)
     *not_found = result;
@@ -629,7 +638,7 @@ bool InteractionSequenceBrowserUtil::Exists(const DeepQuery& query,
 base::Value InteractionSequenceBrowserUtil::EvaluateAt(
     const DeepQuery& where,
     const std::string& function) {
-  const std::string full_query = CreateDeepQuery(where, function, false);
+  const std::string full_query = CreateDeepQuery(where, function);
   return Evaluate(full_query);
 }
 
