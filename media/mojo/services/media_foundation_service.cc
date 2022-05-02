@@ -76,8 +76,6 @@ constexpr AudioCodec kAllAudioCodecs[] = {
 
 constexpr EncryptionScheme kAllEncryptionSchemes[] = {EncryptionScheme::kCenc,
                                                       EncryptionScheme::kCbcs};
-using IsTypeSupportedCB =
-    base::RepeatingCallback<bool(const std::string& content_type)>;
 
 bool IsTypeSupportedInternal(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
@@ -209,7 +207,9 @@ std::string GetTypeString(VideoCodec video_codec,
 }
 
 base::flat_set<EncryptionScheme> GetSupportedEncryptionSchemes(
-    IsTypeSupportedCB callback,
+    ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
+    const std::string& key_system,
+    bool is_hw_secure,
     VideoCodec video_codec,
     const std::string& robustness) {
   base::flat_set<EncryptionScheme> supported_schemes;
@@ -220,14 +220,16 @@ base::flat_set<EncryptionScheme> GetSupportedEncryptionSchemes(
          {kEncryptionIvQueryName, base::NumberToString(GetIvSize(scheme))},
          {kRobustnessQueryName, robustness.c_str()}});
 
-    if (callback.Run(type))
+    if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type))
       supported_schemes.insert(scheme);
   }
   return supported_schemes;
 }
 
-absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
-                                               bool is_hw_secure) {
+absl::optional<CdmCapability> GetCdmCapability(
+    ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
+    const std::string& key_system,
+    bool is_hw_secure) {
   DVLOG(2) << __func__ << ", is_hw_secure=" << is_hw_secure;
 
   // TODO(hmchen): make this generic for more key systems.
@@ -241,7 +243,7 @@ absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
     auto type = GetTypeString(video_codec, /*audio_codec=*/absl::nullopt,
                               {{kRobustnessQueryName, robustness}});
 
-    if (callback.Run(type)) {
+    if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type)) {
       // IsTypeSupported() does not support querying profiling, so specify {}
       // to indicate all relevant profiles should be considered supported.
       const std::vector<media::VideoCodecProfile> kAllProfiles = {};
@@ -264,7 +266,7 @@ absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
     auto type = GetTypeString(video_codec, audio_codec,
                               {{kRobustnessQueryName, robustness}});
 
-    if (callback.Run(type))
+    if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type))
       capability.audio_codecs.push_back(audio_codec);
   }
 
@@ -278,8 +280,8 @@ absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
   base::flat_set<EncryptionScheme> intersection(
       std::begin(kAllEncryptionSchemes), std::end(kAllEncryptionSchemes));
   for (auto codec : capability.video_codecs) {
-    const auto schemes =
-        GetSupportedEncryptionSchemes(callback, codec.first, robustness);
+    const auto schemes = GetSupportedEncryptionSchemes(
+        cdm_factory, key_system, is_hw_secure, codec.first, robustness);
     intersection = base::STLSetIntersection<base::flat_set<EncryptionScheme>>(
         intersection, schemes);
   }
@@ -294,6 +296,7 @@ absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
   // IsTypeSupported does not support session type yet. So just use temporary
   // session which is required by EME spec.
   capability.session_types.insert(CdmSessionType::kTemporary);
+
   return capability;
 }
 
@@ -328,14 +331,10 @@ void MediaFoundationService::IsKeySystemSupported(
     return;
   }
 
-  absl::optional<CdmCapability> sw_secure_capability = GetCdmCapability(
-      base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system,
-                          /*is_hw_secure=*/false),
-      /*is_hw_secure=*/false);
-  absl::optional<CdmCapability> hw_secure_capability = GetCdmCapability(
-      base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system,
-                          /*is_hw_secure=*/true),
-      /*is_hw_secure=*/true);
+  absl::optional<CdmCapability> sw_secure_capability =
+      GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/false);
+  absl::optional<CdmCapability> hw_secure_capability =
+      GetCdmCapability(cdm_factory, key_system, /*is_hw_secure=*/true);
 
   if (!sw_secure_capability && !hw_secure_capability) {
     DVLOG(2) << "Get empty CdmCapability.";

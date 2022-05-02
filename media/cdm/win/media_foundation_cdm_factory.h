@@ -72,15 +72,9 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   void StoreClientToken(const std::vector<uint8_t>& client_token);
   void OnCdmEvent(CdmEvent event);
 
-  HRESULT CreateMfCdmInternal(
-      const CdmConfig& cdm_config,
-      const base::UnguessableToken& cdm_origin_id,
-      const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-      const base::FilePath& cdm_store_path_root,
-      Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
-
-  // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
-  // so we can bind it to a repeating callback using weak pointer.
+  // Creates `mf_cdm` based on the input parameters. Same as
+  // CreateMediaFoundationCdm() but returns the HRESULT in out parameter so we
+  // can bind it to a repeating callback using weak pointer.
   void CreateMfCdm(const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
                    const absl::optional<std::vector<uint8_t>>& cdm_client_token,

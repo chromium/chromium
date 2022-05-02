@@ -137,6 +137,8 @@ source_set("cdm") {
       "win/media_foundation_cdm_module.h",
       "win/media_foundation_cdm_session.cc",
       "win/media_foundation_cdm_session.h",
+      "win/media_foundation_cdm_util.cc",
+      "win/media_foundation_cdm_util.h",
     ]
 
     libs = [ "Propsys.lib" ]

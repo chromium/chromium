@@ -448,6 +448,8 @@ void CdmRegistryImpl::LazyInitializeHardwareSecureCapability(
 void CdmRegistryImpl::OnHardwareSecureCapabilityInitialized(
     const std::string& key_system,
     absl::optional<media::CdmCapability> cdm_capability) {
+  DVLOG(1) << __func__ << ": key_system=" << key_system
+           << ", cdm_capability=" << (cdm_capability ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_lazy_initialize_key_systems_.count(key_system));
 
