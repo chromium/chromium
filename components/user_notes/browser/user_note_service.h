@@ -67,8 +67,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   struct ModelMapEntry {
     explicit ModelMapEntry(std::unique_ptr<UserNote> m);
     ~ModelMapEntry();
-    ModelMapEntry(const ModelMapEntry&) = delete;
     ModelMapEntry(ModelMapEntry&& other);
+    ModelMapEntry(const ModelMapEntry&) = delete;
     ModelMapEntry& operator=(const ModelMapEntry&) = delete;
 
     std::unique_ptr<UserNote> model;

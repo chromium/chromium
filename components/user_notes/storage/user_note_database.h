@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/user_notes/interfaces/user_note_storage.h"
+#include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/model/user_note.h"
 #include "sql/database.h"
 #include "url/gurl.h"
@@ -29,8 +29,7 @@ class UserNoteDatabase {
   // Initialises internal database. Must be called prior to any other usage.
   void Init();
 
-  UserNoteStorage::UrlNoteMetadataIDMap GetNoteMetadataForUrls(
-      std::vector<GURL> urls);
+  UserNoteMetadataSnapshot GetNoteMetadataForUrls(std::vector<GURL> urls);
 
   std::vector<std::unique_ptr<UserNote>> GetNotesById(
       std::vector<base::UnguessableToken> ids);

@@ -10,6 +10,9 @@ namespace user_notes {
 
 UserNoteMetadataSnapshot::UserNoteMetadataSnapshot() = default;
 
+UserNoteMetadataSnapshot::UserNoteMetadataSnapshot(
+    UserNoteMetadataSnapshot&& other) = default;
+
 UserNoteMetadataSnapshot::~UserNoteMetadataSnapshot() = default;
 
 void UserNoteMetadataSnapshot::AddEntry(

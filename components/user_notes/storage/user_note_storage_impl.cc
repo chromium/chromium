@@ -26,7 +26,7 @@ UserNoteStorageImpl::UserNoteStorageImpl(
 
 void UserNoteStorageImpl::GetNoteMetadataForUrls(
     std::vector<GURL> urls,
-    base::OnceCallback<void(UserNoteStorage::UrlNoteMetadataIDMap)> callback) {
+    base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) {
   database_.AsyncCall(&UserNoteDatabase::GetNoteMetadataForUrls)
       .WithArgs(std::move(urls))
       .Then(std::move(callback));

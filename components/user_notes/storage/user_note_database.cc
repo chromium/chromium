@@ -29,13 +29,13 @@ void UserNoteDatabase::Init() {
   // TODO(gayane): Implement.
 }
 
-UserNoteStorage::UrlNoteMetadataIDMap UserNoteDatabase::GetNoteMetadataForUrls(
+UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
     std::vector<GURL> urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(gayane): Implement.
 
-  return UserNoteStorage::UrlNoteMetadataIDMap();
+  return UserNoteMetadataSnapshot();
 }
 
 std::vector<std::unique_ptr<UserNote>> UserNoteDatabase::GetNotesById(

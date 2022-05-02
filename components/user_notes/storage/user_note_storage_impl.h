@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/threading/sequence_bound.h"
+#include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/interfaces/user_note_storage.h"
 #include "components/user_notes/model/user_note.h"
 #include "components/user_notes/storage/user_note_database.h"
@@ -30,8 +31,7 @@ class UserNoteStorageImpl : public UserNoteStorage {
   // Implement UserNoteStorage
   void GetNoteMetadataForUrls(
       std::vector<GURL> urls,
-      base::OnceCallback<void(UserNoteStorage::UrlNoteMetadataIDMap)> callback)
-      override;
+      base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) override;
 
   void GetNotesById(
       std::vector<base::UnguessableToken> ids,

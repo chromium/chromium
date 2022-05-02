@@ -44,6 +44,7 @@ class UserNoteMetadataSnapshot {
       std::unordered_map<GURL, IdToMetadataMap, GURLHash>;
 
   UserNoteMetadataSnapshot();
+  UserNoteMetadataSnapshot(UserNoteMetadataSnapshot&& other);
   UserNoteMetadataSnapshot(const UserNoteMetadataSnapshot&) = delete;
   UserNoteMetadataSnapshot& operator=(const UserNoteMetadataSnapshot&) = delete;
   ~UserNoteMetadataSnapshot();
