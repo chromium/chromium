@@ -118,6 +118,9 @@ class CORE_EXPORT NGHighlightOverlay {
   // Given highlight |layers| and |edges|, returns the ranges that the given
   // |layer| should paint text proper for, suppressing ranges where it’s not the
   // topmost active highlight and splitting for underlying decoration changes.
+  //
+  // The edges must not represent overlapping ranges. If the highlight is active
+  // in overlapping ranges, those ranges must be merged before ComputeEdges.
   static Vector<HighlightPart> ComputeParts(
       const Vector<HighlightLayer>& layers,
       const Vector<HighlightEdge>& edges);

@@ -356,8 +356,7 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     wtf_size_t edge_layer_index = layers.Find(edge.layer);
     DCHECK_NE(edge_layer_index, kNotFound)
         << "edge layer should be one of the given layers";
-    // TODO(crbug.com/1147859) this will crash if there are overlapping ranges
-    // for a given highlight layer (see logic in old ComputeMarkersToPaint)
+    // This algorithm malfunctions if the edges represent overlapping ranges.
     DCHECK(active[edge_layer_index] ? edge.type == HighlightEdgeType::kEnd
                                     : edge.type == HighlightEdgeType::kStart)
         << "edge should be kStart iff the layer is active or else kEnd";

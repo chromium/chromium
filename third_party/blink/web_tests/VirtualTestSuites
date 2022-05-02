@@ -1191,7 +1191,8 @@
       "external/wpt/css/css-highlight-api",
       "paint/markers/inline_spelling_markers.html",
       "paint/markers/inline-spelling-markers-hidpi.html",
-      "paint/markers/inline-spelling-markers-hidpi-composited.html"
+      "paint/markers/inline-spelling-markers-hidpi-composited.html",
+      "paint/invalidation/selection/selection-after-remove.html"
     ],
     "args": ["--enable-blink-features=HighlightOverlayPainting"]
   },

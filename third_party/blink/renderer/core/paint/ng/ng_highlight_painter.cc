@@ -769,8 +769,7 @@ void NGHighlightPainter::ClipToPartDecorations(const HighlightPart& part) {
 
 void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     const HighlightPart& part) {
-  GraphicsContextStateSaver state_saver(paint_info_.context);
-  ClipToPartDecorations(part);
+  GraphicsContextStateSaver state_saver(paint_info_.context, false);
 
   for (const HighlightLayer& decoration_layer_id : part.decorations) {
     wtf_size_t decoration_layer_index = layers_.Find(decoration_layer_id);
@@ -779,6 +778,11 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
     if (!decoration_layer.decoration_info)
       continue;
+
+    if (!state_saver.Saved()) {
+      state_saver.Save();
+      ClipToPartDecorations(part);
+    }
 
     if (decoration_layer_id.type == HighlightLayerType::kOriginating &&
         part.layer.type != HighlightLayerType::kOriginating) {
@@ -799,8 +803,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
 
 void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     const HighlightPart& part) {
-  GraphicsContextStateSaver state_saver(paint_info_.context);
-  ClipToPartDecorations(part);
+  GraphicsContextStateSaver state_saver(paint_info_.context, false);
 
   for (const HighlightLayer& decoration_layer_id : part.decorations) {
     wtf_size_t decoration_layer_index = layers_.Find(decoration_layer_id);
@@ -810,6 +813,11 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     if (!decoration_layer.decoration_info ||
         !decoration_layer.has_line_through_decorations)
       continue;
+
+    if (!state_saver.Saved()) {
+      state_saver.Save();
+      ClipToPartDecorations(part);
+    }
 
     if (decoration_layer_id.type == HighlightLayerType::kOriginating &&
         part.layer.type != HighlightLayerType::kOriginating) {
