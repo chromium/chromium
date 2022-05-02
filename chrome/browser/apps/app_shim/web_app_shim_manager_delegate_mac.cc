@@ -298,7 +298,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
 
     if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
-      chrome::ShowWebAppProtocolHandlerIntentPicker(
+      chrome::ShowWebAppProtocolLaunchDialog(
           std::move(protocol_url), profile, app_id,
           base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
                          WebAppFileHandlerManager::LaunchInfos(), profile));

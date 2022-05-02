@@ -38,7 +38,7 @@ specific_include_rules = {
     "+content/common/content_navigation_policy.h",
   ],
   "startup_browser_creator_browsertest.cc": [
-    "+chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
+    "+chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h",
   ],
   "hid_chooser_controller_unittest\.cc": [
     "+services/device/hid",

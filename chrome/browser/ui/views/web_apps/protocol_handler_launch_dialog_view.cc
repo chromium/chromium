@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
+#include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 
 #include <memory>
 #include <string>
@@ -18,7 +18,7 @@
 
 namespace web_app {
 
-WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
+ProtocolHandlerLaunchDialogView::ProtocolHandlerLaunchDialogView(
     GURL url,
     Profile* profile,
     const AppId& app_id,
@@ -38,11 +38,10 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
 }
 
-WebAppProtocolHandlerIntentPickerView::
-    ~WebAppProtocolHandlerIntentPickerView() = default;
+ProtocolHandlerLaunchDialogView::~ProtocolHandlerLaunchDialogView() = default;
 
 std::unique_ptr<views::View>
-WebAppProtocolHandlerIntentPickerView::CreateAboveAppInfoView() {
+ProtocolHandlerLaunchDialogView::CreateAboveAppInfoView() {
   // Add "Allow app to open" label.
   auto open_app_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
@@ -57,29 +56,28 @@ WebAppProtocolHandlerIntentPickerView::CreateAboveAppInfoView() {
 }
 
 std::unique_ptr<views::View>
-WebAppProtocolHandlerIntentPickerView::CreateBelowAppInfoView() {
+ProtocolHandlerLaunchDialogView::CreateBelowAppInfoView() {
   return nullptr;
 }
 
-std::u16string
-WebAppProtocolHandlerIntentPickerView::GetRememberChoiceString() {
+std::u16string ProtocolHandlerLaunchDialogView::GetRememberChoiceString() {
   return l10n_util::GetStringUTF16(
       IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION);
 }
 
-BEGIN_METADATA(WebAppProtocolHandlerIntentPickerView, views::DialogDelegateView)
+BEGIN_METADATA(ProtocolHandlerLaunchDialogView, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace web_app
 
 namespace chrome {
 
-void ShowWebAppProtocolHandlerIntentPicker(
+void ShowWebAppProtocolLaunchDialog(
     const GURL& url,
     Profile* profile,
     const web_app::AppId& app_id,
     WebAppLaunchAcceptanceCallback close_callback) {
-  auto view = std::make_unique<web_app::WebAppProtocolHandlerIntentPickerView>(
+  auto view = std::make_unique<web_app::ProtocolHandlerLaunchDialogView>(
       url, profile, app_id, std::move(close_callback));
   view->Init();
   views::DialogDelegate::CreateDialogWidget(std::move(view),

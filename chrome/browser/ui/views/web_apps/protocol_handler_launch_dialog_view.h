@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_PROTOCOL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_PROTOCOL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_LAUNCH_DIALOG_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_LAUNCH_DIALOG_VIEW_H_
 
 #include <memory>
 #include <vector>
@@ -21,24 +21,23 @@ class Profile;
 
 namespace web_app {
 
-// User choice dialog for PWA protocol handling:
-// https://web.dev/url-protocol-handler/
-class WebAppProtocolHandlerIntentPickerView
-    : public LaunchAppUserChoiceDialogView {
+// User choice dialog for PWA protocol handling, shown before launching a PWA to
+// handle a protocol launch. See https://web.dev/url-protocol-handler/
+class ProtocolHandlerLaunchDialogView : public LaunchAppUserChoiceDialogView {
  public:
-  METADATA_HEADER(WebAppProtocolHandlerIntentPickerView);
+  METADATA_HEADER(ProtocolHandlerLaunchDialogView);
 
-  WebAppProtocolHandlerIntentPickerView(
+  ProtocolHandlerLaunchDialogView(
       GURL url,
       Profile* profile,
       const AppId& app_id,
       chrome::WebAppLaunchAcceptanceCallback close_callback);
 
-  WebAppProtocolHandlerIntentPickerView(
-      const WebAppProtocolHandlerIntentPickerView&) = delete;
-  WebAppProtocolHandlerIntentPickerView& operator=(
-      const WebAppProtocolHandlerIntentPickerView&) = delete;
-  ~WebAppProtocolHandlerIntentPickerView() override;
+  ProtocolHandlerLaunchDialogView(const ProtocolHandlerLaunchDialogView&) =
+      delete;
+  ProtocolHandlerLaunchDialogView& operator=(
+      const ProtocolHandlerLaunchDialogView&) = delete;
+  ~ProtocolHandlerLaunchDialogView() override;
 
  protected:
   std::unique_ptr<views::View> CreateAboveAppInfoView() override;
@@ -51,4 +50,4 @@ class WebAppProtocolHandlerIntentPickerView
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_PROTOCOL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_LAUNCH_DIALOG_VIEW_H_

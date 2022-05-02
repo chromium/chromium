@@ -185,8 +185,9 @@ void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 
-// Shows the Web App Protocol Handler Intent Picker view.
-void ShowWebAppProtocolHandlerIntentPicker(
+// Shows the pre-launch dialog for protocol handling PWA launch. The user can
+// allow or block the launch.
+void ShowWebAppProtocolLaunchDialog(
     const GURL& url,
     Profile* profile,
     const web_app::AppId& app_id,

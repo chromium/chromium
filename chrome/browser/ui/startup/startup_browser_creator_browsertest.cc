@@ -138,7 +138,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/json/json_string_value_serializer.h"
-#include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
+#include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -2578,7 +2578,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppProtocolHandlerIntentPickerView");
+                                       "ProtocolHandlerLaunchDialogView");
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -2605,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppProtocolHandlerIntentPickerView");
+                                       "ProtocolHandlerLaunchDialogView");
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -2618,7 +2618,7 @@ IN_PROC_BROWSER_TEST_F(
   observer.SetWebAppProtocolSettingsChangedDelegate(
       base::BindLambdaForTesting([&]() { allowed_protocols_notified = true; }));
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(true);
 
   // Launch the browser via a command line with a handled protocol URL param.
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(false);
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
@@ -2694,7 +2694,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppProtocolHandlerIntentPickerView");
+                                       "ProtocolHandlerLaunchDialogView");
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -2703,7 +2703,7 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(true);
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2712,7 +2712,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(false);
 
   // Wait for app launch task to complete and launches a new browser.
@@ -2770,9 +2770,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
 
     // Launch the browser via a command line with a handled protocol URL param.
     SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2797,9 +2796,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   ASSERT_TRUE(app_browser1);
 
   {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
 
     // Launch the browser via a command line with a handled protocol URL param.
     SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2837,7 +2835,7 @@ IN_PROC_BROWSER_TEST_F(
     return;
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppProtocolHandlerIntentPickerView");
+                                       "ProtocolHandlerLaunchDialogView");
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -2846,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(true);
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2856,7 +2854,7 @@ IN_PROC_BROWSER_TEST_F(
       views::Widget::ClosedReason::kCancelButtonClicked);
   base::RunLoop().RunUntilIdle();
 
-  web_app::WebAppProtocolHandlerIntentPickerView::
+  web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(false);
 
   // Check that we added this protocol to web app's allowed_launch_protocols
@@ -2882,9 +2880,8 @@ IN_PROC_BROWSER_TEST_F(
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
 
     // Launch the browser via a command line with a handled protocol URL param.
     SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2903,9 +2900,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 
   {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
 
     // Launch the browser via a command line with a handled protocol URL param.
     SetUpCommandlineAndStart("web+test://parameterString", app_id);

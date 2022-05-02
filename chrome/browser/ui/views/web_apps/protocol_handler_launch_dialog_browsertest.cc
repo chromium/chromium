@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
+#include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,15 +41,13 @@ AppId InstallTestWebApp(Profile* profile) {
 
 }  // namespace
 
-class WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest
-    : public InProcessBrowserTest {
+class ProtocolHandlerLaunchDialogBrowserTest : public InProcessBrowserTest {
  public:
   void ShowDialogAndCloseWithReason(views::Widget::ClosedReason reason,
                                     bool expected_allowed,
                                     bool expected_remember_user_choice) {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
     GURL protocol_url("web+test://test");
     AppId test_app_id = InstallTestWebApp(browser()->profile());
 
@@ -61,9 +59,9 @@ class WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest
           EXPECT_EQ(expected_remember_user_choice, remember_user_choice);
         });
 
-    chrome::ShowWebAppProtocolHandlerIntentPicker(
-        protocol_url, browser()->profile(), test_app_id,
-        std::move(dialog_finished));
+    chrome::ShowWebAppProtocolLaunchDialog(protocol_url, browser()->profile(),
+                                           test_app_id,
+                                           std::move(dialog_finished));
 
     waiter.WaitIfNeededAndGet()->CloseWithReason(reason);
     run_loop.Run();
@@ -71,20 +69,17 @@ class WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
+    ProtocolHandlerLaunchDialogBrowserTest,
     WebAppProtocolHandlerIntentPickerDialog_EscapeDoesNotRememberPreference) {
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+  ProtocolHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(true);
   ShowDialogAndCloseWithReason(views::Widget::ClosedReason::kEscKeyPressed,
                                /*allowed=*/false,
                                /*remember_user_choice=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
-    ProtocolHandlerIntentPickerDialog_DisallowAndRemember) {
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogBrowserTest,
+                       ProtocolHandlerIntentPickerDialog_DisallowAndRemember) {
+  ProtocolHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(true);
   ShowDialogAndCloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked,
       /*allowed=*/false,
@@ -92,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
+    ProtocolHandlerLaunchDialogBrowserTest,
     ProtocolHandlerIntentPickerDialog_DisallowDoNotRemember) {
   ShowDialogAndCloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked,
@@ -100,20 +95,17 @@ IN_PROC_BROWSER_TEST_F(
       /*remember_user_choice=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
-    ProtocolHandlerIntentPickerDialog_AcceptAndRemember) {
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogBrowserTest,
+                       ProtocolHandlerIntentPickerDialog_AcceptAndRemember) {
+  ProtocolHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(true);
   ShowDialogAndCloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked,
       /*allowed=*/true,
       /*remember_user_choice=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
-    ProtocolHandlerIntentPickerDialog_AcceptDoNotRemember) {
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogBrowserTest,
+                       ProtocolHandlerIntentPickerDialog_AcceptDoNotRemember) {
   ShowDialogAndCloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked,
       /*allowed=*/true,
@@ -125,13 +117,12 @@ class WebAppProtocolHandlerIntentPickerDialogInteractiveBrowserTest
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "WebAppProtocolHandlerIntentPickerView");
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "ProtocolHandlerLaunchDialogView");
     GURL protocol_url("web+test://test");
     AppId test_app_id = InstallTestWebApp(browser()->profile());
-    chrome::ShowWebAppProtocolHandlerIntentPicker(
-        protocol_url, browser()->profile(), test_app_id, base::DoNothing());
+    chrome::ShowWebAppProtocolLaunchDialog(protocol_url, browser()->profile(),
+                                           test_app_id, base::DoNothing());
     waiter.WaitIfNeededAndGet()->CloseWithReason(
         views::Widget::ClosedReason::kEscKeyPressed);
   }

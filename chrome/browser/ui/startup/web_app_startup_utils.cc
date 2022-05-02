@@ -227,8 +227,8 @@ class StartupWebAppCreator
       std::move(launch_callback)
           .Run(/*allowed=*/true, /*remember_user_choice=*/false);
     } else {
-      chrome::ShowWebAppProtocolHandlerIntentPicker(
-          protocol_url_, profile_, app_id_, std::move(launch_callback));
+      chrome::ShowWebAppProtocolLaunchDialog(protocol_url_, profile_, app_id_,
+                                             std::move(launch_callback));
     }
     return LaunchResult::kHandled;
   }
