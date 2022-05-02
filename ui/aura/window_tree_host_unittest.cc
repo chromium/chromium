@@ -476,7 +476,7 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(WindowTreeHostWithThrottleTest, Basic) {
+TEST_F(WindowTreeHostWithThrottleTest, DISABLED_Basic) {
   host()->Show();
   EXPECT_TRUE(host()->compositor()->IsVisible());
   EXPECT_TRUE(test::GetThrottledHosts().empty());
@@ -488,7 +488,7 @@ TEST_F(WindowTreeHostWithThrottleTest, Basic) {
   EXPECT_TRUE(host()->compositor()->IsVisible());
 }
 
-TEST_F(WindowTreeHostWithThrottleTest, CallHideDirectly) {
+TEST_F(WindowTreeHostWithThrottleTest, DISABLED_CallHideDirectly) {
   host()->Show();
   EXPECT_TRUE(host()->compositor()->IsVisible());
   EXPECT_TRUE(test::GetThrottledHosts().empty());
@@ -500,6 +500,6 @@ TEST_F(WindowTreeHostWithThrottleTest, CallHideDirectly) {
   EXPECT_FALSE(host()->compositor()->IsVisible());
 }
 
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace aura
