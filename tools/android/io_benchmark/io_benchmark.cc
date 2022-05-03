@@ -39,10 +39,10 @@ std::mt19937 RandomEngine() {
 }
 
 std::vector<uint8_t> RandomData(size_t size, std::mt19937* engine) {
-  std::uniform_int_distribution<uint8_t> dist(0, 255);
+  std::uniform_int_distribution<uint32_t> dist(0, 255);
   std::vector<uint8_t> data(size);
   for (size_t i = 0; i < size; ++i)
-    data[i] = dist(*engine);
+    data[i] = static_cast<uint8_t>(dist(*engine));
 
   return data;
 }
