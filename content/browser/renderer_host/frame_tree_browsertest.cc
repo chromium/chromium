@@ -2334,8 +2334,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
 // Tests successfully going back to a page with a fenced frame.
 IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
                        GoBackToPageWithFencedFrame) {
-  GURL main_url(https_server()->GetURL(
-      "a.test", "/fenced_frames/basic_fenced_frame_src.html"));
+  GURL main_url(
+      https_server()->GetURL("a.test", "/fenced_frames/opaque_ads.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
@@ -2371,7 +2371,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // Navigate the fenced frame. It should do a replace navigation and therefore
   // the `controller().GetEntryCount()` stays at 1.
   GURL fenced_frame_url_2(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html"));
   std::string script = JsReplace("location.assign($1);", fenced_frame_url_2);
   UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(fenced_frame,
                                                                  script);
@@ -2420,6 +2420,41 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   }
+
+  // Reloading a page with a fenced frame should work. Ensure that the main
+  // navigation happens as well as the navigation within the fenced frame.
+  // A page with a fenced frame, when reloaded, will cause the fenced frame
+  // to navigate to its initial URL.
+  TestNavigationObserver reload_observer(web_contents());
+  EXPECT_TRUE(ExecJs(root, "window.location.reload();"));
+  reload_observer.Wait();
+  EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+  fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_EQ(fenced_frame_url_1, fenced_frame->current_url());
+
+  // Now let's try to use unfencedTop and come back to the page with the fenced
+  // frame.
+  TestFrameNavigationObserver observer(root);
+  EXPECT_TRUE(ExecJs(fenced_frame, JsReplace("window.open($1, '_unfencedTop');",
+                                             new_main_url)));
+  observer.Wait();
+  EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
+  EXPECT_EQ(new_main_url, root->current_frame_host()->GetLastCommittedURL());
+
+  // Go back.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, "history.back();"));
+    back_load_observer.Wait();
+  }
+  EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
+  EXPECT_EQ(main_url, root->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(1U, root->child_count());
+  fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+  EXPECT_EQ(fenced_frame_url_1, fenced_frame->current_url());
 }
 
 // Simulates the crash in crbug.com/1317642 by disabling BFCache and going back
