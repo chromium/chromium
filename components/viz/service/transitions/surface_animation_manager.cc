@@ -321,9 +321,7 @@ class SurfaceAnimationManager::StorageWithSurface {
 
 SurfaceAnimationManager::SurfaceAnimationManager(
     SharedBitmapManager* shared_bitmap_manager)
-    : animation_slowdown_factor_(
-          switches::GetDocumentTransitionSlowDownFactor()),
-      transferable_resource_tracker_(shared_bitmap_manager) {}
+    : transferable_resource_tracker_(shared_bitmap_manager) {}
 
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
@@ -1068,10 +1066,8 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
               : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
   // Create the transform curve.
-  base::TimeDelta total_duration =
-      ApplySlowdownFactor(save_directive_->root_config().duration);
-  base::TimeDelta total_delay =
-      ApplySlowdownFactor(save_directive_->root_config().delay);
+  base::TimeDelta total_duration = save_directive_->root_config().duration;
+  base::TimeDelta total_delay = save_directive_->root_config().delay;
 
   // The transform animation runs for the entire duration of the root
   // transition.
@@ -1130,14 +1126,14 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     const bool has_src_element = shared.has_value();
 
     const auto& config = save_directive_->shared_elements()[i].config;
-    const auto total_duration = ApplySlowdownFactor(config.duration);
-    const auto total_delay = ApplySlowdownFactor(config.delay);
+    const auto total_duration = config.duration;
+    const auto total_delay = config.delay;
 
-    const auto opacity_duration = ApplySlowdownFactor(
-        total_duration * kSharedOpacityTransitionDurationScaleFactor);
-    const auto opacity_delay = ApplySlowdownFactor(
+    const auto opacity_duration =
+        total_duration * kSharedOpacityTransitionDurationScaleFactor;
+    const auto opacity_delay =
         total_delay +
-        (total_duration * kSharedOpacityTransitionDelayScaleFactor));
+        (total_duration * kSharedOpacityTransitionDelayScaleFactor);
 
     // The kSrcOpacity curve animates the screen space opacity applied to the
     // blended content from src and dest elements. The value goes from the
@@ -1317,11 +1313,6 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
 SurfaceSavedFrameStorage*
 SurfaceAnimationManager::GetSurfaceSavedFrameStorageForTesting() {
   return &surface_saved_frame_storage_;
-}
-
-base::TimeDelta SurfaceAnimationManager::ApplySlowdownFactor(
-    base::TimeDelta original) const {
-  return original * animation_slowdown_factor_;
 }
 
 // RootAnimationState

@@ -159,8 +159,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // Returns true if we have a running animation for root or shared elements.
   bool HasRunningAnimations() const;
 
-  base::TimeDelta ApplySlowdownFactor(base::TimeDelta original) const;
-
   // The state machine can take the following paths :
   // 1) Viz driven animation : kIdle -> kAnimating -> kLastFrame -> kIdle
   // 2) Renderer driven animation : kIdle -> kAnimatingRenderer -> kIdle
@@ -170,7 +168,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   uint32_t last_processed_sequence_id_ = 0;
 
-  const int animation_slowdown_factor_ = 1;
   TransferableResourceTracker transferable_resource_tracker_;
 
   absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;

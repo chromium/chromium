@@ -2760,13 +2760,6 @@ const FeatureEntry::FeatureVariation kLargeFaviconFromGoogleVariations[] = {
     {"(128dip)", kLargeFaviconFromGoogle128,
      std::size(kLargeFaviconFromGoogle128), nullptr}};
 
-const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"5", switches::kDocumentTransitionSlowdownFactor, "5"},
-    {"10", switches::kDocumentTransitionSlowdownFactor, "10"},
-    {"20", switches::kDocumentTransitionSlowdownFactor, "20"},
-    {"50", switches::kDocumentTransitionSlowdownFactor, "50"}};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Possible configurations for the snooping protection feature.
 // Empty params configures the feature to apply a simple threshold to one
@@ -4442,10 +4435,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"document-transition", flag_descriptions::kDocumentTransitionName,
      flag_descriptions::kDocumentTransitionDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDocumentTransition)},
-    {"document-transition-slowdown-factor",
-     flag_descriptions::kDocumentTransitionSlowdownFactorName,
-     flag_descriptions::kDocumentTransitionSlowdownFactorDescription, kOsAll,
-     MULTI_VALUE_TYPE(kDocumentTransitionSlowdownFactorChoices)},
 #if BUILDFLAG(IS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,

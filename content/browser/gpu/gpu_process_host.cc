@@ -254,7 +254,6 @@ static const char* const kSwitchNames[] = {
     switches::kEnableLogging,
     switches::kEnableDeJelly,
     switches::kDeJellyScreenWidth,
-    switches::kDocumentTransitionSlowdownFactor,
     switches::kDoubleBufferCompositing,
     switches::kHeadless,
     switches::kLoggingLevel,

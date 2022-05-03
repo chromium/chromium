@@ -745,12 +745,6 @@ const char kDocumentTransitionName[] = "documentTransition API";
 const char kDocumentTransitionDescription[] =
     "Controls the availability of the documentTransition JavaScript API.";
 
-const char kDocumentTransitionSlowdownFactorName[] =
-    "documentTransition API Duration Control";
-const char kDocumentTransitionSlowdownFactorDescription[] =
-    "Slows down animations triggered by documentTransition JavaScript API for "
-    "debugging.";
-
 const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
 const char kEnableAutoDisableAccessibilityDescription[] =
     "When accessibility APIs are no longer being requested, automatically "
