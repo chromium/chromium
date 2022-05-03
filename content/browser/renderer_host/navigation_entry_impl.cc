@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -241,12 +240,6 @@ NavigationEntryImpl::TreeNode::~TreeNode() {}
 
 bool NavigationEntryImpl::TreeNode::MatchesFrame(
     FrameTreeNode* frame_tree_node) const {
-  if (!frame_tree_node) {
-    SCOPED_CRASH_KEY_BOOL("NoFTN", "is_main_frame", !parent);
-    SCOPED_CRASH_KEY_NUMBER("NoFTN", "children_size", children.size());
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
   // The root node is for the main frame whether the unique name matches or not.
   if (!parent)
     return frame_tree_node->IsMainFrame();
@@ -964,29 +957,17 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
 NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
     FrameTreeNode* frame_tree_node) const {
   NavigationEntryImpl::TreeNode* node = nullptr;
-  // TODO(https://crbug.com/1279628): Remove the BFS depth from the queue once
-  // we don't need to debug the crash anymore.
-  base::queue<std::pair<NavigationEntryImpl::TreeNode*, int>> work_queue;
-  work_queue.push(std::make_pair(root_node(), 0));
+  base::queue<NavigationEntryImpl::TreeNode*> work_queue;
+  work_queue.push(root_node());
   while (!work_queue.empty()) {
-    node = work_queue.front().first;
-    int depth = work_queue.front().second;
+    node = work_queue.front();
     work_queue.pop();
-    if (!node) {
-      SCOPED_CRASH_KEY_BOOL("NoNode", "ftn_is_main_frame",
-                            frame_tree_node->IsMainFrame());
-      SCOPED_CRASH_KEY_NUMBER("NoNode", "ftn_child_count",
-                              frame_tree_node->child_count());
-      SCOPED_CRASH_KEY_NUMBER("NoNode", "bfs_depth", depth);
-      base::debug::DumpWithoutCrashing();
-      continue;
-    }
     if (node->MatchesFrame(frame_tree_node))
       return node;
 
     // Enqueue any children and keep looking.
     for (const auto& child : node->children)
-      work_queue.push(std::make_pair(child.get(), depth + 1));
+      work_queue.push(child.get());
   }
   return nullptr;
 }
