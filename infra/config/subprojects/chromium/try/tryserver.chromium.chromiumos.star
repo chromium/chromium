@@ -120,10 +120,14 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
+    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
 )
 
 try_.builder(
     name = "linux-chromeos-rel",
+    mirrors = [
+        "ci/linux-chromeos-rel",
+    ],
     branch_selector = branches.CROS_LTS_MILESTONE,
     builderless = not settings.is_main,
     cores = 8,
