@@ -92,6 +92,7 @@ class QuickAnswersView : public views::View {
   views::View* report_query_view_ = nullptr;
   views::Label* first_answer_label_ = nullptr;
   views::LabelButton* retry_label_ = nullptr;
+  views::ImageButton* dogfood_feedback_button_ = nullptr;
   views::ImageButton* settings_button_ = nullptr;
   views::ImageButton* phonetics_audio_button_ = nullptr;
 

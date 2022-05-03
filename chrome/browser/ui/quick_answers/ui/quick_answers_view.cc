@@ -79,8 +79,9 @@ constexpr int kDefaultLineHeightDip = 20;
 // Spacing between labels in the horizontal elements view.
 constexpr int kLabelSpacingDip = 2;
 
-// Settings button.
-constexpr int kSettingsButtonMarginDip = 4;
+// Buttons view.
+constexpr int kButtonsViewMarginDip = 4;
+constexpr int kDogfoodButtonSizeDip = 20;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
 
@@ -397,6 +398,14 @@ void QuickAnswersView::OnThemeChanged() {
             vector_icons::kSettingsOutlineIcon, kSettingsButtonSizeDip,
             GetColorProvider()->GetColor(ui::kColorIconSecondary)));
   }
+
+  if (dogfood_feedback_button_) {
+    dogfood_feedback_button_->SetImage(
+        views::Button::ButtonState::STATE_NORMAL,
+        gfx::CreateVectorIcon(
+            vector_icons::kDogfoodIcon, kDogfoodButtonSizeDip,
+            GetColorProvider()->GetColor(ui::kColorIconSecondary)));
+  }
 }
 
 views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
@@ -539,13 +548,24 @@ void QuickAnswersView::AddContentView() {
 }
 
 void QuickAnswersView::AddSettingsButton() {
-  auto* settings_view = AddChildView(std::make_unique<views::View>());
+  auto* buttons_view = AddChildView(std::make_unique<views::View>());
   auto* layout =
-      settings_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(gfx::Insets(kSettingsButtonMarginDip))
-      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  settings_button_ = settings_view->AddChildView(
+      buttons_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetInteriorMargin(gfx::Insets(kButtonsViewMarginDip))
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+
+  if (is_internal_) {
+    dogfood_feedback_button_ = buttons_view->AddChildView(
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &QuickAnswersUiController::OnReportQueryButtonPressed,
+            controller_)));
+    dogfood_feedback_button_->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+  }
+
+  settings_button_ = buttons_view->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
@@ -709,6 +729,8 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   // retry-label, and so is not included when this is the case.
   if (!retry_label_)
     focusable_views.push_back(this);
+  if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible())
+    focusable_views.push_back(dogfood_feedback_button_);
   if (settings_button_ && settings_button_->GetVisible())
     focusable_views.push_back(settings_button_);
   if (phonetics_audio_button_ && phonetics_audio_button_->GetVisible())
