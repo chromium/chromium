@@ -15,7 +15,7 @@
       const scope = './partitioned-'
       const absoluteScope = new URL(scope, window.location).href;
 
-      await setup3pIframe();
+      await setupServiceWorker();
 
       // Once the SW sends us its ID, forward it up to the window.
       navigator.serviceWorker.addEventListener('message', evt => {

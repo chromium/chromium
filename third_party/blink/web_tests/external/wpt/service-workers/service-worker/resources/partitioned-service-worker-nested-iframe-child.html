@@ -16,7 +16,7 @@ from the main frame and should not share a ServiceWorker.
 
 async function onLoad() {
   // Set-up the ServiceWorker for this iframe.
-  await setup3pIframe();
+  await setupServiceWorker();
 
   // When the SW's iframe finishes it'll post a message. This forwards
   // it up to the middle-iframe.

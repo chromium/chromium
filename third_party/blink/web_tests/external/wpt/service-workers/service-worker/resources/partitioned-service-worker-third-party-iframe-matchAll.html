@@ -11,7 +11,7 @@
   SW's response up, eventually, to the test.
   <script>
     async function onLoad() {
-      reg = await setup3pIframe();
+      reg = await setupServiceWorker();
 
       // Once the SW sends us its ID, forward it up to the window.
       navigator.serviceWorker.addEventListener('message', evt => {

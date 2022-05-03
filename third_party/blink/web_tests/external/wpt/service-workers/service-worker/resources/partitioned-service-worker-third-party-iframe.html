@@ -12,7 +12,7 @@ and use to resolve the service worker's internal Promise.
 <script>
 
 async function onLoad() {
-  await setup3pIframe();
+  await setupServiceWorker();
 
   // When the SW's iframe finishes it'll post a message. This forwards it up to
   // the window.
