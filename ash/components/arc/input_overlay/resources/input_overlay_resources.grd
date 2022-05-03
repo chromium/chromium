@@ -18,6 +18,7 @@
        <include name="IDR_IO_COM_HABBY_ARCHERO" file="com.habby.archero.json" type="BINDATA" />
        <include name="IDR_IO_COM_DTS_FREEFIRETH" file="com.dts.freefireth.json" type="BINDATA" />
        <include name="IDR_IO_COM_FINGERSOFT_HILLCLIMB" file="com.fingersoft.hillclimb.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ANDROBABY_GAME2048" file="com.androbaby.game2048.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
