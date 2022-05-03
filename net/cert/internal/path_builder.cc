@@ -406,6 +406,9 @@ class CertIssuerIterPath {
   // Returns the last CertIssuersIter in the path.
   CertIssuersIter* back() { return cur_path_.back().get(); }
 
+  // Returns the length of the path.
+  size_t Length() const { return cur_path_.size(); }
+
   std::string PathDebugString() {
     std::string s;
     for (const auto& node : cur_path_) {
@@ -490,7 +493,8 @@ class CertPathIter {
                    CertPathErrors* out_errors,
                    const base::TimeTicks deadline,
                    uint32_t* iteration_count,
-                   const uint32_t max_iteration_count);
+                   const uint32_t max_iteration_count,
+                   const uint32_t max_path_building_depth);
 
  private:
   // Stores the next candidate issuer, until it is used during the
@@ -527,7 +531,8 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
                                CertPathErrors* out_errors,
                                const base::TimeTicks deadline,
                                uint32_t* iteration_count,
-                               const uint32_t max_iteration_count) {
+                               const uint32_t max_iteration_count,
+                               const uint32_t max_path_building_depth) {
   out_certs->clear();
   *out_last_cert_trust = CertificateTrust::ForUnspecified();
 
@@ -544,6 +549,19 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
       }
       out_errors->GetOtherErrors()->AddError(cert_errors::kDeadlineExceeded);
       return false;
+    }
+
+    // We are not done yet, so if the current path is at the depth limit then
+    // we must backtrack to find an acceptable solution.
+    if (max_path_building_depth > 0 &&
+        cur_path_.Length() >= max_path_building_depth) {
+      cur_path_.CopyPath(out_certs);
+      out_errors->GetOtherErrors()->AddError(cert_errors::kDepthLimitExceeded);
+      DVLOG(1) << "CertPathIter reached depth limit. Returning partial path "
+                  "and backtracking:\n"
+               << PathDebugString(*out_certs);
+      cur_path_.Pop();
+      return true;
     }
 
     if (!next_issuer_.cert) {
@@ -727,6 +745,10 @@ void CertPathBuilder::SetDeadline(base::TimeTicks deadline) {
   deadline_ = deadline;
 }
 
+void CertPathBuilder::SetDepthLimit(uint32_t limit) {
+  max_path_building_depth_ = limit;
+}
+
 void CertPathBuilder::SetExploreAllPaths(bool explore_all_paths) {
   explore_all_paths_ = explore_all_paths;
 }
@@ -738,10 +760,10 @@ CertPathBuilder::Result CertPathBuilder::Run() {
     std::unique_ptr<CertPathBuilderResultPath> result_path =
         std::make_unique<CertPathBuilderResultPath>();
 
-    if (!cert_path_iter_->GetNextPath(&result_path->certs,
-                                      &result_path->last_cert_trust,
-                                      &result_path->errors, deadline_,
-                                      &iteration_count, max_iteration_count_)) {
+    if (!cert_path_iter_->GetNextPath(
+            &result_path->certs, &result_path->last_cert_trust,
+            &result_path->errors, deadline_, &iteration_count,
+            max_iteration_count_, max_path_building_depth_)) {
       // There are no more paths to check or limits were exceeded.
       if (result_path->errors.ContainsError(
               cert_errors::kIterationLimitExceeded)) {

@@ -196,6 +196,10 @@ class NET_EXPORT CertPathBuilder {
   // will be when path building is aborted.
   void SetDeadline(base::TimeTicks deadline);
 
+  // Sets a limit to the number of certificates to be added in a path from leaf
+  // to root. Setting |limit| to 0 disables this limit, which is the default.
+  void SetDepthLimit(uint32_t limit);
+
   // If |explore_all_paths| is false (the default), path building will stop as
   // soon as a valid path is found. If |explore_all_paths| is true, path
   // building will continue until all possible paths have been exhausted (or
@@ -228,6 +232,7 @@ class NET_EXPORT CertPathBuilder {
   const InitialAnyPolicyInhibit initial_any_policy_inhibit_;
   uint32_t max_iteration_count_ = 0;
   base::TimeTicks deadline_;
+  uint32_t max_path_building_depth_ = 0;
   bool explore_all_paths_ = false;
 };
 

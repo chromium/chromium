@@ -63,6 +63,7 @@ DEFINE_CERT_ERROR_ID(kUnableToCheckRevocation, "Unable to check revocation");
 DEFINE_CERT_ERROR_ID(kNoIssuersFound, "No matching issuer found");
 DEFINE_CERT_ERROR_ID(kDeadlineExceeded, "Deadline exceeded");
 DEFINE_CERT_ERROR_ID(kIterationLimitExceeded, "Iteration limit exceeded");
+DEFINE_CERT_ERROR_ID(kDepthLimitExceeded, "Depth limit exceeded");
 
 }  // namespace cert_errors
 

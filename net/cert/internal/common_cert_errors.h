@@ -139,6 +139,9 @@ NET_EXPORT extern const CertErrorId kDeadlineExceeded;
 // Iteration limit was reached during path building.
 NET_EXPORT extern const CertErrorId kIterationLimitExceeded;
 
+// Depth limit was reached during path building.
+NET_EXPORT extern const CertErrorId kDepthLimitExceeded;
+
 }  // namespace cert_errors
 
 }  // namespace net

@@ -796,6 +796,96 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
       result.paths[0]->errors.ContainsError(cert_errors::kDeadlineExceeded));
 }
 
+TEST_F(PathBuilderMultiRootTest, TestDepthLimit) {
+  // D(D) is the trust root.
+  TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchor(d_by_d_);
+
+  // Certs B(C) and C(D) are supplied.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_c_);
+  sync_certs.AddCert(c_by_d_);
+
+  for (const bool insufficient_limit : {true, false}) {
+    CertPathBuilder path_builder(
+        a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+        initial_explicit_policy_, user_initial_policy_set_,
+        initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+    path_builder.AddCertIssuerSource(&sync_certs);
+
+    if (insufficient_limit) {
+      // A limit of depth equal to 2 is insufficient to build the path.
+      // Therefore, building is expected to fail.
+      path_builder.SetDepthLimit(2);
+    } else {
+      // The other tests in this file exercise the case that |SetDepthLimit|
+      // isn't called. Therefore, set a sufficient limit for the path to be
+      // found.
+      path_builder.SetDepthLimit(5);
+    }
+
+    auto result = path_builder.Run();
+
+    EXPECT_EQ(!insufficient_limit, result.HasValidPath());
+    EXPECT_EQ(insufficient_limit,
+              result.AnyPathContainsError(cert_errors::kDepthLimitExceeded));
+  }
+}
+
+TEST_F(PathBuilderMultiRootTest, TestDepthLimitMultiplePaths) {
+  // This case tests path building backracking due to reaching the path depth
+  // limit. Given the root and issuer certificates below, there can be two paths
+  // from between the leaf to a trusted root, one has length of 3 and the other
+  // has length of 4. These certificates are specifically chosen because path
+  // building will first explore the 4-certificate long path then the
+  // 3-certificate long path. So with a depth limit of 3, we can test the
+  // backtracking code path.
+
+  // E(E) and C(D) are the trust roots.
+  TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchor(e_by_e_);
+  trust_store.AddTrustAnchor(c_by_d_);
+
+  // Certs B(C). B(F) and F(E) are supplied.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_c_);
+  sync_certs.AddCert(b_by_f_);
+  sync_certs.AddCert(f_by_e_);
+
+  CertPathBuilder path_builder(
+      a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+  path_builder.AddCertIssuerSource(&sync_certs);
+
+  path_builder.SetDepthLimit(3);
+
+  auto result = path_builder.Run();
+
+  EXPECT_TRUE(result.HasValidPath());
+  EXPECT_TRUE(result.AnyPathContainsError(cert_errors::kDepthLimitExceeded));
+
+  ASSERT_EQ(result.paths.size(), 2u);
+
+  const CertPathBuilderResultPath* truncated_path = result.paths[0].get();
+  EXPECT_FALSE(truncated_path->IsValid());
+  EXPECT_TRUE(
+      truncated_path->errors.ContainsError(cert_errors::kDepthLimitExceeded));
+  ASSERT_EQ(truncated_path->certs.size(), 3u);
+  EXPECT_EQ(a_by_b_, truncated_path->certs[0]);
+  EXPECT_EQ(b_by_f_, truncated_path->certs[1]);
+  EXPECT_EQ(f_by_e_, truncated_path->certs[2]);
+
+  const CertPathBuilderResultPath* valid_path = result.paths[1].get();
+  EXPECT_TRUE(valid_path->IsValid());
+  EXPECT_FALSE(
+      valid_path->errors.ContainsError(cert_errors::kDepthLimitExceeded));
+  ASSERT_EQ(valid_path->certs.size(), 3u);
+  EXPECT_EQ(a_by_b_, valid_path->certs[0]);
+  EXPECT_EQ(b_by_c_, valid_path->certs[1]);
+  EXPECT_EQ(c_by_d_, valid_path->certs[2]);
+}
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void AddToStoreWithEKURestriction(HCERTSTORE store,
