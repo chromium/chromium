@@ -86,7 +86,7 @@
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8304833501377495048">Deixar de mostrar a barra de guias?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Fechar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Fechar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
-<translation id="8557923272772633250">Expandir grupo de guias com <ph name="NUMBER_OF_TABS" /> guias.</translation>
+<translation id="8557923272772633250">Abrir grupo com <ph name="NUMBER_OF_TABS" /> guias.</translation>
 <translation id="860282621117673749">Alertas de redução no preço</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8749939518995770034">Barra de guias fechada</translation>
