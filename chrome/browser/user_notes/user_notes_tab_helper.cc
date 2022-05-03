@@ -6,8 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/browser/user_note_service.h"
-#include "components/user_notes/browser/user_notes_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,8 +28,8 @@ UserNotesTabHelper::UserNotesTabHelper(content::WebContents* web_contents)
 UserNotesTabHelper::~UserNotesTabHelper() = default;
 
 void UserNotesTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (!UserNotesManager::GetForPage(page)) {
-    UserNotesManager::CreateForPage(page, service()->GetSafeRef());
+  if (!UserNoteManager::GetForPage(page)) {
+    UserNoteManager::CreateForPage(page, service()->GetSafeRef());
   }
 }
 

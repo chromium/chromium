@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 
 #include "base/memory/ptr_util.h"
 #include "components/user_notes/browser/user_note_instance.h"
@@ -11,24 +11,24 @@
 namespace user_notes {
 
 // static
-std::unique_ptr<UserNotesManager> UserNotesManager::CreateForTest(
+std::unique_ptr<UserNoteManager> UserNoteManager::CreateForTest(
     content::Page& page,
     base::SafeRef<UserNoteService> service) {
-  return base::WrapUnique(new UserNotesManager(page, service));
+  return base::WrapUnique(new UserNoteManager(page, service));
 }
 
-UserNotesManager::UserNotesManager(content::Page& page,
-                                   base::SafeRef<UserNoteService> service)
-    : PageUserData<UserNotesManager>(page), service_(service) {}
+UserNoteManager::UserNoteManager(content::Page& page,
+                                 base::SafeRef<UserNoteService> service)
+    : PageUserData<UserNoteManager>(page), service_(service) {}
 
-UserNotesManager::~UserNotesManager() {
+UserNoteManager::~UserNoteManager() {
   for (const auto& entry_it : instance_map_) {
     service_->OnNoteInstanceRemovedFromPage(entry_it.second->model().id(),
                                             this);
   }
 }
 
-UserNoteInstance* UserNotesManager::GetNoteInstance(
+UserNoteInstance* UserNoteManager::GetNoteInstance(
     const base::UnguessableToken id) {
   const auto& entry_it = instance_map_.find(id);
   if (entry_it == instance_map_.end()) {
@@ -38,7 +38,7 @@ UserNoteInstance* UserNotesManager::GetNoteInstance(
   return entry_it->second.get();
 }
 
-const std::vector<UserNoteInstance*> UserNotesManager::GetAllNoteInstances() {
+const std::vector<UserNoteInstance*> UserNoteManager::GetAllNoteInstances() {
   std::vector<UserNoteInstance*> notes;
   notes.reserve(instance_map_.size());
   for (const auto& entry_it : instance_map_) {
@@ -48,7 +48,7 @@ const std::vector<UserNoteInstance*> UserNotesManager::GetAllNoteInstances() {
   return notes;
 }
 
-void UserNotesManager::RemoveNote(const base::UnguessableToken id) {
+void UserNoteManager::RemoveNote(const base::UnguessableToken id) {
   const auto& entry_it = instance_map_.find(id);
   DCHECK(entry_it != instance_map_.end())
       << "Attempted to remove a note instance from a page where it didn't "
@@ -58,7 +58,7 @@ void UserNotesManager::RemoveNote(const base::UnguessableToken id) {
   instance_map_.erase(entry_it);
 }
 
-void UserNotesManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
+void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
   // TODO(crbug.com/1313967): This DCHECK is only applicable if notes are only
   // supported in the top-level frame. If notes are ever supported in subframes,
   // it is possible for the same note ID to be added to the same page more than
@@ -73,6 +73,6 @@ void UserNotesManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
   instance_map_.emplace(note->model().id(), std::move(note));
 }
 
-PAGE_USER_DATA_KEY_IMPL(UserNotesManager);
+PAGE_USER_DATA_KEY_IMPL(UserNoteManager);
 
 }  // namespace user_notes

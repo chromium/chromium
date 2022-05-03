@@ -5,7 +5,7 @@
 #include "components/user_notes/browser/user_note_service.h"
 
 #include "base/notreached.h"
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -37,13 +37,13 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
     return;
   }
 
-  DCHECK(UserNotesManager::GetForPage(rfh->GetPage()));
+  DCHECK(UserNoteManager::GetForPage(rfh->GetPage()));
   NOTIMPLEMENTED();
 }
 
 void UserNoteService::OnNoteInstanceAddedToPage(
     const base::UnguessableToken& id,
-    UserNotesManager* manager) {
+    UserNoteManager* manager) {
   DCHECK(IsUserNotesEnabled());
   const auto& entry_it = model_map_.find(id);
   DCHECK(entry_it != model_map_.end())
@@ -54,7 +54,7 @@ void UserNoteService::OnNoteInstanceAddedToPage(
 
 void UserNoteService::OnNoteInstanceRemovedFromPage(
     const base::UnguessableToken& id,
-    UserNotesManager* manager) {
+    UserNoteManager* manager) {
   DCHECK(IsUserNotesEnabled());
 
   const auto& entry_it = model_map_.find(id);

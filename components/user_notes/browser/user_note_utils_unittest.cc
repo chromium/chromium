@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/model/user_note_model_test_utils.h"
 #include "components/user_notes/user_notes_features.h"
@@ -241,12 +241,12 @@ class UserNoteUtilsTest
 
   void TearDown() override {
     // Owned web contentses must be destroyed before the test harness. Before
-    // doing that, however, clear the instance map of all `UserNotesManager`
+    // doing that, however, clear the instance map of all `UserNoteManager`
     // objects to avoid clean-up issues where the managers attempt to remove
     // themselves from the `UserNoteService`, which won't work because the test
     // setup does not add the manager refs in the service.
     for (const auto& wc : web_contents_list_) {
-      UserNotesManager::GetForPage(wc->GetPrimaryPage())->instance_map_.clear();
+      UserNoteManager::GetForPage(wc->GetPrimaryPage())->instance_map_.clear();
     }
     web_contents_list_.clear();
     content::RenderViewHostTestHarness::TearDown();
@@ -290,10 +290,10 @@ class UserNoteUtilsTest
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         wc.get(), GURL(frame_config.url));
 
-    // Create and attach a `UserNotesManager` to the primary page.
+    // Create and attach a `UserNoteManager` to the primary page.
     content::Page& page = wc->GetPrimaryPage();
-    UserNotesManager::CreateForPage(page, note_service_->GetSafeRef());
-    UserNotesManager* note_manager = UserNotesManager::GetForPage(page);
+    UserNoteManager::CreateForPage(page, note_service_->GetSafeRef());
+    UserNoteManager* note_manager = UserNoteManager::GetForPage(page);
     DCHECK(note_manager);
 
     // Attach all notes that have a target URL corresponding to this frame's

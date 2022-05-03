@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 
 #include <memory>
 
@@ -33,9 +33,9 @@ content::Page& NullPage() {
 
 }  // namespace
 
-class UserNotesManagerTest : public testing::Test {
+class UserNoteManagerTest : public testing::Test {
  public:
-  UserNotesManagerTest() {
+  UserNoteManagerTest() {
     // Create 3 note ids.
     note_ids_.push_back(base::UnguessableToken::Create());
     note_ids_.push_back(base::UnguessableToken::Create());
@@ -75,7 +75,7 @@ class UserNotesManagerTest : public testing::Test {
   int ModelMapSize() { return note_service_->model_map_.size(); }
 
   bool DoesManagerExistForId(const base::UnguessableToken& id,
-                             UserNotesManager* manager) {
+                             UserNoteManager* manager) {
     const auto& model_entry_it = note_service_->model_map_.find(id);
     if (model_entry_it == note_service_->model_map_.end()) {
       return false;
@@ -103,12 +103,12 @@ class UserNotesManagerTest : public testing::Test {
   std::vector<base::UnguessableToken> note_ids_;
 };
 
-TEST_F(UserNotesManagerTest, Destructor) {
+TEST_F(UserNoteManagerTest, Destructor) {
   // Initial setup.
   auto m1 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   auto m2 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   m2->AddNoteInstance(
       std::make_unique<UserNoteInstance>(GetSafeRefForNote(note_ids_[0])));
   m2->AddNoteInstance(
@@ -139,10 +139,10 @@ TEST_F(UserNotesManagerTest, Destructor) {
   EXPECT_EQ(ModelMapSize(), 0);
 }
 
-TEST_F(UserNotesManagerTest, GetNoteInstance) {
+TEST_F(UserNoteManagerTest, GetNoteInstance) {
   // Initial setup.
   auto m =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   m->AddNoteInstance(
       std::make_unique<UserNoteInstance>(GetSafeRefForNote(note_ids_[0])));
   m->AddNoteInstance(
@@ -163,10 +163,10 @@ TEST_F(UserNotesManagerTest, GetNoteInstance) {
   EXPECT_EQ(i->model().id(), note_ids_[2]);
 }
 
-TEST_F(UserNotesManagerTest, GetAllNoteInstances) {
+TEST_F(UserNoteManagerTest, GetAllNoteInstances) {
   // Initial setup.
   auto m =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
 
   // Verify initial state.
   EXPECT_EQ(m->instance_map_.size(), 0u);
@@ -190,12 +190,12 @@ TEST_F(UserNotesManagerTest, GetAllNoteInstances) {
   EXPECT_TRUE(DoResultsContainId(results, note_ids_[2]));
 }
 
-TEST_F(UserNotesManagerTest, RemoveNote) {
+TEST_F(UserNoteManagerTest, RemoveNote) {
   // Initial setup.
   auto m1 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   auto m2 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   m1->AddNoteInstance(
       std::make_unique<UserNoteInstance>(GetSafeRefForNote(note_ids_[0])));
   m1->AddNoteInstance(
@@ -241,12 +241,12 @@ TEST_F(UserNotesManagerTest, RemoveNote) {
   EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], m2.get()));
 }
 
-TEST_F(UserNotesManagerTest, AddNoteInstance) {
+TEST_F(UserNoteManagerTest, AddNoteInstance) {
   // Initial setup.
   auto m1 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   auto m2 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
 
   // Verify initial state.
   EXPECT_EQ(ModelMapSize(), 3);

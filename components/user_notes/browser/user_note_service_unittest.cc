@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/model/user_note_model_test_utils.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/page.h"
@@ -84,9 +84,9 @@ TEST_F(UserNoteServiceTest, AddNoteIntancesToModelMap) {
 
   // Simulate note instances being created in managers.
   auto m1 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   auto m2 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[0], m1.get());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[0], m2.get());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[1], m1.get());
@@ -99,9 +99,9 @@ TEST_F(UserNoteServiceTest, AddNoteIntancesToModelMap) {
 TEST_F(UserNoteServiceTest, RemoveNoteIntancesFromModelMap) {
   // Initial setup.
   auto m1 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   auto m2 =
-      UserNotesManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
+      UserNoteManager::CreateForTest(NullPage(), note_service_->GetSafeRef());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[0], m1.get());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[0], m2.get());
   note_service_->OnNoteInstanceAddedToPage(note_ids_[1], m1.get());

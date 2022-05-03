@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_MANAGER_H_
-#define COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_MANAGER_H_
+#ifndef COMPONENTS_USER_NOTES_BROWSER_USER_NOTE_MANAGER_H_
+#define COMPONENTS_USER_NOTES_BROWSER_USER_NOTE_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -27,18 +27,18 @@ namespace user_notes {
 // |Page|. Its lifecycle is tied to the |Page| it is associated with, so it
 // implements |PageUserData|. A tab helper is responsible for attaching an
 // instance of this class to each new |Page|.
-class UserNotesManager : public content::PageUserData<UserNotesManager> {
+class UserNoteManager : public content::PageUserData<UserNoteManager> {
  public:
   // Exposes a way to construct this object from unit tests. Do not use in
-  // product code; instead, use UserNotesManager::CreateForPage, inherited from
+  // product code; instead, use UserNoteManager::CreateForPage, inherited from
   // PageUserData.
-  static std::unique_ptr<UserNotesManager> CreateForTest(
+  static std::unique_ptr<UserNoteManager> CreateForTest(
       content::Page& page,
       base::SafeRef<UserNoteService> service);
 
-  ~UserNotesManager() override;
-  UserNotesManager(const UserNotesManager&) = delete;
-  UserNotesManager& operator=(const UserNotesManager&) = delete;
+  ~UserNoteManager() override;
+  UserNoteManager(const UserNoteManager&) = delete;
+  UserNoteManager& operator=(const UserNoteManager&) = delete;
 
   // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.
@@ -54,15 +54,15 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, Destructor);
-  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, GetNoteInstance);
-  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, GetAllNoteInstances);
-  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, RemoveNote);
-  FRIEND_TEST_ALL_PREFIXES(UserNotesManagerTest, AddNoteInstance);
-  friend class content::PageUserData<UserNotesManager>;
+  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, Destructor);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, GetNoteInstance);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, GetAllNoteInstances);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, RemoveNote);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, AddNoteInstance);
+  friend class content::PageUserData<UserNoteManager>;
   friend class UserNoteUtilsTest;
 
-  UserNotesManager(content::Page& page, base::SafeRef<UserNoteService> service);
+  UserNoteManager(content::Page& page, base::SafeRef<UserNoteService> service);
 
   PAGE_USER_DATA_KEY_DECL();
 
@@ -86,4 +86,4 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
 
 }  // namespace user_notes
 
-#endif  // COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_MANAGER_H_
+#endif  // COMPONENTS_USER_NOTES_BROWSER_USER_NOTE_MANAGER_H_

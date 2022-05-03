@@ -12,8 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/browser/user_note_service.h"
-#include "components/user_notes/browser/user_notes_manager.h"
 #include "components/user_notes/interfaces/user_note_service_delegate.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -32,10 +32,10 @@ namespace {
 
 const char kTestDomain[] = "http://www.google.com/";
 
-// Matcher that verifies whether the page has an attached `UserNotesManager` via
+// Matcher that verifies whether the page has an attached `UserNoteManager` via
 // the navigation handle supplied as arg.
-MATCHER(HasUserNotesManager, "") {
-  return arg != nullptr && UserNotesManager::GetForPage(
+MATCHER(HasUserNoteManager, "") {
+  return arg != nullptr && UserNoteManager::GetForPage(
                                arg->GetRenderFrameHost()->GetPage()) != nullptr;
 }
 
@@ -99,14 +99,14 @@ class UserNotesTabHelperTest : public ChromeRenderViewHostTestHarness {
 };
 
 // Tests that by the time `UserNotesTabHelper::DidFinishNavigation` is called,
-// a `UserNotesManager` is already attached to the `Page` of the navigated
+// a `UserNoteManager` is already attached to the `Page` of the navigated
 // frame.
-TEST_F(UserNotesTabHelperTest, AttachUserNotesManagerToPage) {
+TEST_F(UserNotesTabHelperTest, AttachUserNoteManagerToPage) {
   // Partially mock the `UserNotesTabHelper` to intercept calls to
   // `DidFinishNavigation` and prevent side effects.
   auto mock_tab_helper =
       std::make_unique<MockUserNotesTabHelper>(web_contents());
-  EXPECT_CALL(*mock_tab_helper, DidFinishNavigation(HasUserNotesManager()))
+  EXPECT_CALL(*mock_tab_helper, DidFinishNavigation(HasUserNoteManager()))
       .Times(4);
   AttachTabHelper(std::move(mock_tab_helper));
 

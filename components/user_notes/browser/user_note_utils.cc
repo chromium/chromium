@@ -6,7 +6,7 @@
 
 #include "base/unguessable_token.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
-#include "components/user_notes/browser/user_notes_manager.h"
+#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/model/user_note_metadata.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,8 +27,8 @@ std::vector<FrameUserNoteChanges> CalculateNoteChanges(
     // Notes should only be processed for the primary page.
     DCHECK(rfh->GetMainFrame()->IsInPrimaryMainFrame());
 
-    UserNotesManager* notes_manager =
-        UserNotesManager::GetForPage(rfh->GetPage());
+    UserNoteManager* notes_manager =
+        UserNoteManager::GetForPage(rfh->GetPage());
 
     if (!notes_manager) {
       // Frame is part of an uninteresting page (for User Notes purposes), such

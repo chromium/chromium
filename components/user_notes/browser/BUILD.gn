@@ -8,12 +8,12 @@ static_library("browser") {
     "frame_user_note_changes.h",
     "user_note_instance.cc",
     "user_note_instance.h",
+    "user_note_manager.cc",
+    "user_note_manager.h",
     "user_note_service.cc",
     "user_note_service.h",
     "user_note_utils.cc",
     "user_note_utils.h",
-    "user_notes_manager.cc",
-    "user_notes_manager.h",
   ]
 
   deps = [
@@ -30,9 +30,9 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "user_note_manager_unittest.cc",
     "user_note_service_unittest.cc",
     "user_note_utils_unittest.cc",
-    "user_notes_manager_unittest.cc",
   ]
 
   deps = [
