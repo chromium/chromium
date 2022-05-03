@@ -93,6 +93,13 @@ chromium-metrics-reviews@google.com.
       summary="Determines if a page is shopping related or not"/>
 </variants>
 
+<variants name="PageContentAnnotationsStorageType">
+  <variant name="ModelAnnotations" summary="Model Annotations"/>
+  <variant name="RelatedSearches" summary="Related Searches"/>
+  <variant name="SearchMetadata" summary="Search Metadata"/>
+  <variant name="Unknown" summary="Unknown"/>
+</variants>
+
 <variants name="PageTextDumpEvent">
   <variant name="FinishedLoad" summary="finished load"/>
   <variant name="FirstLayout" summary="first layout"/>
@@ -666,6 +673,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageMinMagnitudeForVisitNotFound.{PageContentAnnotationsStorageType}"
+    units="ms" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the magnitude of the visit times between the visit that
+    {PageContentAnnotationsStorageType} is supposed to be stored for and the
+    closest visit for the same URL if the specific visit, as identified by URL
+    and time, was not found when storing the {PageContentAnnotationsStorageType}
+    for a particular visit. This will be recorded at most once per page load.
+  </summary>
+  <token key="PageContentAnnotationsStorageType"
+      variants="PageContentAnnotationsStorageType"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
     enum="OptimizationGuidePageContentAnnotationsStorageStatus"
     expires_after="2022-10-30">
@@ -673,10 +696,25 @@ chromium-metrics-reviews@google.com.
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Records the status of whether the content annotations were stored in History
-    Service when the page content has been annotated successfully. This will be
-    recorded multiple times per page load, for both the related searches as well
-    as the model annotations once the page has finished loading.
+    Service when the necessary data has been collected successfully. This will
+    be recorded multiple times per page load, for both the related searches as
+    well as the model annotations once the page has finished loading.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus.{PageContentAnnotationsStorageType}"
+    enum="OptimizationGuidePageContentAnnotationsStorageStatus"
+    expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the status of whether the {PageContentAnnotationsStorageType} were
+    stored in History Service when the data has been collected successfully.
+    This will record at most once per page load.
+  </summary>
+  <token key="PageContentAnnotationsStorageType"
+      variants="PageContentAnnotationsStorageType"/>
 </histogram>
 
 <histogram

@@ -480,6 +480,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       "OptimizationGuide.PageContentAnnotationsService."
       "ContentAnnotationsStorageStatus",
       PageContentAnnotationsStorageStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.ModelAnnotations",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -550,6 +554,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
         "OptimizationGuide.PageContentAnnotationsService."
         "ContentAnnotationsStorageStatus",
         PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageStatus.ModelAnnotations",
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
 
     EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
   }
@@ -614,6 +622,10 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotationsService."
       "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.ModelAnnotations",
       PageContentAnnotationsStorageStatus::kSuccess, 1);
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =

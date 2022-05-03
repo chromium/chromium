@@ -84,6 +84,18 @@ struct SearchMetadata {
   std::u16string search_terms;
 };
 
+// The type of page content annotations stored in the history database.
+enum class PageContentAnnotationsType {
+  kUnknown = 0,
+  // Results from executing the models on page content or received from the
+  // remote Optimization Guide service.
+  kModelAnnotations = 1,
+  // Related searches for the Google Search Results page.
+  kRelatedSearches = 2,
+  // Metadata for "search-like" pages.
+  kSearchMetadata = 3,
+};
+
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService,
                                       public EntityMetadataProvider {
@@ -213,13 +225,18 @@ class PageContentAnnotationsService : public KeyedService,
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.
   // |callback| will be invoked to write the bound content annotations to
-  // |history_service| once the visits to the given URL have returned.
-  void QueryURL(const HistoryVisit& visit, PersistAnnotationsCallback callback);
+  // |history_service| once the visits to the given URL have returned. The
+  // |annotation_type| of data to be stored in History Service is passed along
+  // for metrics purposes.
+  void QueryURL(const HistoryVisit& visit,
+                PersistAnnotationsCallback callback,
+                PageContentAnnotationsType annotation_type);
   // Callback invoked when |history_service| has returned results for the visits
   // to a URL. In turn invokes |callback| to write the bound content annotations
   // to |history_service|.
   void OnURLQueried(const HistoryVisit& visit,
                     PersistAnnotationsCallback callback,
+                    PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
   // Runs a batch annotation validation, that is calls |BatchAnnotate| with

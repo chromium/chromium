@@ -37,12 +37,36 @@ namespace optimization_guide {
 
 namespace {
 
+// Keep this in sync with the PageContentAnnotationsStorageType variant in
+// ../optimization/histograms.xml.
+std::string PageContentAnnotationsTypeToString(
+    PageContentAnnotationsType annotation_type) {
+  switch (annotation_type) {
+    case PageContentAnnotationsType::kUnknown:
+      return "Unknown";
+    case PageContentAnnotationsType::kModelAnnotations:
+      return "ModelAnnotations";
+    case PageContentAnnotationsType::kRelatedSearches:
+      return "RelatedSearches";
+    case PageContentAnnotationsType::kSearchMetadata:
+      return "SearchMetadata";
+  }
+}
+
 void LogPageContentAnnotationsStorageStatus(
-    PageContentAnnotationsStorageStatus status) {
+    PageContentAnnotationsStorageStatus status,
+    PageContentAnnotationsType annotation_type) {
   DCHECK_NE(status, PageContentAnnotationsStorageStatus::kUnknown);
+  DCHECK_NE(annotation_type, PageContentAnnotationsType::kUnknown);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.PageContentAnnotationsService."
       "ContentAnnotationsStorageStatus",
+      status);
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus." +
+          PageContentAnnotationsTypeToString(annotation_type),
       status);
 }
 
@@ -315,7 +339,8 @@ void PageContentAnnotationsService::PersistSearchMetadata(
            base::BindOnce(&history::HistoryService::AddSearchMetadataForVisit,
                           history_service_->AsWeakPtr(),
                           search_metadata.normalized_url,
-                          search_metadata.search_terms));
+                          search_metadata.search_terms),
+           PageContentAnnotationsType::kSearchMetadata);
 }
 
 void PageContentAnnotationsService::ExtractRelatedSearches(
@@ -350,7 +375,8 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   QueryURL(visit,
            base::BindOnce(
                &history::HistoryService::AddContentModelAnnotationsForVisit,
-               history_service_->AsWeakPtr(), *content_annotations));
+               history_service_->AsWeakPtr(), *content_annotations),
+           PageContentAnnotationsType::kModelAnnotations);
 }
 #endif
 
@@ -393,27 +419,30 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
 
   QueryURL(visit,
            base::BindOnce(&history::HistoryService::AddRelatedSearchesForVisit,
-                          history_service_->AsWeakPtr(), related_searches));
+                          history_service_->AsWeakPtr(), related_searches),
+           PageContentAnnotationsType::kRelatedSearches);
 }
 
 void PageContentAnnotationsService::QueryURL(
     const HistoryVisit& visit,
-    PersistAnnotationsCallback callback) {
+    PersistAnnotationsCallback callback,
+    PageContentAnnotationsType annotation_type) {
   history_service_->QueryURL(
       visit.url, /*want_visits=*/true,
       base::BindOnce(&PageContentAnnotationsService::OnURLQueried,
-                     weak_ptr_factory_.GetWeakPtr(), visit,
-                     std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), visit, std::move(callback),
+                     annotation_type),
       &history_service_task_tracker_);
 }
 
 void PageContentAnnotationsService::OnURLQueried(
     const HistoryVisit& visit,
     PersistAnnotationsCallback callback,
+    PageContentAnnotationsType annotation_type,
     history::QueryURLResult url_result) {
   if (!url_result.success) {
     LogPageContentAnnotationsStorageStatus(
-        PageContentAnnotationsStorageStatus::kNoVisitsForUrl);
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl, annotation_type);
     return;
   }
 
@@ -435,12 +464,19 @@ void PageContentAnnotationsService::OnURLQueried(
     break;
   }
   LogPageContentAnnotationsStorageStatus(
-      did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound);
+      did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound,
+      annotation_type);
   if (!did_store_content_annotations) {
     DCHECK_NE(min_magnitude_between_visits, base::TimeDelta::Max());
     base::UmaHistogramTimes(
         "OptimizationGuide.PageContentAnnotationsService."
         "ContentAnnotationsStorageMinMagnitudeForVisitNotFound",
+        min_magnitude_between_visits);
+
+    base::UmaHistogramTimes(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageMinMagnitudeForVisitNotFound." +
+            PageContentAnnotationsTypeToString(annotation_type),
         min_magnitude_between_visits);
   }
 }
@@ -471,7 +507,10 @@ void PageContentAnnotationsService::PersistRemotePageEntities(
   QueryURL(history_visit,
            base::BindOnce(
                &history::HistoryService::AddContentModelAnnotationsForVisit,
-               history_service_->AsWeakPtr(), annotations));
+               history_service_->AsWeakPtr(), annotations),
+           // Even though we are persisting remote page entities, we store these
+           // as an override to the model annotations.
+           PageContentAnnotationsType::kModelAnnotations);
 }
 
 void PageContentAnnotationsService::RunBatchAnnotationValidation() {
