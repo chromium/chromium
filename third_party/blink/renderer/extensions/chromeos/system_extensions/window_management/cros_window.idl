@@ -2,20 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum CrosWindowVisibilityState { "hidden", "shown" };
+// WindowState reflects which of the mutually exclusive states of maximized,
+// minimized, or fullscreen that the CrosWindow is in.
+enum WindowState {
+  "normal",     // The window is at the default size or user-selected size.
+  "fullscreen", // The window is running as a full screen application.
+  "maximized",  // The window fills the screen on which it is displayed not
+                // including any screen areas reserved by the operating system.
+  "minimized",  // The window is only visible as an icon.
+};
+
+// CrosWindowVisibilityState reflects whether the CrosWindow is rendered.
+// This is intrinsic to the window and separate from occlusion state which
+// refers to visibility relative to other windows.
+enum CrosWindowVisibilityState {
+  "hidden",  // Window is not placed on any screens.
+  "shown",   // Window is placed on a screen.
+};
 
 interface CrosWindow {
   readonly attribute DOMString id;
 
   readonly attribute DOMString title;
   readonly attribute DOMString appId;
-  readonly attribute boolean isFullscreen;
-  readonly attribute boolean isMaximized;
-  readonly attribute boolean isMinimized;
+  readonly attribute WindowState windowState;
   readonly attribute boolean isFocused;
-  // visibilityState refers to the property of the window whether it's rendered.
-  // This is intrinsic to the window and separate from occlusion state which 
-  // refers to visibility relative to other windows.
   readonly attribute CrosWindowVisibilityState visibilityState;
 
   readonly attribute DOMPoint origin;

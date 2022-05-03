@@ -27,9 +27,7 @@ class CrosWindow : public ScriptWrappable {
 
   String title();
   String appId();
-  bool isFullscreen();
-  bool isMaximized();
-  bool isMinimized();
+  String windowState();
   bool isFocused();
   String visibilityState();
   DOMPoint* origin();

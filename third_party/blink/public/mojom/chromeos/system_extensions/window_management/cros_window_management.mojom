@@ -7,9 +7,22 @@ module blink.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// WindowState reflects which of the mutually exclusive states of maximized,
+// minimized, or fullscreen that the CrosWindow is in.
+enum WindowState {
+  kNormal,      // The window is at the default size or user-selected size.
+  kFullscreen,  // The window is running as a full screen application.
+  kMaximized,   // The window fills the screen on which it is displayed not
+                // including any screen areas reserved by the operating system.
+  kMinimized,   // The window is only visible as an icon.
+};
+
+// VisibilityState reflects whether the CrosWindow is rendered.
+// This is intrinsic to the window and separate from occlusion state which
+// refers to visibility relative to other windows.
 enum VisibilityState {
-  kHidden,
-  kShown,
+  kHidden,  // Window is not placed on any screens.
+  kShown,   // Window is placed on a screen.
 };
 
 // Represents a Chrome OS window which can be manipulated by a Window Management
@@ -24,14 +37,9 @@ struct CrosWindowInfo {
   gfx.mojom.Rect bounds;
 
   string title;
-  bool is_fullscreen;
-  bool is_maximized;
-  bool is_minimized;
+  WindowState window_state;
   bool is_focused;
-  // visibilityState refers to the property of the window whether it's rendered.
-  // This is intrinsic to the window and separate from occlusion state which
-  // refers to visibility relative to other windows.
-  VisibilityState is_visible;
+  VisibilityState visibility_state;
 };
 
 // Chrome OS Window Management API for System Extensions.

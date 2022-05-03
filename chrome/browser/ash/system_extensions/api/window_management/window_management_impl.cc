@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -45,9 +46,17 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
             base::UTF16ToUTF8(widget->widget_delegate()->GetWindowTitle());
         window->app_id = update.AppId();
         window->bounds = target->bounds();
-        window->is_fullscreen = widget->IsFullscreen();
-        window->is_maximized = widget->IsMaximized();
-        window->is_minimized = widget->IsMinimized();
+
+        // Set window state (states are mutually exclusive)
+        if (widget->IsFullscreen()) {
+          window->window_state = blink::mojom::WindowState::kFullscreen;
+        } else if (widget->IsMaximized()) {
+          window->window_state = blink::mojom::WindowState::kMaximized;
+        } else if (widget->IsMinimized()) {
+          window->window_state = blink::mojom::WindowState::kMinimized;
+        } else {
+          window->window_state = blink::mojom::WindowState::kNormal;
+        }
         // Instance registry references the activatable component of a window
         // which itself does not have focus but contains the child focusable. To
         // detect focus on the window, we assert that the focused window has our
@@ -55,9 +64,9 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
         window->is_focused = target == aura::client::GetFocusClient(target)
                                            ->GetFocusedWindow()
                                            ->GetToplevelWindow();
-        window->is_visible = widget->IsVisible()
-                                 ? blink::mojom::VisibilityState::kShown
-                                 : blink::mojom::VisibilityState::kHidden;
+        window->visibility_state = widget->IsVisible()
+                                       ? blink::mojom::VisibilityState::kShown
+                                       : blink::mojom::VisibilityState::kHidden;
         windows.push_back(std::move(window));
       });
   std::move(callback).Run(std::move(windows));

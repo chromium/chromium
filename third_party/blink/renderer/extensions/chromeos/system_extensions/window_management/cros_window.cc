@@ -14,6 +14,10 @@ namespace blink {
 
 static constexpr char kShown[] = "shown";
 static constexpr char kHidden[] = "hidden";
+static constexpr char kWindowStateFullscreen[] = "fullscreen";
+static constexpr char kWindowStateMaximized[] = "maximized";
+static constexpr char kWindowStateMinimized[] = "minimized";
+static constexpr char kWindowStateNormal[] = "normal";
 
 CrosWindow::CrosWindow(CrosWindowManagement* manager,
                        mojom::blink::CrosWindowInfoPtr window)
@@ -32,16 +36,17 @@ String CrosWindow::title() {
   return window_->title;
 }
 
-bool CrosWindow::isFullscreen() {
-  return window_->is_fullscreen;
-}
-
-bool CrosWindow::isMaximized() {
-  return window_->is_maximized;
-}
-
-bool CrosWindow::isMinimized() {
-  return window_->is_minimized;
+String CrosWindow::windowState() {
+  switch (window_->window_state) {
+    case mojom::blink::WindowState::kFullscreen:
+      return kWindowStateFullscreen;
+    case mojom::blink::WindowState::kMaximized:
+      return kWindowStateMaximized;
+    case mojom::blink::WindowState::kMinimized:
+      return kWindowStateMinimized;
+    case mojom::blink::WindowState::kNormal:
+      return kWindowStateNormal;
+  }
 }
 
 bool CrosWindow::isFocused() {
@@ -49,7 +54,7 @@ bool CrosWindow::isFocused() {
 }
 
 String CrosWindow::visibilityState() {
-  switch (window_->is_visible) {
+  switch (window_->visibility_state) {
     case mojom::blink::VisibilityState::kShown:
       return kShown;
     case mojom::blink::VisibilityState::kHidden:

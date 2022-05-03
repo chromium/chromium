@@ -26,7 +26,8 @@ async function setFullscreenAndTest(fullscreen) {
 
   {
     let [window] = await chromeos.windowManagement.getWindows();
-    assert_false(window.isFullscreen, `setFullscreen() fail`);
+    assert_not_equals(
+        window.windowState, 'fullscreen', `unset fullscreen fail`);
   }
 }
 
@@ -86,12 +87,8 @@ async function assertWindowState(state) {
   await assertSingleWindow();
 
   let [window] = await chromeos.windowManagement.getWindows();
-  assert_equals(window.isMaximized, state === "maximized",
-      `window should be in the ${state} state`);
-  assert_equals(window.isMinimized, state === "minimized",
-      `window should be in the ${state} state`);
-  assert_equals(window.isFullscreen, state === "fullscreen",
-      `window should be in the ${state} state`);
+  assert_equals(
+      window.windowState, state, `window should be in ${state} state`);
   assert_equals(
       window.visibilityState, state === 'minimized' ? 'hidden' : 'shown',
       `window should be in the ${state} state`);
