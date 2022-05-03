@@ -152,7 +152,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
   auto job_controller = std::make_unique<JobController>(
       this, delegate, session_, job_factory_.get(), request_info,
       /* is_preconnect = */ false, is_websocket, enable_ip_based_pooling,
-      enable_alternative_services, server_ssl_config, proxy_ssl_config);
+      enable_alternative_services,
+      session_->context()
+          .quic_context->params()
+          ->delay_main_job_with_available_spdy_session,
+      server_ssl_config, proxy_ssl_config);
   JobController* job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
   return job_controller_raw_ptr->Start(delegate,
@@ -169,7 +173,11 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
       /*is_preconnect=*/true,
       /*is_websocket=*/false,
       /*enable_ip_based_pooling=*/true,
-      /*enable_alternative_services=*/true, /*server_ssl_config=*/SSLConfig(),
+      /*enable_alternative_services=*/true,
+      session_->context()
+          .quic_context->params()
+          ->delay_main_job_with_available_spdy_session,
+      /*server_ssl_config=*/SSLConfig(),
       /*proxy_ssl_config=*/SSLConfig());
   JobController* job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));

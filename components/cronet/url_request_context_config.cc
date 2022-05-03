@@ -100,6 +100,8 @@ const char kInitialDelayForBrokenAlternativeServiceSeconds[] =
     "initial_delay_for_broken_alternative_service_seconds";
 const char kExponentialBackoffOnInitialDelay[] =
     "exponential_backoff_on_initial_delay";
+const char kDelayMainJobWithAvailableSpdySession[] =
+    "delay_main_job_with_available_spdy_session";
 
 // AsyncDNS experiment dictionary name.
 const char kAsyncDnsFieldTrialName[] = "AsyncDNS";
@@ -587,6 +589,11 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 
       quic_params->exponential_backoff_on_initial_delay =
           quic_args.FindBoolKey(kExponentialBackoffOnInitialDelay);
+
+      quic_params->delay_main_job_with_available_spdy_session =
+          quic_args.FindBoolKey(kDelayMainJobWithAvailableSpdySession)
+              .value_or(
+                  quic_params->delay_main_job_with_available_spdy_session);
 
       quic_params->disable_tls_zero_rtt =
           quic_args.FindBoolKey(kDisableTlsZeroRtt)

@@ -130,6 +130,7 @@ HttpStreamFactory::JobController::JobController(
     bool is_websocket,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
+    bool delay_main_job_with_available_spdy_session,
     const SSLConfig& server_ssl_config,
     const SSLConfig& proxy_ssl_config)
     : factory_(factory),
@@ -147,6 +148,8 @@ HttpStreamFactory::JobController::JobController(
       job_bound_(false),
       main_job_is_blocked_(false),
       main_job_is_resumed_(false),
+      delay_main_job_with_available_spdy_session_(
+          delay_main_job_with_available_spdy_session),
       bound_job_(nullptr),
       next_state_(STATE_RESOLVE_PROXY),
       proxy_resolve_request_(nullptr),
@@ -599,9 +602,16 @@ const NetLogWithSource* HttpStreamFactory::JobController::GetNetLog() const {
 void HttpStreamFactory::JobController::MaybeSetWaitTimeForMainJob(
     const base::TimeDelta& delay) {
   if (main_job_is_blocked_) {
-    main_job_wait_time_ =
-        std::min(delay, base::Seconds(kMaxDelayTimeForMainJobSecs));
-    if (main_job_->HasAvailableSpdySession()) {
+    const bool has_available_spdy_session =
+        main_job_->HasAvailableSpdySession();
+    if (!delay_main_job_with_available_spdy_session_ &&
+        has_available_spdy_session) {
+      main_job_wait_time_ = base::TimeDelta();
+    } else {
+      main_job_wait_time_ =
+          std::min(delay, base::Seconds(kMaxDelayTimeForMainJobSecs));
+    }
+    if (has_available_spdy_session) {
       UMA_HISTOGRAM_TIMES("Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession",
                           main_job_wait_time_);
     } else {

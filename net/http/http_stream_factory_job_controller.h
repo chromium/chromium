@@ -42,6 +42,7 @@ class HttpStreamFactory::JobController
                 bool is_websocket,
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services,
+                bool delay_main_job_with_available_spdy_session,
                 const SSLConfig& server_ssl_config,
                 const SSLConfig& proxy_ssl_config);
 
@@ -323,6 +324,10 @@ class HttpStreamFactory::JobController
   base::CancelableOnceClosure resume_main_job_callback_;
   // True if the main job was blocked and has been resumed in ResumeMainJob().
   bool main_job_is_resumed_;
+
+  // If true, delay main job even the request can be sent immediately on an
+  // available SPDY session.
+  bool delay_main_job_with_available_spdy_session_;
 
   // Waiting time for the main job before it is resumed.
   base::TimeDelta main_job_wait_time_;

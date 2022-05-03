@@ -225,6 +225,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(
       quic_params->initial_delay_for_broken_alternative_service.has_value());
   EXPECT_FALSE(quic_params->exponential_backoff_on_initial_delay.has_value());
+  EXPECT_TRUE(quic_params->delay_main_job_with_available_spdy_session);
 
   // Check network_service_type for iOS.
   EXPECT_EQ(2, quic_params->ios_network_service_type);
@@ -1151,6 +1152,55 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams2) {
             quic_params->initial_delay_for_broken_alternative_service.value());
   ASSERT_TRUE(quic_params->exponential_backoff_on_initial_delay.has_value());
   EXPECT_FALSE(quic_params->exponential_backoff_on_initial_delay.value());
+}
+
+TEST(URLRequestContextConfigTest, NotDelayMainJobWithAvailableSpdySession) {
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"QUIC\":{\"delay_main_job_with_available_spdy_session\":false}}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
+
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder);
+  // Set a ProxyConfigService to avoid DCHECK failure when building.
+  builder.set_proxy_config_service(
+      std::make_unique<net::ProxyConfigServiceFixed>(
+          net::ProxyConfigWithAnnotation::CreateDirect()));
+  std::unique_ptr<net::URLRequestContext> context(builder.Build());
+  const net::QuicParams* quic_params = context->quic_context()->params();
+
+  EXPECT_FALSE(quic_params->delay_main_job_with_available_spdy_session);
 }
 
 TEST(URLRequestContextConfigTest, SetDisableTlsZeroRtt) {
