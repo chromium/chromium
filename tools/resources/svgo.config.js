@@ -13,6 +13,9 @@ module.exports = {
           // free to remove viewBox manually from a certain SVG if you have
           // audited all its usages.
           removeViewBox: false,
+
+          // https://github.com/svg/svgo/issues/1672
+          minifyStyles: false,
         },
       },
     },
