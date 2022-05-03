@@ -163,9 +163,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       chromeos::attestation::AttestationStatus status,
       const std::string& pem_certificate_chain);
 
-  // Starts the enrollment flow for the offline demo mode.
-  void StartOfflineDemoEnrollmentFlow();
-
   // Starts registration if the store is initialized.
   void StartRegistration();
 
@@ -209,12 +206,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Handles result from device policy refresh via authpolicyd.
   void HandleActiveDirectoryPolicyRefreshed(authpolicy::ErrorType error);
-
-  // Handles the blob for the device policy for the offline demo mode.
-  void OnOfflinePolicyBlobLoaded(absl::optional<std::string> blob);
-
-  // Handles the policy validation result for the offline demo mode.
-  void OnOfflinePolicyValidated(DeviceCloudPolicyValidator* validator);
 
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

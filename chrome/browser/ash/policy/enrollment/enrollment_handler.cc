@@ -98,8 +98,8 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     EnrollmentConfig::Mode mode) {
   switch (mode) {
     case EnrollmentConfig::MODE_NONE:
-    case EnrollmentConfig::MODE_OFFLINE_DEMO:
     case EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
+    case EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
       break;
     case EnrollmentConfig::MODE_MANUAL:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
@@ -269,35 +269,26 @@ EnrollmentHandler::EnrollmentHandler(
   dm_auth_ = std::move(dm_auth);
   CHECK(!client_->is_registered());
   CHECK_EQ(DM_STATUS_SUCCESS, client_->status());
-  if (enrollment_config_.is_mode_attestation() ||
-      enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
-    CHECK(dm_auth_.empty());
-  } else {
-    CHECK(!dm_auth_.empty());
-  }
-  CHECK_NE(enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO,
-           enrollment_config.offline_policy_path.empty());
+  CHECK_EQ(dm_auth_.empty(), enrollment_config_.is_mode_attestation());
   CHECK(enrollment_config_.auth_mechanism !=
             EnrollmentConfig::AUTH_MECHANISM_ATTESTATION ||
         attestation_flow_);
-  if (enrollment_config.mode != EnrollmentConfig::MODE_OFFLINE_DEMO) {
-    register_params_ =
-        std::make_unique<CloudPolicyClient::RegistrationParameters>(
-            em::DeviceRegisterRequest::DEVICE,
-            EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
-    register_params_->SetPsmExecutionResult(
-        GetPsmExecutionResult(*g_browser_process->local_state()));
-    register_params_->SetPsmDeterminationTimestamp(
-        GetPsmDeterminationTimestamp(*g_browser_process->local_state()));
-    // License type is set only if terminal license is used. Unset field is
-    // treated as enterprise license.
-    if (license_type == LicenseType::kTerminal) {
-      register_params_->SetLicenseType(
-          em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK);
-    }
-
-    register_params_->requisition = requisition;
+  register_params_ =
+      std::make_unique<CloudPolicyClient::RegistrationParameters>(
+          em::DeviceRegisterRequest::DEVICE,
+          EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
+  register_params_->SetPsmExecutionResult(
+      GetPsmExecutionResult(*g_browser_process->local_state()));
+  register_params_->SetPsmDeterminationTimestamp(
+      GetPsmDeterminationTimestamp(*g_browser_process->local_state()));
+  // License type is set only if terminal license is used. Unset field is
+  // treated as enterprise license.
+  if (license_type == LicenseType::kTerminal) {
+    register_params_->SetLicenseType(
+        em::LicenseType_LicenseTypeEnum::LicenseType_LicenseTypeEnum_KIOSK);
   }
+
+  register_params_->requisition = requisition;
 
   store_->AddObserver(this);
   client_->AddObserver(this);
@@ -317,15 +308,6 @@ void EnrollmentHandler::SetSigningServiceProviderForTesting(
 
 void EnrollmentHandler::StartEnrollment() {
   CHECK_EQ(STEP_PENDING, enrollment_step_);
-
-  if (enrollment_config_.skip_state_keys_request()) {
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
-    LOG(WARNING) << "Skipping state keys request.";
-    SetStep(STEP_LOADING_STORE);
-    StartRegistration();
-    return;
-  }
 
   SetStep(STEP_STATE_KEYS);
 
@@ -517,8 +499,6 @@ void EnrollmentHandler::StartRegistration() {
     // First attempt to register with enrollment certificate. Do not force new
     // key and fresh enrollment certificate.
     StartAttestationBasedEnrollmentFlow(/*is_initial_attempt=*/true);
-  } else if (enrollment_config_.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
-    StartOfflineDemoEnrollmentFlow();
   } else {
     client_->Register(*register_params_, client_id_, dm_auth_.oauth_token());
   }
@@ -594,69 +574,6 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
   client_->RegisterWithCertificate(
       *register_params_, client_id_, pem_certificate_chain, sub_organization_,
       signing_service_provider_->CreateSigningService());
-}
-
-void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {
-  DCHECK(!enrollment_config_.offline_policy_path.empty());
-
-  device_mode_ = DeviceMode::DEVICE_MODE_DEMO;
-  domain_ = enrollment_config_.management_domain;
-  skip_robot_auth_ = true;
-  SetStep(STEP_POLICY_FETCH);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ReadFileToOptionalString,
-                     enrollment_config_.offline_policy_path),
-      base::BindOnce(&EnrollmentHandler::OnOfflinePolicyBlobLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EnrollmentHandler::OnOfflinePolicyBlobLoaded(
-    absl::optional<std::string> blob) {
-  DCHECK_EQ(EnrollmentConfig::MODE_OFFLINE_DEMO, enrollment_config_.mode);
-  DCHECK_EQ(STEP_POLICY_FETCH, enrollment_step_);
-
-  if (!blob.has_value()) {
-    return;
-  }
-
-  SetStep(STEP_VALIDATION);
-
-  // Validate the policy.
-  auto policy = std::make_unique<em::PolicyFetchResponse>();
-  if (!policy->ParseFromString(blob.value())) {
-    return;
-  }
-
-  // Validate the device policy for the offline demo mode.
-  auto validator = CreateValidator(std::move(policy), domain_);
-  validator->ValidateDomain(domain_);
-  DeviceCloudPolicyValidator::StartValidation(
-      std::move(validator),
-      base::BindOnce(&EnrollmentHandler::OnOfflinePolicyValidated,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EnrollmentHandler::OnOfflinePolicyValidated(
-    DeviceCloudPolicyValidator* validator) {
-  DCHECK_EQ(enrollment_config_.mode, EnrollmentConfig::MODE_OFFLINE_DEMO);
-  DCHECK_EQ(STEP_VALIDATION, enrollment_step_);
-
-  if (!validator->success()) {
-    ReportResult(EnrollmentStatus::ForValidationError(validator->status()));
-    return;
-  }
-
-  // Don't use the device ID within the validated policy -- it's common among
-  // all of the offline-enrolled devices.
-  device_id_ = base::GenerateGUID();
-  policy_ = std::move(validator->policy());
-
-  // The steps for OAuth2 token fetching is skipped for the OFFLINE_DEMO_MODE.
-  SetStep(STEP_SET_FWMP_DATA);
-  SetFirmwareManagementParametersData();
 }
 
 std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(

@@ -100,12 +100,6 @@ class EnterpriseEnrollmentHelper {
   // lifetime, and only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingAttestation() = 0;
 
-  // Starts enterprise enrollment for offline demo-mode.
-  // EnrollForOfflineDemo is used offline, no network connections. Thus it goes
-  // into enrollment without authentication -- and applies policies which are
-  // stored locally.
-  virtual void EnrollForOfflineDemo() = 0;
-
   // Starts device attribute update process. First tries to get
   // permission to update device attributes for current user
   // using stored during enrollment oauth token.

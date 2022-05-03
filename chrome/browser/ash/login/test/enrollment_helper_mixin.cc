@@ -103,23 +103,6 @@ void EnrollmentHelperMixin::ExpectAttestationEnrollmentErrorRepeated(
       }));
 }
 
-void EnrollmentHelperMixin::ExpectOfflineEnrollmentSuccess() {
-  ExpectEnrollmentMode(policy::EnrollmentConfig::MODE_OFFLINE_DEMO);
-
-  EXPECT_CALL(*mock_, EnrollForOfflineDemo())
-      .WillOnce(InvokeWithoutArgs(
-          [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
-}
-
-void EnrollmentHelperMixin::ExpectOfflineEnrollmentError(
-    policy::EnrollmentStatus status) {
-  ExpectEnrollmentMode(policy::EnrollmentConfig::MODE_OFFLINE_DEMO);
-  EXPECT_CALL(*mock_, EnrollForOfflineDemo())
-      .WillOnce(InvokeWithoutArgs([this, status]() {
-        mock_->status_consumer()->OnEnrollmentError(status);
-      }));
-}
-
 void EnrollmentHelperMixin::SetupClearAuth() {
   ON_CALL(*mock_, ClearAuth(_))
       .WillByDefault(Invoke(

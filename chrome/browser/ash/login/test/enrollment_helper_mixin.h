@@ -59,11 +59,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   void ExpectAttestationEnrollmentErrorRepeated(
       policy::EnrollmentStatus status);
 
-  // Configures and sets expectations for successful offline demo flow.
-  void ExpectOfflineEnrollmentSuccess();
-  // Configures and sets expectations for offline demo flow resulting in error.
-  void ExpectOfflineEnrollmentError(policy::EnrollmentStatus status);
-
   // Sets up expectation of kTestAuthCode as enrollment credentials.
   void ExpectEnrollmentCredentials();
   // Sets up default ClearAuth handling.

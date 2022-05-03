@@ -136,13 +136,6 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAttestation() {
   DoEnroll(policy::DMAuth::NoAuth());
 }
 
-void EnterpriseEnrollmentHelperImpl::EnrollForOfflineDemo() {
-  CHECK_EQ(enrollment_config_.mode,
-           policy::EnrollmentConfig::MODE_OFFLINE_DEMO);
-  // The tokens are not used in offline demo mode.
-  DoEnroll(policy::DMAuth::NoAuth());
-}
-
 void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
   if (oauth_status_ != OAUTH_NOT_STARTED) {
     if (oauth_fetcher_) {
@@ -167,8 +160,6 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
 void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   DCHECK(auth_data_.empty() || auth_data_ == auth_data);
   DCHECK(enrollment_config_.is_mode_attestation() ||
-         enrollment_config_.mode ==
-             policy::EnrollmentConfig::MODE_OFFLINE_DEMO ||
          oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
          oauth_status_ == OAUTH_STARTED_WITH_TOKEN);
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved

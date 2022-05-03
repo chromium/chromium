@@ -35,7 +35,6 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
     case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
     case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
     case policy::EnrollmentConfig::MODE_SERVER_ADVERTISED:
-    case policy::EnrollmentConfig::MODE_OFFLINE_DEMO:
       base::UmaHistogramSparse(kMetricEnrollment, sample);
       break;
     case policy::EnrollmentConfig::MODE_ATTESTATION:
@@ -67,6 +66,7 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       base::UmaHistogramSparse(kMetricEnrollmentRecovery, sample);
       break;
     case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
+    case policy::EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
     case policy::EnrollmentConfig::MODE_NONE:
       NOTREACHED();
       break;
