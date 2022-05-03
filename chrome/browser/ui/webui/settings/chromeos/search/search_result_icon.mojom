@@ -16,7 +16,6 @@ enum SearchResultIcon {
   kCellular,
   kChrome,
   kClock,
-  kDarkMode,
   kDeveloperTags,
   kDisplay,
   kDrive,
