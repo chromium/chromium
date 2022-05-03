@@ -53,6 +53,11 @@ class SavedTabGroupModel {
   // Notify Observers that a saved tab group was removed from the tabstrip.
   void GroupClosed(tab_groups::TabGroupId tab_group_id);
 
+  // Changes the index of a given tab group by id. The new index provided is the
+  // expected index after the group is removed.
+  void Move(tab_groups::TabGroupId tab_group_id, int new_index);
+
+  // Add/Remove observers for this model.
   void AddObserver(SavedTabGroupModelObserver* observer);
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 

@@ -81,6 +81,21 @@ void SavedTabGroupModel::GroupClosed(tab_groups::TabGroupId tab_group_id) {
     observer.SavedTabGroupClosed(index);
 }
 
+void SavedTabGroupModel::Move(tab_groups::TabGroupId tab_group_id,
+                              int new_index) {
+  DCHECK_GE(new_index, 0);
+  int index = GetIndexOf(tab_group_id);
+  if (index < 0)
+    return;
+
+  SavedTabGroup group = saved_tab_groups_[index];
+  saved_tab_groups_.erase(saved_tab_groups_.begin() + index);
+  saved_tab_groups_.emplace(saved_tab_groups_.begin() + new_index, group);
+
+  for (auto& observer : observers_)
+    observer.SavedTabGroupMoved(saved_tab_groups_[new_index], index, new_index);
+}
+
 void SavedTabGroupModel::AddObserver(SavedTabGroupModelObserver* observer) {
   observers_.AddObserver(observer);
 }

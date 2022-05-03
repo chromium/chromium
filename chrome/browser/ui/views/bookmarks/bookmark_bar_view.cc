@@ -1291,7 +1291,9 @@ void BookmarkBarView::SavedTabGroupUpdated(const SavedTabGroup& group,
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::SavedTabGroupMoved(const SavedTabGroup& group) {
+void BookmarkBarView::SavedTabGroupMoved(const SavedTabGroup& group,
+                                         int old_index,
+                                         int new_index) {
   // TODO(dljames): Find the current index for [group] in [tab_group_buttons_].
   // Find the new index for [ group ] in [saved_tab_group_model_]. Swap
   // from current -> new.

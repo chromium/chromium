@@ -102,3 +102,18 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   EXPECT_EQ(new_button_1->GetText(), kNewTitle);
   EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
 }
+
+TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+  saved_tab_group_model()->Add(kSavedTabGroup2);
+
+  const auto& button_list = saved_tab_group_bar()->children();
+  views::View* button_1 = button_list[0];
+
+  // move the tab and expect the one that was moved to be in the expected
+  // position.
+  saved_tab_group_model()->Move(kSavedTabGroup1.group_id, 1);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_NE(button_1, saved_tab_group_bar()->children()[0]);
+  EXPECT_EQ(button_1, saved_tab_group_bar()->children()[1]);
+}

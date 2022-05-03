@@ -43,8 +43,19 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_index_ = index;
   }
 
-  void SavedTabGroupMoved(const SavedTabGroup& group) override {
+  void SavedTabGroupMoved(const SavedTabGroup& group,
+                          int old_index,
+                          int new_index) override {
     retrieved_group_.emplace_back(group);
+    retrieved_old_index_ = old_index;
+    retrieved_new_index_ = new_index;
+  }
+
+  void ClearSignals() {
+    retrieved_group_.clear();
+    retrieved_index_ = -1;
+    retrieved_old_index_ = -1;
+    retrieved_new_index_ = -1;
   }
 
   void SavedTabGroupClosed(int index) override { retrieved_index_ = index; }
@@ -84,6 +95,8 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   std::vector<SavedTabGroup> retrieved_group_;
   int retrieved_index_ = -1;
+  int retrieved_old_index_ = -1;
+  int retrieved_new_index_ = -1;
   std::string base_path_ = "file:///c:/tmp/";
 };
 
@@ -310,6 +323,14 @@ TEST_F(SavedTabGroupModelTest, UpdateElement) {
   EXPECT_EQ(group->color, random_color);
 }
 
+TEST_F(SavedTabGroupModelTest, MoveElement) {
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
+  saved_tab_group_model_->Move(id_2_, 2);
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
+  saved_tab_group_model_->Move(id_2_, 0);
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
+}
+
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
 // the model.
 TEST_F(SavedTabGroupModelObserverTest, AddElement) {
@@ -393,4 +414,34 @@ TEST_F(SavedTabGroupModelObserverTest, GroupClosed) {
   saved_tab_group_model_->GroupClosed(group_4.group_id);
   EXPECT_NE(index, retrieved_index_);
   EXPECT_EQ(-1, retrieved_index_);
+}
+
+// Tests that SavedTabGroupModelObserver::Moved passes the correct
+// element from the model.
+TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
+  SavedTabGroup stg_1(tab_groups::TabGroupId::GenerateNew(),
+                      std::u16string(u"stg_1"),
+                      tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroup stg_2(tab_groups::TabGroupId::GenerateNew(),
+                      std::u16string(u"stg_2"),
+                      tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroup stg_3(tab_groups::TabGroupId::GenerateNew(),
+                      std::u16string(u"stg_3"),
+                      tab_groups::TabGroupColorId::kGrey, {});
+
+  saved_tab_group_model_->Add(stg_1);
+  saved_tab_group_model_->Add(stg_2);
+  saved_tab_group_model_->Add(stg_3);
+
+  ClearSignals();
+
+  saved_tab_group_model_->Move(stg_2.group_id, 2);
+
+  const int index = retrieved_group_.size() - 1;
+  ASSERT_GE(index, 0);
+
+  SavedTabGroup received_group = retrieved_group_[index];
+  EXPECT_EQ(stg_2.group_id, received_group.group_id);
+  EXPECT_EQ(1, retrieved_old_index_);
+  EXPECT_EQ(2, retrieved_new_index_);
 }

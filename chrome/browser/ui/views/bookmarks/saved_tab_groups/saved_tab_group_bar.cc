@@ -52,6 +52,7 @@ void SavedTabGroupBar::SavedTabGroupAdded(const SavedTabGroup& group,
                                           int index) {
   AddTabGroupButton(group, index);
 }
+
 void SavedTabGroupBar::SavedTabGroupRemoved(int index) {
   RemoveTabGroupButton(index);
 }
@@ -62,7 +63,11 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const SavedTabGroup& group,
   AddTabGroupButton(group, index);
 }
 
-void SavedTabGroupBar::SavedTabGroupMoved(const SavedTabGroup& group) {}
+void SavedTabGroupBar::SavedTabGroupMoved(const SavedTabGroup& group,
+                                          int old_index,
+                                          int new_index) {
+  ReorderChildView(children().at(old_index), new_index);
+}
 
 // TODO dpenning: Support the state of the SavedTabGroup open in a tab strip
 // changing.
