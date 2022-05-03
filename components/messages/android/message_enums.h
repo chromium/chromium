@@ -125,6 +125,17 @@ enum class SecondaryMenuMaxSize {
   LARGE = 2,   // 300dp -> @dimen/message_secondary_menu_max_size_large
 };
 
+// The primary widget that should be shown in the message.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+enum class PrimaryWidgetAppearance {
+  // Default value. Show the primary action button if non-empty text has been
+  // set for the primary action button, otherwise no primary widget is shown.
+  BUTTON_IF_TEXT_IS_SET = 0,
+  // Show a spinning progress indicator that isn't clickable.
+  PROGRESS_SPINNER = 1,
+};
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGE_ENUMS_H_

@@ -12,11 +12,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -49,6 +51,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MessageBannerViewTest {
+    private static final String PRIMARY_BUTTON_TEXT = "PrimaryButtonText";
     private static final String SECONDARY_BUTTON_MENU_TEXT = "SecondaryActionText";
 
     @ClassRule
@@ -65,6 +68,8 @@ public class MessageBannerViewTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock
+    Runnable mPrimaryActionCallback;
     @Mock
     Runnable mSecondaryActionCallback;
 
@@ -223,5 +228,317 @@ public class MessageBannerViewTest {
         onView(withId(R.id.message_secondary_button)).perform(click());
         onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
         Mockito.verify(mSecondaryActionCallback).run();
+    }
+
+    /**
+     * Setting PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET without setting the
+     * PRIMARY_BUTTON_TEXT should mean that no primary widget is visible.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceButtonWithUnsetText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * Setting PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET with PRIMARY_BUTTON_TEXT set to
+     * null should mean that no primary widget is visible.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceButtonWithNullText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, null)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * Setting PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET with PRIMARY_BUTTON_TEXT set to an
+     * empty string should mean that no primary widget is visible.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceButtonWithEmptyText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "")
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * Setting PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET with PRIMARY_BUTTON_TEXT set to a
+     * non-empty string should show the primary action button.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceButtonWithNonEmptyText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mPrimaryActionCallback.run();
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+
+        onView(withId(R.id.message_primary_button)).perform(click());
+        Mockito.verify(mPrimaryActionCallback).run();
+    }
+
+    /**
+     * Changing PRIMARY_BUTTON_TEXT to a non-empty string when PRIMARY_WIDGET_APPEARANCE is set to
+     * BUTTON_IF_TEXT_IS_SET should show the primary action button.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceButtonChangeTextFromEmptyToNonEmpty() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "")
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mPrimaryActionCallback.run();
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+            // Change the PRIMARY_BUTTON_TEXT to a non-empty string after the view has already been
+            // put together.
+            propertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT);
+        });
+
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+
+        onView(withId(R.id.message_primary_button)).perform(click());
+        Mockito.verify(mPrimaryActionCallback).run();
+    }
+
+    /**
+     * Setting PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceProgressSpinner() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.PROGRESS_SPINNER)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * Changing PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mPrimaryActionCallback.run();
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+            // Change the PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER after the view has already
+            // been put together.
+            propertyModel.set(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                    PrimaryWidgetAppearance.PROGRESS_SPINNER);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * Setting the PRIMARY_BUTTON_TEXT to a non-empty string should not override the
+     * PROGRESS_SPINNER appearance, so the progress spinner should be shown.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceProgressSpinnerWithNonEmptyButtonText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                                    PrimaryWidgetAppearance.PROGRESS_SPINNER)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mPrimaryActionCallback.run();
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * With neither PRIMARY_WIDGET_APPEARANCE nor PRIMARY_BUTTON_TEXT set, no primary widget should
+     * be visible, since PRIMARY_WIDGET_APPEARANCE should default to BUTTON_IF_TEXT_IS_SET.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceUnsetWithUnsetText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+    }
+
+    /**
+     * When PRIMARY_WIDGET_APPEARANCE is left unset, it should default to BUTTON_IF_TEXT_IS_SET, so
+     * setting PRIMARY_BUTTON_TEXT to a non-empty string should show the primary action button.
+     */
+    @Test
+    @MediumTest
+    public void testPrimaryWidgetAppearanceUnsetWithNonEmptyText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mPrimaryActionCallback.run();
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+
+        Assert.assertEquals(View.VISIBLE,
+                mMessageBannerView.findViewById(R.id.message_primary_button).getVisibility());
+        Assert.assertEquals(View.GONE,
+                mMessageBannerView.findViewById(R.id.message_primary_progress_spinner)
+                        .getVisibility());
+
+        onView(withId(R.id.message_primary_button)).perform(click());
+        Mockito.verify(mPrimaryActionCallback).run();
     }
 }

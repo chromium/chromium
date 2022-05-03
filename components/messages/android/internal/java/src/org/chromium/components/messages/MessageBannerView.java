@@ -43,7 +43,10 @@ public class MessageBannerView extends BoundedLinearLayout {
     private ImageView mIconView;
     private TextView mTitle;
     private TextViewWithCompoundDrawables mDescription;
+    private @PrimaryWidgetAppearance int mPrimaryWidgetAppearance =
+            PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET;
     private TextView mPrimaryButton;
+    private View mPrimaryProgressSpinner;
     private ListMenuButton mSecondaryButton;
     private View mDivider;
     private String mSecondaryButtonMenuText;
@@ -65,6 +68,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         mTitle = findViewById(R.id.message_title);
         mDescription = findViewById(R.id.message_description);
         mPrimaryButton = findViewById(R.id.message_primary_button);
+        mPrimaryProgressSpinner = findViewById(R.id.message_primary_progress_spinner);
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
@@ -139,9 +143,25 @@ public class MessageBannerView extends BoundedLinearLayout {
         mIconView.setImageDrawable(bitmap);
     }
 
+    void setPrimaryWidgetAppearance(@PrimaryWidgetAppearance int primaryWidgetAppearance) {
+        mPrimaryWidgetAppearance = primaryWidgetAppearance;
+        updatePrimaryWidgetAppearance();
+    }
+
     void setPrimaryButtonText(String text) {
-        mPrimaryButton.setVisibility(VISIBLE);
         mPrimaryButton.setText(text);
+        updatePrimaryWidgetAppearance();
+    }
+
+    private void updatePrimaryWidgetAppearance() {
+        mPrimaryButton.setVisibility(
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                                && !TextUtils.isEmpty(mPrimaryButton.getText())
+                        ? VISIBLE
+                        : GONE);
+        mPrimaryProgressSpinner.setVisibility(
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER ? VISIBLE
+                                                                                     : GONE);
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {

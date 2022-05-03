@@ -28,5 +28,6 @@
     <dimen name="message_secondary_menu_max_size_small">180dp</dimen>
     <dimen name="message_secondary_menu_max_size_medium">250dp</dimen>
     <dimen name="message_secondary_menu_max_size_large">300dp</dimen>
+    <dimen name="message_progress_spinner_height">24dp</dimen>
 
 </resources>

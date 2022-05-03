@@ -35,6 +35,14 @@ public class MessageBannerProperties {
      * MessageIdentifier enum.
      */
     public static final ReadableIntPropertyKey MESSAGE_IDENTIFIER = new ReadableIntPropertyKey();
+    /**
+     * Controls the appearance of the primary widget, according to which value of the
+     * PrimaryWidgetAppearance enum that this is set to. See the documentation of
+     * PrimaryWidgetAppearance in components/messages/android/message_enums.h for details about each
+     * possible value.
+     */
+    public static final WritableIntPropertyKey PRIMARY_WIDGET_APPEARANCE =
+            new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
     /**
@@ -128,5 +136,5 @@ public class MessageBannerProperties {
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
             TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
             ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
-            SECONDARY_MENU_MAX_SIZE};
+            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE};
 }

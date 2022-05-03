@@ -6,6 +6,7 @@ package org.chromium.components.translate;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -19,6 +20,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.messages.PrimaryWidgetAppearance;
 import org.chromium.components.messages.SecondaryMenuMaxSize;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -117,8 +119,15 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
         mMessageProperties.set(MessageBannerProperties.TITLE, title);
         mMessageProperties.set(MessageBannerProperties.DESCRIPTION, description);
-        mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                primaryButtonText == null ? "" : primaryButtonText);
+
+        if (TextUtils.isEmpty(primaryButtonText)) {
+            mMessageProperties.set(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                    PrimaryWidgetAppearance.PROGRESS_SPINNER);
+        } else {
+            mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText);
+            mMessageProperties.set(MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
+                    PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET);
+        }
 
         if (needsDispatch) {
             mMessageDispatcher.enqueueMessage(mMessageProperties, mWebContents,
