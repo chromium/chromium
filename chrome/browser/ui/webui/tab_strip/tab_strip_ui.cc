@@ -9,6 +9,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -60,8 +61,11 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
 
   // Add a load time string for the frame color to allow the tab strip to paint
   // a background color that matches the frame before any content loads.
+  // TODO(https://crbug.com/1060398): Update the tab strip color to respond
+  // appopriately to activation changes.
   const auto& color_provider = web_ui->GetWebContents()->GetColorProvider();
-  const SkColor frame_color = color_provider.GetColor(ui::kColorFrameActive);
+  const SkColor frame_color =
+      color_provider.GetColor(kColorThumbnailTabStripBackgroundActive);
   html_source->AddString("frameColor",
                          color_utils::SkColorToRgbaString(frame_color));
 

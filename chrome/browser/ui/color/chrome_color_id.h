@@ -398,6 +398,26 @@
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \
+  E_CPONLY(kColorThumbnailTabStripBackgroundActive) \
+  E_CPONLY(kColorThumbnailTabStripBackgroundInactive) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveGrey) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveBlue) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveRed) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveYellow) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveGreen) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActivePink) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActivePurple) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveCyan) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameActiveOrange) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveGrey) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveBlue) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveRed) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveYellow) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveGreen) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactivePink) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactivePurple) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveCyan) \
+  E_CPONLY(kColorThumbnailTabStripTabGroupFrameInactiveOrange) \
   /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E_CPONLY(kColorToolbarButtonBackgroundHighlightedDefault) \

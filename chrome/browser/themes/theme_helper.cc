@@ -697,12 +697,6 @@ SkColor ThemeHelper::GetTabGroupColor(
                            ? TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE
                            : TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE;
 
-    // TODO(tluk) Change to ensure consistent color ids between WebUI and views
-    // tabstrip groups. Currently WebUI tabstrip groups always check active
-    // frame colors (https://crbug.com/1060398).
-    if (base::FeatureList::IsEnabled(features::kWebUITabStrip))
-      tab_color_id = TP::COLOR_FRAME_ACTIVE;
-
     return GetTabGroupColors(id)[color_utils::IsDark(
         GetColor(tab_color_id, incognito, theme_supplier))];
   }

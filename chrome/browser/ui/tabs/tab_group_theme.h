@@ -11,6 +11,10 @@
 int GetTabGroupTabStripColorId(tab_groups::TabGroupColorId group_color_id,
                                bool active_frame);
 
+ui::ColorId GetThumbnailTabStripTabGroupColorId(
+    tab_groups::TabGroupColorId group_color_id,
+    bool active_frame);
+
 int GetTabGroupDialogColorId(tab_groups::TabGroupColorId group_color_id);
 
 ui::ColorId GetTabGroupContextMenuColorId(

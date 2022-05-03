@@ -589,11 +589,69 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabstripLoadingProgressForeground] = {ui::kColorAccent};
   mixer[kColorTabstripScrollContainerShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x4D);
+
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorThumbnailTabForeground] =
       ui::GetColorWithMaxContrast(kColorThumbnailTabBackground);
+  mixer[kColorThumbnailTabStripBackgroundActive] = {ui::kColorFrameActive};
+  mixer[kColorThumbnailTabStripBackgroundInactive] = {ui::kColorFrameInactive};
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveBlue] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleBlue300, gfx::kGoogleBlue600);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveCyan] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleCyan300, gfx::kGoogleCyan900);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveGreen] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleGreen300, gfx::kGoogleGreen700);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveGrey] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleGrey300, gfx::kGoogleGrey700);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveOrange] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleOrange300, gfx::kGoogleOrange400);
+  mixer[kColorThumbnailTabStripTabGroupFrameActivePink] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGooglePink300, gfx::kGooglePink700);
+  mixer[kColorThumbnailTabStripTabGroupFrameActivePurple] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGooglePurple300, gfx::kGooglePurple500);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveRed] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleRed300, gfx::kGoogleRed600);
+  mixer[kColorThumbnailTabStripTabGroupFrameActiveYellow] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundActive,
+                                 gfx::kGoogleYellow300, gfx::kGoogleYellow600);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveBlue] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleBlue300, gfx::kGoogleBlue600);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveCyan] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleCyan300, gfx::kGoogleCyan900);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveGreen] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleGreen300, gfx::kGoogleGreen700);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveGrey] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleGrey300, gfx::kGoogleGrey700);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveOrange] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleOrange300, gfx::kGoogleOrange400);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactivePink] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGooglePink300, gfx::kGooglePink700);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactivePurple] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGooglePurple300, gfx::kGooglePurple500);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveRed] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleRed300, gfx::kGoogleRed600);
+  mixer[kColorThumbnailTabStripTabGroupFrameInactiveYellow] =
+      ui::SelectBasedOnDarkInput(kColorThumbnailTabStripBackgroundInactive,
+                                 gfx::kGoogleYellow300, gfx::kGoogleYellow600);
+
   mixer[kColorToolbar] = {dark_mode ? kDarkToolbarColor : kLightToolbarColor};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] =
       ui::SetAlpha(ui::GetColorWithMaxContrast(kColorToolbarButtonText), 0xCC);

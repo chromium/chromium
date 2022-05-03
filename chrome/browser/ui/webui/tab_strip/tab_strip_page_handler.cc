@@ -560,9 +560,11 @@ tab_strip::mojom::TabGroupVisualDataPtr TabStripPageHandler::GetTabGroupData(
   // TODO the tab strip should support toggles between inactive and active frame
   // states. Currently the webui tab strip only uses active frame colors
   // (https://crbug.com/1060398).
-  const int color_id = GetTabGroupTabStripColorId(visual_data->color(), true);
-  const SkColor group_color = embedder_->GetColor(color_id);
+  const int group_color_id =
+      GetThumbnailTabStripTabGroupColorId(visual_data->color(), true);
+  const SkColor group_color = embedder_->GetColor(group_color_id);
   tab_group->color = color_utils::SkColorToRgbString(group_color);
+  // TODO(tluk): Incorporate the text color into the ColorProvider.
   tab_group->text_color = color_utils::SkColorToRgbString(
       color_utils::GetColorWithMaxContrast(group_color));
   return tab_group;
