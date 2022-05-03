@@ -59,7 +59,8 @@ std::unique_ptr<base::ListValue> PairingRegistryDelegateLinux::LoadAll() {
       continue;
     }
 
-    pairings->Append(std::move(pairing_json));
+    pairings->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(pairing_json)));
   }
 
   return pairings;
