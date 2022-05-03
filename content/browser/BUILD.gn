@@ -1922,6 +1922,8 @@ source_set("browser") {
     "speculation_rules/prefetch/prefetch_status.h",
     "speculation_rules/prefetch/prefetch_type.cc",
     "speculation_rules/prefetch/prefetch_type.h",
+    "speculation_rules/prefetch/prefetched_mainframe_response_container.cc",
+    "speculation_rules/prefetch/prefetched_mainframe_response_container.h",
     "speculation_rules/speculation_host_impl.cc",
     "speculation_rules/speculation_host_impl.h",
     "speech/speech_recognition_dispatcher_host.cc",

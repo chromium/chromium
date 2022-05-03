@@ -10,12 +10,15 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/timer/timer.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_network_context.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_params.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_proxy_configurator.h"
+#include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -29,6 +32,8 @@
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -113,6 +118,30 @@ bool ShouldStartSpareRenderer() {
     }
   }
   return true;
+}
+
+absl::optional<base::TimeDelta> GetTotalPrefetchTime(
+    network::mojom::URLResponseHead* head) {
+  DCHECK(head);
+
+  base::Time start = head->request_time;
+  base::Time end = head->response_time;
+
+  if (start.is_null() || end.is_null())
+    return absl::nullopt;
+  return end - start;
+}
+
+absl::optional<base::TimeDelta> GetPrefetchConnectTime(
+    network::mojom::URLResponseHead* head) {
+  DCHECK(head);
+
+  base::TimeTicks start = head->load_timing.connect_timing.connect_start;
+  base::TimeTicks end = head->load_timing.connect_timing.connect_end;
+
+  if (start.is_null() || end.is_null())
+    return absl::nullopt;
+  return end - start;
 }
 
 }  // namespace
@@ -572,11 +601,103 @@ void PrefetchService::OnPrefetchComplete(
   if (!prefetch_container)
     return;
 
-  // TODO(https://crbug.com/1299059): Process the response.
+  // TODO(https://crbug.com/1299059): Store relevant metrics based on the status
+  // of the completed prefetch.
 
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+  if (prefetch_container->IsDecoy()) {
+    // Since this prefetch was a decoy, we don't cache the response.
+    prefetch_container->ResetURLLoader();
+    Prefetch();
+    return;
+  }
+
+  base::UmaHistogramSparse(
+      "PrefetchProxy.Prefetch.Mainframe.NetError",
+      std::abs(prefetch_container->GetLoader()->NetError()));
+
+  if (prefetch_container->GetLoader()->NetError() != net::OK) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchFailedNetError);
+  }
+
+  if (prefetch_container->GetLoader()->NetError() == net::OK && body &&
+      prefetch_container->GetLoader()->ResponseInfo()) {
+    network::mojom::URLResponseHeadPtr head =
+        prefetch_container->GetLoader()->ResponseInfo()->Clone();
+
+    // Verifies that the request was made using the prefetch proxy if required,
+    // or made directly if the proxy was not required.
+    DCHECK(!head->proxy_server.is_direct() ==
+           prefetch_container->GetPrefetchType().IsProxyRequired());
+
+    HandlePrefetchedResponse(prefetch_container, isolation_info,
+                             std::move(head), std::move(body));
+  }
+
   prefetch_container->ResetURLLoader();
   Prefetch();
+}
+
+void PrefetchService::HandlePrefetchedResponse(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    const net::IsolationInfo& isolation_info,
+    network::mojom::URLResponseHeadPtr head,
+    std::unique_ptr<std::string> body) {
+  DCHECK(prefetch_container);
+  DCHECK(!head->was_fetched_via_cache);
+
+  if (!head->headers)
+    return;
+
+  UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
+                           body->size());
+
+  absl::optional<base::TimeDelta> total_time = GetTotalPrefetchTime(head.get());
+  if (total_time) {
+    UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
+                               *total_time, base::Milliseconds(10),
+                               base::Seconds(30), 100);
+  }
+
+  absl::optional<base::TimeDelta> connect_time =
+      GetPrefetchConnectTime(head.get());
+  if (connect_time) {
+    UMA_HISTOGRAM_TIMES("PrefetchProxy.Prefetch.Mainframe.ConnectTime",
+                        *connect_time);
+  }
+
+  int response_code = head->headers->response_code();
+
+  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                           response_code);
+  if (response_code < 200 | response_code >= 300) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchFailedNon2XX);
+
+    if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+      base::TimeDelta retry_after;
+      std::string retry_after_string;
+      if (head->headers->EnumerateHeader(nullptr, "Retry-After",
+                                         &retry_after_string) &&
+          net::HttpUtil::ParseRetryAfterHeader(
+              retry_after_string, base::Time::Now(), &retry_after)) {
+        // TODO(https://crbug.com/1299059): Update |PrefetchProxyOriginDecider|
+        // of this response via a delegate.
+      }
+    }
+    return;
+  }
+
+  if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchFailedMIMENotSupported);
+    return;
+  }
+
+  prefetch_container->TakePrefetchedResponse(
+      std::make_unique<PrefetchedMainframeResponseContainer>(
+          isolation_info, std::move(head), std::move(body)));
+  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
 
 // static

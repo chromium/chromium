@@ -149,6 +149,15 @@ class CONTENT_EXPORT PrefetchService {
                           const net::IsolationInfo& isolation_info,
                           std::unique_ptr<std::string> body);
 
+  // Checks the response form |OnPrefechComplete| for success or failure. On
+  // success, the response is moved to a |PrefetchedMainframeResponseContainer|
+  // and cached in |prefetch_contianer|.
+  void HandlePrefetchedResponse(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      const net::IsolationInfo& isolation_info,
+      network::mojom::URLResponseHeadPtr head,
+      std::unique_ptr<std::string> body);
+
   raw_ptr<BrowserContext> browser_context_;
 
   // The custom proxy configurator for Prefetch Proxy. Only used on prefetches

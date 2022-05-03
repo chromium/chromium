@@ -11,6 +11,7 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_service.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
+#include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -56,6 +57,20 @@ void PrefetchContainer::TakeURLLoader(
 void PrefetchContainer::ResetURLLoader() {
   DCHECK(loader_);
   loader_.reset();
+}
+
+bool PrefetchContainer::HasPrefetchedResponse() const {
+  return prefetched_response_ != nullptr;
+}
+
+void PrefetchContainer::TakePrefetchedResponse(
+    std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response) {
+  prefetched_response_ = std::move(prefetched_response);
+}
+
+std::unique_ptr<PrefetchedMainframeResponseContainer>
+PrefetchContainer::ReleasePrefetchedResponse() {
+  return std::move(prefetched_response_);
 }
 
 }  // namespace content

@@ -55,6 +55,10 @@ bool PrefetchStartsSpareRenderer();
 // forever.
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 
+// Whether only prefetched resources with a text/html MIME type should be used.
+// If this is false, there is no MIME type restriction.
+bool PrefetchServiceHTMLOnly();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_PARAMS_H_

@@ -110,4 +110,9 @@ base::TimeDelta PrefetchContainerLifetimeInPrefetchService() {
       10 * 60 /* 10 minutes */));
 }
 
+bool PrefetchServiceHTMLOnly() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor, "html_only", false);
+}
+
 }  // namespace content

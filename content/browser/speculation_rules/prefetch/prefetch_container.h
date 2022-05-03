@@ -24,6 +24,7 @@ namespace content {
 class PrefetchService;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
+class PrefetchedMainframeResponseContainer;
 
 // This class contains the state for a request to prefetch a specific URL.
 class CONTENT_EXPORT PrefetchContainer {
@@ -79,10 +80,24 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The URL loader used to make the network requests for this prefetch.
   void TakeURLLoader(std::unique_ptr<network::SimpleURLLoader> loader);
+  network::SimpleURLLoader* GetLoader() { return loader_.get(); }
   void ResetURLLoader();
 
   // The |PrefetchDocumentManager| that requested |this|.
   PrefetchDocumentManager* GetPrefetchDocumentManager() const;
+
+  // Whether or not |this| has a prefetched response.
+  bool HasPrefetchedResponse() const;
+
+  // |this| takes ownership of the given |prefetched_response|.
+  void TakePrefetchedResponse(
+      std::unique_ptr<PrefetchedMainframeResponseContainer>
+          prefetched_response);
+
+  // Releases ownership of |prefetched_response_| from |this| and gives it to
+  // the caller.
+  std::unique_ptr<PrefetchedMainframeResponseContainer>
+  ReleasePrefetchedResponse();
 
  private:
   // The ID of the render frame host that triggered the prefetch.
@@ -115,6 +130,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The URL loader used to prefetch |url_|.
   std::unique_ptr<network::SimpleURLLoader> loader_;
+
+  // The prefetched response for |url_|.
+  std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
