@@ -409,7 +409,7 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
     // Mark as not enterprise managed to prevent the secure DNS mode from
     // being downgraded to off.
     base::win::ScopedDomainStateForTesting scoped_domain(false);
-    EXPECT_FALSE(base::IsMachineExternallyManaged());
+    EXPECT_FALSE(base::IsEnterpriseDevice());
 #endif
 
     // Set the mocked policy provider to act as if no policies are in use by

@@ -2226,8 +2226,8 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is considered an enterprise user. An enterprise user is
-    either in a domain or is managed via MDM. This check is performed once at
-    start-up on Windows.
+    either in a domain, either local or cloud via AAD. This check is performed
+    once at start-up on Windows.
   </summary>
 </histogram>
 
@@ -2289,6 +2289,18 @@ chromium-metrics-reviews@google.com.
     found a file of managed policies to follow. On Android (OS version
     Lollipop+): Whether the device has a profile owner app. This check is
     performed once on application start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsManagedOrEnterpriseDevice"
+    enum="BooleanEnabled" expires_after="2022-08-21">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is managed or part of an enterprise. This includes
+    devices that are either in a domain or managed via MDM. This check is
+    performed once at start-up on Windows.
   </summary>
 </histogram>
 

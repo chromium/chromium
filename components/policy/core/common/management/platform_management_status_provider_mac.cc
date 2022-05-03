@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/management/platform_management_status_provider_mac.h"
 
+#include "base/enterprise_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 
 namespace policy {
@@ -15,7 +16,7 @@ DomainEnrollmentStatusProvider::DomainEnrollmentStatusProvider() {
 DomainEnrollmentStatusProvider::~DomainEnrollmentStatusProvider() = default;
 
 EnterpriseManagementAuthority DomainEnrollmentStatusProvider::FetchAuthority() {
-  return domain_join_state_.device_joined || domain_join_state_.user_joined
+  return base::IsEnterpriseDevice()
              ? EnterpriseManagementAuthority::DOMAIN_LOCAL
              : EnterpriseManagementAuthority::NONE;
 }
@@ -28,26 +29,8 @@ EnterpriseMDMManagementStatusProvider::
 
 EnterpriseManagementAuthority
 EnterpriseMDMManagementStatusProvider::FetchAuthority() {
-  base::MacDeviceManagementStateNew mdm_state_new =
-      base::IsDeviceRegisteredWithManagementNew();
-
-  bool managed = false;
-  switch (mdm_state_new) {
-    case base::MacDeviceManagementStateNew::kLimitedMDMEnrollment:
-    case base::MacDeviceManagementStateNew::kFullMDMEnrollment:
-    case base::MacDeviceManagementStateNew::kDEPMDMEnrollment:
-      managed = true;
-      break;
-    case base::MacDeviceManagementStateNew::kFailureAPIUnavailable:
-      managed = base::MacDeviceManagementStateOld::kMDMEnrollment ==
-                base::IsDeviceRegisteredWithManagementOld();
-      break;
-    default:
-      break;
-  }
-
-  return managed ? EnterpriseManagementAuthority::CLOUD
-                 : EnterpriseManagementAuthority::NONE;
+  return base::IsManagedDevice() ? EnterpriseManagementAuthority::CLOUD
+                                 : EnterpriseManagementAuthority::NONE;
 }
 
 }  // namespace policy

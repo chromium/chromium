@@ -38,25 +38,10 @@ namespace {
 
 // Encapsulates logic to determine if enterprise policies should be honored.
 bool ShouldHonorPolicies() {
-  // Only honor sensitive policies if the Mac is managed externally.
-  base::DeviceUserDomainJoinState join_state =
-      base::AreDeviceAndUserJoinedToDomain();
-  if (join_state.device_joined)
-    return true;
-
-  // IsDeviceRegisteredWithManagementNew is only available after 10.13.4.
-  // Eventually switch to it when that is the minimum OS required by Chromium.
-  if (@available(macOS 10.13.4, *)) {
-    base::MacDeviceManagementStateNew mdm_state =
-        base::IsDeviceRegisteredWithManagementNew();
-    return mdm_state ==
-               base::MacDeviceManagementStateNew::kLimitedMDMEnrollment ||
-           mdm_state == base::MacDeviceManagementStateNew::kFullMDMEnrollment ||
-           mdm_state == base::MacDeviceManagementStateNew::kDEPMDMEnrollment;
-  }
-  base::MacDeviceManagementStateOld mdm_state =
-      base::IsDeviceRegisteredWithManagementOld();
-  return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
+  // Only honor sensitive policies if the Mac is managed or connected to an
+  // enterprise.
+  // TODO (crbug.com/1322121): Use PlatformManagementService instead.
+  return base::IsManagedOrEnterpriseDevice();
 }
 
 }  // namespace
@@ -99,10 +84,13 @@ void PolicyLoaderMac::InitOnBackgroundThread() {
     managed_policy_file_exists = true;
   }
 
+  base::UmaHistogramBoolean("EnterpriseCheck.IsManagedOrEnterpriseDevice",
+                            base::IsManagedOrEnterpriseDevice());
+
   base::UmaHistogramBoolean("EnterpriseCheck.IsManaged2",
                             managed_policy_file_exists);
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
-                            base::IsMachineExternallyManaged());
+                            base::IsEnterpriseDevice());
 
   base::UmaHistogramEnumeration("EnterpriseCheck.Mac.IsDeviceMDMEnrolledOld",
                                 base::IsDeviceRegisteredWithManagementOld());

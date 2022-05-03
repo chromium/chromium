@@ -51,7 +51,7 @@ std::string ShortURLForReporting(const GURL& url) {
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     const policy::BrowserPolicyConnector* bpc) {
 #if BUILDFLAG(IS_WIN)
-  if (base::IsMachineExternallyManaged())
+  if (base::IsManagedDevice())
     return ChromeUserPopulation::ENTERPRISE_MANAGED;
   else
     return ChromeUserPopulation::NOT_MANAGED;

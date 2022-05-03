@@ -228,7 +228,10 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   if (android_has_owner_.value_or(false))
     return true;
 #elif BUILDFLAG(IS_WIN)
-  if (base::IsMachineExternallyManaged())
+  // TODO (crbug.com/1320766): For legacy compatibility, this uses
+  // IsEnterpriseDevice() which effectively equates to a domain join check.
+  // Consider whether this should use IsManagedDevice() instead.
+  if (base::IsEnterpriseDevice())
     return true;
 #endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

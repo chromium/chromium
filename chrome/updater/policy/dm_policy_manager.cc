@@ -59,7 +59,7 @@ DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::IsManaged() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsMachineExternallyManaged();
+  return base::IsManagedDevice();
 #else
   // crbug.com/1276162 - implement.
   NOTIMPLEMENTED();

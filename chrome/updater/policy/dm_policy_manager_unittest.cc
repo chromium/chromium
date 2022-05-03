@@ -109,7 +109,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
 #if !BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsManagedDevice());
 #endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
@@ -185,7 +185,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
 #if !BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsManagedDevice());
 #endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
@@ -276,7 +276,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsManagedDevice());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;

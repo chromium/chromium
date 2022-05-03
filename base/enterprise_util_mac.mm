@@ -18,7 +18,28 @@
 
 namespace base {
 
-bool IsMachineExternallyManaged() {
+bool IsManagedDevice() {
+  // MDM enrollment indicates the device is actively being managed. Simply being
+  // joined to a domain, however, does not.
+
+  // IsDeviceRegisteredWithManagementNew is only available after 10.13.4.
+  // Eventually switch to it when that is the minimum OS required by Chromium.
+  if (@available(macOS 10.13.4, *)) {
+    base::MacDeviceManagementStateNew mdm_state =
+        base::IsDeviceRegisteredWithManagementNew();
+    return mdm_state ==
+               base::MacDeviceManagementStateNew::kLimitedMDMEnrollment ||
+           mdm_state == base::MacDeviceManagementStateNew::kFullMDMEnrollment ||
+           mdm_state == base::MacDeviceManagementStateNew::kDEPMDMEnrollment;
+  }
+
+  base::MacDeviceManagementStateOld mdm_state =
+      base::IsDeviceRegisteredWithManagementOld();
+  return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
+}
+
+bool IsEnterpriseDevice() {
+  // Domain join is a basic indicator of being an enterprise device.
   DeviceUserDomainJoinState join_state = AreDeviceAndUserJoinedToDomain();
   return join_state.device_joined || join_state.user_joined;
 }

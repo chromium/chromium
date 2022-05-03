@@ -221,7 +221,7 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
 #if BUILDFLAG(IS_WIN)
     // TODO(crbug/1027107): Replace with a more generic CBCM check.
     // Don't show the update bubbles to enterprise users.
-    if (base::IsMachineExternallyManaged() ||
+    if (base::IsEnterpriseDevice() ||
         policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid()) {
       return;
     }

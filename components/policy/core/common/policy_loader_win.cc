@@ -175,13 +175,15 @@ void CollectEnterpriseUMAs() {
                             base::win::OSInfo::GetInstance()->version_type(),
                             base::win::SUITE_LAST);
 
+  base::UmaHistogramBoolean("EnterpriseCheck.IsManagedOrEnterpriseDevice",
+                            base::IsManagedOrEnterpriseDevice());
   base::UmaHistogramBoolean("EnterpriseCheck.IsDomainJoined", IsDomainJoined());
   base::UmaHistogramBoolean("EnterpriseCheck.InDomain",
                             base::win::IsEnrolledToDomain());
   base::UmaHistogramBoolean("EnterpriseCheck.IsManaged2",
                             base::win::IsDeviceRegisteredWithManagement());
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
-                            base::IsMachineExternallyManaged());
+                            base::IsEnterpriseDevice());
   base::UmaHistogramBoolean("EnterpriseCheck.IsJoinedToAzureAD",
                             base::win::IsJoinedToAzureAD());
 

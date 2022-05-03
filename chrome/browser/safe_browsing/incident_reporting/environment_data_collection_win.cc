@@ -284,7 +284,7 @@ void CollectRegistryData(
 
 void CollectDomainEnrollmentData(
     ClientIncidentReport_EnvironmentData_OS* os_data) {
-  os_data->set_is_enrolled_to_domain(base::IsMachineExternallyManaged());
+  os_data->set_is_enrolled_to_domain(base::IsEnterpriseDevice());
 }
 
 void CollectPlatformProcessData(

@@ -34,7 +34,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
+  EXPECT_EQ([policyManager managed], base::IsManagedOrEnterpriseDevice());
 
   // Verify global level policies.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
@@ -78,7 +78,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestNoGlobalPolicy) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
+  EXPECT_EQ([policyManager managed], base::IsManagedOrEnterpriseDevice());
 
   // Verify global level policies are set to default.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
@@ -117,7 +117,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestInvalidPolicyValues) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
+  EXPECT_EQ([policyManager managed], base::IsManagedOrEnterpriseDevice());
 
   // Verify global level policies.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);

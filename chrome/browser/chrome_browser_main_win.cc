@@ -602,7 +602,7 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   // be used to better identify whether crashes are from enterprise users.
   static crash_reporter::CrashKeyString<4> is_enterprise_managed(
       "is-enterprise-managed");
-  is_enterprise_managed.Set(base::IsMachineExternallyManaged() ? "yes" : "no");
+  is_enterprise_managed.Set(base::IsManagedOrEnterpriseDevice() ? "yes" : "no");
 
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.

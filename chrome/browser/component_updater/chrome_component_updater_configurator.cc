@@ -161,7 +161,7 @@ ChromeConfigurator::ExtraRequestParams() const {
 std::string ChromeConfigurator::GetDownloadPreference() const {
 #if BUILDFLAG(IS_WIN)
   // This group policy is supported only on Windows and only for enterprises.
-  return base::IsMachineExternallyManaged()
+  return base::IsEnterpriseDevice()
              ? base::SysWideToUTF8(
                    GoogleUpdateSettings::GetDownloadPreference())
              : std::string();

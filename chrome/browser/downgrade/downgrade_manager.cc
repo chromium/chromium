@@ -153,7 +153,7 @@ void DeleteMovedUserData(const base::FilePath& user_data_dir,
 bool UserDataSnapshotEnabled() {
   return g_snapshots_enabled_for_testing ||
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-         base::IsMachineExternallyManaged() ||
+         base::IsEnterpriseDevice() ||
 #endif
          policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
 }

@@ -82,7 +82,7 @@ GroupPolicyManager::GroupPolicyManager() {
 GroupPolicyManager::~GroupPolicyManager() = default;
 
 bool GroupPolicyManager::IsManaged() const {
-  return policies_.DictSize() > 0 && base::IsMachineExternallyManaged();
+  return policies_.DictSize() > 0 && base::IsManagedDevice();
 }
 
 std::string GroupPolicyManager::source() const {
@@ -204,10 +204,10 @@ bool GroupPolicyManager::GetStringPolicy(const std::string& key,
 void GroupPolicyManager::LoadAllPolicies() {
   scoped_hpolicy policy_lock;
 
-  if (base::IsMachineExternallyManaged()) {
+  if (base::IsManagedDevice()) {
     // GPO rules mandate a call to EnterCriticalPolicySection() before reading
     // policies (and a matching LeaveCriticalPolicySection() call after read).
-    // Acquire the lock for domain-joined machines because group policies are
+    // Acquire the lock for managed machines because group policies are
     // applied only in this case, and the lock acquisition can take a long
     // time, in the worst case scenarios.
     policy_lock.reset(::EnterCriticalPolicySection(true));

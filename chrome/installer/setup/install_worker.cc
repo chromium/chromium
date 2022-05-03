@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -554,14 +555,8 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   if (new_brand.empty())
     return;
 
-  // Only update if this machine is:
-  // - domain joined, or
-  // - registered with MDM and is not windows home edition
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  if (!(base::win::IsEnrolledToDomain() ||
-        (base::win::IsDeviceRegisteredWithManagement() &&
-         is_enterprise_version))) {
+  // Only update if this machine is a managed device, including domain join.
+  if (!base::IsManagedDevice()) {
     return;
   }
 

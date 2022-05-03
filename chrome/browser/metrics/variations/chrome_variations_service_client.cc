@@ -77,7 +77,7 @@ ChromeVariationsServiceClient::GetCurrentFormFactor() {
 
 bool ChromeVariationsServiceClient::IsEnterprise() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsMachineExternallyManaged();
+  return base::IsEnterpriseDevice();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 #else

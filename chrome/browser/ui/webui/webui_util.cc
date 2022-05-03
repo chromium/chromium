@@ -70,7 +70,7 @@ bool IsEnterpriseManaged() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsMachineExternallyManaged();
+  return base::IsManagedDevice();
 #else
   return false;
 #endif
