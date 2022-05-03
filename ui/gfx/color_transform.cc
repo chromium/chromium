@@ -1048,18 +1048,23 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
 };
 
 // Scale the color such that the luminance `input_max_value` maps to
-// `output_max_value`. This assumes that the third color component is
-// luminance.
-class ColorTransformToneMapInXYZ : public ColorTransformStep {
+// `output_max_value`.
+class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
  public:
-  ColorTransformToneMapInXYZ(float input_max_value, float output_max_value)
+  ColorTransformToneMapInRec2020Linear(float input_max_value,
+                                       float output_max_value)
       : a_(output_max_value / (input_max_value * input_max_value)),
         b_(1.f / output_max_value) {}
+
+  // The luminance vector in linear space.
+  static constexpr float kLr = 0.2627;
+  static constexpr float kLg = 0.6780;
+  static constexpr float kLb = 0.0593;
 
   // ColorTransformStep implementation:
   void Transform(ColorTransform::TriStim* color, size_t num) const override {
     for (size_t i = 0; i < num; i++) {
-      float L = color[i].z();
+      float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
       if (L > 0.f)
         color[i].Scale((1.f + a_ * L) / (1.f + b_ * L));
     }
@@ -1069,7 +1074,9 @@ class ColorTransformToneMapInXYZ : public ColorTransformStep {
                           size_t step_index) const override {
     *hdr << "vec3 ToneMapStep" << step_index << "(vec3 color) {\n"
          << "  vec3 result = color;\n"
-         << "  float L = color.b;\n"
+         << "  vec3 luma_vec = vec3(" << kLr << ", " << kLg << ", " << kLb
+         << ");\n"
+         << "  float L = dot(color, luma_vec);\n"
          << "  if (L > 0.0) {\n"
          << "    result *= (1.0 + " << a_ << "*L) / \n"
          << "              (1.0 + " << b_ << "*L);\n"
@@ -1080,7 +1087,9 @@ class ColorTransformToneMapInXYZ : public ColorTransformStep {
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
     *src << "{\n"
-         << "  half L = color.b;\n"
+         << "  half4 luma_vec = half4(" << kLr << ", " << kLg << ", " << kLb
+         << ", 0.0);\n"
+         << "  half L = dot(color, luma_vec);\n"
          << "  if (L > 0.0) {\n"
          << "    color.rgb *= (1.0 + " << a_ << "*L) / \n"
          << "                 (1.0 + " << b_ << "*L);\n"
@@ -1175,10 +1184,9 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(src.GetPrimaryMatrix()));
 
-  // Perform tone mapping while we're in XYZ space, because in this space, the
-  // third component is already luminance.
+  // Perform tone mapping in a linear space
   if (options.tone_map_pq_and_hlg_to_dst) {
-    float src_max_luminance_relative = 1.f;
+    float src_max_luminance_relative = 0.f;
     switch (src.GetTransferID()) {
       case ColorSpace::TransferID::HLG: {
         // The maximum value that ColorTransformHLGToLinear can produce.
@@ -1195,8 +1203,15 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         break;
     }
     if (src_max_luminance_relative > options.dst_max_luminance_relative) {
-      steps_.push_back(std::make_unique<ColorTransformToneMapInXYZ>(
+      const ColorSpace rec2020_linear(
+          ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
+          ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
+      steps_.push_back(std::make_unique<ColorTransformMatrix>(
+          Invert(rec2020_linear.GetPrimaryMatrix())));
+      steps_.push_back(std::make_unique<ColorTransformToneMapInRec2020Linear>(
           src_max_luminance_relative, options.dst_max_luminance_relative));
+      steps_.push_back(std::make_unique<ColorTransformMatrix>(
+          rec2020_linear.GetPrimaryMatrix()));
     }
   }
 
