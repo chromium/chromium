@@ -851,7 +851,10 @@ void AppMenuModel::Build() {
                                        : IDS_NEW_TAB);
   AddItemWithStringId(IDC_NEW_WINDOW, IDS_NEW_WINDOW);
 
-  AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
+  // This menu item is not visible in Guest Mode. If incognito mode is not
+  // available, it will be shown in disabled state. (crbug.com/1100791)
+  if (!browser_->profile()->IsGuestSession())
+    AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
