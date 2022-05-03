@@ -231,7 +231,7 @@ TEST_P(StorageQueueStressTest,
     test::TestCallbackWaiter write_waiter;
     base::RepeatingCallback<void(Status)> cb = base::BindRepeating(
         [](test::TestCallbackWaiter* waiter, Status status) {
-          EXPECT_OK(status);
+          EXPECT_OK(status) << status;
           waiter->Signal();
         },
         &write_waiter);

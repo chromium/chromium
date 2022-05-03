@@ -801,7 +801,6 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     DCHECK_LT(
         static_cast<uint32_t>(reason),
         static_cast<uint32_t>(UploaderInterface::UploadReason::MAX_REASON));
-    DETACH_FROM_SEQUENCE(read_sequence_checker_);
   }
 
  private:
@@ -809,7 +808,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   ~ReadContext() override = default;
 
   void OnStart() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
@@ -824,7 +824,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void PrepareDataFiles() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
@@ -882,7 +883,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void BeginUploading() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
@@ -906,7 +908,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void StartUploading() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     // Read from it until the specified sequencing id is found.
     for (int64_t sequencing_id = current_file_->first;
          sequencing_id < sequence_info_.sequencing_id(); ++sequencing_id) {
@@ -942,7 +945,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void UploadingCompleted(Status status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     // If uploader was created, notify it about completion.
     if (uploader_) {
       uploader_->Completed(status);
@@ -960,7 +964,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void OnCompletion() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     // Unregister with storage_queue.
     if (!files_.empty()) {
       if (storage_queue_) {
@@ -972,7 +977,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
   // Prepares the |blob| for uploading.
   void CallCurrentRecord(base::StringPiece blob) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     google::protobuf::io::ArrayInputStream blob_stream(  // Zero-copy stream.
         blob.data(), blob.size());
     EncryptedRecord encrypted_record;
@@ -993,7 +999,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // empty (has no |encrypted_wrapped_record| and/or |encryption_info|), it
   // indicates a gap notification.
   void CallRecordUpload(EncryptedRecord encrypted_record) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (encrypted_record.has_sequence_information()) {
       LOG(ERROR) << "Sequence information already present, seq="
                  << sequence_info_.sequencing_id();
@@ -1012,7 +1019,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void CallGapUpload(uint64_t count) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (count == 0u) {
       // No records skipped.
       NextRecord(/*more_records=*/true);
@@ -1034,7 +1042,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // sends for processing, or calls Response with error status. Otherwise, call
   // Response(OK).
   void NextRecord(bool more_records) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!more_records) {
       Response(Status::StatusOK());  // Requested to stop reading.
       return;
@@ -1061,7 +1070,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // If anything goes wrong (file is shorter than expected, or record hash does
   // not match), returns error.
   StatusOr<base::StringPiece> EnsureBlob(int64_t sequencing_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!storage_queue_) {
       return Status(error::UNAVAILABLE, "StorageQueue shut down");
     }
@@ -1148,7 +1158,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void CallRecordOrGap(int64_t sequencing_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
@@ -1206,7 +1217,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void OnUploaderInstantiated(
       base::OnceCallback<void()> continuation,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (!uploader_result.ok()) {
       Response(Status(error::FAILED_PRECONDITION,
                       base::StrCat({"Failed to provide the Uploader, status=",
@@ -1233,8 +1245,6 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   const bool must_invoke_upload_;
   std::unique_ptr<UploaderInterface> uploader_;
   base::WeakPtr<StorageQueue> storage_queue_;
-
-  SEQUENCE_CHECKER(read_sequence_checker_);
 };
 
 class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
@@ -1248,13 +1258,13 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
         record_(std::move(record)),
         in_contexts_queue_(storage_queue->write_contexts_queue_.end()) {
     DCHECK(storage_queue.get());
-    DETACH_FROM_SEQUENCE(write_sequence_checker_);
   }
 
  private:
   // Context can only be deleted by calling Response method.
   ~WriteContext() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
 
     // If still in queue, remove it (something went wrong).
     if (in_contexts_queue_ != storage_queue_->write_contexts_queue_.end()) {
@@ -1284,7 +1294,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   }
 
   void OnStart() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
 
     // Make sure the record is valid.
     if (!record_.has_destination()) {
@@ -1423,14 +1434,16 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   }
 
   void WriteRecord(std::string buffer) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     buffer_.swap(buffer);
 
     ResumeWriteRecord();
   }
 
   void ResumeWriteRecord() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
 
     // If we are not at the head of the queue, delay write and expect to be
     // reactivated later.
@@ -1486,8 +1499,6 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   // Write buffer. When filled in (after encryption), |WriteRecord| can be
   // executed. Empty until encryption is done.
   std::string buffer_;
-
-  SEQUENCE_CHECKER(write_sequence_checker_);
 };
 
 void StorageQueue::Write(Record record,
@@ -1544,7 +1555,6 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
         force_(force),
         storage_queue_(storage_queue) {
     DCHECK(storage_queue.get());
-    DETACH_FROM_SEQUENCE(confirm_sequence_checker_);
   }
 
  private:
@@ -1552,7 +1562,8 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
   ~ConfirmContext() override = default;
 
   void OnStart() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(confirm_sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        storage_queue_->storage_queue_sequence_checker_);
     if (force_) {
       storage_queue_->first_unconfirmed_sequencing_id_ =
           sequencing_id_.has_value() ? (sequencing_id_.value() + 1) : 0;
@@ -1570,8 +1581,6 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
   bool force_;
 
   scoped_refptr<StorageQueue> storage_queue_;
-
-  SEQUENCE_CHECKER(confirm_sequence_checker_);
 };
 
 void StorageQueue::Confirm(absl::optional<int64_t> sequencing_id,
