@@ -20,6 +20,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web_view/internal/app/web_view_io_thread.h"
@@ -217,6 +218,14 @@ void ApplicationContext::SetApplicationLocale(const std::string& locale) {
   application_locale_ = locale;
   translate::TranslateDownloadManager::GetInstance()->set_application_locale(
       application_locale_);
+}
+
+SafeBrowsingService* ApplicationContext::GetSafeBrowsingService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!safe_browsing_service_) {
+    safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  }
+  return safe_browsing_service_.get();
 }
 
 }  // namespace ios_web_view

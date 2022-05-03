@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "ios/web/public/init/network_context_owner.h"
@@ -34,6 +35,7 @@ class NetworkContext;
 }  // namespace network
 
 class PrefService;
+class SafeBrowsingService;
 
 namespace ios_web_view {
 
@@ -80,6 +82,9 @@ class ApplicationContext {
   // called from web::WebMainParts::PostDestroyThreads.
   void PostDestroyThreads();
 
+  // Gets the SafeBrowsingService.
+  SafeBrowsingService* GetSafeBrowsingService();
+
  private:
   friend class base::NoDestructor<ApplicationContext>;
 
@@ -110,6 +115,8 @@ class ApplicationContext {
       network_connection_tracker_;
 
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
+
+  scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 };
 
 }  // namespace ios_web_view
