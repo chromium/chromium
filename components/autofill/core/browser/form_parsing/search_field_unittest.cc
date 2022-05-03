@@ -21,8 +21,7 @@ class SearchFieldTest : public FormFieldTest {
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
-    return SearchField::Parse(scanner, page_language,
-                              PredictionSource::kDefaultHeuristics,
+    return SearchField::Parse(scanner, page_language, PatternSource::kDefault,
                               /*log_manager=*/nullptr);
   }
 };

@@ -31,7 +31,7 @@ class MerchantPromoCodeFieldTest : public FormFieldTest {
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
     return MerchantPromoCodeField::Parse(scanner, page_language,
-                                         PredictionSource::kDefaultHeuristics,
+                                         PatternSource::kDefault,
                                          /*log_manager=*/nullptr);
   }
 };

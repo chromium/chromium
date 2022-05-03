@@ -24,29 +24,29 @@ namespace {
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
     base::StringPiece language_code,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   auto* it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-  switch (prediction_source) {
-    case PredictionSource::kDefaultHeuristics:
+  switch (pattern_source) {
+    case PatternSource::kDefault:
       return it->second[0];
-    case PredictionSource::kExperimentalHeuristics:
+    case PatternSource::kExperimental:
       return it->second[1];
-    case PredictionSource::kNextGenHeuristics:
+    case PatternSource::kNextGen:
       return it->second[2];
-    case PredictionSource::kFallbackHeuristics:
+    case PatternSource::kLegacy:
       return it->second[3];
   }
 #else
-  switch (prediction_source) {
-    case PredictionSource::kDefaultHeuristics:
+  switch (pattern_source) {
+    case PatternSource::kDefault:
       return it->second[0];
-    case PredictionSource::kExperimentalHeuristics:
-    case PredictionSource::kNextGenHeuristics:
-    case PredictionSource::kFallbackHeuristics:
+    case PatternSource::kExperimental:
+    case PatternSource::kNextGen:
+    case PatternSource::kLegacy:
       break;
   }
 #endif
@@ -59,18 +59,17 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
     absl::optional<LanguageCode> language_code,
-    PredictionSource prediction_source) {
-  return language_code
-             ? GetMatchPatterns(name, **language_code, prediction_source)
-             : GetMatchPatterns(name, "", prediction_source);
+    PatternSource pattern_source) {
+  return language_code ? GetMatchPatterns(name, **language_code, pattern_source)
+                       : GetMatchPatterns(name, "", pattern_source);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
     absl::optional<LanguageCode> language_code,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   return GetMatchPatterns(FieldTypeToStringPiece(type), language_code,
-                          prediction_source);
+                          pattern_source);
 }
 
 // The dereferencing operator implements the distinction between ordinary and

@@ -689,13 +689,10 @@ void FormStructure::DetermineHeuristicTypes(
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   ParseFieldTypesFromAutocompleteAttributes();
-  ParseFieldTypesWithPatterns(PredictionSource::kDefaultHeuristics,
-                              log_manager);
+  ParseFieldTypesWithPatterns(PatternSource::kDefault, log_manager);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-  ParseFieldTypesWithPatterns(PredictionSource::kExperimentalHeuristics,
-                              log_manager);
-  ParseFieldTypesWithPatterns(PredictionSource::kNextGenHeuristics,
-                              log_manager);
+  ParseFieldTypesWithPatterns(PatternSource::kExperimental, log_manager);
+  ParseFieldTypesWithPatterns(PatternSource::kNextGen, log_manager);
 #endif
 
   UpdateAutofillCount();
@@ -1188,9 +1185,8 @@ void FormStructure::RetrieveFromCache(
       if (!only_server_and_autofill_state) {
         // Transfer attributes of the cached AutofillField to the newly created
         // AutofillField.
-        for (int i = 0; i <= static_cast<int>(PredictionSource::kMaxValue);
-             ++i) {
-          PredictionSource s = static_cast<PredictionSource>(i);
+        for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
+          PatternSource s = static_cast<PatternSource>(i);
           field->set_heuristic_type(s, cached_field->heuristic_type(s));
         }
         field->SetHtmlType(cached_field->html_type(),
@@ -1656,17 +1652,16 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   was_parsed_for_autocomplete_attributes_ = true;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(
-    PredictionSource prediction_source,
-    LogManager* log_manager) {
+void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
+                                                LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    field_type_map = FormField::ParseFormFields(fields_, current_page_language_,
-                                                is_form_tag_, prediction_source,
-                                                log_manager);
+    field_type_map =
+        FormField::ParseFormFields(fields_, current_page_language_,
+                                   is_form_tag_, pattern_source, log_manager);
   } else if (ShouldRunPromoCodeHeuristics()) {
     field_type_map = FormField::ParseFormFieldsForPromoCodes(
-        fields_, current_page_language_, is_form_tag_, prediction_source,
+        fields_, current_page_language_, is_form_tag_, pattern_source,
         log_manager);
   }
   if (field_type_map.empty())
@@ -1677,8 +1672,7 @@ void FormStructure::ParseFieldTypesWithPatterns(
     if (iter == field_type_map.end())
       continue;
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(prediction_source,
-                              candidates.BestHeuristicType());
+    field->set_heuristic_type(pattern_source, candidates.BestHeuristicType());
   }
 }
 

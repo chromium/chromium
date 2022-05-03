@@ -36,7 +36,7 @@ class PhoneField : public FormField {
 
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source,
+                                          PatternSource pattern_source,
                                           LogManager* log_manager);
 
 #if defined(UNIT_TEST)
@@ -109,7 +109,7 @@ class PhoneField : public FormField {
                               const bool is_country_code_field,
                               const std::string& json_field_type,
                               const LanguageCode& page_language,
-                              PredictionSource prediction_source);
+                              PatternSource pattern_source);
 
   // Returns true if |scanner| points to a <select> field that appears to be the
   // phone country code by looking at its option contents.

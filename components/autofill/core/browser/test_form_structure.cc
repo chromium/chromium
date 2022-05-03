@@ -23,27 +23,26 @@ TestFormStructure::~TestFormStructure() {}
 void TestFormStructure::SetFieldTypes(
     const std::vector<ServerFieldType>& heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
-  std::vector<std::vector<std::pair<PredictionSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
       all_heuristic_types;
 
   base::ranges::transform(
       heuristic_types, std::back_inserter(all_heuristic_types),
       [](ServerFieldType type)
-          -> std::vector<std::pair<PredictionSource, ServerFieldType>> {
-        return {{PredictionSource::kDefaultHeuristics, type}};
+          -> std::vector<std::pair<PatternSource, ServerFieldType>> {
+        return {{PatternSource::kDefault, type}};
       });
 
   SetFieldTypes(all_heuristic_types, server_types);
 }
 
 void TestFormStructure::SetFieldTypes(
-    const std::vector<std::vector<
-        std::pair<PredictionSource, ServerFieldType>>>& heuristic_types,
+    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+        heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
   ASSERT_EQ(field_count(), heuristic_types.size());
   ASSERT_EQ(field_count(), server_types.size());
-  ASSERT_THAT(heuristic_types,
-              Each(Contains(Pair(PredictionSource::kDefaultHeuristics, _))))
+  ASSERT_THAT(heuristic_types, Each(Contains(Pair(PatternSource::kDefault, _))))
       << "There must be a default heuristic prediction for every field.";
 
   for (size_t i = 0; i < field_count(); ++i) {

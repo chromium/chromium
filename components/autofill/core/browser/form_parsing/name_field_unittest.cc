@@ -26,8 +26,7 @@ class NameFieldTest : public FormFieldTest {
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("us")) override {
-    return NameField::Parse(scanner, page_language,
-                            PredictionSource::kDefaultHeuristics,
+    return NameField::Parse(scanner, page_language, PatternSource::kDefault,
                             /*log_manager=*/nullptr);
   }
 };

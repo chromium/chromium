@@ -22,11 +22,10 @@ namespace {
 // A form field that can parse a full name field.
 class FullNameField : public NameField {
  public:
-  static std::unique_ptr<FullNameField> Parse(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PredictionSource prediction_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FullNameField> Parse(AutofillScanner* scanner,
+                                              const LanguageCode& page_language,
+                                              PatternSource pattern_source,
+                                              LogManager* log_manager);
   explicit FullNameField(AutofillField* field);
 
   FullNameField(const FullNameField&) = delete;
@@ -46,12 +45,12 @@ class FirstTwoLastNamesField : public NameField {
   static std::unique_ptr<FirstTwoLastNamesField> ParseComponentNames(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
   static std::unique_ptr<FirstTwoLastNamesField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
 
   FirstTwoLastNamesField(const FirstTwoLastNamesField&) = delete;
@@ -79,7 +78,7 @@ class FirstLastNameField : public NameField {
   static std::unique_ptr<FirstLastNameField> ParseNameSurnameLabelSequence(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
 
   // Tries to match a series of fields with a shared label: The first field
@@ -88,7 +87,7 @@ class FirstLastNameField : public NameField {
   static std::unique_ptr<FirstLastNameField> ParseSharedNameLabelSequence(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
 
   // Tries to match a series of fields with patterns that are specific to the
@@ -97,7 +96,7 @@ class FirstLastNameField : public NameField {
   static std::unique_ptr<FirstLastNameField> ParseSpecificComponentSequence(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
 
   // Probes the matching strategies defined above. Returns the result of the
@@ -105,7 +104,7 @@ class FirstLastNameField : public NameField {
   static std::unique_ptr<FirstLastNameField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source,
+      PatternSource pattern_source,
       LogManager* log_manager);
 
   FirstLastNameField(const FirstLastNameField&) = delete;
@@ -129,7 +128,7 @@ class FirstLastNameField : public NameField {
 // static
 std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
                                             const LanguageCode& page_language,
-                                            PredictionSource prediction_source,
+                                            PatternSource pattern_source,
                                             LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -140,14 +139,14 @@ std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
   if (!field && base::FeatureList::IsEnabled(
                     features::kAutofillEnableSupportForMoreStructureInNames)) {
     field = FirstTwoLastNamesField::Parse(scanner, page_language,
-                                          prediction_source, log_manager);
+                                          pattern_source, log_manager);
   }
   if (!field) {
-    field = FirstLastNameField::Parse(scanner, page_language, prediction_source,
+    field = FirstLastNameField::Parse(scanner, page_language, pattern_source,
                                       log_manager);
   }
   if (!field) {
-    field = FullNameField::Parse(scanner, page_language, prediction_source,
+    field = FullNameField::Parse(scanner, page_language, pattern_source,
                                  log_manager);
   }
   return field;
@@ -161,15 +160,14 @@ void NameField::AddClassifications(FieldCandidatesMap* field_candidates) const {
 std::unique_ptr<FullNameField> FullNameField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   // Exclude e.g. "username" or "nickname" fields.
   scanner->SaveCursor();
   base::span<const MatchPatternRef> name_ignored_patterns =
-      GetMatchPatterns("NAME_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language,
-                       prediction_source);
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language, pattern_source);
   bool should_ignore =
       ParseField(scanner, kNameIgnoredRe, name_ignored_patterns, nullptr,
                  {log_manager, "kNameIgnoredRe"}) ||
@@ -185,7 +183,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
   AutofillField* field = nullptr;
 
   base::span<const MatchPatternRef> name_patterns =
-      GetMatchPatterns("FULL_NAME", page_language, prediction_source);
+      GetMatchPatterns("FULL_NAME", page_language, pattern_source);
   if (ParseField(scanner, kFullNameRe, name_patterns, &field,
                  {log_manager, "kFullNameRe"}))
     return std::make_unique<FullNameField>(field);
@@ -206,9 +204,9 @@ FirstTwoLastNamesField::FirstTwoLastNamesField() = default;
 std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
-  return ParseComponentNames(scanner, page_language, prediction_source,
+  return ParseComponentNames(scanner, page_language, pattern_source,
                              log_manager);
 }
 
@@ -216,26 +214,25 @@ std::unique_ptr<FirstTwoLastNamesField> FirstTwoLastNamesField::Parse(
 std::unique_ptr<FirstTwoLastNamesField>
 FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
                                             const LanguageCode& page_language,
-                                            PredictionSource prediction_source,
+                                            PatternSource pattern_source,
                                             LogManager* log_manager) {
   auto v = base::WrapUnique(new FirstTwoLastNamesField());
   scanner->SaveCursor();
 
   base::span<const MatchPatternRef> honorific_prefix_patterns =
-      GetMatchPatterns("HONORIFIC_PREFIX", page_language, prediction_source);
+      GetMatchPatterns("HONORIFIC_PREFIX", page_language, pattern_source);
   base::span<const MatchPatternRef> name_ignored_patterns =
-      GetMatchPatterns("NAME_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language,
-                       prediction_source);
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> first_name_patterns =
-      GetMatchPatterns("FIRST_NAME", page_language, prediction_source);
+      GetMatchPatterns("FIRST_NAME", page_language, pattern_source);
   base::span<const MatchPatternRef> middle_name_patterns =
-      GetMatchPatterns("MIDDLE_NAME", page_language, prediction_source);
+      GetMatchPatterns("MIDDLE_NAME", page_language, pattern_source);
   base::span<const MatchPatternRef> first_last_name_patterns =
-      GetMatchPatterns("LAST_NAME_FIRST", page_language, prediction_source);
+      GetMatchPatterns("LAST_NAME_FIRST", page_language, pattern_source);
   base::span<const MatchPatternRef> second_last_name_patterns =
-      GetMatchPatterns("LAST_NAME_SECOND", page_language, prediction_source);
+      GetMatchPatterns("LAST_NAME_SECOND", page_language, pattern_source);
 
   // Allow name fields to appear in any order.
   while (!scanner->IsEnd()) {
@@ -324,7 +321,7 @@ std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseNameSurnameLabelSequence(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   // Some pages have a generic name label that corresponds to a first name
   // followed by a last name label.
@@ -332,18 +329,17 @@ FirstLastNameField::ParseNameSurnameLabelSequence(
   auto v = base::WrapUnique(new FirstLastNameField());
 
   base::span<const MatchPatternRef> name_specific_patterns =
-      GetMatchPatterns("NAME_GENERIC", page_language, prediction_source);
+      GetMatchPatterns("NAME_GENERIC", page_language, pattern_source);
   base::span<const MatchPatternRef> middle_name_patterns =
-      GetMatchPatterns("MIDDLE_NAME", page_language, prediction_source);
+      GetMatchPatterns("MIDDLE_NAME", page_language, pattern_source);
   base::span<const MatchPatternRef> last_name_patterns =
-      GetMatchPatterns("LAST_NAME", page_language, prediction_source);
+      GetMatchPatterns("LAST_NAME", page_language, pattern_source);
   // Check that the field should not be ignored.
 
   base::span<const MatchPatternRef> name_ignored_patterns =
-      GetMatchPatterns("NAME_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language,
-                       prediction_source);
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language, pattern_source);
   scanner->SaveCursor();
 
   bool should_ignore =
@@ -377,7 +373,7 @@ std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSharedNameLabelSequence(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   // Some pages (e.g. Overstock_comBilling.html, SmithsonianCheckout.html)
   // have the label "Name" followed by two or three text fields.
@@ -386,7 +382,7 @@ FirstLastNameField::ParseSharedNameLabelSequence(
 
   AutofillField* next = nullptr;
   base::span<const MatchPatternRef> name_specific_patterns =
-      GetMatchPatterns("NAME_GENERIC", page_language, prediction_source);
+      GetMatchPatterns("NAME_GENERIC", page_language, pattern_source);
 
   if (ParseField(scanner, kNameGenericRe, name_specific_patterns,
                  &v->first_name_, {log_manager, "kNameGenericRe"}) &&
@@ -412,7 +408,7 @@ std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSpecificComponentSequence(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   auto v = base::WrapUnique(new FirstLastNameField());
   scanner->SaveCursor();
@@ -430,20 +426,19 @@ FirstLastNameField::ParseSpecificComponentSequence(
   // Allow name fields to appear in any order.
 
   base::span<const MatchPatternRef> honorific_prefix_patterns =
-      GetMatchPatterns("HONORIFIC_PREFIX", page_language, prediction_source);
+      GetMatchPatterns("HONORIFIC_PREFIX", page_language, pattern_source);
   base::span<const MatchPatternRef> name_ignored_patterns =
-      GetMatchPatterns("NAME_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> address_name_ignored_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language,
-                       prediction_source);
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language, pattern_source);
   base::span<const MatchPatternRef> first_name_patterns =
-      GetMatchPatterns("FIRST_NAME", page_language, prediction_source);
+      GetMatchPatterns("FIRST_NAME", page_language, pattern_source);
   base::span<const MatchPatternRef> middle_name_initial_patterns =
-      GetMatchPatterns("MIDDLE_INITIAL", page_language, prediction_source);
+      GetMatchPatterns("MIDDLE_INITIAL", page_language, pattern_source);
   base::span<const MatchPatternRef> middle_name_patterns =
-      GetMatchPatterns("MIDDLE_NAME", page_language, prediction_source);
+      GetMatchPatterns("MIDDLE_NAME", page_language, pattern_source);
   base::span<const MatchPatternRef> last_name_patterns =
-      GetMatchPatterns("LAST_NAME", page_language, prediction_source);
+      GetMatchPatterns("LAST_NAME", page_language, pattern_source);
 
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
@@ -524,19 +519,19 @@ FirstLastNameField::ParseSpecificComponentSequence(
 std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   std::unique_ptr<FirstLastNameField> field = ParseSharedNameLabelSequence(
-      scanner, page_language, prediction_source, log_manager);
+      scanner, page_language, pattern_source, log_manager);
 
   if (!field && base::FeatureList::IsEnabled(
                     features::kAutofillEnableNameSurenameParsing)) {
     field = ParseNameSurnameLabelSequence(scanner, page_language,
-                                          prediction_source, log_manager);
+                                          pattern_source, log_manager);
   }
   if (!field) {
     field = ParseSpecificComponentSequence(scanner, page_language,
-                                           prediction_source, log_manager);
+                                           pattern_source, log_manager);
   }
   return field;
 }

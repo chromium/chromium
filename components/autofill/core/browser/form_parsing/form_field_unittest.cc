@@ -131,7 +131,7 @@ TEST(FormFieldTest, ParseFormFields) {
   // languages are used.
   EXPECT_TRUE(FormField::ParseFormFields(
                   fields, LanguageCode(""), /*is_form_tag=*/true,
-                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
+                  PatternSource::kDefault, /*log_manager=*/nullptr)
                   .empty());
 
   // reset |is_checkable| to false.
@@ -143,7 +143,7 @@ TEST(FormFieldTest, ParseFormFields) {
   // Parse a single address line 1 field.
   ASSERT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
                                            /*is_form_tag=*/true,
-                                           PredictionSource::kDefaultHeuristics,
+                                           PatternSource::kDefault,
                                            /*log_manager=*/nullptr)
                     .size());
 
@@ -156,7 +156,7 @@ TEST(FormFieldTest, ParseFormFields) {
   // all languages are used.
   ASSERT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
                                            /*is_form_tag=*/true,
-                                           PredictionSource::kDefaultHeuristics,
+                                           PatternSource::kDefault,
                                            /*log_manager=*/nullptr)
                     .size());
 }
@@ -181,7 +181,7 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   // languages are used.
   EXPECT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
                                            /*is_form_tag=*/true,
-                                           PredictionSource::kDefaultHeuristics,
+                                           PatternSource::kDefault,
                                            /*log_manager=*/nullptr)
                     .size());
 
@@ -196,11 +196,11 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     feature_list.InitAndDisableFeature(kAutofillFixFillableFieldTypes);
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    EXPECT_EQ(3u,
-              FormField::ParseFormFields(
-                  fields, LanguageCode(""), /*is_form_tag=*/true,
-                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
-                  .size());
+    EXPECT_EQ(3u, FormField::ParseFormFields(fields, LanguageCode(""),
+                                             /*is_form_tag=*/true,
+                                             PatternSource::kDefault,
+                                             /*log_manager=*/nullptr)
+                      .size());
   }
 
   // With the fix, we don't parse the form because search fields are not
@@ -211,13 +211,13 @@ TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     const FieldCandidatesMap field_candidates_map = FormField::ParseFormFields(
-        fields, LanguageCode(""), /*is_form_tag=*/true,
-        PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr);
-    EXPECT_EQ(0u,
-              FormField::ParseFormFields(
-                  fields, LanguageCode(""), /*is_form_tag=*/true,
-                  PredictionSource::kDefaultHeuristics, /*log_manager=*/nullptr)
-                  .size());
+        fields, LanguageCode(""), /*is_form_tag=*/true, PatternSource::kDefault,
+        /*log_manager=*/nullptr);
+    EXPECT_EQ(0u, FormField::ParseFormFields(fields, LanguageCode(""),
+                                             /*is_form_tag=*/true,
+                                             PatternSource::kDefault,
+                                             /*log_manager=*/nullptr)
+                      .size());
   }
 }
 
@@ -263,7 +263,7 @@ TEST(FormFieldTest, ParseFormFieldsForPromoCodes) {
 
   EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(
                     fields, LanguageCode(""), /*is_form_tag=*/true,
-                    PredictionSource::kDefaultHeuristics)
+                    PatternSource::kDefault)
                     .size());
 
   // Don't parse other fields.
@@ -274,7 +274,7 @@ TEST(FormFieldTest, ParseFormFieldsForPromoCodes) {
   // Still only the promo code field should be parsed.
   EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(
                     fields, LanguageCode(""), /*is_form_tag=*/true,
-                    PredictionSource::kDefaultHeuristics)
+                    PatternSource::kDefault)
                     .size());
 }
 }  // namespace autofill

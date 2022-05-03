@@ -26,7 +26,7 @@ class AddressField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source,
+                                          PatternSource pattern_source,
                                           LogManager* log_manager);
 
   AddressField(const AddressField&) = delete;
@@ -48,39 +48,39 @@ class AddressField : public FormField {
 
   bool ParseCompany(AutofillScanner* scanner,
                     const LanguageCode& page_language,
-                    PredictionSource prediction_source);
+                    PatternSource pattern_source);
 
   bool ParseAddress(AutofillScanner* scanner,
                     const LanguageCode& page_language,
-                    PredictionSource prediction_source);
+                    PatternSource pattern_source);
 
   bool ParseAddressFieldSequence(AutofillScanner* scanner,
                                  const LanguageCode& page_language,
-                                 PredictionSource prediction_source);
+                                 PatternSource pattern_source);
 
   bool ParseAddressLines(AutofillScanner* scanner,
                          const LanguageCode& page_language,
-                         PredictionSource prediction_source);
+                         PatternSource pattern_source);
 
   bool ParseCountry(AutofillScanner* scanner,
                     const LanguageCode& page_language,
-                    PredictionSource prediction_source);
+                    PatternSource pattern_source);
 
   bool ParseZipCode(AutofillScanner* scanner,
                     const LanguageCode& page_language,
-                    PredictionSource prediction_source);
+                    PatternSource pattern_source);
 
   bool ParseDependentLocality(AutofillScanner* scanner,
                               const LanguageCode& page_language,
-                              PredictionSource prediction_source);
+                              PatternSource pattern_source);
 
   bool ParseCity(AutofillScanner* scanner,
                  const LanguageCode& page_language,
-                 PredictionSource prediction_source);
+                 PatternSource pattern_source);
 
   bool ParseState(AutofillScanner* scanner,
                   const LanguageCode& page_language,
-                  PredictionSource prediction_source);
+                  PatternSource pattern_source);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
@@ -88,7 +88,7 @@ class AddressField : public FormField {
   bool ParseDependentLocalityCityStateCountryZipCode(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   // Like ParseFieldSpecifics(), but applies |pattern| against the name and
   // label of the current field separately. If the return value is
@@ -109,27 +109,27 @@ class AddressField : public FormField {
   ParseNameLabelResult ParseNameAndLabelForZipCode(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForDependentLocality(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForCity(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForCountry(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForState(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
-      PredictionSource prediction_source);
+      PatternSource pattern_source);
 
   raw_ptr<LogManager> log_manager_;
   AutofillField* company_ = nullptr;

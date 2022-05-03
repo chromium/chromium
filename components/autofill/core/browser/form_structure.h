@@ -232,7 +232,7 @@ class FormStructure {
   void ParseFieldTypesFromAutocompleteAttributes();
 
   // Classifies each field in |fields_| using the regular expressions.
-  void ParseFieldTypesWithPatterns(PredictionSource prediction_source,
+  void ParseFieldTypesWithPatterns(PatternSource pattern_source,
                                    LogManager* log_manager);
 
   // Returns the values that can be filled into the form structure for the
@@ -376,8 +376,7 @@ class FormStructure {
   void set_overall_field_type_for_testing(size_t field_index,
                                           ServerFieldType type) {
     if (field_index < fields_.size() && type > 0 && type < MAX_VALID_FIELD_TYPE)
-      fields_[field_index]->set_heuristic_type(
-          PredictionSource::kDefaultHeuristics, type);
+      fields_[field_index]->set_heuristic_type(PatternSource::kDefault, type);
   }
   // Set the server field type for |fields_[field_index]| to |type| for testing
   // purposes.

@@ -9,17 +9,10 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
-
-enum class PredictionSource {
-  kDefaultHeuristics,
-  kExperimentalHeuristics,
-  kNextGenHeuristics,
-  kFallbackHeuristics,
-  kMaxValue = kFallbackHeuristics
-};
 
 // Represents a possible type for a given field.
 struct FieldCandidate {

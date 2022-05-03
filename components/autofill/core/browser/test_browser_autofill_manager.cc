@@ -98,14 +98,14 @@ void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<ServerFieldType>& heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
-  std::vector<std::vector<std::pair<PredictionSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
       all_heuristic_types;
 
   base::ranges::transform(
       heuristic_types, std::back_inserter(all_heuristic_types),
       [](ServerFieldType type)
-          -> std::vector<std::pair<PredictionSource, ServerFieldType>> {
-        return {{PredictionSource::kDefaultHeuristics, type}};
+          -> std::vector<std::pair<PatternSource, ServerFieldType>> {
+        return {{PatternSource::kDefault, type}};
       });
 
   AddSeenForm(form, all_heuristic_types, server_types);
@@ -113,8 +113,7 @@ void TestBrowserAutofillManager::AddSeenForm(
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<
-        std::vector<std::pair<PredictionSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
         heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
   FormData empty_form = form;

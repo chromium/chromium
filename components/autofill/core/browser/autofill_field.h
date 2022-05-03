@@ -53,7 +53,7 @@ class AutofillField : public FormFieldData {
       FieldSignature field_signature);
 
   ServerFieldType heuristic_type(
-      PredictionSource s = PredictionSource::kDefaultHeuristics) const;
+      PatternSource s = PatternSource::kDefault) const;
   ServerFieldType server_type() const;
   bool server_type_prediction_is_override() const;
   const std::vector<
@@ -77,7 +77,7 @@ class AutofillField : public FormFieldData {
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   // Setters for the detected types.
-  void set_heuristic_type(PredictionSource s, ServerFieldType t);
+  void set_heuristic_type(PatternSource s, ServerFieldType t);
   void add_possible_types_validities(
       const ServerFieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
@@ -253,8 +253,7 @@ class AutofillField : public FormFieldData {
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
   // attempted.
-  std::array<ServerFieldType,
-             static_cast<size_t>(PredictionSource::kMaxValue) + 1>
+  std::array<ServerFieldType, static_cast<size_t>(PatternSource::kMaxValue) + 1>
       local_type_predictions_;
 
   // The type of the field. Overrides all other types (html_type_,

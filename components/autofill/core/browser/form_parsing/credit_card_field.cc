@@ -64,7 +64,7 @@ bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
 std::unique_ptr<FormField> CreditCardField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -75,24 +75,24 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   bool cardholder_name_match_has_low_confidence = false;
 
   base::span<const MatchPatternRef> name_on_card_patterns =
-      GetMatchPatterns("NAME_ON_CARD", page_language, prediction_source);
+      GetMatchPatterns("NAME_ON_CARD", page_language, pattern_source);
 
   base::span<const MatchPatternRef> name_on_card_contextual_patterns =
       GetMatchPatterns("NAME_ON_CARD_CONTEXTUAL", page_language,
-                       prediction_source);
+                       pattern_source);
 
   base::span<const MatchPatternRef> last_name_patterns =
-      GetMatchPatterns("LAST_NAME", page_language, prediction_source);
+      GetMatchPatterns("LAST_NAME", page_language, pattern_source);
 
   base::span<const MatchPatternRef> cvc_patterns = GetMatchPatterns(
-      CREDIT_CARD_VERIFICATION_CODE, page_language, prediction_source);
+      CREDIT_CARD_VERIFICATION_CODE, page_language, pattern_source);
 
   // Credit card fields can appear in many different orders.
   // We loop until no more credit card related fields are found, see |break| at
   // the bottom of the loop.
   for (int fields = 0; !scanner->IsEnd(); ++fields) {
     // Ignore gift card fields.
-    if (IsGiftCardField(scanner, log_manager, page_language, prediction_source))
+    if (IsGiftCardField(scanner, log_manager, page_language, pattern_source))
       break;
 
     if (!credit_card_field->cardholder_) {
@@ -191,7 +191,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // doesn't have bad side effects.
     AutofillField* current_number_field;
     base::span<const MatchPatternRef> patterns =
-        GetMatchPatterns(CREDIT_CARD_NUMBER, page_language, prediction_source);
+        GetMatchPatterns(CREDIT_CARD_NUMBER, page_language, pattern_source);
     if (ParseFieldSpecifics(scanner, kCardNumberRe, kMatchNumTelAndPwd,
                             patterns, &current_number_field,
                             {log_manager, "kCardNumberRe"})) {
@@ -218,8 +218,8 @@ std::unique_ptr<FormField> CreditCardField::Parse(
       continue;
     }
 
-    if (credit_card_field->ParseExpirationDate(
-            scanner, log_manager, page_language, prediction_source)) {
+    if (credit_card_field->ParseExpirationDate(scanner, log_manager,
+                                               page_language, pattern_source)) {
       nb_unknown_fields = 0;
       continue;
     }
@@ -328,7 +328,7 @@ bool CreditCardField::LikelyCardYearSelectField(
     AutofillScanner* scanner,
     LogManager* log_manager,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   if (scanner->IsEnd())
     return false;
 
@@ -350,7 +350,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   // Another way to eliminate days - filter out 'day' fields.
   base::span<const MatchPatternRef> day_patterns =
-      GetMatchPatterns("DAY", page_language, prediction_source);
+      GetMatchPatterns("DAY", page_language, pattern_source);
   if (FormField::ParseFieldSpecifics(
           scanner, kDayRe, kDefaultMatchParamsWith<MatchFieldType::kSelect>,
           day_patterns, nullptr, {log_manager, "kDayRe"})) {
@@ -419,7 +419,7 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
                                       LogManager* log_manager,
                                       const LanguageCode& page_language,
-                                      PredictionSource prediction_source) {
+                                      PatternSource pattern_source) {
   if (scanner->IsEnd())
     return false;
 
@@ -432,13 +432,13 @@ bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
   size_t saved_cursor = scanner->SaveCursor();
 
   base::span<const MatchPatternRef> debit_cards_patterns =
-      GetMatchPatterns("DEBIT_CARD", page_language, prediction_source);
+      GetMatchPatterns("DEBIT_CARD", page_language, pattern_source);
 
   base::span<const MatchPatternRef> debit_gift_card_patterns =
-      GetMatchPatterns("DEBIT_GIFT_CARD", page_language, prediction_source);
+      GetMatchPatterns("DEBIT_GIFT_CARD", page_language, pattern_source);
 
   base::span<const MatchPatternRef> gift_card_patterns =
-      GetMatchPatterns("GIFT_CARD", page_language, prediction_source);
+      GetMatchPatterns("GIFT_CARD", page_language, pattern_source);
 
   if (ParseFieldSpecifics(scanner, kDebitCardRe, kMatchFieldType,
                           debit_cards_patterns, nullptr,
@@ -513,7 +513,7 @@ void CreditCardField::AddClassifications(
 bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
                                           LogManager* log_manager,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source) {
+                                          PatternSource pattern_source) {
   if (!expiration_date_ && base::LowerCaseEqualsASCII(
                                scanner->Cursor()->form_control_type, "month")) {
     expiration_date_ = scanner->Cursor();
@@ -534,7 +534,7 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
     expiration_month_ = scanner->Cursor();
     scanner->Advance();
     if (LikelyCardYearSelectField(scanner, log_manager, page_language,
-                                  prediction_source)) {
+                                  pattern_source)) {
       expiration_year_ = scanner->Cursor();
       scanner->Advance();
       return true;
@@ -551,18 +551,18 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
                               MatchFieldType::kSelect, MatchFieldType::kSearch>;
 
   base::span<const MatchPatternRef> cc_exp_month_patterns =
-      GetMatchPatterns(CREDIT_CARD_EXP_MONTH, page_language, prediction_source);
+      GetMatchPatterns(CREDIT_CARD_EXP_MONTH, page_language, pattern_source);
 
-  base::span<const MatchPatternRef> cc_exp_year_patterns = GetMatchPatterns(
-      "CREDIT_CARD_EXP_YEAR", page_language, prediction_source);
+  base::span<const MatchPatternRef> cc_exp_year_patterns =
+      GetMatchPatterns("CREDIT_CARD_EXP_YEAR", page_language, pattern_source);
 
   base::span<const MatchPatternRef> cc_exp_month_before_year_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_MONTH_BEFORE_YEAR", page_language,
-                       prediction_source);
+                       pattern_source);
 
   base::span<const MatchPatternRef> cc_exp_year_after_month_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_YEAR_AFTER_MONTH", page_language,
-                       prediction_source);
+                       pattern_source);
 
   if (ParseFieldSpecifics(scanner, kExpirationMonthRe, kMatchCCType,
                           cc_exp_month_patterns, &expiration_month_,
@@ -597,7 +597,7 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   // Try to look for a 2-digit year expiration date.
   base::span<const MatchPatternRef> cc_exp_2digit_year_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, page_language,
-                       prediction_source);
+                       pattern_source);
   if (ParseFieldSpecifics(scanner, kExpirationDate2DigitYearRe, kMatchCCType,
                           cc_exp_2digit_year_patterns, &expiration_date_,
                           {log_manager_, "kExpirationDate2DigitYearRe"})) {
@@ -607,8 +607,8 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   }
 
   // Try to look for a generic expiration date field. (2 or 4 digit year)
-  base::span<const MatchPatternRef> cc_exp_date_patterns = GetMatchPatterns(
-      "CREDIT_CARD_EXP_DATE", page_language, prediction_source);
+  base::span<const MatchPatternRef> cc_exp_date_patterns =
+      GetMatchPatterns("CREDIT_CARD_EXP_DATE", page_language, pattern_source);
   if (ParseFieldSpecifics(scanner, kExpirationDateRe, kMatchCCType,
                           cc_exp_date_patterns, &expiration_date_,
                           {log_manager_, "kExpirationDateRe"})) {
@@ -626,7 +626,7 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   // Try to look for a 4-digit year expiration date.
   base::span<const MatchPatternRef> cc_exp_date_4_digit_year_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, page_language,
-                       prediction_source);
+                       pattern_source);
   if (FieldCanFitDataForFieldType(current_field_max_length,
                                   CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) &&
       ParseFieldSpecifics(scanner, kExpirationDate4DigitYearRe, kMatchCCType,

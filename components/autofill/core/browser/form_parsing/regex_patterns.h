@@ -9,7 +9,6 @@
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/common/language_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -69,6 +68,16 @@ class MatchPatternRef {
   UnderlyingType value_;
 };
 
+// The pattern  source identifies the JSON file providing the set of parsing
+// patterns.
+enum class PatternSource {
+  kDefault,
+  kExperimental,
+  kNextGen,
+  kLegacy,
+  kMaxValue = kLegacy
+};
+
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.
 //
@@ -82,12 +91,12 @@ class MatchPatternRef {
 base::span<const MatchPatternRef> GetMatchPatterns(
     base::StringPiece name,
     absl::optional<LanguageCode> language,
-    PredictionSource prediction_source);
+    PatternSource pattern_source);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     ServerFieldType type,
     absl::optional<LanguageCode> language,
-    PredictionSource prediction_source);
+    PatternSource pattern_source);
 
 }  // namespace autofill
 

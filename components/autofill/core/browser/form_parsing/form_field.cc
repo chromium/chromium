@@ -51,50 +51,50 @@ FieldCandidatesMap FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     const LanguageCode& page_language,
     bool is_form_tag,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
   FieldCandidatesMap field_candidates;
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
   const size_t email_count = field_candidates.size();
 
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
-                      &field_candidates, page_language, prediction_source,
+                      &field_candidates, page_language, pattern_source,
                       log_manager);
   const size_t promo_code_count = field_candidates.size() - email_count;
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   // Travel pass.
   ParseFormFieldsPass(TravelField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   // Address pass.
   ParseFormFieldsPass(AddressField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
-                      &field_candidates, page_language, prediction_source,
+                      &field_candidates, page_language, pattern_source,
                       log_manager);
 
   // Price pass.
   ParseFormFieldsPass(PriceField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   // Name pass.
   ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
-                      page_language, prediction_source, log_manager);
+                      page_language, pattern_source, log_manager);
 
   size_t fillable_fields = 0;
   if (base::FeatureList::IsEnabled(features::kAutofillFixFillableFieldTypes)) {
@@ -151,14 +151,14 @@ FieldCandidatesMap FormField::ParseFormFieldsForPromoCodes(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     const LanguageCode& page_language,
     bool is_form_tag,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
   FieldCandidatesMap field_candidates;
 
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
-                      &field_candidates, page_language, prediction_source,
+                      &field_candidates, page_language, pattern_source,
                       log_manager);
 
   return field_candidates;
@@ -370,12 +370,12 @@ void FormField::ParseFormFieldsPass(ParseFunction parse,
                                     const std::vector<AutofillField*>& fields,
                                     FieldCandidatesMap* field_candidates,
                                     const LanguageCode& page_language,
-                                    PredictionSource prediction_source,
+                                    PatternSource pattern_source,
                                     LogManager* log_manager) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
     std::unique_ptr<FormField> form_field =
-        parse(&scanner, page_language, prediction_source, log_manager);
+        parse(&scanner, page_language, pattern_source, log_manager);
     if (form_field == nullptr) {
       scanner.Advance();
     } else {

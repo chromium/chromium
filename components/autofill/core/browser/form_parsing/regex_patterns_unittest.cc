@@ -122,19 +122,19 @@ TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   // The expected patterns are the patterns of all languages for `kSomeName`.
   std::vector<MatchPatternRef> expected;
   for (const std::string& lang : kLanguagesOfPattern) {
-    const auto& patterns = GetMatchPatterns(
-        kSomeName, LanguageCode(lang), PredictionSource::kDefaultHeuristics);
+    const auto& patterns = GetMatchPatterns(kSomeName, LanguageCode(lang),
+                                            PatternSource::kDefault);
     expected.insert(expected.end(), patterns.begin(), patterns.end());
   }
   base::EraseIf(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt,
-                               PredictionSource::kDefaultHeuristics),
-              UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt,
-                               PredictionSource::kDefaultHeuristics),
-              Each(Not(IsSupplementary)));
+  EXPECT_THAT(
+      GetMatchPatterns(kSomeName, absl::nullopt, PatternSource::kDefault),
+      UnorderedElementsAreArray(expected));
+  EXPECT_THAT(
+      GetMatchPatterns(kSomeName, absl::nullopt, PatternSource::kDefault),
+      Each(Not(IsSupplementary)));
 }
 
 // Tests that for a given pattern name, if the language doesn't isn't known we
@@ -142,11 +142,10 @@ TEST_F(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
 TEST_F(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
-  EXPECT_THAT(
-      GetMatchPatterns(kSomeName, kNonexistingLanguage,
-                       PredictionSource::kDefaultHeuristics),
-      ElementsAreArray(GetMatchPatterns(kSomeName, absl::nullopt,
-                                        PredictionSource::kDefaultHeuristics)));
+  EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage,
+                               PatternSource::kDefault),
+              ElementsAreArray(GetMatchPatterns(kSomeName, absl::nullopt,
+                                                PatternSource::kDefault)));
 }
 
 // Tests that for a given pattern name, the non-English languages are
@@ -154,10 +153,10 @@ TEST_F(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
 TEST_F(RegexPatternsTest,
        EnglishPatternsAreAddedToOtherLanguagesAsSupplementaryPatterns) {
   const std::string kSomeName = "ADDRESS_LINE_1";
-  auto de_patterns = GetMatchPatterns(kSomeName, LanguageCode("de"),
-                                      PredictionSource::kDefaultHeuristics);
-  auto en_patterns = GetMatchPatterns(kSomeName, LanguageCode("en"),
-                                      PredictionSource::kDefaultHeuristics);
+  auto de_patterns =
+      GetMatchPatterns(kSomeName, LanguageCode("de"), PatternSource::kDefault);
+  auto en_patterns =
+      GetMatchPatterns(kSomeName, LanguageCode("en"), PatternSource::kDefault);
   ASSERT_FALSE(de_patterns.empty());
   ASSERT_FALSE(en_patterns.empty());
 
@@ -180,7 +179,7 @@ TEST_F(RegexPatternsTest,
 struct PatternTestCase {
   // The set of patterns. In non-branded builds, only the default set is
   // supported.
-  PredictionSource prediction_source = PredictionSource::kDefaultHeuristics;
+  PatternSource pattern_source = PatternSource::kDefault;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
@@ -209,8 +208,8 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
     EXPECT_THAT(sample,
                 MatchesAny(GetMatchPatterns(test_case.pattern_name,
                                             LanguageCode(test_case.language),
-                                            test_case.prediction_source)))
-        << "prediction_source=" << static_cast<int>(test_case.prediction_source)
+                                            test_case.pattern_source)))
+        << "pattern_source=" << static_cast<int>(test_case.pattern_source)
         << ","
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
@@ -220,7 +219,7 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
     EXPECT_THAT(sample,
                 Not(MatchesAny(GetMatchPatterns(
                     test_case.pattern_name, LanguageCode(test_case.language),
-                    test_case.prediction_source))))
+                    test_case.pattern_source))))
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
@@ -232,39 +231,38 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"legacy"},
             .negative_samples = {"default", "experimental", "nextgen"}},
 #else
         PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"default"},
             .negative_samples = {"legacy", "experimental", "nextgen"}},
+        PatternTestCase{.pattern_source = PatternSource::kExperimental,
+                        .pattern_name = "PATTERN_SOURCE_DUMMY",
+                        .language = "en",
+                        .positive_samples = {"experimental"},
+                        .negative_samples = {"default", "legacy", "nextgen"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kExperimentalHeuristics,
-            .pattern_name = "PATTERN_SOURCE_DUMMY",
-            .language = "en",
-            .positive_samples = {"experimental"},
-            .negative_samples = {"default", "legacy", "nextgen"}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_source = PatternSource::kNextGen,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"nextgen"},
             .negative_samples = {"default", "legacy", "experimental"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kFallbackHeuristics,
+            .pattern_source = PatternSource::kLegacy,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
             .language = "en",
             .positive_samples = {"legacy"},
             .negative_samples = {"default", "experimental", "nextgen"}},
 #endif
         PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -289,7 +287,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -314,29 +312,27 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "en",
-            .positive_samples = {"Zip code", "postal code"},
-            .negative_samples =
-                {// Not matching for "en" language:
-                 "postleitzahl",
-                 // Not referring to a ZIP code:
-                 "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kDefaultHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "de",
-            .positive_samples =
-                {// Inherited from "en":
-                 "Zip code", "postal code",
-                 // Specifically added for "de":
-                 "postleitzahl"}}
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "en",
+                        .positive_samples = {"Zip code", "postal code"},
+                        .negative_samples =
+                            {// Not matching for "en" language:
+                             "postleitzahl",
+                             // Not referring to a ZIP code:
+                             "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "de",
+                        .positive_samples =
+                            {// Inherited from "en":
+                             "Zip code", "postal code",
+                             // Specifically added for "de":
+                             "postleitzahl"}}
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         ,
         PatternTestCase{
-            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_source = PatternSource::kExperimental,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -361,7 +357,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kExperimentalHeuristics,
+            .pattern_source = PatternSource::kExperimental,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -386,27 +382,25 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
+        PatternTestCase{.pattern_source = PatternSource::kExperimental,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "en",
+                        .positive_samples = {"Zip code", "postal code"},
+                        .negative_samples =
+                            {// Not matching for "en" language:
+                             "postleitzahl",
+                             // Not referring to a ZIP code:
+                             "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase{.pattern_source = PatternSource::kExperimental,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "de",
+                        .positive_samples =
+                            {// Inherited from "en":
+                             "Zip code", "postal code",
+                             // Specifically added for "de":
+                             "postleitzahl"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kExperimentalHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "en",
-            .positive_samples = {"Zip code", "postal code"},
-            .negative_samples =
-                {// Not matching for "en" language:
-                 "postleitzahl",
-                 // Not referring to a ZIP code:
-                 "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kExperimentalHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "de",
-            .positive_samples =
-                {// Inherited from "en":
-                 "Zip code", "postal code",
-                 // Specifically added for "de":
-                 "postleitzahl"}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_source = PatternSource::kNextGen,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -431,7 +425,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .prediction_source = PredictionSource::kNextGenHeuristics,
+            .pattern_source = PatternSource::kNextGen,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -456,25 +450,23 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kNextGenHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "en",
-            .positive_samples = {"Zip code", "postal code"},
-            .negative_samples =
-                {// Not matching for "en" language:
-                 "postleitzahl",
-                 // Not referring to a ZIP code:
-                 "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{
-            .prediction_source = PredictionSource::kNextGenHeuristics,
-            .pattern_name = "ZIP_CODE",
-            .language = "de",
-            .positive_samples =
-                {// Inherited from "en":
-                 "Zip code", "postal code",
-                 // Specifically added for "de":
-                 "postleitzahl"}}
+        PatternTestCase{.pattern_source = PatternSource::kNextGen,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "en",
+                        .positive_samples = {"Zip code", "postal code"},
+                        .negative_samples =
+                            {// Not matching for "en" language:
+                             "postleitzahl",
+                             // Not referring to a ZIP code:
+                             "Supported file formats: .docx, .rar, .zip."}},
+        PatternTestCase{.pattern_source = PatternSource::kNextGen,
+                        .pattern_name = "ZIP_CODE",
+                        .language = "de",
+                        .positive_samples =
+                            {// Inherited from "en":
+                             "Zip code", "postal code",
+                             // Specifically added for "de":
+                             "postleitzahl"}}
 #endif
         ));
 

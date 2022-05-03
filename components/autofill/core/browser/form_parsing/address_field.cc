@@ -88,7 +88,7 @@ constexpr MatchParams kStateMatchType =
 std::unique_ptr<FormField> AddressField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source,
+    PatternSource pattern_source,
     LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -98,19 +98,19 @@ std::unique_ptr<FormField> AddressField::Parse(
   size_t saved_cursor = scanner->SaveCursor();
 
   base::span<const MatchPatternRef> email_patterns =
-      GetMatchPatterns("EMAIL_ADDRESS", page_language, prediction_source);
+      GetMatchPatterns("EMAIL_ADDRESS", page_language, pattern_source);
 
   base::span<const MatchPatternRef> address_patterns =
-      GetMatchPatterns("ADDRESS_LOOKUP", page_language, prediction_source);
+      GetMatchPatterns("ADDRESS_LOOKUP", page_language, pattern_source);
 
-  base::span<const MatchPatternRef> address_ignore_patterns = GetMatchPatterns(
-      "ADDRESS_NAME_IGNORED", page_language, prediction_source);
+  base::span<const MatchPatternRef> address_ignore_patterns =
+      GetMatchPatterns("ADDRESS_NAME_IGNORED", page_language, pattern_source);
 
   base::span<const MatchPatternRef> attention_ignore_patterns =
-      GetMatchPatterns("ATTENTION_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("ATTENTION_IGNORED", page_language, pattern_source);
 
   base::span<const MatchPatternRef> region_ignore_patterns =
-      GetMatchPatterns("REGION_IGNORED", page_language, prediction_source);
+      GetMatchPatterns("REGION_IGNORED", page_language, pattern_source);
 
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
@@ -133,11 +133,11 @@ std::unique_ptr<FormField> AddressField::Parse(
                    })) {
       continue;
     } else if (address_field->ParseAddress(scanner, page_language,
-                                           prediction_source) ||
+                                           pattern_source) ||
                address_field->ParseDependentLocalityCityStateCountryZipCode(
-                   scanner, page_language, prediction_source) ||
+                   scanner, page_language, pattern_source) ||
                address_field->ParseCompany(scanner, page_language,
-                                           prediction_source)) {
+                                           pattern_source)) {
       has_trailing_non_labeled_fields = false;
       continue;
     } else if (ParseField(scanner, kAttentionIgnoredRe,
@@ -231,21 +231,20 @@ void AddressField::AddClassifications(
 
 bool AddressField::ParseCompany(AutofillScanner* scanner,
                                 const LanguageCode& page_language,
-                                PredictionSource prediction_source) {
+                                PatternSource pattern_source) {
   if (company_)
     return false;
 
   base::span<const MatchPatternRef> company_patterns =
-      GetMatchPatterns("COMPANY_NAME", page_language, prediction_source);
+      GetMatchPatterns("COMPANY_NAME", page_language, pattern_source);
 
   return ParseField(scanner, kCompanyRe, company_patterns, &company_,
                     {log_manager_, "kCompanyRe"});
 }
 
-bool AddressField::ParseAddressFieldSequence(
-    AutofillScanner* scanner,
-    const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
+                                             const LanguageCode& page_language,
+                                             PatternSource pattern_source) {
   // Search for a sequence of a street name field followed by a house number
   // field. Only if both are found in an abitrary order, the parsing is
   // considered successful.
@@ -258,13 +257,13 @@ bool AddressField::ParseAddressFieldSequence(
 
   const size_t cursor_position = scanner->CursorPosition();
 
-  base::span<const MatchPatternRef> street_name_patterns = GetMatchPatterns(
-      ADDRESS_HOME_STREET_NAME, page_language, prediction_source);
+  base::span<const MatchPatternRef> street_name_patterns =
+      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, page_language, pattern_source);
 
   base::span<const MatchPatternRef> house_number_patterns = GetMatchPatterns(
-      ADDRESS_HOME_HOUSE_NUMBER, page_language, prediction_source);
+      ADDRESS_HOME_HOUSE_NUMBER, page_language, pattern_source);
   base::span<const MatchPatternRef> apartment_number_patterns =
-      GetMatchPatterns(ADDRESS_HOME_APT_NUM, page_language, prediction_source);
+      GetMatchPatterns(ADDRESS_HOME_APT_NUM, page_language, pattern_source);
 
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
@@ -313,22 +312,22 @@ bool AddressField::ParseAddressFieldSequence(
 
 bool AddressField::ParseAddress(AutofillScanner* scanner,
                                 const LanguageCode& page_language,
-                                PredictionSource prediction_source) {
+                                PatternSource pattern_source) {
   if (street_name_ && house_number_) {
     return false;
   }
   // Do not inline these calls: After passing an address field sequence, there
   // might be an additional address line 2 to parse afterwards.
   bool has_field_sequence =
-      ParseAddressFieldSequence(scanner, page_language, prediction_source);
+      ParseAddressFieldSequence(scanner, page_language, pattern_source);
   bool has_address_lines =
-      ParseAddressLines(scanner, page_language, prediction_source);
+      ParseAddressLines(scanner, page_language, pattern_source);
   return has_field_sequence || has_address_lines;
 }
 
 bool AddressField::ParseAddressLines(AutofillScanner* scanner,
                                      const LanguageCode& page_language,
-                                     PredictionSource prediction_source) {
+                                     PatternSource pattern_source) {
   // We only match the string "address" in page text, not in element names,
   // because sometimes every element in a group of address fields will have
   // a name containing the string "address"; for example, on the page
@@ -344,7 +343,7 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   std::u16string label_pattern = kAddressLine1LabelRe;
 
   base::span<const MatchPatternRef> address_line1_patterns =
-      GetMatchPatterns("ADDRESS_LINE_1", page_language, prediction_source);
+      GetMatchPatterns("ADDRESS_LINE_1", page_language, pattern_source);
 
   // TODO(crbug.com/1121990): Remove duplicate calls when launching
   // AutofillParsingPatternProvider. The old code calls ParseFieldSpecifics()
@@ -392,7 +391,7 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   label_pattern = kAddressLine2LabelRe;
 
   base::span<const MatchPatternRef> address_line2_patterns =
-      GetMatchPatterns("ADDRESS_LINE_2", page_language, prediction_source);
+      GetMatchPatterns("ADDRESS_LINE_2", page_language, pattern_source);
 
   if (!ParseField(scanner, pattern, address_line2_patterns, &address2_,
                   {log_manager_, "kAddressLine2Re"}) &&
@@ -404,7 +403,7 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
     return true;
 
   base::span<const MatchPatternRef> address_line_extra_patterns =
-      GetMatchPatterns("ADDRESS_LINE_EXTRA", page_language, prediction_source);
+      GetMatchPatterns("ADDRESS_LINE_EXTRA", page_language, pattern_source);
 
   // Optionally parse address line 3. This uses the same label regexp as
   // address 2 above.
@@ -434,14 +433,14 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
 
 bool AddressField::ParseCountry(AutofillScanner* scanner,
                                 const LanguageCode& page_language,
-                                PredictionSource prediction_source) {
+                                PatternSource pattern_source) {
   if (country_)
     return false;
 
   base::span<const MatchPatternRef> country_patterns =
-      GetMatchPatterns("COUNTRY", page_language, prediction_source);
+      GetMatchPatterns("COUNTRY", page_language, pattern_source);
   base::span<const MatchPatternRef> country_patternsl =
-      GetMatchPatterns("COUNTRY_LOCATION", page_language, prediction_source);
+      GetMatchPatterns("COUNTRY_LOCATION", page_language, pattern_source);
 
   scanner->SaveCursor();
   if (ParseFieldSpecifics(scanner, kCountryRe,
@@ -464,15 +463,15 @@ bool AddressField::ParseCountry(AutofillScanner* scanner,
 
 bool AddressField::ParseZipCode(AutofillScanner* scanner,
                                 const LanguageCode& page_language,
-                                PredictionSource prediction_source) {
+                                PatternSource pattern_source) {
   if (zip_)
     return false;
 
   base::span<const MatchPatternRef> zip_code_patterns =
-      GetMatchPatterns("ZIP_CODE", page_language, prediction_source);
+      GetMatchPatterns("ZIP_CODE", page_language, pattern_source);
 
   base::span<const MatchPatternRef> four_digit_zip_code_patterns =
-      GetMatchPatterns("ZIP_4", page_language, prediction_source);
+      GetMatchPatterns("ZIP_4", page_language, pattern_source);
   if (!ParseFieldSpecifics(scanner, kZipCodeRe, kZipCodeMatchType,
                            zip_code_patterns, &zip_,
                            {log_manager_, "kZipCodeRe"})) {
@@ -489,7 +488,7 @@ bool AddressField::ParseZipCode(AutofillScanner* scanner,
 
 bool AddressField::ParseDependentLocality(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source) {
+                                          PatternSource pattern_source) {
   const bool is_enabled_dependent_locality_parsing =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableDependentLocalityParsing);
@@ -499,7 +498,7 @@ bool AddressField::ParseDependentLocality(AutofillScanner* scanner,
 
   base::span<const MatchPatternRef> dependent_locality_patterns =
       GetMatchPatterns("ADDRESS_HOME_DEPENDENT_LOCALITY", page_language,
-                       prediction_source);
+                       pattern_source);
   return ParseFieldSpecifics(scanner, kDependentLocalityRe,
                              kDependentLocalityMatchType,
                              dependent_locality_patterns, &dependent_locality_,
@@ -508,24 +507,24 @@ bool AddressField::ParseDependentLocality(AutofillScanner* scanner,
 
 bool AddressField::ParseCity(AutofillScanner* scanner,
                              const LanguageCode& page_language,
-                             PredictionSource prediction_source) {
+                             PatternSource pattern_source) {
   if (city_)
     return false;
 
   base::span<const MatchPatternRef> city_patterns =
-      GetMatchPatterns("CITY", page_language, prediction_source);
+      GetMatchPatterns("CITY", page_language, pattern_source);
   return ParseFieldSpecifics(scanner, kCityRe, kCityMatchType, city_patterns,
                              &city_, {log_manager_, "kCityRe"});
 }
 
 bool AddressField::ParseState(AutofillScanner* scanner,
                               const LanguageCode& page_language,
-                              PredictionSource prediction_source) {
+                              PatternSource pattern_source) {
   if (state_)
     return false;
 
   base::span<const MatchPatternRef> patterns_state =
-      GetMatchPatterns("STATE", page_language, prediction_source);
+      GetMatchPatterns("STATE", page_language, pattern_source);
   return ParseFieldSpecifics(scanner, kStateRe, kStateMatchType, patterns_state,
                              &state_, {log_manager_, "kStateRe"});
 }
@@ -570,7 +569,7 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
 bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   // The |scanner| is not pointing at a field.
   if (scanner->IsEnd())
     return false;
@@ -589,37 +588,37 @@ bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
   // Exactly one field type is missing.
   if (num_of_missing_types == 1) {
     if (!dependent_locality_)
-      return ParseDependentLocality(scanner, page_language, prediction_source);
+      return ParseDependentLocality(scanner, page_language, pattern_source);
     if (!city_)
-      return ParseCity(scanner, page_language, prediction_source);
+      return ParseCity(scanner, page_language, pattern_source);
     if (!state_)
-      return ParseState(scanner, page_language, prediction_source);
+      return ParseState(scanner, page_language, pattern_source);
     if (!country_)
-      return ParseCountry(scanner, page_language, prediction_source);
+      return ParseCountry(scanner, page_language, pattern_source);
     if (!zip_)
-      return ParseZipCode(scanner, page_language, prediction_source);
+      return ParseZipCode(scanner, page_language, pattern_source);
   }
 
   // Check for matches to both the name and the label.
   ParseNameLabelResult dependent_locality_result =
       ParseNameAndLabelForDependentLocality(scanner, page_language,
-                                            prediction_source);
+                                            pattern_source);
   if (dependent_locality_result == RESULT_MATCH_NAME_LABEL)
     return true;
   ParseNameLabelResult city_result =
-      ParseNameAndLabelForCity(scanner, page_language, prediction_source);
+      ParseNameAndLabelForCity(scanner, page_language, pattern_source);
   if (city_result == RESULT_MATCH_NAME_LABEL)
     return true;
   ParseNameLabelResult state_result =
-      ParseNameAndLabelForState(scanner, page_language, prediction_source);
+      ParseNameAndLabelForState(scanner, page_language, pattern_source);
   if (state_result == RESULT_MATCH_NAME_LABEL)
     return true;
   ParseNameLabelResult country_result =
-      ParseNameAndLabelForCountry(scanner, page_language, prediction_source);
+      ParseNameAndLabelForCountry(scanner, page_language, pattern_source);
   if (country_result == RESULT_MATCH_NAME_LABEL)
     return true;
   ParseNameLabelResult zip_result =
-      ParseNameAndLabelForZipCode(scanner, page_language, prediction_source);
+      ParseNameAndLabelForZipCode(scanner, page_language, pattern_source);
   if (zip_result == RESULT_MATCH_NAME_LABEL)
     return true;
 
@@ -641,7 +640,7 @@ bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
     if (country_result != RESULT_MATCH_NONE)
       return SetFieldAndAdvanceCursor(scanner, &country_);
     if (zip_result != RESULT_MATCH_NONE)
-      return ParseZipCode(scanner, page_language, prediction_source);
+      return ParseZipCode(scanner, page_language, pattern_source);
   }
 
   // If there is a clash between the country and the state, set the type of
@@ -671,7 +670,7 @@ bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
     if (country_result == result)
       return SetFieldAndAdvanceCursor(scanner, &country_);
     if (zip_result == result)
-      return ParseZipCode(scanner, page_language, prediction_source);
+      return ParseZipCode(scanner, page_language, pattern_source);
   }
 
   return false;
@@ -680,15 +679,15 @@ bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   if (zip_)
     return RESULT_MATCH_NONE;
 
   base::span<const MatchPatternRef> zip_code_patterns =
-      GetMatchPatterns("ZIP_CODE", page_language, prediction_source);
+      GetMatchPatterns("ZIP_CODE", page_language, pattern_source);
 
   base::span<const MatchPatternRef> four_digit_zip_code_patterns =
-      GetMatchPatterns("ZIP_4", page_language, prediction_source);
+      GetMatchPatterns("ZIP_4", page_language, pattern_source);
 
   ParseNameLabelResult result = ParseNameAndLabelSeparately(
       scanner, kZipCodeRe, kZipCodeMatchType, zip_code_patterns, &zip_,
@@ -698,12 +697,12 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
     return result;
 
   size_t saved_cursor = scanner->SaveCursor();
-  bool found_non_zip4 = ParseCity(scanner, page_language, prediction_source);
+  bool found_non_zip4 = ParseCity(scanner, page_language, pattern_source);
   if (found_non_zip4)
     city_ = nullptr;
   scanner->RewindTo(saved_cursor);
   if (!found_non_zip4) {
-    found_non_zip4 = ParseState(scanner, page_language, prediction_source);
+    found_non_zip4 = ParseState(scanner, page_language, pattern_source);
     if (found_non_zip4)
       state_ = nullptr;
     scanner->RewindTo(saved_cursor);
@@ -723,7 +722,7 @@ AddressField::ParseNameLabelResult
 AddressField::ParseNameAndLabelForDependentLocality(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   const bool is_enabled_dependent_locality_parsing =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableDependentLocalityParsing);
@@ -733,7 +732,7 @@ AddressField::ParseNameAndLabelForDependentLocality(
 
   base::span<const MatchPatternRef> dependent_locality_patterns =
       GetMatchPatterns("ADDRESS_HOME_DEPENDENT_LOCALITY", page_language,
-                       prediction_source);
+                       pattern_source);
   return ParseNameAndLabelSeparately(
       scanner, kDependentLocalityRe, kDependentLocalityMatchType,
       dependent_locality_patterns, &dependent_locality_,
@@ -743,12 +742,12 @@ AddressField::ParseNameAndLabelForDependentLocality(
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   if (city_)
     return RESULT_MATCH_NONE;
 
   base::span<const MatchPatternRef> city_patterns =
-      GetMatchPatterns("CITY", page_language, prediction_source);
+      GetMatchPatterns("CITY", page_language, pattern_source);
   return ParseNameAndLabelSeparately(scanner, kCityRe, kCityMatchType,
                                      city_patterns, &city_,
                                      {log_manager_, "kCityRe"});
@@ -757,12 +756,12 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   if (state_)
     return RESULT_MATCH_NONE;
 
   base::span<const MatchPatternRef> patterns_state =
-      GetMatchPatterns("STATE", page_language, prediction_source);
+      GetMatchPatterns("STATE", page_language, pattern_source);
   return ParseNameAndLabelSeparately(scanner, kStateRe, kStateMatchType,
                                      patterns_state, &state_,
                                      {log_manager_, "kStateRe"});
@@ -771,15 +770,15 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
-    PredictionSource prediction_source) {
+    PatternSource pattern_source) {
   if (country_)
     return RESULT_MATCH_NONE;
 
   base::span<const MatchPatternRef> country_patterns =
-      GetMatchPatterns("COUNTRY", page_language, prediction_source);
+      GetMatchPatterns("COUNTRY", page_language, pattern_source);
 
   base::span<const MatchPatternRef> country_location_patterns =
-      GetMatchPatterns("COUNTRY_LOCATION", page_language, prediction_source);
+      GetMatchPatterns("COUNTRY_LOCATION", page_language, pattern_source);
 
   ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
       scanner, kCountryRe,

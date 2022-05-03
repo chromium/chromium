@@ -15,22 +15,21 @@ namespace autofill {
 TravelField::~TravelField() = default;
 
 // static
-std::unique_ptr<FormField> TravelField::Parse(
-    AutofillScanner* scanner,
-    const LanguageCode& page_language,
-    PredictionSource prediction_source,
-    LogManager* log_manager) {
+std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
+                                              const LanguageCode& page_language,
+                                              PatternSource pattern_source,
+                                              LogManager* log_manager) {
   if (!scanner || scanner->IsEnd())
     return nullptr;
 
   base::span<const MatchPatternRef> passport_patterns =
-      GetMatchPatterns("PASSPORT", page_language, prediction_source);
+      GetMatchPatterns("PASSPORT", page_language, pattern_source);
   base::span<const MatchPatternRef> travel_origin_patterns =
-      GetMatchPatterns("TRAVEL_ORIGIN", page_language, prediction_source);
+      GetMatchPatterns("TRAVEL_ORIGIN", page_language, pattern_source);
   base::span<const MatchPatternRef> travel_destination_patterns =
-      GetMatchPatterns("TRAVEL_DESTINATION", page_language, prediction_source);
+      GetMatchPatterns("TRAVEL_DESTINATION", page_language, pattern_source);
   base::span<const MatchPatternRef> flight_patterns =
-      GetMatchPatterns("FLIGHT", page_language, prediction_source);
+      GetMatchPatterns("FLIGHT", page_language, pattern_source);
 
   auto travel_field = std::make_unique<TravelField>();
   if (ParseField(scanner, kPassportRe, passport_patterns,

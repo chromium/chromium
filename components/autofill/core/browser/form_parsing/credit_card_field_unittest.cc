@@ -88,8 +88,8 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("us")) override {
-    return CreditCardField::Parse(
-        scanner, page_language, PredictionSource::kDefaultHeuristics, nullptr);
+    return CreditCardField::Parse(scanner, page_language,
+                                  PatternSource::kDefault, nullptr);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.

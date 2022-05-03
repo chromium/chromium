@@ -44,9 +44,9 @@ class PhoneFieldTest : public testing::Test {
   static std::unique_ptr<PhoneField> Parse(AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    std::unique_ptr<FormField> field = PhoneField::Parse(
-        scanner, LanguageCode(""), PredictionSource::kDefaultHeuristics,
-        /*log_manager=*/nullptr);
+    std::unique_ptr<FormField> field =
+        PhoneField::Parse(scanner, LanguageCode(""), PatternSource::kDefault,
+                          /*log_manager=*/nullptr);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
   }

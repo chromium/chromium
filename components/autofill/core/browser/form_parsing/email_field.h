@@ -20,7 +20,7 @@ class EmailField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source,
+                                          PatternSource pattern_source,
                                           LogManager* log_manager);
   explicit EmailField(const AutofillField* field);
 

@@ -30,7 +30,7 @@ class CreditCardField : public FormField {
   ~CreditCardField() override;
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
-                                          PredictionSource prediction_source,
+                                          PatternSource pattern_source,
                                           LogManager* log_manager);
 
  protected:
@@ -50,7 +50,7 @@ class CreditCardField : public FormField {
   static bool LikelyCardYearSelectField(AutofillScanner* scanner,
                                         LogManager* log_manager,
                                         const LanguageCode& page_language,
-                                        PredictionSource prediction_source);
+                                        PatternSource pattern_source);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -63,14 +63,14 @@ class CreditCardField : public FormField {
   static bool IsGiftCardField(AutofillScanner* scanner,
                               LogManager* log_manager,
                               const LanguageCode& page_language,
-                              PredictionSource prediction_source);
+                              PatternSource pattern_source);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
   bool ParseExpirationDate(AutofillScanner* scanner,
                            LogManager* log_manager,
                            const LanguageCode& page_language,
-                           PredictionSource prediction_source);
+                           PatternSource pattern_source);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
