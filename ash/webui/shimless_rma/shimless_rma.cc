@@ -314,8 +314,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION_DESCRIPTION},
       {"wipeDevicePreserveDataLabel",
        IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION},
-      {"wipeDevicePreserveDataDescription",
-       IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION_DESCRIPTION},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
