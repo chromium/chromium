@@ -53,7 +53,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
