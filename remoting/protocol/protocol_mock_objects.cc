@@ -55,7 +55,8 @@ std::unique_ptr<base::ListValue> MockPairingRegistryDelegate::LoadAll() {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
   for (Pairings::const_iterator i = pairings_.begin(); i != pairings_.end();
        ++i) {
-    result->Append(i->second.ToValue());
+    result->GetList().Append(
+        base::Value::FromUniquePtrValue(i->second.ToValue()));
   }
   return result;
 }

@@ -274,7 +274,8 @@ void PairingRegistry::SanitizePairings(
         pairing.client_name(),
         pairing.client_id(),
         "");
-    sanitized_pairings->Append(sanitized_pairing.ToValue());
+    sanitized_pairings->GetList().Append(
+        base::Value::FromUniquePtrValue(sanitized_pairing.ToValue()));
   }
 
   std::move(callback).Run(std::move(sanitized_pairings));
