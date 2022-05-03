@@ -468,6 +468,36 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
             url::Origin::Create(GURL("https://d.test")));
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, NoReferrer) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  const net::test_server::HttpRequest* request =
+      register_response->http_request();
+  EXPECT_TRUE(request->headers.find("Referer") == request->headers.end());
+}
+
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImg_TriggerRegistered) {
   GURL page_url =
