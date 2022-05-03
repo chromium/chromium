@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/follow/follow_util.h"
+#import "ios/chrome/browser/follow/follow_util.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ntp/features.h"
@@ -16,8 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-FollowActionState GetFollowActionState(web::WebState* webState,
-                                       ChromeBrowserState* browserState) {
+FollowActionState GetFollowActionState(web::WebState* webState) {
   // This method should be called only if the feature flag has been enabled.
   DCHECK(IsWebChannelsEnabled());
 
@@ -25,6 +24,8 @@ FollowActionState GetFollowActionState(web::WebState* webState,
     return FollowActionStateHidden;
   }
   const GURL& URL = webState->GetLastCommittedURL();
+  ChromeBrowserState* browserState =
+      ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
   // Show the follow action when:
   // 1. The page url is valid;
   // 2. Users are not on NTP or Chrome internal pages;

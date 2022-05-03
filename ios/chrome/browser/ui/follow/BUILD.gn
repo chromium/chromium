@@ -67,25 +67,3 @@ source_set("first_follow_ui") {
     "//ui/base",
   ]
 }
-
-source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "follow_util.h",
-    "follow_util.mm",
-  ]
-  deps = [
-    ":enums",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/signin",
-    "//ios/web/public",
-    "//url",
-  ]
-}
-
-source_set("enums") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "follow_action_state.h" ]
-  deps = []
-}
