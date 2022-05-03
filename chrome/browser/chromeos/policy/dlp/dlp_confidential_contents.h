@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
+#include <algorithm>
 #include <list>
 #include <string>
 #include <vector>
@@ -76,6 +77,19 @@ class DlpConfidentialContents {
     return !(a == b);
   }
 
+  // Returns true if all the elements in |a| and |b| are equal (i.e. have the
+  // same url) and the same title, and false otherwise. Useful to detect changes
+  // in titles, even if the set of the confidential contents hasn't changed.
+  friend bool EqualWithTitles(const DlpConfidentialContents& a,
+                              const DlpConfidentialContents& b) {
+    return std::equal(
+        a.contents_.begin(), a.contents_.end(), b.contents_.begin(),
+        b.contents_.end(),
+        [](const DlpConfidentialContent& x, const DlpConfidentialContent& y) {
+          return x == y && x.title == y.title;
+        });
+  }
+
   // Returns a reference to the underlying content container.
   base::flat_set<DlpConfidentialContent>& GetContents();
 
@@ -101,7 +115,7 @@ class DlpConfidentialContents {
 
   // Adds all content stored in |other| to the underlying container, without
   // duplicates.
-  void UnionWith(const DlpConfidentialContents& other);
+  void InsertOrUpdate(const DlpConfidentialContents& other);
 
  private:
   base::flat_set<DlpConfidentialContent> contents_;

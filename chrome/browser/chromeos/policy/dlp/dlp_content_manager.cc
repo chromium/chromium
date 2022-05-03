@@ -876,7 +876,7 @@ bool DlpContentManager::LastReportedScreenShare::ShouldReportAndUpdate(
                      confidential_contents_.GetContents().end(),
                      confidential_contents.GetContents().begin(),
                      confidential_contents.GetContents().end())) {
-    confidential_contents_.UnionWith(confidential_contents);
+    confidential_contents_.InsertOrUpdate(confidential_contents);
     return true;
   }
   return false;

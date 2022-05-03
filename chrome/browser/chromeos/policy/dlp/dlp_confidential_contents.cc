@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -29,6 +30,12 @@ gfx::ImageSkia GetWindowIcon(aura::Window* window) {
   return image ? *image : gfx::ImageSkia();
 }
 
+GURL GetWithoutRef(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements);
+}
+
 }  // namespace
 
 // The maximum number of entries that can be kept in the
@@ -46,11 +53,13 @@ DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
     : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
       title(web_contents->GetTitle()),
-      url(web_contents->GetLastCommittedURL()) {}
+      url(GetWithoutRef(web_contents->GetLastCommittedURL())) {}
 
 DlpConfidentialContent::DlpConfidentialContent(aura::Window* window,
                                                const GURL& url)
-    : icon(GetWindowIcon(window)), title(window->GetTitle()), url(url) {}
+    : icon(GetWindowIcon(window)),
+      title(window->GetTitle()),
+      url(GetWithoutRef(url)) {}
 
 DlpConfidentialContent::DlpConfidentialContent(
     const DlpConfidentialContent& other) = default;
@@ -59,7 +68,7 @@ DlpConfidentialContent& DlpConfidentialContent::operator=(
 
 bool DlpConfidentialContent::operator==(
     const DlpConfidentialContent& other) const {
-  return url.EqualsIgnoringRef(other.url);
+  return url == other.url;
 }
 
 bool DlpConfidentialContent::operator!=(
@@ -139,8 +148,20 @@ bool DlpConfidentialContents::IsEmpty() const {
   return contents_.empty();
 }
 
-void DlpConfidentialContents::UnionWith(const DlpConfidentialContents& other) {
+void DlpConfidentialContents::InsertOrUpdate(
+    const DlpConfidentialContents& other) {
   contents_.insert(other.contents_.begin(), other.contents_.end());
+  for (auto other_content : other.contents_) {
+    auto it =
+        std::find_if(contents_.begin(), contents_.end(),
+                     [&other_content](const DlpConfidentialContent& content) {
+                       return content == other_content &&
+                              content.title != other_content.title;
+                     });
+    if (it != contents_.end()) {
+      *it = other_content;
+    }
+  }
 }
 
 DlpConfidentialContentsCache::Entry::Entry(
