@@ -10,7 +10,6 @@
 
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
@@ -29,7 +28,6 @@ class GURL;
 @protocol BrowserCommands <NSObject,
                            ActivityServiceCommands,
                            BrowserCoordinatorCommands,
-                           InfobarCommands,
                            NewTabPageCommands,
                            PageInfoCommands,
                            PopupMenuCommands,

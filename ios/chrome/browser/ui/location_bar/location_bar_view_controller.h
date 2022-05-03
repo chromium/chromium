@@ -17,7 +17,6 @@
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
-@protocol InfobarCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 
@@ -68,7 +67,6 @@
 @property(nonatomic, weak) id<ActivityServiceCommands,
                               ApplicationCommands,
                               BrowserCommands,
-                              InfobarCommands,
                               LoadQueryCommands,
                               OmniboxCommands>
     dispatcher;

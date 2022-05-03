@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"

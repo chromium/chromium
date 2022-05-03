@@ -192,9 +192,8 @@
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.badgeMediator.dispatcher =
-      static_cast<id<InfobarCommands, BrowserCoordinatorCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.badgeMediator.dispatcher = static_cast<id<BrowserCoordinatorCommands>>(
+      self.browser->GetCommandDispatcher());
   buttonFactory.delegate = self.badgeMediator;
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);

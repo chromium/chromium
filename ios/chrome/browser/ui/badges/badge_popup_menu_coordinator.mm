@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_item.h"
 #import "ios/chrome/browser/ui/badges/badges_histograms.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"

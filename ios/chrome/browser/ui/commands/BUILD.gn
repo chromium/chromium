@@ -21,7 +21,6 @@ source_set("commands") {
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
     "help_commands.h",
-    "infobar_commands.h",
     "lens_commands.h",
     "load_query_commands.h",
     "new_tab_page_commands.h",

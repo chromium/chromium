@@ -13,7 +13,6 @@
 @protocol BadgeItem;
 class Browser;
 @protocol BrowserCoordinatorCommands;
-@protocol InfobarCommands;
 
 // A mediator object that updates the consumer when the state of badges changes.
 @interface BadgeMediator : NSObject <BadgeDelegate>
@@ -25,8 +24,7 @@ class Browser;
 - (void)disconnect;
 
 // The dispatcher for badge related actions.
-@property(nonatomic, weak) id<InfobarCommands, BrowserCoordinatorCommands>
-    dispatcher;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands> dispatcher;
 
 // The consumer being set up by this mediator.  Setting to a new value updates
 // the new consumer.
