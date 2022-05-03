@@ -420,7 +420,6 @@ void VideoCaptureDeviceWin::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::AutoLock lock(lock_);
   if (state_ != kIdle)
     return;
 
@@ -535,13 +534,15 @@ void VideoCaptureDeviceWin::AllocateAndStart(
       params.requested_format.pixel_format,
       media::VideoPixelFormat::PIXEL_FORMAT_MAX);
 
-  client_->OnStarted();
-  state_ = kCapturing;
+  {
+    base::AutoLock lock(lock_);
+    client_->OnStarted();
+    state_ = kCapturing;
+  }
 }
 
 void VideoCaptureDeviceWin::StopAndDeAllocate() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::AutoLock lock(lock_);
   if (state_ != kCapturing)
     return;
 
@@ -556,8 +557,11 @@ void VideoCaptureDeviceWin::StopAndDeAllocate() {
   graph_builder_->Disconnect(output_capture_pin_.Get());
   graph_builder_->Disconnect(input_sink_pin_.Get());
 
-  client_.reset();
-  state_ = kIdle;
+  {
+    base::AutoLock lock(lock_);
+    client_.reset();
+    state_ = kIdle;
+  }
 }
 
 void VideoCaptureDeviceWin::TakePhoto(TakePhotoCallback callback) {
@@ -862,9 +866,11 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
                                           const VideoCaptureFormat& format,
                                           base::TimeDelta timestamp,
                                           bool flip_y) {
-  base::AutoLock lock(lock_);
-  if (state_ != kCapturing)
-    return;
+  {
+    base::AutoLock lock(lock_);
+    if (state_ != kCapturing)
+      return;
+  }
 
   if (first_ref_time_.is_null())
     first_ref_time_ = base::TimeTicks::Now();
