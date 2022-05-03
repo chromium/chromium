@@ -182,7 +182,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   WmMoveResizeHandler* AsWmMoveResizeHandler();
 
-  // Propagates the |min_size_| and |max_size_| to the ShellToplevel.
+  // Propagates the minimum size and maximum size to the ShellToplevel.
   void SetSizeConstraints();
 
   // If current state is not PlatformWindowState::kNormal, stores the current
@@ -236,10 +236,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Title of the ShellToplevel.
   std::u16string window_title_;
-
-  // Max and min sizes of the WaylandToplevelWindow window.
-  absl::optional<gfx::Size> min_size_;
-  absl::optional<gfx::Size> max_size_;
 
   wl::Object<zaura_surface> aura_surface_;
   // |gtk_surface1_| is the optional GTK surface that provides better

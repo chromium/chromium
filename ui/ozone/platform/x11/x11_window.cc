@@ -1396,11 +1396,17 @@ void X11Window::OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) {
 }
 
 absl::optional<gfx::Size> X11Window::GetMinimumSizeForXWindow() {
-  return platform_window_delegate_->GetMinimumSizeForWindow();
+  if (auto max_size = platform_window_delegate_->GetMinimumSizeForWindow())
+    return platform_window_delegate_->ConvertRectToPixels(gfx::Rect(*max_size))
+        .size();
+  return absl::nullopt;
 }
 
 absl::optional<gfx::Size> X11Window::GetMaximumSizeForXWindow() {
-  return platform_window_delegate_->GetMaximumSizeForWindow();
+  if (auto max_size = platform_window_delegate_->GetMaximumSizeForWindow())
+    return platform_window_delegate_->ConvertRectToPixels(gfx::Rect(*max_size))
+        .size();
+  return absl::nullopt;
 }
 
 SkPath X11Window::GetWindowMaskForXWindow() {

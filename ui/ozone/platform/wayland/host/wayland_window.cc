@@ -971,18 +971,24 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsPx(
     const gfx::Rect& bounds_px) {
   gfx::Rect adjusted_bounds_px = bounds_px;
   if (const auto min_size = delegate_->GetMinimumSizeForWindow()) {
-    if (min_size->width() > 0 && adjusted_bounds_px.width() < min_size->width())
-      adjusted_bounds_px.set_width(min_size->width());
-    if (min_size->height() > 0 &&
-        adjusted_bounds_px.height() < min_size->height())
-      adjusted_bounds_px.set_height(min_size->height());
+    gfx::Size min_size_in_px =
+        delegate()->ConvertRectToPixels(gfx::Rect(*min_size)).size();
+    if (min_size_in_px.width() > 0 &&
+        adjusted_bounds_px.width() < min_size_in_px.width())
+      adjusted_bounds_px.set_width(min_size_in_px.width());
+    if (min_size_in_px.height() > 0 &&
+        adjusted_bounds_px.height() < min_size_in_px.height())
+      adjusted_bounds_px.set_height(min_size_in_px.height());
   }
   if (const auto max_size = delegate_->GetMaximumSizeForWindow()) {
-    if (max_size->width() > 0 && adjusted_bounds_px.width() > max_size->width())
-      adjusted_bounds_px.set_width(max_size->width());
-    if (max_size->height() > 0 &&
-        adjusted_bounds_px.height() > max_size->height())
-      adjusted_bounds_px.set_height(max_size->height());
+    gfx::Size max_size_in_px =
+        delegate()->ConvertRectToPixels(gfx::Rect(*max_size)).size();
+    if (max_size_in_px.width() > 0 &&
+        adjusted_bounds_px.width() > max_size_in_px.width())
+      adjusted_bounds_px.set_width(max_size_in_px.width());
+    if (max_size_in_px.height() > 0 &&
+        adjusted_bounds_px.height() > max_size_in_px.height())
+      adjusted_bounds_px.set_height(max_size_in_px.height());
   }
   return adjusted_bounds_px;
 }

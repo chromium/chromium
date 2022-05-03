@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   virtual void OnActivationChanged(bool active) = 0;
 
-  // Requests size constraints for the PlatformWindow.
+  // Requests size constraints for the PlatformWindow in DIP.
   virtual absl::optional<gfx::Size> GetMinimumSizeForWindow();
   virtual absl::optional<gfx::Size> GetMaximumSizeForWindow();
 

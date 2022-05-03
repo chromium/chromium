@@ -845,14 +845,12 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
 
 absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
-  return ToPixelRect(gfx::Rect(native_widget_delegate_->GetMinimumSize()))
-      .size();
+  return native_widget_delegate_->GetMinimumSize();
 }
 
 absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
-  return ToPixelRect(gfx::Rect(native_widget_delegate_->GetMaximumSize()))
-      .size();
+  return native_widget_delegate_->GetMaximumSize();
 }
 
 SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
