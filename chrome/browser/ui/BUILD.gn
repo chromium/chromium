@@ -124,6 +124,8 @@ static_library("ui") {
     "login/login_tab_helper.h",
     "managed_ui.cc",
     "managed_ui.h",
+    "monogram_utils.cc",
+    "monogram_utils.h",
     "omnibox/omnibox_pedal_implementations.cc",
     "omnibox/omnibox_pedal_implementations.h",
     "page_info/chrome_page_info_delegate.cc",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FAVICON_FAVICON_UTILS_H_
 
 #include "components/favicon/content/content_favicon_driver.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
 class WebContents;

@@ -58,6 +58,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
 
   // Updates the image for the account in the corresponding ImageView.
   void OnAccountImageFetched(views::ImageView* image_view,
+                             const std::u16string& account_name,
                              const gfx::Image& image,
                              const image_fetcher::RequestMetadata& metadata);
 

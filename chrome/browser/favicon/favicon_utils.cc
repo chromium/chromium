@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -41,53 +42,6 @@ constexpr SkColor kFallbackIconLetterColor = SK_ColorWHITE;
 const double kDesaturateHue = -1.0;
 const double kDesaturateSaturation = 0.0;
 const double kDesaturateLightness = 0.6;
-
-// Draws a circle of a given |size| and |offset| in the |canvas| and fills it
-// with |background_color|.
-void DrawCircleInCanvas(gfx::Canvas* canvas,
-                        int size,
-                        int offset,
-                        SkColor background_color) {
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(background_color);
-  int corner_radius = size / 2;
-  canvas->DrawRoundRect(gfx::Rect(offset, offset, size, size), corner_radius,
-                        flags);
-}
-
-// Will paint the appropriate letter in the center of specified |canvas| of
-// given |size|.
-void DrawFallbackIconLetter(const GURL& icon_url,
-                            int size,
-                            int offset,
-                            gfx::Canvas* canvas) {
-  // Get the appropriate letter to draw, then eventually draw it.
-  std::u16string icon_text = favicon::GetFallbackIconText(icon_url);
-  if (icon_text.empty())
-    return;
-
-  const double kDefaultFontSizeRatio = 0.5;
-  int font_size = static_cast<int>(size * kDefaultFontSizeRatio);
-  if (font_size <= 0)
-    return;
-
-  gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
-
-#if BUILDFLAG(IS_WIN)
-  font_weight = gfx::Font::Weight::SEMIBOLD;
-#endif
-
-  // TODO(crbug.com/853780): Adjust the text color according to the background
-  // color.
-  canvas->DrawStringRectWithFlags(
-      icon_text,
-      gfx::FontList({l10n_util::GetStringUTF8(IDS_NTP_FONT_FAMILY)},
-                    gfx::Font::NORMAL, font_size, font_weight),
-      kFallbackIconLetterColor, gfx::Rect(offset, offset, size, size),
-      gfx::Canvas::TEXT_ALIGN_CENTER);
-}
 
 // Returns a color based on the hash of |icon_url|'s origin.
 SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
@@ -123,15 +77,15 @@ SkBitmap GenerateMonogramFavicon(GURL url, int icon_size, int circle_size) {
   bitmap.allocN32Pixels(icon_size, icon_size, false);
   cc::SkiaPaintCanvas paint_canvas(bitmap);
   gfx::Canvas canvas(&paint_canvas, 1.f);
-  canvas.DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
+
+  std::u16string monogram = favicon::GetFallbackIconText(url);
   SkColor fallback_color =
       color_utils::BlendForMinContrast(ComputeBackgroundColorForUrl(url),
                                        kFallbackIconLetterColor)
           .color;
 
-  int offset = (icon_size - circle_size) / 2;
-  DrawCircleInCanvas(&canvas, circle_size, offset, fallback_color);
-  DrawFallbackIconLetter(url, circle_size, offset, &canvas);
+  monogram::DrawMonogramInCanvas(&canvas, icon_size, circle_size, monogram,
+                                 kFallbackIconLetterColor, fallback_color);
   return bitmap;
 }
 

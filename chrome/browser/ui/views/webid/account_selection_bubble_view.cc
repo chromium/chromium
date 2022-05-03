@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 
+#include "base/i18n/case_conversion.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/platform_locale_settings.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -61,6 +66,21 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not implemented. This is a feature that sites use for"
             "Federated Sign-In, for which we do not have an Enterprise policy."
         })");
+
+// A CanvasImageSource that fills a gray circle with a monogram.
+class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  LetterAvatarImageSkiaSource(const std::u16string& letter, int size)
+      : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
+
+  void Draw(gfx::Canvas* canvas) override {
+    monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
+                                   letter_, SK_ColorWHITE, SK_ColorGRAY);
+  }
+
+ private:
+  const std::u16string letter_;
+};
 
 }  // namespace
 
@@ -218,16 +238,18 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   image_view->SetImageSize({kDesiredAvatarSize, kDesiredAvatarSize});
   image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
                                            kImageFetcherUmaClient);
+  std::u16string account_name16 = base::UTF8ToUTF16(account.name);
   image_fetcher_->FetchImage(
       account.picture,
       base::BindOnce(&AccountSelectionBubbleView::OnAccountImageFetched,
-                     weak_ptr_factory_.GetWeakPtr(), image_view.get()),
+                     weak_ptr_factory_.GetWeakPtr(), image_view.get(),
+                     account_name16),
       std::move(params));
   if (should_hover) {
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&AccountSelectionBubbleView::OnSingleAccountPicked,
                             weak_ptr_factory_.GetWeakPtr(), account),
-        std::move(image_view), base::UTF8ToUTF16(account.name),
+        std::move(image_view), account_name16,
         base::UTF8ToUTF16(account.email));
     row->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     return row;
@@ -256,10 +278,23 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
 
 void AccountSelectionBubbleView::OnAccountImageFetched(
     views::ImageView* image_view,
+    const std::u16string& account_name,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  // TODO(npm): transform the image into a circle.
-  image_view->SetImage(ui::ImageModel::FromImage(image));
+  ui::ImageModel avatar;
+  if (image.IsEmpty()) {
+    std::u16string letter = account_name;
+    if (letter.length() > 0)
+      letter = base::i18n::ToUpper(account_name.substr(0, 1));
+    avatar = ui::ImageModel::FromImageSkia(
+        gfx::CanvasImageSource::MakeImageSkia<LetterAvatarImageSkiaSource>(
+            letter, kDesiredAvatarSize));
+  } else {
+    avatar = ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+        image, /*is_rectangle=*/true, kDesiredAvatarSize, kDesiredAvatarSize,
+        profiles::SHAPE_CIRCLE));
+  }
+  image_view->SetImage(avatar);
 }
 
 void AccountSelectionBubbleView::OnLinkClicked(const GURL& gurl) {
