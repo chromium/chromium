@@ -5684,7 +5684,7 @@
   {
     "name": "terminal-tmux-integration",
     "owners": [ "lxj", "easy", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "theme-refactor-android",
