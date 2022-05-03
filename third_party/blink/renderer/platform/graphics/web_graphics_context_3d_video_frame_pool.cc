@@ -132,6 +132,13 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!raster_context_provider)
     return false;
 
+#if BUILDFLAG(IS_WIN)
+  // CopyRGBATextureToVideoFrame below needs D3D shared images on Windows so
+  // early out before creating the GMB since it's going to fail anyway.
+  if (!context_provider->GetCapabilities().shared_image_d3d)
+    return false;
+#endif  // BUILDFLAG(IS_WIN)
+
   scoped_refptr<media::VideoFrame> dst_frame =
       pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
   if (!dst_frame)

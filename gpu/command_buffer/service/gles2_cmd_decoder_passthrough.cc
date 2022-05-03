@@ -412,8 +412,8 @@ PassthroughResources::SharedImageData::SharedImageData(
     SharedImageData&& other) = default;
 PassthroughResources::SharedImageData::~SharedImageData() = default;
 
-PassthroughResources::SharedImageData& PassthroughResources::SharedImageData::
-operator=(SharedImageData&& other) {
+PassthroughResources::SharedImageData&
+PassthroughResources::SharedImageData::operator=(SharedImageData&& other) {
   scoped_access_ = std::move(other.scoped_access_);
   representation_ = std::move(other.representation_);
   return *this;
@@ -1689,7 +1689,11 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
   caps.gpu_vsync = surface_->SupportsGpuVSync();
 #if BUILDFLAG(IS_WIN)
+  caps.shared_image_d3d =
+      SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
+          group_->gpu_preferences());
   caps.shared_image_swap_chain =
+      caps.shared_image_d3d &&
       SharedImageBackingFactoryD3D::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
@@ -3111,11 +3115,12 @@ bool GLES2DecoderPassthroughImpl::CheckErrorCallbackState() {
   return had_error_;
 }
 
-#define GLES2_CMD_OP(name)                                               \
-  {                                                                      \
-      &GLES2DecoderPassthroughImpl::Handle##name, cmds::name::kArgFlags, \
-      cmds::name::cmd_flags,                                             \
-      sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1,               \
+#define GLES2_CMD_OP(name)                                 \
+  {                                                        \
+      &GLES2DecoderPassthroughImpl::Handle##name,          \
+      cmds::name::kArgFlags,                               \
+      cmds::name::cmd_flags,                               \
+      sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1, \
   }, /* NOLINT */
 
 constexpr GLES2DecoderPassthroughImpl::CommandInfo

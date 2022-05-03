@@ -51,6 +51,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -1103,7 +1104,8 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
     unpack_premultiply_alpha_needed = GL_TRUE;
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat, gfx::Size, gfx::ColorSpace) {
+                           viz::ResourceFormat, const gfx::Size&,
+                           const gfx::ColorSpace&) {
     GLuint src_texture = dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
         src_mailbox.mailbox.name);
     dst_gl->BeginSharedImageAccessDirectCHROMIUM(
@@ -1155,14 +1157,34 @@ void DrawingBuffer::CopyToVideoFrame(
   const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
                                                  ? kTopLeft_GrSurfaceOrigin
                                                  : kBottomLeft_GrSurfaceOrigin;
-  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat src_format,
-                           const gfx::Size& src_size,
-                           const gfx::ColorSpace src_color_space) {
-    frame_pool->CopyRGBATextureToVideoFrame(
-        src_format, src_size, src_color_space, src_surface_origin, src_mailbox,
-        dst_color_space, std::move(callback));
-  };
+  // Split the callback so that one can be consumed by the copy if it succeeds,
+  // and the other can be used to restore the original callback reference.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  // Restore the original callback; we will reset it below if the copy succeeds.
+  callback = std::move(split_callback.first);
+
+  // Frame pool copy callback that wraps the original (split) callback.
+  auto frame_pool_callback = base::BindOnce(
+      [](WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback,
+         scoped_refptr<media::VideoFrame> video_frame) {
+        // Only run callback if copy succeeds, otherwise caller will handle
+        // failure e.g. HTMLCanvasElement fallback to static bitmap image copy.
+        if (video_frame)
+          std::move(callback).Run(std::move(video_frame));
+      },
+      std::move(split_callback.second));
+
+  auto copy_function =
+      [&](const gpu::MailboxHolder& src_mailbox, viz::ResourceFormat src_format,
+          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
+        if (frame_pool->CopyRGBATextureToVideoFrame(
+                src_format, src_size, src_color_space, src_surface_origin,
+                src_mailbox, dst_color_space, std::move(frame_pool_callback))) {
+          // This method indicates success by consuming the callback argument
+          // so do that if the copy has consumed the wrapped split callback.
+          callback.Reset();
+        }
+      };
   // Ensure that `frame_pool` has not experienced a context loss.
   // https://crbug.com/1269230
   auto* raster_interface = frame_pool->GetRasterInterface();

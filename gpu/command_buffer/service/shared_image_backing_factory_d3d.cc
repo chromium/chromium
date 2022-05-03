@@ -14,7 +14,9 @@
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
 
@@ -174,6 +176,18 @@ SharedImageBackingFactoryD3D::SwapChainBackings::SwapChainBackings(
 SharedImageBackingFactoryD3D::SwapChainBackings&
 SharedImageBackingFactoryD3D::SwapChainBackings::operator=(
     SharedImageBackingFactoryD3D::SwapChainBackings&&) = default;
+
+// static
+bool SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
+    const GpuPreferences& gpu_preferences) {
+  // Only supported for passthrough command decoder and Skia-GL.
+  const bool using_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
+                                 gl::PassthroughCommandDecoderSupported();
+  const bool is_skia_gl = gpu_preferences.gr_context_type == GrContextType::kGL;
+  // D3D11 device will be null if ANGLE is using the D3D9 backend.
+  const bool using_d3d11 = gl::QueryD3D11DeviceObjectFromANGLE() != nullptr;
+  return using_passthrough && is_skia_gl && using_d3d11;
+}
 
 // static
 bool SharedImageBackingFactoryD3D::IsSwapChainSupported() {

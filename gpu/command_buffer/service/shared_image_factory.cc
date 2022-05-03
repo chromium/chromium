@@ -304,16 +304,11 @@ SharedImageFactory::SharedImageFactory(
   }
 
 #if BUILDFLAG(IS_WIN)
-  // Only supported for passthrough command decoder and Skia-GL.
-  const bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                               gles2::PassthroughCommandDecoderSupported();
-  const bool is_skia_gl = gr_context_type_ == GrContextType::kGL;
-  // D3D11 device will be null if ANGLE is using the D3D9 backend.
-  // TODO(sunnyps): Should we get the device from SharedContextState instead?
-  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  if (use_passthrough && is_skia_gl && d3d11_device) {
+  if (SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
+          gpu_preferences)) {
+    // TODO(sunnyps): Should we get the device from SharedContextState instead?
     auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
-        std::move(d3d11_device),
+        gl::QueryD3D11DeviceObjectFromANGLE(),
         shared_image_manager_->dxgi_shared_handle_manager());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));

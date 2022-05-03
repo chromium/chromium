@@ -40,6 +40,10 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
 
   ~SharedImageBackingFactoryD3D() override;
 
+  // Returns true if D3D shared images are supported and this factory should be
+  // used. Generally this means Skia-GL, passthrough decoder, and ANGLE-D3D11.
+  static bool IsD3DSharedImageSupported(const GpuPreferences& gpu_preferences);
+
   // Returns true if DXGI swap chain shared images for overlays are supported.
   static bool IsSwapChainSupported();
 

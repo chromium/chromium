@@ -455,6 +455,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     gpu::SyncToken receive_sync_token;
   };
 
+  // CopyFunction(const gpu::MailboxHolder&, viz::ResourceFormat,
+  //              const gfx::Size&, const gfx::ColorSpace&)
   template <typename CopyFunction>
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               SourceDrawingBuffer src_buffer,
