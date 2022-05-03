@@ -4,8 +4,6 @@
 
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  forDebuggingOnly.reportAdAuctionWin(
-    auctionConfig.sellerSignals.reportTo + '_debug_win_report');
   return bid;
 }
 
