@@ -491,6 +491,24 @@ TEST(FieldFormatterTest, FormatExpressionWithRegexpReplacement) {
   EXPECT_EQ("rABrrrrr", result);
 }
 
+TEST(FieldFormatterTest, FormatExpressionWithRegexpReplacementCapturingGroups) {
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* chunk = value_expression.add_chunk();
+  chunk->set_text("John Doe");
+  auto* group_replacement = chunk->add_regexp_replacements();
+  group_replacement->mutable_text_filter()->set_re2("(\\w+)\\s(\\w+)");
+  group_replacement->set_replacement("\\2 \\1");
+
+  EXPECT_EQ(ACTION_APPLIED,
+            FormatExpression(value_expression,
+                             /* mappings= */ base::flat_map<Key, std::string>(),
+                             /* quote_meta= */ false, &result)
+                .proto_status());
+  EXPECT_EQ("Doe John", result);
+}
+
 TEST(FieldFormatterTest, FormatExpressionWithInvalidRegexpReplacement) {
   base::flat_map<Key, std::string> mappings = {{Key(1), "AA"}};
   std::string result;
@@ -499,11 +517,11 @@ TEST(FieldFormatterTest, FormatExpressionWithInvalidRegexpReplacement) {
   auto* chunk = value_expression.add_chunk();
   // AA -> ?
   chunk->set_key(1);
-  auto* case_insensitive_local = chunk->add_regexp_replacements();
-  case_insensitive_local->mutable_text_filter()->set_re2("^*");
-  case_insensitive_local->mutable_text_filter()->set_case_sensitive(false);
-  case_insensitive_local->set_global(false);
-  case_insensitive_local->set_replacement("");
+  auto* invalid_replacement = chunk->add_regexp_replacements();
+  invalid_replacement->mutable_text_filter()->set_re2("^*");
+  invalid_replacement->mutable_text_filter()->set_case_sensitive(false);
+  invalid_replacement->set_global(false);
+  invalid_replacement->set_replacement("");
 
   EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
                                              /* quote_meta= */ false, &result)
