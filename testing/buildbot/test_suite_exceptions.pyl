@@ -475,6 +475,14 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
+      'linux_layout_tests_layout_ng_disabled': {
+        'args': [
+          '--flag-specific=disable-layout-ng',
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
       # TODO (crbug.com/1254971) Re-enable once fixed
       'mac-osxbeta-rel': {
         'experiment_percentage': 0,

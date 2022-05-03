@@ -6860,6 +6860,21 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'linux_layout_tests_layout_ng_disabled': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'blink_tests',
+        ],
+        'swarming': {
+          'hard_timeout': 900,
+        },
+        'test_suites': {
+          'gtest_tests': 'layout_ng_gtests',
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'linux_optional_gpu_tests_rel': {
         'os_type': 'linux',
         'browser_config': 'release',
