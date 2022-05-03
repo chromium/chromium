@@ -813,6 +813,11 @@ bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
 // through a cross-origin frame. (A->B->A embedding)
 bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
   const Frame* frame = navigator.DomWindow()->GetFrame();
+
+  // Fenced Frames block all permissions, so we shouldn't end up here because
+  // the policy is checked before this method is called.
+  DCHECK(!frame->IsInFencedFrameTree());
+
   // Get the origin of the top-level document
   const SecurityOrigin* top_origin =
       frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
