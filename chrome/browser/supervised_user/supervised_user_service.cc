@@ -206,20 +206,7 @@ std::string SupervisedUserService::GetExtensionRequestId(
 }
 
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
-  std::string email =
-      profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // |GetActiveUser()| can return null in unit tests.
-  if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    email = ash::ChromeUserManager::Get()
-                ->GetSupervisedUserManager()
-                ->GetManagerDisplayEmail(user_manager::UserManager::Get()
-                                             ->GetActiveUser()
-                                             ->GetAccountId()
-                                             .GetUserEmail());
-  }
-#endif
-  return email;
+  return profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
 }
 
 std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
@@ -230,20 +217,6 @@ std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
 std::string SupervisedUserService::GetCustodianName() const {
   std::string name =
       profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianName);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1218633): Check if additional work is needed for
-  // extensions in LaCrOS.
-  // |GetActiveUser()| can return null in unit tests.
-  if (name.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    name = base::UTF16ToUTF8(
-        chromeos::ChromeUserManager::Get()
-            ->GetSupervisedUserManager()
-            ->GetManagerDisplayName(user_manager::UserManager::Get()
-                                        ->GetActiveUser()
-                                        ->GetAccountId()
-                                        .GetUserEmail()));
-  }
-#endif
   return name.empty() ? GetCustodianEmailAddress() : name;
 }
 
