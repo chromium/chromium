@@ -618,19 +618,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testFragmentWhenClickingOnPrivacyLink() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
-        mAccountManagerTestRule.addAccount(
-                CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
-        launchActivityWithFragment();
-
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnPrivacyLink());
-
-        verify(mFirstRunPageDelegateMock).showInfoPage(R.string.google_privacy_policy_url);
-    }
-
-    @Test
-    @MediumTest
     public void testFragmentWhenClickingOnUmaDialogLink() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
@@ -1045,10 +1032,6 @@ public class SigninFirstRunFragmentTest {
 
     private ViewAction clickOnTosLink() {
         return clickOnFooterLink(0);
-    }
-
-    private ViewAction clickOnPrivacyLink() {
-        return clickOnFooterLink(1);
     }
 
     private ViewAction clickOnFooterLink(int spanIndex) {
