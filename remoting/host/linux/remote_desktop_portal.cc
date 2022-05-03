@@ -98,7 +98,7 @@ void RemoteDesktopPortal::Start() {
   // screencast portal to go into either failed/succeeded state before stopping
   // our loop.
   while (context_ && screencast_portal_status_ == RequestResponse::kUnknown) {
-    g_main_context_iteration(context_, /*may_block=*/false);
+    g_main_context_iteration(context_, /*may_block=*/true);
   }
   if (context_) {
     g_main_context_pop_thread_default(context_);
