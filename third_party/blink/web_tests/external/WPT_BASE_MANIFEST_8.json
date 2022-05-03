@@ -112287,6 +112287,32 @@
        {}
       ]
      ],
+     "stretch-flex-item-checkbox-input.html": [
+      "896905d5e988eb574e69c40e8b93feec689c2485",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/stretch-flex-item-checkbox-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "stretch-flex-item-radio-input.html": [
+      "bf8a08e703f2df516b45b32552e0ce2141039f30",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/stretch-flex-item-radio-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "stretch-input-in-column.html": [
       "4136c45d17a6bf946a4f788d95458c04ac6c6a6d",
       [
@@ -124585,6 +124611,32 @@
        {}
       ]
      ],
+     "stretch-grid-item-checkbox-input.html": [
+      "c6a34a8288db1e034dfba0856ef0e4f9ec16d8f8",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/stretch-grid-item-checkbox-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "stretch-grid-item-radio-input.html": [
+      "9ae9d7be040fe69a6b503b9c51b7d1e97ab1827a",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/stretch-grid-item-radio-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "subgrid": {
       "abs-pos-001.html": [
        "e524ec2d767c043516546733411d7e25e6eff05b",
@@ -125003,7 +125055,7 @@
        ]
       ],
       "parent-repeat-auto-fit-001.html": [
-       "12010c32f29c67222861e8a3e1f2bc20e650af1a",
+       "8ecbccbea64320054f940d9c2e2d31dd028daa14",
        [
         null,
         [
@@ -125016,7 +125068,7 @@
        ]
       ],
       "parent-repeat-auto-fit-002.html": [
-       "d46f59b99f557fb424ff0a7ab2a4962de23023c1",
+       "b113f47a0b2e823053408433f7f40833a27201f3",
        [
         null,
         [
@@ -125191,58 +125243,6 @@
         [
          [
           "/css/css-grid/subgrid/subgrid-item-block-size-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "subgrid-mbp-overflow-001.html": [
-       "a9aec76a9f027dcd1908a383e1573f7a110e67ae",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/subgrid/subgrid-mbp-overflow-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "subgrid-mbp-overflow-002.html": [
-       "1bd1fa67bfc53c3b7637fd3bc4bf98b8aa2403c5",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/subgrid/subgrid-mbp-overflow-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "subgrid-mbp-overflow-003.html": [
-       "45afcb56cbd2beb4d3a6afdbfc9856686526f596",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/subgrid/subgrid-mbp-overflow-003-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "subgrid-mbp-overflow-004.html": [
-       "e9a446bc5bfef4e4b6d3cf837e0758788378cbac",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/subgrid/subgrid-mbp-overflow-004-ref.html",
           "=="
          ]
         ],
@@ -265580,6 +265580,14 @@
       "234ecd4e84f22100aa023b152e56e38399dda8a2",
       []
      ],
+     "stretch-flex-item-checkbox-input-ref.html": [
+      "eda83f2d1d575ab6f45e99146a3b6d3f13b3a20d",
+      []
+     ],
+     "stretch-flex-item-radio-input-ref.html": [
+      "7ba10710b70fa15d03c5666570efadceeb6e93ae",
+      []
+     ],
      "support": {
       "100x100-blue.png": [
        "f578ae72533c7746c8a4d2f6eef32a8137ee1f4b",
@@ -274584,13 +274592,21 @@
        []
       ]
      },
+     "stretch-grid-item-checkbox-input-ref.html": [
+      "6a75b0fcfb985a932c3cad3e982af38cba8047dd",
+      []
+     ],
+     "stretch-grid-item-radio-input-ref.html": [
+      "401a2bfc72d354d9ea3e1d11d5b09649cc4fce00",
+      []
+     ],
      "subgrid": {
       "abs-pos-001-ref.html": [
        "fe316d5d3bf91110b9a2bc2ed7d26a4158868edf",
        []
       ],
       "abs-pos-002-ref.html": [
-       "1354260d50be155f18bed7f924143800c69f6b51",
+       "69e071c758b65724d49af23ecd7d3d77d1970e3c",
        []
       ],
       "auto-track-sizing-001-ref.html": [
@@ -274755,18 +274771,6 @@
       ],
       "subgrid-item-block-size-001-ref.html": [
        "d264a3455a6c580976d2519ab4e0eb206b1164bf",
-       []
-      ],
-      "subgrid-mbp-overflow-001-ref.html": [
-       "30f4bf7a969527eca2963bdd2f62d8749bb5000f",
-       []
-      ],
-      "subgrid-mbp-overflow-003-ref.html": [
-       "d771427f6e5adff7304c892bfc0990cba51d923a",
-       []
-      ],
-      "subgrid-mbp-overflow-004-ref.html": [
-       "5188a3c9fbf98f3730dd9195bbbf2cb56ab1aa90",
        []
       ],
       "subgrid-stretch-ref.html": [
