@@ -682,9 +682,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       WGPUBuffer buffer = procs_.deviceCreateBuffer(device_, &buffer_desc);
 
       // Read back the Skia image contents into the staging buffer.
-      // TODO(crbug.com/dawn/1400) Change to buffer_size to WGPU_WHOLE_MAP_SIZE
-      // after dawn side update.
-      void* dst_pointer = procs_.bufferGetMappedRange(buffer, 0, buffer_size);
+      void* dst_pointer =
+          procs_.bufferGetMappedRange(buffer, 0, WGPU_WHOLE_MAP_SIZE);
       DCHECK(dst_pointer);
       if (!sk_image->readPixels(shared_context_state_->gr_context(),
                                 sk_image->imageInfo(), dst_pointer,
@@ -842,10 +841,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         procs_.bufferRelease(buffer);
         return false;
       }
-      // TODO(crbug.com/dawn/1400) Change to buffer_size to WGPU_WHOLE_MAP_SIZE
-      // after dawn side update.
       const void* data =
-          procs_.bufferGetConstMappedRange(buffer, 0, buffer_size);
+          procs_.bufferGetConstMappedRange(buffer, 0, WGPU_WHOLE_MAP_SIZE);
       DCHECK(data);
       surface->writePixels(SkPixmap(surface->imageInfo(), data, bytes_per_row),
                            /*x*/ 0, /*y*/ 0);
