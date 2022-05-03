@@ -31,21 +31,26 @@ class LoadingModalDialogMediator
     private ModalDialogManager mDialogManager;
     private PropertyModel mModel;
 
-    /**
-     * Tracks whether the Dialog should be displayed when {@link #showDialogImmediately()} is run.
-     * Android doesn't always cancel a Runnable when requested, meaning that the Dialog could be
-     * hidden before it even has a chance to be shown.
-     */
-    private boolean mShouldShow;
-    private Long mShownAtMs;
+    private long mShownAtMs;
+
+    private @LoadingModalDialogCoordinator.State int mState;
 
     /** ModalDialogProperties.Controller implementation */
     @Override
-    public void onClick(PropertyModel model, @ButtonType int buttonType) {}
+    public void onClick(PropertyModel model, @ButtonType int buttonType) {
+        // TODO(crbug.com/1311674): Dismiss as follows after button is added
+        // dismissDialogImmediately(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+    }
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mDialogManager.removeObserver(this);
+        mHandler.removeCallbacksAndMessages(null);
+        if (dismissalCause != DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED) {
+            mState = LoadingModalDialogCoordinator.State.CANCELLED;
+        } else {
+            mState = LoadingModalDialogCoordinator.State.FINISHED;
+        }
     }
 
     /**
@@ -60,12 +65,14 @@ class LoadingModalDialogMediator
     @Override
     public void onDialogAdded(PropertyModel model) {
         if (model != mModel) return;
+        mState = LoadingModalDialogCoordinator.State.LOADING_SHOWN;
         mShownAtMs = Long.valueOf(SystemClock.elapsedRealtime());
     }
 
     LoadingModalDialogMediator(ObservableSupplier<ModalDialogManager> dialogManagerSupplier) {
         assert dialogManagerSupplier != null;
         mDialogManagerSupplier = dialogManagerSupplier;
+        mState = LoadingModalDialogCoordinator.State.READY;
     }
 
     /**
@@ -76,14 +83,14 @@ class LoadingModalDialogMediator
      *
      */
     void showDialog(PropertyModel model) {
-        assert mModel == null : "dialog is already visible or pending";
+        assert mState == LoadingModalDialogCoordinator.State.READY;
 
         ModalDialogManager dialogManager = mDialogManagerSupplier.get();
         if (dialogManager == null) return;
 
         mDialogManager = dialogManager;
         mModel = model;
-        mShouldShow = true;
+        mState = LoadingModalDialogCoordinator.State.LOADING_DELAYED;
         mHandler.postDelayed(this::showDialogImmediately, SHOW_DELAY_TIME_MS);
     }
 
@@ -91,41 +98,58 @@ class LoadingModalDialogMediator
      * Dismisses the currently visible dialog or cancelling the pending dialog if it is not visible
      * yet. If dialog is already visible for at least {@link #MINIMUM_SHOW_TIME_MS}, it will be
      * dismissed immediately. Otherwise it will be dismissed after being visible for that period of
-     * time.
-     *
-     * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
-     *                       dismissed.
+     * time. This method should be called when the loading finishes.
      */
-    void dismissDialog(@DialogDismissalCause int dismissalCause) {
-        if (mModel == null) return;
-        mShouldShow = false;
+    void dismissDialog() {
+        if (mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED
+                && mState != LoadingModalDialogCoordinator.State.LOADING_SHOWN) {
+            return;
+        }
 
         mHandler.removeCallbacksAndMessages(null);
 
         final long currentTimeMs = SystemClock.elapsedRealtime();
-        System.out.println("currentTimeMs = " + currentTimeMs);
-
-        if (mShownAtMs != null && mShownAtMs.longValue() + MINIMUM_SHOW_TIME_MS > currentTimeMs) {
+        if (mState == LoadingModalDialogCoordinator.State.LOADING_SHOWN
+                && mShownAtMs + MINIMUM_SHOW_TIME_MS > currentTimeMs) {
             // Dialog dismiss should be postponed to prevent UI flicker.
-            Runnable dismissRunnable = () -> dismissDialogImmediately(dismissalCause);
+            mState = LoadingModalDialogCoordinator.State.FINISHED_SHOWN;
+            Runnable dismissRunnable =
+                    () -> dismissDialogImmediately(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
             mHandler.postDelayed(
-                    dismissRunnable, mShownAtMs.longValue() + MINIMUM_SHOW_TIME_MS - currentTimeMs);
+                    dismissRunnable, mShownAtMs + MINIMUM_SHOW_TIME_MS - currentTimeMs);
         } else {
             // Dialog is not yet shown or has been visible long enough.
-            dismissDialogImmediately(dismissalCause);
+            dismissDialogImmediately(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
         }
+    }
+
+    /**
+     * Indicates the current dialog state.
+     */
+    @LoadingModalDialogCoordinator.State
+    int getState() {
+        return mState;
     }
 
     /** Immediately shows the dialog. */
     private void showDialogImmediately() {
-        if (!mShouldShow) return;
+        if (mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED) return;
         mDialogManager.addObserver(this);
         mDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
-    /** Immediately dismisses the dialog. */
+    /**
+     * Immediately dismisses the dialog.
+     *
+     * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
+     *                       dismissed.
+     */
     private void dismissDialogImmediately(@DialogDismissalCause int dismissalCause) {
-        if (mShouldShow) return;
+        if (mState != LoadingModalDialogCoordinator.State.FINISHED_SHOWN
+                && mState != LoadingModalDialogCoordinator.State.LOADING_SHOWN
+                && mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED) {
+            return;
+        }
         mDialogManager.dismissDialog(mModel, dismissalCause);
     }
 }

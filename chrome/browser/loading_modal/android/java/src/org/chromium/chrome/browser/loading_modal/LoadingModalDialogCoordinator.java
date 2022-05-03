@@ -8,13 +8,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Coordinator class for displaying the loading modal dialog.
@@ -23,6 +26,26 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class LoadingModalDialogCoordinator {
     private final LoadingModalDialogMediator mMediator;
     private final RelativeLayout mCustomView;
+
+    // Used to indicate the current loading dialog state.
+    @IntDef({State.READY, State.LOADING_DELAYED, State.LOADING_SHOWN, State.FINISHED_SHOWN,
+            State.FINISHED, State.CANCELLED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {
+        /** Loading is not started, the dialog is not shown. */
+        int READY = 0;
+        /** Loading in progress, the dialog is delayed. */
+        int LOADING_DELAYED = 1;
+        /** Loading in progress, the dialog is visible. */
+        int LOADING_SHOWN = 2;
+        /** Loading finished, the dialog dismissal is delayed. */
+        int FINISHED_SHOWN = 3;
+        /** Loading finished, the dialog is dismissed. */
+        int FINISHED = 4;
+        /** User dismissed the dialog before the loading finished. */
+        int CANCELLED = 5;
+        int NUM_ENTRIES = 6;
+    }
 
     /**
      * Creates the {@link LoadingModalDialogCoordinator}.
@@ -62,12 +85,15 @@ public class LoadingModalDialogCoordinator {
         mMediator.showDialog(dialogModel);
     }
 
+    /** Dismisses the loading modal dialog. */
+    public void dismiss() {
+        mMediator.dismissDialog();
+    }
+
     /**
-     * Dismisses the loading modal dialog.
-     *
-     * @param dismissalCause {@link DialogDismissalCause} indicating the dismissal cause
+     * Indicates the current dialog state.
      */
-    public void dismiss(@DialogDismissalCause int dismissalCause) {
-        mMediator.dismissDialog(dismissalCause);
+    public @State int getState() {
+        return mMediator.getState();
     }
 }
