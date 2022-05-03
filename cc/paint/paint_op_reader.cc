@@ -88,14 +88,15 @@ template <typename T>
 void PaintOpReader::ReadSimple(T* val) {
   static_assert(std::is_trivially_copyable_v<T>);
 
+  DCHECK_EQ(memory_, base::bits::AlignUp(memory_, PaintOpWriter::Alignment()));
   // Align everything to 4 bytes, as the writer does.
-  static constexpr size_t kAlign = 4;
-  size_t size = base::bits::AlignUp(sizeof(T), kAlign);
+  static constexpr size_t size =
+      base::bits::AlignUp(sizeof(T), PaintOpWriter::Alignment());
 
-  if (remaining_bytes_ < size)
+  if (remaining_bytes_ < size) {
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadSimple);
-  if (!valid_)
     return;
+  }
 
   // Most of the time this is used for primitives, but this function is also
   // used for SkRect/SkIRect/SkMatrix whose implicit operator= can't use a
@@ -124,34 +125,37 @@ void PaintOpReader::ReadFlattenable(
     DeserializationError error_on_factory_failure) {
   size_t bytes = 0;
   ReadSize(&bytes);
-  if (remaining_bytes_ < bytes)
+  if (remaining_bytes_ < bytes) {
     SetInvalid(
         DeserializationError::kInsufficientRemainingBytes_ReadFlattenable);
-  if (!valid_)
     return;
+  }
+
   if (bytes == 0)
     return;
 
   auto* scratch = CopyScratchSpace(bytes);
   val->reset(factory(scratch, bytes, nullptr).release());
-  if (!val)
+  if (!val) {
     SetInvalid(error_on_factory_failure);
+    return;
+  }
 
-  memory_ += bytes;
-  remaining_bytes_ -= bytes;
+  DidRead(bytes);
 }
 
 void PaintOpReader::ReadData(size_t bytes, void* data) {
-  if (remaining_bytes_ < bytes)
-    SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
-  if (!valid_)
-    return;
+  DCHECK_EQ(memory_, base::bits::AlignUp(memory_, PaintOpWriter::Alignment()));
   if (bytes == 0)
     return;
 
+  if (remaining_bytes_ < bytes) {
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
+    return;
+  }
+
   memcpy(data, const_cast<const char*>(memory_), bytes);
-  memory_ += bytes;
-  remaining_bytes_ -= bytes;
+  DidRead(bytes);
 }
 
 void PaintOpReader::ReadSize(size_t* size) {
@@ -241,8 +245,7 @@ void PaintOpReader::Read(SkPath* path) {
         // do any caching either.
         path->setIsVolatile(true);
       }
-      memory_ += path_bytes;
-      remaining_bytes_ -= path_bytes;
+      DidRead(path_bytes);
       return;
     }
   }
@@ -435,9 +438,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
 
   // This is safe to cast away the volatile as it is just a memcpy internally.
   *data = SkData::MakeWithCopy(const_cast<const char*>(memory_), bytes);
-
-  memory_ += bytes;
-  remaining_bytes_ -= bytes;
+  DidRead(bytes);
 }
 
 void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
@@ -454,16 +455,14 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
   if (!color_space)
     SetInvalid(DeserializationError::kSkColorSpaceDeserializeFailure);
 
-  memory_ += size;
-  remaining_bytes_ -= size;
+  DidRead(size);
 }
 
 void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
-  AlignMemory(4);
+  AssertAlignment(PaintOpWriter::Alignment());
 
   size_t data_bytes = 0u;
   ReadSize(&data_bytes);
-
   if (data_bytes == 0) {
     *slug = nullptr;
     return;
@@ -476,8 +475,7 @@ void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
 
   *slug = GrSlug::Deserialize(const_cast<const char*>(memory_), data_bytes,
                               options_.strike_client);
-  memory_ += data_bytes;
-  remaining_bytes_ -= data_bytes;
+  DidRead(data_bytes);
 
   if (!*slug) {
     SetInvalid(DeserializationError::kGrSlugDeserializeFailure);
@@ -715,8 +713,7 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
     valid_ = false;
     return;
   }
-  memory_ += bytes_to_skip;
-  remaining_bytes_ -= bytes_to_skip;
+  DidRead(bytes_to_skip);
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {
@@ -753,8 +750,7 @@ const volatile void* PaintOpReader::ExtractReadableMemory(size_t bytes) {
     return nullptr;
 
   const volatile void* extracted_memory = memory_;
-  memory_ += bytes;
-  remaining_bytes_ -= bytes;
+  DidRead(bytes);
   return extracted_memory;
 }
 
@@ -778,7 +774,7 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
     crop_rect.emplace(rect);
   }
 
-  AlignMemory(4);
+  AssertAlignment(PaintOpWriter::Alignment());
   switch (type) {
     case PaintFilter::Type::kNullFilter:
       NOTREACHED();
@@ -1400,8 +1396,7 @@ size_t PaintOpReader::Read(sk_sp<PaintRecord>* record) {
     SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;
   }
-  memory_ += size_bytes;
-  remaining_bytes_ -= size_bytes;
+  DidRead(size_bytes);
   return size_bytes;
 }
 
@@ -1421,6 +1416,15 @@ void PaintOpReader::Read(SkRegion* region) {
   size_t result = region->readFromMemory(data.get(), region_bytes);
   if (!result)
     SetInvalid(DeserializationError::kSkRegionReadFromMemoryFailure);
+}
+
+inline void PaintOpReader::DidRead(size_t bytes_read) {
+  // All data are aligned with PaintOpWriter::Alignment() at least.
+  size_t aligned_bytes =
+      base::bits::AlignUp(bytes_read, PaintOpWriter::Alignment());
+  memory_ += aligned_bytes;
+  DCHECK_LE(aligned_bytes, remaining_bytes_);
+  remaining_bytes_ -= aligned_bytes;
 }
 
 }  // namespace cc

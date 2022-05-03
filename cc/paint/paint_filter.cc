@@ -671,7 +671,8 @@ AlphaThresholdPaintFilter::~AlphaThresholdPaintFilter() = default;
 size_t AlphaThresholdPaintFilter::SerializedSize() const {
   size_t region_size = region_.writeToMemory(nullptr);
   base::CheckedNumeric<size_t> total_size;
-  total_size = BaseSerializedSize() + sizeof(uint64_t) + region_size +
+  total_size = BaseSerializedSize() + sizeof(uint64_t) +
+               base::bits::AlignUp(region_size, PaintOpWriter::Alignment()) +
                sizeof(inner_min_) + sizeof(outer_max_);
   total_size += GetFilterSize(input_.get());
   return total_size.ValueOrDefault(0u);

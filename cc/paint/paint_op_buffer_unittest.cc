@@ -1961,6 +1961,8 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
         "%s #%zu", PaintOpTypeToString(GetParamType()).c_str(), op_idx));
     size_t expected_bytes = bytes_written[op_idx];
     EXPECT_GT(expected_bytes, 0u);
+    EXPECT_EQ(expected_bytes,
+              base::bits::AlignUp(expected_bytes, PaintOpWriter::Alignment()));
 
     // Attempt to write op into a buffer of size |i|, and only expect
     // it to succeed if the buffer is large enough.

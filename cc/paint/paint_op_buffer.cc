@@ -571,7 +571,7 @@ size_t DrawImageOp::Serialize(const PaintOp* base_op,
   helper.Write(
       CreateDrawImage(op->image, flags_to_serialize, op->sampling, current_ctm),
       &scale_adjustment);
-  helper.AlignMemory(alignof(SkScalar));
+  helper.AssertAlignment(alignof(SkScalar));
   helper.Write(scale_adjustment.width());
   helper.Write(scale_adjustment.height());
 
@@ -602,7 +602,7 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
   helper.Write(
       CreateDrawImage(op->image, flags_to_serialize, op->sampling, matrix),
       &scale_adjustment);
-  helper.AlignMemory(alignof(SkScalar));
+  helper.AssertAlignment(alignof(SkScalar));
   helper.Write(scale_adjustment.width());
   helper.Write(scale_adjustment.height());
 
@@ -641,7 +641,7 @@ size_t DrawLineOp::Serialize(const PaintOp* base_op,
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
   helper.Write(*flags_to_serialize, current_ctm);
-  helper.AlignMemory(alignof(SkScalar));
+  helper.AssertAlignment(alignof(SkScalar));
   helper.Write(op->x0);
   helper.Write(op->y0);
   helper.Write(op->x1);
@@ -1017,7 +1017,7 @@ class PaintOpDeserializer {
 
   void ReadSize(size_t* size) { reader_.ReadSize(size); }
 
-  void AlignMemory(size_t alignment) { reader_.AlignMemory(alignment); }
+  void AssertAlignment(size_t alignment) { reader_.AssertAlignment(alignment); }
 
  private:
   PaintOpReader reader_;
@@ -1144,7 +1144,7 @@ PaintOp* DrawImageOp::Deserialize(const volatile void* input,
   deserializer.Read(&deserializer->flags);
 
   deserializer.Read(&deserializer->image);
-  deserializer.AlignMemory(alignof(SkScalar));
+  deserializer.AssertAlignment(alignof(SkScalar));
   deserializer.Read(&deserializer->scale_adjustment.fWidth);
   deserializer.Read(&deserializer->scale_adjustment.fHeight);
 
@@ -1165,7 +1165,7 @@ PaintOp* DrawImageRectOp::Deserialize(const volatile void* input,
   deserializer.Read(&deserializer->flags);
 
   deserializer.Read(&deserializer->image);
-  deserializer.AlignMemory(alignof(SkScalar));
+  deserializer.AssertAlignment(alignof(SkScalar));
   deserializer.Read(&deserializer->scale_adjustment.fWidth);
   deserializer.Read(&deserializer->scale_adjustment.fHeight);
 
@@ -1198,7 +1198,7 @@ PaintOp* DrawLineOp::Deserialize(const volatile void* input,
   PaintOpDeserializer<DrawLineOp> deserializer(input, input_size, options,
                                                new (output) DrawLineOp);
   deserializer.Read(&deserializer->flags);
-  deserializer.AlignMemory(alignof(SkScalar));
+  deserializer.AssertAlignment(alignof(SkScalar));
   deserializer.Read(&deserializer->x0);
   deserializer.Read(&deserializer->y0);
   deserializer.Read(&deserializer->x1);
