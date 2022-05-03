@@ -157,4 +157,26 @@ public interface FeedActionsHandler {
      * @param toInvalidate Identifies which feed or feeds should have their caches invalidated.
      */
     default void invalidateContentCacheFor(@FeedIdentifier int toInvalidate) {}
+
+    /** Actions that could occur for an info card. */
+    @IntDef({InfoCardAction.INFO_CARD_TRACK_VIEW_STARTED, InfoCardAction.INFO_CARD_VIEWED,
+            InfoCardAction.INFO_CARD_CLICKED, InfoCardAction.INFO_CARD_DISMISSED_EXPLIICITLY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface InfoCardAction {
+        // The info card is being tracked for its full visibility.
+        int INFO_CARD_TRACK_VIEW_STARTED = 0;
+        // The info card is fully visible in the viewport.
+        int INFO_CARD_VIEWED = 1;
+        // The user tapps the info card.
+        int INFO_CARD_CLICKED = 2;
+        // The user dismisses the info card explicitly by tapping the close button.
+        int INFO_CARD_DISMISSED_EXPLIICITLY = 3;
+    }
+
+    /**
+     * Reports that an action has occurred for an info card.
+     * @param type Type of the info card.
+     * @param action Action that occurred.
+     */
+    default void reportInfoCardAction(int type, @InfoCardAction int action) {}
 }
