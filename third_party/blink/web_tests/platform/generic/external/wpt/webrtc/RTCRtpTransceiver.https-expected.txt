@@ -33,7 +33,7 @@ PASS checkStopAfterSetLocalAnswer
 PASS checkStopAfterClose
 PASS checkLocalRollback
 PASS checkRollbackAndSetRemoteOfferWithDifferentType
-FAIL checkRemoteRollback assert_equals: track event from remote rollback expected 1 but got 0
+PASS checkRemoteRollback
 PASS checkMsectionReuse
 PASS checkStopAfterCreateOfferWithReusedMsection
 PASS checkAddIceCandidateToStoppedTransceiver
