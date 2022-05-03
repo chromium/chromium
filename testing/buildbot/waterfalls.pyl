@@ -6142,22 +6142,6 @@
           ]
         },
       },
-      'win7-updater-tester-dbg': {
-        'mixins': [
-          'win7',
-          'x86-64'
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_win',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ]
-        },
-      },
       'win7-updater-tester-dbg-uac': {
         'mixins': [
           'win7',
