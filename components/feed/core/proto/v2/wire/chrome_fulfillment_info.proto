@@ -6,9 +6,12 @@ syntax = "proto2";
 
 package feedwire;
 
+import "components/feed/core/proto/v2/wire/info_card.proto";
+
 option optimize_for = LITE_RUNTIME;
 
 message ChromeFulfillmentInfo {
   optional bool notice_card_acknowledged = 1;
   repeated string acknowledged_notice_key = 2;
+  repeated InfoCardTrackingState info_card_tracking_state = 3;
 }

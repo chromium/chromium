@@ -42,6 +42,7 @@ proto_library("proto_v2") {
     "v2/wire/feed_query.proto",
     "v2/wire/feed_request.proto",
     "v2/wire/feed_response.proto",
+    "v2/wire/info_card.proto",
     "v2/wire/next_page_token.proto",
     "v2/wire/payload_metadata.proto",
     "v2/wire/reliability_logging_enums.proto",
