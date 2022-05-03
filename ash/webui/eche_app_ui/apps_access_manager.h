@@ -23,6 +23,22 @@ using AccessStatus =
 // their phones.
 class AppsAccessManager {
  public:
+  // Note: Numerical values should not be changed, they are persisted to logs
+  // and should not be renumbered or re-used. See
+  // tools/metrics/histograms/enums.xml.
+  enum class OnboardingUserActionMetric {
+    // Initial state.
+    kUserActionUnknown = 0,
+
+    // Onboarding is started by user action.
+    kUserActionStartClicked = 1,
+
+    // The permission is granted by user action.
+    kUserActionPermissionGranted = 2,
+
+    kMaxValue = kUserActionPermissionGranted
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;

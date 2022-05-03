@@ -4989,6 +4989,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.Onboarding.UserAction" enum="OnboardingUserActionMetric"
+    expires_after="2022-09-30">
+  <owner>paulzchen@google.com</owner>
+  <owner>andychou@google.com</owner>
+  <owner>samchiu@google.com</owner>
+  <summary>
+    Events logged the user action in the Eche onboarding. Recorded when users
+    start Eche onboarding and grant the permission that onboarding needs.
+  </summary>
+</histogram>
+
 <histogram name="Eche.StreamEvent" enum="StreamState"
     expires_after="2022-09-30">
   <owner>paulzchen@google.com</owner>

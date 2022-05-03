@@ -68466,6 +68466,14 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OnboardingUserActionMetric">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Onboarding is started by user action"/>
+  <int value="2"
+      label="The permission that onboarding necessary is granted by user
+             action"/>
+</enum>
+
 <enum name="OnServiceConnectedTimedOutResult">
   <int value="0" label="AlreadyConnected">
     OnServiceConnected is already called. Everything worked as expected.

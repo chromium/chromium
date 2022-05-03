@@ -8,6 +8,7 @@
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 namespace eche_app {
@@ -22,6 +23,10 @@ AppsAccessManager::~AppsAccessManager() = default;
 std::unique_ptr<AppsAccessSetupOperation>
 AppsAccessManager::AttemptAppsAccessSetup(
     AppsAccessSetupOperation::Delegate* delegate) {
+  base::UmaHistogramEnumeration(
+      "Eche.Onboarding.UserAction",
+      OnboardingUserActionMetric::kUserActionStartClicked);
+
   // Should only be able to start the setup process if apps access is
   // available but not yet granted.
   if (GetAccessStatus() != AccessStatus::kAvailableButNotGranted)
