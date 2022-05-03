@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef COMPONENTS_CRONET_IOS_CRONET_H_
+#define COMPONENTS_CRONET_IOS_CRONET_H_
+
 #import <Foundation/Foundation.h>
 
 #include "bidirectional_stream_c.h"
@@ -208,3 +211,5 @@ GRPC_SUPPORT_EXPORT
 + (void)enableTestCertVerifierForTesting;
 
 @end
+
+#endif  // COMPONENTS_CRONET_IOS_CRONET_H_
