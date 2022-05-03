@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -51,6 +52,19 @@ const int kDesiredIconSizesForShortcut[] = {16, 32, 48, 128, 256, 512};
 const int* kDesiredIconSizesForShortcut = IconUtil::kIconDimensions;
 #else
 const int kDesiredIconSizesForShortcut[] = {32};
+#endif
+
+#if BUILDFLAG(IS_WIN)
+base::LazyThreadPoolCOMSTATaskRunner g_shortcuts_task_runner =
+    LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        base::SingleThreadTaskRunnerThreadMode::SHARED);
+#else
+base::LazyThreadPoolSequencedTaskRunner g_shortcuts_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits({base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 #endif
 
 size_t GetNumDesiredIconSizesForShortcut() {
@@ -335,16 +349,7 @@ void PostShortcutIOTaskAndReply(
 }
 
 scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
-  constexpr base::TaskTraits traits = {
-      base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-      base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
-
-#if BUILDFLAG(IS_WIN)
-  return base::ThreadPool::CreateCOMSTATaskRunner(
-      traits, base::SingleThreadTaskRunnerThreadMode::SHARED);
-#else
-  return base::ThreadPool::CreateTaskRunner(traits);
-#endif
+  return g_shortcuts_task_runner.Get();
 }
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
