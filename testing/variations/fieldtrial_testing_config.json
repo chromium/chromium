@@ -4076,21 +4076,6 @@
             ]
         }
     ],
-    "IOSTabGridSearch": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabsSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSThumbstrip": [
         {
             "platforms": [
