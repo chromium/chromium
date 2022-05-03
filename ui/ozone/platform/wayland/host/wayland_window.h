@@ -162,7 +162,8 @@ class WaylandWindow : public PlatformWindow,
                  mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
-                 WmDragHandler::Delegate* delegate) override;
+                 WmDragHandler::DragFinishedCallback drag_finished_callback,
+                 WmDragHandler::LocationDelegate* delegate) override;
   void CancelDrag() override;
 
   // PlatformWindow
@@ -493,7 +494,7 @@ class WaylandWindow : public PlatformWindow,
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;
 
-  WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
+  WmDragHandler::DragFinishedCallback drag_finished_callback_;
 
   base::OnceClosure drag_loop_quit_closure_;
 

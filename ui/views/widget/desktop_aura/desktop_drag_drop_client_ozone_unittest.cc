@@ -102,8 +102,9 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
                  DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
-                 WmDragHandler::Delegate* delegate) override {
-    drag_handler_delegate_ = delegate;
+                 WmDragHandler::DragFinishedCallback callback,
+                 WmDragHandler::LocationDelegate* delegate) override {
+    drag_finished_callback_ = std::move(callback);
     source_data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -150,7 +151,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   }
 
   void CloseDrag(DragOperation operation) {
-    drag_handler_delegate_->OnDragFinished(operation);
+    std::move(drag_finished_callback_).Run(operation);
     drag_loop_quit_closure_.Run();
   }
 
@@ -163,7 +164,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   }
 
  private:
-  WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
+  WmDragHandler::DragFinishedCallback drag_finished_callback_;
   std::unique_ptr<ui::OSExchangeData> source_data_;
   base::RepeatingClosure drag_loop_quit_closure_;
   int modifiers_ = 0;

@@ -13,7 +13,7 @@ namespace ui {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(WmDragHandler*, kWmDragHandlerKey, nullptr)
 
-WmDragHandler::Delegate::~Delegate() = default;
+WmDragHandler::LocationDelegate::~LocationDelegate() = default;
 
 bool WmDragHandler::ShouldReleaseCaptureForDrag(
     ui::OSExchangeData* data) const {

@@ -56,12 +56,6 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
   }
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
-  gfx::Rect ConvertRectToPixels(const gfx::Rect& rect) const override {
-    return rect;
-  }
-  gfx::Rect ConvertRectToDIP(const gfx::Rect& rect) const override {
-    return rect;
-  }
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;

@@ -19,6 +19,7 @@
 namespace gfx {
 class Rect;
 class Size;
+class PointF;
 }  // namespace gfx
 
 class SkPath;
@@ -139,8 +140,14 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);
 
+  // Convert gfx::Rect in pixels to DIP in screen, and vice versa.
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
   virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixells) const;
+
+  // Convert gfx::Point in screen pixels to dip in the window's local
+  // coordinate.
+  virtual gfx::PointF ConvertScreenPointToLocalDIP(
+      const gfx::Point& screen_in_pixels) const;
 };
 
 }  // namespace ui

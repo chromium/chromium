@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -38,6 +39,10 @@
 #include "ui/views/window/native_frame_view.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/window_move_client.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone_linux.h"
+#endif
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(views::DesktopWindowTreeHostPlatform*)
 
@@ -307,7 +312,11 @@ std::unique_ptr<aura::client::DragDropClient>
 DesktopWindowTreeHostPlatform::CreateDragDropClient() {
   ui::WmDragHandler* drag_handler = ui::GetWmDragHandler(*(platform_window()));
   std::unique_ptr<DesktopDragDropClientOzone> drag_drop_client =
+#if BUILDFLAG(IS_LINUX)
+      std::make_unique<DesktopDragDropClientOzoneLinux>(window(), drag_handler);
+#else
       std::make_unique<DesktopDragDropClientOzone>(window(), drag_handler);
+#endif  // BUILDFLAG(IS_LINUX)
   // Set a class property key, which allows |drag_drop_client| to be used for
   // drop action.
   SetWmDropHandler(platform_window(), drag_drop_client.get());
@@ -887,6 +896,19 @@ gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(
 gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToDIP(
     const gfx::Rect& rect_in_pixels) const {
   return ToDIPRect(rect_in_pixels);
+}
+
+gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
+    const gfx::Point& screen_in_pixels) const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // lacros should not use this.
+  NOTREACHED();
+#endif
+  // TODO(crbug.com/1318279): DIP should use gfx::PointF. Fix this as
+  // a part of cleanup work(crbug.com/1318279).
+  gfx::Point local_dip(screen_in_pixels);
+  ConvertScreenInPixelsToDIP(&local_dip);
+  return gfx::PointF(local_dip);
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {

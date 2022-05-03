@@ -90,12 +90,14 @@ void SendMotionEvent(wl::TestDataDevice* data_device,
 
 }  // namespace
 
-class MockDragHandlerDelegate : public WmDragHandler::Delegate {
+class MockDragFinishedCallback {
  public:
-  MOCK_METHOD1(OnDragLocationChanged, void(const gfx::Point& location));
-  MOCK_METHOD1(OnDragOperationChanged, void(DragOperation operation));
   MOCK_METHOD1(OnDragFinished, void(DragOperation operation));
-  MOCK_METHOD0(GetDragWidget, absl::optional<gfx::AcceleratedWidget>());
+
+  ui::WmDragHandler::DragFinishedCallback callback() {
+    return base::BindOnce(&MockDragFinishedCallback::OnDragFinished,
+                          base::Unretained(this));
+  }
 };
 
 class MockDropHandler : public WmDropHandler {
@@ -162,7 +164,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     server_.output()->SetRect({20, 30, 800, 600});
     WaylandDragDropTest::SetUp();
 
-    drag_handler_delegate_ = std::make_unique<MockDragHandlerDelegate>();
+    drag_finished_callback_ = std::make_unique<MockDragFinishedCallback>();
     drop_handler_ = std::make_unique<MockDropHandler>();
     SetWmDropHandler(window_.get(), drop_handler_.get());
   }
@@ -177,8 +179,8 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
   MockDropHandler* drop_handler() { return drop_handler_.get(); }
 
-  MockDragHandlerDelegate* drag_handler() {
-    return drag_handler_delegate_.get();
+  MockDragFinishedCallback* drag_finished_callback() {
+    return drag_finished_callback_.get();
   }
 
   wl::MockSurface* GetMockSurface(uint32_t id) {
@@ -200,7 +202,8 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     os_exchange_data.SetString(sample_text_for_dnd());
     origin_window->StartDrag(
         os_exchange_data, operations, DragEventSource::kMouse, /*cursor=*/{},
-        /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+        /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
+        /*loation delegate=*/nullptr);
     Sync();
   }
 
@@ -234,7 +237,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
           // If DnD was cancelled, or data was dropped where it was not
           // accepted, the operation result must be None (0).
           // Regression test for https://crbug.com/1136751.
-          EXPECT_CALL(*self->drag_handler(),
+          EXPECT_CALL(*self->drag_finished_callback(),
                       OnDragFinished(DragOperation::kNone))
               .Times(1);
 
@@ -254,7 +257,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
  protected:
   std::unique_ptr<MockDropHandler> drop_handler_;
-  std::unique_ptr<MockDragHandlerDelegate> drag_handler_delegate_;
+  std::unique_ptr<MockDragFinishedCallback> drag_finished_callback_;
 };
 
 TEST_P(WaylandDataDragControllerTest, StartDrag) {
@@ -432,7 +435,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
 
   // Consume the move event from pointer enter.
   EXPECT_CALL(*drop_handler_,
-              MockDragMotion(PointFNear(gfx::PointF(20, 20)), _, _));
+              MockDragMotion(PointFNear(gfx::PointF(10, 10)), _, _));
 
   gfx::Point entered_point(10, 10);
   // The server sends an enter event.
@@ -443,9 +446,9 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   Sync();
   ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
 
-  // In 2x window scale, we expect received coordinates to be multiplied.
+  // In 2x window scale, we expect received coordinates still be in DIP.
   EXPECT_CALL(*drop_handler_,
-              MockDragMotion(PointFNear(gfx::PointF(60, 60)), _, _));
+              MockDragMotion(PointFNear(gfx::PointF(30, 30)), _, _));
 
   // The server sends an motion event in DP.
   gfx::Point motion_point(30, 30);
@@ -491,25 +494,33 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
       data_device_manager_->data_device()->CreateAndSendDataOffer();
   data_offer->OnOffer(kMimeTypeText,
                       ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+  gfx::Point entered_point{800, 600};
+  {
+    gfx::PointF expected_position(entered_point);
+    expected_position.Scale(1.0f / kTripleScale);
 
-  EXPECT_CALL(*drop_handler_,
-              MockDragMotion(PointFNear(gfx::PointF(800, 600)), _, _));
+    EXPECT_CALL(*drop_handler_,
+                MockDragMotion(PointFNear(expected_position), _, _));
 
-  // The server sends an enter event at the bottom right corner of the window.
-  gfx::Point entered_point(800, 600);
-  data_device_manager_->data_device()->OnEnter(
-      1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
-      wl_fixed_from_int(entered_point.y()), data_offer);
-
+    // The server sends an enter event at the bottom right corner of the window.
+    data_device_manager_->data_device()->OnEnter(
+        1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
+        wl_fixed_from_int(entered_point.y()), data_offer);
+  }
   Sync();
 
-  EXPECT_CALL(*drop_handler_,
-              MockDragMotion(PointFNear(gfx::PointF(400, 300)), _, _))
-      .Times(::testing::AtLeast(1));
+  gfx::Point center_point{400, 300};
+  {
+    gfx::PointF expected_position(center_point);
+    expected_position.Scale(1.0f / kTripleScale);
 
-  // The server sends a motion event through the center of the output.
-  gfx::Point center(400, 300);
-  SendMotionEvent(data_device_manager_->data_device(), center);
+    EXPECT_CALL(*drop_handler_,
+                MockDragMotion(PointFNear(expected_position), _, _))
+        .Times(::testing::AtLeast(1));
+
+    // The server sends a motion event through the center of the output.
+    SendMotionEvent(data_device_manager_->data_device(), center_point);
+  }
   Sync();
 
   EXPECT_CALL(*drop_handler_,
@@ -802,7 +813,7 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
   os_exchange_data.SetString(sample_text_for_dnd());
   window_2->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
                       DragEventSource::kMouse, {}, true,
-                      drag_handler_delegate_.get());
+                      drag_finished_callback_->callback(), nullptr);
   Sync();
 
   // Send wl_data_source::cancelled event. The drag controller is then
@@ -963,10 +974,10 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(0);
 
   // Attempt to start drag session and ensure it fails.
-  bool result_1 = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
-                                     DragEventSource::kMouse, /*cursor=*/{},
-                                     /*can_grab_pointer=*/true,
-                                     drag_handler_delegate_.get());
+  bool result_1 = window_->StartDrag(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
+      /*cursor=*/{},
+      /*can_grab_pointer=*/true, drag_finished_callback_->callback(), nullptr);
   EXPECT_FALSE(result_1);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   Mock::VerifyAndClearExpectations(this);
@@ -983,20 +994,20 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
     SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
 
     EXPECT_CALL(*drop_handler_, OnDragLeave).Times(1);
-    EXPECT_CALL(*drag_handler_delegate_,
+    EXPECT_CALL(*drag_finished_callback_,
                 OnDragFinished(Eq(DragOperation::kNone)))
         .Times(1);
     Sync();
   }));
   EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(1);
-  bool result_2 = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
-                                     DragEventSource::kMouse, /*cursor=*/{},
-                                     /*can_grab_pointer=*/true,
-                                     drag_handler_delegate_.get());
+  bool result_2 = window_->StartDrag(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
+      /*cursor=*/{},
+      /*can_grab_pointer=*/true, drag_finished_callback_->callback(), nullptr);
   // TODO(crbug.com/1022722): Double-check if this should return false instead.
   EXPECT_TRUE(result_2);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
-  Mock::VerifyAndClearExpectations(drag_handler_delegate_.get());
+  Mock::VerifyAndClearExpectations(drag_finished_callback_.get());
   Mock::VerifyAndClearExpectations(this);
   EXPECT_FALSE(drag_controller()->origin_window_);
   EXPECT_FALSE(drag_controller()->nested_dispatcher_);
@@ -1062,7 +1073,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(0);
   bool drag_started = window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kTouch,
-      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+      /*cursor=*/{}, /*can_grab_pointer=*/true,
+      drag_finished_callback_->callback(), nullptr);
   EXPECT_FALSE(drag_started);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   Mock::VerifyAndClearExpectations(this);
@@ -1081,7 +1093,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   EXPECT_CALL(*this, MockStartDrag(_, _, Eq(mouse_press_serial))).Times(1);
   bool success = window_->StartDrag(
       os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
-      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+      /*cursor=*/{}, /*can_grab_pointer=*/true,
+      drag_finished_callback_->callback(), nullptr);
   EXPECT_TRUE(success);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   Mock::VerifyAndClearExpectations(this);

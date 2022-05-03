@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -57,6 +58,11 @@ gfx::Rect PlatformWindowDelegate::ConvertRectToPixels(
 gfx::Rect PlatformWindowDelegate::ConvertRectToDIP(
     const gfx::Rect& rect_in_pixels) const {
   return rect_in_pixels;
+}
+
+gfx::PointF PlatformWindowDelegate::ConvertScreenPointToLocalDIP(
+    const gfx::Point& screen_in_pixels) const {
+  return gfx::PointF(screen_in_pixels);
 }
 
 }  // namespace ui

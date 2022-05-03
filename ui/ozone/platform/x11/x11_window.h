@@ -177,13 +177,14 @@ class X11Window : public PlatformWindow,
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
   void EndMoveLoop() override;
 
-  // WmDragHandler
+  // WmDragHandler:
   bool StartDrag(const OSExchangeData& data,
                  int operations,
                  mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
-                 WmDragHandler::Delegate* delegate) override;
+                 WmDragHandler::DragFinishedCallback drag_finished_callback,
+                 WmDragHandler::LocationDelegate* delegate) override;
   void CancelDrag() override;
 
   // XDragDropClient::Delegate
@@ -336,7 +337,8 @@ class X11Window : public PlatformWindow,
 
   // Handles XDND events going through this window.
   std::unique_ptr<XDragDropClient> drag_drop_client_;
-  WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
+  WmDragHandler::DragFinishedCallback drag_finished_callback_;
+  WmDragHandler::LocationDelegate* drag_location_delegate_ = nullptr;
 
   // Run loop used while dragging from this window.
   std::unique_ptr<X11MoveLoop> drag_loop_;

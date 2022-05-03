@@ -1432,16 +1432,19 @@ void X11Window::EndMoveLoop() {
   x11_window_move_client_->EndMoveLoop();
 }
 
-bool X11Window::StartDrag(const OSExchangeData& data,
-                          int operations,
-                          mojom::DragEventSource source,
-                          gfx::NativeCursor cursor,
-                          bool can_grab_pointer,
-                          WmDragHandler::Delegate* delegate) {
+bool X11Window::StartDrag(
+    const OSExchangeData& data,
+    int operations,
+    mojom::DragEventSource source,
+    gfx::NativeCursor cursor,
+    bool can_grab_pointer,
+    WmDragHandler::DragFinishedCallback drag_finished_callback,
+    WmDragHandler::LocationDelegate* location_delegate) {
   DCHECK(drag_drop_client_);
-  DCHECK(!drag_handler_delegate_);
+  DCHECK(!drag_location_delegate_);
 
-  drag_handler_delegate_ = delegate;
+  drag_finished_callback_ = std::move(drag_finished_callback);
+  drag_location_delegate_ = location_delegate;
   drag_drop_client_->InitDrag(operations, &data);
   allowed_drag_operations_ = 0;
   notified_enter_ = false;
@@ -1455,7 +1458,7 @@ bool X11Window::StartDrag(const OSExchangeData& data,
     return false;
 
   drag_loop_.reset();
-  drag_handler_delegate_ = nullptr;
+  drag_location_delegate_ = nullptr;
   drag_drop_client_->CleanupDrag();
   return dropped;
 }
@@ -1465,8 +1468,8 @@ void X11Window::CancelDrag() {
 }
 
 absl::optional<gfx::AcceleratedWidget> X11Window::GetDragWidget() {
-  DCHECK(drag_handler_delegate_);
-  return drag_handler_delegate_->GetDragWidget();
+  DCHECK(drag_location_delegate_);
+  return drag_location_delegate_->GetDragWidget();
 }
 
 int X11Window::UpdateDrag(const gfx::Point& screen_point) {
@@ -1496,21 +1499,22 @@ int X11Window::UpdateDrag(const gfx::Point& screen_point) {
 
   XDragDropClient* source_client =
       XDragDropClient::GetForWindow(target_current_context->source_window());
+  gfx::PointF local_point_in_dip =
+      platform_window_delegate_->ConvertScreenPointToLocalDIP(screen_point);
   if (!notified_enter_) {
-    drop_handler->OnDragEnter(gfx::PointF(screen_point), std::move(data),
+    drop_handler->OnDragEnter(local_point_in_dip, std::move(data),
                               suggested_operations,
                               GetKeyModifiers(source_client));
     notified_enter_ = true;
   }
   allowed_drag_operations_ = drop_handler->OnDragMotion(
-      gfx::PointF(screen_point), suggested_operations,
-      GetKeyModifiers(source_client));
+      local_point_in_dip, suggested_operations, GetKeyModifiers(source_client));
   return allowed_drag_operations_;
 }
 
 void X11Window::UpdateCursor(DragOperation negotiated_operation) {
-  DCHECK(drag_handler_delegate_);
-  drag_handler_delegate_->OnDragOperationChanged(negotiated_operation);
+  DCHECK(drag_location_delegate_);
+  drag_location_delegate_->OnDragOperationChanged(negotiated_operation);
 }
 
 void X11Window::OnBeginForeignDrag(x11::Window window) {
@@ -1547,17 +1551,16 @@ DragOperation X11Window::PerformDrop() {
 }
 
 void X11Window::EndDragLoop() {
-  DCHECK(drag_handler_delegate_);
-
-  drag_handler_delegate_->OnDragFinished(
-      PreferredDragOperation(allowed_drag_operations_));
+  DCHECK(!drag_finished_callback_.is_null());
+  std::move(drag_finished_callback_)
+      .Run(PreferredDragOperation(allowed_drag_operations_));
   drag_loop_->EndMoveLoop();
 }
 
 void X11Window::OnMouseMovement(const gfx::Point& screen_point,
                                 int flags,
                                 base::TimeTicks event_time) {
-  drag_handler_delegate_->OnDragLocationChanged(screen_point);
+  drag_location_delegate_->OnDragLocationChanged(screen_point);
   drag_drop_client_->HandleMouseMovement(screen_point, flags, event_time);
 }
 

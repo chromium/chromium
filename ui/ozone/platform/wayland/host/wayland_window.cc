@@ -196,19 +196,21 @@ void WaylandWindow::RemoveEnteredOutput(uint32_t output_id) {
   root_surface_->RemoveEnteredOutput(output_id);
 }
 
-bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
-                              int operations,
-                              mojom::DragEventSource source,
-                              gfx::NativeCursor cursor,
-                              bool can_grab_pointer,
-                              WmDragHandler::Delegate* delegate) {
+bool WaylandWindow::StartDrag(
+    const ui::OSExchangeData& data,
+    int operations,
+    mojom::DragEventSource source,
+    gfx::NativeCursor cursor,
+    bool can_grab_pointer,
+    WmDragHandler::DragFinishedCallback drag_finished_callback,
+    WmDragHandler::LocationDelegate* location_delegate) {
   if (!connection_->data_drag_controller()->StartSession(data, operations,
                                                          source)) {
     return false;
   }
 
-  DCHECK(!drag_handler_delegate_);
-  drag_handler_delegate_ = delegate;
+  DCHECK(drag_finished_callback_.is_null());
+  drag_finished_callback_ = std::move(drag_finished_callback);
 
   base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
   drag_loop_quit_closure_ = drag_loop.QuitClosure();
@@ -269,7 +271,7 @@ bool WaylandWindow::IsVisible() const {
 }
 
 void WaylandWindow::PrepareForShutdown() {
-  if (drag_handler_delegate_)
+  if (drag_finished_callback_)
     OnDragSessionClose(DragOperation::kNone);
 }
 
@@ -527,8 +529,7 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point,
     return;
 
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(ToRootWindowPixel(point), std::move(data),
-                            operation,
+  drop_handler->OnDragEnter(point, std::move(data), operation,
                             /*modifiers=*/0);
 }
 
@@ -538,7 +539,7 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
     return 0;
 
   // TODO(crbug.com/1102857): get the real event modifier here.
-  return drop_handler->OnDragMotion(ToRootWindowPixel(point), operation,
+  return drop_handler->OnDragMotion(point, operation,
                                     /*modifiers=*/0);
 }
 
@@ -558,9 +559,8 @@ void WaylandWindow::OnDragLeave() {
 }
 
 void WaylandWindow::OnDragSessionClose(DragOperation operation) {
-  DCHECK(drag_handler_delegate_);
-  drag_handler_delegate_->OnDragFinished(operation);
-  drag_handler_delegate_ = nullptr;
+  DCHECK(drag_finished_callback_);
+  std::move(drag_finished_callback_).Run(operation);
   connection()->event_source()->ResetPointerFlags();
   std::move(drag_loop_quit_closure_).Run();
 }

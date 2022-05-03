@@ -5,6 +5,7 @@
 #ifndef UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 #define UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -20,21 +21,25 @@ class OSExchangeData;
 
 class COMPONENT_EXPORT(WM) WmDragHandler {
  public:
-  // During the drag operation, the handler may send updates
-  class Delegate {
+  // Notifies when the drag operation finished.
+  using DragFinishedCallback =
+      base::OnceCallback<void(mojom::DragOperation operation)>;
+
+  // A delegate class for a platform on which chrome manages a drag image and
+  // needs to receive the drag location. This can be null if the platform itself
+  // manages the drag image.
+  class LocationDelegate {
    public:
     // Called every time when the drag location has changed.
     virtual void OnDragLocationChanged(const gfx::Point& screen_point_px) = 0;
     // Called when the currently negotiated operation has changed.
     virtual void OnDragOperationChanged(mojom::DragOperation operation) = 0;
-    // Called once when the operation has finished.
-    virtual void OnDragFinished(mojom::DragOperation operation) = 0;
     // DragWidget (if any) should be ignored when finding top window and
     // dispatching mouse events.
     virtual absl::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
 
    protected:
-    virtual ~Delegate();
+    virtual ~LocationDelegate();
   };
 
   // Starts dragging |data|. Whereas, |operations| is a bitmask of
@@ -42,8 +47,11 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
   // the drag source. The destination sets the resulting operation when the drop
   // action is performed. |source| indicates the source event type triggering
   // the drag, and |can_grab_pointer| indicates whether the implementation can
-  // grab the mouse pointer (some platforms may need this). In progress updates
-  // on the drag operation come back through the |delegate|.
+  // grab the mouse pointer (some platforms may need this).In progress updates
+  // on the drag operation come back through the |location_delegate| on the
+  // platform that chrome needs manages a drag image). This can be null if the
+  // platform manages a drag image. |drag_finished_callback| is called when drag
+  // operation finishes.
   //
   // This method runs a nested message loop, returning when the drag operation
   // is done. Care must be taken when calling this as it's entirely possible
@@ -56,7 +64,8 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
                          mojom::DragEventSource source,
                          gfx::NativeCursor cursor,
                          bool can_grab_pointer,
-                         Delegate* delegate) = 0;
+                         DragFinishedCallback drag_finished_callback,
+                         LocationDelegate* location_delegate) = 0;
 
   // Cancels the drag.
   virtual void CancelDrag() = 0;

@@ -151,6 +151,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       override;
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dip) const override;
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;
+  gfx::PointF ConvertScreenPointToLocalDIP(
+      const gfx::Point& screen_in_pixels) const override;
 
   // ui::WorkspaceExtensionDelegate:
   void OnWorkspaceChanged() override;

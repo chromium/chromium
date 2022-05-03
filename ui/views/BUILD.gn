@@ -859,6 +859,12 @@ component("views") {
         ]
         public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
       }
+      if (is_linux) {
+        sources += [
+          "widget/desktop_aura/desktop_drag_drop_client_ozone_linux.cc",
+          "widget/desktop_aura/desktop_drag_drop_client_ozone_linux.h",
+        ]
+      }
       if (use_atk) {
         sources += [
           "accessibility/view_ax_platform_node_delegate_auralinux.cc",
