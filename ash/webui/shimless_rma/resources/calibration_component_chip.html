@@ -12,10 +12,6 @@
     opacity: 0.38;
   }
 
-  :host([disabled]) #componentName {
-    color: var(--cros-text-color-disabled);
-  }
-
   #componentButton {
     --vertical-padding: 24px;
     border-radius: 8px;
@@ -30,8 +26,11 @@
     width: 100%;
   }
 
+  #componentName {
+    color: var(--google-blue-600);
+  }
+
   #labelDiv {
-    color: var(--shimless-component-text-color);
     flex-basis: 155px;
     inset-inline-start: 0;
     padding-inline-start: 24px;
@@ -47,7 +46,7 @@
   }
 
   #infoIcon {
-    fill: var(--cros-icon-color-alert);
+    fill: var(--google-blue-600);
     margin-inline-end: 5px;
   }
 
