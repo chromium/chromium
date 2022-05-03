@@ -4138,6 +4138,183 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   });
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url_a = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+  const url::Origin origin_a = url::Origin::Create(test_url_a);
+
+  GURL ad1_url =
+      https_server_->GetURL("c.test", "/echo?stop_bidding_after_win");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_shoes");
+
+  // This group will win if it has never won an auction.
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(blink::InterestGroup(
+                /*expiry=*/base::Time(),
+                /*owner=*/origin_a,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*bidding_url=*/
+                https_server_->GetURL(
+                    "a.test",
+                    "/interest_group/bidding_logic_stop_bidding_after_win.js"),
+                /*bidding_wasm_helper_url=*/absl::nullopt,
+                /*daily_update_url=*/absl::nullopt,
+                /*trusted_bidding_signals_url=*/absl::nullopt,
+                /*trusted_bidding_signals_keys=*/absl::nullopt,
+                /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+                /*ads=*/{{{ad1_url, "{ad:'metadata', here:[1,2]}"}}},
+                /*ad_components=*/absl::nullopt)));
+
+  GURL test_url_b = https_server_->GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
+  const url::Origin origin_b = url::Origin::Create(test_url_b);
+  // This group will win if the other interest group has won an auction.
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(blink::InterestGroup(
+                /*expiry=*/base::Time(),
+                /*owner=*/origin_b,
+                /*name=*/"shoes",
+                /*priority=*/0.0,
+                /*bidding_url=*/
+                https_server_->GetURL(
+                    "b.test",
+                    "/interest_group/bidding_logic_with_debugging_report.js"),
+                /*bidding_wasm_helper_url=*/absl::nullopt,
+                /*daily_update_url=*/absl::nullopt,
+                /*trusted_bidding_signals_url=*/absl::nullopt,
+                /*trusted_bidding_signals_keys=*/absl::nullopt,
+                /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+                /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
+                /*ad_components=*/absl::nullopt)));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1, $3],
+  })",
+      origin_b,
+      https_server_->GetURL("b.test", "/interest_group/decision_logic.js"),
+      origin_a);
+  // Setting reporting interval to 0 in this test to avoid delaying next report
+  // request after one completed. Reporting interval is tested by other tests.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(0));
+
+  // Run an ad auction. Interest group cars of owner `test_url_a` wins.
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+
+  // Run auction again on the same page. Interest group shoes of owner
+  // `test_url2` wins.
+  auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1, $3],
+  })",
+      origin_b,
+      https_server_->GetURL("b.test", "/interest_group/decision_logic.js"),
+      origin_a);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+
+  // Run the third auction on another page c.test, and only interest group
+  // "shoes" of c.test bids this time.
+  GURL test_url_c = https_server_->GetURL("c.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_c));
+  const url::Origin origin_c = url::Origin::Create(test_url_c);
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(blink::InterestGroup(
+                /*expiry=*/base::Time(),
+                /*owner=*/origin_c,
+                /*name=*/"shoes",
+                /*priority=*/0.0,
+                /*bidding_url=*/
+                https_server_->GetURL(
+                    "c.test",
+                    "/interest_group/bidding_logic_with_debugging_report.js"),
+                /*bidding_wasm_helper_url=*/absl::nullopt,
+                /*daily_update_url=*/absl::nullopt,
+                /*trusted_bidding_signals_url=*/absl::nullopt,
+                /*trusted_bidding_signals_keys=*/absl::nullopt,
+                /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+                /*ads=*/{{{ad2_url, /*metadata=*/absl::nullopt}}},
+                /*ad_components=*/absl::nullopt)));
+
+  auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+      origin_c,
+      https_server_->GetURL("c.test", "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+
+  // Check ResourceRequest structs of report requests.
+  const struct ExpectedReportRequest {
+    GURL url;
+    url::Origin request_initiator;
+  } kExpectedReportRequests[] = {
+      // First auction's seller's ReportResult() URL.
+      {https_server_->GetURL("b.test", "/echoall?report_seller"), origin_b},
+      // First auction's winning bidder's ReportWin() URL.
+      {https_server_->GetURL("a.test",
+                             "/echoall?report_bidder_stop_bidding_after_win"),
+       origin_b},
+      // First auction's debugging report URL for loss report.
+      {https_server_->GetURL("b.test", "/echo?bidder_debug_report_loss/shoes"),
+       origin_b},
+
+      // Second auction's seller's ReportResult() URL. Although this URL is the
+      // second time requesting this URL, this test does not confirm that we
+      // requested the URL twice unfortunately.
+      // TODO(qingxinwu): Update the test fixture's use of RequestMonitor
+      // instead of URLLoaderMonitor to handle duplicate URLs.
+      {https_server_->GetURL("b.test", "/echoall?report_seller"), origin_b},
+      // Second auction's winning bidder's ReportWin() URL.
+      {https_server_->GetURL("b.test", "/echo?report_bidder"), origin_b},
+      // Second auction's debugging report URL for win report.
+      {https_server_->GetURL("b.test", "/echo?bidder_debug_report_win/shoes"),
+       origin_b},
+
+      // Third auction's seller's ReportResult() URL.
+      {https_server_->GetURL("c.test", "/echoall?report_seller"), origin_c},
+      // Third auction's winning bidder's ReportWin() URL.
+      {https_server_->GetURL("c.test", "/echo?report_bidder"), origin_c},
+      // Third auction's debugging report URL for win report.
+      {https_server_->GetURL("c.test", "/echo?bidder_debug_report_win/shoes"),
+       origin_c}};
+
+  for (const auto& expected_report_request : kExpectedReportRequests) {
+    SCOPED_TRACE(expected_report_request.url);
+
+    // Wait for the report URL to be fetched.
+    WaitForURL(expected_report_request.url);
+
+    absl::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_report_request.url);
+    ASSERT_TRUE(request);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+              request->credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+    EXPECT_EQ(expected_report_request.request_initiator,
+              request->request_initiator);
+
+    EXPECT_TRUE(request->headers.IsEmpty());
+
+    ASSERT_TRUE(request->trusted_params);
+    const net::IsolationInfo& isolation_info =
+        request->trusted_params->isolation_info;
+    EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+              isolation_info.request_type());
+    EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  }
+}
+
 // Adding an interest group and then immediately running the ad acution, without
 // waiting in between, should always work because although adding the interest
 // group is async (and intentionally without completion notification), it should
@@ -6064,6 +6241,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   // Use `https_server_` exclusively with hostname "b.test" for reports.
   GURL bidder_report_to_url = https_server_->GetURL("b.test", "/bidder_report");
   GURL seller_report_to_url = https_server_->GetURL("b.test", "/seller_report");
+  GURL bidder_debug_win_report_url =
+      https_server_->GetURL("b.test", "/bidder_report_debug_win_report");
+  GURL seller_debug_win_report_url =
+      https_server_->GetURL("b.test", "/seller_report_debug_win_report");
   URLLoaderMonitor url_loader_monitor;
 
   EXPECT_EQ(
@@ -6105,23 +6286,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             url_loader_monitor.WaitForUrl(seller_report_to_url)
                 .trusted_params->client_security_state->ip_address_space);
 
-  const network::URLLoaderCompletionStatus& bidder_report_status =
-      url_loader_monitor.WaitForRequestCompletion(bidder_report_to_url);
-  EXPECT_EQ(net::ERR_FAILED, bidder_report_status.error_code);
-  EXPECT_THAT(bidder_report_status.cors_error_status,
-              Optional(network::CorsErrorStatus(
-                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kLocal,
-                  network::mojom::IPAddressSpace::kUnknown)));
-
-  const network::URLLoaderCompletionStatus& seller_report_status =
-      url_loader_monitor.WaitForRequestCompletion(seller_report_to_url);
-  EXPECT_EQ(net::ERR_FAILED, seller_report_status.error_code);
-  EXPECT_THAT(seller_report_status.cors_error_status,
-              Optional(network::CorsErrorStatus(
-                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kLocal,
-                  network::mojom::IPAddressSpace::kUnknown)));
+  for (const GURL& report_url :
+       {bidder_report_to_url, seller_report_to_url, bidder_debug_win_report_url,
+        seller_debug_win_report_url}) {
+    SCOPED_TRACE(report_url.spec());
+    const network::URLLoaderCompletionStatus& report_status =
+        url_loader_monitor.WaitForRequestCompletion(report_url);
+    EXPECT_EQ(net::ERR_FAILED, report_status.error_code);
+    EXPECT_THAT(
+        report_status.cors_error_status,
+        Optional(network::CorsErrorStatus(
+            network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
+            network::mojom::IPAddressSpace::kLocal,
+            network::mojom::IPAddressSpace::kUnknown)));
+  }
 }
 
 // Have all requests for an auction served from a public network, and all
@@ -6148,13 +6326,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       "a.test", "/interest_group/decision_logic_report_to_seller_signals.js");
   GURL ad_url = https_server_->GetURL("c.test", "/echo");
 
-  // While reports should should be made to these URLs in this test, their
-  // results don't matter, so there's no need for a test server respond to for
-  // these URLs with anything other than errors.
+  // While reports should be made to these URLs in this test, their results
+  // don't matter, so there's no need for a test server to respond to these URLs
+  // with anything other than errors.
   GURL bidder_report_to_url =
       remote_test_server_.GetURL("a.test", "/bidder_report");
   GURL seller_report_to_url =
       remote_test_server_.GetURL("a.test", "/seller_report");
+  GURL bidder_debug_win_report_url =
+      remote_test_server_.GetURL("a.test", "/bidder_report_debug_win_report");
+  GURL seller_debug_win_report_url =
+      remote_test_server_.GetURL("a.test", "/seller_report_debug_win_report");
   URLLoaderMonitor url_loader_monitor;
 
   ASSERT_EQ(
@@ -6200,15 +6382,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             url_loader_monitor.WaitForUrl(seller_report_to_url)
                 .trusted_params->client_security_state->ip_address_space);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            url_loader_monitor.GetRequestInfo(bidder_report_to_url)
-                ->trusted_params->client_security_state->ip_address_space);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            url_loader_monitor.GetRequestInfo(seller_report_to_url)
-                ->trusted_params->client_security_state->ip_address_space);
+            url_loader_monitor.WaitForUrl(seller_debug_win_report_url)
+                .trusted_params->client_security_state->ip_address_space);
 
-  // Check that both reports reached the server.
+  for (const GURL& report_url :
+       {bidder_report_to_url, seller_report_to_url, bidder_debug_win_report_url,
+        seller_debug_win_report_url}) {
+    SCOPED_TRACE(report_url.spec());
+    EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+              url_loader_monitor.GetRequestInfo(report_url)
+                  ->trusted_params->client_security_state->ip_address_space);
+  }
+
+  // Check that all reports reached the server.
   WaitForURL(bidder_report_to_url);
   WaitForURL(seller_report_to_url);
+  WaitForURL(bidder_debug_win_report_url);
+  WaitForURL(seller_debug_win_report_url);
 }
 
 // Make sure that the IPAddressSpace of the frame that triggers the update is

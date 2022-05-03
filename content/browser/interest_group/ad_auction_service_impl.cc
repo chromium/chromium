@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -32,8 +31,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -51,59 +50,6 @@ namespace content {
 namespace {
 
 constexpr base::TimeDelta kMaxExpiry = base::Days(30);
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("auction_report_sender", R"(
-        semantics {
-          sender: "Interest group based Ad Auction report"
-          description:
-            "Facilitates reporting the result of an in-browser interest group "
-            "based ad auction to an auction participant. "
-            "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md"
-          trigger:
-            "Requested after running a in-browser interest group based ad "
-            "auction to report the auction result back to auction participants."
-          data: "URL associated with an interest group or seller."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default now.  When enabled, they can be disabled by the Privacy"
-            " Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
-        })");
-
-// Makes a self-owned uncredentialed request. It's used to report the result of
-// an in-browser interest group based ad auction to an auction participant.
-void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
-                 const GURL& url,
-                 const url::Origin& frame_origin,
-                 network::mojom::ClientSecurityStatePtr client_security_state) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
-  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->request_initiator = frame_origin;
-  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
-  resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
-  resource_request->trusted_params->client_security_state =
-      std::move(client_security_state);
-  auto simple_url_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), kTrafficAnnotation);
-  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-  // Pass simple_url_loader to keep it alive until the request fails or succeeds
-  // to prevent cancelling the request.
-  simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
-  simple_url_loader_ptr->DownloadHeadersOnly(
-      url_loader_factory,
-      base::BindOnce([](std::unique_ptr<network::SimpleURLLoader>,
-                        scoped_refptr<net::HttpResponseHeaders>) {},
-                     std::move(simple_url_loader)));
-}
 
 bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   // The ad_request_url origin has to be HTTPS.
@@ -448,8 +394,21 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         ->GetStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         ->Clone(std::move(factory_receiver));
+
+    mojo::Remote<network::mojom::URLLoaderFactory> shared_remote;
+    trusted_url_loader_factory_->Clone(
+        shared_remote.BindNewPipeAndPassReceiver());
+    ref_counted_trusted_url_loader_factory_ =
+        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+            std::move(shared_remote));
   }
   return trusted_url_loader_factory_.get();
+}
+
+scoped_refptr<network::WrapperSharedURLLoaderFactory>
+AdAuctionServiceImpl::GetRefCountedTrustedURLLoaderFactory() {
+  GetTrustedURLLoaderFactory();
+  return ref_counted_trusted_url_loader_factory_;
 }
 
 RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
@@ -520,20 +479,6 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
       origin);
 }
 
-void AdAuctionServiceImpl::HandleReports(
-    network::mojom::URLLoaderFactory* factory,
-    const std::vector<GURL>& report_urls,
-    const std::string& name) {
-  for (const GURL& report_url : report_urls) {
-    base::UmaHistogramCounts100000(
-        base::StrCat({"Ads.InterestGroup.Net.RequestUrlSizeBytes.", name}),
-        report_url.spec().size());
-    base::UmaHistogramCounts100(
-        base::StrCat({"Ads.InterestGroup.Net.ResponseSizeBytes.", name}), 0);
-    FetchReport(factory, report_url, origin(), GetClientSecurityState());
-  }
-}
-
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
@@ -566,8 +511,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::move(callback).Run(absl::nullopt);
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kFailed);
-    HandleReports(GetTrustedURLLoaderFactory(),
-                  std::move(debug_loss_report_urls), "DebugLossReport");
+    GetInterestGroupManager().EnqueueReports(
+        std::vector<GURL>(), std::vector<GURL>(), debug_loss_report_urls,
+        origin(), GetClientSecurityState(),
+        GetRefCountedTrustedURLLoaderFactory());
     return;
   }
   DCHECK(winning_group_id);  // Should always be present with a render_url
@@ -582,11 +529,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   std::move(callback).Run(render_url);
   auction_result_metrics->ReportAuctionResult(
       AdAuctionResultMetrics::AuctionResult::kSucceeded);
-
-  network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
-  HandleReports(factory, std::move(report_urls), "SendReportToReport");
-  HandleReports(factory, std::move(debug_loss_report_urls), "DebugLossReport");
-  HandleReports(factory, std::move(debug_win_report_urls), "DebugWinReport");
+  GetInterestGroupManager().EnqueueReports(
+      report_urls, debug_win_report_urls, debug_loss_report_urls, origin(),
+      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory());
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()
