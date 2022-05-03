@@ -8,17 +8,10 @@
 #include "base/callback.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/media_export.h"
+#include "media/renderers/win/media_foundation_rendering_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
-
-// This C++ enum is the equivalent to mojom::RenderingMode
-enum class RenderingMode : int32_t {
-  DirectComposition = 0,
-  FrameServer = 1,
-  kMinValue = 0,
-  kMaxValue = 1,
-};
 
 // C++ interface equivalent to mojom::MediaFoundationRendererExtension.
 // This interface allows MediaFoundationRenderer to support video rendering
@@ -54,7 +47,8 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
       base::TimeTicks deadline_max) = 0;
 
   // Change which mode we are using for video frame rendering.
-  virtual void SetRenderingMode(RenderingMode mode) = 0;
+  virtual void SetMediaFoundationRenderingMode(
+      MediaFoundationRenderingMode mode) = 0;
 };
 
 }  // namespace media

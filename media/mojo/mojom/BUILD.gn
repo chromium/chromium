@@ -721,8 +721,8 @@ mojom("mojom") {
       {
         types = [
           {
-            mojom = "media.mojom.RenderingMode"
-            cpp = "::media::RenderingMode"
+            mojom = "media.mojom.MediaFoundationRenderingMode"
+            cpp = "::media::MediaFoundationRenderingMode"
           },
         ]
         traits_headers = [ "media_foundation_rendering_mode_mojom_traits.h" ]

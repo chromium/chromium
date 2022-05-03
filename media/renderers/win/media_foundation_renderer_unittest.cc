@@ -11,10 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
@@ -240,6 +242,11 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
 TEST_F(MediaFoundationRendererTest, ClearStartsInFrameServer) {
   if (!MediaFoundationRenderer::IsSupported())
     return;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      media::kMediaFoundationClearRendering, {{"strategy", "dynamic"}});
+  ;
 
   AddStream(DemuxerStream::AUDIO, /*encrypted=*/false);
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/false);

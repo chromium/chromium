@@ -64,7 +64,8 @@ class MediaFoundationRendererWrapper final
   void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
   void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
                                          base::TimeTicks deadline_max) override;
-  void SetRenderingMode(media::RenderingMode mode) override;
+  void SetMediaFoundationRenderingMode(
+      MediaFoundationRenderingMode mode) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;

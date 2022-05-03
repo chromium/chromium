@@ -101,7 +101,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
   void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
                                          base::TimeTicks deadline_max) override;
-  void SetRenderingMode(RenderingMode render_mode) override;
+  void SetMediaFoundationRenderingMode(
+      MediaFoundationRenderingMode render_mode) override;
 
   // Testing verification
   bool InFrameServerMode();
@@ -211,8 +212,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Composition mode.
   MediaFoundationTexturePool texture_pool_;
 
-  // The represents the rendering mode of the Media Engine.
-  RenderingMode rendering_mode_ = RenderingMode::DirectComposition;
+  // Rendering mode the Media Engine will use.
+  MediaFoundationRenderingMode rendering_mode_ =
+      MediaFoundationRenderingMode::DirectComposition;
 
   bool has_reported_significant_playback_ = false;
 

@@ -20,6 +20,7 @@
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/renderers/win/media_foundation_rendering_mode.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -162,10 +163,13 @@ class MediaFoundationRendererClient
   bool output_size_updated_ = false;
   bool is_playing_ = false;
   bool has_video_ = false;
-  bool media_engine_in_frame_server_mode_ = false;
   scoped_refptr<VideoFrame> dcomp_video_frame_;
   scoped_refptr<VideoFrame> next_video_frame_;
   gpu::Mailbox mailbox_;
+
+  // Rendering mode the Media Engine will use.
+  MediaFoundationRenderingMode rendering_mode_ =
+      MediaFoundationRenderingMode::DirectComposition;
 
   PipelineStatusCallback init_cb_;
   raw_ptr<CdmContext> cdm_context_ = nullptr;

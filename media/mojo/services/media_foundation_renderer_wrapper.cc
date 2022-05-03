@@ -217,9 +217,8 @@ void MediaFoundationRendererWrapper::RequestNextFrameBetweenTimestamps(
   renderer_->RequestNextFrameBetweenTimestamps(deadline_min, deadline_max);
 }
 
-void MediaFoundationRendererWrapper::SetRenderingMode(
-    media::RenderingMode mode) {
-  // We define the media RenderingMode enum to match the mojom.
-  renderer_->SetRenderingMode(mode);
+void MediaFoundationRendererWrapper::SetMediaFoundationRenderingMode(
+    MediaFoundationRenderingMode mode) {
+  renderer_->SetMediaFoundationRenderingMode(mode);
 }
 }  // namespace media

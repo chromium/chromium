@@ -91,7 +91,7 @@ interface MediaFoundationRendererClientExtension {
 // direct composition visual, skipping the Chromium compositor.
 // FrameServer is when the media engine will render to a texture and
 // that textured is provided to the Chromium compositor.
-enum RenderingMode {
+enum MediaFoundationRenderingMode {
   DirectComposition,
   FrameServer
 };
@@ -133,7 +133,7 @@ interface MediaFoundationRendererExtension {
     mojo_base.mojom.TimeTicks deadline_max);
 
   // Notify which rendering mode to be using for future video frames.
-  SetRenderingMode(RenderingMode mode);
+  SetMediaFoundationRenderingMode(MediaFoundationRenderingMode mode);
 };
 
 // This interface is used by the browser to determine if there are any renderers

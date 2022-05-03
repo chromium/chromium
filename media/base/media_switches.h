@@ -275,9 +275,31 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationVP8Decoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
+MEDIA_EXPORT extern const base::Feature kAllowMediaFoundationFrameServerMode;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
 MEDIA_EXPORT extern const base::Feature kD3D11HEVCDecoding;
 MEDIA_EXPORT extern const base::Feature kD3D11Vp9kSVCHWDecoding;
+
+// Strategy affecting how Media Foundation Renderer determines its rendering
+// mode when used with clear video media. This strategy does not impact
+// protected media which must always use Direct Composition mode.
+enum class MediaFoundationClearRenderingStrategy {
+  // The renderer will operate in Direct Composition mode (e.g. windowless
+  // swapchain).
+  kDirectComposition,
+  // The renderer will operate in Frame Server mode.
+  kFrameServer,
+  // The renderer is allowed to switch between Direct Composition & Frame Server
+  // mode at its discretion.
+  kDynamic,
+};
+
+// Under this feature, a given MediaFoundationClearRenderingStrategy param is
+// used by the Media Foundation Renderer for Clear content scenarios.
+MEDIA_EXPORT extern const base::Feature kMediaFoundationClearRendering;
+MEDIA_EXPORT extern const base::FeatureParam<
+    MediaFoundationClearRenderingStrategy>
+    kMediaFoundationClearRenderingStrategyParam;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

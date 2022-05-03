@@ -27,6 +27,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/base/win/mf_helpers.h"
@@ -154,21 +155,29 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
 
   renderer_client_ = client;
 
-  // If the content is not protected then we need to start off in
-  // frame server mode so that the first frame's image data is
-  // available to Chromium, quite a few web tests need that image.
-  bool start_in_dcomp_mode = false;
+  // Check the rendering strategy & whether we're operating on clear or
+  // protected content to determine the starting 'rendering_mode_'.
+  // If the Direct Composition strategy is specified or if we're operating on
+  // protected content then start in Direct Composition mode, else start in
+  // Frame Server mode. This behavior must match the logic in
+  // MediaFoundationRendererClient::Initialize.
+  auto rendering_strategy = kMediaFoundationClearRenderingStrategyParam.Get();
+  rendering_mode_ =
+      rendering_strategy ==
+              MediaFoundationClearRenderingStrategy::kDirectComposition
+          ? MediaFoundationRenderingMode::DirectComposition
+          : MediaFoundationRenderingMode::FrameServer;
   for (DemuxerStream* stream : media_resource->GetAllStreams()) {
     if (stream->type() == DemuxerStream::Type::VIDEO &&
         stream->video_decoder_config().is_encrypted()) {
-      // This conditional must match the conditional in
-      // MediaFoundationRendererClient::Initialize
-      start_in_dcomp_mode = true;
+      // This is protected content which only supports Direct Composition mode,
+      // update 'rendering_mode_' accordingly.
+      rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
     }
   }
 
-  rendering_mode_ = start_in_dcomp_mode ? RenderingMode::DirectComposition
-                                        : RenderingMode::FrameServer;
+  MEDIA_LOG(INFO, media_log_)
+      << "Starting MediaFoundationRenderingMode: " << rendering_mode_;
 
   HRESULT hr = CreateMediaEngine(media_resource);
   if (FAILED(hr)) {
@@ -247,7 +256,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
 
     // TODO(crbug.com/1276067): We'll investigate scenarios to see if we can use
     // the on-screen video window size and not the native video size.
-    if (rendering_mode_ == RenderingMode::FrameServer) {
+    if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
       bool has_video = false;
       for (auto* stream : media_resource->GetAllStreams()) {
@@ -459,38 +468,42 @@ void MediaFoundationRenderer::Flush(base::OnceClosure flush_cb) {
   std::move(flush_cb).Run();
 }
 
-void MediaFoundationRenderer::SetRenderingMode(RenderingMode render_mode) {
+void MediaFoundationRenderer::SetMediaFoundationRenderingMode(
+    MediaFoundationRenderingMode render_mode) {
   ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
   HRESULT hr = mf_media_engine_.As(&mf_media_engine_ex);
 
   if (mf_media_engine_->HasVideo()) {
-    if (render_mode == RenderingMode::FrameServer) {
+    if (render_mode == MediaFoundationRenderingMode::FrameServer) {
       // Make sure we reinitialize the texture pool
       hr = InitializeTexturePool(native_video_size_);
-    } else if (render_mode == RenderingMode::DirectComposition) {
+    } else if (render_mode == MediaFoundationRenderingMode::DirectComposition) {
       // If needed renegotiate the DComp visual and send it to the client for
       // presentation
     } else {
       DVLOG(1) << "Rendering mode: " << static_cast<int>(render_mode)
                << " is unsupported";
       MEDIA_LOG(ERROR, media_log_)
-          << "MediaFoundationRenderer SetRenderingMode: " << (int)render_mode
+          << "MediaFoundationRenderer SetMediaFoundationRenderingMode: "
+          << (int)render_mode
           << " is not defined. No change to the rendering mode.";
       hr = E_NOT_SET;
     }
 
     if (SUCCEEDED(hr)) {
       hr = mf_media_engine_ex->EnableWindowlessSwapchainMode(
-          render_mode == RenderingMode::DirectComposition);
+          render_mode == MediaFoundationRenderingMode::DirectComposition);
       if (SUCCEEDED(hr)) {
         rendering_mode_ = render_mode;
+        MEDIA_LOG(INFO, media_log_)
+            << "Set MediaFoundationRenderingMode: " << rendering_mode_;
       }
     }
   }
 }
 
 bool MediaFoundationRenderer::InFrameServerMode() {
-  return rendering_mode_ == RenderingMode::FrameServer;
+  return rendering_mode_ == MediaFoundationRenderingMode::FrameServer;
 }
 
 void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
@@ -632,7 +645,7 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
   RECT dest_rect = {0, 0, rect.width(), rect.height()};
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
-  if (rendering_mode_ == RenderingMode::FrameServer) {
+  if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
     RETURN_IF_FAILED(InitializeTexturePool(native_video_size_));
   }
   return S_OK;
@@ -877,7 +890,7 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
     std::ignore = UpdateVideoStream(test_rect);
   }
 
-  if (rendering_mode_ == RenderingMode::FrameServer) {
+  if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
     InitializeTexturePool(native_video_size_);
   }
 
@@ -927,7 +940,7 @@ void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (rendering_mode_ != RenderingMode::FrameServer) {
+  if (rendering_mode_ != MediaFoundationRenderingMode::FrameServer) {
     return;
   }
 

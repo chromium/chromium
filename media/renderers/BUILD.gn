@@ -72,6 +72,8 @@ source_set("renderers") {
       "win/media_foundation_renderer.cc",
       "win/media_foundation_renderer.h",
       "win/media_foundation_renderer_extension.h",
+      "win/media_foundation_rendering_mode.cc",
+      "win/media_foundation_rendering_mode.h",
       "win/media_foundation_source_wrapper.cc",
       "win/media_foundation_source_wrapper.h",
       "win/media_foundation_stream_wrapper.cc",

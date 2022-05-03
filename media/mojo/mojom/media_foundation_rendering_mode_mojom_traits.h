@@ -6,34 +6,37 @@
 #define MEDIA_MOJO_MOJOM_MEDIA_FOUNDATION_RENDERING_MODE_MOJOM_TRAITS_H_
 
 #include "media/mojo/mojom/renderer_extensions.mojom-shared.h"
-#include "media/renderers/win/media_foundation_renderer_extension.h"
+#include "media/renderers/win/media_foundation_rendering_mode.h"
 
 template <>
-struct mojo::EnumTraits<media::mojom::RenderingMode, media::RenderingMode> {
+struct mojo::EnumTraits<media::mojom::MediaFoundationRenderingMode,
+                        media::MediaFoundationRenderingMode> {
  public:
-  static bool FromMojom(media::mojom::RenderingMode data,
-                        media::RenderingMode* output) {
+  static bool FromMojom(media::mojom::MediaFoundationRenderingMode data,
+                        media::MediaFoundationRenderingMode* output) {
     switch (data) {
-      case media::mojom::RenderingMode::DirectComposition:
-        *output = media::RenderingMode::DirectComposition;
+      case media::mojom::MediaFoundationRenderingMode::DirectComposition:
+        *output = media::MediaFoundationRenderingMode::DirectComposition;
         return true;
-      case media::mojom::RenderingMode::FrameServer:
-        *output = media::RenderingMode::FrameServer;
+      case media::mojom::MediaFoundationRenderingMode::FrameServer:
+        *output = media::MediaFoundationRenderingMode::FrameServer;
         return true;
     }
     NOTREACHED();
     return false;
   }
 
-  static media::mojom::RenderingMode ToMojom(media::RenderingMode data) {
+  static media::mojom::MediaFoundationRenderingMode ToMojom(
+      media::MediaFoundationRenderingMode data) {
     switch (data) {
-      case media::RenderingMode::DirectComposition:
-        return media::mojom::RenderingMode::DirectComposition;
-      case media::RenderingMode::FrameServer:
-        return media::mojom::RenderingMode::FrameServer;
+      case media::MediaFoundationRenderingMode::DirectComposition:
+        return media::mojom::MediaFoundationRenderingMode::DirectComposition;
+      case media::MediaFoundationRenderingMode::FrameServer:
+        return media::mojom::MediaFoundationRenderingMode::FrameServer;
+        break;
     }
     NOTREACHED();
-    return media::mojom::RenderingMode::DirectComposition;
+    return media::mojom::MediaFoundationRenderingMode::DirectComposition;
   }
 };
 
