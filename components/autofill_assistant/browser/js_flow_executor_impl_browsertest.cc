@@ -9,6 +9,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -17,14 +18,24 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/base_browsertest.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/model.pb.h"
+#include "components/autofill_assistant/browser/script.h"
+#include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/mock_service.h"
+#include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,12 +47,14 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::StrictMock;
 using ::testing::WithArg;
 
 class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
@@ -60,10 +73,8 @@ class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
       (override));
 };
 
-class JsFlowExecutorImplTest : public autofill_assistant::BaseBrowserTest {
+class JsFlowExecutorImplTest : public BaseBrowserTest {
  public:
-  JsFlowExecutorImplTest() {}
-
   void SetUpOnMainThread() override {
     BaseBrowserTest::SetUpOnMainThread();
 
@@ -321,19 +332,19 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, ReturnNull) {
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, ExceptionReporting) {
-  // Note: the flow wrapper is responsible for the second exception stack frame
-  // as well as the line offset. In practice, the bottom-most stack frame can
-  // and/or should be mostly ignored when analyzing stack traces.
   std::unique_ptr<base::Value> result;
-  ClientStatus status = RunTest("throw new Error('Hello world!');", result);
+  ClientStatus status = RunTest("notdefined;", result);
   EXPECT_EQ(status.proto_status(), UNEXPECTED_JS_ERROR);
   ASSERT_THAT(result, Eq(nullptr));
+
+  // NOTE: Do not change the values here. The above script should output exactly
+  // one stack frame with 0:0.
   EXPECT_THAT(
       status.details().unexpected_error_info().js_exception_line_numbers(),
-      ElementsAre(9, 9));
+      ElementsAre(0));
   EXPECT_THAT(
       status.details().unexpected_error_info().js_exception_column_numbers(),
-      ElementsAre(10, 41));
+      ElementsAre(0));
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleConsecutiveFlows) {
@@ -405,6 +416,111 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
   EXPECT_EQ(RunTest("return globalFlowState.i;", result).proto_status(),
             ACTION_APPLIED);
   EXPECT_EQ(*result, base::Value(5));
+}
+
+class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    BaseBrowserTest::SetUpOnMainThread();
+
+    web_controller_ = WebController::CreateForWebContents(
+        shell()->web_contents(), &user_data_, &log_info_, nullptr,
+        /*enable_full_stack_traces= */ true);
+
+    fake_script_executor_delegate_.SetService(&mock_service_);
+    fake_script_executor_delegate_.SetWebController(web_controller_.get());
+    fake_script_executor_delegate_.SetCurrentURL(GURL("http://example.com/"));
+    fake_script_executor_delegate_.SetWebContents(shell()->web_contents());
+
+    script_executor_ = std::make_unique<ScriptExecutor>(
+        /* script_path= */ "",
+        /* additional_context= */ std::make_unique<TriggerContext>(),
+        /* global_payload= */ "",
+        /* script_payload= */ "",
+        /* listener= */ nullptr, &ordered_interrupts_,
+        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_);
+  }
+
+ protected:
+  void Run(const std::string& js_flow,
+           const ProcessedActionStatusProto& result) {
+    ActionsResponseProto actions_response;
+    actions_response.add_actions()->mutable_js_flow()->set_js_flow(js_flow);
+    /* actions_response.add_actions() */
+    /*     ->mutable_release_elements() */
+    /*     ->add_client_ids() */
+    /*     ->set_identifier("client_id"); */
+
+    EXPECT_CALL(mock_service_, GetActions)
+        .WillOnce(RunOnceCallback<5>(net::HTTP_OK,
+                                     actions_response.SerializeAsString(),
+                                     ServiceRequestSender::ResponseInfo{}));
+
+    EXPECT_CALL(mock_service_,
+                GetNextActions(_, _, _,
+                               ElementsAre(Property(
+                                   &ProcessedActionProto::status, result)),
+                               _, _, _))
+        .WillOnce(RunOnceCallback<6>(net::HTTP_OK,
+                                     ActionsResponseProto().SerializeAsString(),
+                                     ServiceRequestSender::ResponseInfo{}));
+
+    base::RunLoop run_loop;
+    script_executor_->Run(
+        &user_data_,
+        base::BindOnce(&JsFlowExecutorImplScriptExecutorTest::OnFlowFinished,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  void OnFlowFinished(base::OnceClosure done_callback,
+                      const ScriptExecutor::Result& result) {
+    EXPECT_TRUE(result.success);
+    std::move(done_callback).Run();
+  }
+
+  std::vector<std::unique_ptr<Script>> ordered_interrupts_;
+
+  ProcessedActionStatusDetailsProto log_info_;
+  std::unique_ptr<WebController> web_controller_;
+
+  FakeScriptExecutorDelegate fake_script_executor_delegate_;
+  FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate_;
+  UserData user_data_;
+
+  NiceMock<MockService> mock_service_;
+  std::unique_ptr<ScriptExecutor> script_executor_;
+};
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplScriptExecutorTest,
+                       WaitForDomSucceeds) {
+  WaitForDomProto wait_for_dom;
+  wait_for_dom.mutable_wait_condition()
+      ->mutable_match()
+      ->add_filters()
+      ->set_css_selector("#button");
+  std::string wait_for_dom_base64;
+  base::Base64Encode(wait_for_dom.SerializeAsString(), &wait_for_dom_base64);
+
+  Run(R"(const [status, value] = await runNativeAction(19, ')" +
+          wait_for_dom_base64 + R"(');
+      return {status};)",
+      ACTION_APPLIED);
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplScriptExecutorTest, WaitForDomFails) {
+  WaitForDomProto wait_for_dom;
+  wait_for_dom.mutable_wait_condition()
+      ->mutable_match()
+      ->add_filters()
+      ->set_css_selector("#not-found");
+  std::string wait_for_dom_base64;
+  base::Base64Encode(wait_for_dom.SerializeAsString(), &wait_for_dom_base64);
+
+  Run(R"(const [status, value] = await runNativeAction(19, ')" +
+          wait_for_dom_base64 + R"(');
+      return {status};)",
+      ELEMENT_RESOLUTION_FAILED);
 }
 
 }  // namespace

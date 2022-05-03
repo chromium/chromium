@@ -94,9 +94,12 @@ bool ContainsOnlyAllowedValues(const base::Value& value,
 ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
-    std::unique_ptr<base::Value>& out_flow_result) {
+    std::unique_ptr<base::Value>& out_flow_result,
+    int js_line_offset,
+    int num_stack_entries_to_drop) {
   ClientStatus status = CheckJavaScriptResult(
-      devtools_reply_status, devtools_result, __FILE__, __LINE__);
+      devtools_reply_status, devtools_result, __FILE__, __LINE__,
+      js_line_offset, num_stack_entries_to_drop);
   if (!status.ok()) {
     return status;
   }

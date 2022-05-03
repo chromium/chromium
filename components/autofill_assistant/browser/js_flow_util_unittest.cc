@@ -144,7 +144,8 @@ TEST(JsFlowUtilTest, ExtractFlowReturnValue) {
 
   std::unique_ptr<base::Value> out_flow_value;
   ClientStatus status = ExtractFlowReturnValue(
-      devtools_status, devtools_result.get(), out_flow_value);
+      devtools_status, devtools_result.get(), out_flow_value,
+      /* js_line_offset= */ 0, /* num_stack_entries_to_drop= */ 0);
   EXPECT_TRUE(status.ok());
   EXPECT_EQ(*out_flow_value, base::Value(12345));
 }

@@ -271,6 +271,7 @@ void ScriptExecutor::WaitForDomWithSlowWarning(
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
+
   Action::ActionData& current_action_data = current_action_->GetActionData();
   current_action_data.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_, max_wait_time,
@@ -1004,6 +1005,7 @@ void ScriptExecutor::OnProcessedAction(
     // to immediately ask for new actions.
     actions_.resize(processed_actions_.size());
   }
+
   current_action_ = nullptr;
   ProcessNextAction();
 }

@@ -82,6 +82,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
     web_controller_ = web_controller;
   }
 
+  void SetWebContents(content::WebContents* web_contents) {
+    web_contents_ = web_contents;
+  }
+
   void SetTriggerContext(std::unique_ptr<TriggerContext> trigger_context) {
     trigger_context_ = std::move(trigger_context);
   }
@@ -114,6 +118,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   GURL current_url_;
   raw_ptr<Service> service_ = nullptr;
   raw_ptr<WebController> web_controller_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::vector<ElementAreaProto> touchable_element_area_history_;

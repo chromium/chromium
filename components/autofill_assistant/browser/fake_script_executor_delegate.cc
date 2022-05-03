@@ -58,7 +58,7 @@ FakeScriptExecutorDelegate::GetPasswordChangeSuccessTracker() {
 }
 
 content::WebContents* FakeScriptExecutorDelegate::GetWebContents() {
-  return nullptr;
+  return web_contents_;
 }
 
 std::string FakeScriptExecutorDelegate::GetEmailAddressForAccessTokenAccount() {
