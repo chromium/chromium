@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"

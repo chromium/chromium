@@ -2378,7 +2378,7 @@ send_tab_to_self::SendTabToSelfBubbleView* BrowserView::ShowSendTabToSelfBubble(
   return bubble;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 views::Button* BrowserView::GetSharingHubIconButton() {
   return toolbar_button_provider()->GetPageActionIconView(
       PageActionIconType::kSharingHub);
@@ -2401,7 +2401,7 @@ sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
 
   return bubble;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     content::WebContents* web_contents,

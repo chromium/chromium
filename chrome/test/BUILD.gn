@@ -2578,6 +2578,7 @@ if (!is_android) {
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
+        "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_lacros_browsertest.cc",
         "../browser/web_applications/app_service/lacros_web_apps_controller_browsertest.cc",
       ]
       deps += [
@@ -2629,8 +2630,10 @@ if (!is_android) {
     }
 
     if (is_chromeos_ash) {
-      sources +=
-          [ "../browser/lifetime/application_lifetime_chromeos_browsertest.cc" ]
+      sources += [
+        "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
+        "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_ash_browsertest.cc",
+      ]
     }
 
     if (!is_chromeos) {
@@ -3814,7 +3817,6 @@ if (!is_android) {
         "../browser/ui/browser_navigator_browsertest_chromeos.cc",
         "../browser/ui/extensions/application_launch_browsertest.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
-        "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_browsertest.cc",
         "../browser/ui/views/apps/app_dialog/app_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/app_dialog/app_uninstall_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",

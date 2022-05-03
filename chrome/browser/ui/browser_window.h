@@ -434,7 +434,7 @@ class BrowserWindow : public ui::BaseWindow {
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
       content::WebContents* contents) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the PageActionIconView for the Sharing Hub.
   virtual views::Button* GetSharingHubIconButton() = 0;
 #else
@@ -442,7 +442,7 @@ class BrowserWindow : public ui::BaseWindow {
   // of user action.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents) = 0;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Shows the translate bubble.
   //

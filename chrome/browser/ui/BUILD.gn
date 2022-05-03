@@ -4032,7 +4032,6 @@ static_library("ui") {
       "send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.cc",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
-      "sharing_hub/sharing_hub_bubble_controller.cc",
       "sharing_hub/sharing_hub_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_view.h",
 
@@ -5052,7 +5051,11 @@ static_library("ui") {
       ]
     }
     if (is_chromeos) {
-      sources += [ "views/status_icons/status_tray_chromeos.cc" ]
+      sources += [
+        "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.cc",
+        "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h",
+        "views/status_icons/status_tray_chromeos.cc",
+      ]
       deps += [ "//components/arc/common:arc_intent_helper_constants" ]
     }
     if (is_fuchsia) {
@@ -5148,6 +5151,8 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
+        "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
+        "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
         "views/frame/opaque_browser_frame_view.cc",
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",

@@ -21,7 +21,7 @@ class WebContents;
 
 namespace sharing_hub {
 
-class SharingHubBubbleController;
+class SharingHubBubbleControllerDesktopImpl;
 class SharingHubBubbleActionButton;
 struct SharingHubAction;
 
@@ -80,7 +80,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // the bubble during the window close path, since the bubble will be closed
   // asynchronously during browser window teardown but the controller will be
   // destroyed synchronously.
-  base::WeakPtr<SharingHubBubbleController> controller_;
+  base::WeakPtr<SharingHubBubbleControllerDesktopImpl> controller_;
 
   // ScrollView containing the list of share/save actions.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;

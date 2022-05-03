@@ -161,12 +161,12 @@ class TestBrowserWindow : public BrowserWindow {
 #endif  //  !define(OS_ANDROID)
   send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
       content::WebContents* contents) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,
       translate::TranslateStep step,

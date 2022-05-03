@@ -275,7 +275,7 @@ TestBrowserWindow::ShowSendTabToSelfBubble(content::WebContents* contents) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 views::Button* TestBrowserWindow::GetSharingHubIconButton() {
   return nullptr;
 }
@@ -284,7 +284,7 @@ sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
     content::WebContents* contents) {
   return nullptr;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool TestBrowserWindow::IsDownloadShelfVisible() const {
   return false;
