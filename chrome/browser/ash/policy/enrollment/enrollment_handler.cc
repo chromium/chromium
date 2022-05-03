@@ -619,8 +619,6 @@ void EnrollmentHandler::OnOfflinePolicyBlobLoaded(
   DCHECK_EQ(STEP_POLICY_FETCH, enrollment_step_);
 
   if (!blob.has_value()) {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::OFFLINE_POLICY_LOAD_FAILED));
     return;
   }
 
@@ -629,8 +627,6 @@ void EnrollmentHandler::OnOfflinePolicyBlobLoaded(
   // Validate the policy.
   auto policy = std::make_unique<em::PolicyFetchResponse>();
   if (!policy->ParseFromString(blob.value())) {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED));
     return;
   }
 

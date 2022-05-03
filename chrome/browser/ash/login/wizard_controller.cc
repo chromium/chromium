@@ -1361,12 +1361,6 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
           DemoSession::DemoModeConfig::kOnline);
       ShowEulaScreen();
       break;
-    case NetworkScreen::Result::OFFLINE_DEMO:
-      DCHECK(demo_setup_controller_);
-      demo_setup_controller_->set_demo_config(
-          DemoSession::DemoModeConfig::kOffline);
-      ShowEulaScreen();
-      break;
     case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
     case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
       DCHECK(!demo_setup_controller_);
@@ -1706,11 +1700,6 @@ void WizardController::OnArcTermsOfServiceScreenExit(
       break;
     case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE:
       ShowAssistantOptInFlowScreen();
-      break;
-    case ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_OFFLINE:
-    case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE_DEMO_OFFLINE:
-      DCHECK(demo_setup_controller_);
-      ShowDemoModeSetupScreen();
       break;
     case ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE:
     case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE_DEMO_ONLINE:

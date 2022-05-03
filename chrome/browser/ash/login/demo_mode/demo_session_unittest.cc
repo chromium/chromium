@@ -155,7 +155,6 @@ TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
   DemoSession* demo_session = DemoSession::StartIfInDemoMode();
   ASSERT_TRUE(demo_session);
   EXPECT_TRUE(demo_session->started());
-  EXPECT_FALSE(demo_session->offline_enrolled());
   EXPECT_EQ(demo_session, DemoSession::Get());
 }
 

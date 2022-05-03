@@ -31,7 +31,6 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
     CONNECTED_DEMO,
     CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
     CONNECTED_DEMO_CONSOLIDATED_CONSENT,
-    OFFLINE_DEMO,
     BACK_REGULAR,
     BACK_DEMO,
     BACK_OS_INSTALL,

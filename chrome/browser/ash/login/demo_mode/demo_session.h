@@ -52,11 +52,12 @@ class DemoSession : public session_manager::SessionManagerObserver,
     // Online enrollment into demo mode was established with DMServer.
     // Policies are applied from the cloud.
     kOnline = 1,
+    // Deprecated: demo mode offline enrollment is not supported.
     // Offline enrollment into demo mode was established locally.
     // Offline policy set is applied to the device.
-    kOffline = 2,
+    kOfflineDeprecated = 2,
     // Add new entries above this line and make sure to update kLast value.
-    kLast = kOffline,
+    kLast = kOfflineDeprecated,
   };
 
   // Indicates the source of an app launch when in Demo mode for UMA
@@ -92,11 +93,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Whether the device is set up to run demo sessions.
   static bool IsDeviceInDemoMode();
-
-  // Whether the device is set up to enroll Demo Mode offline.
-  // The device needs to be set up for Demo Mode in order to return true.
-  // TODO(b/154290639): Move into anonymous namespace when fixed.
-  static bool IsDemoModeOfflineEnrolled();
 
   // Returns current demo mode configuration.
   static DemoModeConfig GetDemoConfig();
@@ -175,8 +171,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // extensions::AppWindowRegistry::Observer:
   void OnAppWindowActivated(extensions::AppWindow* app_window) override;
 
-  bool offline_enrolled() const { return offline_enrolled_; }
-
   bool started() const { return started_; }
 
   const DemoResources* resources() const { return demo_resources_.get(); }
@@ -193,10 +187,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Installs resources for Demo Mode from the offline demo mode resources, such
   // as apps and media.
   void InstallDemoResources();
-
-  // Loads the highlights app from offline resources and launches it upon
-  // success.
-  void LoadAndLaunchHighlightsApp();
 
   // Installs the CRX file from an update URL. Observes `AppRegistryCache` to
   // launch the app upon installation.
@@ -220,11 +210,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
-
-  // Whether the device was offline-enrolled into demo mode, i.e. enrolled using
-  // pre-built policies. Offline enrolled demo sessions do not have working
-  // robot account associated with them.
-  bool offline_enrolled_ = false;
 
   // Whether demo session has been started.
   bool started_ = false;

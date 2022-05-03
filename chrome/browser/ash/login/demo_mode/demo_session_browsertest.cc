@@ -22,17 +22,7 @@ void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
 
 void CheckDemoMode() {
   EXPECT_TRUE(DemoSession::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kOffline,
-            DemoSession::GetDemoConfig());
-
-  SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
-  EXPECT_TRUE(DemoSession::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kOnline, DemoSession::GetDemoConfig());
-
-  SetDemoConfigPref(DemoSession::DemoModeConfig::kOffline);
-  EXPECT_TRUE(DemoSession::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kOffline,
-            DemoSession::GetDemoConfig());
 }
 
 void CheckNoDemoMode() {
@@ -40,10 +30,6 @@ void CheckNoDemoMode() {
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
 
   SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
-  EXPECT_FALSE(DemoSession::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
-
-  SetDemoConfigPref(DemoSession::DemoModeConfig::kOffline);
   EXPECT_FALSE(DemoSession::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
 }
@@ -63,7 +49,7 @@ class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
   // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    SetDemoConfigPref(DemoSession::DemoModeConfig::kOffline);
+    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
   }
 
  private:
@@ -95,7 +81,7 @@ class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
   // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    SetDemoConfigPref(DemoSession::DemoModeConfig::kOffline);
+    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
   }
 
  private:

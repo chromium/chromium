@@ -615,19 +615,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForPublicAccounts) {
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT, primary_account.second);
 }
 
-IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
-                       GetPrimaryAccountForOfflineDemoAccounts) {
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOffline);
-  ash::DemoSession::StartIfInDemoMode();
-  SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  const std::pair<std::string, mojom::ChromeAccountType>
-      primary_account = RequestPrimaryAccount();
-  EXPECT_EQ(std::string(), primary_account.first);
-  EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
-            primary_account.second);
-}
-
 // Tests that when ARC requests account info for a non-managed account,
 // Chrome supplies the info configured in SetAccountAndProfile() method.
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
@@ -1204,26 +1191,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
             auth_instance().account_info()->account_type);
   EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
-}
-
-IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetOfflineDemoAccount) {
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOffline);
-  ash::DemoSession::StartIfInDemoMode();
-
-  SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-
-  base::RunLoop run_loop;
-  auth_instance().RequestPrimaryAccountInfo(run_loop.QuitClosure());
-  run_loop.Run();
-
-  ASSERT_TRUE(auth_instance().account_info());
-  EXPECT_TRUE(auth_instance().account_info()->account_name.value().empty());
-  EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
-  EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
-            auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
-  EXPECT_TRUE(auth_instance().account_info()->is_managed);
 }
 
 IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,

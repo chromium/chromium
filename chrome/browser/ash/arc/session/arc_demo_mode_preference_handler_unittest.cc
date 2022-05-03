@@ -77,17 +77,6 @@ TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefOnline_NoArcVm) {
   EXPECT_FALSE(handler_was_called());
 }
 
-TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefOffline) {
-  SetArcVmEnabled();
-  EXPECT_FALSE(handler_was_called());
-
-  pref_service()->SetInteger(
-      prefs::kDemoModeConfig,
-      static_cast<int>(ash::DemoSession::DemoModeConfig::kOffline));
-
-  EXPECT_TRUE(handler_was_called());
-}
-
 TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefNone) {
   SetArcVmEnabled();
   EXPECT_FALSE(handler_was_called());

@@ -19,10 +19,6 @@ MATCHER(ConfigIsAttestation, "") {
   return arg.mode == policy::EnrollmentConfig::MODE_ATTESTATION;
 }
 
-MATCHER(ConfigIsOfflineDemo, "") {
-  return arg.mode == policy::EnrollmentConfig::MODE_OFFLINE_DEMO;
-}
-
 }  // namespace
 
 namespace test {
@@ -56,35 +52,6 @@ void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
                 policy::EnrollmentStatus::ForRegistrationError(
                     policy::DeviceManagementStatus::
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
-            break;
-          default:
-            NOTREACHED();
-        }
-      }));
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
-}
-
-void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result) {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
-  auto* mock_ptr = mock.get();
-  EXPECT_CALL(*mock, Setup(_, ConfigIsOfflineDemo(), _, _));
-
-  EXPECT_CALL(*mock, EnrollForOfflineDemo())
-      .WillRepeatedly(testing::Invoke([mock_ptr, result]() {
-        switch (result) {
-          case DemoModeSetupResult::SUCCESS:
-            mock_ptr->status_consumer()->OnDeviceEnrolled();
-            break;
-          case DemoModeSetupResult::ERROR_POWERWASH_REQUIRED:
-            mock_ptr->status_consumer()->OnEnrollmentError(
-                policy::EnrollmentStatus::ForLockError(
-                    InstallAttributes::LOCK_READBACK_ERROR));
-            break;
-          case DemoModeSetupResult::ERROR_DEFAULT:
-            mock_ptr->status_consumer()->OnEnrollmentError(
-                policy::EnrollmentStatus::ForStatus(
-                    policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED));
             break;
           default:
             NOTREACHED();

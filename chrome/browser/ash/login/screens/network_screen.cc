@@ -38,8 +38,6 @@ std::string NetworkScreen::GetResultString(Result result) {
     case Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
     case Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       return "Connected";
-    case Result::OFFLINE_DEMO:
-      return "OfflineDemoSetup";
     case Result::BACK_REGULAR:
     case Result::BACK_DEMO:
     case Result::BACK_OS_INSTALL:

@@ -569,16 +569,6 @@ TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, PrimaryDemoProfile) {
   EXPECT_TRUE(DemoExtensionsExternalLoader::SupportedForProfile(profile.get()));
 }
 
-TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest,
-       PrimaryOfflineEnrolledDemoProfile) {
-  StartDemoSession(DemoSession::DemoModeConfig::kOffline);
-
-  std::unique_ptr<TestingProfile> profile = AddTestUser(
-      AccountId::FromUserEmailGaiaId("primary@test.com", "primary_user"));
-
-  EXPECT_TRUE(DemoExtensionsExternalLoader::SupportedForProfile(profile.get()));
-}
-
 TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, ProfileWithNoUser) {
   StartDemoSession(DemoSession::DemoModeConfig::kOnline);
   TestingProfile profile;

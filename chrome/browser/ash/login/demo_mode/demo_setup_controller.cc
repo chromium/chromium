@@ -51,10 +51,6 @@ using ErrorCode = DemoSetupController::DemoSetupError::ErrorCode;
 using RecoveryMethod = DemoSetupController::DemoSetupError::RecoveryMethod;
 
 constexpr char kDemoRequisition[] = "cros-demo-mode";
-constexpr char kOfflinePolicyDirectoryName[] = "policy";
-constexpr char kOfflineDevicePolicyFileName[] = "device_policy";
-constexpr char kOfflineDeviceLocalAccountPolicyFileName[] =
-    "local_account_policy";
 constexpr char kDemoSetupDownloadDurationHistogram[] =
     "DemoMode.Setup.DownloadDuration";
 constexpr char kDemoSetupEnrollDurationHistogram[] =
@@ -296,10 +292,6 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
     case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
       return DemoSetupError(ErrorCode::kDMTokenStoreError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::OFFLINE_POLICY_LOAD_FAILED:
-    case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
-      return DemoSetupError(ErrorCode::kOfflinePolicyError,
-                            RecoveryMethod::kOnlineOnly, debug_message);
     case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
@@ -357,10 +349,6 @@ DemoSetupController::DemoSetupError::~DemoSetupError() = default;
 std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
     const {
   switch (error_code_) {
-    case ErrorCode::kOfflinePolicyError:
-      return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR);
-    case ErrorCode::kOfflinePolicyStoreError:
-      return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_OFFLINE_STORE_ERROR);
     case ErrorCode::kOnlineFRECheckRequired:
       return l10n_util::GetStringUTF16(
           IDS_DEMO_SETUP_OFFLINE_UNAVAILABLE_ERROR);
@@ -546,10 +534,6 @@ DemoSetupController::~DemoSetupController() {
     device_local_account_policy_store_->RemoveObserver(this);
 }
 
-bool DemoSetupController::IsOfflineEnrollment() const {
-  return demo_config_ == DemoSession::DemoModeConfig::kOffline;
-}
-
 void DemoSetupController::Enroll(
     OnSetupSuccess on_setup_success,
     OnSetupError on_setup_error,
@@ -571,11 +555,8 @@ void DemoSetupController::Enroll(
     case DemoSession::DemoModeConfig::kOnline:
       LoadDemoResourcesCrOSComponent();
       return;
-    case DemoSession::DemoModeConfig::kOffline: {
-      EnrollOffline();
-      return;
-    }
     case DemoSession::DemoModeConfig::kNone:
+    case DemoSession::DemoModeConfig::kOfflineDeprecated:
       NOTREACHED() << "No valid demo mode config specified";
   }
 }
@@ -650,35 +631,6 @@ void DemoSetupController::OnPreinstalledDemoResourcesLoaded(
   std::move(callback).Run(!preinstalled_demo_resources_->path().empty());
 }
 
-void DemoSetupController::EnrollOffline() {
-  DCHECK_EQ(demo_config_, DemoSession::DemoModeConfig::kOffline);
-  DCHECK(!preinstalled_demo_resources_->path().empty());
-
-  const base::FilePath policy_dir =
-      preinstalled_demo_resources_->GetAbsolutePath(
-          base::FilePath(kOfflinePolicyDirectoryName));
-
-  if (IsOnlineFreCheckRequired()) {
-    SetupFailed(
-        DemoSetupError(DemoSetupError::ErrorCode::kOnlineFRECheckRequired,
-                       DemoSetupError::RecoveryMethod::kOnlineOnly,
-                       "Cannot do offline demo mode setup, because online "
-                       "FRE check is required."));
-    return;
-  }
-
-  VLOG(1) << "Starting offline enrollment";
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_OFFLINE_DEMO;
-  config.management_domain = policy::kDemoModeDomain;
-  config.offline_policy_path =
-      policy_dir.AppendASCII(kOfflineDevicePolicyFileName);
-  enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-      this, nullptr /* ad_join_delegate */, config, policy::kDemoModeDomain,
-      policy::LicenseType::kEnterprise);
-  enrollment_helper_->EnrollForOfflineDemo();
-}
-
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
   NOTREACHED();
 }
@@ -701,24 +653,6 @@ void DemoSetupController::OnDeviceEnrolled() {
         base::TimeTicks::Now() - enroll_start_time_;
     base::UmaHistogramLongTimes100(kDemoSetupEnrollDurationHistogram,
                                    enroll_duration);
-  }
-
-  // Try to load the policy for the device local account.
-  if (demo_config_ == DemoSession::DemoModeConfig::kOffline) {
-    VLOG(1) << "Loading offline policy";
-    DCHECK(!preinstalled_demo_resources_->path().empty());
-
-    const base::FilePath file_path =
-        preinstalled_demo_resources_->GetAbsolutePath(
-            base::FilePath(kOfflinePolicyDirectoryName)
-                .AppendASCII(kOfflineDeviceLocalAccountPolicyFileName));
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&ReadFileToOptionalString, file_path),
-        base::BindOnce(&DemoSetupController::OnDeviceLocalAccountPolicyLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
   }
   VLOG(1) << "Marking device registered";
   StartupUtils::MarkDeviceRegistered(
@@ -747,55 +681,6 @@ void DemoSetupController::SetPreinstalledOfflineResourcesPathForTesting(
 void DemoSetupController::SetDeviceLocalAccountPolicyStoreForTest(
     policy::CloudPolicyStore* store) {
   device_local_account_policy_store_ = store;
-}
-
-void DemoSetupController::OnDeviceLocalAccountPolicyLoaded(
-    absl::optional<std::string> blob) {
-  if (!blob.has_value()) {
-    // This is very unlikely to happen since the file existence is already
-    // checked as CheckOfflinePolicyFilesExist.
-    SetupFailed(
-        DemoSetupError(DemoSetupError::ErrorCode::kOfflinePolicyError,
-                       DemoSetupError::RecoveryMethod::kPowerwash,
-                       "Policy file for the device local account not found"));
-    return;
-  }
-
-  enterprise_management::PolicyFetchResponse policy;
-  if (!policy.ParseFromString(blob.value())) {
-    SetupFailed(DemoSetupError(DemoSetupError::ErrorCode::kOfflinePolicyError,
-                               DemoSetupError::RecoveryMethod::kPowerwash,
-                               "Error parsing local account policy blob."));
-    return;
-  }
-
-  // Extract the account_id from the policy data.
-  enterprise_management::PolicyData policy_data;
-  if (policy.policy_data().empty() ||
-      !policy_data.ParseFromString(policy.policy_data())) {
-    SetupFailed(DemoSetupError(DemoSetupError::ErrorCode::kOfflinePolicyError,
-                               DemoSetupError::RecoveryMethod::kPowerwash,
-                               "Error parsing local account policy data."));
-    return;
-  }
-
-  VLOG(1) << "Storing offline policy";
-  // On the unittest, the device_local_account_policy_store_ is already
-  // initialized. Otherwise attempts to get the store.
-  if (!device_local_account_policy_store_) {
-    device_local_account_policy_store_ =
-        GetDeviceLocalAccountPolicyStore(policy_data.username());
-  }
-
-  if (!device_local_account_policy_store_) {
-    SetupFailed(
-        DemoSetupError(DemoSetupError::ErrorCode::kOfflinePolicyStoreError,
-                       DemoSetupError::RecoveryMethod::kPowerwash,
-                       "Can't find the store for the local account policy."));
-    return;
-  }
-  device_local_account_policy_store_->AddObserver(this);
-  device_local_account_policy_store_->Store(policy);
 }
 
 void DemoSetupController::OnDeviceRegistered() {
@@ -860,10 +745,6 @@ void DemoSetupController::OnStoreLoaded(policy::CloudPolicyStore* store) {
 
 void DemoSetupController::OnStoreError(policy::CloudPolicyStore* store) {
   DCHECK_EQ(store, device_local_account_policy_store_);
-  SetupFailed(
-      DemoSetupError(DemoSetupError::ErrorCode::kOfflinePolicyStoreError,
-                     DemoSetupError::RecoveryMethod::kPowerwash,
-                     "Failed to store the local account policy"));
 }
 
 }  //  namespace ash

@@ -319,8 +319,6 @@ void CoreOobeHandler::HandleStartDemoModeSetupForTesting(
   DemoSession::DemoModeConfig config;
   if (demo_config == "online") {
     config = DemoSession::DemoModeConfig::kOnline;
-  } else if (demo_config == "offline") {
-    config = DemoSession::DemoModeConfig::kOffline;
   } else {
     NOTREACHED() << "Unknown demo config passed for tests";
   }

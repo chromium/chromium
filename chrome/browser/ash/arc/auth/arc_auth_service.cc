@@ -95,9 +95,7 @@ mojom::ChromeAccountType GetAccountType(const Profile* profile) {
     // a (fake) robot account not known to auth service - this means that it has
     // to go through different, offline provisioning flow.
     DCHECK(IsRobotOrOfflineDemoAccountMode());
-    return demo_session->offline_enrolled()
-               ? mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT
-               : mojom::ChromeAccountType::ROBOT_ACCOUNT;
+    return mojom::ChromeAccountType::ROBOT_ACCOUNT;
   }
 
   return IsRobotOrOfflineDemoAccountMode()

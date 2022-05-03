@@ -37,7 +37,6 @@ namespace {
 using test::DemoModeSetupResult;
 using test::SetupDummyOfflinePolicyDir;
 using test::SetupMockDemoModeNoEnrollmentHelper;
-using test::SetupMockDemoModeOfflineEnrollmentHelper;
 using test::SetupMockDemoModeOnlineEnrollmentHelper;
 using ::testing::_;
 

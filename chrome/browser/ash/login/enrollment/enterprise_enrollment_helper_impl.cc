@@ -518,10 +518,6 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
       UMA(policy::kMetricEnrollmentStoreDMTokenFailed);
       break;
-    case policy::EnrollmentStatus::OFFLINE_POLICY_LOAD_FAILED:
-    case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
-      UMA(policy::kMetricEnrollmentRegisterPolicyResponseInvalid);
-      break;
     case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
       UMA(policy::kMetricEnrollmentMayNotBlockDevMode);
       break;

@@ -42,10 +42,6 @@ class DemoSetupController
    public:
     // Type of setup error.
     enum class ErrorCode {
-      // Cannot load or parse offline policy.
-      kOfflinePolicyError,
-      // Local account policy store error.
-      kOfflinePolicyStoreError,
       // Cannot perform offline setup without online FRE check.
       kOnlineFRECheckRequired,
       // Cannot load online component.
@@ -201,9 +197,6 @@ class DemoSetupController
     demo_config_ = demo_config;
   }
 
-  // Whether offline enrollment is used for setup.
-  bool IsOfflineEnrollment() const;
-
   // Initiates enrollment that sets up the device in the demo mode domain. The
   // `enrollment_type_` determines whether online or offline setup will be
   // performed and it should be set with set_enrollment_type() before calling
@@ -251,12 +244,6 @@ class DemoSetupController
   // resources were loaded, offline Demo Mode should be available.
   void OnPreinstalledDemoResourcesLoaded(
       HasPreinstalledDemoResourcesCallback callback);
-
-  // Initiates offline enrollment that locks the device and sets up offline
-  // policies required by demo mode. It requires no network connectivity since
-  // all setup will be done locally. The policy files will be loaded from the
-  // preinstalled demo resources.
-  void EnrollOffline();
 
   // Called when the device local account policy for the offline demo mode is
   // loaded.

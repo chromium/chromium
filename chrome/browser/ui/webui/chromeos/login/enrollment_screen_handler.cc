@@ -624,12 +624,6 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_SAVE_DEVICE_CONFIGURATION,
                 false);
       return;
-    case policy::EnrollmentStatus::OFFLINE_POLICY_LOAD_FAILED:
-    case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
-      // OFFLINE_POLICY_LOAD_FAILED and OFFLINE_POLICY_DECODING_FAILED happen
-      // only within MODE_OFFLINE_DEMO flow, which shouldn't happen here.
-      NOTREACHED();
-      return;
     case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_MAY_NOT_BLOCK_DEV_MODE, false);
       return;

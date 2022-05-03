@@ -172,53 +172,5 @@ TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOnline) {
   EXPECT_TRUE(demo_resources.loaded());
 }
 
-TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOffline) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOffline);
-
-  bool first_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &first_callback_called));
-
-  bool second_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &second_callback_called));
-
-  bool third_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &third_callback_called));
-
-  EXPECT_FALSE(demo_resources.loaded());
-  EXPECT_FALSE(first_callback_called);
-  EXPECT_FALSE(second_callback_called);
-  EXPECT_FALSE(third_callback_called);
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  demo_resources.SetPreinstalledOfflineResourcesLoadedForTesting(
-      component_mount_point);
-
-  EXPECT_TRUE(demo_resources.loaded());
-  EXPECT_TRUE(first_callback_called);
-  EXPECT_TRUE(second_callback_called);
-  EXPECT_TRUE(third_callback_called);
-
-  EXPECT_EQ(component_mount_point.AppendASCII(kDemoAppsImageFile),
-            demo_resources.GetDemoAppsPath());
-  EXPECT_EQ(component_mount_point.AppendASCII(kExternalExtensionsPrefsFile),
-            demo_resources.GetExternalExtensionsPrefsPath());
-
-  bool fourth_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &fourth_callback_called));
-  EXPECT_TRUE(fourth_callback_called);
-
-  bool fifth_callback_called = false;
-  demo_resources.EnsureLoaded(
-      base::BindOnce(&SetBoolean, &fifth_callback_called));
-  EXPECT_TRUE(fifth_callback_called);
-
-  EXPECT_TRUE(demo_resources.loaded());
-}
-
 }  // namespace
 }  // namespace ash

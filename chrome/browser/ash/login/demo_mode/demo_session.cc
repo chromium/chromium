@@ -72,10 +72,6 @@ DemoSession* g_demo_session = nullptr;
 absl::optional<DemoSession::DemoModeConfig> g_force_demo_config;
 
 // Path relative to the path at which offline demo resources are loaded that
-// contains the highlights app.
-constexpr char kHighlightsAppPath[] = "chrome_apps/highlights";
-
-// Path relative to the path at which offline demo resources are loaded that
 // contains sample photos.
 constexpr char kPhotosPath[] = "media/photos";
 
@@ -213,8 +209,8 @@ std::string DemoSession::DemoConfigToString(
       return "none";
     case DemoSession::DemoModeConfig::kOnline:
       return "online";
-    case DemoSession::DemoModeConfig::kOffline:
-      return "offline";
+    case DemoSession::DemoModeConfig::kOfflineDeprecated:
+      return "offlineDeprecated";
   }
   NOTREACHED() << "Unknown demo mode configuration";
   return std::string();
@@ -223,12 +219,6 @@ std::string DemoSession::DemoConfigToString(
 // static
 bool DemoSession::IsDeviceInDemoMode() {
   return GetDemoConfig() != DemoModeConfig::kNone;
-}
-
-// static
-bool DemoSession::IsDemoModeOfflineEnrolled() {
-  return DemoSession::IsDeviceInDemoMode() &&
-         DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOffline;
 }
 
 // static
@@ -437,8 +427,7 @@ bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
 void DemoSession::SetExtensionsExternalLoader(
     scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
   extensions_external_loader_ = extensions_external_loader;
-  if (!offline_enrolled_)
-    InstallAppFromUpdateUrl(GetScreensaverAppId());
+  InstallAppFromUpdateUrl(GetScreensaverAppId());
 }
 
 void DemoSession::OverrideIgnorePinPolicyAppsForTesting(
@@ -464,8 +453,7 @@ void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
 }
 
 DemoSession::DemoSession()
-    : offline_enrolled_(IsDemoModeOfflineEnrolled()),
-      ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
+    : ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
       remove_splash_screen_fallback_timer_(
           std::make_unique<base::OneShotTimer>()) {
   // SessionManager may be unset in unit tests.
@@ -505,8 +493,6 @@ DemoSession::GetSortedCountryCodeAndNamePairList() {
 
 void DemoSession::InstallDemoResources() {
   DCHECK(demo_resources_->loaded());
-  if (offline_enrolled_)
-    LoadAndLaunchHighlightsApp();
 
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -515,25 +501,6 @@ void DemoSession::InstallDemoResources() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&InstallDemoMedia, demo_resources_->path(), downloads));
-}
-
-void DemoSession::LoadAndLaunchHighlightsApp() {
-  DCHECK(demo_resources_->loaded());
-  if (demo_resources_->path().empty()) {
-    LOG(ERROR) << "Offline resources not loaded - no highlights app available.";
-    InstallAppFromUpdateUrl(GetHighlightsAppId());
-    return;
-  }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  const base::FilePath resources_path =
-      demo_resources_->path().Append(kHighlightsAppPath);
-  if (!apps::AppLoadService::Get(profile)->LoadAndLaunch(
-          resources_path, base::CommandLine(base::CommandLine::NO_PROGRAM),
-          base::FilePath() /* cur_dir */)) {
-    LOG(WARNING) << "Failed to launch highlights app from offline resources.";
-    InstallAppFromUpdateUrl(GetHighlightsAppId());
-  }
 }
 
 void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
@@ -579,8 +546,7 @@ void DemoSession::OnSessionStateChanged() {
       }
       RestoreDefaultLocaleForNextSession();
 
-      if (!offline_enrolled_)
-        InstallAppFromUpdateUrl(GetHighlightsAppId());
+      InstallAppFromUpdateUrl(GetHighlightsAppId());
 
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
