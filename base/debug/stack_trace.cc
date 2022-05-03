@@ -307,64 +307,27 @@ bool IsWithinRange(uintptr_t address, const AddressRange& range) {
   return address >= range.start && address <= range.end;
 }
 
-size_t TraceStackFramePointersInternal(
-    absl::optional<uintptr_t> fp,
+// We force this function to be inlined into its callers (e.g.
+// TraceStackFramePointers()) in all build modes so we don't have to worry about
+// conditionally skipping a frame based on potential inlining or tail calls.
+__attribute__((always_inline)) size_t TraceStackFramePointersInternal(
+    uintptr_t fp,
     uintptr_t stack_end,
     size_t max_depth,
     size_t skip_initial,
     bool enable_scanning,
-    absl::optional<AddressRange> caller_function_range,
     const void** out_trace) {
-  // If |fp| is not provided then try to unwind the current stack. In this case
-  // the caller function cannot pass in it's own frame pointer to unwind
-  // because the frame pointer may not be valid here. The compiler can optimize
-  // the tail function call from the caller to skip to the previous frame of the
-  // caller directly, making it's frame pointer invalid when we reach this
-  // function.
-  if (!fp) {
-    // Usage of __builtin_frame_address() enables frame pointers in this
-    // function even if they are not enabled globally. So 'fp' will always
-    // be valid.
-    fp = reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
-         kStackFrameAdjustment;
-  }
-
   size_t depth = 0;
   while (depth < max_depth) {
-    uintptr_t pc = GetStackFramePC(*fp);
-    // Case 1: If we are unwinding on a copied stack, then
-    // |caller_function_range| will not exist.
-    //
-    // Case 2: If we are unwinding the current stack from this function's frame,
-    // the next frame could be either the caller (TraceStackFramePointers()) or
-    // the function that called TraceStackFramePointers() (say Fn()).
-    //
-    // 2a. If the current function (depending on optimization of the build) is
-    // inlined, or the tail call to this function from TraceStackFramePointers()
-    // causes the frame pointer to skip directly to Fn(), the stack will look
-    // like this:
-    //    1st Frame: TraceStackFramePointersInternal()
-    //               TraceStackFramePointers() has no frame
-    //    2nd Frame: Fn()
-    //    ...
-    //  In this case we do not want to skip the caller from the output.
-    //
-    //  2b. Otherwise the stack will look like this:
-    //    1st Frame: TraceStackFramePointersInternal()
-    //    2nd Frame: <stack space of TraceStackFramePointers()>   <- Skip
-    //    3rd Frame: Fn()
-    //  In this case, the next pc will be within the caller function's
-    //  addresses, so skip the frame.
-    if (!caller_function_range || !IsWithinRange(pc, *caller_function_range)) {
-      if (skip_initial != 0) {
-        skip_initial--;
-      } else {
-        out_trace[depth++] = reinterpret_cast<const void*>(pc);
-      }
+    uintptr_t pc = GetStackFramePC(fp);
+    if (skip_initial != 0) {
+      skip_initial--;
+    } else {
+      out_trace[depth++] = reinterpret_cast<const void*>(pc);
     }
 
-    uintptr_t next_fp = GetNextStackFrame(*fp);
-    if (IsStackFrameValid(next_fp, *fp, stack_end)) {
+    uintptr_t next_fp = GetNextStackFrame(fp);
+    if (IsStackFrameValid(next_fp, fp, stack_end)) {
       fp = next_fp;
       continue;
     }
@@ -372,7 +335,7 @@ size_t TraceStackFramePointersInternal(
     if (!enable_scanning)
       break;
 
-    next_fp = ScanStackForNextFrame(*fp, stack_end);
+    next_fp = ScanStackForNextFrame(fp, stack_end);
     if (next_fp) {
       fp = next_fp;
     } else {
@@ -383,35 +346,24 @@ size_t TraceStackFramePointersInternal(
   return depth;
 }
 
-size_t TraceStackFramePointers(const void** out_trace,
-                               size_t max_depth,
-                               size_t skip_initial,
-                               bool enable_scanning) {
-  // This function's frame can be skipped by the compiler since the callee
-  // function can jump to caller of this function directly while execution.
-  // Since there is no way to guarantee that the first frame the trace stack
-  // function finds will be this function or the previous function, skip the
-  // current function if it is found.
-TraceStackFramePointers_start:
-  AddressRange current_fn_range = {
-      reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_start),
-      reinterpret_cast<uintptr_t>(&&TraceStackFramePointers_end)};
-  size_t depth = TraceStackFramePointersInternal(
-      /*fp=*/absl::nullopt, GetStackEnd(), max_depth, skip_initial,
-      enable_scanning, current_fn_range, out_trace);
-TraceStackFramePointers_end:
-  return depth;
+NOINLINE size_t TraceStackFramePointers(const void** out_trace,
+                                        size_t max_depth,
+                                        size_t skip_initial,
+                                        bool enable_scanning) {
+  return TraceStackFramePointersInternal(
+      reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
+          kStackFrameAdjustment,
+      GetStackEnd(), max_depth, skip_initial, enable_scanning, out_trace);
 }
 
-size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
-                                         uintptr_t stack_end,
-                                         const void** out_trace,
-                                         size_t max_depth,
-                                         size_t skip_initial,
-                                         bool enable_scanning) {
+NOINLINE size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
+                                                  uintptr_t stack_end,
+                                                  const void** out_trace,
+                                                  size_t max_depth,
+                                                  size_t skip_initial,
+                                                  bool enable_scanning) {
   return TraceStackFramePointersInternal(fp, stack_end, max_depth, skip_initial,
-                                         enable_scanning, absl::nullopt,
-                                         out_trace);
+                                         enable_scanning, out_trace);
 }
 
 ScopedStackFrameLinker::ScopedStackFrameLinker(void* fp, void* parent_fp)
