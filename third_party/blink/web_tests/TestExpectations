@@ -29,9 +29,6 @@ accessibility/slot-poison.html [ Failure ]
 # Temporarily disabled for DevTools.
 crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
 
-# Temporarily disabled while making DevTools change
-crbug.com/1192230 http/tests/devtools/network/network-serviceworker-timing-view.js [ Skip ]
-
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]

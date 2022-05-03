@@ -19,7 +19,7 @@ respondWith
 Request/Response
 
 DURATION
-Waiting (TTFB)
+Waiting for server response
 ​
 6.72 ms
 Content Download
