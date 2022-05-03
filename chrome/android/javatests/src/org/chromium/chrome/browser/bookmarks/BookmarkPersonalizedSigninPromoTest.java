@@ -100,16 +100,18 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Test
     @MediumTest
     public void testSigninButtonDefaultAccount() {
+        final CoreAccountInfo accountInfo =
+                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
         doNothing()
                 .when(SyncConsentActivityLauncherImpl.get())
                 .launchActivityForPromoDefaultFlow(any(Context.class), anyInt(), anyString());
-        CoreAccountInfo accountInfo =
-                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
+
         onView(allOf(withId(R.id.signin_promo_signin_button), withEffectiveVisibility(VISIBLE)))
                 .perform(click());
+
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(accountInfo.getEmail()));
@@ -153,6 +155,8 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        // Sync promo sometimes shows up again on tablets after profile data updates.
+        onView(allOf(withId(R.id.signin_promo_view_container), withEffectiveVisibility(VISIBLE)))
+                .check(matches(isDisplayed()));
     }
 }
