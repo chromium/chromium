@@ -736,6 +736,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         settings.setDatabaseEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
 
         // Default layout behavior for chrome on android.
         settings.setUseWideViewPort(true);
