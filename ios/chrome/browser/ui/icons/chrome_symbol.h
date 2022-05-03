@@ -10,11 +10,14 @@
 // Custom symbol names.
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
+extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kCameraSymbol;
 extern NSString* const kCameraFillSymbol;
-
+extern NSString* const kPlusCircleFillSymbol;
+extern NSString* const kArrowTriangleSlashCirclePathSymbol;
+extern NSString* const kPopupBadgeMinusSymbol;
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;

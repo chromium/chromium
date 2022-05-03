@@ -18,6 +18,13 @@ symbolset("incognito") {
   ]
 }
 
+symbolset("incognito_circle_fill") {
+  sources = [
+    "incognito_circle_fill.symbolset/Contents.json",
+    "incognito_circle_fill.symbolset/incognito.circle.fill.cr.svg",
+  ]
+}
+
 symbolset("square_number") {
   sources = [
     "square_number.symbolset/Contents.json",
@@ -43,5 +50,26 @@ symbolset("camera_fill") {
   sources = [
     "camera_fill.symbolset/Contents.json",
     "camera_fill.symbolset/camera.fill.cr.svg",
+  ]
+}
+
+symbolset("plus_circle_fill") {
+  sources = [
+    "plus_circle_fill.symbolset/Contents.json",
+    "plus_circle_fill.symbolset/plus.circle.fill.cr.svg",
+  ]
+}
+
+symbolset("arrow_triangle_slash_circlepath") {
+  sources = [
+    "arrow_triangle_slash_circlepath.symbolset/Contents.json",
+    "arrow_triangle_slash_circlepath.symbolset/arrow.triangle.slash.circlepath.cr.svg",
+  ]
+}
+
+symbolset("popup_badge_minus") {
+  sources = [
+    "popup_badge_minus.symbolset/Contents.json",
+    "popup_badge_minus.symbolset/popup.badge.minus.cr.svg",
   ]
 }

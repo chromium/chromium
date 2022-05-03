@@ -47,10 +47,15 @@ UIImage* SymbolWithConfiguration(NSString* symbolName,
 // Custom symbol names.
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
+NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
 NSString* const kCameraFillSymbol = @"camera_fill";
+NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
+NSString* const kArrowTriangleSlashCirclePathSymbol =
+    @"arrow_triangle_slash_circlepath";
+NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";

@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -38,6 +39,9 @@ const CGFloat kStackViewDefaultSpacing = 20.0;
 const CGFloat kStackViewImageSpacing = 22.0;
 const CGFloat kLayoutGuideVerticalMargin = 8.0;
 const CGFloat kLayoutGuideMinHeight = 12.0;
+
+// The size of the incognito symbol image.
+NSInteger kIncognitoSymbolImagePointSize = 72;
 
 // The URL for the the Learn More page shown on incognito new tab.
 // Taken from ntp_resource_cache.cc.
@@ -176,8 +180,20 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     [_containerView addSubview:_stackView];
 
     // Incognito image.
-    UIImage* incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* incognitoImage;
+    if (UseSymbols()) {
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kIncognitoSymbolImagePointSize
+                              weight:UIImageSymbolWeightLight
+                               scale:UIImageSymbolScaleMedium];
+      incognitoImage = [CustomSymbolWithConfiguration(
+          kIncognitoCircleFillSymbol, configuration)
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    } else {
+      incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+
     UIImageView* incognitoImageView =
         [[UIImageView alloc] initWithImage:incognitoImage];
     incognitoImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];

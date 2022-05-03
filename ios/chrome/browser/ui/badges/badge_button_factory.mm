@@ -27,6 +27,13 @@ namespace {
 // The identifier for the new popup menu action trigger.
 NSString* const kOverflowPopupMenuActionIdentifier =
     @"kOverflowPopupMenuActionIdentifier";
+
+// The size of the incognito symbol image.
+NSInteger kSymbolIncognitoPointSize = 28;
+
+// The size of the incognito full screen symbol image.
+NSInteger kSymbolIncognitoFullScreenPointSize = 14;
+
 }  // namespace
 
 @implementation BadgeButtonFactory
@@ -140,13 +147,23 @@ NSString* const kOverflowPopupMenuActionIdentifier =
 }
 
 - (BadgeButton*)incognitoBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:kBadgeTypeIncognito
-                          image:[[UIImage imageNamed:@"incognito_badge"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysOriginal]];
-  button.fullScreenImage = [[UIImage imageNamed:@"incognito_small_badge"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  BadgeButton* button;
+  if (UseSymbols()) {
+    UIImage* image = CustomSymbolTemplateWithPointSize(
+        kIncognitoCircleFillSymbol, kSymbolIncognitoPointSize);
+    button = [self createButtonForType:kBadgeTypeIncognito image:image];
+    button.fullScreenImage = CustomSymbolTemplateWithPointSize(
+        kIncognitoSymbol, kSymbolIncognitoFullScreenPointSize);
+  } else {
+    button =
+        [self createButtonForType:kBadgeTypeIncognito
+                            image:[[UIImage imageNamed:@"incognito_badge"]
+                                      imageWithRenderingMode:
+                                          UIImageRenderingModeAlwaysOriginal]];
+    button.fullScreenImage = [[UIImage imageNamed:@"incognito_small_badge"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+
   button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   button.accessibilityTraits &= ~UIAccessibilityTraitButton;
   button.userInteractionEnabled = NO;

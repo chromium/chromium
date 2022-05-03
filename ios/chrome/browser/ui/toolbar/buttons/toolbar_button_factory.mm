@@ -181,9 +181,9 @@ NSString* kToolbarArrowForwardSymbol = @"arrow.forward";
 
 - (ToolbarButton*)openNewTabButton {
   UIImage* newTabImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kPlusSymbol, kSymbolToolbarPointSize)
-          : [UIImage imageNamed:@"toolbar_new_tab_page"];
+      UseSymbols() ? CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                               kSymbolToolbarPointSize)
+                   : [UIImage imageNamed:@"toolbar_new_tab_page"];
   ToolbarNewTabButton* newTabButton =
       [ToolbarNewTabButton toolbarButtonWithImage:newTabImage];
 

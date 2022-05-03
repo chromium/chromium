@@ -22,15 +22,6 @@ imageset("infobar_downloading") {
   ]
 }
 
-imageset("infobar_popup_blocker") {
-  sources = [
-    "infobar_popup_blocker.imageset/Contents.json",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker.png",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker@2x.png",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker@3x.png",
-  ]
-}
-
 imageset("infobar_reveal_password_icon") {
   sources = [
     "infobar_reveal_password_icon.imageset/Contents.json",
