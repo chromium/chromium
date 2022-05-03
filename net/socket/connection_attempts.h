@@ -15,6 +15,10 @@ struct ConnectionAttempt {
   ConnectionAttempt(const IPEndPoint endpoint, int result)
       : endpoint(endpoint), result(result) {}
 
+  bool operator==(const ConnectionAttempt& other) const {
+    return endpoint == other.endpoint && result == other.result;
+  }
+
   // Address and port the socket layer attempted to connect to.
   IPEndPoint endpoint;
 

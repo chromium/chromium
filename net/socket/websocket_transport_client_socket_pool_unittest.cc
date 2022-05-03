@@ -218,6 +218,9 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
                   &pool_, NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(handle.resolve_error_info().error, IsError(ERR_DNS_TIMED_OUT));
+  EXPECT_THAT(handle.connection_attempts(),
+              testing::ElementsAre(
+                  ConnectionAttempt(IPEndPoint(), ERR_NAME_NOT_RESOLVED)));
 }
 
 TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
@@ -233,6 +236,10 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
                   ClientSocketPool::ProxyAuthCallback(), &pool_,
                   NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
+  EXPECT_THAT(
+      handle.connection_attempts(),
+      testing::ElementsAre(ConnectionAttempt(
+          IPEndPoint(IPAddress::IPv4Localhost(), 80), ERR_CONNECTION_FAILED)));
 
   // Make the host resolutions complete synchronously this time.
   host_resolver_->set_synchronous_mode(true);
@@ -243,6 +250,10 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
                   ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
                   ClientSocketPool::ProxyAuthCallback(), &pool_,
                   NetLogWithSource()));
+  EXPECT_THAT(
+      handle.connection_attempts(),
+      testing::ElementsAre(ConnectionAttempt(
+          IPEndPoint(IPAddress::IPv4Localhost(), 80), ERR_CONNECTION_FAILED)));
 }
 
 TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequestsFinishFifo) {
@@ -870,6 +881,22 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
 
   EXPECT_GE(base::TimeTicks::Now() - start, delay * 5);
+
+  // The order is slightly timing-dependent, so don't assert on the order.
+  EXPECT_THAT(handle.connection_attempts(),
+              testing::UnorderedElementsAre(
+                  ConnectionAttempt(IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80),
+                                    ERR_CONNECTION_FAILED),
+                  ConnectionAttempt(IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80),
+                                    ERR_CONNECTION_FAILED),
+                  ConnectionAttempt(IPEndPoint(ParseIP("3:abcd::3:4:ff"), 80),
+                                    ERR_CONNECTION_FAILED),
+                  ConnectionAttempt(IPEndPoint(ParseIP("4:abcd::3:4:ff"), 80),
+                                    ERR_CONNECTION_FAILED),
+                  ConnectionAttempt(IPEndPoint(ParseIP("1.1.1.1"), 80),
+                                    ERR_CONNECTION_FAILED),
+                  ConnectionAttempt(IPEndPoint(ParseIP("2.2.2.2"), 80),
+                                    ERR_CONNECTION_FAILED)));
 }
 
 // Test that, if an address fails due to `ERR_NETWORK_IO_SUSPENDED`, we do not
@@ -898,6 +925,10 @@ TEST_F(WebSocketTransportClientSocketPoolTest, Suspend) {
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                   &pool_, NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
+  EXPECT_THAT(handle.connection_attempts(),
+              testing::ElementsAre(
+                  ConnectionAttempt(IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80),
+                                    ERR_NETWORK_IO_SUSPENDED)));
 }
 
 // Same as above, but with a asynchronous failure.
@@ -925,6 +956,10 @@ TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                   &pool_, NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
+  EXPECT_THAT(handle.connection_attempts(),
+              testing::ElementsAre(
+                  ConnectionAttempt(IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80),
+                                    ERR_NETWORK_IO_SUSPENDED)));
 }
 
 // Global timeout for all connects applies. This test is disabled by default

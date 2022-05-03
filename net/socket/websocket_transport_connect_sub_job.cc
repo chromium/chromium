@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
@@ -253,6 +254,9 @@ int WebSocketTransportConnectSubJob::DoTransportConnectComplete(int result) {
   if (result != OK) {
     // Drop the socket to release the endpoint lock.
     transport_socket_.reset();
+
+    parent_job_->connection_attempts_.push_back(
+        ConnectionAttempt(CurrentAddress(), result));
 
     // Don't try the next address if entering suspend mode.
     if (result != ERR_NETWORK_IO_SUSPENDED &&

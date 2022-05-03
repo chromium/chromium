@@ -68,6 +68,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
   // ConnectJob methods.
   LoadState GetLoadState() const override;
   bool HasEstablishedConnection() const override;
+  ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
 
  private:
@@ -121,6 +122,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
   base::OneShotTimer fallback_timer_;
 
   ResolveErrorInfo resolve_error_info_;
+  ConnectionAttempts connection_attempts_;
 
   base::WeakPtrFactory<WebSocketTransportConnectJob> weak_ptr_factory_{this};
 };

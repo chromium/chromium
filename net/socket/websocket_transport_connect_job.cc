@@ -100,6 +100,10 @@ bool WebSocketTransportConnectJob::HasEstablishedConnection() const {
   return false;
 }
 
+ConnectionAttempts WebSocketTransportConnectJob::GetConnectionAttempts() const {
+  return connection_attempts_;
+}
+
 ResolveErrorInfo WebSocketTransportConnectJob::GetResolveErrorInfo() const {
   return resolve_error_info_;
 }
@@ -172,8 +176,11 @@ int WebSocketTransportConnectJob::DoResolveHostComplete(int result) {
   connect_timing_.connect_start = connect_timing_.dns_end;
   resolve_error_info_ = request_->GetResolveErrorInfo();
 
-  if (result != OK)
+  if (result != OK) {
+    // If hostname resolution failed, record an empty endpoint and the result.
+    connection_attempts_.push_back(ConnectionAttempt(IPEndPoint(), result));
     return result;
+  }
   DCHECK(request_->GetAddressResults());
 
   next_state_ = STATE_TRANSPORT_CONNECT;
