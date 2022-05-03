@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace history {
@@ -36,7 +37,8 @@ class SignalHandler {
       StorageService* storage_service,
       history::HistoryService* history_service,
       const std::vector<optimization_guide::proto::OptimizationTarget>&
-          segment_ids);
+          segment_ids,
+      base::RepeatingClosure model_refresh_callback);
 
   void TearDown();
 

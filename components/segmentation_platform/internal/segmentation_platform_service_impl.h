@@ -104,8 +104,15 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Must only be invoked with a valid SegmentInfo.
   void OnSegmentationModelUpdated(proto::SegmentInfo segment_info);
 
+  // Callback sent to child classes to notify when model results need to be
+  // refreshed. For example, when history is cleared.
+  void OnModelRefreshNeeded();
+
   // Called when service status changes.
   void OnServiceStatusChanged();
+
+  // Task that runs every day or at startup to keep the platform data updated.
+  void RunDailyTasks(bool is_startup);
 
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 

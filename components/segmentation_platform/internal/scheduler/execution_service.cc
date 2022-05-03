@@ -79,9 +79,6 @@ void ExecutionService::Initialize(
       std::move(observers), storage_service->segment_info_database(),
       storage_service->signal_storage_config(), model_execution_manager_.get(),
       model_executor_.get(), all_segment_ids, clock, platform_options);
-
-  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
-      /*expired_only=*/true);
 }
 
 void ExecutionService::OnNewModelInfoReady(
@@ -116,6 +113,11 @@ void ExecutionService::OverwriteModelExecutionResult(
     optimization_guide::proto::OptimizationTarget segment_id,
     const std::pair<float, ModelExecutionStatus>& result) {
   model_execution_scheduler_->OnModelExecutionCompleted(segment_id, result);
+}
+
+void ExecutionService::RefreshModelResults() {
+  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
+      /*expired_only=*/true);
 }
 
 }  // namespace segmentation_platform

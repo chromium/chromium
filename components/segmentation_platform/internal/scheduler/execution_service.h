@@ -87,6 +87,9 @@ class ExecutionService {
       optimization_guide::proto::OptimizationTarget segment_id,
       const std::pair<float, ModelExecutionStatus>& result);
 
+  // Refreshes model results for all eligible models.
+  void RefreshModelResults();
+
  private:
   // Training/inference input data generation.
   std::unique_ptr<processing::FeatureListQueryProcessor>
@@ -95,6 +98,7 @@ class ExecutionService {
   // Traing data collection logic.
   std::unique_ptr<TrainingDataCollector> training_data_collector_;
 
+  // Utility to execute model and return result.
   std::unique_ptr<ModelExecutor> model_executor_;
 
   // Scheduler to launch tasks to report training data to the server.

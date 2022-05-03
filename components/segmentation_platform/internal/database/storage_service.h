@@ -104,6 +104,9 @@ class StorageService {
   // bitmap values.
   int GetServiceStatus() const;
 
+  // Executes all database maintenance tasks.
+  void ExecuteDatabaseMaintenanceTasks(bool is_startup);
+
   DefaultModelManager* default_model_manager() {
     DCHECK(default_model_manager_);
     return default_model_manager_.get();
@@ -127,10 +130,6 @@ class StorageService {
   void OnSignalStorageConfigInitialized(bool success);
   bool IsInitializationFinished() const;
   void MaybeFinishInitialization();
-
-  // Executes all database maintenance tasks. This should be invoked after a
-  // short amount of time has passed since initialization happened.
-  void OnExecuteDatabaseMaintenanceTasks();
 
   // Default models.
   std::unique_ptr<DefaultModelManager> default_model_manager_;

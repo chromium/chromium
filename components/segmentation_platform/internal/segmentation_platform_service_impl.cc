@@ -85,8 +85,11 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
                                                  all_segment_ids_.end());
 
   // Construct signal processors.
-  signal_handler_.Initialize(storage_service_.get(),
-                             init_params->history_service, segment_id_vec);
+  signal_handler_.Initialize(
+      storage_service_.get(), init_params->history_service, segment_id_vec,
+      base::BindRepeating(
+          &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
+          weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
@@ -177,6 +180,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
 
+  RunDailyTasks(/*is_startup=*/true);
+
   init_time_ = clock_->Now();
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.CreationToInitializationLatency",
@@ -199,9 +204,24 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void SegmentationPlatformServiceImpl::OnModelRefreshNeeded() {
+  execution_service_.RefreshModelResults();
+}
+
 void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
   proxy_->OnServiceStatusChanged(storage_initialized_,
                                  storage_service_->GetServiceStatus());
+}
+
+void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
+  execution_service_.RefreshModelResults();
+  storage_service_->ExecuteDatabaseMaintenanceTasks(is_startup);
+
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SegmentationPlatformServiceImpl::RunDailyTasks,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_startup=*/false),
+      base::Days(1));
 }
 
 // static

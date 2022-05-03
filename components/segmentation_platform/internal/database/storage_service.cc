@@ -143,13 +143,6 @@ void StorageService::MaybeFinishInitialization() {
       .Run(*segment_info_database_initialized_ &&
            *signal_database_initialized_ &&
            *signal_storage_config_initialized_);
-
-  // Initiate database maintenance tasks with a small delay.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&StorageService::OnExecuteDatabaseMaintenanceTasks,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kDatabaseMaintenanceDelay);
 }
 
 int StorageService::GetServiceStatus() const {
@@ -164,7 +157,19 @@ int StorageService::GetServiceStatus() const {
   return status;
 }
 
-void StorageService::OnExecuteDatabaseMaintenanceTasks() {
+void StorageService::ExecuteDatabaseMaintenanceTasks(bool is_startup) {
+  if (is_startup) {
+    // Initiate database maintenance tasks with a small delay at startup.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&StorageService::ExecuteDatabaseMaintenanceTasks,
+                       weak_ptr_factory_.GetWeakPtr(), false),
+        kDatabaseMaintenanceDelay);
+    return;
+  }
+
+  // This should be invoked at least after a short amount of time has passed
+  // since initialization happened.
   database_maintenance_->ExecuteMaintenanceTasks();
 }
 

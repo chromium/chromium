@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 
 #include "base/metrics/user_metrics.h"
+#include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -17,10 +18,12 @@ namespace segmentation_platform {
 
 HistoryServiceObserver::HistoryServiceObserver(
     history::HistoryService* history_service,
-    StorageService* storage_service)
+    StorageService* storage_service,
+    base::RepeatingClosure models_refresh_callback)
     : storage_service_(storage_service),
       url_signal_handler_(
           storage_service->ukm_data_manager()->GetOrCreateUrlHandler()),
+      models_refresh_callback_(models_refresh_callback),
       history_delegate_(
           std::make_unique<HistoryDelegateImpl>(history_service,
                                                 url_signal_handler_)) {
@@ -44,6 +47,9 @@ void HistoryServiceObserver::OnURLVisited(
 void HistoryServiceObserver::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  TRACE_EVENT0("segmentation_platform",
+               "HistoryServiceObserver::OnURLsDeleted");
+
   // If the history deletion was not from expiration or if the whole history
   // database was removed, delete the segment results computed based on URL
   // data.
@@ -89,6 +95,17 @@ void HistoryServiceObserver::DeleteResultsForHistoryBasedSegments() {
     storage_service_->segment_info_database()->SaveSegmentResult(
         segment_id, absl::nullopt, base::DoNothing());
   }
+
+  // If a model refresh was recently posted, then cancel the task and restart
+  // the 30 second timer. This is to avoid running models often when user clears
+  // multiple history entries at once.
+  if (posted_model_refresh_task_) {
+    posted_model_refresh_task_->Cancel();
+  }
+  posted_model_refresh_task_ = std::make_unique<base::CancelableOnceClosure>(
+      base::BindOnce(models_refresh_callback_));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, posted_model_refresh_task_->callback(), base::Minutes(1));
 }
 
 }  // namespace segmentation_platform
