@@ -4646,6 +4646,21 @@
             ]
         }
     ],
+    "MediaFoundationH264CbpEncoding": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationH264CbpEncoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaHardwareSecureDecryption": [
         {
             "platforms": [
