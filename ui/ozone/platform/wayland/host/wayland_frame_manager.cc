@@ -212,7 +212,6 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
-      subsurface->Show();
       subsurface->ConfigureAndShowSurface(
           config->bounds_rect, root_config->bounds_rect,
           root_config->surface_scale_factor, nullptr, reference_above);
