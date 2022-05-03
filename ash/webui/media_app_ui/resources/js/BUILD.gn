@@ -33,6 +33,8 @@ copy("stage_static") {
 # This is for files that are generated in "gen/".
 copy("stage_generated") {
   sources = [
+    "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
+    "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
   ]
@@ -42,6 +44,7 @@ copy("stage_generated") {
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//ash/webui/system_apps/public/js:modulize",
+    "//third_party/blink/public/mojom:mojom_platform_js",
   ]
 }
 
@@ -121,6 +124,7 @@ js_library("app_context_test_support") {
 js_library("launch") {
   externs_list = [
     "//ash/webui/web_applications/externs/file_handling.externs.js",
+    "//ash/webui/web_applications/externs/file_system_access.externs.js",
     "dom_draft.externs.js",
 
     # The privileged context can't access the app, but shares struct definitions
@@ -163,5 +167,18 @@ js_library("receiver") {
 }
 
 js_library("mojo_api_bootstrap") {
-  deps = [ "//ash/webui/media_app_ui:mojo_bindings_js_library_for_compile" ]
+  sources = [
+    "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite-for-compile.js",
+    "$target_gen_dir/../../media_app_ui.mojom-lite-for-compile.js",
+  ]
+
+  deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
+
+  extra_deps = [
+    # We can't depend on the `_js_library_for_compile` target for the following
+    # without needing to depend on many unrelated closure definitions under the
+    # `//third_party/blink/public/mojom:mojom_platform` target.
+    "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//third_party/blink/public/mojom:mojom_platform_js",
+  ]
 }

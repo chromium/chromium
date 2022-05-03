@@ -4,6 +4,8 @@
 
 module ash.media_app_ui.mojom;
 
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+
 // Browser interface for chrome://media-app to bootstrap a connection.
 interface PageHandlerFactory {
   // Create a page handler which exposes interfaces implemented in the browser
@@ -18,4 +20,10 @@ interface PageHandler {
   OpenFeedbackDialog() => (string? error_message);
   // Toggles "browser" fullscreen mode for the window.
   ToggleBrowserFullscreenMode() => ();
+  // Checks if the file path for the file represented by the provided transfer
+  // token is writable according to Ash. Returns false if |token| can't be
+  // resolved to a path.
+  IsFileBrowserWritable(
+      pending_remote<blink.mojom.FileSystemAccessTransferToken> token)
+      => (bool writable);
 };

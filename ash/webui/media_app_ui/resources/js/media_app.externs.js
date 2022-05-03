@@ -58,6 +58,13 @@ mediaApp.AbstractFile.prototype.fromClipboard;
  */
 mediaApp.AbstractFile.prototype.error;
 /**
+ * A function that queries the original file's path to see if it is writable
+ * according to Ash. Returns a promise that resolves once this has been
+ * determined.
+ * @type {function(): !Promise<boolean>|undefined}
+ */
+mediaApp.AbstractFile.prototype.isBrowserWritable;
+/**
  * A function that will overwrite the original file with the provided Blob.
  * Returns a promise that resolves when the write operations are complete. Or
  * rejects. Upon success, `size` will reflect the new file size.

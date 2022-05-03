@@ -31,6 +31,9 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void ToggleBrowserFullscreenMode(
       ToggleBrowserFullscreenModeCallback callback) override;
+  void IsFileBrowserWritable(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      IsFileBrowserWritableCallback callback) override;
 
  private:
   mojo::Receiver<media_app_ui::mojom::PageHandler> receiver_;

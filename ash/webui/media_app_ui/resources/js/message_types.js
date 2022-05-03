@@ -14,19 +14,20 @@
 export const Message = {
   DELETE_FILE: 'delete-file',
   IFRAME_READY: 'iframe-ready',
+  IS_FILE_BROWSER_WRITABLE: 'is-file-browser-writable',
   LOAD_EXTRA_FILES: 'load-extra-files',
   LOAD_FILES: 'load-files',
   NAVIGATE: 'navigate',
   NOTIFY_CURRENT_FILE: 'notify-current-file',
+  OPEN_ALLOWED_FILE: 'open-allowed-file',
   OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
   OPEN_FILES_WITH_PICKER: 'open-files-with-picker',
+  OPEN_IN_SANDBOXED_VIEWER: 'open-in-sandboxed-viewer',
   OVERWRITE_FILE: 'overwrite-file',
   RENAME_FILE: 'rename-file',
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',
-  OPEN_ALLOWED_FILE: 'open-allowed-file',
   TOGGLE_BROWSER_FULLSCREEN_MODE: 'toggle-browser-fullscreen-mode',
-  OPEN_IN_SANDBOXED_VIEWER: 'open-in-sandboxed-viewer',
 };
 
 /**
@@ -59,6 +60,17 @@ export let FileContext;
  * }}
  */
 export let LoadFilesMessage;
+
+/**
+ * Message sent by the unprivileged context to the privileged context to check
+ * whether or not the current file is writable according to Ash. If the supplied
+ * file `token` is invalid the request is rejected.
+ * @typedef {{token: number}}
+ */
+export let IsFileBrowserWritableMessage;
+
+/** @typedef {{writable: boolean}} */
+export let IsFileBrowserWritableResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting

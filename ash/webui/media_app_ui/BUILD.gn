@@ -97,6 +97,7 @@ group("closure_compile") {
 
 mojom("mojo_bindings") {
   sources = [ "media_app_ui.mojom" ]
+  deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [

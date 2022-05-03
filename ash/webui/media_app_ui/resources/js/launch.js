@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './unguessable_token.mojom-lite.js';
+import './file_system_access_transfer_token.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {DeleteFileMessage, FileContext, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
@@ -202,6 +204,17 @@ guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
   window.open(
       `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
       'popup=1');
+});
+
+guestMessagePipe.registerHandler(Message.IS_FILE_BROWSER_WRITABLE, message => {
+  const writableMsg =
+      /** @type {!IsFileBrowserWritableMessage} */ (message);
+  const fileHandle = fileHandleForToken(writableMsg.token);
+
+  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+      Mojo.getFileSystemAccessTransferToken(fileHandle));
+
+  return mediaAppPageHandler.isFileBrowserWritable(transferToken);
 });
 
 guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {

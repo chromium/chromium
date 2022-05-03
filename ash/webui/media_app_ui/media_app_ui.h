@@ -31,6 +31,10 @@ class MediaAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<media_app_ui::mojom::PageHandlerFactory> receiver);
   MediaAppUIDelegate* delegate() { return delegate_.get(); }
 
+  // content::WebUIController:
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
+
   bool IsJavascriptErrorReportingEnabled() override;
 
  private:

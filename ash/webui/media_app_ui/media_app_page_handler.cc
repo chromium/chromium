@@ -8,8 +8,34 @@
 
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
+#include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 
 namespace ash {
+
+namespace {
+
+void IsFileURLBrowserWritable(
+    MediaAppPageHandler::IsFileBrowserWritableCallback callback,
+    absl::optional<storage::FileSystemURL> url) {
+  if (!url.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  };
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::PathIsWritable, url->path()), std::move(callback));
+}
+
+}  // namespace
 
 MediaAppPageHandler::MediaAppPageHandler(
     MediaAppUI* media_app_ui,
@@ -28,6 +54,18 @@ void MediaAppPageHandler::ToggleBrowserFullscreenMode(
     ToggleBrowserFullscreenModeCallback callback) {
   media_app_ui_->delegate()->ToggleBrowserFullscreenMode();
   std::move(callback).Run();
+}
+
+void MediaAppPageHandler::IsFileBrowserWritable(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+    IsFileBrowserWritableCallback callback) {
+  auto* web_contents = media_app_ui_->web_ui()->GetWebContents();
+  web_contents->GetBrowserContext()
+      ->GetStoragePartition(web_contents->GetSiteInstance())
+      ->GetFileSystemAccessEntryFactory()
+      ->ResolveTransferToken(
+          std::move(token),
+          base::BindOnce(&IsFileURLBrowserWritable, std::move(callback)));
 }
 
 }  // namespace ash

@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_file_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1356,6 +1357,40 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   folder.Refresh();
   EXPECT_EQ(1u, folder.files().size());
   EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
+                       CheckBrowserWritable) {
+  WaitForTestSystemAppInstall();
+
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({
+      TestFile(kFileJpeg640x480),
+      TestFile(kFilePng800x600),
+  });
+  // Remove ability to write to the second file.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePermissionRestorer restore_permissions_for(folder.files()[1]);
+  EXPECT_EQ(true, base::MakeFileUnwritable(folder.files()[1]));
+
+  folder.Open(TestFile(kFileJpeg640x480));
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  bool result;
+  constexpr char kScript[] =
+      "lastLoadedReceivedFileList().item($1).isBrowserWritable()"
+      ".then(result => domAutomationController.send(result));";
+  // The first file should be writable.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      app, base::ReplaceStringPlaceholders(kScript, {"0"}, nullptr), &result));
+  EXPECT_TRUE(result);
+  // The second file should not be writable.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      app, base::ReplaceStringPlaceholders(kScript, {"1"}, nullptr), &result));
+  EXPECT_FALSE(result);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
