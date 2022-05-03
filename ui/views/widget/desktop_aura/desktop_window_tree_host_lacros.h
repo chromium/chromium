@@ -23,7 +23,7 @@ class PinnedModeExtension;
 
 namespace views {
 
-class WindowEventFilterLinux;
+class WindowEventFilterLacros;
 
 // Contains Lacros specific implementation.
 class VIEWS_EXPORT DesktopWindowTreeHostLacros
@@ -56,13 +56,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void InitModalType(ui::ModalType modal_type) override;
 
-  Widget::MoveLoopResult RunMoveLoop(
-      const gfx::Vector2d& drag_offset,
-      Widget::MoveLoopSource source,
-      Widget::MoveLoopEscapeBehavior escape_behavior) override;
-
   // PlatformWindowDelegate:
-  void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
 
   // DesktopWindowTreeHostPlatform overrides:
@@ -79,7 +73,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   // A handler for events intended for non client area.
   // A posthandler for events intended for non client area. Handles events if no
   // other consumer handled them.
-  std::unique_ptr<WindowEventFilterLinux> non_client_window_event_filter_;
+  std::unique_ptr<WindowEventFilterLacros> non_client_window_event_filter_;
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLacros> weak_factory_{this};

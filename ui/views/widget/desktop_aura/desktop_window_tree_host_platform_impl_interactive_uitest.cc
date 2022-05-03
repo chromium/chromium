@@ -18,15 +18,16 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
-#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/native_frame_view.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLinux;
 #else
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
+#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
 using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLacros;
 #endif
 
@@ -320,7 +321,14 @@ class DesktopWindowTreeHostPlatformImplTest
   TestDesktopWindowTreeHostPlatformImpl* host_ = nullptr;
 };
 
-TEST_F(DesktopWindowTreeHostPlatformImplTest, HitTest) {
+// On Lacros, the resize and drag operations are handled by compositor,
+// so this test does not make much sense.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HitTest DISABLED_HitTest
+#else
+#define MAYBE_HitTest HitTest
+#endif
+TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
   gfx::Rect widget_bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(widget_bounds));
   widget->Show();
@@ -329,8 +337,13 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, HitTest) {
   auto handler =
       std::make_unique<FakeWmMoveResizeHandler>(host_->platform_window());
   host_->DestroyNonClientEventFilter();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  host_->non_client_window_event_filter_ =
+      std::make_unique<WindowEventFilterLacros>(host_, handler.get());
+#else
   host_->non_client_window_event_filter_ =
       std::make_unique<WindowEventFilterLinux>(host_, handler.get());
+#endif
 
   // It is not important to use pointer locations corresponding to the hittests
   // values used in the browser itself, because we fake the hit test results,

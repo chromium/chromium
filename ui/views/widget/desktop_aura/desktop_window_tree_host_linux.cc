@@ -27,11 +27,16 @@
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(USE_ATK)
 #include "ui/accessibility/platform/atk_util_auralinux.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
+#else
+#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #endif
 
 namespace views {
@@ -162,6 +167,7 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
   return result;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // In Windows, the native events sent to chrome are separated into client
   // and non-client versions of events, which we record on our LocatedEvent
@@ -214,6 +220,7 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   if (!event->handled())
     WindowTreeHostPlatform::DispatchEvent(event);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DesktopWindowTreeHostLinux::OnClosed() {
   DestroyNonClientEventFilter();
@@ -306,7 +313,7 @@ void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
 
 void DesktopWindowTreeHostLinux::CreateNonClientEventFilter() {
   DCHECK(!non_client_window_event_filter_);
-  non_client_window_event_filter_ = std::make_unique<WindowEventFilterLinux>(
+  non_client_window_event_filter_ = std::make_unique<WindowEventFilterClass>(
       this, GetWmMoveResizeHandler(*platform_window()));
 }
 

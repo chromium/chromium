@@ -824,20 +824,16 @@ component("views") {
         public += [ "widget/desktop_aura/desktop_screen_ozone.h" ]
         sources += [ "widget/desktop_aura/desktop_screen_ozone.cc" ]
       }
-      if (is_linux || is_chromeos) {
-        sources += [
-          "widget/desktop_aura/window_event_filter_linux.cc",
-          "widget/desktop_aura/window_event_filter_linux.h",
-        ]
-        deps += [ "//ui/base:hit_test" ]
-      }
       if (is_linux) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_linux.h" ]
         sources += [
           "style/platform_style_linux.cc",
           "widget/desktop_aura/desktop_screen_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_linux.cc",
+          "widget/desktop_aura/window_event_filter_linux.cc",
+          "widget/desktop_aura/window_event_filter_linux.h",
         ]
+        deps += [ "//ui/base:hit_test" ]
       }
       if (is_chromeos_lacros) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
@@ -845,7 +841,10 @@ component("views") {
           # TODO: do we need one for lacros?
           "style/platform_style_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
+          "widget/desktop_aura/window_event_filter_lacros.cc",
+          "widget/desktop_aura/window_event_filter_lacros.h",
         ]
+        deps += [ "//ui/base:hit_test" ]
       }
       if (is_linux || is_chromeos_lacros || is_fuchsia) {
         public += [

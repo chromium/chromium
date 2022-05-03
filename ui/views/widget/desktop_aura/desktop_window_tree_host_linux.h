@@ -28,7 +28,13 @@ class X11Extension;
 
 namespace views {
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class WindowEventFilterLacros;
+using WindowEventFilterClass = WindowEventFilterLacros;
+#else
 class WindowEventFilterLinux;
+using WindowEventFilterClass = WindowEventFilterLinux;
+#endif
 
 // Contains Linux specific implementation, which supports both X11 and Wayland
 // backend.
@@ -66,7 +72,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
       Widget::MoveLoopEscapeBehavior escape_behavior) override;
 
   // PlatformWindowDelegate:
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   void DispatchEvent(ui::Event* event) override;
+#endif
   void OnClosed() override;
 
   ui::X11Extension* GetX11Extension();
@@ -101,7 +109,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // A handler for events intended for non client area.
   // A posthandler for events intended for non client area. Handles events if no
   // other consumer handled them.
-  std::unique_ptr<WindowEventFilterLinux> non_client_window_event_filter_;
+  std::unique_ptr<WindowEventFilterClass> non_client_window_event_filter_;
 
   std::unique_ptr<CompositorObserver> compositor_observer_;
 

@@ -16,7 +16,7 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
+#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -58,33 +58,6 @@ void DesktopWindowTreeHostLacros::InitModalType(ui::ModalType modal_type) {
   }
 }
 
-void DesktopWindowTreeHostLacros::DispatchEvent(ui::Event* event) {
-  // TODO(crbug.com/3604429): This will be moved to WindowEventFilter.
-  int hit_test_code = HTNOWHERE;
-  if (event->IsMouseEvent() || event->IsTouchEvent()) {
-    ui::LocatedEvent* located_event = event->AsLocatedEvent();
-    if (GetContentWindow() && GetContentWindow()->delegate()) {
-      int flags = located_event->flags();
-      gfx::Point location_in_dip = located_event->location();
-      GetRootTransform().TransformPointReverse(&location_in_dip);
-      hit_test_code = GetContentWindow()->delegate()->GetNonClientComponent(
-          location_in_dip);
-      if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE)
-        flags |= ui::EF_IS_NON_CLIENT;
-      located_event->set_flags(flags);
-    }
-  }
-
-  if ((event->IsMouseEvent() || event->IsTouchEvent()) &&
-      non_client_window_event_filter_) {
-    non_client_window_event_filter_->HandleLocatedEventWithHitTest(
-        hit_test_code, event->AsLocatedEvent());
-  }
-
-  if (!event->handled())
-    WindowTreeHostPlatform::DispatchEvent(event);
-}
-
 void DesktopWindowTreeHostLacros::OnClosed() {
   DestroyNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnClosed();
@@ -99,7 +72,7 @@ void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
 
 void DesktopWindowTreeHostLacros::CreateNonClientEventFilter() {
   DCHECK(!non_client_window_event_filter_);
-  non_client_window_event_filter_ = std::make_unique<WindowEventFilterLinux>(
+  non_client_window_event_filter_ = std::make_unique<WindowEventFilterLacros>(
       this, GetWmMoveResizeHandler(*platform_window()));
 }
 
@@ -146,28 +119,6 @@ DesktopWindowTreeHost* DesktopWindowTreeHost::Create(
     DesktopNativeWidgetAura* desktop_native_widget_aura) {
   return new DesktopWindowTreeHostLacros(native_widget_delegate,
                                          desktop_native_widget_aura);
-}
-
-Widget::MoveLoopResult DesktopWindowTreeHostLacros::RunMoveLoop(
-    const gfx::Vector2d& drag_offset,
-    Widget::MoveLoopSource source,
-    Widget::MoveLoopEscapeBehavior escape_behavior) {
-  GetContentWindow()->SetCapture();
-
-  // DesktopWindowTreeHostLinux::RunMoveLoop() may result in |this| being
-  // deleted. As an extra safity guard, keep track of |this| with a weak
-  // pointer, and only call ReleaseCapture() if it still exists.
-  //
-  // TODO(https://crbug.com/1289682): Consider removing capture set/unset
-  // during window drag 'n drop (detached).
-  auto weak_this = weak_factory_.GetWeakPtr();
-
-  Widget::MoveLoopResult result = DesktopWindowTreeHostPlatform::RunMoveLoop(
-      drag_offset, source, escape_behavior);
-  if (weak_this.get())
-    GetContentWindow()->ReleaseCapture();
-
-  return result;
 }
 
 }  // namespace views
