@@ -159,8 +159,7 @@ BasicDesktopEnvironment::CreateComposingVideoCapturer(
       CreateVideoCapturer(std::move(monitor)));
 }
 
-std::unique_ptr<webrtc::DesktopCapturer>
-BasicDesktopEnvironment::CreateVideoCapturer(
+std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
     std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

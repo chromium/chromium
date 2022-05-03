@@ -47,6 +47,7 @@
 #include "remoting/protocol/mouse_input_filter.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/video_stream.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -263,6 +264,11 @@ class ClientSession : public protocol::HostStub,
       std::unique_ptr<protocol::MessagePipe> pipe);
 
   void CreatePerMonitorVideoStreams();
+
+#if defined(WEBRTC_USE_GIO)
+  void ExtractAndSetInputInjectorMetadata(
+      webrtc::DesktopCaptureMetadata capture_metadata);
+#endif
 
   raw_ptr<EventHandler> event_handler_;
 

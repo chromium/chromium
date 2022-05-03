@@ -11,7 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "remoting/protocol/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -32,7 +33,7 @@ class DesktopDisplayInfoMonitor;
 // This class optionally loads the list of desktop displays on the UI thread
 // (after each captured frame), which will notify the ClientSessionControl
 // if the displays have changed.
-class DesktopCapturerProxy : public webrtc::DesktopCapturer {
+class DesktopCapturerProxy : public DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
@@ -62,6 +63,11 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
                                   shared_memory_factory) override;
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
+#if defined(WEBRTC_USE_GIO)
+  void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
+                            callback) override;
+#endif
+
   bool SelectSource(SourceId id) override;
 
  private:
@@ -69,6 +75,10 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
 
   void OnFrameCaptured(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
+
+#if defined(WEBRTC_USE_GIO)
+  void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
+#endif
 
   base::ThreadChecker thread_checker_;
 
@@ -81,6 +91,9 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   // single-video-stream case.
   std::unique_ptr<DesktopDisplayInfoMonitor> desktop_display_info_monitor_;
 
+#if defined(WEBRTC_USE_GIO)
+  base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> metadata_callback_;
+#endif
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
 };
 

@@ -24,6 +24,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
@@ -84,8 +85,7 @@ IpcDesktopEnvironment::CreateKeyboardLayoutMonitor(
       std::move(callback));
 }
 
-std::unique_ptr<webrtc::DesktopCapturer>
-IpcDesktopEnvironment::CreateVideoCapturer(
+std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer(
     std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   return desktop_session_proxy_->CreateVideoCapturer();
 }

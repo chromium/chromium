@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/desktop_environment.h"
+#include "remoting/protocol/desktop_capturer.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -39,7 +40,7 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
   std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
       override;

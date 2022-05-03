@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
+#include "remoting/protocol/desktop_capturer.h"
 
 namespace webrtc {
 class DesktopCapturer;
@@ -60,7 +61,7 @@ class DesktopEnvironment {
   // of DesktopDisplayInfoLoader are updated to be event-driven (instead of
   // polling per captured frame), this parameter could be removed even in
   // the single-video-stream case.
-  virtual std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) = 0;
 
   virtual std::unique_ptr<DesktopDisplayInfoMonitor>

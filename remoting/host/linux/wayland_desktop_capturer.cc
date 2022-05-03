@@ -4,6 +4,9 @@
 
 #include "remoting/host/linux/wayland_desktop_capturer.h"
 
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/linux/remote_desktop_portal.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -44,9 +47,21 @@ bool WaylandDesktopCapturer::SelectSource(SourceId id) {
 
 #if defined(WEBRTC_USE_GIO)
 webrtc::DesktopCaptureMetadata WaylandDesktopCapturer::GetMetadata() {
-  return {
-      .session_details = base_capturer_pipewire_.GetSessionDetails(),
-  };
+  constexpr base::TimeDelta kMetadataTimeout = base::Seconds(3);
+  base::Time start_time = base::Time::Now();
+  do {
+    SessionDetails session_details =
+        base_capturer_pipewire_.GetSessionDetails();
+    if (session_details.proxy && session_details.cancellable &&
+        !session_details.session_handle.empty() &&
+        session_details.pipewire_stream_node_id > 0) {
+      return {.session_details = std::move(session_details)};
+    }
+    base::PlatformThread::Sleep(base::Milliseconds(10));
+  } while (base::Time::Now() - start_time < kMetadataTimeout);
+  LOG(ERROR) << "Unable to retrievel portal session details in time: "
+             << kMetadataTimeout << ". CRD session will fail.";
+  return {};
 }
 #endif
 

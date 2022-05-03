@@ -55,6 +55,9 @@ class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
       std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory);
   void SelectSource(SourceId id);
   void CaptureFrame();
+#if defined(WEBRTC_USE_GIO)
+  void GetAndSetMetadata();
+#endif
 
  private:
   // webrtc::DesktopCapturer::Callback implementation.
@@ -127,6 +130,18 @@ void DesktopCapturerProxy::Core::CaptureFrame() {
     OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_PERMANENT, nullptr);
   }
 }
+
+#if defined(WEBRTC_USE_GIO)
+void DesktopCapturerProxy::Core::GetAndSetMetadata() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (capturer_) {
+    webrtc::DesktopCaptureMetadata metadata = capturer_->GetMetadata();
+    caller_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DesktopCapturerProxy::OnMetadata, proxy_,
+                                  std::move(metadata)));
+  }
+}
+#endif
 
 void DesktopCapturerProxy::Core::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
@@ -225,4 +240,21 @@ void DesktopCapturerProxy::OnFrameCaptured(
   }
 }
 
+#if defined(WEBRTC_USE_GIO)
+void DesktopCapturerProxy::GetMetadataAsync(
+    base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  metadata_callback_ = std::move(callback);
+  capture_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::GetAndSetMetadata, base::Unretained(core_.get())));
+}
+
+void DesktopCapturerProxy::OnMetadata(webrtc::DesktopCaptureMetadata metadata) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  std::move(metadata_callback_).Run(std::move(metadata));
+}
+
+#endif
 }  // namespace remoting

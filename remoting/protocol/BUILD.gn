@@ -77,6 +77,7 @@ static_library("protocol") {
     "data_channel_manager.cc",
     "data_channel_manager.h",
     "datagram_channel_factory.h",
+    "desktop_capturer.h",
     "display_size.cc",
     "display_size.h",
     "file_transfer_helpers.cc",

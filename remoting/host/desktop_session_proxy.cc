@@ -143,8 +143,7 @@ std::unique_ptr<ScreenControls> DesktopSessionProxy::CreateScreenControls() {
   return std::make_unique<IpcScreenControls>(this);
 }
 
-std::unique_ptr<webrtc::DesktopCapturer>
-DesktopSessionProxy::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   return std::make_unique<IpcVideoFrameCapturer>(this);

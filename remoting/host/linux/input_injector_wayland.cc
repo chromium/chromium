@@ -122,7 +122,7 @@ class InputInjectorWayland : public InputInjector {
   void InjectMouseEvent(const protocol::MouseEvent& event) override;
   void InjectTouchEvent(const protocol::TouchEvent& event) override;
 
-  void SetMetadata(InputInjectorMetadata metadata);
+  void SetMetadata(InputInjectorMetadata metadata) override;
 
   // InputInjector interface.
   void Start(

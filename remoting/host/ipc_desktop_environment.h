@@ -21,6 +21,7 @@
 #include "remoting/host/file_transfer/ipc_file_operations.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
+#include "remoting/protocol/desktop_capturer.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -58,7 +59,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
   std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
       override;

@@ -87,8 +87,7 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
   return std::make_unique<FakeScreenControls>();
 }
 
-std::unique_ptr<webrtc::DesktopCapturer>
-FakeDesktopEnvironment::CreateVideoCapturer(
+std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
     std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null())

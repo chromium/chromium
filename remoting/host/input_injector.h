@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "remoting/host/input_injector_metadata.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/input_stub.h"
 
@@ -33,9 +34,14 @@ class InputInjector : public protocol::ClipboardStub,
   // InjectTouchEvent() on this platform.
   static bool SupportsTouchEvents();
 
-  // Initialises any objects needed to execute events.
+  // Initializes any objects needed to execute events.
   virtual void Start(
       std::unique_ptr<protocol::ClipboardStub> client_clipboard) = 0;
+
+  // Sets metadata that may be required by the injector to work properly.
+  // Currently used by wayland input injector to get the portal session related
+  // details from capturer.
+  virtual void SetMetadata(InputInjectorMetadata metadata) {}
 };
 
 }  // namespace remoting

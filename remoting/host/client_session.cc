@@ -54,6 +54,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
+#if defined(WEBRTC_USE_GIO)
+#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#endif
+
 namespace {
 
 constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
@@ -495,6 +499,14 @@ void ClientSession::OnConnectionAuthenticated() {
   clipboard_echo_filter_.set_client_stub(connection_->client_stub());
 }
 
+#if defined(WEBRTC_USE_GIO)
+void ClientSession::ExtractAndSetInputInjectorMetadata(
+    webrtc::DesktopCaptureMetadata capture_metadata) {
+  input_injector_->SetMetadata(
+      {.session_details = std::move(capture_metadata.session_details)});
+}
+#endif
+
 void ClientSession::CreateMediaStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -513,6 +525,16 @@ void ClientSession::CreateMediaStreams() {
     video_stream.composer = composer->GetWeakPtr();
     video_stream.stream =
         connection_->StartVideoStream(kStreamName, std::move(composer));
+#if defined(WEBRTC_USE_GIO)
+    if (webrtc::DesktopCapturer::IsRunningUnderWayland() &&
+        video_stream.composer) {
+      // Unretained(this) is safe because |this| owns the composer, which will
+      // not run any callback after it is destroyed.
+      video_stream.composer->GetMetadataAsync(
+          base::BindOnce(&ClientSession::ExtractAndSetInputInjectorMetadata,
+                         base::Unretained(this)));
+    }
+#endif  // defined(WEBRTC_USE_GIO)
   } else {
     video_stream.stream = connection_->StartVideoStream(
         kStreamName,
