@@ -15,7 +15,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -333,9 +332,9 @@ PageInfo::~PageInfo() {
       did_revoke_user_ssl_decisions_ ? USER_CERT_DECISIONS_REVOKED
                                      : USER_CERT_DECISIONS_NOT_REVOKED;
   if (show_ssl_decision_revoke_button_) {
-    UMA_HISTOGRAM_ENUMERATION("interstitial.ssl.did_user_revoke_decisions2",
-                              user_decision,
-                              END_OF_SSL_CERTIFICATE_DECISIONS_DID_REVOKE_ENUM);
+    base::UmaHistogramEnumeration(
+        "interstitial.ssl.did_user_revoke_decisions2", user_decision,
+        END_OF_SSL_CERTIFICATE_DECISIONS_DID_REVOKE_ENUM);
   }
 
   // Record the total time the Page Info UI was open for all opens as well as
@@ -416,7 +415,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   delegate_->OnPageInfoActionOccurred(action);
 #endif
 
-  UMA_HISTOGRAM_ENUMERATION("WebsiteSettings.Action", action, PAGE_INFO_COUNT);
+  base::UmaHistogramEnumeration("WebsiteSettings.Action", action);
 
   if (web_contents_) {
     ukm::builders::PageInfoBubble(
@@ -428,7 +427,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   base::UmaHistogramEnumeration(
       security_state::GetSafetyTipHistogramName(
           "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
-      action, PAGE_INFO_COUNT);
+      action);
 
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
@@ -438,10 +437,9 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   bool has_fledge = settings->HasJoinedUserToInterestGroup();
   switch (action) {
     case PageInfoAction::PAGE_INFO_OPENED:
-      if (has_fledge || has_topic) {
-        base::RecordAction(
-            base::UserMetricsAction("PageInfo.OpenedWithAdsPersonalization"));
-      }
+      base::RecordAction(base::UserMetricsAction("PageInfo.Opened"));
+      base::UmaHistogramBoolean("Security.PageInfo.AdPersonalizationRowShown",
+                                has_fledge || has_topic);
       break;
     case PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED:
       if (has_fledge && has_topic) {
@@ -459,7 +457,96 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       base::RecordAction(base::UserMetricsAction(
           "PageInfo.AdPersonalization.ManageInterestClicked"));
       break;
-    default:
+    case PAGE_INFO_CERTIFICATE_DIALOG_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Security.Certificate.Opened"));
+      break;
+    case PAGE_INFO_CONNECTION_HELP_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Security.ConnectionHelp.Opened"));
+      break;
+    case PAGE_INFO_SECURITY_DETAILS_OPENED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Security.Opened"));
+      break;
+    case PAGE_INFO_SITE_SETTINGS_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.SiteSettings.Opened"));
+      break;
+    case PAGE_INFO_COOKIES_DIALOG_OPENED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Cookies.Opened"));
+      break;
+    case PAGE_INFO_COOKIES_ALLOWED_FOR_SITE:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Cookies.Allowed"));
+      break;
+    case PAGE_INFO_COOKIES_BLOCKED_FOR_SITE:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Cookies.Blocked"));
+      break;
+    case PAGE_INFO_COOKIES_CLEARED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Cookies.Cleared"));
+      break;
+    case PAGE_INFO_PERMISSION_DIALOG_OPENED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.Permission.Opened"));
+      break;
+    case PAGE_INFO_CHANGED_PERMISSION:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Permission.Changed"));
+      break;
+    case PAGE_INFO_PERMISSIONS_CLEARED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Permission.Cleared"));
+      break;
+    case PAGE_INFO_CHOOSER_OBJECT_DELETED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Permission.ChooserObjectDeleted"));
+      break;
+    case PAGE_INFO_RESET_DECISIONS_CLICKED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.Permission.ResetDecisions"));
+      break;
+    case PAGE_INFO_FORGET_SITE_OPENED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.ForgetSite.Opened"));
+      break;
+    case PAGE_INFO_FORGET_SITE_CLEARED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.ForgetSite.Cleared"));
+      break;
+    case PAGE_INFO_HISTORY_OPENED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.History.Opened"));
+      break;
+    case PAGE_INFO_HISTORY_ENTRY_REMOVED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.History.EntryRemoved"));
+      break;
+    case PAGE_INFO_HISTORY_ENTRY_CLICKED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.History.EntryClicked"));
+      break;
+    case PAGE_INFO_PASSWORD_REUSE_ALLOWED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.PasswordReuseAllowed"));
+      break;
+    case PAGE_INFO_CHANGE_PASSWORD_PRESSED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.ChangePasswordPressed"));
+      break;
+    case PAGE_INFO_SAFETY_TIP_HELP_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.SafetyTip.HelpOpened"));
+      break;
+    case PAGE_INFO_STORE_INFO_CLICKED:
+      base::RecordAction(base::UserMetricsAction("PageInfo.StoreInfo.Opened"));
+      break;
+    case PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.AboutThisSite.Opened"));
+      break;
+    case PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.AboutThisSite.SourceLinkClicked"));
+      break;
+    case PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.AboutThisSite.MoreAboutClicked"));
       break;
   }
 }
@@ -478,15 +565,15 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
   // the Page Info UI.
   size_t num_values;
   int histogram_value = ContentSettingTypeToHistogramValue(type, &num_values);
-  UMA_HISTOGRAM_EXACT_LINEAR("WebsiteSettings.OriginInfo.PermissionChanged",
-                             histogram_value, num_values);
+  base::UmaHistogramExactLinear("WebsiteSettings.OriginInfo.PermissionChanged",
+                                histogram_value, num_values);
 
   if (setting == ContentSetting::CONTENT_SETTING_ALLOW) {
-    UMA_HISTOGRAM_EXACT_LINEAR(
+    base::UmaHistogramExactLinear(
         "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", histogram_value,
         num_values);
   } else if (setting == ContentSetting::CONTENT_SETTING_BLOCK) {
-    UMA_HISTOGRAM_EXACT_LINEAR(
+    base::UmaHistogramExactLinear(
         "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", histogram_value,
         num_values);
   }

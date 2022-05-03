@@ -108,7 +108,7 @@ int SetSSLCipherSuite(int connection_status, int cipher_suite) {
 
 class MockPageInfoUI : public PageInfoUI {
  public:
-  ~MockPageInfoUI() override {}
+  ~MockPageInfoUI() override = default;
   MOCK_METHOD1(SetCookieInfo, void(const CookieInfoList& cookie_info_list));
   MOCK_METHOD0(SetPermissionInfoStub, void());
   MOCK_METHOD1(SetIdentityInfo, void(const IdentityInfo& identity_info));
@@ -150,7 +150,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     SetURL("http://www.example.com");
   }
 
-  ~PageInfoTest() override {}
+  ~PageInfoTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -1150,11 +1150,11 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
 
   const TestCase kTestCases[] = {
-      // PAGE_INFO_COUNT used as shorthand for "take no action".
+      // PAGE_INFO_OPENED used as shorthand for "take no action".
       {"https://example.test", security_state::SECURE, "SECURE",
-       PageInfo::PAGE_INFO_COUNT},
+       PageInfo::PAGE_INFO_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
-       PageInfo::PAGE_INFO_COUNT},
+       PageInfo::PAGE_INFO_OPENED},
       {"https://example.test", security_state::SECURE, "SECURE",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
       {"http://example.test", security_state::NONE, "NONE",
@@ -1176,14 +1176,14 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.security_level_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
+    if (test.action != PageInfo::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
 
     histograms.ExpectTotalCount(kHistogramPrefix + test.security_level_name, 1);
 
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
+    if (test.action != PageInfo::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.security_level_name, 1);
     } else {
@@ -1290,11 +1290,11 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   const TestCase kTestCases[] = {
       // PAGE_INFO_COUNT used as shorthand for "take no action".
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
-       PageInfo::PAGE_INFO_COUNT},
+       PageInfo::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
-       PageInfo::PAGE_INFO_COUNT},
+       PageInfo::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kBadReputation,
-       "SafetyTip_BadReputation", PageInfo::PAGE_INFO_COUNT},
+       "SafetyTip_BadReputation", PageInfo::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
@@ -1319,7 +1319,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
         kHistogramPrefix + "NoAction." + test.safety_tip_status_name, 0);
 
     PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
+    if (test.action != PageInfo::PAGE_INFO_OPENED) {
       test_page_info->RecordPageInfoAction(test.action);
     }
     ClearPageInfo();
@@ -1327,7 +1327,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
     histograms.ExpectTotalCount(kHistogramPrefix + test.safety_tip_status_name,
                                 1);
 
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
+    if (test.action != PageInfo::PAGE_INFO_OPENED) {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "Action." + test.safety_tip_status_name, 1);
     } else {

@@ -23499,6 +23499,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PageInfo.AboutThisSite.MoreAboutClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>More about clicked in AboutThisSite from PageInfo.</description>
+</action>
+
+<action name="PageInfo.AboutThisSite.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>AboutThisSite subpage opened from PageInfo.</description>
+</action>
+
+<action name="PageInfo.AboutThisSite.SourceLinkClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Source link clicked in AboutThisSite from PageInfo.</description>
+</action>
+
 <action name="PageInfo.AdPersonalization.ManageInterestClicked">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -23536,13 +23554,141 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="PageInfo.OpenedWithAdsPersonalization">
+<action name="PageInfo.ChangePasswordPressed">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <description>
-    User opened Page Info with an Ads Personalization row present.
-  </description>
+  <description>Change password pressed in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Cookies.Allowed">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Cookies allowed in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Cookies.Blocked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Cookies blocked in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Cookies.Cleared">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Cookies cleared in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Cookies.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Page Info Cookies subpage opened.</description>
+</action>
+
+<action name="PageInfo.ForgetSite.Cleared">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Forget Site dialog confirmed in PageInfo.</description>
+</action>
+
+<action name="PageInfo.ForgetSite.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Forget Site dialog opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.History.EntryClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>History entry clicked from PageInfo.</description>
+</action>
+
+<action name="PageInfo.History.EntryRemoved">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>History entry removed from PageInfo.</description>
+</action>
+
+<action name="PageInfo.History.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>History subpage opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>User opened PageInfo.</description>
+</action>
+
+<action name="PageInfo.PasswordReuseAllowed">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Password reuse allowed from PageInfo.</description>
+</action>
+
+<action name="PageInfo.Permission.Changed">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Permission changed in page info.</description>
+</action>
+
+<action name="PageInfo.Permission.ChooserObjectDeleted">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Chooser object deleted from PageInfo.</description>
+</action>
+
+<action name="PageInfo.Permission.Cleared">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="PageInfo.Permission.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Certificate details opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Permission.ResetDecisions">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Permissions reset from PageInfo.</description>
+</action>
+
+<action name="PageInfo.SafetyTip.HelpOpened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Help opened from Safety Tip.</description>
+</action>
+
+<action name="PageInfo.Security.Certificate.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Certificate details opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Security.ConnectionHelp.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Connection help opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.Security.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Certificate details opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.SiteSettings.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Site settings opened in PageInfo.</description>
+</action>
+
+<action name="PageInfo.StoreInfo.Opened">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Store info subpage opened from PageInfo.</description>
 </action>
 
 <action name="PageLoad" not_user_triggered="true">
