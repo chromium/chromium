@@ -1008,19 +1008,23 @@ version_info::Channel ChromePasswordManagerClient::GetChannel() const {
 
 void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
+  content::RenderFrameHost* rfh =
+      password_generation_driver_receivers_.GetCurrentTargetFrame();
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-          password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          ui_data.form_data.url,
+          rfh, ui_data.form_data.url,
           BadMessageReason::
               CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED))
     return;
 #if BUILDFLAG(IS_ANDROID)
   if (PasswordGenerationController::AllowedForWebContents(web_contents())) {
-    PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
-        password_generation_driver_receivers_.GetCurrentTargetFrame());
+    PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
     // This method is called over Mojo via a RenderFrameHostReceiverSet; the
     // current target frame must be live.
-    DCHECK(driver);
+    // TODO(crbug.com/1294378): Remove reference to nested frames once
+    // EnablePasswordManagerWithinFencedFrame is launched.
+    DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+    if (!driver)
+      return;
 
     PasswordGenerationController* generation_controller =
         PasswordGenerationController::GetIfExisting(web_contents());
@@ -1035,11 +1039,14 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   }
 #else
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory_->GetDriverForFrame(
-          password_generation_driver_receivers_.GetCurrentTargetFrame());
+      driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  DCHECK(driver);
+  // TODO(crbug.com/1294378): Remove reference to nested frames once
+  // EnablePasswordManagerWithinFencedFrame is launched.
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (!driver)
+    return;
 
   // Attempt to show the autofill dropdown UI first.
   gfx::RectF element_bounds_in_top_frame_space =
@@ -1062,11 +1069,17 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const autofill::FormData& form_data,
     autofill::FieldRendererId field_renderer_id,
     const std::u16string& password_value) {
-  auto* driver = driver_factory_->GetDriverForFrame(
-      password_generation_driver_receivers_.GetCurrentTargetFrame());
+  content::RenderFrameHost* rfh =
+      password_generation_driver_receivers_.GetCurrentTargetFrame();
+  auto* driver = driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  DCHECK(driver);
+  // TODO(crbug.com/1294378): Remove reference to nested frames once
+  // EnablePasswordManagerWithinFencedFrame is launched.
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (!driver)
+    return;
+
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(TransformToRootCoordinates(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
@@ -1099,26 +1112,36 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
   if (popup_controller_)
     popup_controller_->UpdatePassword(password_value);
 
-  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
-      password_generation_driver_receivers_.GetCurrentTargetFrame());
+  content::RenderFrameHost* rfh =
+      password_generation_driver_receivers_.GetCurrentTargetFrame();
+  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  DCHECK(driver);
-  password_manager_.OnPresaveGeneratedPassword(
-      driver,
-      password_manager::GetFormWithFrameAndFormMetaData(
-          password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          form_data),
-      password_value);
+  // TODO(crbug.com/1294378): Remove reference to nested frames once
+  // EnablePasswordManagerWithinFencedFrame is launched.
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (driver) {
+    password_manager_.OnPresaveGeneratedPassword(
+        driver,
+        password_manager::GetFormWithFrameAndFormMetaData(
+            password_generation_driver_receivers_.GetCurrentTargetFrame(),
+            form_data),
+        password_value);
+  }
 }
 
 void ChromePasswordManagerClient::PasswordNoLongerGenerated(
     const autofill::FormData& form_data) {
-  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
-      password_generation_driver_receivers_.GetCurrentTargetFrame());
+  content::RenderFrameHost* rfh =
+      password_generation_driver_receivers_.GetCurrentTargetFrame();
+  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
-  DCHECK(driver);
+  // TODO(crbug.com/1294378): Remove reference to nested frames once
+  // EnablePasswordManagerWithinFencedFrame is launched.
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (!driver)
+    return;
   password_manager_.OnPasswordNoLongerGenerated(
       driver, password_manager::GetFormWithFrameAndFormMetaData(
                   password_generation_driver_receivers_.GetCurrentTargetFrame(),
