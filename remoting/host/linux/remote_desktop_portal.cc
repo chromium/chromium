@@ -57,14 +57,15 @@ void RemoteDesktopPortal::Cleanup() {
     g_main_context_pop_thread_default(context_);
     g_main_context_unref(context_);
   }
+  if (screencast_portal_)
+    screencast_portal_.reset();
   UnsubscribeSignalHandlers();
   webrtc::xdg_portal::TearDownSession(std::move(session_handle_), proxy_,
                                       cancellable_, connection_);
-  session_handle_ = "";
+  session_handle_.clear();
   proxy_ = nullptr;
   cancellable_ = nullptr;
   connection_ = nullptr;
-  screencast_portal_->Cleanup();
 }
 
 void RemoteDesktopPortal::UnsubscribeSignalHandlers() {
@@ -96,12 +97,14 @@ void RemoteDesktopPortal::Start() {
   // asynchronous call in the combined portal setup so we wait for the
   // screencast portal to go into either failed/succeeded state before stopping
   // our loop.
-  while (screencast_portal_status_ == RequestResponse::kUnknown) {
-    g_main_context_iteration(context_, true);
+  while (context_ && screencast_portal_status_ == RequestResponse::kUnknown) {
+    g_main_context_iteration(context_, /*may_block=*/false);
   }
-  g_main_context_pop_thread_default(context_);
-  g_main_context_unref(context_);
-  context_ = nullptr;
+  if (context_) {
+    g_main_context_pop_thread_default(context_);
+    g_main_context_unref(context_);
+    context_ = nullptr;
+  }
 
   HOST_LOG << "Session setup finished";
 }
