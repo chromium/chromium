@@ -39,6 +39,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 
+import com.google.android.material.button.MaterialButtonToggleGroup;
+
 import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
@@ -66,6 +68,7 @@ public class MainActivity
     private Button mLaunchIncognitoButton;
     private Button mLaunchPartialHeightCctButton;
     private MediaPlayer mMediaPlayer;
+    private MaterialButtonToggleGroup mCloseButtonPositionToggle;
 
     /**
      * Once per second, asks the framework for the process importance, and logs any change.
@@ -122,6 +125,8 @@ public class MainActivity
         mLaunchPartialHeightCctButton.setOnClickListener(this);
         mMediaPlayer = MediaPlayer.create(this, R.raw.amazing_grace);
         findViewById(R.id.register_twa_service).setOnClickListener(this);
+        mCloseButtonPositionToggle = findViewById(R.id.close_button_position_toggle);
+        mCloseButtonPositionToggle.check(R.id.start_button);
 
         Intent activityIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"));
         PackageManager pm = getPackageManager();
@@ -222,6 +227,10 @@ public class MainActivity
         String url = mEditText.getText().toString();
         int viewId = v.getId();
 
+        // @CloseButtonPosition
+        int closeButtonPosition =
+                mCloseButtonPositionToggle.getCheckedButtonId() == R.id.end_button ? 2 : 1;
+
         if (viewId == R.id.connect_button) {
             bindCustomTabsService();
         } else if (viewId == R.id.warmup_button) {
@@ -249,6 +258,8 @@ public class MainActivity
             customTabsIntent.intent.putExtra(
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     viewId == R.id.launch_incognito_button);
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
             configSessionConnection(session, customTabsIntent);
             customTabsIntent.launchUrl(this, Uri.parse(url));
         } else if (viewId == R.id.launch_pcct_button) {
@@ -263,6 +274,8 @@ public class MainActivity
             configSessionConnection(session, customTabsIntent);
             customTabsIntent.intent.putExtra(
                     "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL", 500);
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
             customTabsIntent.launchUrl(this, Uri.parse(url));
         }
     }

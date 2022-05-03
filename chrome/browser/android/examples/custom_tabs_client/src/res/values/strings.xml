@@ -16,6 +16,10 @@
 <resources>
     <string name="app_name">Chrome Custom Tabs Example</string>
     <string name="url_hint">Please type the url here.</string>
+    <string name="toolbar_customizations_text">Toolbar Customizations</string>
+    <string name="close_button_position_text">Close Button Position</string>
+    <string name="close_button_start_text">Default/Start</string>
+    <string name="close_button_end_text">End</string>
     <string name="warmup_button_text">Warmup Chrome</string>
     <string name="may_launch_button_text">May Launch URL</string>
     <string name="launch_button_text">Launch URL in a Chrome Custom Tab</string>

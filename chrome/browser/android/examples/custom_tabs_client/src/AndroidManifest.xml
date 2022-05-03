@@ -22,7 +22,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:allowBackup="false"
-        android:theme="@style/Theme.MaterialComponents.Light" >
+        android:theme="@style/Theme.Material3.DayNight" >
 
         <activity
             android:name="org.chromium.customtabsclient.MainActivity"
