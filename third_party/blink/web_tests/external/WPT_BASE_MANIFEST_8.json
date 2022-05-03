@@ -234545,6 +234545,19 @@
       }
      },
      "popups": {
+      "popup-backdrop-appearance.tentative.html": [
+       "7dcd401b4c92381dd4aca796378d1b3d32836f7c",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-backdrop-appearance-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "popup-defaultopen-display.tentative.html": [
        "179e07189b31ec4b97ef3aa6ca61765388b781f8",
        [
@@ -309880,6 +309893,10 @@
       }
      },
      "popups": {
+      "popup-backdrop-appearance-ref.tentative.html": [
+       "9ae95c2f8ffd2d03d90b6eca4a1f3834bfc3cf42",
+       []
+      ],
       "popup-defaultopen-display-ref.tentative.html": [
        "db1a3f2b044d174781a6c5ba961b7b43c21611ce",
        []
@@ -459501,6 +459518,15 @@
         ]
        }
       },
+      "sections-and-headings": {
+       "headings-styles.html": [
+        "63e6a83e883d7dbbf600165746fc61b016ae6053",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "tables": {
        "form-in-tables-xhtml.xhtml": [
         "6af44139a092706c3752e6856781bd91f91008a7",
@@ -467910,7 +467936,7 @@
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "1b36233615845ea97b2e22910ad377935e9ae9a1",
+       "e2a91b54a1ed59b14a283e2523eb3de3f666223a",
        [
         null,
         {
