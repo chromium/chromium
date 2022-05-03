@@ -2794,12 +2794,12 @@ crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/datetimelocal-s
 crbug.com/1299212 fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Failure Pass Timeout ]
 crbug.com/1299212 fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Failure Pass Timeout ]
 crbug.com/1299212 fast/forms/select/menulist-popup-type-ahead-style-change.html [ Failure Pass Timeout ]
-crbug.com/1299212 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Pass Failure ]
-crbug.com/1299212 fast/forms/calendar-picker/date-picker-input-change-events.html [ Pass Timeout Crash ]
-crbug.com/1299212 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Pass Timeout Crash ]
+crbug.com/1299212 fast/forms/calendar-picker/date-picker-choose-default-value-after-set-value.html [ Failure Pass ]
+crbug.com/1299212 fast/forms/calendar-picker/date-picker-input-change-events.html [ Crash Pass Timeout ]
+crbug.com/1299212 fast/forms/datetimelocal/datetimelocal-picker-input-change-events.html [ Crash Pass Timeout ]
 crbug.com/1299212 fast/forms/month/month-picker-input-change-events.html [ Pass Timeout ]
 crbug.com/1299212 fast/forms/time/time-picker-input-change-events.html [ Pass Timeout ]
-crbug.com/1299212 fast/forms/week/week-picker-input-change-events.html [ Pass Timeout Crash ]
+crbug.com/1299212 fast/forms/week/week-picker-input-change-events.html [ Crash Pass Timeout ]
 # This might be just flaky on Windows:
 crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/* [ Failure Pass Timeout ]
 # At least scrollbars, if not window sizes, are flaky on Win7:
@@ -3388,6 +3388,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Timeout Failure ]
 crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
@@ -7703,7 +7704,7 @@ crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEve
 crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-parts-structure.tentative.html [ Timeout ]
 
 # Unblock WebRTC roll: A test is about to go from failing to passing
-crbug.com/1320669 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
+crbug.com/1320669 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Failure Pass ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
