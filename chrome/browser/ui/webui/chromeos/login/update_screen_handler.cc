@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/grit/chromium_strings.h"
@@ -142,14 +141,6 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("slideSelectedButtonLabel", IDS_UPDATE_SELECTED_BUTTON_LABEL);
   builder->Add("slideUnselectedButtonLabel",
                IDS_UPDATE_UNSELECTED_BUTTON_LABEL);
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  builder->Add("cancelUpdateHint", IDS_UPDATE_CANCEL);
-  builder->Add("cancelledUpdateMessage", IDS_UPDATE_CANCELLED);
-#else
-  builder->Add("cancelUpdateHint", IDS_EMPTY_STRING);
-  builder->Add("cancelledUpdateMessage", IDS_EMPTY_STRING);
-#endif
 
   builder->Add("updateOverCellularPromptTitle",
                IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE);

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/grit/chromium_strings.h"
@@ -79,6 +80,14 @@ void UpdateRequiredScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CONFIRM);
   builder->Add("eolDeleteUsersDataCancel",
                IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CANCEL);
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  builder->Add("cancelUpdateHint", IDS_UPDATE_CANCEL);
+  builder->Add("cancelledUpdateMessage", IDS_UPDATE_CANCELLED);
+#else
+  builder->Add("cancelUpdateHint", IDS_EMPTY_STRING);
+  builder->Add("cancelledUpdateMessage", IDS_EMPTY_STRING);
+#endif
 }
 
 void UpdateRequiredScreenHandler::InitializeDeprecated() {

@@ -95,11 +95,6 @@ const CheckingDownloadingUpdateBase = Polymer.mixinBehaviors(
       downloadingUpdatesKey: String,
 
       /**
-       * ID of the localized string for update cancellation message.
-       */
-      cancelHintKey: String,
-
-      /**
        * Message "3 minutes left".
        */
       estimatedTimeLeftMsg_: {

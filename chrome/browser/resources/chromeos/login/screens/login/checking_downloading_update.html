@@ -71,7 +71,7 @@
       </div>
       <div slot="subtitle" class="update-subtitle" hidden="[[!cancelAllowed]]"
           id="checkingForUpdateCancelHint">
-        [[i18nDynamic(locale, cancelHintKey)]]
+        [[i18nDynamic(locale, 'cancelUpdateHint')]]
       </div>
       <paper-progress slot="progress" id="checking-progress"
           indeterminate="[[checkingForUpdate]]">
@@ -93,7 +93,7 @@
       <div slot="subtitle">
         <div>[[i18nDynamic(locale, downloadingUpdatesKey)]]</div>
         <div hidden="[[!cancelAllowed]]">
-          [[i18nDynamic(locale, cancelHintKey)]]
+          [[i18nDynamic(locale, 'cancelUpdateHint')]]
         </div>
         <div id="progress-message" class="progress-message">
           [[progressMessage_]]
