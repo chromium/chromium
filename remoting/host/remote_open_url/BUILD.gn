@@ -21,7 +21,6 @@ source_set("common") {
   ]
 
   deps = [
-    "//base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
@@ -36,7 +35,10 @@ source_set("common") {
     "//ui/base",
   ]
 
-  public_deps = [ "//remoting/proto" ]
+  public_deps = [
+    "//base",
+    "//remoting/proto",
+  ]
 
   if (is_linux) {
     sources += [

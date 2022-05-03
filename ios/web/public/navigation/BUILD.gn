@@ -6,11 +6,14 @@ source_set("navigation") {
   deps = [
     "//ios/web/common:user_agent",
     "//ios/web/public/ui",
+  ]
+
+  public_deps = [
+    ":referrer",
+    "//base",
     "//ui/base",
     "//url",
   ]
-
-  public_deps = [ ":referrer" ]
 
   sources = [
     "browser_url_rewriter.h",

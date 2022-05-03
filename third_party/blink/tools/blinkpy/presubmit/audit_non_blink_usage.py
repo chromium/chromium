@@ -107,7 +107,7 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
             'base::bit_cast',
-            'base::in_place',
+            'absl::in_place',
             'absl::make_optional',
             'base::make_span',
             'absl::nullopt',

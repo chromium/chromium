@@ -12,7 +12,7 @@ class {{export_attribute}} {{union.name}} {
   static {{union.name}}Ptr
   New{{field.name|under_to_camel}}(
       {{field.kind|cpp_wrapper_param_type_new}} {{field.name}}) {
-    auto result = {{union.name}}Ptr(base::in_place);
+    auto result = {{union.name}}Ptr(absl::in_place);
     result->set_{{field.name}}(std::move({{field.name}}));
     return result;
   }

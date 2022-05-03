@@ -20,6 +20,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 constexpr net::NetworkTrafficAnnotationTag kSCTAuditReportTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("sct_auditing", R"(
@@ -121,7 +122,7 @@ GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
 
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  network::mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+  network::mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
   configuration->sampling_rate = features::kSCTAuditingSamplingRate.Get();
   configuration->log_expected_ingestion_delay =
       features::kSCTLogExpectedIngestionDelay.Get();

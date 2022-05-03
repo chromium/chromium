@@ -21,14 +21,10 @@ source_set("favicon") {
     "large_icon_cache.h",
   ]
   deps = [
-    "//base",
     "//components/favicon/core",
     "//components/favicon/core:history_implementation",
-    "//components/favicon_base",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
@@ -40,6 +36,12 @@ source_set("favicon") {
     "//skia",
     "//ui/base",
     "//url",
+  ]
+  public_deps = [
+    "//base",
+    "//components/favicon_base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
   ]
 }
 

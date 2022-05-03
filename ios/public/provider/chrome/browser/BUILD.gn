@@ -11,13 +11,13 @@ source_set("browser") {
     "chrome_browser_provider.mm",
   ]
   deps = [
-    "//base",
     "//components/metrics",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//url",
   ]
+  public_deps = [ "//base" ]
   frameworks = [ "CoreLocation.framework" ]
 }
 

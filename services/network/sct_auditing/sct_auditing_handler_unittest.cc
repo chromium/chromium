@@ -36,6 +36,7 @@
 #include "services/network/test/test_utils.h"
 #include "services/network/url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace network {
 
@@ -81,7 +82,7 @@ class SCTAuditingHandlerTest : public testing::Test {
         std::move(context_params));
 
     // Set up fake CT logs.
-    mojom::CTLogInfoPtr log(base::in_place);
+    mojom::CTLogInfoPtr log(absl::in_place);
     log->id = kTestLogIdAsString;
     log->mmd = kTestLogMMD;
     std::vector<mojom::CTLogInfoPtr> log_list;
@@ -101,7 +102,7 @@ class SCTAuditingHandlerTest : public testing::Test {
 
     // Set up SCT auditing configuration.
     auto* cache = network_service_->sct_auditing_cache();
-    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
     configuration->sampling_rate = 1.0;
     configuration->report_uri = GURL("https://example.test");
     configuration->traffic_annotation =

@@ -22,6 +22,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom.h"
@@ -144,7 +145,7 @@ void PageLoadMetricsObserverTester::SimulateCpuTimingUpdate(
 void PageLoadMetricsObserverTester::SimulateCpuTimingUpdate(
     const mojom::CpuTiming& cpu_timing,
     content::RenderFrameHost* rfh) {
-  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(base::in_place);
+  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(absl::in_place);
   page_load_metrics::InitPageLoadTimingForTest(timing.get());
   SimulatePageLoadTimingUpdate(
       *timing, mojom::FrameMetadata(), /* new_features= */ {},
@@ -171,7 +172,7 @@ void PageLoadMetricsObserverTester::SimulateMobileFriendlinessUpdate(
 void PageLoadMetricsObserverTester::SimulateInputTimingUpdate(
     const mojom::InputTiming& input_timing,
     content::RenderFrameHost* rfh) {
-  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(base::in_place);
+  auto timing = page_load_metrics::mojom::PageLoadTimingPtr(absl::in_place);
   page_load_metrics::InitPageLoadTimingForTest(timing.get());
   SimulatePageLoadTimingUpdate(
       *timing, mojom::FrameMetadata(), /* new_features= */ {},
@@ -252,15 +253,15 @@ void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
 void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     content::RenderFrameHost* render_frame_host) {
-  auto timing = mojom::PageLoadTimingPtr(base::in_place);
+  auto timing = mojom::PageLoadTimingPtr(absl::in_place);
   InitPageLoadTimingForTest(timing.get());
   metrics_web_contents_observer_->OnTimingUpdated(
       render_frame_host, std::move(timing),
-      mojom::FrameMetadataPtr(base::in_place),
+      mojom::FrameMetadataPtr(absl::in_place),
       std::vector<blink::UseCounterFeature>(), resources,
-      mojom::FrameRenderDataUpdatePtr(base::in_place),
-      mojom::CpuTimingPtr(base::in_place),
-      mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
+      mojom::FrameRenderDataUpdatePtr(absl::in_place),
+      mojom::CpuTimingPtr(absl::in_place),
+      mojom::InputTimingPtr(absl::in_place), blink::MobileFriendliness());
 }
 
 void PageLoadMetricsObserverTester::SimulateLoadedResource(

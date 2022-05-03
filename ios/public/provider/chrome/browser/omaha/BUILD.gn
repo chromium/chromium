@@ -5,7 +5,7 @@
 source_set("omaha_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "omaha_api.h" ]
-  deps = [
+  public_deps = [
     "//base",
     "//url",
   ]

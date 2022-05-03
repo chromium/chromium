@@ -17,6 +17,7 @@
 #include "media/base/vector_math.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 
@@ -78,7 +79,7 @@ LoopbackStream::LoopbackStream(
       socket_handle = mojo::PlatformHandle(foreign_socket.Take());
       if (socket_handle.is_valid()) {
         std::move(created_callback)
-            .Run({base::in_place, std::move(shared_memory_region),
+            .Run({absl::in_place, std::move(shared_memory_region),
                   std::move(socket_handle)});
         network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
                                        std::move(writer)));

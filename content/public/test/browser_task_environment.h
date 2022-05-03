@@ -100,7 +100,7 @@ class TestBrowserThread;
 //     template <typename... TaskEnvironmentTraits>
 //     explicit FooBase(TaskEnvironmentTraits&&... traits)
 //         : task_environment_(
-//               base::in_place,
+//               absl::in_place,
 //               std::forward<TaskEnvironmentTraits>(traits)...) {}
 //
 //     // Alternatively a subclass may pass this tag to ask this FooBase not to

@@ -22,6 +22,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using blink::mojom::LockMode;
 
@@ -283,7 +284,7 @@ class LockManager::BucketState {
       for (const auto& lock : request_queue) {
         std::vector<blink::mojom::LockInfoPtr>& target =
             lock.is_granted() ? held : requests;
-        target.emplace_back(base::in_place, lock.name(), lock.mode(),
+        target.emplace_back(absl::in_place, lock.name(), lock.mode(),
                             lock.client_id());
       }
     }

@@ -25,6 +25,7 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::Test;
 using ::testing::Mock;
@@ -212,7 +213,7 @@ TEST(AudioOutputStreamBrokerTest, StreamCreationSuccess_Propagates) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({base::in_place, base::UnsafeSharedMemoryRegion::Create(kShMemSize),
+      .Run({absl::in_place, base::UnsafeSharedMemoryRegion::Create(kShMemSize),
             mojo::PlatformHandle(socket1.Take())});
 
   EXPECT_CALL(env.provider_client, OnCreated());

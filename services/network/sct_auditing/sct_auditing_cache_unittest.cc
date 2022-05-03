@@ -25,6 +25,7 @@
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -49,7 +50,7 @@ class SCTAuditingCacheTest : public testing::Test {
  protected:
   // Initializes the configuration for the SCTAuditingCache to defaults.
   void InitSCTAuditing(SCTAuditingCache* cache, double sampling_rate = 1.0) {
-    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
     configuration->sampling_rate = sampling_rate;
     configuration->traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);

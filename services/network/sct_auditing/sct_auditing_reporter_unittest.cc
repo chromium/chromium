@@ -26,6 +26,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace network {
 
@@ -114,7 +115,7 @@ class SCTAuditingReporterTest : public testing::Test {
     SCTAuditingReporter::SCTHashdanceMetadata metadata =
         *SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
             reporter_metadata_.ToValue());
-    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
     configuration->log_expected_ingestion_delay = kExpectedIngestionDelay;
     configuration->log_max_ingestion_random_delay = kMaxIngestionRandomDelay;
     configuration->report_uri = GURL(kTestReportURL);

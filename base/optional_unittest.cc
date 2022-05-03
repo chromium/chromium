@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::ElementsAre;
 
@@ -535,7 +536,7 @@ TEST(OptionalTest, ForwardConstructor) {
       Test(const Test& param) : param_type(ParamType::COPY_CONSTRUCTED) {}
       Test(Test&& param) : param_type(ParamType::MOVE_CONSTRUCTED) {}
       explicit Test(int param) : param_type(ParamType::INT) {}
-      explicit Test(in_place_t param) : param_type(ParamType::IN_PLACE) {}
+      explicit Test(absl::in_place_t param) : param_type(ParamType::IN_PLACE) {}
       explicit Test(absl::optional<int> param)
           : param_type(ParamType::OPTIONAL_INT) {}
 

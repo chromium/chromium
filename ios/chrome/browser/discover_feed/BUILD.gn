@@ -18,11 +18,13 @@ source_set("discover_feed") {
     "feed_model_configuration.mm",
   ]
   deps = [
-    "//base",
     "//components/keyed_service/core",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    "//base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 

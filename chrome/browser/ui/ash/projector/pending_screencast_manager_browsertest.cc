@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
 
@@ -162,7 +163,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
                             int64_t total_bytes,
                             int64_t transferred_bytes) {
     syncing_status.item_events.emplace_back(
-        base::in_place, /*stable_id=*/1, /*group_id=*/1, path,
+        absl::in_place, /*stable_id=*/1, /*group_id=*/1, path,
         total_bytes == transferred_bytes
             ? drivefs::mojom::ItemEvent::State::kCompleted
             : drivefs::mojom::ItemEvent::State::kInProgress,

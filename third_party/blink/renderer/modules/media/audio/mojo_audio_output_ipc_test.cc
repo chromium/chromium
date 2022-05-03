@@ -21,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -80,7 +81,7 @@ class TestStreamProvider
         base::CancelableSyncSocket::CreatePair(&socket_, &foreign_socket));
     provider_client_->Created(
         std::move(stream_pending_remote),
-        {base::in_place, base::UnsafeSharedMemoryRegion::Create(kMemoryLength),
+        {absl::in_place, base::UnsafeSharedMemoryRegion::Create(kMemoryLength),
          mojo::PlatformHandle(foreign_socket.Take())});
   }
 

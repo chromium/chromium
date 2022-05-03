@@ -5,5 +5,5 @@
 source_set("discover_feed_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "discover_feed_api.h" ]
-  deps = [ "//ios/chrome/browser/discover_feed" ]
+  public_deps = [ "//ios/chrome/browser/discover_feed" ]
 }

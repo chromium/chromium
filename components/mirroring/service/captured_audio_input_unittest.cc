@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::InvokeWithoutArgs;
 
@@ -81,7 +82,7 @@ class CapturedAudioInputTest : public ::testing::Test {
     stream_client_.reset();
     audio_client->StreamCreated(
         std::move(pending_stream), stream_client_.BindNewPipeAndPassReceiver(),
-        {base::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
+        {absl::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
          mojo::PlatformHandle(foreign_socket.Take())});
   }
 

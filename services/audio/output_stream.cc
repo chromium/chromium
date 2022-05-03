@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 
@@ -183,7 +184,7 @@ void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
   }
 
   std::move(created_callback)
-      .Run({base::in_place, std::move(shared_memory_region),
+      .Run({absl::in_place, std::move(shared_memory_region),
             std::move(socket_handle)});
 }
 

@@ -21,6 +21,7 @@
 #include "base/template_util.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace base {
 namespace subtle {
@@ -441,7 +442,7 @@ class RefCountedData
   RefCountedData(const T& in_value) : data(in_value) {}
   RefCountedData(T&& in_value) : data(std::move(in_value)) {}
   template <typename... Args>
-  explicit RefCountedData(in_place_t, Args&&... args)
+  explicit RefCountedData(absl::in_place_t, Args&&... args)
       : data(std::forward<Args>(args)...) {}
 
   T data;

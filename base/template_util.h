@@ -59,35 +59,6 @@ struct priority_tag<0> {};
 
 }  // namespace internal
 
-// base::in_place_t is an implementation of std::in_place_t from
-// C++17. A tag type used to request in-place construction in template vararg
-// constructors.
-
-// Specification:
-// https://en.cppreference.com/w/cpp/utility/in_place
-struct in_place_t {};
-constexpr in_place_t in_place = {};
-
-// base::in_place_type_t is an implementation of std::in_place_type_t from
-// C++17. A tag type used for in-place construction when the type to construct
-// needs to be specified, such as with base::unique_any, designed to be a
-// drop-in replacement.
-
-// Specification:
-// http://en.cppreference.com/w/cpp/utility/in_place
-template <typename T>
-struct in_place_type_t {};
-
-template <typename T>
-struct is_in_place_type_t {
-  static constexpr bool value = false;
-};
-
-template <typename... Ts>
-struct is_in_place_type_t<in_place_type_t<Ts...>> {
-  static constexpr bool value = true;
-};
-
 namespace internal {
 
 // The indirection with std::is_enum<T> is required, because instantiating

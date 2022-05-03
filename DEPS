@@ -3592,6 +3592,7 @@ include_rules = [
   "+third_party/abseil-cpp/absl/numeric/int128.h",
   '+third_party/abseil-cpp/absl/types/optional.h',
   '+third_party/abseil-cpp/absl/types/variant.h',
+  '+third_party/abseil-cpp/absl/utility/utility.h',
 ]
 
 

@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/route_request_result.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -280,7 +281,7 @@ Display WiredDisplayMediaRouteProvider::GetPrimaryDisplay() const {
 
 WiredDisplayMediaRouteProvider::Presentation::Presentation(
     const MediaRoute& route)
-    : route_(route), status_(base::in_place) {}
+    : route_(route), status_(absl::in_place) {}
 
 WiredDisplayMediaRouteProvider::Presentation::Presentation(
     Presentation&& other) = default;

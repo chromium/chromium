@@ -37,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace content {
 
@@ -429,7 +430,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
 
   for (const auto& event_trigger : trigger.event_triggers()) {
     web_ui_trigger->event_triggers.emplace_back(
-        base::in_place,
+        absl::in_place,
         /*data=*/event_trigger.data,
         /*priority=*/event_trigger.priority,
         /*deduplication_key=*/event_trigger.dedup_key

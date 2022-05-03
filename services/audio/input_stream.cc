@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/input_sync_writer.h"
 #include "services/audio/user_input_monitor.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 
@@ -227,7 +228,7 @@ void InputStream::OnCreated(bool initially_muted) {
   DCHECK(socket_handle.is_valid());
 
   std::move(created_callback_)
-      .Run({base::in_place, std::move(shared_memory_region),
+      .Run({absl::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted, id_);
 }

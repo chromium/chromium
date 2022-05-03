@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -127,7 +128,7 @@ class FakeStreamCreator {
     factory_client_->StreamCreated(
         receiver_.BindNewPipeAndPassRemote(),
         stream_client_.BindNewPipeAndPassReceiver(),
-        {base::in_place,
+        {absl::in_place,
          base::ReadOnlySharedMemoryRegion::Create(kMemoryLength).region,
          mojo::PlatformHandle(foreign_socket.Take())},
         initially_muted_, base::UnguessableToken::Create());

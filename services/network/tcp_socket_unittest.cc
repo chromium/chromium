@@ -1080,8 +1080,8 @@ TEST_P(TCPSocketWithMockSocketTest, InitialTCPConnectedSocketOptions) {
   std::vector<mojom::TCPKeepAliveOptionsPtr> keep_alive_options_list;
 
   keep_alive_options_list.emplace_back(nullptr);
-  keep_alive_options_list.emplace_back(base::in_place, false, 0U);
-  keep_alive_options_list.emplace_back(base::in_place, true, 100U);
+  keep_alive_options_list.emplace_back(absl::in_place, false, 0U);
+  keep_alive_options_list.emplace_back(absl::in_place, true, 100U);
 
   for (int receive_buffer_size :
        {-1, 0, 1024, TCPConnectedSocket::kMaxBufferSize,

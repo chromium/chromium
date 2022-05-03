@@ -40,6 +40,7 @@
 #include "sandbox/policy/switches.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -90,7 +91,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     base::SyncSocket socket1, socket2;
     base::SyncSocket::CreatePair(&socket1, &socket2);
     std::move(created_callback)
-        .Run({base::in_place,
+        .Run({absl::in_place,
               base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
               mojo::PlatformHandle(socket1.Take())},
              false /*initially muted*/, base::UnguessableToken::Create());

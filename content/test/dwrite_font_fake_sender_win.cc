@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace content {
 
@@ -101,7 +102,7 @@ void FakeFontCollection::GetFamilyNames(uint32_t family_index,
   std::vector<blink::mojom::DWriteStringPairPtr> family_names;
   if (family_index < fonts_.size()) {
     for (const auto& name : fonts_[family_index].family_names_) {
-      family_names.emplace_back(base::in_place, name.first, name.second);
+      family_names.emplace_back(absl::in_place, name.first, name.second);
     }
   }
   std::move(callback).Run(std::move(family_names));

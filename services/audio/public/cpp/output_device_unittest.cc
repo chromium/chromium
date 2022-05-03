@@ -22,6 +22,7 @@
 #include "services/audio/sync_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using testing::_;
 using testing::Invoke;
@@ -224,7 +225,7 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
   task_env_.RunUntilIdle();
 
   std::move(stream_factory_->created_callback_)
-      .Run({base::in_place, env.reader->TakeSharedMemoryRegion(),
+      .Run({absl::in_place, env.reader->TakeSharedMemoryRegion(),
             mojo::PlatformHandle(env.client_socket.Take())});
   task_env_.RunUntilIdle();
 

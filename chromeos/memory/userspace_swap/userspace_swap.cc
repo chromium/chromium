@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace chromeos {
 namespace memory {
@@ -516,7 +517,7 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
         current_area_length += base::kSuperPageSize;
       } else {
         if (current_area) {
-          regions.emplace_back(base::in_place, current_area,
+          regions.emplace_back(absl::in_place, current_area,
                                current_area_length);
           current_area = 0;
           current_area_length = 0;
@@ -525,7 +526,7 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
     }
 
     if (current_area) {
-      regions.emplace_back(base::in_place, current_area, current_area_length);
+      regions.emplace_back(absl::in_place, current_area, current_area_length);
     }
 
     if (!superpages_remaining)

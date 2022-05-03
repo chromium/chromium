@@ -902,6 +902,29 @@ C++ library so that the standard version can be used. In the meanwhile, use
 `absl::optional` instead.
 ***
 
+### std::in_place/in_place_type/in_place_index/in_place_t/in_place_type_t/in_place_index_t <sup>[banned]</sup>
+
+```c++
+std::optional<std::complex<double>> opt{std::in_place, 0, 1};
+std::variant<int, float> v{std::in_place_type<int>, 1.4};
+```
+
+**Description:** The `std::in_place` are disambiguation tags for
+`std::optional`, `std::variant`, and `std::any` to indicate that the object
+should be constructed in-place.
+
+**Documentation:**
+[std::in_place](https://en.cppreference.com/w/cpp/utility/in_place)
+
+**Notes:**
+*** promo
+Banned for now because `std::optional`, `std::variant`, and `std::any` are all
+banned for now. Because `absl::optional` and `absl::variant` are used instead,
+and they require `absl::in_place`, use `absl::in_place` for non-Abseil Chromium
+code. See the
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s/m/wYYTCiRwAAAJ).
+***
+
 ### std::clamp <sup>[banned]</sup>
 
 ```c++
@@ -1675,6 +1698,24 @@ absl::variant
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/DqvG-TpvMyU)
+***
+
+### in_place <sup>[allowed]</sup>
+
+```c++
+absl::in_place
+```
+
+**Description:** Early adaptation of C++17 `std::in_place`.
+
+**Documentation:**
+[std::in_place](https://en.cppreference.com/w/cpp/utility/in_place)
+
+**Notes:**
+*** promo
+Because the Abseil versions of `optional` and `variant` are used, the Abseil
+version of `in_place` is used in Chromium. See the
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s/m/wYYTCiRwAAAJ).
 ***
 
 ## Abseil Banned Library Features {#absl-blocklist}

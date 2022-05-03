@@ -42,6 +42,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace drivefs {
 namespace {
@@ -488,7 +489,7 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_ForwardToObservers) {
       &observer);
   observation_scoper.Observe(host_.get());
   auto status = mojom::SyncingStatus::New();
-  status->item_events.emplace_back(base::in_place, 12, 34, "filename.txt",
+  status->item_events.emplace_back(absl::in_place, 12, 34, "filename.txt",
                                    mojom::ItemEvent::State::kInProgress, 123,
                                    456, mojom::ItemEventReason::kPin);
   mojom::SyncingStatusPtr observed_status;
@@ -514,11 +515,11 @@ TEST_F(DriveFsHostTest, OnFilesChanged_ForwardToObservers) {
       &observer);
   observation_scoper.Observe(host_.get());
   std::vector<mojom::FileChangePtr> changes;
-  changes.emplace_back(base::in_place, base::FilePath("/create"),
+  changes.emplace_back(absl::in_place, base::FilePath("/create"),
                        mojom::FileChange::Type::kCreate);
-  changes.emplace_back(base::in_place, base::FilePath("/delete"),
+  changes.emplace_back(absl::in_place, base::FilePath("/delete"),
                        mojom::FileChange::Type::kDelete);
-  changes.emplace_back(base::in_place, base::FilePath("/modify"),
+  changes.emplace_back(absl::in_place, base::FilePath("/modify"),
                        mojom::FileChange::Type::kModify);
   std::vector<mojom::FileChangePtr> observed_changes;
   EXPECT_CALL(observer, OnFilesChanged(_))

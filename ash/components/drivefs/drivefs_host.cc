@@ -78,7 +78,7 @@ class DriveFsHost::MountState : public DriveFsSession,
       DriveFsHost::Delegate* delegate) {
     auto access_token = auth_delegate->GetCachedAccessToken();
     mojom::DriveFsConfigurationPtr config = {
-        base::in_place,
+        absl::in_place,
         auth_delegate->GetAccountId().GetUserEmail(),
         std::move(access_token),
         auth_delegate->IsMetricsCollectionEnabled(),
@@ -184,7 +184,7 @@ class DriveFsHost::MountState : public DriveFsSession,
     std::vector<mojom::FetchChangeLogOptionsPtr> options;
     options.reserve(invalidations.size());
     for (const auto& invalidation : invalidations) {
-      options.emplace_back(base::in_place, invalidation.second,
+      options.emplace_back(absl::in_place, invalidation.second,
                            invalidation.first);
     }
     drivefs_interface()->FetchChangeLog(std::move(options));

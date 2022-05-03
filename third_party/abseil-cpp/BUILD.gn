@@ -89,6 +89,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
     "//third_party/abseil-cpp/absl/types:variant",
+    "//third_party/abseil-cpp/absl/utility",
   ]
 
   # The following dependencies currently don't build with NaCl.

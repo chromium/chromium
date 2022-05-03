@@ -13,6 +13,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using cast_channel::V2MessageType;
 
@@ -226,7 +227,7 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
       const std::string* url_string = image_value.FindStringKey("url");
       if (!url_string)
         continue;
-      media_status_.images.emplace_back(base::in_place, GURL(*url_string),
+      media_status_.images.emplace_back(absl::in_place, GURL(*url_string),
                                         GetValidSize(&image_value));
     }
   }

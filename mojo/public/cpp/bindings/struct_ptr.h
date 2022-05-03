@@ -14,6 +14,7 @@
 #include "base/template_util.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
@@ -59,7 +60,7 @@ class StructPtr {
   }
 
   template <typename... Args>
-  StructPtr(base::in_place_t, Args&&... args)
+  StructPtr(absl::in_place_t, Args&&... args)
       : ptr_(new Struct(std::forward<Args>(args)...)) {}
 
   template <typename U>
@@ -158,7 +159,7 @@ class InlinedStructPtr {
   }
 
   template <typename... Args>
-  InlinedStructPtr(base::in_place_t, Args&&... args)
+  InlinedStructPtr(absl::in_place_t, Args&&... args)
       : value_(std::forward<Args>(args)...), state_(VALID) {}
 
   template <typename U>

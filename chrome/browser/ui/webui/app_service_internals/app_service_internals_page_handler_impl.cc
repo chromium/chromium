@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/template_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
     Profile* profile)
@@ -42,7 +42,7 @@ void AppServiceInternalsPageHandlerImpl::GetApps(GetAppsCallback callback) {
         std::stringstream debug_info;
         debug_info << update;
 
-        result.emplace_back(base::in_place, update.AppId(), update.Name(),
+        result.emplace_back(absl::in_place, update.AppId(), update.Name(),
                             debug_info.str());
       });
 

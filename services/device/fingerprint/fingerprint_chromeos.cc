@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace device {
 
@@ -289,7 +290,7 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
 
   for (auto& observer : observers_) {
     observer->OnAuthScanDone(
-        {base::in_place, converted_msg},
+        {absl::in_place, converted_msg},
         // TODO(patrykd): Construct the map at the beginning of this function.
         base::flat_map<std::string, std::vector<std::string>>(entries));
   }
