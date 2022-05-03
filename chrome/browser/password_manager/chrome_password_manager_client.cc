@@ -37,6 +37,7 @@
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -430,12 +431,25 @@ void ChromePasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {
 #if BUILDFLAG(IS_ANDROID)
+  std::vector<TouchToFillWebAuthnCredential> webauthn_credentials;
+  if (GetWebAuthnCredentialsDelegate() &&
+      GetWebAuthnCredentialsDelegate()->IsWebAuthnAutofillEnabled()) {
+    const std::vector<autofill::Suggestion>& suggestions =
+        GetWebAuthnCredentialsDelegate()->GetWebAuthnSuggestions();
+    base::ranges::transform(suggestions,
+                            std::back_inserter(webauthn_credentials),
+                            [](const auto& suggestion) {
+                              return TouchToFillWebAuthnCredential(
+                                  suggestion.value, suggestion.backend_id);
+                            });
+  }
+
   GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      driver->AsWeakPtr(), submission_readiness);
+      webauthn_credentials, driver->AsWeakPtr(), submission_readiness);
 #endif
 }
 

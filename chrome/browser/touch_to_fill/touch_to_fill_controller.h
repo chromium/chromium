@@ -28,6 +28,7 @@ class UiCredential;
 }  // namespace password_manager
 
 class ChromePasswordManagerClient;
+class TouchToFillWebAuthnCredential;
 
 class TouchToFillController {
  public:
@@ -43,6 +44,7 @@ class TouchToFillController {
     kSelectedCredential = 0,
     kDismissed = 1,
     kSelectedManagePasswords = 2,
+    kSelectedWebAuthnCredential = 3,
   };
 
   // The final outcome that closes the Touch To Fill sheet.
@@ -55,7 +57,8 @@ class TouchToFillController {
     kSheetDismissed = 1,
     kReauthenticationFailed = 2,
     kManagePasswordsSelected = 3,
-    kMaxValue = kManagePasswordsSelected,
+    kWebAuthnCredentialSelected = 4,
+    kMaxValue = kWebAuthnCredentialSelected,
   };
 
   // No-op constructor for tests.
@@ -71,8 +74,10 @@ class TouchToFillController {
   TouchToFillController& operator=(const TouchToFillController&) = delete;
   ~TouchToFillController();
 
-  // Instructs the controller to show the provided |credentials| to the user.
+  // Instructs the controller to show the provided |credentials| and
+  // |webauthn_credentials| to the user.
   void Show(base::span<const password_manager::UiCredential> credentials,
+            base::span<TouchToFillWebAuthnCredential> webauthn_credentials,
             base::WeakPtr<password_manager::PasswordManagerDriver> driver,
             autofill::mojom::SubmissionReadinessState submission_readiness);
 
@@ -80,6 +85,11 @@ class TouchToFillController {
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked
   // repeatedly.
   void OnCredentialSelected(const password_manager::UiCredential& credential);
+
+  // Informs the controller that the user has made a selection. Invokes
+  // TouchToFillDismissed() and initiates a WebAuthn sign-in.
+  void OnWebAuthnCredentialSelected(
+      const TouchToFillWebAuthnCredential& credential);
 
   // Informs the controller that the user has tapped the "Manage Passwords"
   // button. This will open the password preferences.
@@ -106,6 +116,10 @@ class TouchToFillController {
 
   // Fills the credential into the form.
   void FillCredential(const password_manager::UiCredential& credential);
+
+  // Called upon completion or dismissal to perform cleanup.
+  void CleanUpDriverAndReportOutcome(TouchToFillOutcome outcome,
+                                     bool show_virtual_keyboard);
 
   // Weak pointer to the PasswordManagerClient this class is tied to.
   raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;

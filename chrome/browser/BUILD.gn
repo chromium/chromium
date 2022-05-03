@@ -3372,6 +3372,8 @@ static_library("browser") {
       "tab/web_contents_state.h",
       "touch_to_fill/touch_to_fill_controller.cc",
       "touch_to_fill/touch_to_fill_controller.h",
+      "touch_to_fill/touch_to_fill_webauthn_credential.cc",
+      "touch_to_fill/touch_to_fill_webauthn_credential.h",
       "translate/android/translate_bridge.cc",
       "translate/android/translate_bridge.h",
       "video_tutorials/internal/android/video_tutorial_service_bridge_factory.cc",

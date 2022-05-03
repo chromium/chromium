@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -123,6 +124,7 @@ TouchToFillController::~TouchToFillController() {
 
 void TouchToFillController::Show(
     base::span<const UiCredential> credentials,
+    base::span<TouchToFillWebAuthnCredential> webauthn_credentials,
     base::WeakPtr<PasswordManagerDriver> driver,
     SubmissionReadinessState submission_readiness) {
   DCHECK(!driver_ || driver_.get() == driver.get());
@@ -140,8 +142,8 @@ void TouchToFillController::Show(
       .Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
-                              credentials.size());
-  if (credentials.empty()) {
+                              credentials.size() + webauthn_credentials.size());
+  if (credentials.empty() && webauthn_credentials.empty()) {
     // Ideally this should never happen. However, in case we do end up invoking
     // Show() without credentials, we should not show Touch To Fill to the user
     // and treat this case as dismissal, in order to restore the soft keyboard.
@@ -153,11 +155,14 @@ void TouchToFillController::Show(
     view_ = TouchToFillViewFactory::Create(this);
 
   const GURL& url = driver_->GetLastCommittedURL();
+  // TODO(https://crbug.com/1318942): Currently WebAuthn credentials are not
+  // displayed in any particular order, and always appear after password
+  // credentials. This needs to be evaluated by UX.
   view_->Show(
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      SortCredentials(credentials), trigger_submission_);
+      SortCredentials(credentials), webauthn_credentials, trigger_submission_);
 }
 
 void TouchToFillController::OnCredentialSelected(
@@ -184,18 +189,30 @@ void TouchToFillController::OnCredentialSelected(
                      base::Unretained(this), credential));
 }
 
+void TouchToFillController::OnWebAuthnCredentialSelected(
+    const TouchToFillWebAuthnCredential& credential) {
+  view_.reset();
+  if (!driver_)
+    return;
+
+  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kWebAuthnCredentialSelected,
+                                /*show_virtual_keyboard=*/false);
+
+  password_client_->GetWebAuthnCredentialsDelegate()->SelectWebAuthnCredential(
+      credential.id());
+}
+
 void TouchToFillController::OnManagePasswordsSelected() {
   view_.reset();
   if (!driver_)
     return;
 
-  std::exchange(driver_, nullptr)
-      ->TouchToFillClosed(ShowVirtualKeyboard(false));
+  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kManagePasswordsSelected,
+                                /*show_virtual_keyboard=*/false);
+
   password_client_->NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer::kTouchToFill);
 
-  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
-                                TouchToFillOutcome::kManagePasswordsSelected);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedManagePasswords))
       .Record(ukm::UkmRecorder::Get());
@@ -206,10 +223,8 @@ void TouchToFillController::OnDismiss() {
   if (!driver_)
     return;
 
-  std::exchange(driver_, nullptr)->TouchToFillClosed(ShowVirtualKeyboard(true));
-
-  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
-                                TouchToFillOutcome::kSheetDismissed);
+  CleanUpDriverAndReportOutcome(TouchToFillOutcome::kSheetDismissed,
+                                /*show_virtual_keyboard=*/true);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kDismissed))
       .Record(ukm::UkmRecorder::Get());
@@ -229,10 +244,8 @@ void TouchToFillController::OnReauthCompleted(UiCredential credential,
     return;
 
   if (!auth_successful) {
-    std::exchange(driver_, nullptr)
-        ->TouchToFillClosed(ShowVirtualKeyboard(true));
-    base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
-                                  TouchToFillOutcome::kReauthenticationFailed);
+    CleanUpDriverAndReportOutcome(TouchToFillOutcome::kReauthenticationFailed,
+                                  /*show_virtual_keyboard=*/true);
     return;
   }
 
@@ -263,4 +276,12 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
 
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
                                 TouchToFillOutcome::kCredentialFilled);
+}
+
+void TouchToFillController::CleanUpDriverAndReportOutcome(
+    TouchToFillOutcome outcome,
+    bool show_virtual_keyboard) {
+  std::exchange(driver_, nullptr)
+      ->TouchToFillClosed(ShowVirtualKeyboard(show_virtual_keyboard));
+  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

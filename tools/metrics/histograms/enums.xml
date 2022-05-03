@@ -90041,6 +90041,7 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Sheet is dismissed"/>
   <int value="2" label="Reauthentication failed"/>
   <int value="3" label="'Manage Passwords' was selected"/>
+  <int value="4" label="WebAuthn credential was selected"/>
 </enum>
 
 <enum name="TouchToFill.SubmissionReadiness">
@@ -90058,6 +90059,7 @@ would be helpful to identify which type is being sent.
   <int value="0" label="Selected Credential"/>
   <int value="1" label="Dismissed"/>
   <int value="2" label="Selected Manage Passwords"/>
+  <int value="3" label="Selected WebAuthn Credential"/>
 </enum>
 
 <enum name="TPM12CommandOrdinal">

@@ -17,9 +17,11 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -65,6 +67,10 @@ class MockPasswordManagerClient
               NavigateToManagePasswordsPage,
               (password_manager::ManagePasswordsReferrer),
               (override));
+  MOCK_METHOD(password_manager::WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
+              (override));
 };
 
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
@@ -76,11 +82,14 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
 };
 
 struct MockTouchToFillView : TouchToFillView {
-  MOCK_METHOD(
-      void,
-      Show,
-      (const GURL&, IsOriginSecure, base::span<const UiCredential>, bool),
-      (override));
+  MOCK_METHOD(void,
+              Show,
+              (const GURL&,
+               IsOriginSecure,
+               base::span<const UiCredential>,
+               base::span<const TouchToFillWebAuthnCredential>,
+               bool),
+              (override));
   MOCK_METHOD1(OnCredentialSelected, void(const UiCredential&));
   MOCK_METHOD0(OnDismiss, void());
 };
@@ -124,6 +133,13 @@ class TouchToFillControllerTest : public testing::Test {
     // By default, don't trigger a form submission.
     EXPECT_CALL(driver_, TriggerFormSubmission()).Times(0);
 
+    webauthn_credentials_delegate_ =
+        std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
+    ON_CALL(client_, GetWebAuthnCredentialsDelegate)
+        .WillByDefault(Return(webauthn_credentials_delegate_.get()));
+    ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
+        .WillByDefault(Return(false));
+
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kBiometricTouchToFill);
   }
@@ -144,6 +160,11 @@ class TouchToFillControllerTest : public testing::Test {
     return touch_to_fill_controller_;
   }
 
+  password_manager::MockWebAuthnCredentialsDelegate*
+  webauthn_credentials_delegate() {
+    return webauthn_credentials_delegate_.get();
+  }
+
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
   }
@@ -156,6 +177,8 @@ class TouchToFillControllerTest : public testing::Test {
       base::MakeRefCounted<MockBiometricAuthenticator>();
   MockPasswordManagerDriver driver_;
   MockPasswordManagerClient client_;
+  std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
+      webauthn_credentials_delegate_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_recorder_;
   TouchToFillController touch_to_fill_controller_{
@@ -172,11 +195,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/false));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   // Test that we correctly log the absence of an Android credential.
@@ -213,11 +239,14 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Submit) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/true));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/true));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kTwoFields);
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
@@ -242,11 +271,14 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Dont_Submit) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/false));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
@@ -275,11 +307,14 @@ TEST_F(TouchToFillControllerTest, Dont_Submit_With_Empty_Username) {
 
   // As we don't know which credential will be selected, don't disable
   // submission for now.
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/true));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/true));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kTwoFields);
 
   // The user picks the credential with an empty username, submission should not
@@ -306,11 +341,14 @@ TEST_F(TouchToFillControllerTest, Single_Credential_With_Empty_Username) {
       MakeUiCredential({.username = "", .password = "p4ssw0rd"})};
 
   // Only one credential with empty username - submission is impossible.
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/false));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kTwoFields);
 
   // Filling doesn't trigger submission.
@@ -326,11 +364,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth_Available) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   // Test that we correctly log the absence of an Android credential.
@@ -362,11 +403,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
 
   // Without |kTouchToFillPasswordSubmission|, a form that is ready for
   // submission doesn't affect UI.
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kTwoFields);
 
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
@@ -391,11 +435,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(driver(), FillSuggestion(_, _)).Times(0);
@@ -417,7 +464,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
 TEST_F(TouchToFillControllerTest, Show_Empty) {
   EXPECT_CALL(view(), Show).Times(0);
   touch_to_fill_controller().Show(
-      {}, driver().AsWeakPtr(),
+      {}, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 0, 1);
@@ -430,11 +477,14 @@ TEST_F(TouchToFillControllerTest, Show_Insecure_Origin) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL("http://example.com")),
-                           IsOriginSecure(false), ElementsAreArray(credentials),
-                           /*ready_for_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL("http://example.com")), IsOriginSecure(false),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*ready_for_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 }
 
@@ -455,11 +505,14 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Android_Credential) {
       }),
   };
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   // Test that we correctly log the presence of an Android credential.
@@ -510,11 +563,14 @@ TEST_F(TouchToFillControllerTest, Show_Orders_Credentials) {
   });
 
   UiCredential credentials[] = {alice, bob, charlie, david};
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           testing::ElementsAre(charlie, alice, bob, david),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           testing::ElementsAre(charlie, alice, bob, david),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 }
 
@@ -522,11 +578,14 @@ TEST_F(TouchToFillControllerTest, Dismiss) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
@@ -551,11 +610,14 @@ TEST_F(TouchToFillControllerTest, ManagePasswordsSelected) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials),
-                               /*trigger_submission=*/false));
+  EXPECT_CALL(
+      *weak_view,
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
@@ -581,11 +643,14 @@ TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/false));
   touch_to_fill_controller().Show(
-      credentials, driver().AsWeakPtr(),
+      credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(*authenticator(),
@@ -596,6 +661,38 @@ TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   EXPECT_CALL(*authenticator(), Cancel(BiometricAuthRequester::kTouchToFill));
+}
+
+TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
+  std::unique_ptr<MockTouchToFillView> mock_view =
+      std::make_unique<MockTouchToFillView>();
+  MockTouchToFillView* weak_view = mock_view.get();
+  touch_to_fill_controller().set_view(std::move(mock_view));
+
+  ON_CALL(*webauthn_credentials_delegate(), IsWebAuthnAutofillEnabled)
+      .WillByDefault(Return(true));
+
+  TouchToFillWebAuthnCredential credential(u"alice", "12345");
+  std::vector<TouchToFillWebAuthnCredential> credentials({credential});
+
+  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                               ElementsAreArray(std::vector<UiCredential>()),
+                               ElementsAreArray(credentials),
+                               /*trigger_submission=*/false));
+  touch_to_fill_controller().Show(
+      {}, credentials, driver().AsWeakPtr(),
+      autofill::mojom::SubmissionReadinessState::kNoInformation);
+
+  EXPECT_CALL(*webauthn_credentials_delegate(),
+              SelectWebAuthnCredential(credential.id()));
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  touch_to_fill_controller().OnWebAuthnCredentialSelected(credentials[0]);
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kWebAuthnCredentialSelected,
+      1);
 }
 
 class TouchToFillControllerTestWithSubmissionReadinessVariationTest
@@ -615,10 +712,13 @@ TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
   // If there is no field after the password, then submit the form.
   bool submission_expected =
       submission_readiness > SubmissionReadinessState::kFieldAfterPasswordField;
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/submission_expected));
-  touch_to_fill_controller().Show(credentials, driver().AsWeakPtr(),
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/submission_expected));
+  touch_to_fill_controller().Show(credentials, {}, driver().AsWeakPtr(),
                                   submission_readiness);
 
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
@@ -642,10 +742,13 @@ TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
   bool submission_expected =
       submission_readiness == SubmissionReadinessState::kTwoFields;
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/submission_expected));
-  touch_to_fill_controller().Show(credentials, driver().AsWeakPtr(),
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/submission_expected));
+  touch_to_fill_controller().Show(credentials, {}, driver().AsWeakPtr(),
                                   submission_readiness);
 
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
@@ -661,10 +764,13 @@ TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(view(),
-              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                   ElementsAreArray(credentials), /*trigger_submission=*/_));
-  touch_to_fill_controller().Show(credentials, driver().AsWeakPtr(),
+  EXPECT_CALL(
+      view(),
+      Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+           ElementsAreArray(credentials),
+           ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
+           /*trigger_submission=*/_));
+  touch_to_fill_controller().Show(credentials, {}, driver().AsWeakPtr(),
                                   submission_readiness);
 
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));

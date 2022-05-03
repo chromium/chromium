@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -61,6 +62,17 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
+    private static WebAuthnCredential[] createWebAuthnCredentialArray(int size) {
+        return new WebAuthnCredential[size];
+    }
+
+    @CalledByNative
+    private static void insertWebAuthnCredential(
+            WebAuthnCredential[] credentials, int index, String username, String id) {
+        credentials[index] = new WebAuthnCredential(username, id);
+    }
+
+    @CalledByNative
     private void showCredentials(
             GURL url, boolean isOriginSecure, Credential[] credentials, boolean submitCredential) {
         mTouchToFillComponent.showCredentials(
@@ -87,6 +99,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @NativeMethods
     interface Natives {
         void onCredentialSelected(long nativeTouchToFillViewImpl, Credential credential);
+        void onWebAuthnCredentialSelected(
+                long nativeTouchToFillViewImpl, WebAuthnCredential credential);
         void onManagePasswordsSelected(long nativeTouchToFillViewImpl);
         void onDismiss(long nativeTouchToFillViewImpl);
     }
