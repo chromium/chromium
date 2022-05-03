@@ -1056,26 +1056,30 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
     SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
 
   // When paused or ended, we know exactly what the current time is and can
-  // elide seeks to it. However, there are two cases that are not elided:
+  // elide seeks to it. However, there are three cases that are not elided:
   //   1) When the pipeline state is not stable.
-  //      In this case we just let `pipeline_controller_` decide what to do, as
+  //      In this case we just let PipelineController decide what to do, as
   //      it has complete information.
-  //   2) For MSE.
+  //   2) When the ready state was not kReadyStateHaveEnoughData.
+  //      If playback has not started, it's possible to enter a state where
+  //      OnBufferingStateChange() will not be called again to complete the
+  //      seek.
+  //   3) For MSE.
   //      Because the buffers may have changed between seeks, MSE seeks are
   //      never elided.
   if (paused_ && pipeline_controller_->IsStable() &&
       (paused_time_ == time || (ended_ && time == base::Seconds(Duration()))) &&
       !chunk_demuxer_) {
-    // If the ready state was high enough before, we can indicate that the seek
-    // completed just by restoring it. Otherwise we will just wait for the real
-    // ready state change to eventually happen.
     if (old_state == kReadyStateHaveEnoughData) {
+      // This will in turn SetReadyState() to signal the demuxer seek, followed
+      // by timeChanged() to signal the renderer seek.
+      should_notify_time_changed_ = true;
       main_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&WebMediaPlayerImpl::OnBufferingStateChange,
                                     weak_this_, media::BUFFERING_HAVE_ENOUGH,
                                     media::BUFFERING_CHANGE_REASON_UNKNOWN));
+      return;
     }
-    return;
   }
 
   if (playback_events_recorder_)
