@@ -5,11 +5,12 @@
 import './shared_style.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
+import {getTemplate} from './more_permissions_item.html.js';
 import {recordAppManagementUserAction} from './util.js';
 
 export class AppManagementMorePermissionsItemElement extends PolymerElement {
@@ -18,7 +19,7 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

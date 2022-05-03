@@ -7,7 +7,7 @@ import './toggle_row.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
@@ -15,6 +15,7 @@ import {I18nMixin} from '../../js/i18n_mixin.js';
 import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
+import {getTemplate} from './file_handling_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {recordAppManagementUserAction} from './util.js';
 
@@ -27,7 +28,7 @@ export class AppManagementFileHandlingItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

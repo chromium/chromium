@@ -6,11 +6,12 @@ import './shared_style.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, RunOnOsLoginMode} from './constants.js';
+import {getTemplate} from './run_on_os_login_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {recordAppManagementUserAction} from './util.js';
 
@@ -20,7 +21,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

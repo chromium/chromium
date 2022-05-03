@@ -5,8 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("app_management.gni")
 
 assert(!is_android && !is_ios)
 
@@ -14,29 +16,12 @@ preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_compon
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
 
-web_component_files = [
-  "file_handling_item.ts",
-  "icons.ts",
-  "more_permissions_item.ts",
-  "permission_item.ts",
-  "run_on_os_login_item.ts",
-  "shared_style.ts",
-  "shared_vars.ts",
-  "toggle_row.ts",
-  "uninstall_button.ts",
-  "window_mode_item.ts",
-]
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
 
-non_web_component_files = [
-  "constants.ts",
-  "permission_constants.ts",
-  "permission_util.ts",
-  "browser_proxy.ts",
-  "util.ts",
-]
-
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 mojom("mojo_bindings") {
@@ -105,15 +90,18 @@ preprocess_if_expr("preprocess_src") {
   visibility = [ ":build_ts" ]
   in_folder = "."
   out_folder = preprocess_folder_tmp
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
   visibility = [ ":build_ts" ]
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder_tmp
-  in_files = web_component_files
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
 copy("copy_mojo") {
@@ -133,10 +121,7 @@ ts_library("build_ts") {
   out_dir = preprocess_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_web_component_files + [
-               "app_management.mojom-webui.js",
-               "types.mojom-webui.js",
-             ]
+  in_files = ts_files + html_wrapper_files + css_wrapper_files + mojo_files
 
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 

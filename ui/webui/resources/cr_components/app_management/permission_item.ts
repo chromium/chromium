@@ -5,13 +5,13 @@ import './shared_style.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App} from './app_management.mojom-webui.js';
-import {Permission} from './app_management.mojom-webui.js';
+import {App, Permission} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
 import {PermissionType, PermissionTypeIndex, TriState} from './permission_constants.js';
+import {getTemplate} from './permission_item.html.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from './permission_util.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from './util.js';
@@ -22,7 +22,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -7,11 +7,12 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 
 import {assertNotReached} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, InstallReason} from './constants.js';
+import {getTemplate} from './uninstall_button.html.js';
 import {recordAppManagementUserAction} from './util.js';
 
 export class AppManamentUninstallButtonElement extends PolymerElement {
@@ -20,7 +21,7 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
