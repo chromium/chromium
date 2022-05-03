@@ -102,6 +102,9 @@ try_.builder(
             ".+/[+]/chromecast/.+",
         ],
     ),
+    mirrors = [
+        "ci/fuchsia-arm64-cast",
+    ],
 )
 
 try_.builder(
@@ -112,6 +115,13 @@ try_.builder(
             ".+/[+]/fuchsia/.+",
             ".+/[+]/media/fuchsia/.+",
         ],
+    ),
+    mirrors = [
+        "ci/fuchsia-x64-dbg",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
     ),
 )
 
@@ -146,6 +156,9 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    mirrors = [
+        "ci/fuchsia-x64-cast",
+    ],
 )
 
 try_.builder(
@@ -154,6 +167,9 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    mirrors = [
+        "ci/Fuchsia ARM64",
+    ],
 )
 
 try_.builder(
@@ -162,6 +178,9 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    mirrors = [
+        "ci/Fuchsia x64",
+    ],
 )
 
 try_.builder(
