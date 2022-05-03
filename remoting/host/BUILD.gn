@@ -589,6 +589,7 @@ static_library("common") {
     ]
     frameworks = [
       "Accelerate.framework",
+      "AudioToolbox.framework",
       "Carbon.framework",
       "CoreAudio.framework",
     ]

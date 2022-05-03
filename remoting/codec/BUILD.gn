@@ -64,14 +64,10 @@ source_set("encoder") {
     sources += [
       "audio_encoder_opus.cc",
       "audio_encoder_opus.h",
-      "cast_software_video_encoder_adapter.cc",
-      "cast_software_video_encoder_adapter.h",
     ]
     deps += [
       "//media",
       "//media:shared_memory_support",
-      "//media/cast:common",
-      "//media/cast:encoding",
     ]
   }
 }
