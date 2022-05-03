@@ -62,7 +62,7 @@ The full explanation is outside of the scope of this document and can be found i
 
 Client Hint preferences are stored in the preferences service as a content setting (`ContentSettingsType::CLIENT_HINTS`), keyed to the origin. This storage is accessed through the [content::ClientHintsControllerDelegate] interface, with the principle implementation being [client_hints::ClientHints] in //components (to share across multiple platforms). The delegate is accessible in the browser process as a property of the [content::BrowserContext] (in //chrome land, this is implemented as the Profile and “Off The Record” Profile. An important note is that there is an “incognito profile” that gets its own client hints storage).
 
-This storage is marked as `content_settings::SessionModel::UserSession`. This means that when settings are read in from disk (on browser start up) there’s also a check for a flag that’s set on graceful shutdown. (This is to exclude crashes and browser updates). If that flag is set, the settings are cleared. Practically, this means that the settings are cleared after closing the browser.
+This storage is marked as `content_settings::SessionModel::Durable`. This means that the client hint settings are read in from disk on browser start up and loaded into memory. Practically, this means that the client hint settings persist until the user clears site data or cookies for the origin.
 
 The code for reading from and writing to the client hint preferences in content is in [/content/browser/client_hints/client_hints.cc]
 
