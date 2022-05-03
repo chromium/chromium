@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -37,16 +37,6 @@ export class WrapupWaitForManualWpEnablePage extends
     return html`{__html_template__}`;
   }
 
-  static get properties() {
-    return {
-      /** @protected */
-      hwwpEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-    };
-  }
-
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
@@ -69,36 +59,12 @@ export class WrapupWaitForManualWpEnablePage extends
   }
 
   /**
-   * @param {boolean} hwwpEnabled
-   * @return {string}
-   * @protected
-   */
-  getBodyText_(hwwpEnabled) {
-    return this.hwwpEnabled_ ? this.i18n('manuallyEnabledWpMessageText') :
-                               this.i18n('manuallyEnableWpInstructionsText');
-  }
-
-  /**
    * @param {boolean} enabled
    */
   onHardwareWriteProtectionStateChanged(enabled) {
-    this.hwwpEnabled_ = enabled;
-    // TODO(gavindodd): enable/disable next button. Or should it automatically
-    // progress to the next state?
-    if (this.hwwpEnabled_) {
-      enableNextButton(this);
-    } else {
-      disableNextButton(this);
-    }
-  }
-
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.hwwpEnabled_) {
-      return this.shimlessRmaService_.writeProtectManuallyEnabled();
-    } else {
-      return Promise.reject(
-          new Error('Hardware Write Protection is not enabled.'));
+    if (enabled) {
+      executeThenTransitionState(
+          this, () => this.shimlessRmaService_.writeProtectManuallyEnabled());
     }
   }
 }

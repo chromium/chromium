@@ -188,8 +188,8 @@ export const StateComponentMapping = {
   [State.kWaitForManualWPEnable]: {
     componentIs: 'wrapup-wait-for-manual-wp-enable-page',
     requiresReloadWhenShown: true,
-    buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonNext: ButtonState.HIDDEN,
+    buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kRestock]: {

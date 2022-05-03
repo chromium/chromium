@@ -5,11 +5,20 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {WrapupWaitForManualWpEnablePage} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function wrapupWaitForManualWpEnablePageTest() {
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' used to signal write
+   * write protect is enabled.
+   * @type {?ShimlessRma}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?WrapupWaitForManualWpEnablePage} */
   let component = null;
 
@@ -26,6 +35,8 @@ export function wrapupWaitForManualWpEnablePageTest() {
   });
 
   teardown(() => {
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
     component.remove();
     component = null;
     service.reset();
@@ -36,6 +47,11 @@ export function wrapupWaitForManualWpEnablePageTest() {
    */
   function initializeWaitForManualWpEnablePage() {
     assertFalse(!!component);
+
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     component = /** @type {!WrapupWaitForManualWpEnablePage} */ (
         document.createElement('wrapup-wait-for-manual-wp-enable-page'));
@@ -52,38 +68,18 @@ export function wrapupWaitForManualWpEnablePageTest() {
     assertFalse(manualEnableComponent.hidden);
   });
 
-  test('HwwpDisabledDisablesNext', async () => {
-    await initializeWaitForManualWpEnablePage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(
-        savedError.message, 'Hardware Write Protection is not enabled.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('HwwpEnabledEnablesNext', async () => {
+  test('WriteProtectEnabledAutoTransitions', async () => {
     const resolver = new PromiseResolver();
     await initializeWaitForManualWpEnablePage();
-    service.triggerHardwareWriteProtectionObserver(true, 0);
-    await flushTasks();
+
+    let callCount = 0;
     service.writeProtectManuallyEnabled = () => {
+      callCount++;
       return resolver.promise;
     };
-
-    const expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
+    service.triggerHardwareWriteProtectionObserver(true, 0);
     await flushTasks();
 
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCount);
   });
 }

@@ -252,8 +252,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"manuallyEnableWpTitleText", IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE},
       {"manuallyEnableWpInstructionsText",
        IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS},
-      {"manuallyEnabledWpMessageText",
-       IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE},
       // Confirm device information page
       {"confirmDeviceInfoTitle", IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_TITLE},
       {"confirmDeviceInfoInstructions",
