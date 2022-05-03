@@ -24,7 +24,6 @@ class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
-class DatatypeAssociationStats;
 class DebugEventInfo;
 class DebugInfo;
 class DeviceInfoSpecifics;
@@ -114,9 +113,6 @@ std::unique_ptr<base::DictionaryValue> BookmarkSpecificsToValue(
 
 std::unique_ptr<base::DictionaryValue> ClientConfigParamsToValue(
     const sync_pb::ClientConfigParams& proto);
-
-std::unique_ptr<base::DictionaryValue> DatatypeAssociationStatsToValue(
-    const sync_pb::DatatypeAssociationStats& proto);
 
 std::unique_ptr<base::DictionaryValue> DebugEventInfoToValue(
     const sync_pb::DebugEventInfo& proto);

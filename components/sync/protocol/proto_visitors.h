@@ -375,14 +375,6 @@ VISIT_PROTO_FIELDS(const sync_pb::GarbageCollectionDirective& proto) {
   VISIT(age_watermark_in_days);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::DatatypeAssociationStats& proto) {
-  VISIT(data_type_id);
-  VISIT(download_wait_time_us);
-  VISIT(download_time_us);
-  VISIT_REP(high_priority_type_configured_before);
-  VISIT_REP(same_priority_type_configured_before);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::DebugEventInfo& proto) {
   VISIT_ENUM(singleton_event);
   VISIT(sync_cycle_completed_event_info);
