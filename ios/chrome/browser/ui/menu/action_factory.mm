@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
@@ -54,9 +55,12 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToCopyURL:(const GURL)URL {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kLinkActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"copy_link_url"];
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
-                image:[UIImage imageNamed:@"copy_link_url"]
+                image:image
                  type:MenuActionType::CopyURL
                 block:^{
                   StoreURLInPasteboard(URL);
@@ -64,17 +68,24 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kShareSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"share"];
   return
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
-                      image:[UIImage imageNamed:@"share"]
+                      image:image
                        type:MenuActionType::Share
                       block:block];
 }
 
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kDeleteActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"delete"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
-                      image:[UIImage imageNamed:@"delete"]
+                      image:image
                        type:MenuActionType::Delete
                       block:block];
   action.attributes = UIMenuElementAttributesDestructive;
@@ -82,9 +93,13 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToOpenInNewTabWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kOpenInNewTabActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"open_in_new_tab"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
-                         image:[UIImage imageNamed:@"open_in_new_tab"]
+                         image:image
                           type:MenuActionType::OpenInNewTab
                          block:block];
 }
@@ -99,9 +114,12 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToRemoveWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kHideActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"remove"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACTION_TITLE)
-                      image:[UIImage imageNamed:@"remove"]
+                      image:image
                        type:MenuActionType::Remove
                       block:block];
   action.attributes = UIMenuElementAttributesDestructive;
@@ -109,17 +127,23 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToEditWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kEditActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"edit"];
   return [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE)
-                         image:[UIImage imageNamed:@"edit"]
+                         image:image
                           type:MenuActionType::Edit
                          block:block];
 }
 
 - (UIAction*)actionToHideWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kHideActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"remove"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION)
-                      image:[UIImage imageNamed:@"remove"]
+                      image:image
                        type:MenuActionType::Hide
                       block:block];
   action.attributes = UIMenuElementAttributesDestructive;
@@ -135,17 +159,24 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToMarkAsReadWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kMarkAsReadActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"mark_read"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_READING_LIST_MARK_AS_READ_ACTION)
-                         image:[UIImage imageNamed:@"mark_read"]
+                         image:image
                           type:MenuActionType::Read
                          block:block];
 }
 
 - (UIAction*)actionToMarkAsUnreadWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kHideActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"remove"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION)
-                         image:[UIImage imageNamed:@"remove"]
+                         image:image
                           type:MenuActionType::Unread
                          block:block];
 }
@@ -160,33 +191,47 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToAddToReadingListWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kReadLaterActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"read_later"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)
-                         image:[UIImage imageNamed:@"read_later"]
+                         image:image
                           type:MenuActionType::AddToReadingList
                          block:block];
 }
 
 - (UIAction*)actionToBookmarkWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"bookmark"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS)
-                         image:[UIImage imageNamed:@"bookmark"]
+                         image:image
                           type:MenuActionType::AddToBookmarks
                          block:block];
 }
 
 - (UIAction*)actionToEditBookmarkWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kEditActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"bookmark"];
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)
-                image:[UIImage imageNamed:@"bookmark"]
+                image:image
                  type:MenuActionType::EditBookmark
                 block:block];
 }
 
 - (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kXMarkSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"close"];
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)
-                image:[UIImage imageNamed:@"close"]
+                image:image
                  type:MenuActionType::CloseTab
                 block:block];
   action.attributes = UIMenuElementAttributesDestructive;
@@ -203,9 +248,12 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kCopyActionSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"copy"];
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)
-                image:[UIImage imageNamed:@"copy"]
+                image:image
                  type:MenuActionType::CopyImage
                 block:block];
   return action;
@@ -221,10 +269,13 @@ NSInteger kSymbolToolbarPointSize = 18;
 }
 
 - (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kXMarkSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"close"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)
-                      image:[UIImage imageNamed:@"close"]
+                      image:image
                        type:MenuActionType::CloseAllTabs
                       block:block];
   action.attributes = UIMenuElementAttributesDestructive;

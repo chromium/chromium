@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -33,12 +34,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSInteger kSymbolActionPointSize = 18;
-
-NSString* kQRCodeFinderSymbol = @"qrcode.viewfinder";
-NSString* kPlusSquareSymbol = @"plus.square";
-NSString* kClipboardSymbol = @"doc.on.clipboard";
 
 @interface BrowserActionFactory ()
 
@@ -104,9 +99,12 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
     };
   }
 
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
+                                      kIncognitoSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"open_in_incognito"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)
-                         image:[UIImage imageNamed:@"open_in_incognito"]
+                         image:image
                           type:MenuActionType::OpenInNewIncognitoTab
                          block:block];
 }
@@ -117,10 +115,14 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
 
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kNewWindowActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"open_new_window"];
   NSUserActivity* activity = ActivityToLoadURL(activityOrigin, URL);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
-                         image:[UIImage imageNamed:@"open_new_window"]
+                         image:image
                           type:MenuActionType::OpenInNewWindow
                          block:^{
                            [windowOpener openNewWindowWithActivity:activity];
@@ -130,9 +132,14 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
 - (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity {
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kNewWindowActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"open_new_window"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
-                         image:[UIImage imageNamed:@"open_new_window"]
+                         image:image
                           type:MenuActionType::OpenInNewWindow
                          block:^{
                            [windowOpener openNewWindowWithActivity:activity];
@@ -180,7 +187,7 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
-                      image:DefaultSymbolWithPointSize(kPlusSquareSymbol,
+                      image:DefaultSymbolWithPointSize(kNewTabActionSymbol,
                                                        kSymbolActionPointSize)
                        type:MenuActionType::OpenNewTab
                       block:^{
@@ -232,7 +239,7 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER)
-                image:DefaultSymbolWithPointSize(kQRCodeFinderSymbol,
+                image:DefaultSymbolWithPointSize(kQRCodeFinderActionSymbol,
                                                  kSymbolActionPointSize)
                  type:MenuActionType::ShowQRScanner
                 block:^{
@@ -325,7 +332,8 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
                          image:DefaultSymbolWithPointSize(
-                                   kClipboardSymbol, kSymbolActionPointSize)
+                                   kClipboardActionSymbol,
+                                   kSymbolActionPointSize)
                           type:MenuActionType::SearchCopiedImage
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -352,7 +360,8 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
                          image:DefaultSymbolWithPointSize(
-                                   kClipboardSymbol, kSymbolActionPointSize)
+                                   kClipboardActionSymbol,
+                                   kSymbolActionPointSize)
                           type:MenuActionType::VisitCopiedLink
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -379,7 +388,8 @@ NSString* kClipboardSymbol = @"doc.on.clipboard";
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
                          image:DefaultSymbolWithPointSize(
-                                   kClipboardSymbol, kSymbolActionPointSize)
+                                   kClipboardActionSymbol,
+                                   kSymbolActionPointSize)
                           type:MenuActionType::SearchCopiedText
                          block:^{
                            ClipboardRecentContent::GetInstance()

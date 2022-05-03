@@ -30,7 +30,15 @@ source_set("infobar_icons") {
     "infobar_icon.h",
     "infobar_icon.mm",
   ]
-  deps = [ ":symbols" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("action_icons") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "action_icon.h",
+    "action_icon.mm",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
