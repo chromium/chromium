@@ -256,7 +256,6 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
       model, std::move(model_metadata));
 
   if (bookmark_tracker_) {
-    bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
     StartTrackingMetadata();
   } else if (!metadata_str.empty()) {
     DLOG(WARNING)

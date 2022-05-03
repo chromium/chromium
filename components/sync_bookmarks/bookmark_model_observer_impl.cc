@@ -75,6 +75,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   nudge_for_commit_closure_.Run();
+  bookmark_tracker_->CheckAllNodesTracked(model);
 }
 
 void BookmarkModelObserverImpl::BookmarkNodeAdded(
@@ -119,6 +120,10 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   nudge_for_commit_closure_.Run();
+
+  // Do not check if all nodes are tracked because it's still possible that some
+  // nodes are untracked, e.g. if current node has been just restored and its
+  // children will be added soon.
 }
 
 void BookmarkModelObserverImpl::OnWillRemoveBookmarks(
@@ -147,6 +152,7 @@ void BookmarkModelObserverImpl::BookmarkNodeRemoved(
 
 void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
     bookmarks::BookmarkModel* model) {
+  bookmark_tracker_->CheckAllNodesTracked(model);
   const bookmarks::BookmarkNode* root_node = model->root_node();
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
@@ -161,6 +167,7 @@ void BookmarkModelObserverImpl::BookmarkAllUserNodesRemoved(
     bookmarks::BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   // All the work should have already been done in OnWillRemoveAllUserBookmarks.
+  bookmark_tracker_->CheckAllNodesTracked(model);
 }
 
 void BookmarkModelObserverImpl::BookmarkNodeChanged(
