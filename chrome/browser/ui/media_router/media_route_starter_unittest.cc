@@ -152,6 +152,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     DestroyMediaRouteStarter();
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
+    WebContentsPresentationManager::SetTestInstance(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
