@@ -126,6 +126,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Choose WP disable method page
       {"chooseWpDisableMethodPageTitleText",
        IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE},
+      {"manualWpDisableMethodDescriptionText",
+       IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION},
       {"manualWpDisableMethodOptionText",
        IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_OPTION},
       {"rsuWpDisableMethodOptionText",
@@ -329,10 +331,6 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "welcomeTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE));
-  html_source->AddString(
-      "manualWpDisableMethodDescriptionText",
-      ui::SubstituteChromeOSDeviceType(
-          IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION));
   html_source->AddString(
       "criticalErrorTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
