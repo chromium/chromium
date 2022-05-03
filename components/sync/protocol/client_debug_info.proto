@@ -130,8 +130,9 @@ message DebugEventInfo {
   optional int32 nudging_datatype = 3;
   // A notification triggered a nudge.
   repeated int32 datatypes_notified_from_server = 4;
-  // A datatype finished model association.
-  optional DatatypeAssociationStats datatype_association_stats = 5;
+
+  reserved "datatype_association_stats";
+  reserved 5;
 }
 
 message DebugInfo {

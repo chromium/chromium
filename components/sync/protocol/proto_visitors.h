@@ -378,7 +378,6 @@ VISIT_PROTO_FIELDS(const sync_pb::DebugEventInfo& proto) {
   VISIT(sync_cycle_completed_event_info);
   VISIT(nudging_datatype);
   VISIT_REP(datatypes_notified_from_server);
-  VISIT(datatype_association_stats);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DebugInfo& proto) {

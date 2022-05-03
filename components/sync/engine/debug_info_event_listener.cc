@@ -159,27 +159,6 @@ void DebugInfoEventListener::OnDataTypeConfigureComplete(
        configuration_stats) {
     DCHECK(ProtocolTypes().Has(configuration_stat.model_type));
     sync_pb::DebugEventInfo association_event;
-    sync_pb::DatatypeAssociationStats* datatype_stats =
-        association_event.mutable_datatype_association_stats();
-    datatype_stats->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(configuration_stat.model_type));
-    datatype_stats->set_download_wait_time_us(
-        configuration_stat.download_wait_time.InMicroseconds());
-    datatype_stats->set_download_time_us(
-        configuration_stat.download_time.InMicroseconds());
-
-    for (ModelType type :
-         configuration_stat.high_priority_types_configured_before) {
-      datatype_stats->add_high_priority_type_configured_before(
-          GetSpecificsFieldNumberFromModelType(type));
-    }
-
-    for (ModelType type :
-         configuration_stat.same_priority_types_configured_before) {
-      datatype_stats->add_same_priority_type_configured_before(
-          GetSpecificsFieldNumberFromModelType(type));
-    }
-
     AddEventToQueue(association_event);
   }
 }
