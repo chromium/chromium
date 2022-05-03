@@ -130,7 +130,8 @@ def _CommonChecks(input_api, output_api):
             output_api,
             excluded_paths=_EXCLUDED_PATHS,
             maxlen=800,
-            license_header=license_header))
+            license_header=license_header,
+            global_checks=False))
     results.extend(_CheckForWrongMojomIncludes(input_api, output_api))
     return results
 
@@ -243,7 +244,4 @@ def CheckChangeOnUpload(input_api, output_api):
 def CheckChangeOnCommit(input_api, output_api):
     results = []
     results.extend(_CommonChecks(input_api, output_api))
-    results.extend(
-        input_api.canned_checks.CheckChangeHasDescription(
-            input_api, output_api))
     return results
