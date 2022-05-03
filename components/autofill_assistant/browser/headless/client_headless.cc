@@ -40,10 +40,11 @@ namespace autofill_assistant {
 const char kOAuth2Scope[] = "https://www.googleapis.com/auth/userinfo.profile";
 const char kConsumerName[] = "autofill_assistant";
 
-ClientHeadless::ClientHeadless(content::WebContents* web_contents,
-                               const CommonDependencies* common_dependencies)
+ClientHeadless::ClientHeadless(
+    content::WebContents* web_contents,
+    const CommonDependencies* common_dependencies,
+    ExternalActionDelegate* action_extension_delegate)
     : web_contents_(web_contents), common_dependencies_(common_dependencies) {
-  headless_ui_controller_ = std::make_unique<HeadlessUiController>();
   auto* password_manager_client =
       common_dependencies_->GetPasswordManagerClient(web_contents);
   if (password_manager_client) {
@@ -52,6 +53,8 @@ ClientHeadless::ClientHeadless(content::WebContents* web_contents,
   } else {
     website_login_manager_ = std::make_unique<EmptyWebsiteLoginManagerImpl>();
   }
+  headless_ui_controller_ =
+      std::make_unique<HeadlessUiController>(action_extension_delegate);
 }
 
 ClientHeadless::~ClientHeadless() = default;

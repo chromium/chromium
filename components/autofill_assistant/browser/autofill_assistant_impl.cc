@@ -129,8 +129,10 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
 
 std::unique_ptr<ExternalScriptController>
 AutofillAssistantImpl::CreateExternalScriptController(
-    content::WebContents* web_contents) {
-  return std::make_unique<ExternalScriptControllerImpl>(web_contents);
+    content::WebContents* web_contents,
+    ExternalActionDelegate* action_extension_delegate) {
+  return std::make_unique<ExternalScriptControllerImpl>(
+      web_contents, action_extension_delegate);
 }
 
 }  // namespace autofill_assistant

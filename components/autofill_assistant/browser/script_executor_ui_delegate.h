@@ -13,6 +13,8 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
+#include "components/autofill_assistant/browser/public/external_action_delegate.h"
+#include "components/autofill_assistant/browser/public/external_script_controller.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"
@@ -86,6 +88,15 @@ class ScriptExecutorUiDelegate {
 
   // Clears the persistent generic UI.
   virtual void ClearPersistentGenericUi() = 0;
+
+  // Whether this supports external actions.
+  virtual bool SupportsExternalActions() = 0;
+
+  // Executes the external action.
+  virtual void ExecuteExternalAction(
+      const external::Action& external_action,
+      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+          callback) = 0;
 
  protected:
   virtual ~ScriptExecutorUiDelegate() {}

@@ -273,6 +273,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kJsFlow:
       out << "JsFlow";
       break;
+    case ActionProto::ActionInfoCase::kExternalAction:
+      out << "ExternalAction";
+      break;
     case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
       out << "RegisterPasswordResetRequest";
       break;

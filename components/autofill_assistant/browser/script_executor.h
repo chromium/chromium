@@ -174,7 +174,7 @@ class ScriptExecutor : public ActionDelegate,
               base::OnceCallback<void()> end_on_navigation_callback,
               bool browse_mode,
               bool browse_mode_invisible) override;
-  void CleanUpAfterPrompt() override;
+  void CleanUpAfterPrompt(bool consume_touchable_area = true) override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void RetrieveElementFormAndFieldData(
       const Selector& selector,
@@ -265,6 +265,11 @@ class ScriptExecutor : public ActionDelegate,
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
       override;
+  bool SupportsExternalActions() override;
+  void RequestExternalAction(
+      const ExternalActionProto& external_action,
+      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+          callback) override;
   bool MustUseBackendData() const override;
 
  private:
@@ -337,6 +342,12 @@ class ScriptExecutor : public ActionDelegate,
       int http_status,
       const std::string& response,
       const ServiceRequestSender::ResponseInfo& response_info);
+  void OnExternalActionFinished(
+      const ExternalActionProto& external_action,
+      const bool prompt,
+      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+          callback,
+      ExternalActionDelegate::ActionResult result);
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.

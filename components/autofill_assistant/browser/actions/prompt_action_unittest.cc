@@ -27,6 +27,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -312,7 +313,7 @@ TEST_F(PromptActionTest, AutoSelectWhenElementExists) {
                                 std::make_unique<ElementFinderResult>());
       }));
 
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(Property(&ProcessedActionProto::status, ACTION_APPLIED),
@@ -339,7 +340,7 @@ TEST_F(PromptActionTest, TimingStatsAutoSelect) {
                                 std::make_unique<ElementFinderResult>());
       }));
 
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   task_env_.FastForwardBy(base::Seconds(1));
@@ -523,7 +524,7 @@ TEST_F(PromptActionTest, EndActionOnNavigation) {
   PromptAction action(&mock_action_delegate_, proto_);
 
   // Set new expectations for when the navigation event arrives.
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
@@ -553,7 +554,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
   PromptAction action(&mock_action_delegate_, proto_);
 
   // Set new expectations for when the navigation event arrives.
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   action.ProcessAction(callback_.Get());

@@ -22,7 +22,9 @@ namespace autofill_assistant {
 class ExternalScriptControllerImpl : public ExternalScriptController,
                                      public ControllerObserver {
  public:
-  ExternalScriptControllerImpl(content::WebContents* web_contents);
+  ExternalScriptControllerImpl(
+      content::WebContents* web_contents,
+      ExternalActionDelegate* action_extension_delegate);
 
   ExternalScriptControllerImpl(const ExternalScriptControllerImpl&) = delete;
   ExternalScriptControllerImpl& operator=(const ExternalScriptControllerImpl&) =

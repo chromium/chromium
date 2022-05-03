@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/external_script_controller.h"
 
 namespace autofill_assistant {
@@ -53,8 +54,14 @@ class AutofillAssistant {
   // |ExternalScriptController::StartScript|.
   // The returned |ExternalScriptController| instance has to survive for the
   // duration of the execution of the script.
+  // |action_extension_delegate| can be nullptr, but in that case the script
+  // execution will fail if it reaches an external action. If present,
+  // |action_extension_delegate| instance must outlive the
+  // |ExternalScriptController|.
   virtual std::unique_ptr<ExternalScriptController>
-  CreateExternalScriptController(content::WebContents* web_contents) = 0;
+  CreateExternalScriptController(
+      content::WebContents* web_contents,
+      ExternalActionDelegate* action_extension_delegate) = 0;
 
  protected:
   AutofillAssistant() = default;

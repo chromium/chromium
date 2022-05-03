@@ -31,7 +31,8 @@ namespace autofill_assistant {
 class ClientHeadless : public Client, public AccessTokenFetcher {
  public:
   explicit ClientHeadless(content::WebContents* web_contents,
-                          const CommonDependencies* common_dependencies);
+                          const CommonDependencies* common_dependencies,
+                          ExternalActionDelegate* action_extension_delegate);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 

@@ -25,7 +25,8 @@ class MockAutofillAssistant : public AutofillAssistant {
               (override));
   MOCK_METHOD(std::unique_ptr<ExternalScriptController>,
               CreateExternalScriptController,
-              (content::WebContents * web_contents),
+              (content::WebContents * web_contents,
+               ExternalActionDelegate* action_extension_delegate),
               (override));
 };
 

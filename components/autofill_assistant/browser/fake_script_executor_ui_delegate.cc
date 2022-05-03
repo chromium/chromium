@@ -158,4 +158,13 @@ void FakeScriptExecutorUiDelegate::ClearPersistentGenericUi() {
 void FakeScriptExecutorUiDelegate::SetShowFeedbackChip(
     bool show_feedback_chip) {}
 
+bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
+  return false;
+}
+
+void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
+    const external::Action& external_action,
+    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+        callback) {}
+
 }  // namespace autofill_assistant

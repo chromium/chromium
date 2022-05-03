@@ -38,7 +38,8 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
       GetCapabilitiesResponseCallback callback) override;
 
   std::unique_ptr<ExternalScriptController> CreateExternalScriptController(
-      content::WebContents* web_contents) override;
+      content::WebContents* web_contents,
+      ExternalActionDelegate* action_extension_delegate) override;
 
  private:
   // The request sender responsible for communicating with a remote endpoint.

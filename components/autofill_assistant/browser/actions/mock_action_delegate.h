@@ -96,7 +96,7 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void()> end_on_navigation_callback,
                     bool browse_mode,
                     bool browse_mode_invisible));
-  MOCK_METHOD0(CleanUpAfterPrompt, void());
+  MOCK_METHOD1(CleanUpAfterPrompt, void(bool));
   MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));
   MOCK_METHOD2(
@@ -212,6 +212,12 @@ class MockActionDelegate : public ActionDelegate {
       RequestUserData,
       void(const CollectUserDataOptions& options,
            base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+               callback));
+  MOCK_METHOD0(SupportsExternalActions, bool());
+  MOCK_METHOD2(
+      RequestExternalAction,
+      void(const ExternalActionProto& external_action,
+           base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
                callback));
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
 

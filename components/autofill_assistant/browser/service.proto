@@ -18,6 +18,7 @@ import "browser/generic_ui.proto";
 import "browser/model.proto";
 import "browser/view_layout.proto";
 import "content/common/proto/semantic_feature_overrides.proto";
+import "browser/public/external_action.proto";
 
 // A field trial containing the name of the trial and the name of the
 // randomly selected trial group.
@@ -1035,6 +1036,7 @@ message ActionProto {
     JsFlowProto js_flow = 92;
     ExecuteJsProto execute_js = 93;
     RegisterPasswordResetRequestProto register_password_reset_request = 94;
+    ExternalActionProto external_action = 95;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -3402,4 +3404,20 @@ message JsFlowProto {
   }
   // The JS flow to execute in a sandbox.
   optional string js_flow = 1;
+}
+
+// Action which forwards a proto to the owner of the |ExternalScriptController|
+// for the current flow. Not supported for internal flows.
+message ExternalActionProto {
+  // The opaque proto to be forwarded to the owner of the
+  // |ExternalScriptController| for this flow.
+  optional external.ActionInfo info = 1;
+
+  // Whether to show the touchable area in the overlay.
+  // If true, it will consume the current touchable area.
+  optional bool show_touchable_area = 2;
+
+  // Whether interrupts should be executed while Autofill Assistant is in prompt
+  // state.
+  optional bool allow_interrupt = 3;
 }

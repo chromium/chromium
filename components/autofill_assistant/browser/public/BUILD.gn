@@ -2,11 +2,18 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("public") {
   sources = [
     "autofill_assistant.cc",
     "autofill_assistant.h",
     "autofill_assistant_factory.h",
+    "external_action_delegate.h",
     "external_script_controller.h",
     "runtime_manager.cc",
     "runtime_manager.h",
@@ -17,10 +24,24 @@ static_library("public") {
   ]
 
   deps = [
+    ":proto",
     "//base",
     "//components/version_info:channel",
     "//content/public/browser",
   ]
+}
+
+proto_library("proto") {
+  proto_in_dir = "//components/autofill_assistant/"
+  sources = [ "external_action.proto" ]
+}
+
+# Java protos are only used for testing.
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//components/autofill_assistant/browser/public"
+    sources = [ "$proto_path/external_action.proto" ]
+  }
 }
 
 static_library("unit_test_support") {

@@ -11,14 +11,16 @@
 namespace autofill_assistant {
 
 ExternalScriptControllerImpl::ExternalScriptControllerImpl(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    ExternalActionDelegate* action_extension_delegate)
     : web_contents_(web_contents) {
   DCHECK(web_contents_);
 
   auto* starter = Starter::FromWebContents(web_contents_);
   if (starter) {
-    client_ = std::make_unique<ClientHeadless>(
-        web_contents, starter->GetCommonDependencies());
+    client_ = std::make_unique<ClientHeadless>(web_contents,
+                                               starter->GetCommonDependencies(),
+                                               action_extension_delegate);
   }
 }
 

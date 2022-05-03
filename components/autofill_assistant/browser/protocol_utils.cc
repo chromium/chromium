@@ -22,6 +22,7 @@
 #include "components/autofill_assistant/browser/actions/edit_password_action.h"
 #include "components/autofill_assistant/browser/actions/execute_js_action.h"
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
+#include "components/autofill_assistant/browser/actions/external_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 #include "components/autofill_assistant/browser/actions/js_flow_action.h"
@@ -454,6 +455,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ExecuteJsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kJsFlow:
       return std::make_unique<JsFlowAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kExternalAction:
+      return std::make_unique<ExternalAction>(delegate, action);
     case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
       return std::make_unique<RegisterPasswordResetRequestAction>(delegate,
                                                                   action);
@@ -720,6 +723,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kJsFlow:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_js_flow());
+      break;
+    case ActionProto::ActionInfoCase::kExternalAction:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_external_action());
       break;
     case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
       success = ParseActionFromString(

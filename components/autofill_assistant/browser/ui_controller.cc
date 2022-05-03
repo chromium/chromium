@@ -1148,4 +1148,15 @@ void UiController::OnUiShownChanged(bool shown) {
   }
 }
 
+bool UiController::SupportsExternalActions() {
+  return false;
+}
+
+void UiController::ExecuteExternalAction(
+    const external::Action& info,
+    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+        callback) {
+  NOTREACHED() << "Flows using default UI don't support external actions.";
+}
+
 }  // namespace autofill_assistant

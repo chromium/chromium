@@ -77,6 +77,11 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   void ClearGenericUi() override;
   void ClearPersistentGenericUi() override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
+  bool SupportsExternalActions() override;
+  void ExecuteExternalAction(
+      const external::Action& external_action,
+      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+          callback) override;
 
   const std::vector<Details>& GetDetails() { return details_; }
 

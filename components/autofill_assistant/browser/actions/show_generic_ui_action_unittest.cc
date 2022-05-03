@@ -122,7 +122,7 @@ TEST_F(ShowGenericUiActionTest, GoesIntoPromptState) {
   EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _)).Times(1);
   EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _)).Times(1);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt()).Times(1);
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -289,7 +289,7 @@ TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
                    bool browse_mode, bool browse_mode_invisible) {
         std::move(end_navigation_callback).Run();
       });
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt()).Times(1);
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
       callback_,
       Run(Pointee(
@@ -324,7 +324,7 @@ TEST_F(ShowGenericUiActionTest, BreakingNavigationBeforeUiIsSet) {
             std::move(end_action_callback)
                 .Run(ClientStatus(OTHER_ACTION_STATUS));
           }));
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt()).Times(1);
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
       callback_,
       Run(Pointee(

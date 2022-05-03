@@ -190,6 +190,11 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnResetState() override;
   void OnUiShownChanged(bool shown) override;
   void OnShutdown(Metrics::DropOutReason reason) override;
+  bool SupportsExternalActions() override;
+  void ExecuteExternalAction(
+      const external::Action& info,
+      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+          callback) override;
 
   // Overrides AutofillAssistantTtsController::TtsEventDelegate
   void OnTtsEvent(AutofillAssistantTtsController::TtsEventType event) override;

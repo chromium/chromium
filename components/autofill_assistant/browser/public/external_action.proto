@@ -1,0 +1,19 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.external.proto";
+option java_multiple_files = true;
+
+package autofill_assistant.external;
+
+message Action {
+  optional ActionInfo info = 1;
+}
+
+message ActionInfo {
+  extensions 100 to 999;
+}
