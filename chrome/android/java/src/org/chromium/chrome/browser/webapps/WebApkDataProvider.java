@@ -25,6 +25,13 @@ import java.util.List;
  * Provides access to more detail about webapks.
  */
 public class WebApkDataProvider {
+    // Contains the details to return for an offline app when testing.
+    private static WebappInfo sWebappInfoForTesting;
+
+    public static void setWebappInfoForTesting(WebappInfo webappInfo) {
+        sWebappInfoForTesting = webappInfo;
+    }
+
     /**
      * Converts a color value to a hex string.
      * @param color The color to convert.
@@ -37,6 +44,8 @@ public class WebApkDataProvider {
     }
 
     private static WebappInfo getPartialWebappInfo(String url) {
+        if (sWebappInfoForTesting != null) return sWebappInfoForTesting;
+
         Context appContext = ContextUtils.getApplicationContext();
         String packageName = WebApkValidator.queryFirstWebApkPackage(appContext, url);
         return WebappInfo.create(WebApkIntentDataProviderFactory.create(new Intent(), packageName,
