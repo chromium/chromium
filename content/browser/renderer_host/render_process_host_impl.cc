@@ -2028,14 +2028,11 @@ void RenderProcessHostImpl::BindWebrtcVideoPerfHistory(
 }
 
 void RenderProcessHostImpl::BindQuotaManagerHost(
-    int render_frame_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/1215208): Pass the StorageKey from the function arguments,
-  // once migrated.
   storage_partition_impl_->GetQuotaContext()->BindQuotaManagerHost(
-      GetID(), render_frame_id, blink::StorageKey(origin), std::move(receiver));
+      GetID(), MSG_ROUTING_NONE, storage_key, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateLockManager(

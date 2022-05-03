@@ -218,8 +218,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver)
       override {}
   void BindQuotaManagerHost(
-      int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) override {
   }
   void CreateLockManager(

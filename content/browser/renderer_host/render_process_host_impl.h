@@ -615,11 +615,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
           receiver) override;
 
   // Binds |receiver| to a QuotaManagerHost instance indirectly owned by the
-  // StoragePartition associated with the render process host. Used by frames
-  // and workers via BrowserInterfaceBroker.
+  // StoragePartition associated with the render process host. Used by workers
+  // via BrowserInterfaceBroker. Frames should call out to QuotaContext directly
+  // to pass in the correct frame id as well.
   void BindQuotaManagerHost(
-      int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) override;
 
   // Binds |receiver| to the LockManager owned by |storage_partition_impl_|.

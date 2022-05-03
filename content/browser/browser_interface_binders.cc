@@ -39,6 +39,7 @@
 #include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
+#include "content/browser/quota/quota_context.h"
 #include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
@@ -378,11 +379,11 @@ void BindProcessInternalsHandler(
 }
 
 void BindQuotaManagerHost(
-    RenderFrameHost* host,
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
-  host->GetProcess()->BindQuotaManagerHost(host->GetRoutingID(),
-                                           host->GetLastCommittedOrigin(),
-                                           std::move(receiver));
+  host->GetStoragePartition()->GetQuotaContext()->BindQuotaManagerHost(
+      host->GetProcess()->GetID(), host->GetRoutingID(), host->storage_key(),
+      std::move(receiver));
 }
 
 void BindNativeIOHost(
@@ -1268,6 +1269,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindQuotaManagerHost, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1285,9 +1288,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::NotificationService>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
-  map->Add<blink::mojom::QuotaManagerHost>(
-      BindWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::BindQuotaManagerHost, host));
 }
 
 void PopulateBinderMap(DedicatedWorkerHost* host, mojo::BinderMap* map) {
@@ -1361,6 +1361,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindQuotaManagerHost, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1378,9 +1380,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::NotificationService>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
-  map->Add<blink::mojom::QuotaManagerHost>(
-      BindWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::BindQuotaManagerHost, host));
 }
 
 void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
@@ -1488,14 +1487,14 @@ void PopulateBinderMapWithContext(
           &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::LockManager>(BindServiceWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::CreateLockManager, host));
+  map->Add<blink::mojom::QuotaManagerHost>(
+      BindServiceWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::BindQuotaManagerHost, host));
 
   // RenderProcessHost binders taking a frame id and an origin
   map->Add<blink::mojom::NotificationService>(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
-  map->Add<blink::mojom::QuotaManagerHost>(
-      BindServiceWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::BindQuotaManagerHost, host));
 
   // Give the embedder a chance to register binders.
   GetContentClient()
