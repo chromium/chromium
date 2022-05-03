@@ -14,6 +14,7 @@
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -119,6 +120,11 @@ class VIEWS_EXPORT TableView : public views::View,
   static std::unique_ptr<ScrollView> CreateScrollViewWithTable(
       std::unique_ptr<TableView> table);
 
+  // Returns a new Builder<ScrollView> that contains the |table| constructed
+  // from the given Builder<TableView>.
+  static Builder<ScrollView> CreateScrollViewBuilderWithTable(
+      Builder<TableView>&& table);
+
   // Initialize the table with the appropriate data.
   void Init(ui::TableModel* model,
             const std::vector<ui::TableColumn>& columns,
@@ -131,6 +137,14 @@ class VIEWS_EXPORT TableView : public views::View,
   // issues when the model needs to be deleted before the table.
   void SetModel(ui::TableModel* model);
   ui::TableModel* model() const { return model_; }
+
+  void SetColumns(const std::vector<ui::TableColumn>& columns);
+
+  void SetTableType(TableTypes table_type);
+  TableTypes GetTableType() const;
+
+  void SetSingleSelection(bool single_selection);
+  bool GetSingleSelection() const;
 
   // Sets the TableGrouper. TableView does not own |grouper| (common use case is
   // to have TableModel implement TableGrouper).
@@ -163,8 +177,15 @@ class VIEWS_EXPORT TableView : public views::View,
   // Returns whether an active row and column have been set.
   bool GetHasFocusIndicator() const;
 
+  // These functions are deprecated. Favor calling the equivalent functions
+  // below.
   void set_observer(TableViewObserver* observer) { observer_ = observer; }
   TableViewObserver* observer() const { return observer_; }
+
+  // The following are equivalent to the above, but are named for compatibility
+  // with metadata properties and view builder.
+  void SetObserver(TableViewObserver* observer);
+  TableViewObserver* GetObserver() const;
 
   int GetActiveVisibleColumnIndex() const;
 
@@ -215,8 +236,6 @@ class VIEWS_EXPORT TableView : public views::View,
 
   // Returns the proper ax sort direction.
   ax::mojom::SortDirection GetFirstSortDescriptorDirection() const;
-
-  TableTypes GetTableType() const;
 
   // Updates the relative bounds of the virtual accessibility children created
   // in RebuildVirtualAccessibilityChildren(). This function is public so that
@@ -529,6 +548,24 @@ class VIEWS_EXPORT TableView : public views::View,
   base::WeakPtrFactory<TableView> weak_factory_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TableView, View)
+VIEW_BUILDER_PROPERTY(int, ActiveVisibleColumnIndex)
+VIEW_BUILDER_PROPERTY(const std::vector<ui::TableColumn>&,
+                      Columns,
+                      std::vector<ui::TableColumn>)
+VIEW_BUILDER_PROPERTY(ui::TableModel*, Model)
+VIEW_BUILDER_PROPERTY(TableTypes, TableType)
+VIEW_BUILDER_PROPERTY(bool, SingleSelection)
+VIEW_BUILDER_PROPERTY(TableGrouper*, Grouper)
+VIEW_BUILDER_PROPERTY(TableViewObserver*, Observer)
+VIEW_BUILDER_PROPERTY(bool, SelectOnRemove)
+VIEW_BUILDER_PROPERTY(bool, SortOnPaint)
+VIEW_BUILDER_METHOD(SetColumnVisibility, int, bool)
+VIEW_BUILDER_METHOD(SetVisibleColumnWidth, int, int)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::TableView)
 
 #endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_

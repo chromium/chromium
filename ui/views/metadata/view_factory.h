@@ -58,7 +58,18 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   Builder& CustomConfigure(ConfigureCallback configure_callback) & {
-    configure_callback_ = std::move(configure_callback);
+    // Allow multiple configure callbacks by chaining them.
+    if (configure_callback_) {
+      configure_callback_ = base::BindOnce(
+          [](ConfigureCallback current_callback,
+             ConfigureCallback previous_callback, ViewClass_* root_view) {
+            std::move(current_callback).Run(root_view);
+            std::move(previous_callback).Run(root_view);
+          },
+          std::move(configure_callback), std::move(configure_callback_));
+    } else {
+      configure_callback_ = std::move(configure_callback);
+    }
     return *static_cast<Builder*>(this);
   }
 

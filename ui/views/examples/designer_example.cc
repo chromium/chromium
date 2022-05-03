@@ -495,22 +495,14 @@ void DesignerExample::CreateExampleView(View* container) {
                                   &DesignerExample::CreateView,
                                   base::Unretained(this)))
                               .SetText(u"Add"),
-                          Builder<ScrollView>()
-                              .CustomConfigure(base::BindOnce(
-                                  [](DesignerExample* designer_example,
-                                     ScrollView* scroll_view) {
-                                    std::vector<ui::TableColumn> columns = {
-                                        MakeColumn(0, u"Name", true),
-                                        MakeColumn(1, u"Value", false)};
-                                    auto inspector =
-                                        std::make_unique<TableView>(
-                                            designer_example, columns,
-                                            views::TEXT_ONLY, true);
-                                    designer_example->inspector_ =
-                                        scroll_view->SetContents(
-                                            std::move(inspector));
-                                  },
-                                  base::Unretained(this)))
+                          TableView::CreateScrollViewBuilderWithTable(
+                              Builder<TableView>()
+                                  .CopyAddressTo(&inspector_)
+                                  .SetColumns({MakeColumn(0, u"Name", true),
+                                               MakeColumn(1, u"Value", false)})
+                                  .SetModel(this)
+                                  .SetTableType(views::TEXT_ONLY)
+                                  .SetSingleSelection(true))
                               .SetPreferredSize(gfx::Size(250, 400)))))
       .BuildChildren();
   grab_handles_.Initialize(designer_panel_);

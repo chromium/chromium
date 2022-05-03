@@ -237,3 +237,20 @@ TEST_F(ViewFactoryTest, TestViewBuilderAddChildAtIndex) {
   EXPECT_EQ(ok_button, view->children()[0]);
   EXPECT_EQ(cancel_button, view->children()[1]);
 }
+
+TEST_F(ViewFactoryTest, TestCustomConfigureChaining) {
+  int callback_count = 0;
+  std::unique_ptr<views::View> view =
+      views::Builder<views::View>()
+          .CustomConfigure(
+              base::BindOnce([](int* callback_count,
+                                views::View* view) { ++(*callback_count); },
+                             &callback_count))
+          .CustomConfigure(
+              base::BindOnce([](int* callback_count,
+                                views::View* view) { ++(*callback_count); },
+                             &callback_count))
+          .Build();
+  // Make sure both callbacks have been called.
+  EXPECT_EQ(callback_count, 2);
+}

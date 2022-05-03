@@ -207,20 +207,26 @@ std::unique_ptr<ScrollView> TableView::CreateScrollViewWithTable(
   return scroll_view;
 }
 
+// static
+Builder<ScrollView> TableView::CreateScrollViewBuilderWithTable(
+    Builder<TableView>&& table) {
+  auto scroll_view = ScrollView::CreateScrollViewWithBorder();
+  auto* scroll_view_ptr = scroll_view.get();
+  return Builder<ScrollView>(std::move(scroll_view))
+      .SetContents(std::move(table).CustomConfigure(base::BindOnce(
+          [](ScrollView* scroll_view, TableView* table_view) {
+            table_view->CreateHeaderIfNecessary(scroll_view);
+          },
+          scroll_view_ptr)));
+}
+
 void TableView::Init(ui::TableModel* model,
                      const std::vector<ui::TableColumn>& columns,
                      TableTypes table_type,
                      bool single_selection) {
-  columns_ = columns;
-  table_type_ = table_type;
-  single_selection_ = single_selection;
-
-  for (const auto& column : columns) {
-    VisibleColumn visible_column;
-    visible_column.column = column;
-    visible_columns_.push_back(visible_column);
-  }
-
+  SetColumns(columns);
+  SetTableType(table_type);
+  SetSingleSelection(single_selection);
   SetModel(model);
 }
 
@@ -242,6 +248,38 @@ void TableView::SetModel(ui::TableModel* model) {
   } else {
     ClearVirtualAccessibilityChildren();
   }
+}
+
+void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
+  columns_ = columns;
+  visible_columns_.clear();
+  for (const auto& column : columns) {
+    VisibleColumn visible_column;
+    visible_column.column = column;
+    visible_columns_.push_back(visible_column);
+  }
+}
+
+void TableView::SetTableType(TableTypes table_type) {
+  if (table_type_ == table_type)
+    return;
+  table_type_ = table_type;
+  OnPropertyChanged(&table_type_, PropertyEffects::kPropertyEffectsLayout);
+}
+
+TableTypes TableView::GetTableType() const {
+  return table_type_;
+}
+
+void TableView::SetSingleSelection(bool single_selection) {
+  if (single_selection_ == single_selection)
+    return;
+  single_selection_ = single_selection;
+  OnPropertyChanged(&single_selection_, PropertyEffects::kPropertyEffectsPaint);
+}
+
+bool TableView::GetSingleSelection() const {
+  return single_selection_;
 }
 
 void TableView::SetGrouper(TableGrouper* grouper) {
@@ -377,6 +415,17 @@ bool TableView::GetHasFocusIndicator() const {
              ui::ListSelectionModel::kUnselectedIndex;
 }
 
+void TableView::SetObserver(TableViewObserver* observer) {
+  if (observer_ == observer)
+    return;
+  observer_ = observer;
+  OnPropertyChanged(&observer_, PropertyEffects::kPropertyEffectsNone);
+}
+
+TableViewObserver* TableView::GetObserver() const {
+  return observer_;
+}
+
 const TableView::VisibleColumn& TableView::GetVisibleColumn(int index) {
   DCHECK(index >= 0 && index < static_cast<int>(visible_columns_.size()));
   return visible_columns_[index];
@@ -426,10 +475,6 @@ void TableView::SetSelectOnRemove(bool select_on_remove) {
 
   select_on_remove_ = select_on_remove;
   OnPropertyChanged(&select_on_remove_, kPropertyEffectsNone);
-}
-
-TableTypes TableView::GetTableType() const {
-  return table_type_;
 }
 
 bool TableView::GetSortOnPaint() const {
@@ -1833,9 +1878,11 @@ ADD_READONLY_PROPERTY_METADATA(int, FirstSelectedRow)
 ADD_READONLY_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(int, ActiveVisibleColumnIndex)
 ADD_READONLY_PROPERTY_METADATA(bool, IsSorted)
+ADD_PROPERTY_METADATA(TableViewObserver*, Observer)
 ADD_READONLY_PROPERTY_METADATA(int, RowHeight)
+ADD_PROPERTY_METADATA(bool, SingleSelection)
 ADD_PROPERTY_METADATA(bool, SelectOnRemove)
-ADD_READONLY_PROPERTY_METADATA(TableTypes, TableType)
+ADD_PROPERTY_METADATA(TableTypes, TableType)
 ADD_PROPERTY_METADATA(bool, SortOnPaint)
 END_METADATA
 
