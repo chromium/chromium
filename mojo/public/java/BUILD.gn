@@ -21,8 +21,6 @@ android_library("system_java") {
     "system/src/org/chromium/mojo/system/UntypedHandle.java",
     "system/src/org/chromium/mojo/system/Watcher.java",
   ]
-
-  deps = [ "//base:base_java" ]
 }
 
 android_library("bindings_java") {
@@ -60,7 +58,6 @@ android_library("bindings_java") {
 
   deps = [
     ":system_java",
-    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 

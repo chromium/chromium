@@ -51,7 +51,6 @@ android_library("test_support_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsActivityTestRule.java" ]
 
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/settings:java",

@@ -195,7 +195,6 @@ template("content_shell_apk_tmpl") {
       ":content_shell_apk_java",
       ":content_shell_assets",
       ":content_shell_java",
-      "//base:base_java",
       "//base:base_java_test_support",
       "//build/android:build_java",
       "//components/crash/android:java",

@@ -14,7 +14,6 @@ android_library("component_autofill_provider_java_test_support") {
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",
   ]
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
     "//build/android:build_java",

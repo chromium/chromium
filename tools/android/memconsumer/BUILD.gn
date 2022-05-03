@@ -23,7 +23,6 @@ android_apk("memconsumer_apk") {
 
   deps = [
     ":memconsumer_apk_resources",
-    "//base:base_java",
     "//build/android:build_java",
   ]
 }

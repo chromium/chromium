@@ -120,7 +120,6 @@ if (is_android) {
     srcjar_deps = [ ":jni_enums" ]
 
     deps = [
-      "//base:base_java",
       "//components/download/internal/common:internal_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]

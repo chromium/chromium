@@ -49,8 +49,6 @@ android_library("ulp_delegate_java") {
     "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
   ]
 
-  deps = [ "//base:base_java" ]
-
   # Allow downstream targets to provide their own implementations.
   jar_excluded_patterns = [ "*/LanguageProfileDelegateImpl.class" ]
 }
@@ -60,7 +58,6 @@ android_library("ulp_delegate_public_java") {
 
   deps = [
     ":ulp_delegate_java",
-    "//base:base_java",
     "//build/android:build_java",
   ]
 }

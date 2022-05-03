@@ -302,7 +302,6 @@ test("blink_common_unittests") {
   ]
   if (is_android) {
     deps += [
-      "//base:base_java",
       "//build/android:build_java",
       "//media/base/android:media_java",
     ]

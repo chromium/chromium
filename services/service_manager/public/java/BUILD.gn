@@ -12,7 +12,6 @@ android_library("service_manager_java") {
     "src/org/chromium/services/service_manager/InterfaceRegistry.java",
   ]
   deps = [
-    "//base:base_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/service_manager/public/mojom:constants_java",

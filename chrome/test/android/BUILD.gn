@@ -99,7 +99,6 @@ instrumentation_test_apk("chrome_java_test_wpr_tests") {
   data_deps = [ "//ui/base:goldctl" ]
   deps = [
     ":chrome_java_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//chrome/android:chrome_java",
@@ -136,7 +135,6 @@ instrumentation_test_apk("chrome_java_test_feed_test") {
   data_deps = [ "//ui/base:goldctl" ]
   deps = [
     ":chrome_java_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//chrome/android:chrome_java",
@@ -230,7 +228,6 @@ junit_binary("chrome_java_test_pagecontroller_junit_tests") {
   ]
   deps = [
     ":chrome_java_test_pagecontroller",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//build/android:build_java",

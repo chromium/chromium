@@ -89,7 +89,6 @@ android_library("javatests") {
   sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/TypefaceRequestTest.java" ]
   deps = [
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_test_support",

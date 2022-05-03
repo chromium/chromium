@@ -177,7 +177,6 @@ if (is_android) {
   android_library("tracing_test_helper_java") {
     testonly = true
     deps = [
-      "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
     ]

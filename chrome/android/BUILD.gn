@@ -338,7 +338,6 @@ android_library("chrome_java") {
     "$google_play_services_package:google_play_services_tasks_java",
     "$google_play_services_package:google_play_services_vision_common_java",
     "$google_play_services_package:google_play_services_vision_java",
-    "//base:base_java",
     "//cc:cc_java",
     "//chrome/android/features/keyboard_accessory:public_java",
     "//chrome/android/features/start_surface:public_java",
@@ -936,7 +935,6 @@ junit_binary("chrome_junit_tests") {
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
@@ -1330,7 +1328,6 @@ android_library("chrome_test_java") {
     "$google_play_services_package:google_play_services_gcm_java",
     "$google_play_services_package:google_play_services_iid_java",
     "$google_play_services_package:google_play_services_tasks_java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//build/android:build_java",
@@ -3287,7 +3284,6 @@ android_test_apk("chrome_bundle_smoke_test_apk") {
   # the parent target is never_incremental.
   never_incremental = true
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/test/android:chrome_java_test_pagecontroller",
     "//content/public/test/android:content_java_test_support",

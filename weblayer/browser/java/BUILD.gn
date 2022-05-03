@@ -379,7 +379,6 @@ android_library("test_java") {
     ":java",
     ":test_interfaces_java",
     ":weblayer_test_resources",
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//components/android_autofill/browser:java",
@@ -412,7 +411,6 @@ android_library("junit_test_support") {
   testonly = true
   deps = [
     ":java",
-    "//base:base_java",
     "//build/android:build_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
@@ -442,7 +440,6 @@ junit_binary("weblayer_junit_tests") {
   deps = [
     ":java",
     ":junit_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//build/android:build_java",

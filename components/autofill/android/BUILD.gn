@@ -94,7 +94,6 @@ android_library("main_autofill_java") {
   deps = [
     ":autofill_java_resources",
     ":payments_autofill_java",
-    "//base:base_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

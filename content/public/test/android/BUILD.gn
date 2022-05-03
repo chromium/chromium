@@ -9,7 +9,6 @@ generate_jni("test_support_content_jni_headers") {
 android_library("android_test_message_pump_support_java") {
   testonly = true
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
     "//build/android:build_java",

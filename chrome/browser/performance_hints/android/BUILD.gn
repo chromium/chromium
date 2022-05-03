@@ -12,7 +12,6 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/performance_hints/PerformanceHintsObserver.java" ]
 
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",

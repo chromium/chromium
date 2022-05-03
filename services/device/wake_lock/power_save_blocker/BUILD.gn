@@ -96,9 +96,6 @@ if (is_android) {
       "//services/device:*",
     ]
     sources = java_sources_needing_jni
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-    ]
+    deps = [ "//base:jni_java" ]
   }
 }

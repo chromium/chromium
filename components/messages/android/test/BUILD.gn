@@ -14,7 +14,6 @@ android_library("test_support_java") {
   sources =
       [ "java/src/org/chromium/components/messages/MessagesTestHelper.java" ]
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
     "//build/android:build_java",

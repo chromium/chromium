@@ -320,7 +320,6 @@ java_library("junit_test_support") {
   ]
   deps = [
     ":java",
-    "//base:base_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -347,7 +346,6 @@ java_library("junit") {
   deps = [
     ":java",
     ":junit_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//build/android:build_java",

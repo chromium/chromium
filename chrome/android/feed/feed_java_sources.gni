@@ -5,7 +5,6 @@
 import("//components/feed/features.gni")
 
 feed_deps = [
-  "//base:base_java",
   "//chrome/android/feed:chrome_feed_java_resources",
   "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
   "//third_party/android_deps:javax_inject_javax_inject_java",

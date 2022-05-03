@@ -573,7 +573,6 @@ android_library("clipboard_java_test_support") {
       [ "javatests/src/org/chromium/ui/base/ClipboardAndroidTestSupport.java" ]
 
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
     "//build/android:build_java",
@@ -592,7 +591,6 @@ android_library("ui_javatests") {
     ":clipboard_java_test_support",
     ":ui_java",
     ":ui_java_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",

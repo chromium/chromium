@@ -51,7 +51,6 @@ android_library("test_support_java") {
   deps = [
     ":delegate_java",
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//chrome/test/android:chrome_java_test_support",
@@ -73,7 +72,6 @@ android_library("javatests") {
     ":delegate_java",
     ":java",
     ":test_support_java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//chrome/test/android:chrome_java_test_support",

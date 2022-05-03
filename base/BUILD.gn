@@ -3565,7 +3565,6 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
-      ":base_java",
       ":base_java_unittest_support",
       "//base/test:test_support_java",
     ]
@@ -4457,7 +4456,6 @@ if (is_android) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     deps = [
-      "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
     ]

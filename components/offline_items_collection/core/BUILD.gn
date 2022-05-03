@@ -150,7 +150,6 @@ if (is_android) {
     testonly = true
     deps = [
       ":core_java",
-      "//base:base_java",
       "//base:jni_java",
       "//third_party/junit",
     ]

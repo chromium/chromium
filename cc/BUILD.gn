@@ -993,9 +993,6 @@ if (is_android) {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
     srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
-    deps = [
-      "//base:base_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

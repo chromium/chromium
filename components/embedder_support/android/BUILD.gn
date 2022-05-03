@@ -21,10 +21,7 @@ android_library("browser_context_java") {
 
 android_library("simple_factory_key_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:jni_java" ]
 }
 
 generate_jni("simple_factory_key_jni_headers") {
@@ -149,7 +146,6 @@ android_library("content_view_java") {
 
 android_library("view_java") {
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
@@ -264,7 +260,6 @@ generate_jni("context_menu_jni_headers") {
 
 android_library("context_menu_java") {
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -280,7 +275,6 @@ android_library("native_java_unittests_java") {
   testonly = true
   deps = [
     ":util_java",
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/junit",
@@ -335,7 +329,6 @@ android_library("embedder_support_javatests") {
     ":util_java",
     ":web_contents_delegate_java",
     ":web_contents_delegate_java_resources",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",

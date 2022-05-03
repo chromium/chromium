@@ -47,7 +47,6 @@ android_library("native_main_runner_java") {
   testonly = true
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
   ]

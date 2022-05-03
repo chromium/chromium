@@ -445,7 +445,6 @@ if (is_android) {
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
     ]
     deps = [
-      "//base:base_java",
       "//base:jni_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",

@@ -21,7 +21,6 @@ android_library("jni_sample_java") {
   ]
 
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
   ]
@@ -33,7 +32,6 @@ android_library("jni_annotation_sample_java") {
   sources = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
 
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
   ]
@@ -70,7 +68,6 @@ android_apk("sample_jni_apk") {
   android_manifest = "AndroidManifest.xml"
   deps = [
     ":jni_sample_java",
-    "//base:base_java",
     "//build/android:build_java",
   ]
   shared_libraries = [ ":jni_sample_lib" ]

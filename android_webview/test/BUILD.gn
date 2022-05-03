@@ -507,7 +507,6 @@ android_library("webview_instrumentation_test_utils_java") {
   ]
   deps = [
     "//android_webview:common_variations_java",
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//components/component_updater/android:embedded_component_loader_java",
@@ -645,7 +644,6 @@ android_library("android_webview_unittests_java") {
   testonly = true
   deps = [
     "//android_webview:android_webview_java",
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",

@@ -3998,7 +3998,6 @@ if (enable_java_templates) {
 
       if (!defined(use_default_launcher) || use_default_launcher) {
         deps += [
-          "//base:base_java",
           "//build/android:build_java",
           "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
           "//testing/android/native_test:native_test_java",

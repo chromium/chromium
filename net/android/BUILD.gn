@@ -152,7 +152,6 @@ android_apk("net_test_support_apk") {
   deps = [
     ":net_java_test_support",
     ":net_java_test_support_provider",
-    "//base:base_java",
     "//build/android:build_java",
   ]
   android_manifest = "../test/android/javatests/AndroidManifest.xml"

@@ -120,7 +120,6 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
   sources = [ "page_cycler/src/org/chromium/webview_shell/page_cycler/PageCyclerTest.java" ]
   deps = [
     ":system_webview_shell_apk_java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//content/public/android:content_java",

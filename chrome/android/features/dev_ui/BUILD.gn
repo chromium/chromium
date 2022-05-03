@@ -15,7 +15,6 @@ buildflag_header("buildflags") {
 
 android_library("java") {
   deps = [
-    "//base:base_java",
     "//build/android:build_java",
     "//chrome/android/features/dev_ui/public:java",
   ]

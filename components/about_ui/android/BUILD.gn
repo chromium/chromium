@@ -10,7 +10,6 @@ generate_jni("about_ui_jni_headers") {
 android_library("aboutui_java") {
   sources = [ "java/src/org/chromium/components/aboutui/CreditUtils.java" ]
   deps = [
-    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
   ]

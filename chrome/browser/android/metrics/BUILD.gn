@@ -33,7 +33,6 @@ if (is_android) {
   android_library("ukm_java_test_support") {
     testonly = true
     sources = _test_jni_sources
-    deps = [ "//base:base_java" ]
   }
 
   android_library("ukm_javatests") {
