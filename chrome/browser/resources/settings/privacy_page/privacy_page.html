@@ -787,6 +787,10 @@
             block-option-icon="settings:protected-content-off"
             allow-option-label=
                 "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
+<if expr="is_win and _google_chrome">
+            allow-option-sub-label=
+                "$i18n{siteSettingsProtectedContentIdentifiersAllowedSubLabel}"
+</if>
             allow-option-icon="settings:protected-content"
             disabled$="[[isGuest_]]">
           </settings-category-default-radio-group>
