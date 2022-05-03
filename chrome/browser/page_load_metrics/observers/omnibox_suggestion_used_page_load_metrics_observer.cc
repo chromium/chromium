@@ -26,6 +26,9 @@ const char kSearchLargestContentfulPaint2[] =
     "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2";
 const char kURLLargestContentfulPaint2[] =
     "Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2";
+
+const char kSearchLargestContentfulPaint2Above2s[] =
+    "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2Above2s";
 }  // namespace
 
 OmniboxSuggestionUsedMetricsObserver::OmniboxSuggestionUsedMetricsObserver() =
@@ -96,6 +99,40 @@ OmniboxSuggestionUsedMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
+void OmniboxSuggestionUsedMetricsObserver::OnTimingUpdate(
+    content::RenderFrameHost* subframe_rfh,
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordSearchLCP2Above2s();
+}
+
+void OmniboxSuggestionUsedMetricsObserver::RecordSearchLCP2Above2s() {
+  if (lcp2_above_2s_recorded_) {
+    return;
+  }
+  const page_load_metrics::ContentfulPaintTimingInfo& paint =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (!paint.ContainsValidTime() || paint.Time()->InMilliseconds() < 2000) {
+    return;
+  }
+  if (!ui::PageTransitionCoreTypeIs(transition_type_,
+                                    ui::PAGE_TRANSITION_GENERATED)) {
+    // Not a Search load.
+    return;
+  }
+
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          paint.Time(), GetDelegate())) {
+    // Page was started in background or was backgrounded before reaching this
+    // LCP value.
+    return;
+  }
+  PAGE_LOAD_HISTOGRAM(kSearchLargestContentfulPaint2Above2s,
+                      paint.Time().value());
+  lcp2_above_2s_recorded_ = true;
+}
+
 void OmniboxSuggestionUsedMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   RecordSessionEndHistograms(timing);
@@ -104,6 +141,8 @@ void OmniboxSuggestionUsedMetricsObserver::OnComplete(
 void OmniboxSuggestionUsedMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK(GetDelegate().DidCommit());
+
+  RecordSearchLCP2Above2s();
 
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()

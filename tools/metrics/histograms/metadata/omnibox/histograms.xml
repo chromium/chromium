@@ -1196,8 +1196,26 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    Measures the time from navigation start to largest contentful paint. Only
-    recorded for a search query suggestion selected from the omnibox.
+    Measures the time from navigation start to largest contentful paint
+    (https://github.com/w3c/largest-contentful-paint). Only recorded for a
+    search query suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2Above2s"
+    units="ms" expires_after="2023-05-01">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the time from navigation to the time the first largest contentful
+    paint candidate
+    (https://github.com/w3c/largest-contentful-paint#the-last-candidate) above 2
+    seconds. Only recorded for a search query suggestion selected from the
+    omnibox. Note that this histogram is most useful for use with Chrometto in
+    order to record a high LCP trace as soon as it happens (rather than only
+    once the slow page loads gets discarded).
   </summary>
 </histogram>
 
