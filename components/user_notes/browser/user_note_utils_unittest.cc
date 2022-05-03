@@ -36,6 +36,8 @@ using NoteIdList = std::vector<int>;
 const char kUrl1[] = "https://www.google.com/1";
 const char kUrl2[] = "https://www.google.com/2";
 const char kUrl3[] = "https://www.google.com/3";
+const char kUrl4[] = "https://www.google.com/4";
+const char kUrl5[] = "https://www.google.com/5";
 
 const base::Time kInitialTimeStamp = base::Time::FromDoubleT(1000);
 const base::Time kUpdatedTimeStamp = base::Time::FromDoubleT(2000);
@@ -253,9 +255,8 @@ class UserNoteUtilsTest
   void CreateNewNoteAndAddToService(const NoteConfig& note_config) {
     int test_id = note_config.test_id;
     ASSERT_TRUE(test_id_to_token_.find(test_id) == test_id_to_token_.end())
-        << "Invalid test case configuration: the same note test ID is used "
-           "more than once ("
-        << test_id << ")";
+        << "Invalid test case configuration: the same note ID (" << test_id
+        << ") is used more than once";
 
     auto token_id = base::UnguessableToken::Create();
     test_id_to_token_.emplace(test_id, token_id);
@@ -272,13 +273,16 @@ class UserNoteUtilsTest
     auto note = std::make_unique<UserNote>(
         token_id, std::move(note_metadata), GetTestUserNoteBody(),
         GetTestUserNotePageTarget(note_config.target_url));
-
     UserNoteService::ModelMapEntry entry(std::move(note));
     note_service_->model_map_.emplace(token_id, std::move(entry));
   }
 
   void ConfigureNewFrame(const FrameConfig& frame_config,
                          const std::vector<NoteConfig>& note_configs) {
+    ASSERT_TRUE(config_to_frame_.find(frame_config) == config_to_frame_.end())
+        << "Invalid test case configuration: the same frame ID ("
+        << frame_config.test_id << ") is used more than once";
+
     // Create a test frame and navigate it to the specified URL.
     std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
     content::RenderFrameHostTester::For(wc->GetMainFrame())
@@ -311,7 +315,6 @@ class UserNoteUtilsTest
 
     frame_to_config_.emplace(wc->GetMainFrame(), frame_config);
     config_to_frame_.emplace(frame_config, wc->GetMainFrame());
-    // test_id_to_frame_.emplace(frame_config.test_id, wc->GetMainFrame());
     web_contents_list_.emplace_back(std::move(wc));
   }
 
@@ -352,23 +355,325 @@ class UserNoteUtilsTest
 
 std::vector<UserNoteDiffTestCase> BuildTestCases() {
   std::vector<UserNoteDiffTestCase> test_cases = {
-      UserNoteDiffTestCase("single_frame_single_unchanged_note")
+      // Cases without frames and / or notes.
+      UserNoteDiffTestCase("no_frames"),
+
+      UserNoteDiffTestCase("multiple_frames_all_without_notes")
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddFrame(FrameConfig(1, kUrl2))
+          .AddFrame(FrameConfig(2, kUrl3)),
+
+      UserNoteDiffTestCase("multiple_frames_same_url_all_without_notes")
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddFrame(FrameConfig(1, kUrl2))
+          .AddFrame(FrameConfig(2, kUrl2)),
+
+      // Cases with unchanged notes.
+      UserNoteDiffTestCase("one_frame_with_unchanged_notes")
           .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
           .AddFrame(FrameConfig(0, kUrl1)),
 
-      UserNoteDiffTestCase("single_frame_single_added_note")
-          .AddNote(NoteConfig(0, kUrl2, NoteUpdateType::ADDED))
-          .AddFrame(FrameConfig(0, kUrl2).ExpectAdded({0})),
+      UserNoteDiffTestCase("multiple_frames_some_with_unchanged_notes")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddFrame(FrameConfig(1, kUrl2))
+          .AddFrame(FrameConfig(2, kUrl3)),
 
-      UserNoteDiffTestCase("single_frame_single_modified_note")
-          .AddNote(NoteConfig(0, kUrl3, NoteUpdateType::MODIFIED))
-          .AddFrame(FrameConfig(0, kUrl3).ExpectModified({0})),
+      UserNoteDiffTestCase("multiple_frames_all_with_unchanged_notes")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1))
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddNote(NoteConfig(3, kUrl2))
+          .AddNote(NoteConfig(4, kUrl2))
+          .AddNote(NoteConfig(5, kUrl2))
+          .AddFrame(FrameConfig(1, kUrl2))
+          .AddNote(NoteConfig(6, kUrl3))
+          .AddNote(NoteConfig(7, kUrl3))
+          .AddNote(NoteConfig(8, kUrl3))
+          .AddFrame(FrameConfig(2, kUrl3)),
 
-      UserNoteDiffTestCase("single_frame_single_removed_note")
+      UserNoteDiffTestCase("multiple_frames_same_url_all_with_unchanged_notes")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1))
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddFrame(FrameConfig(1, kUrl1))
+          .AddNote(NoteConfig(3, kUrl2))
+          .AddNote(NoteConfig(4, kUrl2))
+          .AddNote(NoteConfig(5, kUrl2))
+          .AddFrame(FrameConfig(2, kUrl2)),
+
+      // Cases with added notes.
+      UserNoteDiffTestCase("one_frame_with_one_added_note")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({0})),
+
+      UserNoteDiffTestCase("one_frame_with_multiple_added_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({0, 1})),
+
+      UserNoteDiffTestCase("multiple_frames_some_with_added_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectAdded({3, 4, 5}))
+          .AddFrame(FrameConfig(2, kUrl3)),
+
+      UserNoteDiffTestCase("multiple_frames_all_with_added_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectAdded({3, 4, 5}))
+          .AddNote(NoteConfig(6, kUrl3, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(7, kUrl3, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(8, kUrl3, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(2, kUrl3).ExpectAdded({6, 7, 8})),
+
+      UserNoteDiffTestCase("multiple_frames_same_url_all_with_added_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({0, 1, 2}))
+          .AddFrame(FrameConfig(1, kUrl1).ExpectAdded({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(2, kUrl2).ExpectAdded({3, 4, 5})),
+
+      // Cases with modified notes.
+      UserNoteDiffTestCase("one_frame_with_one_modified_note")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectModified({0})),
+
+      UserNoteDiffTestCase("one_frame_with_multiple_modified_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectModified({0, 1, 2})),
+
+      UserNoteDiffTestCase("multiple_frames_some_with_modified_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectModified({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectModified({3, 4, 5}))
+          .AddFrame(FrameConfig(2, kUrl3)),
+
+      UserNoteDiffTestCase("multiple_frames_all_with_modified_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectModified({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectModified({3, 4, 5}))
+          .AddNote(NoteConfig(6, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(7, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(8, kUrl3, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(2, kUrl3).ExpectModified({6, 7, 8})),
+
+      UserNoteDiffTestCase("multiple_frames_same_url_all_with_modified_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectModified({0, 1, 2}))
+          .AddFrame(FrameConfig(1, kUrl1).ExpectModified({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(2, kUrl2).ExpectModified({3, 4, 5})),
+
+      // Cases with removed notes.
+      UserNoteDiffTestCase("one_frame_one_removed_note")
           .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::REMOVED))
-          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0}))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0})),
 
-  };
+      UserNoteDiffTestCase("one_frame_with_multiple_removed_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0, 1})),
+
+      UserNoteDiffTestCase("multiple_frames_some_with_removed_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectRemoved({3, 4, 5}))
+          .AddFrame(FrameConfig(2, kUrl3)),
+
+      UserNoteDiffTestCase("multiple_frames_all_with_removed_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectRemoved({3, 4, 5}))
+          .AddNote(NoteConfig(6, kUrl3, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(7, kUrl3, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(8, kUrl3, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(2, kUrl3).ExpectRemoved({6, 7, 8})),
+
+      UserNoteDiffTestCase("multiple_frames_same_url_all_with_removed_notes")
+          .AddNote(NoteConfig(0, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectRemoved({0, 1, 2}))
+          .AddFrame(FrameConfig(1, kUrl1).ExpectRemoved({0, 1, 2}))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(2, kUrl2).ExpectRemoved({3, 4, 5})),
+
+      // Cases that mix update types.
+      UserNoteDiffTestCase("one_frame_with_one_of_each_update_type")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(3, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1)
+                        .ExpectAdded({1})
+                        .ExpectModified({2})
+                        .ExpectRemoved({3})),
+
+      UserNoteDiffTestCase("one_frame_with_multiple_of_each_update_type")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(3, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(6, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(7, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(8, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1)
+                        .ExpectAdded({2, 3})
+                        .ExpectModified({4, 5, 6})
+                        .ExpectRemoved({7, 8})),
+
+      UserNoteDiffTestCase("multiple_frames_with_different_update_types")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(3, kUrl1, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(0, kUrl1).ExpectAdded({2, 3}))
+          .AddNote(NoteConfig(4, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(6, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(
+              FrameConfig(1, kUrl2).ExpectModified({4, 5}).ExpectRemoved({6}))
+          .AddFrame(FrameConfig(2, kUrl3)),
+
+      UserNoteDiffTestCase(
+          "multiple_frames_with_multiple_notes_of_each_update_type")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(3, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(6, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(7, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(8, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1)
+                        .ExpectAdded({2, 3})
+                        .ExpectModified({4, 5, 6})
+                        .ExpectRemoved({7, 8}))
+          .AddNote(NoteConfig(9, kUrl2))
+          .AddNote(NoteConfig(10, kUrl2))
+          .AddNote(NoteConfig(11, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(12, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(13, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(14, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(15, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(16, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(17, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(1, kUrl2)
+                        .ExpectAdded({11, 12})
+                        .ExpectModified({13, 14, 15})
+                        .ExpectRemoved({16, 17}))
+          .AddNote(NoteConfig(18, kUrl3))
+          .AddNote(NoteConfig(19, kUrl3))
+          .AddNote(NoteConfig(20, kUrl3, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(21, kUrl3, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(22, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(23, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(24, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(25, kUrl3, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(26, kUrl3, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(2, kUrl3)
+                        .ExpectAdded({20, 21})
+                        .ExpectModified({22, 23, 24})
+                        .ExpectRemoved({25, 26})),
+
+      UserNoteDiffTestCase(
+          "multiple_frames_same_url_with_multiple_notes_of_each_update_type")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddNote(NoteConfig(2, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(3, kUrl1, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(4, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(6, kUrl1, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(7, kUrl1, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(8, kUrl1, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(0, kUrl1)
+                        .ExpectAdded({2, 3})
+                        .ExpectModified({4, 5, 6})
+                        .ExpectRemoved({7, 8}))
+          .AddFrame(FrameConfig(1, kUrl1)
+                        .ExpectAdded({2, 3})
+                        .ExpectModified({4, 5, 6})
+                        .ExpectRemoved({7, 8}))
+          .AddNote(NoteConfig(9, kUrl2))
+          .AddNote(NoteConfig(10, kUrl2))
+          .AddNote(NoteConfig(11, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(12, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(13, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(14, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(15, kUrl2, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(16, kUrl2, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(17, kUrl2, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(2, kUrl2)
+                        .ExpectAdded({11, 12})
+                        .ExpectModified({13, 14, 15})
+                        .ExpectRemoved({16, 17})),
+
+      UserNoteDiffTestCase("multiple_frames_each_with_different_update_types")
+          .AddNote(NoteConfig(0, kUrl1))
+          .AddNote(NoteConfig(1, kUrl1))
+          .AddFrame(FrameConfig(0, kUrl1))
+          .AddNote(NoteConfig(2, kUrl2, NoteUpdateType::ADDED))
+          .AddNote(NoteConfig(3, kUrl2, NoteUpdateType::ADDED))
+          .AddFrame(FrameConfig(1, kUrl2).ExpectAdded({2, 3}))
+          .AddNote(NoteConfig(4, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(5, kUrl3, NoteUpdateType::MODIFIED))
+          .AddNote(NoteConfig(6, kUrl3, NoteUpdateType::MODIFIED))
+          .AddFrame(FrameConfig(2, kUrl3).ExpectModified({4, 5, 6}))
+          .AddNote(NoteConfig(7, kUrl4, NoteUpdateType::REMOVED))
+          .AddNote(NoteConfig(8, kUrl4, NoteUpdateType::REMOVED))
+          .AddFrame(FrameConfig(3, kUrl4).ExpectRemoved({7, 8}))
+          .AddFrame(FrameConfig(4, kUrl5))};
 
   return test_cases;
 }
@@ -420,17 +725,20 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
     NoteIdList actual_added =
         ConvertToSortedTestIds(diff.notes_added_, token_to_test_id_);
     NoteIdList expected_added = CopyAndSort(frame_config.added);
-    EXPECT_EQ(actual_added, expected_added);
+    EXPECT_EQ(actual_added, expected_added)
+        << "Unexpected ADDED results for frame " << frame_config.test_id;
 
     NoteIdList actual_modified =
         ConvertToSortedTestIds(diff.notes_modified_, token_to_test_id_);
     NoteIdList expected_modified = CopyAndSort(frame_config.modified);
-    EXPECT_EQ(actual_modified, expected_modified);
+    EXPECT_EQ(actual_modified, expected_modified)
+        << "Unexpected MODIFIED results for frame " << frame_config.test_id;
 
     NoteIdList actual_removed =
         ConvertToSortedTestIds(diff.notes_removed_, token_to_test_id_);
     NoteIdList expected_removed = CopyAndSort(frame_config.removed);
-    EXPECT_EQ(actual_removed, expected_removed);
+    EXPECT_EQ(actual_removed, expected_removed)
+        << "Unexpected REMOVED results for frame " << frame_config.test_id;
   }
 
   // Make sure there are no missing diffs.
