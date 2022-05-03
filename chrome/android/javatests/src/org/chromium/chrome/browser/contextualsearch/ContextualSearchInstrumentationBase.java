@@ -176,8 +176,7 @@ public class ContextualSearchInstrumentationBase {
 
         public MockCSSelectionController(
                 ChromeActivity activity, ContextualSearchSelectionHandler handler) {
-            super(activity, handler, activity.getActivityTabProvider(),
-                    activity.getBrowserControlsManager());
+            super(activity, handler, activity.getActivityTabProvider());
             mPopupController = new StubbedSelectionPopupController();
         }
 

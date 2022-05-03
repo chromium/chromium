@@ -35,17 +35,6 @@ abstract class ContextualSearchHeuristic {
     protected void logResultsSeen(boolean wasSearchContentViewSeen, boolean wasActivatedByTap) {}
 
     /**
-     * Optionally logs data about the duration the panel was viewed and /or opened.
-     * Default is to not log anything.
-     * @param panelViewDurationMs The duration that the panel was viewed (Peek and opened) by the
-     *        user.  This should always be a positive number, since this method is only called when
-     *        the panel has been viewed (Peeked).
-     * @param panelOpenDurationMs The duration that the panel was opened, or 0 if it was never
-     *        opened.
-     */
-    protected void logPanelViewedDurations(long panelViewDurationMs, long panelOpenDurationMs) {}
-
-    /**
      * @return Whether this heuristic should be considered when logging aggregate metrics for Tap
      *         suppression.
      */

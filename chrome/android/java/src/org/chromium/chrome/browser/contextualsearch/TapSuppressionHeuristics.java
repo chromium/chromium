@@ -41,7 +41,6 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
         mHeuristics.add(new TapWordEdgeSuppression(contextualSearchContext));
         mHeuristics.add(new ContextualSearchEntityHeuristic(contextualSearchContext));
         mHeuristics.add(new NearTopTapSuppression(selectionController, y));
-        mHeuristics.add(new BarOverlapTapSuppression(selectionController, y));
         mHeuristics.add(new ShortTextRunSuppression(contextualSearchContext, elementRunLength));
         mHeuristics.add(new SmallTextSuppression(fontSizeDips));
         // Quick Answer that appears in the Caption via the JS API.

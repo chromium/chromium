@@ -146,8 +146,6 @@ public class ContextualSearchPanelMetrics {
             if (mResultsSeenExperiments != null) {
                 mResultsSeenExperiments.logResultsSeen(
                         mWasSearchContentViewSeen, mWasActivatedByTap);
-                mResultsSeenExperiments.logPanelViewedDurations(
-                        panelViewDurationMs, mPanelOpenedBeyondPeekDurationMs);
                 if (!isChained) mResultsSeenExperiments = null;
             }
             mPanelOpenedBeyondPeekDurationMs = 0;

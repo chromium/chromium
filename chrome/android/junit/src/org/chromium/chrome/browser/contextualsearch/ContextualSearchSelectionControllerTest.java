@@ -48,7 +48,7 @@ public final class ContextualSearchSelectionControllerTest {
     public void setUp() throws Exception {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mSelectionControllerUnderTest =
-                new ContextualSearchSelectionController(activity, null, null, null);
+                new ContextualSearchSelectionController(activity, null, null);
         mSelectionControllerUnderTest.setSelectedText(USER_SELECTION);
         sSelectionSetByHandleSelection = null;
     }

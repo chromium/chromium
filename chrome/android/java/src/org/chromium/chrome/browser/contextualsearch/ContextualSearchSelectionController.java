@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
@@ -73,9 +72,6 @@ public class ContextualSearchSelectionController {
 
     /** A means of accessing the currently active tab. */
     private final Supplier<Tab> mTabSupplier;
-
-    /** A means of interacting with the browser controls. */
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private ContextualSearchPolicy mPolicy;
 
@@ -169,15 +165,12 @@ public class ContextualSearchSelectionController {
      * @param activity The activity for resource and view access.
      * @param handler The handler for callbacks.
      * @param tabSupplier Access to the currently active tab.
-     * @param browserControlsStateProvider Access to the browser controls system.
      */
     public ContextualSearchSelectionController(Activity activity,
-            ContextualSearchSelectionHandler handler, Supplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            ContextualSearchSelectionHandler handler, Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mHandler = handler;
         mTabSupplier = tabSupplier;
-        mBrowserControlsStateProvider = browserControlsStateProvider;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mContainsWordPattern = Pattern.compile(CONTAINS_WORD_PATTERN);
         // TODO(donnd): remove when behind-the-flag bug fixed (crbug.com/786589).
@@ -230,11 +223,6 @@ public class ContextualSearchSelectionController {
     /** @return A supplier of the currently active tab. */
     Supplier<Tab> getTabSupplier() {
         return mTabSupplier;
-    }
-
-    /** @return A means of interacting with the browser controls system. */
-    BrowserControlsStateProvider getBrowserControlsStateProvider() {
-        return mBrowserControlsStateProvider;
     }
 
     /**

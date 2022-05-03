@@ -381,7 +381,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuUi.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuUtils.java",
   "java/src/org/chromium/chrome/browser/contextmenu/LensChipDelegate.java",
-  "java/src/org/chromium/chrome/browser/contextualsearch/BarOverlapTapSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchEntityHeuristic.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFieldTrial.java",

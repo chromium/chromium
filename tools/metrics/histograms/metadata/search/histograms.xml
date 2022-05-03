@@ -390,48 +390,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchBarNoOverlap.PeekDuration" units="ms"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration that the panel was peeking before being opened when triggered
-    by a tap that was in a part of the screen where it overlaps the Bar. Logged
-    when the panel is closed after being opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchBarOverlap"
-    enum="ContextualSearchTapSuppression" expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether a Tap was suppressed because the Bar overlapped the selection area.
-    Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchBarOverlap.PeekDuration" units="ms"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration that the panel was peeking before being opened when triggered
-    by a tap at the bottom of the screen where it overlaps the Bar. Logged when
-    the panel is closed after being opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchBarOverlapSeen"
-    enum="ContextualSearchBarOverlapSeen" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether the Bar overlapped the selection area and whether the results were
-    seen. Recorded when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchBasePageProtocol"
     enum="ContextualSearchBasePageProtocol" expires_after="M72">
   <owner>donnd@chromium.org</owner>

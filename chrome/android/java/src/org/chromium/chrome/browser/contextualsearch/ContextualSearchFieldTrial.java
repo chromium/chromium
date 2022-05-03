@@ -103,9 +103,13 @@ public class ContextualSearchFieldTrial {
          * Enables usage of English as the target language even when it's the primary UI language.
          */
         int IS_ENGLISH_TARGET_TRANSLATION_ENABLED = 4;
-        /** Whether collecting data on Bar overlap is enabled. */
+        /**
+         * @deprecated
+         * Whether collecting data on Bar overlap is enabled.
+         */
         int IS_BAR_OVERLAP_COLLECTION_ENABLED = 5;
         /**
+         * @deprecated
          * Whether triggering is suppressed by a selection nearly overlapping the normal
          * Bar peeking location.
          */
