@@ -170,6 +170,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       CompositorFrameConsumer* compositor_frame_consumer) override;
   void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) override;
+  void ChildSurfaceWasEvicted() override;
 
   void SetActiveFrameSinkId(const viz::FrameSinkId& frame_sink_id);
 

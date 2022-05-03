@@ -371,6 +371,11 @@ void BrowserViewRenderer::OnViewTreeForceDarkStateChanged(
   client_->OnViewTreeForceDarkStateChanged(view_tree_force_dark_state);
 }
 
+void BrowserViewRenderer::ChildSurfaceWasEvicted() {
+  if (compositor_)
+    compositor_->WasEvicted();
+}
+
 void BrowserViewRenderer::RemoveCompositorFrameConsumer(
     CompositorFrameConsumer* consumer) {
   ReturnUncommittedFrames(consumer->PassUncommittedFrameOnUI());

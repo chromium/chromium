@@ -240,6 +240,11 @@ void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore,
     hardware_renderer_->AbandonContext();
 
   hardware_renderer_.reset();
+
+  ui_loop_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CompositorFrameProducer::ChildSurfaceWasEvicted,
+                     producer_weak_ptr_));
 }
 
 void RenderThreadManager::RemoveFromCompositorFrameProducerOnUI() {

@@ -30,6 +30,7 @@ class CompositorFrameProducer {
       bool view_tree_force_dark_state) = 0;
   virtual void RemoveCompositorFrameConsumer(
       CompositorFrameConsumer* consumer) = 0;
+  virtual void ChildSurfaceWasEvicted() = 0;
 
  protected:
   virtual ~CompositorFrameProducer() {}
