@@ -2178,6 +2178,27 @@ class ScrubbyScrollBar extends View {
      */
     this._timer = null;
 
+    /**
+     * @type {?function}
+     * @protected
+     */
+    this._mouseUpEventListener = null;
+    /**
+     * @type {?function}
+     * @protected
+     */
+    this._mouseMoveEventListener = null;
+    /**
+     * @type {?function}
+     * @protected
+     */
+    this._touchEndEventListener = null;
+    /**
+     * @type {?function}
+     * @protected
+     */
+    this._touchMoveEventListener = null;
+
     this.element.addEventListener(
         'mousedown', this.onMouseDown.bind(this), false);
     this.element.addEventListener(
@@ -2200,10 +2221,10 @@ class ScrubbyScrollBar extends View {
       this._thumbStyleTopAnimator.stop();
     this._timer = setInterval(
         this.onScrollTimer.bind(this), ScrubbyScrollBar.ScrollInterval);
-    window.addEventListener(
-        'touchmove', this.onWindowTouchMove.bind(this), false);
-    window.addEventListener(
-        'touchend', this.onWindowTouchEnd.bind(this), false);
+    this._touchMoveEventListener = this.onWindowTouchMove.bind(this);
+    window.addEventListener('touchmove', this._touchMoveEventListener, false);
+    this._touchEndEventListener = this.onWindowTouchEnd.bind(this);
+    window.addEventListener('touchend', this._touchEndEventListener, false);
     event.stopPropagation();
     event.preventDefault();
   }
@@ -2231,8 +2252,9 @@ class ScrubbyScrollBar extends View {
     this._thumbStyleTopAnimator.duration = 100;
     this._thumbStyleTopAnimator.start();
 
-    window.removeEventListener('touchmove', this.onWindowTouchMove, false);
-    window.removeEventListener('touchend', this.onWindowTouchEnd, false);
+    window.removeEventListener(
+        'touchmove', this._touchMoveEventListener, false);
+    window.removeEventListener('touchend', this._touchEndEventListener, false);
     clearInterval(this._timer);
   }
 
@@ -2290,9 +2312,10 @@ class ScrubbyScrollBar extends View {
   onMouseDown(event) {
     this._setThumbPositionFromEventPosition(event.clientY);
 
-    window.addEventListener(
-        'mousemove', this.onWindowMouseMove.bind(this), false);
-    window.addEventListener('mouseup', this.onWindowMouseUp.bind(this), false);
+    this._mouseMoveEventListener = this.onWindowMouseMove.bind(this);
+    window.addEventListener('mousemove', this._mouseMoveEventListener, false);
+    this._mouseUpEventListener = this.onWindowMouseUp.bind(this);
+    window.addEventListener('mouseup', this._mouseUpEventListener, false);
     if (this._thumbStyleTopAnimator)
       this._thumbStyleTopAnimator.stop();
     this._timer = setInterval(
@@ -2313,7 +2336,8 @@ class ScrubbyScrollBar extends View {
    */
   onWindowMouseUp(event) {
     this._thumbStyleTopAnimator = new TransitionAnimator();
-    this._thumbStyleTopAnimator.step = this.onThumbStyleTopAnimationStep;
+    this._thumbStyleTopAnimator.step =
+        this.onThumbStyleTopAnimationStep.bind(this);
     this._thumbStyleTopAnimator.setFrom(this.thumb.offsetTop);
     this._thumbStyleTopAnimator.setTo((this._height - this._thumbHeight) / 2);
     this._thumbStyleTopAnimator.timingFunction =
@@ -2321,8 +2345,9 @@ class ScrubbyScrollBar extends View {
     this._thumbStyleTopAnimator.duration = 100;
     this._thumbStyleTopAnimator.start();
 
-    window.removeEventListener('mousemove', this.onWindowMouseMove, false);
-    window.removeEventListener('mouseup', this.onWindowMouseUp, false);
+    window.removeEventListener(
+        'mousemove', this._mouseMoveEventListener, false);
+    window.removeEventListener('mouseup', this._mouseUpEventListener, false);
     clearInterval(this._timer);
   }
 
