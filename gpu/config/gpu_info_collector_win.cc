@@ -17,6 +17,7 @@
 #include <d3d11_3.h>
 #include <d3d12.h>
 #include <dxgi.h>
+#include <dxgi1_6.h>
 #include <vulkan/vulkan.h>
 #include <wrl/client.h>
 
@@ -148,8 +149,7 @@ bool GetActiveAdapterLuid(LUID* luid) {
     return false;
 
   DXGI_ADAPTER_DESC desc;
-  if (FAILED(adapter->GetDesc(&desc)))
-    return false;
+  CHECK_EQ(S_OK, adapter->GetDesc(&desc));
 
   // Zero isn't a valid LUID.
   if (desc.AdapterLuid.HighPart == 0 && desc.AdapterLuid.LowPart == 0)
@@ -221,7 +221,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   for (i = 0; SUCCEEDED(dxgi_factory->EnumAdapters(i, &dxgi_adapter)); i++) {
     DXGI_ADAPTER_DESC desc;
-    dxgi_adapter->GetDesc(&desc);
+    CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
 
     GPUInfo::GPUDevice device;
     device.vendor_id = desc.VendorId;
@@ -281,6 +281,30 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     }
   }
 
+  Microsoft::WRL::ComPtr<IDXGIFactory6> dxgi_factory6;
+  if (gpu_info->GpuCount() > 1 && SUCCEEDED(dxgi_factory.As(&dxgi_factory6))) {
+    if (SUCCEEDED(dxgi_factory6->EnumAdapterByGpuPreference(
+            0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+            IID_PPV_ARGS(&dxgi_adapter)))) {
+      DXGI_ADAPTER_DESC desc;
+      CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
+      GPUInfo::GPUDevice* device = gpu_info->FindGpuByLuid(
+          desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
+      DCHECK(device);
+      device->gpu_preference = gl::GpuPreference::kHighPerformance;
+    }
+    if (SUCCEEDED(dxgi_factory6->EnumAdapterByGpuPreference(
+            0, DXGI_GPU_PREFERENCE_MINIMUM_POWER,
+            IID_PPV_ARGS(&dxgi_adapter)))) {
+      DXGI_ADAPTER_DESC desc;
+      CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
+      GPUInfo::GPUDevice* device = gpu_info->FindGpuByLuid(
+          desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
+      DCHECK(device);
+      device->gpu_preference = gl::GpuPreference::kLowPower;
+    }
+  }
+
   return i > 0;
 }
 
@@ -289,10 +313,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
 // are known driver bugs.
 bool CanCreateD3D12Device(IDXGIAdapter* dxgi_adapter) {
   DXGI_ADAPTER_DESC desc;
-  HRESULT hr = dxgi_adapter->GetDesc(&desc);
-  if (FAILED(hr)) {
-    return false;
-  }
+  CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
 
   // Known driver bugs are Intel-only. Expand in the future, as necessary, for
   // other IHVs.
@@ -300,7 +321,8 @@ bool CanCreateD3D12Device(IDXGIAdapter* dxgi_adapter) {
     return true;
 
   LARGE_INTEGER umd_version;
-  hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &umd_version);
+  HRESULT hr =
+      dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &umd_version);
   if (FAILED(hr)) {
     return false;
   }
@@ -650,7 +672,8 @@ bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,
   for (UINT ii = 0; SUCCEEDED(dxgi_factory->EnumAdapters(ii, &dxgi_adapter));
        ++ii) {
     DXGI_ADAPTER_DESC desc;
-    if (SUCCEEDED(dxgi_adapter->GetDesc(&desc)) && desc.VendorId == 0x1414) {
+    CHECK_EQ(S_OK, dxgi_adapter->GetDesc(&desc));
+    if (desc.VendorId == 0x1414) {
       // Bypass Microsoft software renderer.
       continue;
     }

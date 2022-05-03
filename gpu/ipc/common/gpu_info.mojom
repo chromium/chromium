@@ -10,6 +10,7 @@ import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gl/mojom/gpu_preference.mojom";
 
 [EnableIf=supports_vulkan]
 import "gpu/ipc/common/vulkan_info.mojom";
@@ -30,6 +31,7 @@ struct GpuDevice {
   int32 cuda_compute_capability_major;
   [EnableIf=is_win]
   Luid luid;
+  gl.mojom.GpuPreference gpu_preference;
 };
 
 // gpu::VideoCodecProfile

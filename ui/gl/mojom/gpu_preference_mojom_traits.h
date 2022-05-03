@@ -15,6 +15,8 @@ template <>
 struct EnumTraits<gl::mojom::GpuPreference, gl::GpuPreference> {
   static gl::mojom::GpuPreference ToMojom(gl::GpuPreference preference) {
     switch (preference) {
+      case gl::GpuPreference::kNone:
+        return gl::mojom::GpuPreference::kNone;
       case gl::GpuPreference::kDefault:
         return gl::mojom::GpuPreference::kDefault;
       case gl::GpuPreference::kLowPower:
@@ -29,6 +31,9 @@ struct EnumTraits<gl::mojom::GpuPreference, gl::GpuPreference> {
   static bool FromMojom(gl::mojom::GpuPreference input,
                         gl::GpuPreference* out) {
     switch (input) {
+      case gl::mojom::GpuPreference::kNone:
+        *out = gl::GpuPreference::kNone;
+        return true;
       case gl::mojom::GpuPreference::kDefault:
         *out = gl::GpuPreference::kDefault;
         return true;

@@ -23,6 +23,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <dxgi.h>
@@ -295,6 +296,9 @@ struct GPU_EXPORT GPUInfo {
     // NVIDIA CUDA compute capability, major version. 0 if undetermined. Can be
     // used to determine the hardware generation that the GPU belongs to.
     int cuda_compute_capability_major = 0;
+
+    // If this device is identified as high performance or low power GPU.
+    gl::GpuPreference gpu_preference = gl::GpuPreference::kNone;
   };
 
   GPUInfo();
@@ -317,6 +321,13 @@ struct GPU_EXPORT GPUInfo {
   // Return true if it's a multi-gpu system and there is a discrete GPU.
   // |output_discrete_gpu| is the first non-Intel GPU.
   bool GetDiscreteGpu(GPUDevice* output_discrete_gpu) const;
+
+  // TODO(crbug.com/1315820): Remove GetIntegratedGpu() and GetDiscreteGpu().
+  GPUDevice* GetGpuByPreference(gl::GpuPreference preference);
+
+#if BUILDFLAG(IS_WIN)
+  GPUDevice* FindGpuByLuid(DWORD low_part, LONG high_part);
+#endif  // BUILDFLAG(IS_WIN)
 
   // The amount of time taken to get from the process starting to the message
   // loop being pumped.

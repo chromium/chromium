@@ -247,32 +247,37 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                                               command_line, &needs_more_info);
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // GPU picking is only effective with ANGLE/Metal backend on Mac and
   // on Windows.
-  GPUInfo::GPUDevice preferred_gpu;
-  bool force_integrated_gpu =
+  bool force_low_power_gpu =
       gpu_feature_info_.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU);
-  bool force_discrete_gpu =
+  bool force_high_performance_gpu =
       gpu_feature_info_.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU);
 #if BUILDFLAG(IS_MAC)
   // Default to the integrated gpu on a multi-gpu Mac.
-  if (!force_discrete_gpu)
-    force_integrated_gpu = true;
-#endif  // BUILDFLAG(IS_MAC)
-  if (force_discrete_gpu && gpu_info_.GetDiscreteGpu(&preferred_gpu)) {
-#if BUILDFLAG(IS_MAC)
+  if (!force_high_performance_gpu)
+    force_low_power_gpu = true;
+
+  GPUInfo::GPUDevice preferred_gpu;
+  if (force_high_performance_gpu && gpu_info_.GetDiscreteGpu(&preferred_gpu)) {
     system_device_id = preferred_gpu.register_id;
-#elif BUILDFLAG(IS_WIN)
-    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu.luid);
-#endif
-  } else if (force_integrated_gpu &&
+  } else if (force_low_power_gpu &&
              gpu_info_.GetIntegratedGpu(&preferred_gpu)) {
-#if BUILDFLAG(IS_MAC)
     system_device_id = preferred_gpu.register_id;
-#elif BUILDFLAG(IS_WIN)
-    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu.luid);
-#endif
   }
+#elif BUILDFLAG(IS_WIN)
+  GPUInfo::GPUDevice* preferred_gpu = nullptr;
+  if (force_high_performance_gpu) {
+    preferred_gpu =
+        gpu_info_.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
+  } else if (force_low_power_gpu) {
+    preferred_gpu = gpu_info_.GetGpuByPreference(gl::GpuPreference::kLowPower);
+  }
+  if (preferred_gpu)
+    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu->luid);
+#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
   gpu_info_.in_process_gpu = false;

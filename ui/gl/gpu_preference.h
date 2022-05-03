@@ -15,6 +15,7 @@ namespace gl {
 // This API will likely need to be adjusted as the functionality is
 // implemented on more operating systems.
 enum class GpuPreference {
+  kNone,
   kDefault,
   kLowPower,
   kHighPerformance,

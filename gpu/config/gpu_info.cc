@@ -37,6 +37,7 @@ void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
   enumerator->AddString("driverVersion", device.driver_version);
   enumerator->AddInt("cudaComputeCapabilityMajor",
                      device.cuda_compute_capability_major);
+  enumerator->AddInt("gpuPreference", static_cast<int>(device.gpu_preference));
   enumerator->EndGPUDevice();
 }
 
@@ -336,6 +337,30 @@ bool GPUInfo::GetDiscreteGpu(GPUDevice* output_discrete_gpu) const {
   }
   return false;
 }
+
+GPUInfo::GPUDevice* GPUInfo::GetGpuByPreference(gl::GpuPreference preference) {
+  DCHECK(preference == gl::GpuPreference::kHighPerformance ||
+         preference == gl::GpuPreference::kLowPower);
+  if (gpu.gpu_preference == preference)
+    return &gpu;
+  for (auto& device : secondary_gpus) {
+    if (device.gpu_preference == preference)
+      return &device;
+  }
+  return nullptr;
+}
+
+#if BUILDFLAG(IS_WIN)
+GPUInfo::GPUDevice* GPUInfo::FindGpuByLuid(DWORD low_part, LONG high_part) {
+  if (gpu.luid.LowPart == low_part && gpu.luid.HighPart == high_part)
+    return &gpu;
+  for (auto& device : secondary_gpus) {
+    if (device.luid.LowPart == low_part && device.luid.HighPart == high_part)
+      return &device;
+  }
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   struct GPUInfoKnownFields {

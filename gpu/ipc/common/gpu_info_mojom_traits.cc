@@ -34,7 +34,8 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
          data.ReadLuid(&out->luid) &&
 #endif  // BUILDFLAG(IS_WIN)
          data.ReadDriverVendor(&out->driver_vendor) &&
-         data.ReadDriverVersion(&out->driver_version);
+         data.ReadDriverVersion(&out->driver_version) &&
+         data.ReadGpuPreference(&out->gpu_preference);
 }
 
 // static

@@ -6,6 +6,7 @@ module gl.mojom;
 
 // gl::GpuPreference
 enum GpuPreference {
+  kNone,
   kDefault,
   kLowPower,
   kHighPerformance,

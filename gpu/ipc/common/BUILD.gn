@@ -334,6 +334,7 @@ mojom("interfaces") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gl/mojom",
   ]
   enabled_features = []
   if (enable_vulkan) {
