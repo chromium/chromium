@@ -19,11 +19,8 @@
 
 namespace net {
 
-class ClientSocketFactory;
 class IPEndPoint;
-class NetLogWithSource;
 class StreamSocket;
-class WebSocketEndpointLockManager;
 
 // Attempts to connect to a subset of the addresses required by a
 // WebSocketTransportConnectJob, specifically either the IPv4 or IPv6
@@ -34,11 +31,9 @@ class WebSocketTransportConnectSubJob
  public:
   typedef WebSocketTransportConnectJob::SubJobType SubJobType;
 
-  WebSocketTransportConnectSubJob(
-      const AddressList& addresses,
-      WebSocketTransportConnectJob* parent_job,
-      SubJobType type,
-      WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
+  WebSocketTransportConnectSubJob(const AddressList& addresses,
+                                  WebSocketTransportConnectJob* parent_job,
+                                  SubJobType type);
 
   WebSocketTransportConnectSubJob(const WebSocketTransportConnectSubJob&) =
       delete;
@@ -72,10 +67,6 @@ class WebSocketTransportConnectSubJob
     STATE_DONE,
   };
 
-  ClientSocketFactory* client_socket_factory() const;
-
-  const NetLogWithSource& net_log() const;
-
   const IPEndPoint& CurrentAddress() const;
 
   void OnIOComplete(int result);
@@ -91,7 +82,6 @@ class WebSocketTransportConnectSubJob
 
   State next_state_;
   const SubJobType type_;
-  const raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
 };

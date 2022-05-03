@@ -96,6 +96,10 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
 
   // Called back from a SubJob when it completes.
   void OnSubJobComplete(int result, WebSocketTransportConnectSubJob* job);
+  // Called when a SubJob completes, synchronously or asynchronously. Returns
+  // |ERR_IO_PENDING| if there is more work to do and another error if
+  // completed.
+  int HandleSubJobComplete(int result, WebSocketTransportConnectSubJob* job);
 
   // Called from |fallback_timer_|.
   void StartIPv4JobAsync();

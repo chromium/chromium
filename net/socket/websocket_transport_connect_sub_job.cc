@@ -119,14 +119,12 @@ class WebSocketStreamSocket final : public StreamSocket {
 WebSocketTransportConnectSubJob::WebSocketTransportConnectSubJob(
     const AddressList& addresses,
     WebSocketTransportConnectJob* parent_job,
-    SubJobType type,
-    WebSocketEndpointLockManager* websocket_endpoint_lock_manager)
+    SubJobType type)
     : parent_job_(parent_job),
       addresses_(addresses),
       current_address_index_(0),
       next_state_(STATE_NONE),
-      type_(type),
-      websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager) {}
+      type_(type) {}
 
 WebSocketTransportConnectSubJob::~WebSocketTransportConnectSubJob() = default;
 
@@ -157,15 +155,6 @@ LoadState WebSocketTransportConnectSubJob::GetLoadState() const {
   }
   NOTREACHED();
   return LOAD_STATE_IDLE;
-}
-
-ClientSocketFactory* WebSocketTransportConnectSubJob::client_socket_factory()
-    const {
-  return parent_job_->client_socket_factory();
-}
-
-const NetLogWithSource& WebSocketTransportConnectSubJob::net_log() const {
-  return parent_job_->net_log();
 }
 
 const IPEndPoint& WebSocketTransportConnectSubJob::CurrentAddress() const {
@@ -210,15 +199,13 @@ int WebSocketTransportConnectSubJob::DoLoop(int result) {
 }
 
 int WebSocketTransportConnectSubJob::DoEndpointLock() {
-  int rv =
-      websocket_endpoint_lock_manager_->LockEndpoint(CurrentAddress(), this);
+  int rv = parent_job_->websocket_endpoint_lock_manager()->LockEndpoint(
+      CurrentAddress(), this);
   next_state_ = STATE_OBTAIN_LOCK_COMPLETE;
   return rv;
 }
 
 int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
-  // TODO(ricea): Update global g_last_connect_time and report
-  // ConnectInterval.
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   AddressList one_address(CurrentAddress());
 
@@ -233,13 +220,15 @@ int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
   // This class now owns an endpoint lock. Wrap `socket` in a
   // `WebSocketStreamSocket` to take ownership of the lock and release it when
   // the socket goes out of scope.
+  const NetLogWithSource& net_log = parent_job_->net_log();
   std::unique_ptr<StreamSocket> socket =
-      client_socket_factory()->CreateTransportClientSocket(
+      parent_job_->client_socket_factory()->CreateTransportClientSocket(
           one_address, std::move(socket_performance_watcher),
-          parent_job_->network_quality_estimator(), net_log().net_log(),
-          net_log().source());
+          parent_job_->network_quality_estimator(), net_log.net_log(),
+          net_log.source());
   transport_socket_ = std::make_unique<WebSocketStreamSocket>(
-      std::move(socket), websocket_endpoint_lock_manager_, CurrentAddress());
+      std::move(socket), parent_job_->websocket_endpoint_lock_manager(),
+      CurrentAddress());
 
   transport_socket_->ApplySocketTag(parent_job_->socket_tag());
 
