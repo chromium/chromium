@@ -235,7 +235,7 @@
     Turn off automatic updates?
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DIALOG_DESCRIPTION" desc="Text of the auto update toggle feature dialog description.">
-    Your device may no longer work properly, and you may experience security and performance issues. Key features in your apps may also stop working when they become outdated and you’ll lose your right to make legal claims.
+    Your device may no longer work properly, and you may experience security and performance issues. Turning off updates may also impact your right to make legal claims if you experience any issues.
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TURN_OFF_BUTTON" desc="Text of the auto update toggle feature dialog turn off button.">
     Turn off
