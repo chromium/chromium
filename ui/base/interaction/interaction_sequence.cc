@@ -5,6 +5,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"
@@ -26,6 +27,27 @@ template <typename Signature, typename... Args>
 void RunIfValid(base::OnceCallback<Signature> callback, Args... args) {
   if (callback)
     std::move(callback).Run(args...);
+}
+
+// Insert an unused argument `Arg` in the front of the argument list for
+// `callback`, and return the new callback with the dummy argument.
+template <typename Arg, typename Ret, typename... Args>
+base::OnceCallback<Ret(Arg, Args...)> PushUnusedArg(
+    base::OnceCallback<Ret(Args...)> callback) {
+  return base::BindOnce([](base::OnceCallback<Ret(Args...)> callback, Arg arg,
+                           Args... args) { std::move(callback).Run(args...); },
+                        std::move(callback));
+}
+
+// Insert two unused arguments `Arg1` and `Arg2` in the front of the argument
+// list for `callback`, and return the new callback with the dummy arguments.
+template <typename Arg1, typename Arg2, typename Ret, typename... Args>
+base::OnceCallback<Ret(Arg1, Arg2, Args...)> PushUnusedArgs2(
+    base::OnceCallback<Ret(Args...)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<Ret(Args...)> callback, Arg1 arg1, Arg2 arg2,
+         Args... args) { std::move(callback).Run(args...); },
+      std::move(callback));
 }
 
 // Sets step->must_remain_visible if it does not have a value.
@@ -244,8 +266,32 @@ InteractionSequence::StepBuilder::SetStartCallback(
 }
 
 InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetStartCallback(
+    base::OnceCallback<void(TrackedElement*)> start_callback) {
+  step_->start_callback =
+      PushUnusedArg<InteractionSequence*>(std::move(start_callback));
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetStartCallback(
+    base::OnceClosure start_callback) {
+  step_->start_callback =
+      PushUnusedArgs2<InteractionSequence*, TrackedElement*>(
+          std::move(start_callback));
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetEndCallback(StepEndCallback end_callback) {
   step_->end_callback = std::move(end_callback);
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetEndCallback(
+    base::OnceClosure end_callback) {
+  step_->end_callback = PushUnusedArg<TrackedElement*>(std::move(end_callback));
   return *this;
 }
 

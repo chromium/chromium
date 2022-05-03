@@ -256,11 +256,24 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Sets the callback called at the start of the step.
     StepBuilder& SetStartCallback(StepStartCallback start_callback);
 
+    // Sets the callback called at the start of the step. Convenience method
+    // that eliminates the InteractionSequence argument if you do not need it.
+    StepBuilder& SetStartCallback(
+        base::OnceCallback<void(TrackedElement*)> start_callback);
+
+    // Sets the callback called at the start of the step. Convenience method
+    // that eliminates both arguments if you do not need them.
+    StepBuilder& SetStartCallback(base::OnceClosure start_callback);
+
     // Sets the callback called at the end of the step. Guaranteed to be called
     // if the start callback is called, before the start callback of the next
     // step or the sequence aborted or completed callback. Also called if this
     // object is destroyed while the step is still in-process.
     StepBuilder& SetEndCallback(StepEndCallback end_callback);
+
+    // Sets the callback called at the end of the step. Convenience method if
+    // you don't need the parameter.
+    StepBuilder& SetEndCallback(base::OnceClosure end_callback);
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();

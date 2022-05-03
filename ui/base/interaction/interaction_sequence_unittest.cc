@@ -3870,4 +3870,35 @@ TEST(InteractionSequenceTest, DestroyedElementDuringNestedEvents) {
   EXPECT_CALL_IN_SCOPE(completed, Run, element1.Show());
 }
 
+TEST(InteractionSequenceTest, StepStartEndConvenienceMethods) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>,
+                         step1_start);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1_end);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2_start);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetMustBeVisibleAtStart(false)
+                       .SetStartCallback(step1_start.Get())
+                       .SetEndCallback(step1_end.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step2_start.Get()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(step1_start, Run(&element), element.Show());
+  EXPECT_CALLS_IN_SCOPE_3(step1_end, Run, step2_start, Run, completed, Run,
+                          element.Activate());
+}
+
 }  // namespace ui
