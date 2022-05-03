@@ -43,16 +43,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Assistant.BetterOnboarding.Shown"
-    enum="AssistantBetterOnboardingMode" expires_after="2021-12-19">
-  <owner>xiaohuic@chromium.org</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    The number of times Assistant better onboarding UI is shown. The UI has a
-    few different modes recorded in the enum.
-  </summary>
-</histogram>
-
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
     expires_after="2023-03-21">
   <owner>xiaohuic@chromium.org</owner>

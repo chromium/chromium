@@ -237,12 +237,6 @@ void AssistantUiControllerImpl::OnUiVisibilityChanged(
 }
 
 void AssistantUiControllerImpl::OnOnboardingShown() {
-  using chromeos::assistant::prefs::AssistantOnboardingMode;
-  base::UmaHistogramEnumeration(
-      "Assistant.BetterOnboarding.Shown",
-      AssistantState::Get()->onboarding_mode().value_or(
-          AssistantOnboardingMode::kDefault));
-
   if (has_shown_onboarding_)
     return;
 

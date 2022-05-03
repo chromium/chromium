@@ -4801,11 +4801,6 @@ others/histograms.xml -->
   <int value="3" label="Readout"/>
 </enum>
 
-<enum name="AssistantBetterOnboardingMode">
-  <int value="0" label="kDefault"/>
-  <int value="1" label="kEdu"/>
-</enum>
-
 <enum name="AssistantBetterOnboardingType">
   <int value="0" label="kUnspecified"/>
   <int value="1" label="kMath"/>
