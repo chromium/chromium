@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+PASS Loading JSON…
+PASS separate text/javascript;charset=windows-1252
+PASS separate text/javascript;";charset=windows-1252
+PASS separate text/javascript
+PASS separate "text/javascript"
+PASS separate text/ javascript
+PASS separate text /javascript
+FAIL separate x/x text/javascript assert_unreached: Reached unreachable code
+FAIL combined x/x text/javascript assert_unreached: Reached unreachable code
+FAIL separate x/x;charset=windows-1252 text/javascript assert_unreached: Reached unreachable code
+FAIL combined x/x;charset=windows-1252 text/javascript assert_unreached: Reached unreachable code
+FAIL separate text/javascript x/x assert_unreached: Reached unreachable code
+FAIL combined text/javascript x/x assert_unreached: Reached unreachable code
+PASS separate text/javascript; charset=windows-1252 text/javascript
+PASS combined text/javascript; charset=windows-1252 text/javascript
+PASS separate text/javascript;" x/x
+PASS combined text/javascript;" x/x
+PASS separate text/javascript 
+PASS combined text/javascript 
+PASS separate text/javascript error
+PASS combined text/javascript error
+PASS separate text/javascript;charset=windows-1252 x/x text/javascript
+PASS combined text/javascript;charset=windows-1252 x/x text/javascript
+PASS separate text/javascript;charset=windows-1252 error text/javascript
+PASS combined text/javascript;charset=windows-1252 error text/javascript
+PASS separate text/javascript;charset=windows-1252  text/javascript
+PASS combined text/javascript;charset=windows-1252  text/javascript
+FAIL separate text/javascript;charset=windows-1252;" \" x/x assert_equals: expected "â‚¬" but got "€"
+PASS combined text/javascript;charset=windows-1252;" \" x/x
+FAIL separate x/x;" x/y;\" text/javascript;charset=windows-1252;" text/javascript assert_unreached: Reached unreachable code
+FAIL combined x/x;" x/y;\" text/javascript;charset=windows-1252;" text/javascript assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+
