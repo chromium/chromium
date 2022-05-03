@@ -19,6 +19,7 @@ BridgeTarget = {
   COMMAND_HANDLER: 'CommandHandler',
   EVENT_SOURCE_STATE: 'EventSourceState',
   LOG_STORE: 'LogStore',
+  PANEL_BACKGROUND: 'PanelBackground',
 };
 
 /**
@@ -28,12 +29,16 @@ BridgeTarget = {
 BridgeAction = {
   BACK_TRANSLATE: 'backTranslate',
   CLEAR_LOG: 'clearLog',
+  CREATE_NEW_I_SEARCH: 'createNewISearch',
+  DESTROY_I_SEARCH: 'destroyISearch',
   GET: 'get',
   GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
+  INCREMENTAL_SEARCH: 'incrementalSearch',
   ON_COMMAND: 'onCommand',
   REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
   SET_LOGGING_PREFS: 'setLoggingPrefs',
   SET_PREF: 'setPref',
+  SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
   UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
 };

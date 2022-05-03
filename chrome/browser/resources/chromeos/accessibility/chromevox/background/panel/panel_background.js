@@ -17,17 +17,33 @@ export class PanelBackground {
   }
 
   static init() {
-    if (window.panelBackground) {
+    if (PanelBackground.instance) {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
-    window.panelBackground = new PanelBackground();
+    PanelBackground.instance = new PanelBackground();
+
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH,
+        () => PanelBackground.instance.createNewISearch_());
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH,
+        () => PanelBackground.instance.destroyISearch_());
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
+        ({searchStr, dir, opt_nextObject}) =>
+            PanelBackground.instance.incrementalSearch_(
+                searchStr, dir, opt_nextObject));
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE,
+        () => PanelBackground.instance.setRangeToISearchNode_());
   }
 
   /**
    * Creates a new ISearch object, ready to search starting from the current
    * ChromeVox focus.
+   * @private
    */
-  createNewISearch() {
+  createNewISearch_() {
     if (this.iSearch_) {
       this.iSearch_.clear();
     }
@@ -35,8 +51,11 @@ export class PanelBackground {
     this.iSearch_.handler = this;
   }
 
-  /** Destroy the ISearch object so it can be garbage collected. */
-  destroyISearch() {
+  /**
+   * Destroy the ISearch object so it can be garbage collected.
+   * @private
+   */
+  destroyISearch_() {
     this.iSearch_.handler = null;
     this.iSearch_ = null;
   }
@@ -45,8 +64,9 @@ export class PanelBackground {
    * @param {string} searchStr
    * @param {constants.Dir} dir
    * @param {boolean=} opt_nextObject
+   * @private
    */
-  incrementalSearch(searchStr, dir, opt_nextObject) {
+  incrementalSearch_(searchStr, dir, opt_nextObject) {
     if (!this.iSearch_) {
       console.error(
           'Trying to incrementally search when no ISearch has been created');
@@ -56,8 +76,11 @@ export class PanelBackground {
     this.iSearch_.search(searchStr, dir, opt_nextObject);
   }
 
-  /** Sets the current ChromeVox focus to the current ISearch node. */
-  setRangeToISearchNode() {
+  /**
+   * Sets the current ChromeVox focus to the current ISearch node.
+   * @private
+   */
+  setRangeToISearchNode_() {
     if (!this.iSearch_) {
       console.error(
           'Setting range to ISearch node when no ISearch in progress');
@@ -109,4 +132,4 @@ export class PanelBackground {
 }
 
 /** @type {PanelBackground} */
-window.panelBackground;
+PanelBackground.instance;

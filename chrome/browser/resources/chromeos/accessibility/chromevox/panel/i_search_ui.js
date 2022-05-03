@@ -5,16 +5,14 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 
 export class ISearchUI {
-  /** @param {Element} input */
+  /** @param {!Element} input */
   constructor(input) {
-    chrome.extension.getBackgroundPage().panelBackground.createNewISearch();
     this.input_ = input;
     this.dir_ = Dir.FORWARD;
 
@@ -26,18 +24,15 @@ export class ISearchUI {
   }
 
   /**
-   * @param {Element} input
-   * @return {ISearchUI}
+   * @param {!Element} input
+   * @return {!Promise<ISearchUI>}
    */
-  static init(input) {
+  static async init(input) {
     if (ISearchUI.instance_) {
       ISearchUI.instance_.destroy();
     }
 
-    if (!input) {
-      throw 'Expected search input';
-    }
-
+    await BackgroundBridge.PanelBackground.createNewISearch();
     ISearchUI.instance_ = new ISearchUI(input);
     input.focus();
     input.select();
@@ -62,14 +57,14 @@ export class ISearchUI {
         return false;
       case 'Enter':
         PanelInterface.instance.setPendingCallback(
-            () => chrome.extension.getBackgroundPage()
-                      .panelBackground.setRangeToISearchNode());
+            async () =>
+                await BackgroundBridge.PanelBackground.setRangeToISearchNode());
         PanelInterface.instance.closeMenusAndRestoreFocus();
         return false;
       default:
         return false;
     }
-    chrome.extension.getBackgroundPage().panelBackground.incrementalSearch(
+    BackgroundBridge.PanelBackground.incrementalSearch(
         this.input_.value, this.dir_, true);
     evt.preventDefault();
     evt.stopPropagation();
@@ -83,14 +78,13 @@ export class ISearchUI {
    */
   onTextInput(evt) {
     const searchStr = evt.target.value + evt.data;
-    chrome.extension.getBackgroundPage().panelBackground.incrementalSearch(
-        searchStr, this.dir_);
+    BackgroundBridge.PanelBackground.incrementalSearch(searchStr, this.dir_);
     return true;
   }
 
   /** Unregisters event handlers. */
   destroy() {
-    chrome.extension.getBackgroundPage().panelBackground.destroyISearch();
+    BackgroundBridge.PanelBackground.destroyISearch();
     const input = this.input_;
     this.input_ = null;
     input.removeEventListener('keydown', this.onKeyDown, true);

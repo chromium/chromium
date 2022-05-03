@@ -129,3 +129,37 @@ BackgroundBridge.LogStore = {
         BridgeTarget.LOG_STORE, BridgeAction.GET_LOGS);
   },
 };
+
+BackgroundBridge.PanelBackground = {
+  /**
+   * Creates a new ISearch object, ready to search starting from the current
+   * ChromeVox focus.
+   */
+  async createNewISearch() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH);
+  },
+
+  /** Destroy the ISearch object so it can be garbage collected. */
+  async destroyISearch() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH);
+  },
+
+  /**
+   * @param {string} searchStr
+   * @param {constants.Dir} dir
+   * @param {boolean=} opt_nextObject
+   */
+  async incrementalSearch(searchStr, dir, opt_nextObject) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
+        {searchStr, dir, opt_nextObject});
+  },
+
+  /** Sets the current ChromeVox focus to the current ISearch node. */
+  async setRangeToISearchNode() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE);
+  }
+};
