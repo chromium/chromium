@@ -9,9 +9,9 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
-import org.chromium.components.bookmarks.BookmarkItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

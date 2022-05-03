@@ -20,9 +20,9 @@ import androidx.appcompat.widget.Toolbar;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.ArrayList;

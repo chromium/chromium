@@ -26,12 +26,12 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
@@ -189,8 +189,7 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
-                /*readingListSwappable=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
         BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
         doReturn(existingBookmark).when(bookmarkBridge).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
@@ -219,8 +218,7 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
-                /*readingListSwappable=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
         BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
         doReturn(existingBookmark).when(bookmarkBridge).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
@@ -249,13 +247,11 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId1 = new BookmarkId(1, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark1 = new BookmarkItem(existingBookmarkId1, "Test1",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
-                /*readingListSwappable=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
         BookmarkId existingBookmarkId2 = new BookmarkId(2, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark2 = new BookmarkItem(existingBookmarkId2, "Test2",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
-                /*readingListSwappable=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
         BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
         doReturn(existingBookmark1).when(bookmarkBridge).getBookmarkById(existingBookmarkId1);
         doReturn(existingBookmark2).when(bookmarkBridge).getBookmarkById(existingBookmarkId2);
@@ -295,8 +291,7 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
-                /*readingListSwappable=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
         BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
