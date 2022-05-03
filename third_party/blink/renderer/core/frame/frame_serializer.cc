@@ -30,9 +30,6 @@
 
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 
-#include "base/metrics/histogram.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -67,7 +64,6 @@
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -285,14 +281,7 @@ void SerializerMarkupAccumulator::AppendRewrittenAttribute(
 
 FrameSerializer::FrameSerializer(Deque<SerializedResource>& resources,
                                  Delegate& delegate)
-    : resources_(&resources),
-      is_serializing_css_(false),
-      delegate_(delegate),
-      total_image_count_(0),
-      loaded_image_count_(0),
-      total_css_count_(0),
-      loaded_css_count_(0),
-      should_collect_problem_metric_(false) {}
+    : resources_(&resources), delegate_(delegate) {}
 
 void FrameSerializer::SerializeFrame(const LocalFrame& frame) {
   TRACE_EVENT0("page-serialization", "FrameSerializer::serializeFrame");
@@ -306,12 +295,8 @@ void FrameSerializer::SerializeFrame(const LocalFrame& frame) {
     return;
   }
 
-  should_collect_problem_metric_ =
-      delegate_.ShouldCollectProblemMetric() && frame.IsMainFrame();
   {
     TRACE_EVENT0("page-serialization", "FrameSerializer::serializeFrame HTML");
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-        "PageSerialization.SerializationTime.Html");
     SerializerMarkupAccumulator accumulator(delegate_, *this, document);
     String text =
         accumulator.SerializeNodes<EditingStrategy>(document, kIncludeNode);
@@ -322,34 +307,6 @@ void FrameSerializer::SerializeFrame(const LocalFrame& frame) {
     resources_->push_front(SerializedResource(
         url, document.SuggestedMIMEType(),
         SharedBuffer::Create(frame_html.c_str(), frame_html.length())));
-  }
-
-  if (should_collect_problem_metric_) {
-    // Report detectors through UMA.
-    // Note: some of these histograms used 21 buckets to try to ensure each
-    // bucket covered 5% of the range. Unfortunately, there was an off-by-one
-    // error... but changing the meaning of buckets is annoying.
-    base::UmaHistogramCounts100(
-        "PageSerialization.ProblemDetection.TotalImageCount",
-        total_image_count_);
-    if (total_image_count_ > 0) {
-      DCHECK_LE(loaded_image_count_, total_image_count_);
-      base::LinearHistogram::FactoryGet(
-          "PageSerialization.ProblemDetection.LoadedImagePercentage", 1, 100,
-          21, base::HistogramBase::kUmaTargetedHistogramFlag)
-          ->Add(loaded_image_count_ * 100 / total_image_count_);
-    }
-
-    base::UmaHistogramCounts100(
-        "PageSerialization.ProblemDetection.TotalCSSCount", total_css_count_);
-    if (total_css_count_ > 0) {
-      DCHECK_LE(loaded_css_count_, total_css_count_);
-      base::LinearHistogram::FactoryGet(
-          "PageSerialization.ProblemDetection.LoadedCSSPercentage", 1, 100, 21,
-          base::HistogramBase::kUmaTargetedHistogramFlag)
-          ->Add(loaded_css_count_ * 100 / total_css_count_);
-    }
-    should_collect_problem_metric_ = false;
   }
 }
 
@@ -415,20 +372,9 @@ void FrameSerializer::SerializeCSSStyleSheet(CSSStyleSheet& style_sheet,
   }
   if (!is_inline_css)
     resource_urls_.insert(url);
-  if (should_collect_problem_metric_ && !is_inline_css) {
-    total_css_count_++;
-    if (style_sheet.LoadCompleted())
-      loaded_css_count_++;
-  }
 
   TRACE_EVENT2("page-serialization", "FrameSerializer::serializeCSSStyleSheet",
                "type", "CSS", "url", url.ElidedString().Utf8());
-  // Only report UMA metric if this is not a reentrant CSS serialization call.
-  base::TimeTicks css_start_time;
-  if (!is_serializing_css_) {
-    is_serializing_css_ = true;
-    css_start_time = base::TimeTicks::Now();
-  }
 
   // If this CSS is inlined its definition was already serialized with the frame
   // HTML code that was previously generated. No need to regenerate it here.
@@ -463,13 +409,6 @@ void FrameSerializer::SerializeCSSStyleSheet(CSSStyleSheet& style_sheet,
   // need to be.
   for (unsigned i = 0; i < style_sheet.length(); ++i)
     SerializeCSSRule(style_sheet.item(i));
-
-  if (css_start_time != base::TimeTicks()) {
-    is_serializing_css_ = false;
-    base::UmaHistogramMicrosecondsTimes(
-        "PageSerialization.SerializationTime.CSSElement",
-        base::TimeTicks::Now() - css_start_time);
-  }
 }
 
 void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
@@ -551,28 +490,13 @@ void FrameSerializer::AddImageToResources(ImageResourceContent* image,
   if (!ShouldAddURL(url))
     return;
   resource_urls_.insert(url);
-  if (should_collect_problem_metric_)
-    total_image_count_++;
   if (!image || !image->HasImage() || image->ErrorOccurred())
     return;
-  if (should_collect_problem_metric_ && image->IsLoaded())
-    loaded_image_count_++;
 
   TRACE_EVENT2("page-serialization", "FrameSerializer::addImageToResources",
                "type", "image", "url", url.ElidedString().Utf8());
-  base::TimeTicks image_start_time = base::TimeTicks::Now();
-
   scoped_refptr<const SharedBuffer> data = image->GetImage()->Data();
-  AddToResources(image->GetResponse().MimeType(),
-                 data, url);
-
-  // If we're already reporting time for CSS serialization don't report it for
-  // this image to avoid reporting the same time twice.
-  if (!is_serializing_css_) {
-    base::UmaHistogramMicrosecondsTimes(
-        "PageSerialization.SerializationTime.ImageElement",
-        base::TimeTicks::Now() - image_start_time);
-  }
+  AddToResources(image->GetResponse().MimeType(), data, url);
 }
 
 void FrameSerializer::AddFontToResources(FontResource& font) {
