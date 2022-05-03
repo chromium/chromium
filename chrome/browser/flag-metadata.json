@@ -1616,11 +1616,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "enable-cascade-layers",
-    "owners": [ "xiaochengh" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "enable-cast-remoting-query-blocklist",
     "owners": [ "rwkeane@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 115
