@@ -58,8 +58,8 @@ MODEL_TYPE_END_PATTERN = '^\};'
 # Strings relating to files we'll need to read.
 # model_type.cc is where the ModelTypeInfoMap is
 # entity_specifics.proto is where the proto definitions for ModelTypes are.
-PROTO_FILE_PATH = './protocol/entity_specifics.proto'
-PROTO_FILE_NAME = 'entity_specifics.proto'
+ENTITY_SPECIFICS_PROTO_FILE_PATH = './protocol/entity_specifics.proto'
+ENTITY_SPECIFICS_PROTO_FILE_NAME = 'entity_specifics.proto'
 MODEL_TYPE_FILE_NAME = 'model_type.cc'
 
 SYNC_SOURCE_FILES = (r'^components[\\/]sync[\\/].*\.(cc|h)$',)
@@ -96,7 +96,7 @@ def CheckModelTypeInfoMap(input_api, output_api, model_type_file):
   if not check_map:
     return []
   proto_field_definitions = ParseEntitySpecificsProtoFieldIdentifiers(
-    input_api, os.path.abspath(PROTO_FILE_PATH))
+    input_api, os.path.abspath(ENTITY_SPECIFICS_PROTO_FILE_PATH))
   accumulated_problems.extend(
     CheckNoDuplicatedFieldValues(output_api, map_entries))
 
@@ -376,10 +376,25 @@ def CheckChangeLintsClean(input_api, output_api):
 def CheckChanges(input_api, output_api):
   results = []
   results += CheckChangeLintsClean(input_api, output_api)
+
+  proto_file_changed = False
+  proto_visitors_changed = False
+
   for f in input_api.AffectedFiles():
     if (f.LocalPath().endswith(MODEL_TYPE_FILE_NAME) or
-        f.LocalPath().endswith(PROTO_FILE_NAME)):
+        f.LocalPath().endswith(ENTITY_SPECIFICS_PROTO_FILE_NAME)):
       results += CheckModelTypeInfoMap(input_api, output_api, f)
+
+    if (f.LocalPath().endswith('.proto')):
+      proto_file_changed = True
+    if (f.LocalPath().endswith('/proto_visitors.h')):
+      proto_visitors_changed = True
+
+  if proto_file_changed and not proto_visitors_changed:
+    results.append(
+      output_api.PresubmitPromptWarning(
+        'You changed proto files, but didn\'t change proto_visitors.h'))
+
   return results
 
 def CheckChangeOnUpload(input_api, output_api):

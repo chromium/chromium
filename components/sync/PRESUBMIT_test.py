@@ -159,16 +159,47 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     self.assertTrue('_mts_schema_descriptor' in results[0].message)
     self.assertTrue("blocklist" in results[0].message)
 
-  def _testChange(self, modeltype_literal):
+  def testProtoChangeWithoutVisitors(self):
+    files = [
+      MockFile(os.path.abspath('./protocol/entity_specifics.proto'), '')
+    ]
+    results = self._testChangeWithFiles(files)
+    # Changing a .proto file without also updating proto_visitors.h should
+    # result in a warning.
+    self.assertEqual(1, len(results))
+    self.assertTrue("proto_visitors.h" in results[0].message)
+
+  def testProtoChangeWithVisitors(self):
+    files = [
+      MockFile(os.path.abspath('./protocol/entity_specifics.proto'), ''),
+      MockFile(os.path.abspath('./protocol/proto_visitors.h'), '')
+    ]
+    results = self._testChangeWithFiles(files)
+    # Changing .proto files along with proto_visitors.h is good.
+    self.assertEqual(0, len(results))
+
+  def testProtoVisitorsChange(self):
+    files = [
+      MockFile(os.path.abspath('./protocol/proto_visitors.h'), '')
+    ]
+    results = self._testChangeWithFiles(files)
+    # Changing proto_visitors.h without changing any proto files is fine.
+    self.assertEqual(0, len(results))
+
+  def _testChangeWithFiles(self, files):
     mock_input_api = MockInputApi()
-    mock_input_api.files = [
+    mock_input_api.files = files
+    return PRESUBMIT.CheckChangeOnCommit(mock_input_api, MockOutputApi())
+
+  def _testChange(self, modeltype_literal):
+    files = [
       MockFile(os.path.abspath('./protocol/entity_specifics.proto'),
         MOCK_PROTOFILE_CONTENTS),
+      MockFile(os.path.abspath('./protocol/proto_visitors.h'), ''),
       MockFile(os.path.abspath('./base/model_type.cc'),
         MOCK_MODELTYPE_CONTENTS % (modeltype_literal))
     ]
-
-    return PRESUBMIT.CheckChangeOnCommit(mock_input_api, MockOutputApi())
+    return self._testChangeWithFiles(files)
 
 
 if __name__ == '__main__':
