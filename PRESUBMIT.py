@@ -1059,6 +1059,7 @@ _ANDROID_SPECIFIC_PYDEPS_FILES = [
 
 
 _GENERIC_PYDEPS_FILES = [
+    'android_webview/test/components/run_webview_component_smoketest.pydeps',
     'android_webview/tools/run_cts.pydeps',
     'base/android/jni_generator/jni_generator.pydeps',
     'base/android/jni_generator/jni_registration_generator.pydeps',
@@ -1102,9 +1103,11 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/jinja_template.pydeps',
     'build/android/gyp/lint.pydeps',
     'build/android/gyp/merge_manifest.pydeps',
+    'build/android/gyp/optimize_resources.pydeps',
     'build/android/gyp/prepare_resources.pydeps',
     'build/android/gyp/process_native_prebuilt.pydeps',
     'build/android/gyp/proguard.pydeps',
+    'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
     'build/android/gyp/turbine.pydeps',
     'build/android/gyp/unused_resources.pydeps',
     'build/android/gyp/validate_static_library_dex_references.pydeps',
