@@ -6013,14 +6013,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "DesktopSharePreview")},
 #endif
 
-    {"sharing-prefer-vapid", flag_descriptions::kSharingPreferVapidName,
-     flag_descriptions::kSharingPreferVapidDescription, kOsAll,
-     FEATURE_VALUE_TYPE(kSharingPreferVapid)},
-
-    {"sharing-send-via-sync", flag_descriptions::kSharingSendViaSyncName,
-     flag_descriptions::kSharingSendViaSyncDescription, kOsAll,
-     FEATURE_VALUE_TYPE(kSharingSendViaSync)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-enable-pip-rounded-corners",
      flag_descriptions::kAshEnablePipRoundedCornersName,

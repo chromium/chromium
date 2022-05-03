@@ -5341,16 +5341,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "sharing-prefer-vapid",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 87
-  },
-  {
-    "name": "sharing-send-via-sync",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "shelf-drag-to-pin",
     "owners": ["tbarzic", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 106
