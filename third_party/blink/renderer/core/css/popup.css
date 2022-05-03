@@ -33,3 +33,15 @@
   background: -internal-light-dark(white, black);
   color: -internal-light-dark(black, white);
 }
+
+[popup=popup i]::backdrop,
+[popup=hint i]::backdrop,
+[popup=async i]::backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: transparent;
+    pointer-events: none !important;
+}

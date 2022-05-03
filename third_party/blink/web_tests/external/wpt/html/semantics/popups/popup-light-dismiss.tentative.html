@@ -24,6 +24,10 @@
 <style>
   #p1 {top: 50px;}
   #p2 {top: 120px;}
+  [popup]::backdrop {
+    /* This should *not* affect anything: */
+    pointer-events: auto;
+  }
 </style>
 <script>
   function spinEventLoop() {
