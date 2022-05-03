@@ -18,7 +18,10 @@
 namespace ash {
 namespace {
 
+// Scroll bar configuration.
 constexpr int kScrollBarWidth = 10;
+constexpr int kViewportHeight = 200;
+constexpr int kContentHeight = 1000;
 
 // Thumb opacity values.
 constexpr float kDefaultOpacity = 0.38f;
@@ -61,8 +64,8 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
     scroll_bar_ = contents->AddChildView(
         std::make_unique<RoundedScrollBar>(/*horizontal=*/false));
     scroll_bar_->set_controller(&controller_);
-    scroll_bar_->SetBounds(90, 0, kScrollBarWidth, 200);
-    scroll_bar_->Update(/*viewport_size=*/200, /*content_size=*/1000,
+    scroll_bar_->SetBounds(90, 0, kScrollBarWidth, kViewportHeight);
+    scroll_bar_->Update(kViewportHeight, kContentHeight,
                         /*contents_scroll_offset=*/0);
     thumb_ = scroll_bar_->GetThumbForTest();
     generator_ = std::make_unique<ui::test::EventGenerator>(
@@ -84,6 +87,20 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
 
 TEST_F(RoundedScrollBarTest, InvisibleByDefault) {
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
+}
+
+TEST_F(RoundedScrollBarTest, ShowOnThumbBoundsChanged) {
+  // Programmatically scroll the view, which changes the thumb bounds.
+  // By default this does not show the thumb.
+  scroll_bar_->Update(kViewportHeight, kContentHeight,
+                      /*contents_scroll_offset=*/100);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
+
+  // With the setting enabled, changing the thumb bounds shows the thumb.
+  scroll_bar_->SetShowOnThumbBoundsChanged(true);
+  scroll_bar_->Update(kViewportHeight, kContentHeight,
+                      /*contents_scroll_offset=*/200);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
 }
 
 TEST_F(RoundedScrollBarTest, ScrollingShowsDefaultOpacity) {

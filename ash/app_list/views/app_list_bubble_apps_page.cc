@@ -146,6 +146,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
   vertical_scroll->SetInsets(kVerticalScrollInsets);
   vertical_scroll->SetSnapBackOnDragOutside(false);
+  scroll_bar_ = vertical_scroll.get();
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
   auto scroll_contents = std::make_unique<views::View>();
@@ -254,6 +255,10 @@ void AppListBubbleAppsPage::UpdateSuggestions() {
 
 void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   DCHECK(GetVisible());
+
+  // Don't show the scroll bar due to thumb bounds changes. There's enough
+  // visual movement going on during the animation.
+  scroll_bar_->SetShowOnThumbBoundsChanged(false);
 
   // The animation relies on the correct positions of views, so force layout.
   if (needs_layout())
@@ -676,6 +681,9 @@ void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
   // the gradient mask layer.
   gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
   gradient_helper_->UpdateGradientZone();
+
+  // Show the scroll bar for keyboard-driven scroll position changes.
+  scroll_bar_->SetShowOnThumbBoundsChanged(true);
 }
 
 void AppListBubbleAppsPage::HandleFocusAfterSort() {

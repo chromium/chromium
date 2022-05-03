@@ -42,6 +42,7 @@ class AppListViewDelegate;
 class ContinueSectionView;
 class PillButton;
 class RecentAppsView;
+class RoundedScrollBar;
 class SearchResultPageDialogController;
 class SearchBoxView;
 class ScrollableAppsGridView;
@@ -211,6 +212,7 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   AppListViewDelegate* view_delegate_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
+  RoundedScrollBar* scroll_bar_ = nullptr;
   PillButton* show_continue_section_button_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;

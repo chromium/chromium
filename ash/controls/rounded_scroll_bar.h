@@ -39,6 +39,11 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // outside the thumb should "snap back" to the original scroll position.
   void SetSnapBackOnDragOutside(bool snap);
 
+  // Sets whether the scroll bar should show itself when the scroll thumb
+  // bounds are changed (i.e. when the scroll position changes or the content
+  // size changes).
+  void SetShowOnThumbBoundsChanged(bool show);
+
   // views::ScrollBar:
   gfx::Rect GetTrackBounds() const override;
   bool OverlapsContent() const override;
@@ -62,6 +67,9 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // Called when the thumb hover/pressed state changed.
   void OnThumbStateChanged();
 
+  // Called when the thumb bounds (position or size) changed.
+  void OnThumbBoundsChanged();
+
   // Equivalent to GetThumb() but typed as the inner class `Thumb`.
   Thumb* const thumb_;
 
@@ -70,6 +78,9 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
 
   // Timer that will start the scrollbar's hiding animation when it reaches 0.
   base::RetainingOneShotTimer hide_scrollbar_timer_;
+
+  // Whether to temporarily show the scroll bar when the thumb bounds change.
+  bool show_on_thumb_bounds_changed_ = false;
 };
 
 }  // namespace ash
