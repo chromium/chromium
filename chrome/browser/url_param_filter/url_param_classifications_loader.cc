@@ -21,21 +21,18 @@ namespace url_param_filter {
 namespace {
 
 ClassificationMap GetClassificationsFromFeature(
-    const base::FieldTrialParams& params,
+    const std::string& feature_classifications,
     FilterClassification_SiteRole role) {
-  auto classification_arg = params.find("classifications");
   FilterClassifications classifications;
   ClassificationMap map;
-  if (classification_arg != params.end()) {
-    std::string out;
-    base::Base64Decode(classification_arg->second, &out);
-    std::string uncompressed;
-    if (compression::GzipUncompress(out, &uncompressed)) {
-      if (classifications.ParseFromString(uncompressed)) {
-        for (auto i : classifications.classifications()) {
-          if (i.site_role() == role) {
-            map[i.site()] = i;
-          }
+  std::string out;
+  base::Base64Decode(feature_classifications, &out);
+  std::string uncompressed;
+  if (compression::GzipUncompress(out, &uncompressed)) {
+    if (classifications.ParseFromString(uncompressed)) {
+      for (auto i : classifications.classifications()) {
+        if (i.site_role() == role) {
+          map[i.site()] = i;
         }
       }
     }
@@ -43,10 +40,14 @@ ClassificationMap GetClassificationsFromFeature(
   return map;
 }
 
+// If this is called before `ReadClassifications` has read classifications from
+// the component, returns an empty map.
 ClassificationMap GetClassificationsFromFile(
-    const std::vector<FilterClassification>& classifications) {
+    const absl::optional<std::vector<FilterClassification>>& classifications) {
+  if (!classifications.has_value())
+    return ClassificationMap();
   ClassificationMap map;
-  for (const FilterClassification& classification : classifications) {
+  for (const FilterClassification& classification : classifications.value()) {
     map[classification.site()] = classification;
   }
   return map;
@@ -54,50 +55,23 @@ ClassificationMap GetClassificationsFromFile(
 
 }  // anonymous namespace
 
-ClassificationMap ClassificationsLoader::GetSourceClassifications() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Classifications from field trial params override the ones from Component
-  // Updater.
-  base::FieldTrialParams params;
-  bool has_feature_params = base::GetFieldTrialParamsByFeature(
-      features::kIncognitoParamFilterEnabled, &params);
-  if (has_feature_params && params.find("classifications") != params.end()) {
-    return GetClassificationsFromFeature(
-        params,
-        FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
-  }
-
-  if (component_source_classifications_.has_value())
-    return GetClassificationsFromFile(*component_source_classifications_);
-  return ClassificationMap();
-}
-
-ClassificationMap ClassificationsLoader::GetDestinationClassifications() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Classifications from field trial params override the ones from Component
-  // Updater.
-  base::FieldTrialParams params;
-  bool has_feature_params = base::GetFieldTrialParamsByFeature(
-      features::kIncognitoParamFilterEnabled, &params);
-  if (has_feature_params && params.find("classifications") != params.end()) {
-    return GetClassificationsFromFeature(
-        params, FilterClassification_SiteRole::
-                    FilterClassification_SiteRole_DESTINATION);
-  }
-
-  if (component_destination_classifications_.has_value())
-    return GetClassificationsFromFile(*component_destination_classifications_);
-  return ClassificationMap();
-}
-
 // static
 ClassificationsLoader* ClassificationsLoader::GetInstance() {
   static base::NoDestructor<ClassificationsLoader> instance;
   return instance.get();
 }
 
-ClassificationsLoader::ClassificationsLoader() = default;
-ClassificationsLoader::~ClassificationsLoader() = default;
+ClassificationMap ClassificationsLoader::GetSourceClassifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetClassificationsInternal(
+      FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+}
+
+ClassificationMap ClassificationsLoader::GetDestinationClassifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetClassificationsInternal(
+      FilterClassification_SiteRole::FilterClassification_SiteRole_DESTINATION);
+}
 
 void ClassificationsLoader::ReadClassifications(
     const std::string& raw_classifications) {
@@ -127,6 +101,36 @@ void ClassificationsLoader::ResetListsForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   component_source_classifications_.reset();
   component_destination_classifications_.reset();
+}
+
+ClassificationsLoader::ClassificationsLoader() = default;
+ClassificationsLoader::~ClassificationsLoader() = default;
+
+ClassificationMap ClassificationsLoader::GetClassificationsInternal(
+    FilterClassification_SiteRole role) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Classifications from field trial params take precedence over the ones from
+  // Component Updater.
+  base::FieldTrialParams params;
+  bool has_feature_params = base::GetFieldTrialParamsByFeature(
+      features::kIncognitoParamFilterEnabled, &params);
+  // Retrieve classifications from feature if provided as a parameter.
+  if (has_feature_params && params.find("classifications") != params.end()) {
+    return GetClassificationsFromFeature(params.find("classifications")->second,
+                                         role);
+  }
+
+  // If no feature classifications are given, use the component-provided
+  // classifications.
+  switch (role) {
+    case FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE:
+      return GetClassificationsFromFile(component_source_classifications_);
+    case FilterClassification_SiteRole::
+        FilterClassification_SiteRole_DESTINATION:
+      return GetClassificationsFromFile(component_destination_classifications_);
+    case FilterClassification_SiteRole_SITE_ROLE_UNKNOWN:
+      return ClassificationMap();
+  }
 }
 
 }  // namespace url_param_filter

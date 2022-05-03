@@ -24,16 +24,10 @@ class ClassificationsLoader {
   ClassificationsLoader(const ClassificationsLoader&) = delete;
   ClassificationsLoader& operator=(const ClassificationsLoader&) = delete;
 
-  // Returns a mapping from site to it's source classifications.
-  // These classifications are retrieved from either the Component Updater or
-  // the feature flag. If classifications from both sources are provided, then
-  // the feature flag takes precedence.
+  // Returns a mapping from site to its source classifications.
   ClassificationMap GetSourceClassifications();
 
-  // Returns a mapping from site to it's destination classifications.
-  // These classifications are retrieved from either the Component Updater or
-  // the feature flag. If classifications from both sources are provided, then
-  // the feature flag takes precedence.
+  // Returns a mapping from site to its destination classifications.
   ClassificationMap GetDestinationClassifications();
 
   // Deserializes the proto from |raw_classifications|. The classifications that
@@ -54,11 +48,19 @@ class ClassificationsLoader {
   ClassificationsLoader();
   ~ClassificationsLoader();
 
+  // Creates a mapping from a site to it's `role` classifications by retrieving
+  // classifications from either the Component Updater or the feature flag.
+  // If classifications from both are provided, then the feature flag
+  // classifications take precedence.
+  ClassificationMap GetClassificationsInternal(
+      FilterClassification_SiteRole role);
+
   absl::optional<std::vector<FilterClassification>>
-      component_source_classifications_ GUARDED_BY_CONTEXT(sequence_checker_);
+      component_source_classifications_ GUARDED_BY_CONTEXT(sequence_checker_) =
+          absl::nullopt;
   absl::optional<std::vector<FilterClassification>>
       component_destination_classifications_
-          GUARDED_BY_CONTEXT(sequence_checker_);
+          GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
