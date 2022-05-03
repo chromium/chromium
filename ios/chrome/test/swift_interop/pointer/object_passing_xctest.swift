@@ -8,13 +8,16 @@ import XCTest
 class ObjectPassingTest: XCTestCase {
 
   func testReferenceParameters() throws {
-    #if swift(>=5.6)
+    #if swift(>=5.7)
       let a = Object(10)
       let b = Object(20)
-      let passer = ObjectPassing()
     #else
       var a = Object(10)
       var b = Object(20)
+    #endif
+    #if swift(>=5.6)
+      let passer = ObjectPassing()
+    #else
       var passer = ObjectPassing()
     #endif
     XCTAssertEqual(a.GetValue(), 10)
