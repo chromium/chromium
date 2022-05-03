@@ -249,8 +249,6 @@ files. You can follow the steps below for easier review.
 * [SlowTests](../../third_party/blink/web_tests/SlowTests): Tests that take
   longer than the usual timeout to run. Slow tests are given 5x the usual
   timeout.
-* [SmokeTests](../../third_party/blink/web_tests/SmokeTests): A small subset
-  of tests that we run on the Fuchsia bots.
 * [StaleTestExpectations](../../third_party/blink/web_tests/StaleTestExpectations):
   Platform-specific lines that have been in TestExpectations for many months.
   They're moved here to get them out of the way of people doing rebaselines

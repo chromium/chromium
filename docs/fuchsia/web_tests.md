@@ -4,7 +4,7 @@ General instruction on running and debugging web_tests can be found
 [here](../testing/web_tests.md).
 
 Currently, only
-[a small subset of web tests](../../third_party/blink/web_tests/SmokeTests)
+[a small subset of web tests](../../third_party/blink/web_tests/SmokeTests/Default.txt)
 can be run on Fuchsia. Build the target `blink_tests` first before running any
 of the commands below:
 
