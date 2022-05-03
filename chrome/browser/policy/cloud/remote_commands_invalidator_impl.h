@@ -20,6 +20,7 @@ namespace policy {
 // Implementation of invalidator for remote commands services. This class
 // listens to events from CloudPolicyCore and CloudPolicyStore and builds
 // with RemoteCommandsInvalidator to complete the tasks.
+// TODO(crbug.com/1319443): Merge with RemoteCommandsInvalidator.
 class RemoteCommandsInvalidatorImpl : public RemoteCommandsInvalidator,
                                       public CloudPolicyCore::Observer,
                                       public CloudPolicyStore::Observer {

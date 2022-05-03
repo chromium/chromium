@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -119,9 +120,10 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
     return;
 
   // Create the Topic based on the policy data.
-  // If the policy does not specify the Topic, then unregister.
+  // If the policy does not specify the Topic, then unsubscribe and unregister.
   invalidation::Topic topic;
   if (!policy || !GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
+    UnsubscribeFromTopics();
     Unregister();
     return;
   }
@@ -153,12 +155,26 @@ void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
 
 void RemoteCommandsInvalidator::Unregister() {
   if (is_registered_) {
-    CHECK(invalidation_service_->UpdateInterestedTopics(
-        this, invalidation::TopicSet()));
     invalidation_service_->UnregisterInvalidationHandler(this);
     is_registered_ = false;
     UpdateInvalidationsEnabled();
   }
+}
+
+void RemoteCommandsInvalidator::UnsubscribeFromTopics() {
+  base::ScopedObservation<
+      invalidation::InvalidationService, invalidation::InvalidationHandler,
+      &invalidation::InvalidationService::RegisterInvalidationHandler,
+      &invalidation::InvalidationService::UnregisterInvalidationHandler>
+      temporary_registration(this);
+
+  // Invalidator cannot unset its topics without being registered. Let's quickly
+  // register and unregister to do just that.
+  if (!is_registered_)
+    temporary_registration.Observe(invalidation_service_);
+
+  CHECK(invalidation_service_->UpdateInterestedTopics(
+      this, invalidation::TopicSet()));
 }
 
 void RemoteCommandsInvalidator::UpdateInvalidationsEnabled() {
