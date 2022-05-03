@@ -143,6 +143,7 @@ class DownloadPrefs {
 
  private:
   void SaveAutoOpenState();
+  bool CanPlatformEnableAutoOpenForPdf() const;
 
   // Checks whether |path| is a valid download target path. If it is, returns
   // it as is. If it isn't returns the default download directory.

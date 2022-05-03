@@ -433,12 +433,7 @@ bool DownloadPrefs::IsDownloadPathManaged() const {
 }
 
 bool DownloadPrefs::IsAutoOpenByUserUsed() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  if (ShouldOpenPdfInSystemReader())
-    return true;
-#endif
-  return !auto_open_by_user_.empty();
+  return CanPlatformEnableAutoOpenForPdf() || !auto_open_by_user_.empty();
 }
 
 bool DownloadPrefs::IsAutoOpenEnabled(const GURL& url,
@@ -448,13 +443,10 @@ bool DownloadPrefs::IsAutoOpenEnabled(const GURL& url,
     return false;
   DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
   extension.erase(0, 1);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
   if (base::FilePath::CompareEqualIgnoreCase(extension,
                                              FILE_PATH_LITERAL("pdf")) &&
-      ShouldOpenPdfInSystemReader())
+      CanPlatformEnableAutoOpenForPdf())
     return true;
-#endif
 
   return auto_open_by_user_.find(extension) != auto_open_by_user_.end() ||
          IsAutoOpenByPolicy(url, path);
@@ -520,7 +512,17 @@ bool DownloadPrefs::ShouldOpenPdfInSystemReader() const {
       return false;
   }
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, there is always an "app" to handle PDF files. E.g., a "View"
+  // app which configures a file handler to open in a browser tab. However,
+  // there is no browser UI to manipulate the kOpenPdfDownloadInSystemReader
+  // download pref. Instead, user preference is managed via the Files app "Open
+  // with..." UI. Return true here to respect the user's "Open with" preference,
+  // and retain consistency with other shelf UI for recent downloads (Tote).
+  return true;
+#else
   return should_open_pdf_in_system_reader_;
+#endif
 }
 #endif
 
@@ -552,6 +554,16 @@ void DownloadPrefs::SaveAutoOpenState() {
     extensions.erase(extensions.size() - 1);
 
   profile_->GetPrefs()->SetString(prefs::kDownloadExtensionsToOpen, extensions);
+}
+
+bool DownloadPrefs::CanPlatformEnableAutoOpenForPdf() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;  // There is no UI for auto-open on ChromeOS.
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  return ShouldOpenPdfInSystemReader();
+#else
+  return false;
+#endif
 }
 
 base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(

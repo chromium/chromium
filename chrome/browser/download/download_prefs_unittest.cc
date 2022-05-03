@@ -368,6 +368,46 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
   EXPECT_FALSE(prefs.IsAutoOpenByPolicy(kBlobDisallowedURL, kFilePath));
 }
 
+TEST(DownloadPrefsTest, Pdf) {
+  const base::FilePath kPdfFile(FILE_PATH_LITERAL("abcd.pdf"));
+  const GURL kURL("http://basic.com");
+
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  DownloadPrefs prefs(&profile);
+
+  // Consistency check.
+  EXPECT_FALSE(prefs.IsAutoOpenByUserUsed());
+  EXPECT_FALSE(prefs.IsAutoOpenEnabled(kURL, kPdfFile));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS always has a "SystemReader" that opens in a tab.
+  EXPECT_TRUE(prefs.ShouldOpenPdfInSystemReader());
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  EXPECT_FALSE(prefs.ShouldOpenPdfInSystemReader());
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+  prefs.SetShouldOpenPdfInSystemReader(true);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Using the system reader does not imply auto-open on ChromeOS.
+  EXPECT_FALSE(prefs.IsAutoOpenByUserUsed());
+  EXPECT_FALSE(prefs.IsAutoOpenEnabled(kURL, kPdfFile));
+  EXPECT_TRUE(prefs.ShouldOpenPdfInSystemReader());
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(prefs.IsAutoOpenByUserUsed());
+  EXPECT_TRUE(prefs.IsAutoOpenEnabled(kURL, kPdfFile));
+  EXPECT_TRUE(prefs.ShouldOpenPdfInSystemReader());
+#else
+  EXPECT_FALSE(prefs.IsAutoOpenByUserUsed());
+  EXPECT_FALSE(prefs.IsAutoOpenEnabled(kURL, kPdfFile));
+  // Note ShouldOpenPdfInSystemReader is not declared on non-Desktop.
+#endif
+}
+
 TEST(DownloadPrefsTest, MissingDefaultPathCorrected) {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
