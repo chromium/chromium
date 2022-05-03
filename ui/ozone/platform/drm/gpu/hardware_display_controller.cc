@@ -38,8 +38,8 @@
 
 // Vendor ID for downstream, interim ChromeOS specific modifiers.
 #define DRM_FORMAT_MOD_VENDOR_CHROMEOS 0xf0
-// TODO(gurchetansingh) Remove once DRM_FORMAT_MOD_ARM_AFBC is used by all
-// kernels and allocators.
+// TODO(b/231167263) Remove once DRM_FORMAT_MOD_ARM_AFBC is used by all kernels
+// and allocators.
 #define DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC fourcc_mod_code(CHROMEOS, 1)
 
 namespace ui {
@@ -77,6 +77,18 @@ std::string NumberToHexString(const T value) {
   std::stringstream ss;
   ss << "0x" << std::hex << std::uppercase << value;
   return ss.str();
+}
+
+bool IsRockchipAfbc(uint64_t modifier) {
+  // TODO(b/231167263): Drop when kernel 4.4 is gone for RK3399.
+  if (modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
+    return true;
+  }
+
+  // Newer (and upstream) kernels use DRM_FORMAT_MOD_ARM_AFBC.
+  return modifier ==
+         DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
+                                 AFBC_FORMAT_MOD_SPARSE | AFBC_FORMAT_MOD_YTR);
 }
 
 }  // namespace
@@ -299,11 +311,10 @@ std::vector<uint64_t> HardwareDisplayController::GetSupportedModifiers(
   auto it = preferred_format_modifier_.find(fourcc_format);
   if (it != preferred_format_modifier_.end()) {
     uint64_t supported_modifier = it->second;
-    // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
-    // a valid AFBC buffer (crbug.com/852675).
+    // AFBC for modeset buffers doesn't work correctly, as we can't fill them
+    // with a valid AFBC buffer (b/172227166).
     // For now, don't use AFBC for modeset buffers.
-    if (is_modeset &&
-        supported_modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
+    if (is_modeset && IsRockchipAfbc(supported_modifier)) {
       supported_modifier = DRM_FORMAT_MOD_LINEAR;
     }
     return std::vector<uint64_t>{supported_modifier};
