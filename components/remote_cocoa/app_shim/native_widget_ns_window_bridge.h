@@ -189,7 +189,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       return fullscreen_controller_->GetTargetFullscreenState();
     return target_fullscreen_state_;
   }
-  bool window_visible() const { return window_visible_; }
+  bool window_visible() const;
   bool wants_to_be_visible() const { return wants_to_be_visible_; }
   bool in_fullscreen_transition() const {
     if (fullscreen_controller_)
@@ -421,6 +421,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
   bool wants_to_be_visible_ = false;
+
+  // This tracks headless window visibility state. In headless mode
+  // the platform window is always hidden, so we use this boolean
+  // to track the window's requested visibility state.
+  bool headless_window_visibility_state_ = false;
 
   // If true, then ignore interactions with CATransactionCoordinator until the
   // first frame arrives.

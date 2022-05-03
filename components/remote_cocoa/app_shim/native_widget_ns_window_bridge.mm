@@ -689,9 +689,16 @@ void NativeWidgetNSWindowBridge::CloseWindowNow() {
 
 void NativeWidgetNSWindowBridge::SetVisibilityState(
     WindowVisibilityState new_state) {
-  // Avoid changing headless mode window visibility state.
-  if (is_headless_mode_window_)
+  // In headless mode the platform window is always hidden, so instead of
+  // changing its visibility state just maintain a local flag to track the
+  // expected visibility state and lie to the upper layer pretending the
+  // window did change its visibility state.
+  if (is_headless_mode_window_) {
+    headless_window_visibility_state_ =
+        new_state != WindowVisibilityState::kHideWindow;
+    host_->OnVisibilityChanged(headless_window_visibility_state_);
     return;
+  }
 
   // During session restore this method gets called from RestoreTabsToBrowser()
   // with new_state = kShowAndActivateWindow. We consume restoration data on our
@@ -1736,6 +1743,15 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   } else {
     std::move(begin_sheet_closure).Run();
   }
+}
+
+bool NativeWidgetNSWindowBridge::window_visible() const {
+  // In headless mode the platform window is always hidden, so instead of
+  // returning the actual platform window visibility state tracked by
+  // OnVisibilityChanged() callback, return the expected visibility state
+  // maintained by SetVisibilityState() call.
+  return is_headless_mode_window_ ? headless_window_visibility_state_
+                                  : window_visible_;
 }
 
 }  // namespace remote_cocoa
