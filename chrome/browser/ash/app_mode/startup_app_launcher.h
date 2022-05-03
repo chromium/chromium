@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -16,8 +15,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
 class Profile;
@@ -27,8 +24,6 @@ class AppWindowRegistry;
 }
 
 namespace ash {
-
-class StartupAppLauncherUpdateChecker;
 
 // Responsible for the startup of the app for Chrome App kiosk.
 class StartupAppLauncher : public KioskAppLauncher,
@@ -73,14 +68,11 @@ class StartupAppLauncher : public KioskAppLauncher,
   void OnLaunchSuccess();
   void OnLaunchFailure(KioskAppLaunchError::Error error);
 
-  void MaybeInitializeNetwork();
   bool RetryWhenNetworkIsAvailable();
   void OnKioskAppDataLoadStatusChanged(const std::string& app_id);
 
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
-
-  const extensions::Extension* GetPrimaryAppExtension() const;
 
   // KioskAppManagerObserver overrides.
   void OnKioskExtensionLoadedInCache(const std::string& app_id) override;

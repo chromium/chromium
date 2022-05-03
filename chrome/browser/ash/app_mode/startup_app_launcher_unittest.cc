@@ -259,6 +259,7 @@ class TestKioskLoaderVisitor
     pending_update_urls_.erase(extension_id);
     extensions::InstallTracker::Get(browser_context_)
         ->OnFinishCrxInstall(extension_id, false);
+    extension_service_->pending_extension_manager()->Remove(extension_id);
     return true;
   }
 
@@ -416,15 +417,9 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   }
 
   void InitializeLauncherWithNetworkReady() {
-    startup_app_launcher_->Initialize();
-    EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInitializingNetwork}),
-              startup_launch_delegate_.launch_state_changes());
-    startup_launch_delegate_.ClearLaunchStateChanges();
-
     startup_launch_delegate_.set_network_ready(true);
-    startup_app_launcher_->ContinueWithNetworkReady();
-    EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
-    startup_launch_delegate_.ClearLaunchStateChanges();
+    startup_app_launcher_->Initialize();
+    EXPECT_THAT(startup_launch_delegate_.launch_state_changes(), ElementsAre());
   }
 
   [[nodiscard]] AssertionResult DownloadPrimaryApp(
@@ -1057,6 +1052,9 @@ TEST_F(StartupAppLauncherTest,
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
+  ASSERT_TRUE(
+      external_apps_loader_handler_->FailPendingInstall(kSecondaryAppId));
+
   // After install is complete we should realize that the app needs to install
   // secondary apps, so we need to get network set up
   startup_launch_delegate_.WaitForLaunchStates(
@@ -1084,6 +1082,42 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
+}
+
+TEST_F(StartupAppLauncherTest,
+       OfflineInstallUncachedExtensionShouldForceNetwork) {
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  primary_app_builder.set_version("1.0");
+  scoped_refptr<const extensions::Extension> primary_app =
+      primary_app_builder.Build();
+
+  startup_app_launcher_->Initialize();
+
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kInstallingApp,
+                          LaunchState::kInitializingNetwork));
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_launch_delegate_.set_network_ready(true);
+  startup_app_launcher_->ContinueWithNetworkReady();
+
+  ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
+
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kInstallingApp));
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
+
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kReadyToLaunch));
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_app_launcher_->LaunchApp();
+
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kLaunchSucceeded));
 }
 
 TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
@@ -1126,7 +1160,7 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   EXPECT_TRUE(kiosk_app_session_initialized_);
 }
 
-TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailure) {
+TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailureTriggersRetry) {
   InitializeLauncherWithNetworkReady();
 
   TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
@@ -1141,10 +1175,25 @@ TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailure) {
   ASSERT_TRUE(
       external_apps_loader_handler_->FailPendingInstall(kSecondaryAppId));
 
-  EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
-            startup_launch_delegate_.launch_error());
+  // The retry mechanism should trigger a new request to initialize the network
+  startup_launch_delegate_.WaitForLaunchStates(
+      {LaunchState::kInitializingNetwork});
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  startup_app_launcher_->ContinueWithNetworkReady();
+
+  ASSERT_TRUE(DownloadPrimaryApp(primary_app_builder));
+
+  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kInstallingApp});
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  ASSERT_EQ(std::set<std::string>({kSecondaryAppId}),
+            external_apps_loader_handler_->pending_update_urls());
+  TestKioskExtensionBuilder secondary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                  kSecondaryAppId);
+  secondary_app_builder.set_kiosk_enabled(false);
+  ASSERT_TRUE(FinishSecondaryExtensionInstall(secondary_app_builder));
+
+  startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
 }
 
 TEST_F(StartupAppLauncherTest,
