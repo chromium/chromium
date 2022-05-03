@@ -234,6 +234,8 @@ extern const char kChromeUIAppServiceInternalsHost[];
 extern const char kChromeUINearbyInternalsHost[];
 extern const char kChromeUIBookmarksSidePanelHost[];
 extern const char kChromeUIBookmarksSidePanelURL[];
+extern const char kChromeUIHistoryClustersSidePanelHost[];
+extern const char kChromeUIHistoryClustersSidePanelURL[];
 extern const char kChromeUIReadAnythingSidePanelHost[];
 extern const char kChromeUIReadAnythingSidePanelURL[];
 extern const char kChromeUIReadLaterHost[];

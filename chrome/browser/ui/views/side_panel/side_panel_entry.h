@@ -24,6 +24,7 @@ class SidePanelEntry final {
     // Global Entries
     kReadingList,
     kBookmarks,
+    kHistoryClusters,
     kReadAnything,
     kUserNote,
     kFeed,

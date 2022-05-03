@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/feed/feed_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -25,6 +27,12 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   // Add bookmarks.
   BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
       ->CreateAndRegisterEntry(global_registry);
+
+  // Add history clusters.
+  if (base::FeatureList::IsEnabled(features::kSidePanelJourneys)) {
+    HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
+  }
 
   // Add read anything.
   if (features::IsReadAnythingEnabled()) {
