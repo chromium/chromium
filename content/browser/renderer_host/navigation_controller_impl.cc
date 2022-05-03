@@ -4429,27 +4429,39 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
   scoped_refptr<SiteInstance> site_instance =
       node->current_frame_host()->GetSiteInstance();
 
-  // NOTE: |entry_index| is an estimate of the index where this entry will
-  // commit, but it may be wrong in corner cases (e.g., if we are at the max
-  // entry limit, the earliest entry will be dropped). This is ok because this
-  // algorithm only uses |entry_index| to walk the entry list as it stands right
-  // now, and it isn't saved for anything post-commit.
-  int entry_index = GetPendingEntryIndex();
-  bool will_create_new_entry = false;
-  if (!request ||
-      NavigationTypeUtils::IsReload(request->common_params().navigation_type) ||
-      request->common_params().should_replace_current_entry ||
-      request->common_params().is_history_navigation_in_new_child_frame) {
-    entry_index = GetLastCommittedEntryIndex();
-  } else if (entry_index == -1) {
-    will_create_new_entry = true;
-    entry_index = GetLastCommittedEntryIndex() + 1;
-  }
-
+  // NOTE: |entry_index| is the index where this entry will commit if no
+  // modifications are made between now and DidCommitNavigation. This is used to
+  // walk |entries_| and determine which entries should be exposed by the
+  // navigation API. It is important to calculate this correctly, because blink
+  // will cancel a same-document history commit if it's not present in the
+  // entries blink knows about.
+  int entry_index = GetLastCommittedEntryIndex();
   int64_t pending_item_sequence_number = 0;
   int64_t pending_document_sequence_number = 0;
-  if (auto* pending_entry = GetPendingEntry()) {
-    if (auto* frame_entry = pending_entry->GetFrameEntry(node)) {
+  bool will_create_new_entry = false;
+  if (GetPendingEntryIndex() != -1) {
+    entry_index = GetPendingEntryIndex();
+    if (auto* frame_entry = GetPendingEntry()->GetFrameEntry(node)) {
+      pending_item_sequence_number = frame_entry->item_sequence_number();
+      pending_document_sequence_number =
+          frame_entry->document_sequence_number();
+    }
+  } else if (request &&
+             !NavigationTypeUtils::IsReload(
+                 request->common_params().navigation_type) &&
+             !NavigationTypeUtils::IsHistory(
+                 request->common_params().navigation_type) &&
+             !request->common_params().should_replace_current_entry &&
+             !request->common_params()
+                  .is_history_navigation_in_new_child_frame) {
+    will_create_new_entry = true;
+    entry_index = GetLastCommittedEntryIndex() + 1;
+    // Don't set pending_item_sequence_number or
+    // pending_document_sequence_number in this case - a new unique isn/dsn will
+    // be calculated in the renderer later.
+  } else if (GetLastCommittedEntryIndex() != -1) {
+    entry_index = GetLastCommittedEntryIndex();
+    if (auto* frame_entry = GetLastCommittedEntry()->GetFrameEntry(node)) {
       pending_item_sequence_number = frame_entry->item_sequence_number();
       pending_document_sequence_number =
           frame_entry->document_sequence_number();
@@ -4457,6 +4469,12 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
   }
 
   auto entry_arrays = blink::mojom::NavigationApiHistoryEntryArrays::New();
+  if (entry_index == -1) {
+    // TODO(rakina): Exit early when there is no last committed entry.
+    // Remove when InitialNavigationEntry ships.
+    return entry_arrays;
+  }
+
   entry_arrays->back_entries = PopulateSingleNavigationApiHistoryEntryVector(
       Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
       pending_item_sequence_number, pending_document_sequence_number);

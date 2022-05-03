@@ -21269,6 +21269,163 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       GoForwardAfterInitialHistoryInChildFrame) {
+  // Start on a page with one iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  NavigationControllerImpl& controller = contents()->GetController();
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Navigate to a real page in the subframe, so that the next navigation will
+  // be MANUAL_SUBFRAME.
+  GURL subframe_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  {
+    TestNavigationObserver navigation_observer(contents());
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), subframe_url));
+    navigation_observer.Wait();
+  }
+
+  // Navigate subframe same-document.
+  {
+    TestNavigationObserver navigation_observer(contents());
+    std::string script = "location.href = '#foo';";
+    EXPECT_TRUE(ExecJs(child, script));
+    navigation_observer.Wait();
+  }
+  GURL child_url(child->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+
+  // Navigate root cross-document.
+  GURL cross_doc_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  {
+    TestNavigationObserver navigation_observer(contents());
+    EXPECT_TRUE(NavigateToURLFromRenderer(root, cross_doc_url));
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
+
+  // Go back 2, this will restore the subframe.
+  {
+    TestNavigationObserver navigation_observer(contents());
+    controller.GoToOffset(-2);
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+
+  // The NavigationApi in the renderer validates same-document back/forward
+  // navigations, and cancels them if it is not aware of the existence of the
+  // entry being navigated to. Restoring an iframe during a history traversal of
+  // its parent used to cause
+  // NavigationControllerImpl::GetNavigationApiHistoryEntryVectors() to
+  // miscalculate the committing entry index (thinking it was 1 instead of 0).
+  // This meant that index 0 was treated as a back entry (when it should have
+  // been current) and the index 1 entry was omitted (when it should have been a
+  // forward entry). The NavigationApi therefore had incorrect data to refer to
+  // when validating back/forward navigations and was entirely unaware of the
+  // entry at index 1, so it would incorrectly block a forward navigation to
+  // index 1.
+  {
+    // Go forward.
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    controller.GoForward();
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(child_url,
+            root->child_at(0)->current_frame_host()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       GoBackInMultipleIframesOneFastOneSlow) {
+  // Start on a page with two iframes.
+  GURL main_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  NavigationControllerImpl& controller = contents()->GetController();
+  FrameTreeNode* ftn_a = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* ftn_b = ftn_a->child_at(0);
+  FrameTreeNode* ftn_c = ftn_a->child_at(1);
+  GURL url_b(ftn_b->current_frame_host()->GetLastCommittedURL());
+  GURL url_c(ftn_c->current_frame_host()->GetLastCommittedURL());
+
+  // Navigate second subframe same-document.
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    std::string script = "location.href = '#foo';";
+    EXPECT_TRUE(ExecJs(ftn_c, script));
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+
+  // Navigate first subframe cross-document.
+  GURL url_b2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  {
+    TestNavigationObserver navigation_observer(contents());
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b2));
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(url_b2, ftn_b->current_frame_host()->GetLastCommittedURL());
+
+  // Navigate second subframe cross-document.
+  GURL url_c2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  {
+    TestNavigationObserver navigation_observer(contents());
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_c, url_c2));
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(4, controller.GetEntryCount());
+  EXPECT_EQ(3, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(url_c2, ftn_c->current_frame_host()->GetLastCommittedURL());
+
+  // Go back 3 so that both subframes navigate, but ensure that ftn_c doesn't
+  // commit until after ftn_b is entirely finished.
+  FrameTestNavigationManager b_delayer(ftn_b->frame_tree_node_id(),
+                                       shell()->web_contents(), url_b);
+  FrameTestNavigationManager c_delayer(ftn_c->frame_tree_node_id(),
+                                       shell()->web_contents(), url_c);
+  controller.GoToOffset(-3);
+  b_delayer.WaitForNavigationFinished();
+  c_delayer.WaitForNavigationFinished();
+
+  EXPECT_TRUE(WaitForLoadStop(contents()));
+  EXPECT_EQ(4, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(url_b, ftn_b->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url_c, ftn_c->current_frame_host()->GetLastCommittedURL());
+
+  // The NavigationApi in the renderer validates same-document back/forward
+  // navigations, and cancels them if it is not aware of the existence of the
+  // entry being navigated to. The back traversal above with multiple iframes
+  // committing at different times used to cause
+  // NavigationControllerImpl::GetNavigationApiHistoryEntryVectors() to
+  // miscalculate the committing entry index (thinking it was 1 instead of 0).
+  // This meant that index 0 was treated as a back entry (when it should have
+  // been current) and the index 1 entry was omitted (when it should have been a
+  // forward entry). The NavigationApi therefore had incorrect data to refer to
+  // when validating back/forward navigations and was entirely unaware of the
+  // entry at index 1, so it would incorrectly block a forward navigation to
+  // index 1.
+  {
+    // Go forward.
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    controller.GoForward();
+    navigation_observer.Wait();
+  }
+  EXPECT_EQ(4, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
