@@ -288,7 +288,7 @@ void PreferredAppsImpl::AddPreferredAppImpl(
   // Sync the change to publishers. Because |replaced_app_preference| can
   // be any app type, we should run this for all publishers. Currently
   // only implemented in ARC publisher.
-  // TODO(crbug.com/853604): The |replaced_app_preference| can be really big,
+  // TODO(crbug.com/1322000): The |replaced_app_preference| can be really big,
   // update this logic to only call the relevant publisher for each app after
   // updating the storage structure.
   host_->OnPreferredAppSet(app_id, std::move(intent_filter),
@@ -383,6 +383,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   for (const auto& removed_app_and_filters : removed) {
     // We don't know what app type the app is, so we have to notify all
     // publishers.
+    // TODO(crbug.com/1322000): Only notify the relevant publishers.
     host_->OnSupportedLinksPreferenceChanged(removed_app_and_filters.first,
                                              /*open_in_app=*/false);
   }
