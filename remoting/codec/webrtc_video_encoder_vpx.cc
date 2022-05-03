@@ -145,6 +145,10 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
     vpx_codec_control(codec, VP9E_SET_ROW_MT, 1);
   }
 
+  // The param for this knob is a log2 value so 0 is reasonable here.
+  vpx_codec_control(codec, VP9E_SET_TILE_COLUMNS,
+                    static_cast<int>(codec->config.enc->g_threads >> 1));
+
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
   ret = vpx_codec_control(codec, VP9E_SET_NOISE_SENSITIVITY, 0);
