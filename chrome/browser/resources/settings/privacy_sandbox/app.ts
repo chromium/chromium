@@ -393,7 +393,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     // supporting other styling methods.
     // TODO(crbug.com/1308262): Expose required style hooks on paper-tooltip
     const sheet = new CSSStyleSheet();
-    // @ts-ignore
     sheet.replaceSync(`
       #tooltip {
             border-radius: 4px;
@@ -404,14 +403,12 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
             line-height: 154%;  /* 20px. */
             margin: 0 4px;
       }`);
-    // @ts-ignore
-    const elemStyleSheets = tooltip.shadowRoot.adoptedStyleSheets;
+    const elemStyleSheets = tooltip.shadowRoot!.adoptedStyleSheets;
 
     if (elemStyleSheets.length === 0 ||
         JSON.stringify(elemStyleSheets.slice(-1)[0]) !==
             JSON.stringify(sheet)) {
-      // @ts-ignore
-      tooltip.shadowRoot.adoptedStyleSheets = [...elemStyleSheets, sheet];
+      tooltip.shadowRoot!.adoptedStyleSheets = [...elemStyleSheets, sheet];
     }
 
     const hide = () => {

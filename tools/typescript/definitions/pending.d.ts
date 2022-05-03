@@ -12,6 +12,13 @@
 // for detail.
 interface DocumentOrShadowRoot {
   getSelection(): Selection|null;
+
+  // See https://github.com/microsoft/TypeScript/issues/30022.
+  adoptedStyleSheets: CSSStyleSheet[];
+}
+
+interface CSSStyleSheet {
+  replaceSync(text: string): void;
 }
 
 interface HTMLElement {
