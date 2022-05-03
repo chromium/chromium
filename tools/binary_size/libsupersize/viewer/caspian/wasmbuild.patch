@@ -1,8 +1,8 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index fcc7e12834733..11d4044003cb3 100644
+index d960648941d8b..fc8e041d2bc66 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
-@@ -299,10 +299,11 @@ is_ios = current_os == "ios"
+@@ -301,10 +301,11 @@ is_ios = current_os == "ios"
  is_linux = current_os == "linux"
  is_mac = current_os == "mac"
  is_nacl = current_os == "nacl"
@@ -16,11 +16,11 @@ index fcc7e12834733..11d4044003cb3 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index e49fc28c0893d..5120334fbf373 100644
+index 719de1f28fb64..da8adfa8e52c7 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -643,6 +643,20 @@ config("compiler") {
-     ldflags += [ "-stdlib=libc++" ]
+@@ -635,6 +635,20 @@ config("compiler") {
+     defines += [ "_LIBCPP_HAS_NO_ALIGNED_ALLOCATION" ]
    }
  
 +  if (is_wasm) {
@@ -40,7 +40,7 @@ index e49fc28c0893d..5120334fbf373 100644
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -758,9 +772,7 @@ config("compiler") {
+@@ -749,9 +763,7 @@ config("compiler") {
    if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
@@ -51,7 +51,16 @@ index e49fc28c0893d..5120334fbf373 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -2294,6 +2306,9 @@ config("symbols") {
+@@ -1537,7 +1549,7 @@ config("default_warnings") {
+         cflags += [ "-Wno-deprecated-non-prototype" ]
+       }
+ 
+-      if (!is_nacl && !(is_chromeos ||
++      if (!is_wasm && !is_nacl && !(is_chromeos ||
+                         default_toolchain == "//build/toolchain/cros:target")) {
+         # TODO(https://crbug.com/1316298): Re-enable once test failure is figured out
+         cflags += [
+@@ -2307,6 +2319,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
@@ -62,7 +71,7 @@ index e49fc28c0893d..5120334fbf373 100644
      cflags = []
      if (is_mac && enable_dsyms) {
 diff --git a/build/toolchain/toolchain.gni b/build/toolchain/toolchain.gni
-index b2d0b44b102c6..eb6de8775dff7 100644
+index 86d9ff778c6fa..3b5acb0942190 100644
 --- a/build/toolchain/toolchain.gni
 +++ b/build/toolchain/toolchain.gni
 @@ -47,6 +47,9 @@ if (is_apple) {
@@ -77,7 +86,7 @@ index b2d0b44b102c6..eb6de8775dff7 100644
  }
 diff --git a/build/toolchain/wasm/BUILD.gn b/build/toolchain/wasm/BUILD.gn
 new file mode 100644
-index 0000000000000..fdc5120981de5
+index 0000000000000..3640396e71609
 --- /dev/null
 +++ b/build/toolchain/wasm/BUILD.gn
 @@ -0,0 +1,30 @@

@@ -17,7 +17,7 @@ This step needs to be only once.
 https://emscripten.org/docs/getting_started/downloads.html
 2. Install the known working version:
    ```sh
-   cd $EMSDK; ./emsdk install 3.1.1 && ./emsdk activate 3.1.1
+   cd $EMSDK; ./emsdk install 3.1.9 && ./emsdk activate 3.1.9
    ```
 3. Activate it via environment variables:
    ```sh
