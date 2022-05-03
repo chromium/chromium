@@ -95,7 +95,6 @@ enum class DeprecationIssueType {
   kSharedArrayBufferConstructedWithoutIsolation,
   kTextToSpeech_DisallowedByAutoplay,
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation,
-  kWebCodecsVideoFrameDefaultTimestamp,
   kXHRJSONEncodingDetection,
   kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload,
   kXRSupportsSession,

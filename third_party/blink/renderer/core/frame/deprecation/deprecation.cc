@@ -256,9 +256,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           feature,
           DeprecationIssueType::
               kV8SharedArrayBufferConstructedInExtensionWithoutIsolation);
-    case WebFeature::kWebCodecsVideoFrameDefaultTimestamp:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kWebCodecsVideoFrameDefaultTimestamp);
     case WebFeature::kXHRJSONEncodingDetection:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kXHRJSONEncodingDetection);

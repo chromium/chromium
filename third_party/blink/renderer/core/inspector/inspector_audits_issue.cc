@@ -646,10 +646,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           V8SharedArrayBufferConstructedInExtensionWithoutIsolation;
       break;
-    case DeprecationIssueType::kWebCodecsVideoFrameDefaultTimestamp:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          WebCodecsVideoFrameDefaultTimestamp;
-      break;
     case DeprecationIssueType::kXHRJSONEncodingDetection:
       type =
           protocol::Audits::DeprecationIssueTypeEnum::XHRJSONEncodingDetection;

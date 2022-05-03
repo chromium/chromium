@@ -218,7 +218,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsVideoTrackReader,
           WebFeature::kWebCodecsImageDecoder,
           WebFeature::kWebCodecsAudioEncoder,
-          WebFeature::kWebCodecsVideoFrameDefaultTimestamp,
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
           WebFeature::kOpenWebDatabaseInsecureContext,

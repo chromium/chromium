@@ -910,10 +910,6 @@ void VideoEncoder::CallOutputCallback(
     auto* svc_metadata = SvcOutputMetadata::Create();
     svc_metadata->setTemporalLayerId(output.temporal_id);
     metadata->setSvc(svc_metadata);
-
-    // TODO(https://crbug.com/1275024): Remove these lines after deprecating.
-    if (!base::FeatureList::IsEnabled(kRemoveWebCodecsSpecViolations))
-      metadata->setTemporalLayerId(output.temporal_id);
   }
 
   // TODO(https://crbug.com/1241448): All encoders should output color space.

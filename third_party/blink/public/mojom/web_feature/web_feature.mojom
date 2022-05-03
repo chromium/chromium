@@ -3384,7 +3384,7 @@ enum WebFeature {
   kWebAppManifestHasComments = 4067,
   kAutoExpandedDetailsForFindInPage = 4068,
   kAutoExpandedDetailsForScrollToTextFragment = 4069,
-  kWebCodecsVideoFrameDefaultTimestamp = 4070,
+  kOBSOLETE_WebCodecsVideoFrameDefaultTimestamp = 4070,
   kWebCodecsVideoFrameFromImage = 4071,
   kWebCodecsVideoFrameFromBuffer = 4072,
   kOpenWebDatabaseInsecureContext = 4073,

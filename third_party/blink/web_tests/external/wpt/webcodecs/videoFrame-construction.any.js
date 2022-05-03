@@ -44,6 +44,31 @@ test(t => {
   frame.close();
 }, 'Test we can construct a VideoFrame with a negative timestamp.');
 
+promise_test(async t => {
+  verifyTimestampRequiredToConstructFrame(makeImageBitmap(1, 1));
+}, 'Test that timestamp is required when constructing VideoFrame from ImageBitmap');
+
+promise_test(async t => {
+  verifyTimestampRequiredToConstructFrame(makeOffscreenCanvas(16, 16));
+}, 'Test that timestamp is required when constructing VideoFrame from OffscreenCanvas');
+
+promise_test(async t => {
+  let init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let i420Frame = new VideoFrame(data, init);
+  let validFrame = new VideoFrame(i420Frame);
+  validFrame.close();
+}, 'Test that timestamp is NOT required when constructing VideoFrame from another VideoFrame');
+
 test(t => {
   let image = makeImageBitmap(1, 1);
   let frame = new VideoFrame(image, {timestamp: 10});
@@ -678,3 +703,4 @@ test(t => {
       'plane format should not have alpha: ' + frame.format);
   frame.close();
 }, 'Test a VideoFrame constructed from canvas can drop the alpha channel.');
+

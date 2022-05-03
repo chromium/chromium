@@ -61,9 +61,6 @@
 
 namespace blink {
 
-const base::Feature kRemoveWebCodecsSpecViolations{
-    "RemoveWebCodecsSpecViolations", base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
@@ -455,7 +452,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                const V8CanvasImageSource* source,
                                const VideoFrameInit* init,
                                ExceptionState& exception_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   auto* image_source = ToCanvasImageSource(source, exception_state);
   if (!image_source) {
     // ToCanvasImageSource() will throw a source appropriate exception.
@@ -579,13 +575,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const auto timestamp = base::Microseconds(
       (init && init->hasTimestamp()) ? init->timestamp() : 0);
   if (!init || !init->hasTimestamp()) {
-    Deprecation::CountDeprecation(
-        execution_context, WebFeature::kWebCodecsVideoFrameDefaultTimestamp);
-
-    if (base::FeatureList::IsEnabled(kRemoveWebCodecsSpecViolations)) {
-      exception_state.ThrowTypeError("VideoFrameInit must provide timestamp");
-      return nullptr;
-    }
+    exception_state.ThrowTypeError("VideoFrameInit must provide timestamp");
+    return nullptr;
   }
 
   const auto paint_image = image->PaintImageForCurrentFrame();
