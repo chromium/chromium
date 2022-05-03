@@ -84,6 +84,16 @@ class DownloadUIModel {
 
 #if !BUILDFLAG(IS_ANDROID)
   struct BubbleUIInfo {
+    struct SubpageButton {
+      DownloadCommands::Command command;
+      std::u16string label;
+      bool is_prominent = false;
+
+      SubpageButton(DownloadCommands::Command command,
+                    std::u16string label,
+                    bool is_prominent);
+    };
+
     // has a progress bar and a cancel button.
     bool has_progress_bar = false;
     bool is_progress_bar_looping = false;
@@ -106,13 +116,8 @@ class DownloadUIModel {
     bool has_primary_button = false;
     DownloadCommands::Command primary_button_command;
 
-    // Label and commands for the two subpage buttons
-    bool has_first_button = false;
-    DownloadCommands::Command first_button_command;
-    std::u16string first_button_label;
-    bool has_second_button = false;
-    DownloadCommands::Command second_button_command;
-    std::u16string second_button_label;
+    // Subpage buttons
+    std::vector<SubpageButton> subpage_buttons;
 
     // The subpage exists if the summary exists.
     explicit BubbleUIInfo(const std::u16string& summary);
@@ -126,7 +131,8 @@ class DownloadUIModel {
     BubbleUIInfo& AddPrimaryButton(DownloadCommands::Command command);
     BubbleUIInfo& AddCheckbox(const std::u16string& label);
     BubbleUIInfo& AddSubpageButton(const std::u16string& label,
-                                   DownloadCommands::Command command);
+                                   DownloadCommands::Command command,
+                                   bool is_prominent);
     BubbleUIInfo& SetProgressBarLooping();
   };
 #endif

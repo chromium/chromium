@@ -692,6 +692,11 @@ DownloadUIModel::BubbleUIInfo::BubbleUIInfo(const std::u16string& summary)
     : has_subpage(true), warning_summary(summary) {}
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo(bool has_progress_bar)
     : has_progress_bar(has_progress_bar) {}
+DownloadUIModel::BubbleUIInfo::SubpageButton::SubpageButton(
+    DownloadCommands::Command command,
+    std::u16string label,
+    bool is_prominent)
+    : command(command), label(label), is_prominent(is_prominent) {}
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo() = default;
 DownloadUIModel::BubbleUIInfo::~BubbleUIInfo() = default;
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo(const BubbleUIInfo& rhs) = default;
@@ -716,16 +721,11 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddCheckbox(
 }
 DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddSubpageButton(
     const std::u16string& label,
-    DownloadCommands::Command command) {
-  if (!has_first_button) {
-    has_first_button = true;
-    first_button_label = label;
-    first_button_command = command;
-  } else {
-    has_second_button = true;
-    second_button_label = label;
-    second_button_command = command;
-  }
+    DownloadCommands::Command command,
+    bool is_prominent) {
+  // The subpage of the bubble supports at most 2 buttons.
+  DCHECK(subpage_buttons.size() <= 1);
+  subpage_buttons.emplace_back(command, label, is_prominent);
   return *this;
 }
 
@@ -815,10 +815,11 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
                            ui::kColorAlertMediumSeverity)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP, /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DownloadItem::MixedContentStatus::UNKNOWN:
     case download::DownloadItem::MixedContentStatus::SAFE:
     case download::DownloadItem::MixedContentStatus::VALIDATED:
@@ -828,7 +829,7 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
 
   switch (GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
-      if (IsExtensionDownload())
+      if (IsExtensionDownload()) {
         return DownloadUIModel::BubbleUIInfo(
                    l10n_util::GetStringFUTF16(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE,
@@ -837,11 +838,28 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
             .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-                DownloadCommands::Command::KEEP)
+                DownloadCommands::Command::KEEP,
+                /*is_prominent=*/false)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD);
-      [[fallthrough]];
+                DownloadCommands::Command::DISCARD,
+                /*is_prominent=*/true);
+      } else {
+        // TODO(crbug.com/1320025): Update the strings to match the UX mock.
+        return DownloadUIModel::BubbleUIInfo(
+                   l10n_util::GetStringUTF16(
+                       IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED))
+            .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
+            .AddPrimaryButton(DownloadCommands::Command::KEEP)
+            .AddSubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
+                DownloadCommands::Command::KEEP,
+                /*is_prominent=*/false)
+            .AddSubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+                DownloadCommands::Command::DISCARD,
+                /*is_prominent=*/false);
+      }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
       return DownloadUIModel::BubbleUIInfo(
@@ -854,10 +872,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS))
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -869,10 +889,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS))
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -880,10 +902,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
           .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -893,10 +917,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
           .AddPrimaryButton(DownloadCommands::Command::DISCARD)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -908,10 +934,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CHECKBOX_BYPASS))
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -919,7 +947,8 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
           .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
 
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool request_ap_verdicts = false;
@@ -937,10 +966,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
                              ui::kColorAlertMediumSeverity)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-                DownloadCommands::Command::KEEP)
+                DownloadCommands::Command::KEEP,
+                /*is_prominent=*/false)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD);
+                DownloadCommands::Command::DISCARD,
+                /*is_prominent=*/true);
       } else {
         return DownloadUIModel::BubbleUIInfo(
                    l10n_util::GetStringUTF16(
@@ -949,10 +980,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-                DownloadCommands::Command::KEEP)
+                DownloadCommands::Command::KEEP,
+                /*is_prominent=*/false)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD);
+                DownloadCommands::Command::DISCARD,
+                /*is_prominent=*/true);
       }
     }
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
@@ -962,10 +995,12 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP)
+              DownloadCommands::Command::KEEP,
+              /*is_prominent=*/false)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD);
+              DownloadCommands::Command::DISCARD,
+              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -979,9 +1014,11 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
                            ui::kColorAlertMediumSeverity)
           .AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
           .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN),
-                            DownloadCommands::Command::BYPASS_DEEP_SCANNING)
+                            DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+                            /*is_prominent=*/false)
           .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
-                            DownloadCommands::Command::DEEP_SCAN);
+                            DownloadCommands::Command::DEEP_SCAN,
+                            /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/true)
           .AddPrimaryButton(DownloadCommands::Command::BYPASS_DEEP_SCANNING)
