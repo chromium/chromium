@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 
+#include <algorithm>
+
 namespace arc {
 
 // static
