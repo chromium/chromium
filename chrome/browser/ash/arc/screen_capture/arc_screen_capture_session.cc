@@ -21,6 +21,8 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -57,18 +59,13 @@ scoped_refptr<viz::ContextProvider> GetContextProvider() {
 }  // namespace
 
 struct ArcScreenCaptureSession::PendingBuffer {
-  PendingBuffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
-                SetOutputBufferCallback callback,
+  PendingBuffer(SetOutputBufferCallback callback,
                 GLuint texture,
-                GLuint image_id)
-      : gpu_buffer_(std::move(gpu_buffer)),
-        callback_(std::move(callback)),
-        texture_(texture),
-        image_id_(image_id) {}
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer_;
+                const gpu::Mailbox& mailbox)
+      : callback_(std::move(callback)), texture_(texture), mailbox_(mailbox) {}
   SetOutputBufferCallback callback_;
   const GLuint texture_;
-  const GLuint image_id_;
+  const gpu::Mailbox mailbox_;
 };
 
 struct ArcScreenCaptureSession::DesktopTexture {
@@ -213,9 +210,9 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     return;
   }
   gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
-  if (!gl) {
-    LOG(ERROR) << "Unable to get the GL context";
-    std::move(callback).Run();
+  auto* sii = GetContextProvider()->SharedImageInterface();
+  if (!gl || !sii) {
+    LOG(ERROR) << "Unable to get the GL context or SharedImageInterface";
     return;
   }
 
@@ -244,22 +241,23 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     return;
   }
 
-  GLuint texture;
-  gl->GenTextures(1, &texture);
-  GLuint id = gl->CreateImageCHROMIUM(gpu_memory_buffer->AsClientBuffer(),
-                                      size_.width(), size_.height(), GL_RGB);
-  if (!id) {
-    LOG(ERROR) << "Failed to allocate backing surface from GpuMemoryBuffer";
-    gl->DeleteTextures(1, &texture);
-    std::move(callback).Run();
-    return;
-  }
+  auto* gpu_memory_buffer_manager =
+      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
+  gpu::Mailbox mailbox = sii->CreateSharedImage(
+      gpu_memory_buffer.get(), gpu_memory_buffer_manager, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_GLES2 |
+          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT);
+  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+  GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  gl->BeginSharedImageAccessDirectCHROMIUM(
+      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+
   gl->BindTexture(GL_TEXTURE_2D, texture);
-  gl->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, id);
 
   std::unique_ptr<PendingBuffer> pending_buffer =
-      std::make_unique<PendingBuffer>(std::move(gpu_memory_buffer),
-                                      std::move(callback), texture, id);
+      std::make_unique<PendingBuffer>(std::move(callback), texture, mailbox);
   if (texture_queue_.empty()) {
     // Put our GPU buffer into a queue so it can be used on the next callback
     // where we get a desktop texture.
@@ -280,8 +278,9 @@ void ArcScreenCaptureSession::QueryCompleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
-  if (!gl) {
-    LOG(ERROR) << "Unable to get the GL context";
+  auto* sii = GetContextProvider()->SharedImageInterface();
+  if (!gl || !sii) {
+    LOG(ERROR) << "Unable to get the GL context or SharedImageInterface";
     return;
   }
 
@@ -294,13 +293,12 @@ void ArcScreenCaptureSession::QueryCompleted(
   // Notify ARC++ that the buffer is ready.
   std::move(pending_buffer->callback_).Run();
 
-  // Return resources for ARC++ buffer. The GpuMemoryBuffer will go out of
-  // scope and be destroyed too.
-  gl->BindTexture(GL_TEXTURE_2D, pending_buffer->texture_);
-  gl->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, pending_buffer->image_id_);
+  // Return resources for ARC++ buffer.
+  gl->EndSharedImageAccessDirectCHROMIUM(pending_buffer->texture_);
   gl->DeleteTextures(1, &pending_buffer->texture_);
-  gl->DestroyImageCHROMIUM(pending_buffer->image_id_);
   gl->DeleteQueriesEXT(1, &query_id);
+
+  sii->DestroySharedImage(gpu::SyncToken(), pending_buffer->mailbox_);
 }
 
 void ArcScreenCaptureSession::OnDesktopCaptured(
@@ -327,11 +325,6 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
       result->TakeTextureOwnership();
 
   DCHECK_EQ(1u, release_callbacks.size());
-
-  // The returned texture will later be bound to GL_TEXTURE_2D target, verify it
-  // here:
-  DCHECK_EQ(result->GetTextureResult()->planes[0].texture_target,
-            static_cast<uint32_t>(GL_TEXTURE_2D));
 
   std::unique_ptr<DesktopTexture> desktop_texture =
       std::make_unique<DesktopTexture>(src_texture, result->size(),
@@ -393,6 +386,10 @@ void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
     LOG(ERROR) << "Unable to find layer for the desktop window";
     return;
   }
+
+  // TODO(kylechar): Ideally this would add `BlitRequest` to `request` so
+  // readback happens directly into the final texture rather than making
+  // an extra copy in CopyDesktopTextureToGpuBuffer().
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
