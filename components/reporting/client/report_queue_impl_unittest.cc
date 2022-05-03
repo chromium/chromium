@@ -322,11 +322,32 @@ TEST_F(ReportQueueImplTest, EnqueueRecordWithInvalidPriority) {
 
 TEST_F(ReportQueueImplTest, FlushSpeculativeReportQueue) {
   test::TestEvent<Status> event;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-  speculative_report_queue->Enqueue(kTestMessage, priority_, event.cb());
 
+  // Set up speculative report queue
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(*test_storage_module(), Flush(Eq(priority_), _))
+      .WillOnce(
+          WithArg<1>(Invoke([](base::OnceCallback<void(Status)> callback) {
+            std::move(callback).Run(Status::StatusOK());
+          })));
+
+  speculative_report_queue->Flush(priority_, event.cb());
   const auto result = event.result();
   ASSERT_OK(result);
+}
+
+TEST_F(ReportQueueImplTest, FlushUninitializedSpeculativeReportQueue) {
+  test::TestEvent<Status> event;
+
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Flush(priority_, event.cb());
+
+  const auto result = event.result();
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::FAILED_PRECONDITION);
 }
 
 }  // namespace
