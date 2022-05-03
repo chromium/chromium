@@ -113,7 +113,14 @@ def compile_module(module, sources, settings, extras, tmpdir):
         '-enable-cxx-interop',
     ])
 
+  # Allow an alternative Swift toolchain (such as ToT or a newer version)
+  # by utilizing `xcrun`. If an alternative is not present in either
+  # /Library/Developer/Toolchains or ~/Library/Developer/Toolchains, this
+  # will automatically fall back to Xcode's default.
   process = subprocess.Popen([
+      'xcrun',
+      '--toolchain',
+      'swift',
       'swiftc',
       '-parse-as-library',
       '-module-name',

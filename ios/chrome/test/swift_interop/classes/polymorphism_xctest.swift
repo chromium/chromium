@@ -8,22 +8,26 @@ import XCTest
 class PolymorphismTest: XCTestCase {
 
   func testBasicInheritance() throws {
-    var rect = Rectangle(10, 10)
-    XCTAssertEqual(rect.Area(), 100)
-    XCTAssertEqual(rect.NumberOfSides(), 4)
+    #if swift(<5.7)
+      var rect = Rectangle(10, 10)
+      XCTAssertEqual(rect.Area(), 100)
+      XCTAssertEqual(rect.NumberOfSides(), 4)
 
-    var square = Square(5)
-    XCTAssertEqual(square.Area(), 25)
-    XCTAssertEqual(square.NumberOfSides(), 4)
+      var square = Square(5)
+      XCTAssertEqual(square.Area(), 25)
+      XCTAssertEqual(square.NumberOfSides(), 4)
 
-    var triangle = Triangle(10, 10)
-    XCTAssertEqual(triangle.Area(), 50)
-    XCTAssertEqual(triangle.NumberOfSides(), 3)
+      var triangle = Triangle(10, 10)
+      XCTAssertEqual(triangle.Area(), 50)
+      XCTAssertEqual(triangle.NumberOfSides(), 3)
+    #endif
   }
 
   func testInheritedMethods_noCompile() throws {
     // Test calling a public method defined in the public base class.
     // DOESN'T COMPILE: value of type 'Rectangle' has no member 'HasSides'
+    // CRASHES in 5.7-dev.
+    // var rect = Rectangle(10, 10)
     // XCTAssertTrue(rect.HasSides())
   }
 

@@ -8,15 +8,21 @@ import XCTest
 class ObjectPassingTest: XCTestCase {
 
   func testReferenceParameters() throws {
-    var a = Object(10)
-    var b = Object(20)
     #if swift(>=5.6)
+      let a = Object(10)
+      let b = Object(20)
       let passer = ObjectPassing()
     #else
+      var a = Object(10)
+      var b = Object(20)
       var passer = ObjectPassing()
     #endif
     XCTAssertEqual(a.GetValue(), 10)
-    XCTAssertEqual(passer.AddReferences(&a, &b), 30)
+    #if swift(>=5.7)
+      XCTAssertEqual(passer.AddReferences(a, b), 30)
+    #else
+      XCTAssertEqual(passer.AddReferences(&a, &b), 30)
+    #endif
   }
 
   func testPointerParameters() throws {
@@ -45,6 +51,7 @@ class ObjectPassingTest: XCTestCase {
 
   // Note: if this method returns `Int` instead of `Int32` the compiler
   // will crash (filed as https://github.com/apple/swift/issues/58458).
+  // This has been fixed in ToT.
   // Note: prior to Swift 5.6, calling GetValue() (which is const) on these objects
   // results in a compiler error about calling immutable methods on a `let` object.
   // Omit this test on earlier Swift versions.
