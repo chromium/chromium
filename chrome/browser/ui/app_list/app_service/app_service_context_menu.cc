@@ -430,7 +430,8 @@ void AppServiceContextMenu::OnGetMenuModel(
             color_id));
   }
 
-  if (item_context_ == ash::AppListItemContext::kRecentApps) {
+  if (item_context_ == ash::AppListItemContext::kRecentApps &&
+      ash::features::IsLauncherHideContinueSectionEnabled()) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model->AddItemWithIcon(
         ash::HIDE_CONTINUE_SECTION,

@@ -361,6 +361,8 @@ extern const base::Feature kLauncherFolderRenameKeepsSortOrder;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherDismissButtonsOnSortNudgeAndToast;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kLauncherHideContinueSection;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherNudgeShortInterval;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherNudgeSessionReset;
@@ -663,6 +665,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherFolderRenameKeepsSortOrderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherHideContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherPulsingBlocksRefreshEnabled();

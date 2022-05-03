@@ -373,8 +373,10 @@ TEST_F(AppContextMenuTest, ChromeApp) {
 }
 
 TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kProductivityLauncher};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::features::kProductivityLauncher,
+                                 ash::features::kLauncherHideContinueSection},
+                                {});
 
   scoped_refptr<extensions::Extension> app = MakeChromeApp();
   service_->AddExtension(app.get());
