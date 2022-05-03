@@ -316,6 +316,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   DCHECK(IsStartSurfaceEnabled());
   if (self.showMostRecentTabStartSurfaceTile) {
     self.showMostRecentTabStartSurfaceTile = NO;
+    self.returnToRecentTabItem = nil;
     if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
       [self.consumer hideReturnToRecentTabTile];
     } else {
