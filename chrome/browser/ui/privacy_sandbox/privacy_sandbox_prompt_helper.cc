@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog_helper.h"
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog.h"
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -35,14 +35,14 @@ PrivacySandboxService::DialogType GetRequiredDialogType(Profile* profile) {
 
 }  // namespace
 
-PrivacySandboxDialogHelper::~PrivacySandboxDialogHelper() = default;
+PrivacySandboxPromptHelper::~PrivacySandboxPromptHelper() = default;
 
-PrivacySandboxDialogHelper::PrivacySandboxDialogHelper(
+PrivacySandboxPromptHelper::PrivacySandboxPromptHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      content::WebContentsUserData<PrivacySandboxDialogHelper>(*web_contents) {}
+      content::WebContentsUserData<PrivacySandboxPromptHelper>(*web_contents) {}
 
-void PrivacySandboxDialogHelper::DidFinishNavigation(
+void PrivacySandboxPromptHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!ProfileRequiresDialog(profile()))
     return;
@@ -89,17 +89,17 @@ void PrivacySandboxDialogHelper::DidFinishNavigation(
       browser->tab_strip_model()->GetIndexOfWebContents(
           navigation_handle->GetWebContents()));
 
-  ShowPrivacySandboxDialog(browser, GetRequiredDialogType(profile()));
+  ShowPrivacySandboxPrompt(browser, GetRequiredDialogType(profile()));
 }
 
 // static
-bool PrivacySandboxDialogHelper::ProfileRequiresDialog(Profile* profile) {
+bool PrivacySandboxPromptHelper::ProfileRequiresDialog(Profile* profile) {
   return GetRequiredDialogType(profile) !=
          PrivacySandboxService::DialogType::kNone;
 }
 
-Profile* PrivacySandboxDialogHelper::profile() {
+Profile* PrivacySandboxPromptHelper::profile() {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrivacySandboxDialogHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrivacySandboxPromptHelper);

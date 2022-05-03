@@ -51,6 +51,8 @@ class PrivacySandboxService : public KeyedService,
  public:
   // Possible types of Privacy Sandbox dialogs that may be shown to the user.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  // TODO(crbug.com/1321587): Rename to PromptType as the UI can be presented as
+  // a bubble, a dialog or a bottomsheet.
   enum class DialogType {
     kNone = 0,
     kNotice = 1,
@@ -61,6 +63,8 @@ class PrivacySandboxService : public KeyedService,
   // An exhaustive list of actions related to showing & interacting with the
   // dialog. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  // TODO(crbug.com/1321587): Rename to PromptAction as the UI can be presented
+  // as a bubble, a dialog or a bottomsheet.
   enum class DialogAction {
     // Notice Interactions:
     kNoticeShown = 0,
