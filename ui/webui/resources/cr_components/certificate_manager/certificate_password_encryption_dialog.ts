@@ -12,12 +12,13 @@ import '../../cr_elements/cr_input/cr_input.m.js';
 import '../../cr_elements/shared_vars_css.m.js';
 import './certificate_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
+import {getTemplate} from './certificate_password_encryption_dialog.html.js';
 import {CertificatesBrowserProxyImpl} from './certificates_browser_proxy.js';
 
 export interface CertificatePasswordEncryptionDialogElement {
@@ -37,7 +38,7 @@ export class CertificatePasswordEncryptionDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

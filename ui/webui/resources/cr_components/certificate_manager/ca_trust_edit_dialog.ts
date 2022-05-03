@@ -15,13 +15,14 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './certificate_shared_css.js';
 
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrCheckboxElement} from '../../cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
+import {getTemplate} from './ca_trust_edit_dialog.html.js';
 import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
 export interface CaTrustEditDialogElement {
@@ -43,7 +44,7 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

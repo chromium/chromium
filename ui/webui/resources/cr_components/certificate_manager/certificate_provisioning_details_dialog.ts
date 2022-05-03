@@ -10,12 +10,13 @@ import '../../cr_elements/cr_expand_button/cr_expand_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import {getTemplate} from './certificate_provisioning_details_dialog.html.js';
 
 export interface CertificateProvisioningDetailsDialogElement {
   $: {
@@ -34,7 +35,7 @@ export class CertificateProvisioningDetailsDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

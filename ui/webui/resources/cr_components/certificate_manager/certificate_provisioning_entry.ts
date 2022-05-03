@@ -12,7 +12,7 @@ import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -20,6 +20,7 @@ import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import {getTemplate} from './certificate_provisioning_entry.html.js';
 
 export interface CertificateProvisioningEntryElement {
   $: {
@@ -37,7 +38,7 @@ export class CertificateProvisioningEntryElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -5,6 +5,7 @@
 import("//crypto/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("certificate_manager.gni")
@@ -19,7 +20,7 @@ ts_library("build_ts") {
   out_dir = preprocess_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_web_component_files
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   deps = [
@@ -32,24 +33,31 @@ ts_library("build_ts") {
   ]
 }
 
-html_to_js("web_components") {
+html_to_js("css_wrapper_files") {
   visibility = [ ":preprocess_generated" ]
-  js_files = web_component_files
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 preprocess_if_expr("preprocess_src") {
   visibility = [ ":build_ts" ]
   in_folder = "."
   out_folder = preprocess_folder_tmp
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
   visibility = [ ":build_ts" ]
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder_tmp
-  in_files = web_component_files
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
 generate_grd("build_grdp") {

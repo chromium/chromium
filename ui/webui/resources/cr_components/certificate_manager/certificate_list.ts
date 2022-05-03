@@ -11,12 +11,13 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_entry.js';
 import './certificate_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertNotReached} from '../../js/assert_ts.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
+import {getTemplate} from './certificate_list.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
 import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
@@ -37,7 +38,7 @@ export class CertificateListElement extends CertificateListElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

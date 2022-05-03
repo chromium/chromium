@@ -16,15 +16,17 @@ import './certificate_password_encryption_dialog.js';
 import './certificates_error_dialog.js';
 // <if expr="chromeos_ash">
 import './certificate_provisioning_list.js';
+
 // </if>
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 
+import {getTemplate} from './certificate_manager.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
 import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
@@ -34,6 +36,10 @@ const CertificateManagerElementBase =
 export class CertificateManagerElement extends CertificateManagerElementBase {
   static get is() {
     return 'certificate-manager';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -270,10 +276,6 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
               ]),
       loadTimeData.getString('certificateManagerOthers'),
     ];
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
