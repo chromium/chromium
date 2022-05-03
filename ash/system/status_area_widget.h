@@ -228,7 +228,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // current conditions.
   CollapseState CalculateCollapseState() const;
 
-  StatusAreaWidgetDelegate* status_area_widget_delegate_;
+  StatusAreaWidgetDelegate* const status_area_widget_delegate_;
 
   StatusAreaOverflowButtonTray* overflow_button_tray_ = nullptr;
   OverviewButtonTray* overview_button_tray_ = nullptr;
