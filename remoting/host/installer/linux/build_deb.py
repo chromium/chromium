@@ -11,16 +11,8 @@ import sys
 def main():
   this_dir = os.path.dirname(os.path.abspath(__file__))
   build_deb_script = os.path.join(this_dir, 'build-deb.sh')
-  if ("-remoting_use_wayland" in sys.argv):
-    proc_env = os.environ.copy()
-    proc_env["REMOTING_USE_WAYLAND"] = "true"
-    # This is expected to be the last argument and is not forwarded to the shell
-    # script.
-    proc = subprocess.Popen([build_deb_script] + sys.argv[1:-1],
-                            stdout=subprocess.PIPE, env=proc_env)
-  else:
-    proc = subprocess.Popen([build_deb_script] + sys.argv[1:],
-                            stdout=subprocess.PIPE)
+  proc = subprocess.Popen([build_deb_script] + sys.argv[1:],
+                          stdout=subprocess.PIPE)
   out, _ = proc.communicate()
   sys.stdout.write(out.decode('utf8').strip())
   return proc.returncode
