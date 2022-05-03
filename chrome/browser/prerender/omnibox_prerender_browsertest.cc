@@ -167,10 +167,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 }
 
 // Verifies that prerendering functions in document are properly exposed.
-// TODO(https://crbug.com/1286374): test is flaky.
 IN_PROC_BROWSER_TEST_F(
     OmniboxPrerenderBrowserTest,
-    DISABLED_PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
+    PrerenderFunctionsProperlyExportedWhenInitiatedByOmnibox) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
@@ -180,6 +179,8 @@ IN_PROC_BROWSER_TEST_F(
       0,
       EvalJs(GetActiveWebContents(),
              "performance.getEntriesByType('navigation')[0].activationStart"));
+  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
+                         "'onprerenderingchange' in document"));
 
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/prerender/onprerendering_check.html");
@@ -190,8 +191,15 @@ IN_PROC_BROWSER_TEST_F(
   int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
   content::RenderFrameHost* prerender_frame_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
   EXPECT_EQ(true,
             EvalJs(prerender_frame_host, "document.prerendering === true"));
+  EXPECT_EQ(
+      0,
+      EvalJs(prerender_frame_host,
+             "performance.getEntriesByType('navigation')[0].activationStart"));
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, "'onprerenderingchange' in document"));
 
   // Simulate a browser-initiated navigation.
   content::test::PrerenderHostObserver prerender_observer(
@@ -204,13 +212,15 @@ IN_PROC_BROWSER_TEST_F(
       /*is_renderer_initiated=*/false));
   prerender_observer.WaitForActivation();
 
-  EXPECT_EQ(true, EvalJs(prerender_frame_host,
-                         "onprerenderingchange_observed_promise"));
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, "document.prerendering === false"));
   EXPECT_LT(
       0.0,
       EvalJs(prerender_frame_host,
              "performance.getEntriesByType('navigation')[0].activationStart")
           .ExtractDouble());
+  EXPECT_EQ(true, EvalJs(prerender_frame_host,
+                         "onprerenderingchange_observed_promise"));
 }
 
 // Verifies that the exportation of prerendering functions in the document is
