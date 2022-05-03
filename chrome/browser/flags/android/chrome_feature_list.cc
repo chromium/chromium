@@ -189,6 +189,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
     &kCCTResourcePrefetch,
+    &kCCTToolbarCustomizations,
     &kDontAutoHideBrowserControls,
     &kChromeNewDownloadTab,
     &kChromeShareLongScreenshot,
@@ -501,6 +502,9 @@ const base::Feature kCCTResizableForThirdParties{
 
 const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTToolbarCustomizations{"CCTToolbarCustomizations",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDontAutoHideBrowserControls{
     "DontAutoHideBrowserControls", base::FEATURE_DISABLED_BY_DEFAULT};

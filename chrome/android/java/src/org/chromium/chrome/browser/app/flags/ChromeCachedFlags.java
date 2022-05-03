@@ -79,6 +79,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
+                add(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);
                 add(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);

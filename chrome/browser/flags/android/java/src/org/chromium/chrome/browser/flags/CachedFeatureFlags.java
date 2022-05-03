@@ -97,6 +97,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
+                    .put(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS, true)
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)

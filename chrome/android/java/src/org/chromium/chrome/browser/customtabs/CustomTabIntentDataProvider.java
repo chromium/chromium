@@ -860,6 +860,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @CloseButtonPosition int getCloseButtonPosition() {
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS)) {
+            return CLOSE_BUTTON_POSITION_DEFAULT;
+        }
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
