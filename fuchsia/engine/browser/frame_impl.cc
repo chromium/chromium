@@ -1264,11 +1264,18 @@ void FrameImpl::RequestMediaAccessPermission(
     return;
   }
 
+  if (url::Origin::Create(request.security_origin) !=
+      render_frame_host->GetLastCommittedOrigin()) {
+    std::move(callback).Run(
+        blink::MediaStreamDevices(),
+        blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
+        nullptr);
+    return;
+  }
+
   content::PermissionController* permission_controller =
       web_contents_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
-  CHECK_EQ(url::Origin::Create(request.security_origin),
-           render_frame_host->GetLastCommittedOrigin());
 
   permission_controller->RequestPermissionsFromCurrentDocument(
       permissions, render_frame_host, request.user_gesture,
@@ -1293,11 +1300,15 @@ bool FrameImpl::CheckMediaAccessPermission(
       return false;
   }
 
+  // TODO(crbug.com/1321100): Remove `security_origin`.
+  if (url::Origin::Create(security_origin) !=
+      render_frame_host->GetLastCommittedOrigin()) {
+    return false;
+  }
+
   content::PermissionController* permission_controller =
       web_contents_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
-  CHECK_EQ(url::Origin::Create(security_origin),
-           render_frame_host->GetLastCommittedOrigin());
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
              permission, render_frame_host) ==

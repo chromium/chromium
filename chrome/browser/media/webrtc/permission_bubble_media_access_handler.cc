@@ -182,8 +182,10 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
           ? blink::PermissionType::AUDIO_CAPTURE
           : blink::PermissionType::VIDEO_CAPTURE;
 
-  CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
-           security_origin);
+  // TODO(crbug.com/1321100): Remove `security_origin`.
+  if (render_frame_host->GetLastCommittedOrigin().GetURL() != security_origin) {
+    return false;
+  }
   // It is OK to ignore `security_origin` because it will be calculated from
   // `render_frame_host` and we always ignore `requesting_origin` for
   // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.

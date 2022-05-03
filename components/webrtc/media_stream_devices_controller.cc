@@ -73,6 +73,15 @@ void MediaStreamDevicesController::RequestPermissions(
         {});
     return;
   }
+
+  if (rfh->GetLastCommittedOrigin().GetURL() != request.security_origin) {
+    std::move(callback).Run(
+        MediaStreamDevices(),
+        blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN, false,
+        {}, {});
+    return;
+  }
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   std::unique_ptr<MediaStreamDevicesController> controller(
@@ -86,8 +95,6 @@ void MediaStreamDevicesController::RequestPermissions(
           web_contents->GetBrowserContext());
   bool will_prompt_for_audio = false;
   bool will_prompt_for_video = false;
-
-  CHECK_EQ(rfh->GetLastCommittedOrigin().GetURL(), request.security_origin);
 
   if (controller->ShouldRequestAudio()) {
     permissions::PermissionResult permission_status =
@@ -494,7 +501,9 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
   // PermissionManager::RequestPermissions returned a denial reason.
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_.render_process_id, request_.render_frame_id);
-  CHECK_EQ(rfh->GetLastCommittedOrigin().GetURL(), request_.security_origin);
+  if (rfh->GetLastCommittedOrigin().GetURL() != request_.security_origin) {
+    return false;
+  }
   permissions::PermissionResult result =
       permissions::PermissionsClient::Get()
           ->GetPermissionManager(web_contents_->GetBrowserContext())

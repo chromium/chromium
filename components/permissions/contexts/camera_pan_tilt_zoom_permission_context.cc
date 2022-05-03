@@ -75,8 +75,11 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
       content::RenderFrameHost::FromID(id.render_process_id(),
                                        id.render_frame_id());
 
-  CHECK_EQ(requesting_frame_origin,
-           PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host));
+  if (requesting_frame_origin !=
+      render_frame_host->GetLastCommittedOrigin().GetURL()) {
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
   web_contents->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(

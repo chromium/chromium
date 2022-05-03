@@ -768,8 +768,13 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
     return;
   }
 
-  CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
-           requesting_origin);
+  if (render_frame_host->GetLastCommittedOrigin().GetURL() !=
+      requesting_origin) {
+    SubscribeEndWithError(
+        std::move(callback),
+        blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
+    return;
+  }
 
   // It is OK to ignore `requesting_origin` because it will be calculated from
   // `render_frame_host` and we always use `requesting_origin` for
