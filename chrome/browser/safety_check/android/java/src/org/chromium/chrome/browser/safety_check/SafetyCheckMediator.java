@@ -544,8 +544,9 @@ class SafetyCheckMediator
                     PasswordCheckFactory.getOrCreate(mSettingsLauncher)
                             .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                 } else {
-                    PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                            mPasswordCheckupHelper, SyncService.get());
+                    PasswordManagerHelper.showPasswordCheckup(p.getContext(),
+                            PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupHelper,
+                            SyncService.get(), mModalDialogManagerSupplier);
                 }
                 return true;
             };

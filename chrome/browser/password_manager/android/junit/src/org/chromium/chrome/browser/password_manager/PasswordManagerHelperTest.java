@@ -265,8 +265,9 @@ public class PasswordManagerHelperTest {
     public void testLaunchesPasswordCheckupSync() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
 
         verify(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
@@ -278,8 +279,9 @@ public class PasswordManagerHelperTest {
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testLaunchesPasswordCheckupForLocal() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
 
         verify(mPasswordCheckupClientHelperMock)
                 .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
@@ -291,8 +293,9 @@ public class PasswordManagerHelperTest {
     public void testPasswordCheckupIntentCalledIfSuccess() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
         verify(mPendingIntentMock).send();
     }
 
@@ -302,8 +305,9 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
 
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM, 0));
@@ -324,8 +328,9 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForPasswordCheckup(CredentialManagerError.API_ERROR);
 
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM,
@@ -348,8 +353,9 @@ public class PasswordManagerHelperTest {
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
         doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
-        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM, 0));

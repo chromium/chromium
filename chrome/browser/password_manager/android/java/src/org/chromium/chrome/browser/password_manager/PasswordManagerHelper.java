@@ -91,8 +91,9 @@ public class PasswordManagerHelper {
                 context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
     }
 
-    public static void showPasswordCheckup(@PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, SyncService syncService) {
+    public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
+            PasswordCheckupClientHelper checkupClient, SyncService syncService,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         assert checkupClient != null;
         if (!usesUnifiedPasswordManagerUI()) return;
 
