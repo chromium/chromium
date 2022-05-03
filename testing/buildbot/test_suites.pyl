@@ -5445,6 +5445,36 @@
       },
     },
 
+    'webview_trichrome_64_cts_tests_gtest': {
+      'webview_trichrome_64_cts_tests': {
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': '7HRNj8Yv_CSQiyCoK8Y4Ld-h1virCHVES9Ed18Z75LkC',
+            }
+          ]
+        },
+      },
+    },
+
+    'webview_trichrome_cts_tests_gtest': {
+      'webview_trichrome_cts_tests': {
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': '7HRNj8Yv_CSQiyCoK8Y4Ld-h1virCHVES9Ed18Z75LkC',
+            }
+          ]
+        },
+      },
+    },
+
     'webview_ui_instrumentation_tests': {
       'webview_ui_test_app_test_apk': {},
     },
@@ -5661,7 +5691,7 @@
       'system_webview_shell_instrumentation_tests', # Not an experimental test
       'weblayer_android_gtests',
       'weblayer_gtests',
-      'webview_cts_tests_gtest',
+      'webview_trichrome_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 
@@ -5680,7 +5710,7 @@
       'system_webview_shell_instrumentation_tests', # Not an experimental test
       'weblayer_android_gtests',
       'weblayer_gtests',
-      'webview_64_cts_tests_gtest',
+      'webview_trichrome_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 

@@ -2058,6 +2058,38 @@
     "script": "//android_webview/tools/run_cts.py",
     "type": "script",
   },
+  "webview_trichrome_cts_tests": {
+    "args": [
+      "--skip-expected-failures",
+      "--additional-apk",
+      "apks/TrichromeLibrary.apk",
+      "--use-webview-provider",
+      "apks/TrichromeWebView.apk",
+      "--apk-under-test",
+      "apks/TrichromeWebView.apk",
+      "--use-apk-under-test-flags-file",
+      "-v",
+    ],
+    "label": "//android_webview/test:webview_trichrome_cts_tests",
+    "script": "//android_webview/tools/run_cts.py",
+    "type": "script",
+  },
+  "webview_trichrome_64_cts_tests": {
+    "args": [
+      "--skip-expected-failures",
+      "--additional-apk",
+      "apks/TrichromeLibrary64.apk",
+      "--use-webview-provider",
+      "apks/TrichromeWebView64.apk",
+      "--apk-under-test",
+      "apks/TrichromeWebView64.apk",
+      "--use-apk-under-test-flags-file",
+      "-v",
+    ],
+    "label": "//android_webview/test:webview_trichrome_64_cts_tests",
+    "script": "//android_webview/tools/run_cts.py",
+    "type": "script",
+  },
   "webview_64_cts_tests": {
     "args": [
       "--skip-expected-failures",

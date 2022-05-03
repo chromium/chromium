@@ -28,10 +28,24 @@ python_library("webview_cts_tests") {
   data = [ "//android_webview/tools/cts_config/" ]
 }
 
+python_library("webview_trichrome_cts_tests") {
+  pydeps_file = "//android_webview/tools/run_cts.pydeps"
+  deps = [ "//android_webview:trichrome_webview_apk" ]
+  data_deps = [ "//build/android:test_runner_py" ]
+  data = [ "//android_webview/tools/cts_config/" ]
+}
+
 if (android_64bit_target_cpu) {
   python_library("webview_64_cts_tests") {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
     deps = [ "//android_webview:system_webview_64_apk" ]
+    data_deps = [ "//build/android:test_runner_py" ]
+    data = [ "//android_webview/tools/cts_config/" ]
+  }
+
+  python_library("webview_trichrome_64_cts_tests") {
+    pydeps_file = "//android_webview/tools/run_cts.pydeps"
+    deps = [ "//android_webview:trichrome_webview_64_apk" ]
     data_deps = [ "//build/android:test_runner_py" ]
     data = [ "//android_webview/tools/cts_config/" ]
   }

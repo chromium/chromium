@@ -1150,7 +1150,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_cts_tests_gtest',
+          'gtest_tests': 'webview_trichrome_cts_tests_gtest',
         },
         'use_swarming': True,
       },
@@ -1164,7 +1164,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_cts_tests_gtest',
+          'gtest_tests': 'webview_trichrome_cts_tests_gtest',
         },
         'use_swarming': True,
       },
@@ -1191,7 +1191,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_64_cts_tests_gtest',
+          'gtest_tests': 'webview_trichrome_64_cts_tests_gtest',
         }
       },
       'android-annotator-rel': {

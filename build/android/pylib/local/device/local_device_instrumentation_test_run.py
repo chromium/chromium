@@ -223,28 +223,6 @@ class LocalDeviceInstrumentationTestRun(
         # concurrent adb with this option specified, this should be safe.
         steps.insert(0, remove_packages)
 
-      if self._test_instance.use_webview_provider:
-        @trace_event.traced
-        def use_webview_provider(dev):
-          # We need the context manager to be applied before modifying any
-          # shared preference files in case the replacement APK needs to be
-          # set up, and it needs to be applied while the test is running.
-          # Thus, it needs to be applied early during setup, but must still be
-          # applied during _RunTest, which isn't possible using 'with' without
-          # applying the context manager up in test_runner. Instead, we
-          # manually invoke its __enter__ and __exit__ methods in setup and
-          # teardown.
-          webview_context = webview_app.UseWebViewProvider(
-              dev, self._test_instance.use_webview_provider)
-          # Pylint is not smart enough to realize that this field has
-          # an __enter__ method, and will complain loudly.
-          # pylint: disable=no-member
-          webview_context.__enter__()
-          # pylint: enable=no-member
-          self._context_managers[str(dev)].append(webview_context)
-
-        steps.append(use_webview_provider)
-
       def install_helper(apk,
                          modules=None,
                          fake_modules=None,
@@ -291,6 +269,32 @@ class LocalDeviceInstrumentationTestRun(
       for apk in (self._test_instance.additional_apks +
                   [self._test_instance.test_apk]):
         self._installed_packages.append(apk_helper.GetPackageName(apk))
+
+      if self._test_instance.use_webview_provider:
+
+        @trace_event.traced
+        def use_webview_provider(dev):
+          # We need the context manager to be applied before modifying any
+          # shared preference files in case the replacement APK needs to be
+          # set up, and it needs to be applied while the test is running.
+          # Thus, it needs to be applied early during setup, but must still be
+          # applied during _RunTest, which isn't possible using 'with' without
+          # applying the context manager up in test_runner. Instead, we
+          # manually invoke its __enter__ and __exit__ methods in setup and
+          # teardown.
+          # We do this after installing additional APKs so that
+          # we can install trichrome library before installing the webview
+          # provider
+          webview_context = webview_app.UseWebViewProvider(
+              dev, self._test_instance.use_webview_provider)
+          # Pylint is not smart enough to realize that this field has
+          # an __enter__ method, and will complain loudly.
+          # pylint: disable=no-member
+          webview_context.__enter__()
+          # pylint: enable=no-member
+          self._context_managers[str(dev)].append(webview_context)
+
+        steps.append(use_webview_provider)
 
       # The apk under test needs to be installed last since installing other
       # apks after will unintentionally clear the fake module directory.
