@@ -57,8 +57,10 @@ using BTITestFunction = int64_t (*)(int64_t);
 TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
   auto page_allocator = gin::PageAllocator();
 
-  auto const memory_size = base::PageAllocationGranularity();
-  auto const memory_alignment = base::PageAllocationGranularity();
+  auto const memory_size =
+      partition_alloc::internal::PageAllocationGranularity();
+  auto const memory_alignment =
+      partition_alloc::internal::PageAllocationGranularity();
 
   // Next, map some read-write memory and copy some test helper functions there.
   char* const buffer = reinterpret_cast<char*>(page_allocator.AllocatePages(
@@ -114,8 +116,10 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
 TEST(V8PlatformAllocatorBTITest, VerifyReadWriteExecutePagesAreNotProtected) {
   auto page_allocator = gin::PageAllocator();
 
-  auto const memory_size = base::PageAllocationGranularity();
-  auto const memory_alignment = base::PageAllocationGranularity();
+  auto const memory_size =
+      partition_alloc::internal::PageAllocationGranularity();
+  auto const memory_alignment =
+      partition_alloc::internal::PageAllocationGranularity();
 
   // Next, map some read-write memory and copy some test helper functions there.
   char* const buffer = reinterpret_cast<char*>(page_allocator.AllocatePages(
