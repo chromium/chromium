@@ -294,6 +294,13 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile->IsGuestSession()) {
+    DCHECK_NE(profile_info.mode, StartupProfileMode::kProfilePicker);
+    return true;
+  }
+#endif
+
   // Guest or system profiles are not available unless a separate process
   // already has a window open for the profile.
   return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
@@ -1466,6 +1473,14 @@ StartupProfilePathInfo GetStartupProfilePath(
             StartupProfileMode::kBrowserWindow};
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kGuestSession) {
+    return {ProfileManager::GetGuestProfilePath(),
+            StartupProfileMode::kBrowserWindow};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (command_line.HasSwitch(switches::kProfileDirectory)) {
     return {user_data_dir.Append(
                 command_line.GetSwitchValuePath(switches::kProfileDirectory)),
@@ -1513,6 +1528,12 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
 
   // NOTE: GetProfile() does synchronous file I/O on the main thread.
   Profile* profile = profile_manager->GetProfile(path_info.path);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile->IsGuestSession()) {
+    return {profile, StartupProfileMode::kBrowserWindow};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // There are several cases where we should show the profile picker:
   // - if there is no entry in profile attributes storage, which means that the

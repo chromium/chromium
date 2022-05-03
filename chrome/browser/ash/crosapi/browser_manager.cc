@@ -263,6 +263,11 @@ bool GetLaunchOnLoginPref() {
 // 1. Lacros-chrome is initialized in the web Kiosk session
 // 2. Full restore is responsible for restoring/launching Lacros.
 browser_util::InitialBrowserAction GetInitialBrowserAction() {
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    return browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  }
+
   return browser_util::InitialBrowserAction(
       user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
               ash::full_restore::MaybeCreateFullRestoreServiceForLacros()

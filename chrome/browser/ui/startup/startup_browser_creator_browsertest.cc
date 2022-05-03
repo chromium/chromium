@@ -4165,4 +4165,43 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
+class StartupBrowserCreatorLacrosGuestSessionTest
+    : public InProcessBrowserTest {
+ public:
+  StartupBrowserCreatorLacrosGuestSessionTest() = default;
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kGuestSession;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+};
+
+// Checks that a browser window with new tab is open in Guest session.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosGuestSessionTest, Startup) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(::switches::kIncognito);
+  StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
+                                   chrome::startup::IsFirstRun::kNo);
+  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
+                nullptr);
+
+  // A new browser window should be open.
+  Browser* new_browser = FindOneOtherBrowser(browser());
+  EXPECT_TRUE(new_browser);
+  EXPECT_TRUE(new_browser->profile()->IsGuestSession());
+
+  // The new browser should have exactly one tab (new tab url).
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  EXPECT_TRUE(tab_strip);
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ(
+      chrome::kChromeUINewTabURL,
+      tab_strip->GetWebContentsAt(0)->GetVisibleURL().possibly_invalid_spec());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
