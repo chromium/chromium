@@ -447,7 +447,7 @@
   {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-enable-unmask-card-request-set-instrument-id",
@@ -1572,8 +1572,8 @@
   },
   {
     "name": "enable-autofill-credit-card-upload-feedback",
-    "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 102
+    "owners": [ "siyua", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 106
   },
   {
     "name": "enable-autofill-manual-fallback",
