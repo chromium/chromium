@@ -442,6 +442,14 @@ void ContinueSectionView::AddedToWidget() {
   GetFocusManager()->AddFocusChangeListener(this);
 }
 
+void ContinueSectionView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (continue_label_) {
+    bubble_utils::ApplyStyle(continue_label_,
+                             bubble_utils::LabelStyle::kSubtitle);
+  }
+}
+
 void ContinueSectionView::RemovedFromWidget() {
   GetFocusManager()->RemoveFocusChangeListener(this);
 }

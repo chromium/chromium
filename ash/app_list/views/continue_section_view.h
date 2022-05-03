@@ -83,6 +83,7 @@ class ASH_EXPORT ContinueSectionView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:

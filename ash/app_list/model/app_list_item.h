@@ -99,6 +99,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Returns the number of child items if it has any (e.g. is a folder) or 0.
   virtual size_t ChildItemCount() const;
 
+  // Request a folder item for an icon refresh. Method is no-op for app items.
+  virtual void RequestFolderIconUpdate() {}
+
   // Returns whether the item is a folder with max allowed children.
   bool IsFolderFull() const;
 

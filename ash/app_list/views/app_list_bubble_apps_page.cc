@@ -552,6 +552,12 @@ void AppListBubbleAppsPage::OnViewVisibilityChanged(
     UpdateSeparatorVisibility();
 }
 
+void AppListBubbleAppsPage::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor));
+}
+
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
   DCHECK_GT(recent_apps_->GetItemViewCount(), 0);
   AppListItemView* first_recent = recent_apps_->GetItemViewAt(0);

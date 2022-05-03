@@ -131,6 +131,12 @@ FolderImage* AppListFolderItem::GetFolderImageForTesting(
   return image_it->second.get();
 }
 
+void AppListFolderItem::RequestFolderIconUpdate() {
+  // Request a folder icon refresh for each AppListConfigType available.
+  for (auto& folder_image_pair : folder_images_)
+    folder_image_pair.second->ItemIconChanged(folder_image_pair.first);
+}
+
 void AppListFolderItem::EnsureIconsForAvailableConfigTypes(
     const std::vector<AppListConfigType>& config_types,
     bool request_icon_update) {

@@ -1018,6 +1018,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
 
 void AppListItemView::OnThemeChanged() {
   views::Button::OnThemeChanged();
+  if (item_weak_)
+    item_weak_->RequestFolderIconUpdate();
   title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
       grid_delegate_->IsInFolder()));
   SchedulePaint();
