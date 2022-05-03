@@ -74,6 +74,8 @@ content::WebUIDataSource* CreateHostDataSource() {
                             IDR_MEDIA_APP_APP_ICON_192_PNG);
     source->AddResourcePath("system_assets/app_icon_256.png",
                             IDR_MEDIA_APP_APP_ICON_256_PNG);
+    source->AddResourcePath("system_assets/app_icon.svg",
+                            IDR_MEDIA_APP_APP_ICON_192_SVG);  // App favicon.
     app_icons_added = true;
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   }
@@ -94,9 +96,11 @@ content::WebUIDataSource* CreateHostDataSource() {
                             IDR_MEDIA_APP_GALLERY_ICON_192_PNG);
     source->AddResourcePath("system_assets/app_icon_256.png",
                             IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
+    source->AddResourcePath("system_assets/app_icon.svg",
+                            IDR_MEDIA_APP_APP_ICON_SVG);  // App favicon.
   }
 
-  // Favicons.
+  // File-type favicons.
   source->AddResourcePath("system_assets/pdf_icon.svg",
                           IDR_MEDIA_APP_PDF_ICON_SVG);
   source->AddResourcePath("system_assets/video_icon.svg",
@@ -107,8 +111,6 @@ content::WebUIDataSource* CreateHostDataSource() {
                           IDR_MEDIA_APP_AUDIO_ICON_SVG);
   source->AddResourcePath("system_assets/file_icon.svg",
                           IDR_MEDIA_APP_FILE_ICON_SVG);
-  source->AddResourcePath("system_assets/app_icon.svg",
-                          IDR_MEDIA_APP_APP_ICON_SVG);
   return source;
 }
 
