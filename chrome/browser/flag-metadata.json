@@ -84,11 +84,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "allow-disable-mouse-acceleration",
-    "owners": [ "zentaro" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "allow-disable-touchpad-haptic-feedback",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 105
