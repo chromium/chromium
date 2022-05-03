@@ -182,6 +182,22 @@ struct MEDIA_EXPORT H265SPS {
   bool strong_intra_smoothing_enabled_flag;
   H265VUIParameters vui_parameters;
 
+  // Extension extra elements.
+  bool sps_extension_present_flag;
+  bool sps_range_extension_flag;
+  bool sps_multilayer_extension_flag;
+  bool sps_3d_extension_flag;
+  bool sps_scc_extension_flag;
+  bool transform_skip_rotation_enabled_flag;
+  bool transform_skip_context_enabled_flag;
+  bool implicit_rdpcm_enabled_flag;
+  bool explicit_rdpcm_enabled_flag;
+  bool extended_precision_processing_flag;
+  bool intra_smoothing_disabled_flag;
+  bool high_precision_offsets_enabled_flag;
+  bool persistent_rice_adaptation_enabled_flag;
+  bool cabac_bypass_alignment_enabled_flag;
+
   // Calculated fields.
   int chroma_array_type;
   int sub_width_c;
@@ -253,6 +269,22 @@ struct MEDIA_EXPORT H265PPS {
   bool lists_modification_present_flag;
   int log2_parallel_merge_level_minus2;
   bool slice_segment_header_extension_present_flag;
+
+  // Extension extra elements.
+  bool pps_extension_present_flag;
+  bool pps_range_extension_flag;
+  bool pps_multilayer_extension_flag;
+  bool pps_3d_extension_flag;
+  bool pps_scc_extension_flag;
+  int log2_max_transform_skip_block_size_minus2;
+  bool cross_component_prediction_enabled_flag;
+  bool chroma_qp_offset_list_enabled_flag;
+  int diff_cu_chroma_qp_offset_depth;
+  int chroma_qp_offset_list_len_minus1;
+  int cb_qp_offset_list[6];
+  int cr_qp_offset_list[6];
+  int log2_sao_offset_scale_luma;
+  int log2_sao_offset_scale_chroma;
 
   // Calculated fields.
   int qp_bd_offset_y;

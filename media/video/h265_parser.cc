@@ -650,40 +650,44 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
                    sps->pic_height_in_luma_samples);
   }
 
-  bool sps_extension_present_flag;
-  bool sps_range_extension_flag = false;
-  bool sps_multilayer_extension_flag = false;
-  bool sps_3d_extension_flag = false;
-  bool sps_scc_extension_flag = false;
-  READ_BOOL_OR_RETURN(&sps_extension_present_flag);
-  if (sps_extension_present_flag) {
-    READ_BOOL_OR_RETURN(&sps_range_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_multilayer_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_3d_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_scc_extension_flag);
+  READ_BOOL_OR_RETURN(&sps->sps_extension_present_flag);
+  if (sps->sps_extension_present_flag) {
+    READ_BOOL_OR_RETURN(&sps->sps_range_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_multilayer_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_3d_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_scc_extension_flag);
     SKIP_BITS_OR_RETURN(4);  // sps_extension_4bits
   }
-  if (sps_range_extension_flag) {
-    DVLOG(1) << "HEVC range extension not supported";
-    return kInvalidStream;
+  if (sps->sps_range_extension_flag) {
+    READ_BOOL_OR_RETURN(&sps->transform_skip_rotation_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->transform_skip_context_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->implicit_rdpcm_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->explicit_rdpcm_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->extended_precision_processing_flag);
+    READ_BOOL_OR_RETURN(&sps->intra_smoothing_disabled_flag);
+    READ_BOOL_OR_RETURN(&sps->high_precision_offsets_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->persistent_rice_adaptation_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->cabac_bypass_alignment_enabled_flag);
   }
-  if (sps_multilayer_extension_flag) {
+  if (sps->sps_multilayer_extension_flag) {
     DVLOG(1) << "HEVC multilayer extension not supported";
     return kInvalidStream;
   }
-  if (sps_3d_extension_flag) {
+  if (sps->sps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
   }
-  if (sps_scc_extension_flag) {
+  if (sps->sps_scc_extension_flag) {
     DVLOG(1) << "HEVC SCC extension not supported";
     return kInvalidStream;
   }
 
-  // NOTE: The below 2 values are dependent upon the range extension if that is
-  // ever implemented.
-  sps->wp_offset_half_range_y = 1 << 7;
-  sps->wp_offset_half_range_c = 1 << 7;
+  sps->wp_offset_half_range_y = 1 << (sps->high_precision_offsets_enabled_flag
+                                          ? sps->bit_depth_luma_minus8 + 7
+                                          : 7);
+  sps->wp_offset_half_range_c = 1 << (sps->high_precision_offsets_enabled_flag
+                                          ? sps->bit_depth_chroma_minus8 + 7
+                                          : 7);
 
   // If an SPS with the same id already exists, replace it.
   *sps_id = sps->sps_seq_parameter_set_id;
@@ -808,33 +812,51 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   IN_RANGE_OR_RETURN(pps->log2_parallel_merge_level_minus2, 0,
                      sps->ctb_log2_size_y - 2);
   READ_BOOL_OR_RETURN(&pps->slice_segment_header_extension_present_flag);
-  bool pps_extension_present_flag;
-  READ_BOOL_OR_RETURN(&pps_extension_present_flag);
-  bool pps_range_extension_flag = false;
-  bool pps_multilayer_extension_flag = false;
-  bool pps_3d_extension_flag = false;
-  bool pps_scc_extension_flag = false;
-  if (pps_extension_present_flag) {
-    READ_BOOL_OR_RETURN(&pps_range_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_multilayer_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_3d_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_scc_extension_flag);
+  READ_BOOL_OR_RETURN(&pps->pps_extension_present_flag);
+  if (pps->pps_extension_present_flag) {
+    READ_BOOL_OR_RETURN(&pps->pps_range_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_multilayer_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_3d_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_scc_extension_flag);
     SKIP_BITS_OR_RETURN(4);  // pps_extension_4bits
   }
 
-  if (pps_range_extension_flag) {
-    DVLOG(1) << "HEVC range extension not supported";
-    return kInvalidStream;
+  if (pps->pps_range_extension_flag) {
+    if (pps->transform_skip_enabled_flag) {
+      READ_UE_OR_RETURN(&pps->log2_max_transform_skip_block_size_minus2);
+      IN_RANGE_OR_RETURN(pps->log2_max_transform_skip_block_size_minus2, 0, 3);
+    }
+    READ_BOOL_OR_RETURN(&pps->cross_component_prediction_enabled_flag);
+    READ_BOOL_OR_RETURN(&pps->chroma_qp_offset_list_enabled_flag);
+    if (pps->chroma_qp_offset_list_enabled_flag) {
+      READ_UE_OR_RETURN(&pps->diff_cu_chroma_qp_offset_depth);
+      IN_RANGE_OR_RETURN(pps->diff_cu_chroma_qp_offset_depth, 0,
+                         sps->log2_diff_max_min_luma_coding_block_size);
+      READ_UE_OR_RETURN(&pps->chroma_qp_offset_list_len_minus1);
+      IN_RANGE_OR_RETURN(pps->chroma_qp_offset_list_len_minus1, 0, 5);
+      for (int i = 0; i <= pps->chroma_qp_offset_list_len_minus1; i++) {
+        READ_SE_OR_RETURN(&pps->cb_qp_offset_list[i]);
+        IN_RANGE_OR_RETURN(pps->cb_qp_offset_list[i], -12, 12);
+        READ_SE_OR_RETURN(&pps->cr_qp_offset_list[i]);
+        IN_RANGE_OR_RETURN(pps->cr_qp_offset_list[i], -12, 12);
+      }
+    }
+    READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_luma);
+    IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_luma, 0,
+                       std::max(sps->bit_depth_luma_minus8 - 2, 0));
+    READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_chroma);
+    IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_chroma, 0,
+                       std::max(sps->bit_depth_chroma_minus8 - 2, 0));
   }
-  if (pps_multilayer_extension_flag) {
+  if (pps->pps_multilayer_extension_flag) {
     DVLOG(1) << "HEVC multilayer extension not supported";
     return kInvalidStream;
   }
-  if (pps_3d_extension_flag) {
+  if (pps->pps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
   }
-  if (pps_scc_extension_flag) {
+  if (pps->pps_scc_extension_flag) {
     DVLOG(1) << "HEVC SCC extension not supported";
     return kInvalidStream;
   }
@@ -1136,8 +1158,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
 
     // pps_slice_act_qp_offsets_present_flag is zero, we don't support SCC ext.
 
-    // chroma_qp_offset_list_enabled_flag is zero, we don't support range ext.
-
+    if (pps->chroma_qp_offset_list_enabled_flag)
+      SKIP_BITS_OR_RETURN(1);  // cu_chroma_qp_offset_enabled_flag
     bool deblocking_filter_override_flag = false;
     if (pps->deblocking_filter_override_enabled_flag)
       READ_BOOL_OR_RETURN(&deblocking_filter_override_flag);

@@ -83,9 +83,8 @@ constexpr VideoCodecProfile kSupportedProfiles[] = {
     VP9PROFILE_PROFILE0, VP9PROFILE_PROFILE2,
 
     // These are only supported on macOS 11+.
-    // TODO(crbug.com/1300786): add HEVCPROFILE_MAIN_STILL_PICTURE,
-    // and HEVCPROFILE_REXT since VT has already supported these profiles
-    HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10,
+    HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10, HEVCPROFILE_MAIN_STILL_PICTURE,
+    HEVCPROFILE_REXT,
 
     // TODO(sandersd): Hi10p fails during
     // CMVideoFormatDescriptionCreateFromH264ParameterSets with
@@ -760,6 +759,8 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
     case HEVCPROFILE_MAIN:
     case HEVCPROFILE_MAIN10:
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
+    case HEVCPROFILE_REXT:
       codec_ = VideoCodec::kHEVC;
       break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
@@ -842,7 +843,8 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   const bool require_hardware = config_.profile == VP9PROFILE_PROFILE0 ||
                                 config_.profile == VP9PROFILE_PROFILE2;
   const bool is_hbd = config_.profile == VP9PROFILE_PROFILE2 ||
-                      config_.profile == HEVCPROFILE_MAIN10;
+                      config_.profile == HEVCPROFILE_MAIN10 ||
+                      config_.profile == HEVCPROFILE_REXT;
   if (!CreateVideoToolboxSession(format_, require_hardware, is_hbd, &callback_,
                                  &session_, &configured_size_)) {
     NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
@@ -2052,7 +2054,8 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
       // TODO(https://crbug.com/1233228): The UV planes of P010 frames cannot
       // be represented in the current gfx::BufferFormat.
       if (config_.profile != VP9PROFILE_PROFILE2 &&
-          config_.profile != HEVCPROFILE_MAIN10)
+          config_.profile != HEVCPROFILE_MAIN10 &&
+          config_.profile != HEVCPROFILE_REXT)
         picture_format_ = PIXEL_FORMAT_NV12;
     }
 
@@ -2083,7 +2086,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
   const gfx::BufferFormat buffer_format =
       config_.profile == VP9PROFILE_PROFILE2 ||
-              config_.profile == HEVCPROFILE_MAIN10
+              config_.profile == HEVCPROFILE_MAIN10 ||
+              config_.profile == HEVCPROFILE_REXT
           ? gfx::BufferFormat::P010
           : gfx::BufferFormat::YUV_420_BIPLANAR;
   gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
@@ -2339,7 +2343,9 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
     }
 
     if (supported_profile == HEVCPROFILE_MAIN ||
-        supported_profile == HEVCPROFILE_MAIN10) {
+        supported_profile == HEVCPROFILE_MAIN10 ||
+        supported_profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
+        supported_profile == HEVCPROFILE_REXT) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
       if (!workarounds.disable_accelerated_hevc_decode &&
           base::FeatureList::IsEnabled(kVideoToolboxHEVCDecoding)) {

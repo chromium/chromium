@@ -208,6 +208,14 @@ bool IsHevcProfileSupported(const VideoType& type) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+#elif BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 11.0, *))
+    return base::FeatureList::IsEnabled(kVideoToolboxHEVCDecoding) &&
+           (type.profile == HEVCPROFILE_MAIN ||
+            type.profile == HEVCPROFILE_MAIN10 ||
+            type.profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
+            type.profile == HEVCPROFILE_REXT);
+  return false;
 #elif BUILDFLAG(IS_ANDROID)
   // Technically android 5.0 mandates support for only HEVC main profile,
   // however some platforms (like chromecast) have had more profiles supported
