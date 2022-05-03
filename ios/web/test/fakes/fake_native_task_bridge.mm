@@ -42,16 +42,24 @@
   _progress = [NSProgress progressWithTotalUnitCount:100];
 }
 
-- (void)downloadInitialized {
+#pragma mark - Private methods
+
+- (void)downloadInitialized API_AVAILABLE(ios(15)) {
   // Instantiates _startDownloadBlock, so when we call
   // startDownload:progressionHandler:completionHandler method, the block is
   // initialized.
+  __weak FakeNativeTaskBridge* weakSelf = self;
   [super download:_download
       decideDestinationUsingResponse:_response
                    suggestedFilename:_suggestedFilename
                    completionHandler:^void(NSURL* url) {
-                     self->_calledStartDownloadBlock = YES;
+                     [weakSelf destinationDecided:url];
                    }];
+}
+
+- (void)destinationDecided:(NSURL*)url API_AVAILABLE(ios(15)) {
+  _calledStartDownloadBlock = YES;
+  [self downloadDidFinish:_download];
 }
 
 @end

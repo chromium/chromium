@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
-#include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
+#import "ios/web/public/test/download_task_test_util.h"
+#import "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
-#include "net/http/http_request_headers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "testing/gtest_mac.h"
+#import "net/http/http_request_headers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/url_request/url_fetcher_response_writer.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -105,11 +106,11 @@ TEST_F(DownloadTest, SuccessfulDownload) {
             task->GenerateFileName());
 
   // Start the download task and wait for completion.
-  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task->IsDone();
-  }));
+  {
+    web::test::WaitDownloadTaskDone observer(task);
+    task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    observer.Wait();
+  }
 
   // Verify the completed state of the download task.
   EXPECT_EQ(0, task->GetErrorCode());
@@ -117,8 +118,9 @@ TEST_F(DownloadTest, SuccessfulDownload) {
   EXPECT_EQ(100, task->GetPercentComplete());
   EXPECT_EQ(200, task->GetHttpCode());
   EXPECT_NSEQ(@(kContent),
-              [[NSString alloc] initWithData:task->GetResponseData()
-                                    encoding:NSUTF8StringEncoding]);
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(task)
+                      encoding:NSUTF8StringEncoding]);
 }
 
 }  // namespace web

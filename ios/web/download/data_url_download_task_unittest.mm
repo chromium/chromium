@@ -15,6 +15,7 @@
 #import "base/task/thread_pool.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/test/download_task_test_util.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -38,46 +39,6 @@ const char kMimeType[] = "application/pdf";
 const char kTestData[] = "Chromium";
 const int kTestDataLen = sizeof(kTestData) - 1;
 NSString* const kMethodGet = @"GET";
-
-// Fake DownloadTaskObserver used to wait for task completion.
-class DataUrlDownloadTaskTestObserver : public DownloadTaskObserver {
- public:
-  DataUrlDownloadTaskTestObserver(DownloadTask* task,
-                                  base::OnceClosure done_closure)
-      : done_closure_(std::move(done_closure)) {
-    scoped_observation_.Observe(task);
-  }
-
-  void OnDownloadUpdated(DownloadTask* task) override {
-    DCHECK(scoped_observation_.IsObservingSource(task));
-    if (task->IsDone()) {
-      scoped_observation_.Reset();
-      std::move(done_closure_).Run();
-    }
-  }
-
-  void OnDownloadDestroyed(DownloadTask* task) override {
-    DCHECK(scoped_observation_.IsObservingSource(task));
-    scoped_observation_.Reset();
-    std::move(done_closure_).Run();
-  }
-
- private:
-  base::ScopedObservation<DownloadTask, DownloadTaskObserver>
-      scoped_observation_{this};
-  base::OnceClosure done_closure_;
-};
-
-// Starts the task and waits until `task` is in done state.
-void StartTaskAndWaitUntilDone(DownloadTaskImpl* task,
-                               const base::FilePath& path) {
-  base::RunLoop run_loop;
-  DataUrlDownloadTaskTestObserver observer(task, run_loop.QuitClosure());
-
-  task->Start(path, path.empty() ? web::DownloadTask::Destination::kToMemory
-                                 : web::DownloadTask::Destination::kToDisk);
-  run_loop.Run();
-}
 
 }  //  namespace
 
@@ -103,7 +64,12 @@ TEST_F(DataUrlDownloadTaskTest, ValidDataUrl) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
-  StartTaskAndWaitUntilDone(&task, base::FilePath());
+  // Start the task and wait for completion.
+  {
+    web::test::WaitDownloadTaskDone observer(&task);
+    task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    observer.Wait();
+  }
 
   // Verify the state of downloaded task.
   EXPECT_EQ(DownloadTask::State::kComplete, task.GetState());
@@ -114,8 +80,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidDataUrl) {
   EXPECT_EQ("text/plain", task.GetMimeType());
   EXPECT_TRUE(task.GetResponsePath().empty());
   EXPECT_NSEQ(@(kTestData),
-              [[NSString alloc] initWithData:task.GetResponseData()
-                                    encoding:NSUTF8StringEncoding]);
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(&task)
+                      encoding:NSUTF8StringEncoding]);
 }
 
 // Tests valid data:// url downloads to a file.
@@ -133,7 +100,12 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
   base::FilePath path =
       scoped_temp_dir.GetPath().Append(task.GenerateFileName());
 
-  StartTaskAndWaitUntilDone(&task, path);
+  // Start the task and wait for completion.
+  {
+    web::test::WaitDownloadTaskDone observer(&task);
+    task.Start(path, web::DownloadTask::Destination::kToDisk);
+    observer.Wait();
+  }
 
   // Verify the state of downloaded task.
   EXPECT_EQ(DownloadTask::State::kComplete, task.GetState());
@@ -143,8 +115,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
   EXPECT_EQ(100, task.GetPercentComplete());
   EXPECT_EQ("text/plain", task.GetMimeType());
   EXPECT_NSEQ(@(kTestData),
-              [[NSString alloc] initWithData:task.GetResponseData()
-                                    encoding:NSUTF8StringEncoding]);
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(&task)
+                      encoding:NSUTF8StringEncoding]);
 
   std::string file_content;
   EXPECT_EQ(path, task.GetResponsePath());
@@ -161,7 +134,13 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
-  StartTaskAndWaitUntilDone(&task, base::FilePath("/no-such-dir/file.txt"));
+  // Start the task and wait for completion.
+  {
+    web::test::WaitDownloadTaskDone observer(&task);
+    task.Start(base::FilePath(FILE_PATH_LITERAL("/no-such-dir/file.txt")),
+               web::DownloadTask::Destination::kToDisk);
+    observer.Wait();
+  }
 
   // Verify the state of downloaded task.
   EXPECT_EQ(DownloadTask::State::kFailed, task.GetState());
@@ -169,8 +148,10 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
   EXPECT_EQ(-1, task.GetTotalBytes());
   EXPECT_EQ(0, task.GetReceivedBytes());
   EXPECT_EQ(0, task.GetPercentComplete());
-  EXPECT_NSEQ(@"", [[NSString alloc] initWithData:task.GetResponseData()
-                                         encoding:NSUTF8StringEncoding]);
+  EXPECT_NSEQ(@"",
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(&task)
+                      encoding:NSUTF8StringEncoding]);
 }
 
 // Tests empty data:// url downloads.
@@ -182,7 +163,12 @@ TEST_F(DataUrlDownloadTaskTest, EmptyDataUrl) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
 
-  StartTaskAndWaitUntilDone(&task, base::FilePath());
+  // Start the task and wait for completion.
+  {
+    web::test::WaitDownloadTaskDone observer(&task);
+    task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    observer.Wait();
+  }
 
   // Verify the state of downloaded task.
   EXPECT_EQ(DownloadTask::State::kFailed, task.GetState());
@@ -190,8 +176,10 @@ TEST_F(DataUrlDownloadTaskTest, EmptyDataUrl) {
   EXPECT_EQ(-1, task.GetTotalBytes());
   EXPECT_EQ(0, task.GetReceivedBytes());
   EXPECT_EQ(0, task.GetPercentComplete());
-  EXPECT_NSEQ(@"", [[NSString alloc] initWithData:task.GetResponseData()
-                                         encoding:NSUTF8StringEncoding]);
+  EXPECT_NSEQ(@"",
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(&task)
+                      encoding:NSUTF8StringEncoding]);
 }
 
 }  // namespace web

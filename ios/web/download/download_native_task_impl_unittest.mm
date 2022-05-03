@@ -4,20 +4,16 @@
 
 #import "ios/web/download/download_native_task_impl.h"
 
-#import "base/run_loop.h"
-#import "base/strings/utf_string_conversions.h"
+#import "base/ios/ios_util.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
-#import "base/test/ios/wait_util.h"
-#import "ios/web/public/download/download_task_observer.h"
+#import "base/test/task_environment.h"
+#import "ios/web/public/test/download_task_test_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
-#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,17 +29,6 @@ const char kMimeType[] = "application/pdf";
 const char kIdentifier[] = "testIdentifier";
 const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
 NSString* const kHttpMethod = @"POST";
-
-class MockDownloadTaskObserver : public DownloadTaskObserver {
- public:
-  MOCK_METHOD1(OnDownloadUpdated, void(DownloadTask* task));
-  void OnDownloadDestroyed(DownloadTask* task) override {
-    // Removing observer here works as a test that
-    // DownloadTaskObserver::OnDownloadDestroyed is actually called.
-    // DownloadTask DCHECKs if it is destroyed without observer removal.
-    task->RemoveObserver(this);
-  }
-};
 
 }  //  namespace
 
@@ -64,61 +49,75 @@ class DownloadNativeTaskImplTest : public PlatformTest {
             @(kIdentifier),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
-            fake_task_bridge_)) {
-    task_->AddObserver(&task_observer_);
-  }
+            fake_task_bridge_)) {}
 
-  web::WebTaskEnvironment task_environment_;
-  FakeBrowserState browser_state_;
+  base::test::TaskEnvironment task_environment_;
   FakeWebState web_state_;
   WKDownload* fake_download_ API_AVAILABLE(ios(15)) = nil;
   id<DownloadNativeTaskBridgeDelegate> fake_delegate_ = nil;
   FakeNativeTaskBridge* fake_task_bridge_;
   std::unique_ptr<DownloadNativeTaskImpl> task_;
-  MockDownloadTaskObserver task_observer_;
 };
 
 // Tests DownloadNativeTaskImpl default state after construction.
 TEST_F(DownloadNativeTaskImplTest, DefaultState) {
-  EXPECT_EQ(&web_state_, task_->GetWebState());
-  EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
-  EXPECT_NSEQ(@(kIdentifier), task_->GetIdentifier());
-  EXPECT_EQ(kUrl, task_->GetOriginalUrl());
-  EXPECT_FALSE(task_->IsDone());
-  EXPECT_EQ(0, task_->GetErrorCode());
-  EXPECT_EQ(-1, task_->GetHttpCode());
-  EXPECT_EQ(0, task_->GetReceivedBytes());
+  // This test only work on iOS 15 or higher as it depends on iOS 15 APIs.
+  if (!base::ios::IsRunningOnIOS15OrLater())
+    return;
+
   if (@available(iOS 15, *)) {
+    EXPECT_EQ(&web_state_, task_->GetWebState());
+    EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
+    EXPECT_NSEQ(@(kIdentifier), task_->GetIdentifier());
+    EXPECT_EQ(kUrl, task_->GetOriginalUrl());
+    EXPECT_FALSE(task_->IsDone());
+    EXPECT_EQ(0, task_->GetErrorCode());
+    EXPECT_EQ(-1, task_->GetHttpCode());
+    EXPECT_EQ(0, task_->GetReceivedBytes());
     EXPECT_EQ(0, task_->GetTotalBytes());
     EXPECT_EQ(0, task_->GetPercentComplete());
-  } else {
-    EXPECT_EQ(-1, task_->GetTotalBytes());
-    EXPECT_EQ(-1, task_->GetPercentComplete());
+    EXPECT_EQ(kContentDisposition, task_->GetContentDisposition());
+    EXPECT_EQ(kMimeType, task_->GetMimeType());
+    EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
+    EXPECT_EQ(base::FilePath(kTestFileName), task_->GenerateFileName());
   }
-  EXPECT_EQ(kContentDisposition, task_->GetContentDisposition());
-  EXPECT_EQ(kMimeType, task_->GetMimeType());
-  EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
-  EXPECT_EQ(base::FilePath(kTestFileName), task_->GenerateFileName());
 }
 
 TEST_F(DownloadNativeTaskImplTest, SuccessfulDownload) {
-  // Simulates starting and successfully completing a download
-  EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
-  task_->Start(base::FilePath(), DownloadTask::Destination::kToMemory);
-  EXPECT_EQ(DownloadTask::State::kInProgress, task_->GetState());
+  // This test only work on iOS 15 or higher as it depends on iOS 15 APIs.
+  if (!base::ios::IsRunningOnIOS15OrLater())
+    return;
+
   if (@available(iOS 15, *)) {
+    // Simulates starting and successfully completing a download
+    EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
+    {
+      web::test::WaitDownloadTaskDone observer(task_.get());
+      task_->Start(base::FilePath(), DownloadTask::Destination::kToMemory);
+      observer.Wait();
+    }
+
+    EXPECT_EQ(DownloadTask::State::kComplete, task_->GetState());
     EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == YES);
     EXPECT_EQ(fake_task_bridge_.progress.totalUnitCount, 100);
   }
 }
 
 TEST_F(DownloadNativeTaskImplTest, CancelledDownload) {
-  // Simulates download cancel and checks that |_startDownloadBlock| is called
-  EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
-  task_->Cancel();
-  EXPECT_EQ(DownloadTask::State::kCancelled, task_->GetState());
+  // This test only work on iOS 15 or higher as it depends on iOS 15 APIs.
+  if (!base::ios::IsRunningOnIOS15OrLater())
+    return;
 
   if (@available(iOS 15, *)) {
+    // Simulates download cancel and checks that |_startDownloadBlock| is called
+    EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
+    {
+      web::test::WaitDownloadTaskDone observer(task_.get());
+      task_->Cancel();
+      observer.Wait();
+    }
+
+    EXPECT_EQ(DownloadTask::State::kCancelled, task_->GetState());
     EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == YES);
     EXPECT_EQ(fake_task_bridge_.progress.totalUnitCount, 0);
     EXPECT_TRUE(fake_task_bridge_.download == nil);

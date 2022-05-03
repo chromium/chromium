@@ -4,31 +4,29 @@
 
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
+#import "ios/web/public/test/download_task_test_util.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "net/base/net_errors.h"
+#import "net/url_request/url_fetcher_response_writer.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForDownloadTimeout;
 
 namespace {
 
@@ -74,11 +72,13 @@ TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
   task->SetGeneratedFileName(base::FilePath(kTestUsdzFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -112,11 +112,13 @@ TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -152,11 +154,13 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
       GURL(kUrlDisallowingScaling), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -193,11 +197,13 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScalingExtendedQuery) {
       GURL("https://test.test/#allowsContentScaling=0&testing=5"), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_FALSE(delegate().allowsContentScaling);
 }
@@ -209,11 +215,13 @@ TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
       GURL("https://test.test/#randomFragment=0"), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -249,11 +257,13 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToOne) {
       GURL("https://test.test/#allowsContentScaling=1"), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_TRUE(delegate().allowsContentScaling);
 }
@@ -265,11 +275,13 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToRandomValue) {
       GURL("https://test.test/#allowsContentScaling=randomThing"), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetDone(true);
   EXPECT_TRUE(delegate().allowsContentScaling);
 }
@@ -283,11 +295,13 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceUnstartedDownload) {
   auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task2->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr2 = task2.get();
-  tab_helper()->Download(std::move(task2));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr2->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr2);
+    tab_helper()->Download(std::move(task2));
+    observer.Wait();
+  }
+
   task_ptr2->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -314,20 +328,23 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceInProgressDownload) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
 
   auto task2 = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task2->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr2 = task2.get();
-  tab_helper()->Download(std::move(task2));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr2->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr2);
+    tab_helper()->Download(std::move(task2));
+    observer.Wait();
+  }
+
   task_ptr2->SetDone(true);
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
@@ -355,11 +372,13 @@ TEST_P(ARQuickLookTabHelperTest, MimeTypeChange) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetMimeType("text/html");
   task_ptr->SetDone(true);
   EXPECT_EQ(0U, delegate().fileURLs.count);
@@ -386,11 +405,13 @@ TEST_P(ARQuickLookTabHelperTest, DownloadError) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
   task_ptr->SetDone(true);
   EXPECT_EQ(0U, delegate().fileURLs.count);
@@ -417,11 +438,13 @@ TEST_P(ARQuickLookTabHelperTest, UnauthorizedHttpResponse) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetHttpCode(401);
   task_ptr->SetDone(true);
   EXPECT_EQ(0U, delegate().fileURLs.count);
@@ -448,11 +471,13 @@ TEST_P(ARQuickLookTabHelperTest, ForbiddenHttpResponse) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();
-  tab_helper()->Download(std::move(task));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
-  }));
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
   task_ptr->SetHttpCode(403);
   task_ptr->SetDone(true);
   EXPECT_EQ(0U, delegate().fileURLs.count);

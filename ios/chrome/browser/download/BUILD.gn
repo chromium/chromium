@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/test",
+    "//ios/web/public/test:download_test_utils",
     "//ios/web/public/test/fakes",
     "//net",
     "//testing/gtest",

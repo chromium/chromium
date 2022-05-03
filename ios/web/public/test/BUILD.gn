@@ -47,6 +47,22 @@ source_set("test") {
   ]
 }
 
+source_set("download_test_utils") {
+  deps = [
+    "//base",
+    "//ios/web/public/download",
+  ]
+
+  sources = [
+    "download_task_test_util.h",
+    "download_task_test_util.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 # Those fixtures *must* not be used directly from //ios/chrome code as they
 # create web::BrowserState* as the BrowserState which violates one important
 # invariant of //ios/chrome code (the invariant that all BrowserStates are of
