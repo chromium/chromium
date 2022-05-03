@@ -63,6 +63,8 @@ const CGFloat kBubblePresentationDelay = 1;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* readingListTipBubblePresenter;
 @property(nonatomic, strong)
+    BubbleViewControllerPresenter* followWhileBrowsingBubbleTipPresenter;
+@property(nonatomic, strong)
     BubbleViewControllerPresenter* defaultPageModeTipBubblePresenter;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
@@ -139,6 +141,7 @@ const CGFloat kBubblePresentationDelay = 1;
   [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
   [self.discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [self.readingListTipBubblePresenter dismissAnimated:NO];
+  [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
 }
 
@@ -216,6 +219,34 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.readingListTipBubblePresenter = presenter;
+}
+
+- (void)presentFollowWhileBrowsingTipBubble {
+  if (![self canPresentBubble])
+    return;
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_FOLLOW_WHILE_BROWSING_IPH);
+  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                           direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the tip, then end early to prevent the potential reassignment of the
+  // existing |followWhileBrowsingBubbleTipPresenter| to nil.
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHFollowWhileBrowsingFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTrailing
+                         text:text
+        voiceOverAnnouncement:l10n_util::GetNSString(
+                                  IDS_IOS_FOLLOW_WHILE_BROWSING_IPH)
+                  anchorPoint:toolsMenuAnchor];
+  if (!presenter)
+    return;
+
+  self.followWhileBrowsingBubbleTipPresenter = presenter;
 }
 
 - (void)presentDefaultSiteViewTipBubble {

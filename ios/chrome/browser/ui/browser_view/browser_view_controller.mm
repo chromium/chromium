@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
@@ -3789,6 +3790,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // BrowserCoordinator, which should be owning bubblePresenter.
 - (void)showReadingListIPH {
   [self.bubblePresenter presentReadingListBottomToolbarTipBubble];
+}
+
+// TODO(crbug.com/1272534): Move this command implementation to
+// BrowserCoordinator, which should be owning bubblePresenter.
+- (void)showFollowWhileBrowsingIPH {
+  [self.bubblePresenter presentFollowWhileBrowsingTipBubble];
 }
 
 // TODO(crbug.com/1272534): Move this command implementation to

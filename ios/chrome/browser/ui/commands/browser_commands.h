@@ -55,6 +55,10 @@ class GURL;
 // applicable.
 - (void)showReadingListIPH;
 
+// Shows an IPH pointing to where the Follow entry point is, if
+// applicable.
+- (void)showFollowWhileBrowsingIPH;
+
 // Shows an IPH to explain to the user how to change the default site view, if
 // applicable.
 - (void)showDefaultSiteViewIPH;

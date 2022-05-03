@@ -44,6 +44,9 @@ class ChromeBrowserState;
 // Shows a relevant Reading List help bubble, if applicable.
 - (void)presentReadingListBottomToolbarTipBubble;
 
+// Shows a relevant Follow help bubble while browsing a site, if applicable.
+- (void)presentFollowWhileBrowsingTipBubble;
+
 // Shows a help bubble to let the user know that they can change the default
 // mode (Desktop/Mobile) of the websites.
 - (void)presentDefaultSiteViewTipBubble;

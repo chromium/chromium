@@ -25,6 +25,8 @@ source_set("follow_iph") {
   ]
   deps = [
     "//ios/chrome/browser/follow:tab_helper",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
 }

@@ -8,6 +8,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
@@ -41,6 +42,12 @@ FollowTabHelper::FollowTabHelper(web::WebState* web_state)
 void FollowTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  // Do not show follow IPH when browsing Chrome URLs, such as NTP, flags,
+  // version, sad tab, etc.
+  if (UrlHasChromeScheme(web_state->GetVisibleURL())) {
+    return;
+  }
+
   switch (load_completion_status) {
     case web::PageLoadCompletionStatus::FAILURE:
       break;

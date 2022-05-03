@@ -31,6 +31,7 @@ source_set("tab_helper") {
     "//base",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
     "//ios/public/provider/chrome/browser",
