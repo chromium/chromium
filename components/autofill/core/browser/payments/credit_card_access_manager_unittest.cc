@@ -172,29 +172,29 @@ class CreditCardAccessManagerTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_manager_.Init(/*profile_database=*/database_,
-                                /*account_database=*/nullptr,
-                                /*pref_service=*/autofill_client_.GetPrefs(),
-                                /*local_state=*/autofill_client_.GetPrefs(),
-                                /*identity_manager=*/nullptr,
-                                /*history_service=*/nullptr,
-                                /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr,
-                                /*is_off_the_record=*/false);
-    personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data().Init(/*profile_database=*/database_,
+                         /*account_database=*/nullptr,
+                         /*pref_service=*/autofill_client_.GetPrefs(),
+                         /*local_state=*/autofill_client_.GetPrefs(),
+                         /*identity_manager=*/nullptr,
+                         /*history_service=*/nullptr,
+                         /*strike_database=*/nullptr,
+                         /*image_fetcher=*/nullptr,
+                         /*is_off_the_record=*/false);
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
 
     accessor_ = std::make_unique<TestAccessor>();
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
 
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
-        autofill_client_.GetIdentityManager(), &personal_data_manager_);
+        autofill_client_.GetIdentityManager(), &personal_data());
     autofill_client_.set_test_payments_client(
         std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_manager_);
+        autofill_driver_.get(), &autofill_client_);
     credit_card_access_manager_ =
         browser_autofill_manager_->GetCreditCardAccessManager();
 
@@ -220,8 +220,8 @@ class CreditCardAccessManagerTest : public testing::Test {
     // PersonalDataManager to be around when it gets destroyed.
     autofill_driver_.reset();
 
-    personal_data_manager_.SetPrefService(nullptr);
-    personal_data_manager_.ClearCreditCards();
+    personal_data().SetPrefService(nullptr);
+    personal_data().ClearCreditCards();
   }
 
   bool IsAuthenticationInProgress() {
@@ -235,7 +235,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     credit_card_access_manager_->is_user_verifiable_ = absl::nullopt;
   }
 
-  void ClearCards() { personal_data_manager_.ClearCreditCards(); }
+  void ClearCards() { personal_data().ClearCreditCards(); }
 
   void CreateLocalCard(std::string guid, std::string number = std::string()) {
     CreditCard local_card = CreditCard();
@@ -245,7 +245,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     local_card.set_guid(guid);
     local_card.set_record_type(CreditCard::LOCAL_CARD);
 
-    personal_data_manager_.AddCreditCard(local_card);
+    personal_data().AddCreditCard(local_card);
   }
 
   void CreateServerCard(std::string guid,
@@ -260,7 +260,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     server_card.set_record_type(masked ? CreditCard::MASKED_SERVER_CARD
                                        : CreditCard::FULL_SERVER_CARD);
     server_card.set_server_id(server_id);
-    personal_data_manager_.AddServerCreditCard(server_card);
+    personal_data().AddServerCreditCard(server_card);
   }
 
   CreditCardCVCAuthenticator* GetCVCAuthenticator() {
@@ -517,6 +517,10 @@ class CreditCardAccessManagerTest : public testing::Test {
   }
 
  protected:
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
+  }
+
   std::unique_ptr<TestAccessor> accessor_;
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -525,7 +529,6 @@ class CreditCardAccessManagerTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;
-  TestPersonalDataManager personal_data_manager_;
   // TODO(crbug.com/1249665): Remove this member variable and use test-local
   // feature lists.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -556,9 +559,9 @@ TEST_F(CreditCardAccessManagerTest, RemoveLocalCreditCard) {
   CreateLocalCard(kTestGUID);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
 
-  EXPECT_TRUE(personal_data_manager_.GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
   EXPECT_TRUE(credit_card_access_manager_->DeleteCard(card));
-  EXPECT_FALSE(personal_data_manager_.GetCreditCardWithGUID(kTestGUID));
+  EXPECT_FALSE(personal_data().GetCreditCardWithGUID(kTestGUID));
 }
 
 // Ensures DeleteCard() does nothing for server cards.
@@ -566,11 +569,11 @@ TEST_F(CreditCardAccessManagerTest, RemoveServerCreditCard) {
   CreateServerCard(kTestGUID);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
 
-  EXPECT_TRUE(personal_data_manager_.GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
   EXPECT_FALSE(credit_card_access_manager_->DeleteCard(card));
 
   // Cannot delete server cards.
-  EXPECT_TRUE(personal_data_manager_.GetCreditCardWithGUID(kTestGUID));
+  EXPECT_TRUE(personal_data().GetCreditCardWithGUID(kTestGUID));
 }
 
 // Ensures GetDeletionConfirmationText(~) returns correct values for local
@@ -622,7 +625,7 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
 // Ensures that FetchCreditCard() reports a failure when a card does not exist.
 TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
-  personal_data_manager_.ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   credit_card_access_manager_->PrepareToFetchCreditCard();
   WaitForCallbacks();

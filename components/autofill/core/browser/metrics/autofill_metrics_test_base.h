@@ -89,12 +89,15 @@ class AutofillMetricsBaseTest : public testing::Test {
         *autofill_driver_->autofill_manager());
   }
 
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_->GetPersonalDataManager();
+  }
+
   const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_;
-  MockAutofillClient autofill_client_;
+  std::unique_ptr<MockAutofillClient> autofill_client_;
   raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<TestPersonalDataManager> personal_data_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   raw_ptr<AutofillExternalDelegate> external_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;

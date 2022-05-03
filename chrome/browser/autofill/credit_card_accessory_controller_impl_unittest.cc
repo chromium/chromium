@@ -83,7 +83,7 @@ class CreditCardAccessoryControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   CreditCardAccessoryControllerTest()
-      : af_manager_(&mock_af_driver_, &client_, &data_manager_) {
+      : af_manager_(&mock_af_driver_, &client_) {
     af_manager_.set_credit_card_access_manager_for_test(
         std::make_unique<TestAccessManager>(&mock_af_driver_, &client_,
                                             &data_manager_));

@@ -77,7 +77,6 @@ class MockAutofillClient : public autofill::TestAutofillClient {
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   MockAutofillDriver(content::RenderFrameHost* rfh,
-                     MockAutofillClient* client,
                      ContentAutofillRouter* router)
       : ContentAutofillDriver(rfh, router) {}
 
@@ -93,7 +92,8 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
       : BrowserAutofillManager(driver,
                                client,
-                               client->GetPersonalDataManager()) {}
+                               "en-US",
+                               EnableDownloadManager(false)) {}
   MockBrowserAutofillManager(MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(MockBrowserAutofillManager&) = delete;
   ~MockBrowserAutofillManager() override = default;
@@ -324,8 +324,7 @@ class AutofillPopupControllerAccessibilityUnitTest
   CreateExternalDelegate() override {
     autofill_router_ = std::make_unique<ContentAutofillRouter>();
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
-        web_contents()->GetMainFrame(), autofill_client_.get(),
-        autofill_router_.get());
+        web_contents()->GetMainFrame(), autofill_router_.get());
     autofill_driver_->set_autofill_manager(
         std::make_unique<MockBrowserAutofillManager>(autofill_driver_.get(),
                                                      autofill_client_.get()));

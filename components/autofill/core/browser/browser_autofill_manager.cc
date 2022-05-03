@@ -414,18 +414,6 @@ BrowserAutofillManager::BrowserAutofillManager(
     AutofillClient* client,
     const std::string& app_locale,
     EnableDownloadManager enable_download_manager)
-    : BrowserAutofillManager(driver,
-                             client,
-                             client->GetPersonalDataManager(),
-                             app_locale,
-                             enable_download_manager) {}
-
-BrowserAutofillManager::BrowserAutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    PersonalDataManager* personal_data,
-    const std::string app_locale,
-    EnableDownloadManager enable_download_manager)
     : AutofillManager(driver,
                       client,
                       client->GetChannel(),
@@ -433,7 +421,7 @@ BrowserAutofillManager::BrowserAutofillManager(
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
       app_locale_(app_locale),
-      personal_data_(personal_data),
+      personal_data_(client->GetPersonalDataManager()),
       field_filler_(app_locale, client->GetAddressNormalizer()),
       single_field_form_fill_router_(client->GetSingleFieldFormFillRouter()),
       suggestion_generator_(

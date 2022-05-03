@@ -348,17 +348,17 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_.set_auto_accept_address_imports_for_testing(true);
-    personal_data_.Init(/*profile_database=*/database_,
-                        /*account_database=*/nullptr,
-                        /*pref_service=*/autofill_client_.GetPrefs(),
-                        /*local_state=*/autofill_client_.GetPrefs(),
-                        /*identity_manager=*/nullptr,
-                        /*history_service=*/nullptr,
-                        /*strike_database=*/nullptr,
-                        /*image_fetcher=*/nullptr,
-                        /*is_off_the_record=*/false);
-    personal_data_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data().set_auto_accept_address_imports_for_testing(true);
+    personal_data().Init(/*profile_database=*/database_,
+                         /*account_database=*/nullptr,
+                         /*pref_service=*/autofill_client_.GetPrefs(),
+                         /*local_state=*/autofill_client_.GetPrefs(),
+                         /*identity_manager=*/nullptr,
+                         /*history_service=*/nullptr,
+                         /*strike_database=*/nullptr,
+                         /*image_fetcher=*/nullptr,
+                         /*is_off_the_record=*/false);
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
 
     autocomplete_history_manager_ =
         std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
@@ -371,22 +371,22 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockAutofillDriver>>();
     auto payments_client = std::make_unique<payments::TestPaymentsClient>(
         autofill_driver_->GetURLLoaderFactory(),
-        autofill_client_.GetIdentityManager(), &personal_data_);
+        autofill_client_.GetIdentityManager(), &personal_data());
     payments_client_ = payments_client.get();
     autofill_client_.set_test_payments_client(std::move(payments_client));
     TestCreditCardSaveManager* credit_card_save_manager =
         new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
-                                      payments_client_, &personal_data_);
+                                      payments_client_, &personal_data());
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     TestFormDataImporter* test_form_data_importer = new TestFormDataImporter(
         &autofill_client_, payments_client_,
         std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
-        &personal_data_, "en-US");
+        &personal_data(), "en-US");
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<autofill::TestFormDataImporter>(
             test_form_data_importer));
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_);
+        autofill_driver_.get(), &autofill_client_);
 
     auto single_field_form_fill_router =
         std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
@@ -418,7 +418,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void CreateTestServerCreditCards() {
-    personal_data_.ClearCreditCards();
+    personal_data().ClearCreditCards();
 
     CreditCard masked_server_card;
     test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -426,7 +426,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "04", "2999", "1");
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
     masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
-    personal_data_.AddServerCreditCard(masked_server_card);
+    personal_data().AddServerCreditCard(masked_server_card);
 
     CreditCard full_server_card;
     test::SetCreditCardInfo(&full_server_card, "Buddy Holly",
@@ -434,11 +434,11 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "10", "2998", "1");
     full_server_card.set_guid("00000000-0000-0000-0000-000000000008");
     full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
-    personal_data_.AddServerCreditCard(full_server_card);
+    personal_data().AddServerCreditCard(full_server_card);
   }
 
   void CreateTestServerAndLocalCreditCards() {
-    personal_data_.ClearCreditCards();
+    personal_data().ClearCreditCards();
 
     CreditCard masked_server_card;
     test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -446,7 +446,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "04", "2999", "1");
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
     masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
-    personal_data_.AddServerCreditCard(masked_server_card);
+    personal_data().AddServerCreditCard(masked_server_card);
 
     CreditCard full_server_card;
     test::SetCreditCardInfo(&full_server_card, "Buddy Holly",
@@ -454,7 +454,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "10", "2998", "1");
     full_server_card.set_guid("00000000-0000-0000-0000-000000000008");
     full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
-    personal_data_.AddServerCreditCard(full_server_card);
+    personal_data().AddServerCreditCard(full_server_card);
 
     CreditCard local_card;
     test::SetCreditCardInfo(&local_card, "Elvis Presley",
@@ -462,7 +462,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "04", "2999", "1");
     local_card.set_guid("00000000-0000-0000-0000-000000000009");
     local_card.set_record_type(CreditCard::LOCAL_CARD);
-    personal_data_.AddCreditCard(local_card);
+    personal_data().AddCreditCard(local_card);
   }
 
   void TearDown() override {
@@ -470,8 +470,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     // PersonalDataManager to be around when it gets destroyed.
     browser_autofill_manager_.reset();
 
-    personal_data_.SetPrefService(nullptr);
-    personal_data_.ClearCreditCards();
+    personal_data().SetPrefService(nullptr);
+    personal_data().ClearCreditCards();
   }
 
   void GetAutofillSuggestions(int query_id,
@@ -704,9 +704,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     // |browser_autofill_manager_| owns the |single_field_form_fill_router_| and
     // clears it upon being recreated. Clear it first and then give it a new
     // SingleFieldFormFillRouter to avoid referencing deleted memory.
-    browser_autofill_manager_.reset();
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_);
+        autofill_driver_.get(), &autofill_client_);
 
     auto single_field_form_fill_router =
         std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
@@ -717,6 +716,10 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
  protected:
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
+  }
+
   base::test::TaskEnvironment task_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
@@ -724,7 +727,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   raw_ptr<TestAutofillExternalDelegate> external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
-  TestPersonalDataManager personal_data_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   raw_ptr<MockSingleFieldFormFillRouter> single_field_form_fill_router_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -748,20 +750,20 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "Apt. 10", "Memphis", "Tennessee", "38116", "US",
                          "12345678901");
     profile1.set_guid("00000000-0000-0000-0000-000000000001");
-    personal_data_.AddProfile(profile1);
+    personal_data().AddProfile(profile1);
 
     AutofillProfile profile2;
     test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                          "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid("00000000-0000-0000-0000-000000000002");
-    personal_data_.AddProfile(profile2);
+    personal_data().AddProfile(profile2);
 
     AutofillProfile profile3;
     test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "", "",
                          "");
     profile3.set_guid("00000000-0000-0000-0000-000000000003");
-    personal_data_.AddProfile(profile3);
+    personal_data().AddProfile(profile3);
   }
 
   void CreateTestCreditCards() {
@@ -772,7 +774,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card1.set_guid("00000000-0000-0000-0000-000000000004");
     credit_card1.set_use_count(10);
     credit_card1.set_use_date(AutofillClock::Now() - base::Days(5));
-    personal_data_.AddCreditCard(credit_card1);
+    personal_data().AddCreditCard(credit_card1);
 
     CreditCard credit_card2;
     test::SetCreditCardInfo(&credit_card2, "Buddy Holly",
@@ -781,12 +783,12 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card2.set_guid("00000000-0000-0000-0000-000000000005");
     credit_card2.set_use_count(5);
     credit_card2.set_use_date(AutofillClock::Now() - base::Days(4));
-    personal_data_.AddCreditCard(credit_card2);
+    personal_data().AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
     test::SetCreditCardInfo(&credit_card3, "", "", "", "", "");
     credit_card3.set_guid("00000000-0000-0000-0000-000000000006");
-    personal_data_.AddCreditCard(credit_card3);
+    personal_data().AddCreditCard(credit_card3);
   }
 };
 
@@ -1280,21 +1282,21 @@ TEST_P(SuggestionMatchingTest,
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000124");
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   AutofillProfile profile3;
   profile3.set_guid("00000000-0000-0000-0000-000000000126");
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
-  personal_data_.AddProfile(profile3);
+  personal_data().AddProfile(profile3);
 
   FormFieldData field;
   test::CreateTestFormField("Last Name", "lastname", "G", "text", &field);
@@ -1387,9 +1389,9 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
   FormsSeen(forms);
 
   // Add a duplicate profile.
-  AutofillProfile duplicate_profile = *(personal_data_.GetProfileWithGUID(
+  AutofillProfile duplicate_profile = *(personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000001"));
-  personal_data_.AddProfile(duplicate_profile);
+  personal_data().AddProfile(duplicate_profile);
 
   const FormFieldData& field = form.fields[0];
   GetAutofillSuggestions(form, field);
@@ -1614,7 +1616,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "5255667890123123",  // Mastercard
                           "08", "2017", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
 
   // Set up our form data.
   FormData form;
@@ -1675,7 +1677,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // field is the credit card number field.
 TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data_.SetNicknameForCardWithGUID(
+  personal_data().SetNicknameForCardWithGUID(
       "00000000-0000-0000-0000-000000000005", kArbitraryNickname);
   // Set up our form data.
   FormData form;
@@ -1719,7 +1721,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 // field is not the credit card number field.
 TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data_.SetNicknameForCardWithGUID(
+  personal_data().SetNicknameForCardWithGUID(
       "00000000-0000-0000-0000-000000000005", kArbitraryNickname);
   // Set up our form data.
   FormData form;
@@ -1780,7 +1782,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
 // AutofillExternalDelegateTest that test whether the promo is added.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_OnlySigninPromo) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   // Set up our form data.
   FormData form;
@@ -1832,7 +1834,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Clear the test credit cards and try again -- we should still show the
   // mixed form warning.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   GetAutofillSuggestions(form, field);
   CheckSuggestions(
       kDefaultPageID,
@@ -1924,7 +1926,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "05", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
   credit_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
 
   // Set up our form data.
   FormData form;
@@ -1967,7 +1969,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_MaskedCardWithMoreThan6Digits) {
   // Add a masked server card.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   CreditCard masked_server_card;
   test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -1975,8 +1977,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "04", "2999", "1");
   masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
   masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  personal_data_.AddServerCreditCard(masked_server_card);
-  EXPECT_EQ(1U, personal_data_.GetCreditCards().size());
+  personal_data().AddServerCreditCard(masked_server_card);
+  EXPECT_EQ(1U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -1995,7 +1997,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // after non expired cards even if they have a higher frecency score.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_ExpiredCards) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
 
   // Add a never used non expired credit card.
   CreditCard credit_card0("002149C1-EE28-4213-A3B9-DA243FFF021B",
@@ -2004,7 +2006,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "5105105105105100" /* Mastercard */, "04", "2055",
                           "1");
   credit_card0.set_guid("00000000-0000-0000-0000-000000000001");
-  personal_data_.AddCreditCard(credit_card0);
+  personal_data().AddCreditCard(credit_card0);
 
   // Add an expired card with a higher frecency score.
   CreditCard credit_card1("287151C8-6AB1-487C-9095-28E80BE5DA15",
@@ -2015,7 +2017,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   credit_card1.set_guid("00000000-0000-0000-0000-000000000002");
   credit_card1.set_use_count(300);
   credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
-  personal_data_.AddCreditCard(credit_card1);
+  personal_data().AddCreditCard(credit_card1);
 
   // Add an expired card with a lower frecency score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -2025,9 +2027,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2011", "1");
   credit_card2.set_guid("00000000-0000-0000-0000-000000000003");
-  personal_data_.AddCreditCard(credit_card2);
+  personal_data().AddCreditCard(credit_card2);
 
-  ASSERT_EQ(3U, personal_data_.GetCreditCards().size());
+  ASSERT_EQ(3U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -2067,8 +2069,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // enabled and the input field is empty.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_SuppressDisusedCreditCardsOnEmptyField) {
-  personal_data_.ClearCreditCards();
-  ASSERT_EQ(0U, personal_data_.GetCreditCards().size());
+  personal_data().ClearCreditCards();
+  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
 
   // Add a never used non expired local credit card.
   CreditCard credit_card0("00000000-0000-0000-0000-000000000000",
@@ -2076,7 +2078,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::SetCreditCardInfo(&credit_card0, "Bonnie Parker",
                           "5105105105105100" /* Mastercard */, "04", "2999",
                           "1");
-  personal_data_.AddCreditCard(credit_card0);
+  personal_data().AddCreditCard(credit_card0);
 
   auto now = AutofillClock::Now();
 
@@ -2086,7 +2088,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "4234567890123456" /* Visa */, "04", "2010", "1");
   credit_card1.set_use_date(now - base::Days(10));
-  personal_data_.AddCreditCard(credit_card1);
+  personal_data().AddCreditCard(credit_card1);
 
   // Add an expired local card last used 180 days ago.
   CreditCard credit_card2("00000000-0000-0000-0000-000000000002",
@@ -2095,9 +2097,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "378282246310005" /* American Express */, "01",
                           "2010", "1");
-  personal_data_.AddCreditCard(credit_card2);
+  personal_data().AddCreditCard(credit_card2);
 
-  ASSERT_EQ(3U, personal_data_.GetCreditCards().size());
+  ASSERT_EQ(3U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -2215,8 +2217,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_NumberMissing) {
   // Create one normal credit card and one credit card with the number
   // missing.
-  personal_data_.ClearCreditCards();
-  ASSERT_EQ(0U, personal_data_.GetCreditCards().size());
+  personal_data().ClearCreditCards();
+  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
 
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
@@ -2224,16 +2226,16 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
   credit_card0.set_guid("00000000-0000-0000-0000-000000000001");
-  personal_data_.AddCreditCard(credit_card0);
+  personal_data().AddCreditCard(credit_card0);
 
   CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2999",
                           "1");
   credit_card1.set_guid("00000000-0000-0000-0000-000000000002");
-  personal_data_.AddCreditCard(credit_card1);
+  personal_data().AddCreditCard(credit_card1);
 
-  ASSERT_EQ(2U, personal_data_.GetCreditCards().size());
+  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -2380,7 +2382,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                               "", "", -1));
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   GetAutofillSuggestions(form, field);
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
 }
@@ -2451,7 +2453,7 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   }
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
   ASSERT_TRUE(profile);
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
@@ -2497,7 +2499,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
     *it = FormFieldData();
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
   ASSERT_TRUE(profile);
 
   int response_query_id = 0;
@@ -2535,7 +2537,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldRemoved) {
   form.fields.pop_back();
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
   ASSERT_TRUE(profile);
 
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
@@ -2664,8 +2666,8 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
                                   << static_cast<int>(form_type));
 
   if (!params.run_with_data_on_file) {
-    personal_data_.ClearAllServerData();
-    personal_data_.ClearAllLocalData();
+    personal_data().ClearAllServerData();
+    personal_data().ClearAllLocalData();
   }
 
   DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
@@ -3010,7 +3012,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   test::SetProfileInfo(&profile, "Elvis", "", "", "", "", "", "", "", "", "",
                        "", "");
   profile.set_guid("00000000-0000-0000-0000-000000000101");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   FormFieldData& field = form.fields[0];
   field.is_autofilled = true;
@@ -3043,7 +3045,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
   profile.set_guid("00000000-0000-0000-0000-000000000103");
   profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800PRAIRIE");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   const FormFieldData& field = form.fields[9];
   GetAutofillSuggestions(form, field);
@@ -3131,11 +3133,11 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
-  personal_data_.ClearProfiles();
+  personal_data().ClearProfiles();
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000104");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800FLOWERS");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   const FormFieldData& phone_prefix = form.fields[2];
   GetAutofillSuggestions(form, phone_prefix);
@@ -3165,8 +3167,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   profile.set_guid("00000000-0000-0000-0000-000000000103");
   profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+886123456789");
-  personal_data_.ClearProfiles();
-  personal_data_.AddProfile(profile);
+  personal_data().ClearProfiles();
+  personal_data().AddProfile(profile);
 
   const FormFieldData& field = form.fields[9];
   GetAutofillSuggestions(form, field);
@@ -3209,12 +3211,12 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
-  personal_data_.ClearProfiles();
+  personal_data().ClearProfiles();
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000103");
   profile.SetRawInfo(NAME_FULL, u"Natty Bumppo");
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
   CheckSuggestions(kDefaultPageID,
@@ -3230,7 +3232,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillAddressForm) {
   FormsSeen(forms);
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  AutofillProfile* profile = personal_data().GetProfileWithGUID(guid);
   ASSERT_TRUE(profile);
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
@@ -3343,13 +3345,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_StripCardNumberWhitespace) {
   // Same as the SetUp(), but generate Elvis card with whitespace in credit
   // card number.  |credit_card| will be owned by the TestPersonalDataManager.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Elvis Presley",
                           "4234 5678 9012 3456",  // Visa
                           "04", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000008");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -3372,13 +3374,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Same as the SetUp(), but generate Elvis card with separator characters in
   // credit card number.  |credit_card| will be owned by the
   // TestPersonalDataManager.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Elvis Presley",
                           "4234-5678-9012-3456",  // Visa
                           "04", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000009");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -3399,13 +3401,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test 1 of 4: Empty month, empty year
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_NoYearNoMonth) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
                           "4234567890654321",  // Visa
                           "", "", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, true);
@@ -3426,13 +3428,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test 2 of 4: Non-empty month, empty year
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_NoYearMonth) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
                           "4234567890654321",  // Visa
                           "04", "", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, true);
@@ -3455,13 +3457,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_YearNoMonth) {
   // Same as the SetUp(), but generate 4 credit cards with year month
   // combination.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
                           "4234567890654321",  // Visa
                           "", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, true);
@@ -3482,13 +3484,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test 4 of 4: Non-empty month, non-empty year
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_YearMonth) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
                           "4234567890654321",  // Visa
                           "04", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, true);
@@ -3767,7 +3769,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                        "Apt. 10", "Memphis", "Tennessee", "38116", "US",
                        "12345678901");
   profile.set_guid(guid);
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   int response_page_id = 0;
   FormData response_data;
@@ -3960,7 +3962,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                        "Apt. 10", "Memphis", "Tennessee", "38116", "US",
                        "12345678901");
   profile.set_guid(guid);
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   int response_page_id = 0;
   FormData response_data;
@@ -4094,13 +4096,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // expiration date.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillCreditCardForm_ExpiredCard) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard expired_card;
   test::SetCreditCardInfo(&expired_card, "Homer Simpson",
                           "4234567890654321",  // Visa
                           "05", "2000", "1");
   expired_card.set_guid("00000000-0000-0000-0000-000000000009");
-  personal_data_.AddCreditCard(expired_card);
+  personal_data().AddCreditCard(expired_card);
 
   // Set up the form data.
   FormData form;
@@ -4155,9 +4157,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        PreviewCreditCardForm_VirtualCard) {
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard virtual_card = test::GetVirtualCard();
-  personal_data_.AddServerCreditCard(virtual_card);
+  personal_data().AddServerCreditCard(virtual_card);
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -4701,8 +4703,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   FormsSeen(forms);
 
   // We should be able to fill prefix and suffix fields for US numbers.
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4780,8 +4782,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_ComponentizedNumbers) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4848,8 +4850,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_WholeNumbers) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4898,8 +4900,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_FillPartsOnceOnly) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -4971,8 +4973,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // phone field, we do not fill anything to extension field.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_NotFillMisclassifiedExtention) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5031,8 +5033,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Verify when no complete number can be found, we do best-effort filling.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_BestEfforFilling) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5088,8 +5090,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // entire form, both first phone field and second phone field included.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_FocusOnSecondPhoneNumber) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5141,8 +5143,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_HiddenFieldShouldNotCount) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5265,8 +5267,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
-  AutofillProfile* work_profile =
-      personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
+  AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
+      "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
@@ -5508,7 +5510,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmitted) {
   // Simulate form submission. We should call into the PDM to try to save the
   // filled data.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
+  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 }
 
 // Test that we are saving form data when the FormSubmitted event is sent.
@@ -5531,7 +5533,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedSaveData) {
 
   browser_autofill_manager_->OnFormSubmitted(response_data, false,
                                              SubmissionSource::FORM_SUBMISSION);
-  EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
+  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 }
 
 // Test that when Autocomplete is enabled and Autofill is disabled, form
@@ -6090,7 +6092,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
   // Simulate form submission. We should call into the PDM to try to save the
   // filled data.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
+  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 }
 
 // Test that we are able to save form data after the possible types have been
@@ -6114,18 +6116,18 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
                                false);
 
-  personal_data_.ClearProfiles();
+  personal_data().ClearProfiles();
   // The default credit card is a Elvis card. It must be removed because name
   // fields would be detected. However at least one profile or card is needed to
   // start the upload process, which is why this other card is created.
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
                           "4234567890654321",  // Visa
                           "04", "2999", "1");
   credit_card.set_guid("00000000-0000-0000-0000-000000000007");
-  personal_data_.AddCreditCard(credit_card);
-  ASSERT_EQ(0u, personal_data_.GetProfiles().size());
+  personal_data().AddCreditCard(credit_card);
+  ASSERT_EQ(0u, personal_data().GetProfiles().size());
 
   // Simulate form submission. The first submission should not count the data
   // towards possible types. Therefore we expect all UNKNOWN_TYPE entries.
@@ -6135,12 +6137,12 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                                                 type_set);
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes(unknown_types);
   FormSubmitted(response_data);
-  ASSERT_EQ(1u, personal_data_.GetProfiles().size());
+  ASSERT_EQ(1u, personal_data().GetProfiles().size());
 
   // The second submission should now have data by which to infer types.
   browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
   FormSubmitted(response_data);
-  ASSERT_EQ(1u, personal_data_.GetProfiles().size());
+  ASSERT_EQ(1u, personal_data().GetProfiles().size());
 }
 
 // Test that the form signature for an uploaded form always matches the form
@@ -6198,7 +6200,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Simulate form submission.  We should call into the PDM to try to save the
   // filled data.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
+  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
@@ -6206,7 +6208,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Simulate form submission.  We should not call into the PDM to try to save
   // the filled data, since the filled form is effectively missing an address.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
+  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 }
 
 struct ProfileMatchingTypesTestCase {
@@ -7003,13 +7005,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveProfile) {
   AutofillProfile profile;
   const char guid[] = "00000000-0000-0000-0000-000000000102";
   profile.set_guid(guid);
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   int id = MakeFrontendID(std::string(), guid);
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
 
-  EXPECT_FALSE(personal_data_.GetProfileWithGUID(guid));
+  EXPECT_FALSE(personal_data().GetProfileWithGUID(guid));
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveCreditCard) {
@@ -7017,13 +7019,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveCreditCard) {
   CreditCard credit_card;
   const char guid[] = "00000000-0000-0000-0000-000000100007";
   credit_card.set_guid(guid);
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
 
   int id = MakeFrontendID(guid, std::string());
 
   browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
 
-  EXPECT_FALSE(personal_data_.GetCreditCardWithGUID(guid));
+  EXPECT_FALSE(personal_data().GetCreditCardWithGUID(guid));
 }
 
 // Test our external delegate is called at the right time.
@@ -7595,7 +7597,7 @@ TEST_P(CreditCardSuggestionTest,
                           "01", "2030", "1");
   credit_card.set_guid(guid);
   credit_card.SetNickname(kArbitraryNickname16);
-  personal_data_.AddCreditCard(credit_card);
+  personal_data().AddCreditCard(credit_card);
 
 #if BUILDFLAG(IS_ANDROID)
   // When keyboard accessary is enabled, always show "7777".
@@ -7865,7 +7867,7 @@ TEST_P(SuggestionMatchingTest,
   profile1.SetInfo(NAME_MIDDLE, u"Adam Smith", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000124");
@@ -7873,7 +7875,7 @@ TEST_P(SuggestionMatchingTest,
   profile2.SetInfo(NAME_MIDDLE, u"Shawn Smith", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   FormFieldData field;
   test::CreateTestFormField("Middle Name", "middlename", "S", "text", &field);
@@ -8170,7 +8172,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
       {features::kAutofillEnableMerchantBoundVirtualCards},
       {features::kAutofillSuggestVirtualCardsOnIncompleteForm});
 
-  personal_data_.ClearCreditCards();
+  personal_data().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
                                 /*server_id=*/"a123");
   test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -8180,7 +8182,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
   masked_server_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
   masked_server_card.SetNickname(u"nickname");
-  personal_data_.AddServerCreditCard(masked_server_card);
+  personal_data().AddServerCreditCard(masked_server_card);
 
   // Set up our form data.
   FormData form;
@@ -8960,9 +8962,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // The feature is not implemented for mobile.
-  EXPECT_EQ(0, personal_data_.num_times_save_upi_id_called());
+  EXPECT_EQ(0, personal_data().num_times_save_upi_id_called());
 #else
-  EXPECT_EQ(1, personal_data_.num_times_save_upi_id_called());
+  EXPECT_EQ(1, personal_data().num_times_save_upi_id_called());
 #endif
 }
 
@@ -8993,7 +8995,7 @@ TEST_F(BrowserAutofillManagerTest, DontImportUpiIdWhenIncognito) {
   form.fields[0].value = u"user@indianbank";
   FormSubmitted(form);
 
-  EXPECT_EQ(0, personal_data_.num_times_save_upi_id_called());
+  EXPECT_EQ(0, personal_data().num_times_save_upi_id_called());
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
@@ -9336,7 +9338,7 @@ class BrowserAutofillManagerTestForVirtualCardOption
 
     // Add only one server card so the second suggestion (if any) must be the
     // "Use a virtual card number" option.
-    personal_data_.ClearCreditCards();
+    personal_data().ClearCreditCards();
     CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
                                   /*server_id=*/"a123");
     // TODO(crbug.com/1020740): Replace all the hard-coded expiration year in
@@ -9346,7 +9348,7 @@ class BrowserAutofillManagerTestForVirtualCardOption
                             "04", "2999", "1");
     masked_server_card.SetNetworkForMaskedCard(kVisaCard);
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-    personal_data_.AddServerCreditCard(masked_server_card);
+    personal_data().AddServerCreditCard(masked_server_card);
   }
 
   void CreateCompleteFormAndGetSuggestions() {
@@ -9362,10 +9364,10 @@ class BrowserAutofillManagerTestForVirtualCardOption
   // Adds a CreditCardCloudTokenData to PersonalDataManager. This needs to be
   // called before suggestions are fetched.
   void CreateCloudTokenDataForDefaultCard() {
-    personal_data_.ClearCloudTokenData();
+    personal_data().ClearCloudTokenData();
     CreditCardCloudTokenData data1 = test::GetCreditCardCloudTokenData1();
     data1.masked_card_id = "a123";
-    personal_data_.AddCloudTokenData(data1);
+    personal_data().AddCloudTokenData(data1);
   }
 
   void VerifyNoVirtualCardSuggestions() {
@@ -9468,7 +9470,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   CreateCloudTokenDataForDefaultCard();
   CreditCardCloudTokenData data2 = test::GetCreditCardCloudTokenData2();
   data2.masked_card_id = "a123";
-  personal_data_.AddCloudTokenData(data2);
+  personal_data().AddCloudTokenData(data2);
   CreateCompleteFormAndGetSuggestions();
 
   VerifyNoVirtualCardSuggestions();
@@ -9567,13 +9569,13 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
                           "04", "2999", "1");
   masked_server_card.SetNetworkForMaskedCard(kVisaCard);
   masked_server_card.set_guid("00000000-0000-0000-0000-000000000008");
-  personal_data_.AddServerCreditCard(masked_server_card);
+  personal_data().AddServerCreditCard(masked_server_card);
   CreditCardCloudTokenData data1 = test::GetCreditCardCloudTokenData1();
   data1.masked_card_id = "a456";
-  personal_data_.AddCloudTokenData(data1);
+  personal_data().AddCloudTokenData(data1);
   CreditCardCloudTokenData data2 = test::GetCreditCardCloudTokenData2();
   data2.masked_card_id = "a456";
-  personal_data_.AddCloudTokenData(data2);
+  personal_data().AddCloudTokenData(data2);
 
   CreateCompleteFormAndGetSuggestions();
 
@@ -9839,12 +9841,12 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_DuplicateCards) {
-  personal_data_.ClearCreditCards();
-  ASSERT_EQ(0U, personal_data_.GetCreditCards().size());
+  personal_data().ClearCreditCards();
+  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
-  personal_data_.AddCreditCard(local_card);
-  personal_data_.AddServerCreditCard(GetServerCard());
-  ASSERT_EQ(2U, personal_data_.GetCreditCards().size());
+  personal_data().AddCreditCard(local_card);
+  personal_data().AddServerCreditCard(GetServerCard());
+  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;
@@ -9873,18 +9875,18 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_UnrelatedCards) {
-  personal_data_.ClearCreditCards();
-  ASSERT_EQ(0U, personal_data_.GetCreditCards().size());
+  personal_data().ClearCreditCards();
+  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
-  personal_data_.AddCreditCard(local_card);
+  personal_data().AddCreditCard(local_card);
 
   std::vector<CreditCard> server_cards;
   CreditCard server_card = GetServerCard();
   // Make sure the cards are different by giving a different card number.
   server_card.SetNumber(u"371449635398431");
-  personal_data_.AddServerCreditCard(server_card);
+  personal_data().AddServerCreditCard(server_card);
 
-  ASSERT_EQ(2U, personal_data_.GetCreditCards().size());
+  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
   FormData form;

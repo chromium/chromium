@@ -40,7 +40,8 @@ namespace autofill {
 // This class is for easier writing of tests.
 class TestAutofillClient : public AutofillClient {
  public:
-  TestAutofillClient();
+  explicit TestAutofillClient(
+      std::unique_ptr<TestPersonalDataManager> pdm = nullptr);
 
   TestAutofillClient(const TestAutofillClient&) = delete;
   TestAutofillClient& operator=(const TestAutofillClient&) = delete;
@@ -49,7 +50,7 @@ class TestAutofillClient : public AutofillClient {
 
   // AutofillClient:
   version_info::Channel GetChannel() const override;
-  PersonalDataManager* GetPersonalDataManager() override;
+  TestPersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -184,6 +185,10 @@ class TestAutofillClient : public AutofillClient {
     prefs_ = std::move(prefs);
   }
 
+  void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
+    test_personal_data_manager_ = std::move(pdm);
+  }
+
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
@@ -285,16 +290,20 @@ class TestAutofillClient : public AutofillClient {
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   TestAddressNormalizer test_address_normalizer_;
-  TestPersonalDataManager test_personal_data_manager_;
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
-  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<TestFormDataImporter> form_data_importer_;
+
+  // AutofillOfferManager must be destroyed before TestPersonalDataManager
+  // because the former's destructor refers to the latter.
+  std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
+  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
+
   GURL form_origin_;
   ukm::SourceId source_id_ = -1;
   std::string variation_config_country_code_;

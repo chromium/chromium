@@ -337,14 +337,6 @@ class BrowserAutofillManager : public AutofillManager,
 #endif
 
  protected:
-  // Test code should prefer to use this constructor.
-  BrowserAutofillManager(AutofillDriver* driver,
-                         AutofillClient* client,
-                         PersonalDataManager* personal_data,
-                         const std::string app_locale = "en-US",
-                         EnableDownloadManager enable_download_manager =
-                             EnableDownloadManager(false));
-
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.
   virtual void UploadFormData(const FormStructure& submitted_form,

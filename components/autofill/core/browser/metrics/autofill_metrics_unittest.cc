@@ -397,7 +397,7 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
                                      .is_autofilled = true}},
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -477,7 +477,7 @@ TEST_F(AutofillMetricsTest,
                                      .is_autofilled = true}},
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -549,7 +549,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_AllAutofillFilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                                   ADDRESS_HOME_CITY};
@@ -599,7 +599,7 @@ TEST_F(AutofillMetricsTest,
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                                   ADDRESS_HOME_CITY};
@@ -648,7 +648,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_NotAllAutofilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                                   ADDRESS_HOME_CITY};
@@ -693,7 +693,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_AllAutofilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {CREDIT_CARD_NAME_FULL,
                                                   CREDIT_CARD_NUMBER};
@@ -738,7 +738,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_NotAllAutofilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {CREDIT_CARD_NAME_FULL,
                                                   CREDIT_CARD_NUMBER};
@@ -784,7 +784,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_AllAutofilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
                                                   CREDIT_CARD_NUMBER};
@@ -830,7 +830,7 @@ TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_NotAllAutofilled) {
                              },
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
                                                   CREDIT_CARD_NUMBER};
@@ -887,7 +887,7 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
                                      .is_autofilled = true}},
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
-                             autofill_client_.form_origin())});
+                             autofill_client_->form_origin())});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -1877,7 +1877,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -2033,7 +2033,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FieldSignature field_signature[2];
 
@@ -2141,7 +2141,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FieldSignature field_signature[3];
 
@@ -2659,7 +2659,7 @@ TEST_P(QualityMetricsTest, Classification) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   std::vector<ServerFieldType> heuristic_types, server_types, actual_types;
   AutofillField field;
@@ -2880,7 +2880,7 @@ TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   std::vector<ServerFieldType> heuristic_types, server_types;
   FormFieldData field;
@@ -3611,7 +3611,7 @@ TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields_NoSubmission) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   std::vector<ServerFieldType> heuristic_types, server_types;
 
@@ -3662,7 +3662,7 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -3759,7 +3759,7 @@ TEST_F(AutofillMetricsTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -3806,7 +3806,7 @@ TEST_F(AutofillMetricsTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -3858,7 +3858,7 @@ TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -4101,11 +4101,11 @@ TEST_F(AutofillMetricsTest, LogStoredOfferMetrics) {
 // Test that we correctly log when Profile Autofill is enabled at startup.
 TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data_->SetAutofillProfileEnabled(true);
-  personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
+  personal_data().SetAutofillProfileEnabled(true);
+  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_.GetPrefs(),
-                       /*local_state=*/autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*local_state=*/autofill_client_->GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
@@ -4118,11 +4118,11 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
 // Test that we correctly log when Profile Autofill is disabled at startup.
 TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data_->SetAutofillProfileEnabled(false);
-  personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
+  personal_data().SetAutofillProfileEnabled(false);
+  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_.GetPrefs(),
-                       /*local_state=*/autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*local_state=*/autofill_client_->GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
@@ -4135,11 +4135,11 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
 // Test that we correctly log when CreditCard Autofill is enabled at startup.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data_->SetAutofillCreditCardEnabled(true);
-  personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
+  personal_data().SetAutofillCreditCardEnabled(true);
+  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_.GetPrefs(),
-                       /*local_state=*/autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*local_state=*/autofill_client_->GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
@@ -4152,11 +4152,11 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
 // Test that we correctly log when CreditCard Autofill is disabled at startup.
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
   base::HistogramTester histogram_tester;
-  personal_data_->SetAutofillCreditCardEnabled(false);
-  personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
+  personal_data().SetAutofillCreditCardEnabled(false);
+  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_.GetPrefs(),
-                       /*local_state=*/autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*local_state=*/autofill_client_->GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
@@ -4175,7 +4175,7 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4249,7 +4249,7 @@ TEST_F(AutofillMetricsTest, CompanyNameSuggestions) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4292,7 +4292,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4479,7 +4479,7 @@ TEST_F(AutofillMetricsTest, UpiVpaUkmTest) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
   FormFieldData field;
   test::CreateTestFormField("Enter VPA", "upi-vpa", "unique_id@upi", "text",
                             &field);
@@ -4513,7 +4513,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4720,7 +4720,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4743,13 +4743,13 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     // In order to test that the QueriedCreditCardFormIsSecure is logged as
     // false, we need to set the main frame origin, otherwise this fill is
     // skipped due to the form being detected as mixed content.
-    GURL client_form_origin = autofill_client_.form_origin();
+    GURL client_form_origin = autofill_client_->form_origin();
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpScheme);
-    autofill_client_.set_form_origin(
+    autofill_client_->set_form_origin(
         client_form_origin.ReplaceComponents(replacements));
     form.main_frame_origin =
-        url::Origin::Create(autofill_client_.form_origin());
+        url::Origin::Create(autofill_client_->form_origin());
     autofill_manager().AddSeenForm(form, field_types, field_types);
 
     // Simulate an Autofill query on a credit card field (HTTP, non-secure
@@ -4761,7 +4761,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.QueriedCreditCardFormIsSecure", false, 1);
     // Reset the main frame origin to secure for other tests
-    autofill_client_.set_form_origin(client_form_origin);
+    autofill_client_->set_form_origin(client_form_origin);
   }
 
   {
@@ -4772,7 +4772,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     form.url = GURL("https://example.com/form.html");
     form.action = GURL("https://example.com/submit.html");
     form.main_frame_origin =
-        url::Origin::Create(autofill_client_.form_origin());
+        url::Origin::Create(autofill_client_->form_origin());
     autofill_manager().AddSeenForm(form, field_types, field_types);
 
     // Simulate an Autofill query on a credit card field (HTTPS form).
@@ -4797,7 +4797,7 @@ TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4856,7 +4856,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardParsedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4891,7 +4891,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -4949,7 +4949,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardPopupSuppressedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5009,7 +5009,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5091,7 +5091,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5267,7 +5267,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5411,7 +5411,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5700,7 +5700,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -5900,7 +5900,7 @@ TEST_F(AutofillMetricsTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6040,7 +6040,7 @@ TEST_P(AutofillMetricsIFrameTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6089,7 +6089,7 @@ TEST_P(AutofillMetricsIFrameTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6138,7 +6138,7 @@ TEST_P(AutofillMetricsIFrameTest,
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6199,7 +6199,7 @@ TEST_F(AutofillMetricsTest, ShouldNotLogFormEventNoCardForAddressForm) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6243,7 +6243,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -6796,7 +6796,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7142,7 +7142,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7204,7 +7204,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 
   // Add another masked server card, this time with a linked offer.
   std::string guid("12340000-0000-0000-0000-000000000001");
-  AddMaskedServerCreditCardWithOffer(guid, "$4", autofill_client_.form_origin(),
+  AddMaskedServerCreditCardWithOffer(guid, "$4",
+                                     autofill_client_->form_origin(),
                                      /*id=*/0x4fff);
   // Reset the autofill manager state.
   autofill_manager().Reset();
@@ -7326,8 +7327,9 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                       true /* include_full_server_credit_card */,
                       false /* masked_card_is_enrolled_for_virtual_card */);
   guid = "12340000-0000-0000-0000-000000000002";
-  AddMaskedServerCreditCardWithOffer(guid, "$4", autofill_client_.form_origin(),
-                                     /*id=*/0x3fff, /*expired=*/true);
+  AddMaskedServerCreditCardWithOffer(guid, "$4",
+                                     autofill_client_->form_origin(),
+                                     /*id=*/0x3fff, /*offer_expired=*/true);
 
   // Reset the autofill manager state.
   autofill_manager().Reset();
@@ -7396,7 +7398,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                       true /* include_full_server_credit_card */,
                       false /* masked_card_is_enrolled_for_virtual_card */);
   guid = "12340000-0000-0000-0000-000000000003";
-  AddMaskedServerCreditCardWithOffer(guid, "$5", autofill_client_.form_origin(),
+  AddMaskedServerCreditCardWithOffer(guid, "$5",
+                                     autofill_client_->form_origin(),
                                      /*id=*/0x5fff);
 
   // Reset the autofill manager state.
@@ -7599,7 +7602,7 @@ TEST_F(AutofillMetricsTest, MixedParsedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7645,7 +7648,7 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7690,7 +7693,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7768,7 +7771,7 @@ TEST_F(AutofillMetricsTest, AddressSuppressedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7863,7 +7866,7 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -7976,7 +7979,7 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8097,7 +8100,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8311,7 +8314,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8497,7 +8500,7 @@ TEST_F(AutofillMetricsTest, RecordStandalonePhoneField) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8522,7 +8525,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8640,7 +8643,7 @@ TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -8657,7 +8660,7 @@ TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by `autofill_manager()`.
   autofill_manager().AddSeenForm(form, field_types, field_types);
-  personal_data_->ClearProfiles();
+  personal_data().ClearProfiles();
 
   {
     // Simulate activating the autofill popup for the street field.
@@ -8843,7 +8846,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -9128,7 +9131,7 @@ TEST_F(
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -9269,7 +9272,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_EmptyForm) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   std::vector<FormData> forms(1, form);
 
@@ -9299,7 +9302,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   // Construct a valid credit card form.
   FormFieldData field;
@@ -9471,7 +9474,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -9732,7 +9735,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -10172,7 +10175,7 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   // Create the form's fields.
   FormFieldData field;
@@ -10466,7 +10469,7 @@ TEST_F(AutofillMetricsTest, NonsecureCreditCardForm) {
   form.action = GURL("http://example.com/submit.html");
   GURL frame_origin("http://example_root.com/form.html");
   form.main_frame_origin = url::Origin::Create(frame_origin);
-  autofill_client_.set_form_origin(frame_origin);
+  autofill_client_->set_form_origin(frame_origin);
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -10576,10 +10579,10 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
   GURL url("https://www.google.com");
   int upload_decision = 1;
-  autofill_client_.set_form_origin(url);
+  autofill_client_->set_form_origin(url);
 
   AutofillMetrics::LogCardUploadDecisionsUkm(test_ukm_recorder_,
-                                             autofill_client_.GetUkmSourceId(),
+                                             autofill_client_->GetUkmSourceId(),
                                              url, upload_decision);
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
@@ -10597,10 +10600,10 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
   GURL url("https://www.google.com");
   int form_structure_metric = 1;
   FormSignature form_signature(100);
-  autofill_client_.set_form_origin(url);
+  autofill_client_->set_form_origin(url);
 
   AutofillMetrics::LogDeveloperEngagementUkm(
-      test_ukm_recorder_, autofill_client_.GetUkmSourceId(), url, true,
+      test_ukm_recorder_, autofill_client_->GetUkmSourceId(), url, true,
       {FormType::kCreditCardForm}, form_structure_metric, form_signature);
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);
@@ -10654,7 +10657,7 @@ TEST_F(AutofillMetricsTest, DISABLED_AutofillSuggestionShownTest) {
   form.name = u"TestForm";
   form.url = GURL("http://example_cc.com/form.html");
   form.action = GURL("http://example_cc.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -10817,7 +10820,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel_FromFormEvents) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("Name", "name", "", "text", &field);
@@ -10832,7 +10835,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel_FromFormEvents) {
   // Simulate seeing the form.
   {
     base::HistogramTester histogram_tester;
-    autofill_client_.set_security_level(
+    autofill_client_->set_security_level(
         security_state::SecurityLevel::DANGEROUS);
     autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                    /*removed_forms=*/{});
@@ -10844,7 +10847,8 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel_FromFormEvents) {
   // Simulate suggestions shown twice with separate popups.
   {
     base::HistogramTester histogram_tester;
-    autofill_client_.set_security_level(security_state::SecurityLevel::WARNING);
+    autofill_client_->set_security_level(
+        security_state::SecurityLevel::WARNING);
     autofill_manager().DidShowSuggestions(true, form, field);
     autofill_manager().DidShowSuggestions(true, form, field);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Address.WARNING",
@@ -11123,7 +11127,7 @@ TEST_F(AutofillMetricsTest, FrameHasAutocompleteOneTimeCode) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
 
@@ -11157,7 +11161,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHaveAutocompleteOneTimeCode) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<FormData> forms_without_one_time_code(1, form);
@@ -11186,7 +11190,7 @@ TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithoutAutocomplete) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
 
@@ -11222,7 +11226,7 @@ TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<FormData> forms_with_single_phone_number_field(1, form);
@@ -11249,7 +11253,7 @@ TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
 // autocomplete attribute.
 TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithAutocomplete) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("phone", form);
   std::vector<FormData> forms_with_phone_number(1, form);
 
@@ -11274,7 +11278,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<FormData> forms_without_phone_number(1, form);
@@ -11300,7 +11304,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
 // Verify that we correctly log PhoneCollectionMetricState::kNone.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateNone) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("password", form);
 
   std::vector<FormData> forms(1, form);
@@ -11317,7 +11321,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateNone) {
 // Verify that we correctly log PhoneCollectionMetricState::kOTC.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateOTC) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("one-time-code", form);
 
   std::vector<FormData> forms(1, form);
@@ -11346,7 +11350,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTP) {
 // Verify that we correctly log PhoneCollectionMetricState::kWebOTPPlusOTC.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTPPlusOTC) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("one-time-code", form);
 
   std::vector<FormData> forms(1, form);
@@ -11364,7 +11368,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTPPlusOTC) {
 // Verify that we correctly log PhoneCollectionMetricState::kPhone.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhone) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("tel", form);
 
   std::vector<FormData> forms(1, form);
@@ -11381,7 +11385,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhone) {
 // Verify that we correctly log PhoneCollectionMetricState::kPhonePlusOTC.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusOTC) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("tel", form);
   AddAutoCompleteFieldToForm("one-time-code", form);
 
@@ -11400,7 +11404,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusOTC) {
 // Verify that we correctly log PhoneCollectionMetricState::kPhonePlusWebOTP.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusWebOTP) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("tel", form);
 
   std::vector<FormData> forms(1, form);
@@ -11420,7 +11424,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusWebOTP) {
 TEST_F(AutofillMetricsTest,
        WebOTPPhoneCollectionMetricsStatePhonePlusWebOTPPlusOTC) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   AddAutoCompleteFieldToForm("tel", form);
   AddAutoCompleteFieldToForm("one-time-code", form);
 
@@ -11443,7 +11447,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
   ASSERT_TRUE(entries.empty());
 
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
   // Document collects phone number
   AddAutoCompleteFieldToForm("tel", form);
   // Document uses OntTimeCode
@@ -11476,7 +11480,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   test::CreateTestFormField("", "", "", "password", &field);
@@ -11734,7 +11738,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
   form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -11762,7 +11766,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
 
   if (!user_saw_suggestion) {
     // Remove the profile to prevent suggestion from being shown.
-    personal_data_->ClearProfiles();
+    personal_data().ClearProfiles();
   }
 
   // Simulate interacting with the form.
@@ -11888,7 +11892,7 @@ TEST_F(AutofillMetricsFunnelTest, AblationState) {
   form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form.main_frame_origin = url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -11966,7 +11970,8 @@ void AutofillMetricsKeyMetricsTest::SetUp() {
   form_.name = u"TestForm";
   form_.url = GURL("http://example.com/form.html");
   form_.action = GURL("http://example.com/submit.html");
-  form_.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  form_.main_frame_origin =
+      url::Origin::Create(autofill_client_->form_origin());
 
   FormFieldData field;
   std::vector<ServerFieldType> field_types;
@@ -12021,7 +12026,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   base::HistogramTester histogram_tester;
 
   // Simulate that no data is available.
-  personal_data_->ClearProfiles();
+  personal_data().ClearProfiles();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
   autofill_manager().OnAskForValuesToFill(
@@ -12181,14 +12186,14 @@ TEST_F(AutofillMetricsTest, GetFieldTypeUserEditStatusMetric) {
 // |AutofillClient| and logged upon form submission.
 TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
 
   // Set up language state.
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "ub";
   autofill_manager().OnLanguageDetermined(language_detection_details);
-  autofill_client_.GetLanguageState()->SetSourceLanguage("ub");
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("ub");
+  autofill_client_->GetLanguageState()->SetSourceLanguage("ub");
+  autofill_client_->GetLanguageState()->SetCurrentLanguage("ub");
   int language_code = 'u' * 256 + 'b';
 
   // Simulate form submission.
@@ -12206,14 +12211,14 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
 // get logged as invalid.
 TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
   FormData form;
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
 
   // Set up language state.
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "en";
   autofill_manager().OnLanguageDetermined(language_detection_details);
-  autofill_client_.GetLanguageState()->SetSourceLanguage("en");
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("other");
+  autofill_client_->GetLanguageState()->SetSourceLanguage("en");
+  autofill_client_->GetLanguageState()->SetCurrentLanguage("other");
 
   // Simulate form submission.
   base::HistogramTester histogram_tester;
@@ -12364,7 +12369,7 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
   // GIVEN
   FormData form =
       test::GetFormData({.fields = {{.role = ServerFieldType::NAME_FULL}}});
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
 
   std::vector<ServerFieldType> field_types = {NAME_FULL};
   autofill_manager().AddSeenForm(form, field_types, field_types);
@@ -12399,7 +12404,7 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreInitiallyZero) {
   // GIVEN
   FormData form =
       test::GetFormData({.fields = {{.role = ServerFieldType::NAME_FULL}}});
-  CreateSimpleForm(autofill_client_.form_origin(), form);
+  CreateSimpleForm(autofill_client_->form_origin(), form);
 
   std::vector<ServerFieldType> field_types = {NAME_FULL};
   autofill_manager().AddSeenForm(form, field_types, field_types);

@@ -100,10 +100,10 @@ class MockAutofillClient : public TestAutofillClient {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      // Force to use the constructor designated for unit test.
       : BrowserAutofillManager(driver,
                                client,
-                               client->GetPersonalDataManager()) {}
+                               "en-US",
+                               EnableDownloadManager(false)) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;

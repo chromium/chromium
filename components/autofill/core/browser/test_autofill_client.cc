@@ -18,18 +18,21 @@
 
 namespace autofill {
 
-TestAutofillClient::TestAutofillClient()
-    : form_origin_(GURL("https://example.test")),
+TestAutofillClient::TestAutofillClient(
+    std::unique_ptr<TestPersonalDataManager> pdm)
+    : test_personal_data_manager_(
+          pdm ? std::move(pdm) : std::make_unique<TestPersonalDataManager>()),
+      form_origin_(GURL("https://example.test")),
       last_committed_url_(GURL("https://example.test")) {}
 
-TestAutofillClient::~TestAutofillClient() {}
+TestAutofillClient::~TestAutofillClient() = default;
 
 version_info::Channel TestAutofillClient::GetChannel() const {
   return channel_for_testing_;
 }
 
-PersonalDataManager* TestAutofillClient::GetPersonalDataManager() {
-  return &test_personal_data_manager_;
+TestPersonalDataManager* TestAutofillClient::GetPersonalDataManager() {
+  return test_personal_data_manager_.get();
 }
 
 AutocompleteHistoryManager*

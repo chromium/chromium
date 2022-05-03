@@ -130,37 +130,37 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
-    personal_data_.set_auto_accept_address_imports_for_testing(true);
-    personal_data_.Init(/*profile_database=*/database_,
-                        /*account_database=*/nullptr,
-                        /*pref_service=*/autofill_client_.GetPrefs(),
-                        /*local_state=*/autofill_client_.GetPrefs(),
-                        /*identity_manager=*/nullptr,
-                        /*history_service=*/nullptr,
-                        /*strike_database=*/nullptr,
-                        /*image_fetcher=*/nullptr,
-                        /*is_off_the_record=*/false);
-    personal_data_.OnSyncServiceInitialized(&sync_service_);
+    personal_data().set_auto_accept_address_imports_for_testing(true);
+    personal_data().Init(/*profile_database=*/database_,
+                         /*account_database=*/nullptr,
+                         /*pref_service=*/autofill_client_.GetPrefs(),
+                         /*local_state=*/autofill_client_.GetPrefs(),
+                         /*identity_manager=*/nullptr,
+                         /*history_service=*/nullptr,
+                         /*strike_database=*/nullptr,
+                         /*image_fetcher=*/nullptr,
+                         /*is_off_the_record=*/false);
+    personal_data().OnSyncServiceInitialized(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
-        autofill_client_.GetIdentityManager(), &personal_data_);
+        autofill_client_.GetIdentityManager(), &personal_data());
     autofill_client_.set_test_payments_client(
         std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
     credit_card_save_manager_ =
         new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
-                                      payments_client_, &personal_data_);
+                                      payments_client_, &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     autofill::TestFormDataImporter* test_form_data_importer =
         new TestFormDataImporter(
             &autofill_client_, payments_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
-            &personal_data_, "en-US");
+            &personal_data(), "en-US");
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
     autofill_client_.GetStrikeDatabase();
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_);
+        autofill_driver_.get(), &autofill_client_);
     browser_autofill_manager_->SetExpectedObservedSubmission(true);
   }
 
@@ -170,8 +170,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     browser_autofill_manager_.reset();
     autofill_driver_.reset();
 
-    personal_data_.SetPrefService(nullptr);
-    personal_data_.ClearCreditCards();
+    personal_data().SetPrefService(nullptr);
+    personal_data().ClearCreditCards();
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -340,12 +340,17 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
  protected:
+  MockPersonalDataManager& personal_data() {
+    return static_cast<MockPersonalDataManager&>(
+        *autofill_client_.GetPersonalDataManager());
+  }
+
   base::test::TaskEnvironment task_environment_;
-  TestAutofillClient autofill_client_;
+  TestAutofillClient autofill_client_{
+      std::make_unique<MockPersonalDataManager>()};
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   scoped_refptr<AutofillWebDataService> database_;
-  MockPersonalDataManager personal_data_;
   syncer::TestSyncService sync_service_;
   // TODO(crbug.com/1291003): Refactor to use the real CreditCardSaveManager.
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
@@ -511,7 +516,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
 
   // Verify that even though the full address profile was saved, only the
   // country was included in the upload details request to payments.
-  EXPECT_EQ(1U, personal_data_.GetProfiles().size());
+  EXPECT_EQ(1U, personal_data().GetProfiles().size());
   AutofillProfile only_country;
   only_country.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   EXPECT_EQ(1U, payments_client_->addresses_in_upload_details().size());
@@ -521,7 +526,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
                    only_country));
 
   // Server did not send a server_id, expect copy of card is not stored.
-  EXPECT_TRUE(personal_data_.GetCreditCards().empty());
+  EXPECT_TRUE(personal_data().GetCreditCards().empty());
 
   // Verify that the correct histogram entry (and only that) was logged.
   ExpectUniqueCardUploadDecision(histogram_tester,
@@ -535,7 +540,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   // even though only countries were included in GetUploadDetails.
   EXPECT_THAT(
       payments_client_->addresses_in_upload_card(),
-      testing::UnorderedElementsAreArray({*personal_data_.GetProfiles()[0]}));
+      testing::UnorderedElementsAreArray({*personal_data().GetProfiles()[0]}));
 }
 #endif
 
@@ -1138,7 +1143,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_FirstAndLastName) {
   EXPECT_TRUE(payments_client_->active_experiments_in_request().empty());
 
   // Server did not send a server_id, expect copy of card is not stored.
-  EXPECT_TRUE(personal_data_.GetCreditCards().empty());
+  EXPECT_TRUE(personal_data().GetCreditCards().empty());
   // Verify that the correct histogram entry (and only that) was logged.
   ExpectUniqueCardUploadDecision(histogram_tester,
                                  AutofillMetrics::UPLOAD_OFFERED);
@@ -1216,7 +1221,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_LastAndFirstName) {
   EXPECT_TRUE(payments_client_->active_experiments_in_request().empty());
 
   // Server did not send a server_id, expect copy of card is not stored.
-  EXPECT_TRUE(personal_data_.GetCreditCards().empty());
+  EXPECT_TRUE(personal_data().GetCreditCards().empty());
   // Verify that the correct histogram entry (and only that) was logged.
   ExpectUniqueCardUploadDecision(histogram_tester,
                                  AutofillMetrics::UPLOAD_OFFERED);
@@ -1233,8 +1238,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_LastAndFirstName) {
 #endif
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
-  personal_data_.ClearCreditCards();
-  personal_data_.ClearProfiles();
+  personal_data().ClearCreditCards();
+  personal_data().ClearProfiles();
 
   credit_card_save_manager_->SetCreditCardUploadEnabled(true);
 
@@ -1270,7 +1275,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Don't keep a copy of the card on this device.
-  EXPECT_TRUE(personal_data_.GetCreditCards().empty());
+  EXPECT_TRUE(personal_data().GetCreditCards().empty());
 }
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_FeatureNotEnabled) {
@@ -1975,14 +1980,14 @@ TEST_F(CreditCardSaveManagerTest,
   profile1.SetInfo(NAME_FULL, u"Flo Master", "en-US");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"H3B2Y5", "en-US");
   profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"CA", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
 
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000002");
   profile2.SetInfo(NAME_FULL, u"Flo Master", "en-US");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"h3b 2y5", "en-US");
   profile2.SetInfo(ADDRESS_HOME_COUNTRY, u"CA", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -2594,7 +2599,7 @@ TEST_F(
 #if !BUILDFLAG(IS_IOS)
   // Set the billing_customer_number to designate existence of a Payments
   // account.
-  personal_data_.SetPaymentsCustomerData(
+  personal_data().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Create, fill and submit an address form in order to establish a recent
@@ -2644,7 +2649,7 @@ TEST_F(
 #if !BUILDFLAG(IS_IOS)
   // Set the billing_customer_number to designate existence of a Payments
   // account.
-  personal_data_.SetPaymentsCustomerData(
+  personal_data().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Create, fill and submit an address form in order to establish a recent
@@ -2725,13 +2730,13 @@ TEST_F(
 
   // Set the billing_customer_number to designate existence of a Payments
   // account.
-  personal_data_.SetPaymentsCustomerData(
+  personal_data().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Run through the form submit in exactly the same way (but now Chrome knows
   // that the user is a Google Payments customer).
-  personal_data_.ClearCreditCards();
-  personal_data_.ClearProfiles();
+  personal_data().ClearCreditCards();
+  personal_data().ClearProfiles();
   FormSubmitted(credit_card_form);
 
   // Verify the |credit_card_save_manager_| is NOT requesting cardholder name.
@@ -2802,7 +2807,7 @@ TEST_F(
   // submitting.
 #if !BUILDFLAG(IS_IOS)
   // Wallet Sync Transport is enabled.
-  personal_data_.SetSyncAndSignInState(
+  personal_data().SetSyncAndSignInState(
       AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled);
 
   // Create, fill and submit an address form in order to establish a recent
@@ -2844,7 +2849,7 @@ TEST_F(
   // submitting.
 #if !BUILDFLAG(IS_IOS)
   // Wallet Sync Transport is not enabled.
-  personal_data_.SetSyncAndSignInState(
+  personal_data().SetSyncAndSignInState(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled);
 
   // Create, fill and submit an address form in order to establish a recent
@@ -3271,7 +3276,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_.AddServerCreditCard(credit_card);
+  personal_data().AddServerCreditCard(credit_card);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3372,7 +3377,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressName) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3401,7 +3406,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderAndAddressNameIfMatching) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3431,7 +3436,7 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniqueNameIfNamesConflict) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3459,7 +3464,7 @@ TEST_F(CreditCardSaveManagerTest, DetectPostalCode) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3488,11 +3493,11 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniquePostalCodeIfZipsConflict) {
   AutofillProfile profile1;
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"95051", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3517,7 +3522,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3546,7 +3551,7 @@ TEST_F(CreditCardSaveManagerTest, DetectLocality) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3574,7 +3579,7 @@ TEST_F(CreditCardSaveManagerTest, DetectAdministrativeArea) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3603,7 +3608,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCountryCode) {
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000200");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3630,7 +3635,7 @@ TEST_F(CreditCardSaveManagerTest, DetectCountryCode) {
 TEST_F(CreditCardSaveManagerTest, DetectHasGooglePaymentAccount) {
   // Set the billing_customer_number to designate existence of a Payments
   // account.
-  personal_data_.SetPaymentsCustomerData(
+  personal_data().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Set up our credit card form data.
@@ -3665,7 +3670,7 @@ TEST_F(CreditCardSaveManagerTest, DetectEverythingAtOnce) {
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3704,7 +3709,7 @@ TEST_F(CreditCardSaveManagerTest, DetectSubsetOfPossibleFields) {
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3739,19 +3744,19 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressComponentsAcrossProfiles) {
   AutofillProfile profile1;
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
   AutofillProfile profile3;
   profile3.set_guid("00000000-0000-0000-0000-000000000202");
   profile3.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  personal_data_.AddProfile(profile3);
+  personal_data().AddProfile(profile3);
   AutofillProfile profile4;
   profile4.set_guid("00000000-0000-0000-0000-000000000203");
   profile4.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile4);
+  personal_data().AddProfile(profile4);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3794,7 +3799,7 @@ TEST_F(CreditCardSaveManagerTest,
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3853,7 +3858,7 @@ TEST_F(
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3893,7 +3898,7 @@ TEST_F(
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data with credit card first and last name
   // fields.
@@ -3941,7 +3946,7 @@ TEST_F(
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -4126,7 +4131,7 @@ TEST_F(CreditCardSaveManagerTest,
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -4175,7 +4180,7 @@ TEST_F(CreditCardSaveManagerTest,
   profile1.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
   profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile1);
+  personal_data().AddProfile(profile1);
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
   profile2.SetInfo(NAME_FULL, u"Flo Master", "en-US");
@@ -4184,7 +4189,7 @@ TEST_F(CreditCardSaveManagerTest,
   profile2.SetInfo(ADDRESS_HOME_STATE, u"Stateland", "en-US");
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"12345", "en-US");
   profile2.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile2);
+  personal_data().AddProfile(profile2);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -4231,7 +4236,7 @@ TEST_F(CreditCardSaveManagerTest,
   profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
   profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
   profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
-  personal_data_.AddProfile(profile);
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -4284,7 +4289,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
   local_card.set_record_type(CreditCard::LOCAL_CARD);
-  personal_data_.AddCreditCard(local_card);
+  personal_data().AddCreditCard(local_card);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -4380,7 +4385,7 @@ TEST_F(CreditCardSaveManagerTest,
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
   local_card.set_record_type(CreditCard::LOCAL_CARD);
-  personal_data_.AddCreditCard(local_card);
+  personal_data().AddCreditCard(local_card);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -4481,7 +4486,7 @@ TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_ShouldAddBillingCustomerNumberInRequest) {
   // Set the billing_customer_number to designate existence of a Payments
   // account.
-  personal_data_.SetPaymentsCustomerData(
+  personal_data().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Create, fill and submit an address form in order to establish a recent
@@ -5098,7 +5103,7 @@ TEST_F(CreditCardSaveManagerTest,
 // Make sure that the PersonalDataManager gets notified when the user accepts
 // an upload offer.
 TEST_F(CreditCardSaveManagerTest, OnUserDidAcceptUpload_NotifiesPDM) {
-  EXPECT_CALL(personal_data_, OnUserAcceptedUpstreamOffer);
+  EXPECT_CALL(personal_data(), OnUserAcceptedUpstreamOffer);
 
   // Simulate that the user has accepted the upload from the prompt.
   UserHasAcceptedUpload({});
@@ -5149,7 +5154,7 @@ TEST_F(CreditCardSaveManagerTest, LocalSaveNotOfferedForSavedUnsupportedCard) {
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
   local_card.set_record_type(CreditCard::LOCAL_CARD);
-  personal_data_.AddCreditCard(local_card);
+  personal_data().AddCreditCard(local_card);
 
   // Edit the data, and submit.
   credit_card_form.fields[0].value = u"Flo Master";
