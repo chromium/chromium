@@ -160,6 +160,7 @@ std::unique_ptr<views::Label> PasswordBubbleViewBase::CreatePasswordLabel(
         form.password_value, views::style::CONTEXT_DIALOG_BODY_TEXT,
         STYLE_SECONDARY_MONOSPACED);
     label->SetObscured(true);
+    label->SetElideBehavior(gfx::TRUNCATE);
   } else {
     label = std::make_unique<views::Label>(
         l10n_util::GetStringFUTF16(IDS_PASSWORDS_VIA_FEDERATION,
