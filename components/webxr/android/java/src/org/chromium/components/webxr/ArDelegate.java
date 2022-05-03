@@ -4,18 +4,20 @@
 
 package org.chromium.components.webxr;
 
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+
 /**
  * Interface used by ChromeActivity to communicate with AR code that is only
  * available if |enable_arcore| is set to true at build time.
  */
-public interface ArDelegate {
+public interface ArDelegate extends BackPressHandler {
     /**
      * Used to let AR immersive mode intercept the Back button to exit immersive mode.
      */
-    public boolean onBackPressed();
+    boolean onBackPressed();
 
     /**
      * Used to query if there is an active immersive AR Session.
      */
-    public boolean hasActiveArSession();
+    boolean hasActiveArSession();
 }

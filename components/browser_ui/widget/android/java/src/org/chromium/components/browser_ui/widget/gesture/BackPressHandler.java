@@ -19,12 +19,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
-    @IntDef({Type.TEXT_BUBBLE, Type.TEST})
+    @IntDef({Type.TEXT_BUBBLE, Type.TEST, Type.AR_DELEGATE})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
+        int AR_DELEGATE = 1;
         // Add new type here and then increment the value of TEST by one.
-        int TEST = 1; // This is for test only. Do not use it in production.
+        int TEST = 2; // This is for test only. Do not use it in production.
         int NUM_TYPES = TEST + 1;
     }
 

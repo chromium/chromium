@@ -64,6 +64,7 @@ android_library("ar_java_interfaces") {
   ]
 
   deps = [
+    "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

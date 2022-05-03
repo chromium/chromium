@@ -2313,8 +2313,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (VrModuleProvider.getDelegate().onBackPressed()) return;
 
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null && arDelegate.onBackPressed()) return;
+        if (!BackPressManager.isEnabled()) {
+            ArDelegate arDelegate = ArDelegateProvider.getDelegate();
+            if (arDelegate != null && arDelegate.onBackPressed()) return;
+        }
 
         if (mCompositorViewHolderSupplier.hasValue()) {
             LayoutManagerImpl layoutManager =
@@ -2347,6 +2349,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
+            if (ArDelegateProvider.getDelegate() != null) {
+                mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
+            }
         }
     }
 
