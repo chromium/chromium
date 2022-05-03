@@ -3836,20 +3836,33 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_testFindInMultipleWebViews) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPI) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   TestHelper("testLoadDataAPI", "web_view/shim", NEEDS_TEST_SERVER);
+
+  // Ensure that when site-isolated guests are enabled, the guest process is
+  // locked after the loadDataWithBaseURL navigation and is allowed to access
+  // resources belonging to the base URL's origin.
+  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    content::WebContents* guest =
+        GetGuestViewManager()->WaitForSingleGuestCreated();
+    ASSERT_TRUE(guest);
+    content::RenderFrameHost* main_frame = guest->GetMainFrame();
+    EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_TRUE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
+
+    auto* security_policy = content::ChildProcessSecurityPolicy::GetInstance();
+    url::Origin base_origin = url::Origin::Create(GURL("http://localhost"));
+    EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+        main_frame->GetProcess()->GetID(), base_origin));
+
+    // Ensure the process doesn't have access to some other origin. This
+    // verifies that site isolation is enforced.
+    url::Origin another_origin = url::Origin::Create(GURL("http://foo.com"));
+    EXPECT_FALSE(security_policy->CanAccessDataForOrigin(
+        main_frame->GetProcess()->GetID(), another_origin));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPIAccessibleResources) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   TestHelper("testLoadDataAPIAccessibleResources", "web_view/shim",
              NEEDS_TEST_SERVER);
 }

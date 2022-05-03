@@ -111,10 +111,19 @@ struct CONTENT_EXPORT UrlInfo {
   OriginIsolationRequest origin_isolation_request =
       OriginIsolationRequest::kNone;
 
-  // If |url| represents a resource inside another resource (e.g. a resource
-  // with a urn: URL in WebBundle), origin of the original resource. Otherwise,
-  // this is just the origin of |url|.
-  url::Origin origin;
+  // This allows overriding the origin of |url| for process assignment purposes
+  // in certain very special cases. Namely, if |url| represents a resource
+  // inside another resource (e.g. a resource with a urn: URL in WebBundle),
+  // this will be the origin of the original resource. If the navigation to
+  // |url| is performed via the loadDataWithBaseURL API (e.g., in a <webview>
+  // tag or on Android Webview), this will be the base origin provided via that
+  // API. Otherwise, this will be nullopt.
+  //
+  // TODO(alexmos): Currently, this is also used to hold the origin committed
+  // by the renderer at DidCommitNavigation() time, for use in commit-time URL
+  // and origin checks that require a UrlInfo.  Investigate whether there's a
+  // cleaner way to organize these checks.  See https://crbug.com/1320402.
+  absl::optional<url::Origin> origin;
 
   // If url is being loaded in a frame that is in a origin-restricted sandboxed,
   // then this flag will be true.
@@ -168,6 +177,8 @@ class CONTENT_EXPORT UrlInfoInit {
       absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
 
+  const absl::optional<url::Origin>& origin() { return origin_; }
+
  private:
   UrlInfoInit(UrlInfoInit&);
 
@@ -176,7 +187,7 @@ class CONTENT_EXPORT UrlInfoInit {
   GURL url_;
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kNone;
-  url::Origin origin_;
+  absl::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;

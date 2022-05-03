@@ -433,14 +433,21 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 
   // If `url` is one that is allowed in WebUI renderer process, ensure that its
   // origin is either opaque or its process lock matches the RFH process lock.
+  // As an example, the origin may be opaque if a WebUI navigation resulted in
+  // an error page.
+  //
+  // TODO(alexmos): Currently, `is_allowed_in_web_ui_renderer` is unexpectedly
+  // true for about:blank and renderer debug URLs, even when they commit with
+  // an origin that is not allowed into a WebUI renderer.  For now, these cases
+  // are also skipped via the origin opaqueness check, but
+  // `is_allowed_in_web_ui_renderer` should be strengthened to not be true in
+  // this case so that the checks above also apply.  See
+  // https://crbug.com/1320402.
   if (is_allowed_in_web_ui_renderer) {
-    url::Origin url_origin =
-        url::Origin::Create(url.DeprecatedGetOriginAsURL());
-
     // Verify `site_info`'s process lock matches the RFH's process lock, if one
     // is in place.
     if (should_lock_process) {
-      if (!url_origin.opaque() &&
+      if (!url::Origin::Create(url).opaque() &&
           process_lock != ProcessLock::FromSiteInfo(site_info)) {
         return false;
       }

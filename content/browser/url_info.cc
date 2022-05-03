@@ -28,9 +28,8 @@ UrlInfo::~UrlInfo() = default;
 UrlInfo UrlInfo::CreateForTesting(
     const GURL& url_in,
     absl::optional<StoragePartitionConfig> storage_partition_config) {
-  return UrlInfo(UrlInfoInit(url_in)
-                     .WithOrigin(url::Origin::Create(url_in))
-                     .WithStoragePartitionConfig(storage_partition_config));
+  return UrlInfo(
+      UrlInfoInit(url_in).WithStoragePartitionConfig(storage_partition_config));
 }
 
 bool UrlInfo::IsIsolated() const {
@@ -41,8 +40,7 @@ bool UrlInfo::IsIsolated() const {
 
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
-UrlInfoInit::UrlInfoInit(const GURL& url)
-    : url_(url), origin_(url::Origin::Create(url)) {}
+UrlInfoInit::UrlInfoInit(const GURL& url) : url_(url) {}
 
 UrlInfoInit::UrlInfoInit(const UrlInfo& base)
     : url_(base.url),

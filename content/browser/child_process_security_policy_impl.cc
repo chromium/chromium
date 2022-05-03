@@ -1489,12 +1489,16 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
+  DCHECK(url_info.origin.has_value());
   const url::Origin url_origin =
-      url::Origin::Resolve(url_info.url, url_info.origin);
+      url::Origin::Resolve(url_info.url, *url_info.origin);
   if (!CanAccessDataForOrigin(child_id, url_origin)) {
     // Check for special cases, like blob:null/ and data: URLs, where the
     // origin does not contain information to match against the process lock,
-    // but using the whole URL can result in a process lock match.
+    // but using the whole URL can result in a process lock match.  Note that
+    // the origin being committed in `url_info.origin` will not actually be
+    // used when computing `expected_process_lock` below in many cases; see
+    // https://crbug.com/1320402.
     const auto expected_process_lock =
         ProcessLock::Create(isolation_context, url_info);
     const ProcessLock& actual_process_lock = GetProcessLock(child_id);
@@ -1504,7 +1508,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
 
-  if (!CanAccessDataForOrigin(child_id, url_info.origin))
+  if (!CanAccessDataForOrigin(child_id, *url_info.origin))
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
 
   // Ensure that the origin derived from |url| is consistent with |origin|.
@@ -1513,7 +1517,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   const auto url_tuple_or_precursor_tuple =
       url_origin.GetTupleOrPrecursorTupleIfOpaque();
   const auto origin_tuple_or_precursor_tuple =
-      url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
+      url_info.origin->GetTupleOrPrecursorTupleIfOpaque();
 
   if (url_tuple_or_precursor_tuple.IsValid() &&
       origin_tuple_or_precursor_tuple.IsValid() &&

@@ -3158,22 +3158,40 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     }
   }
 
-  // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
+  UrlInfoInit url_info_init(GetURL());
+  url_info_init.WithOriginIsolationRequest(isolation_request)
+      .WithWebExposedIsolationInfo(web_exposed_isolation_info)
+      .WithIsPdf(is_pdf_)
+      .WithSandbox(is_origin_restricted_sandbox);
+
   if (GetWebBundleURL().is_valid()) {
-    return UrlInfo(UrlInfoInit(GetURL())
-                       .WithOriginIsolationRequest(isolation_request)
-                       .WithOrigin(url::Origin::Resolve(
-                           GetURL(), url::Origin::Create(GetWebBundleURL())))
-                       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-                       .WithIsPdf(is_pdf_)
-                       .WithSandbox(is_origin_restricted_sandbox));
+    // Web Bundle navigations should use the origin of the bundle rather than
+    // the target URL.
+    //
+    // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
+    url_info_init.WithOrigin(
+        url::Origin::Resolve(GetURL(), url::Origin::Create(GetWebBundleURL())));
+  } else if (IsLoadDataWithBaseURL()) {
+    // LoadDataWithBaseURL() navigations also need to explicitly set the origin
+    // to the origin of the base URL.  This ensures that the process for this
+    // navigation will eventually be locked to the right origin (i.e., origin of
+    // the base URL rather than the data: URL).
+    //
+    // Note that while LoadDataWithBaseURL() is supported in <webview> tags on
+    // desktop platforms and on Android Webview, only <webview> tags currently
+    // utilize this special case when running in site-isolated mode. Android
+    // Webview doesn't currently lock processes for LoadDataWithBaseURL()
+    // navigations.
+    url_info_init.WithOrigin(
+        url::Origin::Create(common_params().base_url_for_data_url));
+  } else {
+    // Overriding the origin for a URL is dangerous and only allowed in very
+    // narrow cases which are handled explicitly above.  Please think very
+    // carefully about any new cases that need to do this.
+    DCHECK(!url_info_init.origin().has_value());
   }
 
-  return UrlInfo(UrlInfoInit(GetURL())
-                     .WithOriginIsolationRequest(isolation_request)
-                     .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-                     .WithIsPdf(is_pdf_)
-                     .WithSandbox(is_origin_restricted_sandbox));
+  return UrlInfo(url_info_init);
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {
