@@ -465,7 +465,7 @@ std::u16string Accelerator::ApplyLongFormModifiers(
   if (IsCmdDown()) {
 #if BUILDFLAG(IS_MAC)
     result = ApplyModifierToAcceleratorString(result, IDS_APP_COMMAND_KEY);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     result = ApplyModifierToAcceleratorString(result, IDS_APP_SEARCH_KEY);
 #elif BUILDFLAG(IS_WIN)
     result = ApplyModifierToAcceleratorString(result, IDS_APP_WINDOWS_KEY);
