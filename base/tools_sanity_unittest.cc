@@ -102,21 +102,6 @@ TEST(ToolsSanityTest, MemoryLeak) {
   leak[4] = 1;  // Make sure the allocated memory is used.
 }
 
-// The following tests pass with Clang r170392, but not r172454, which
-// makes AddressSanitizer detect errors in them. We disable these tests under
-// AddressSanitizer until we fully switch to Clang r172454. After that the
-// tests should be put back under the (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
-// clause above.
-// See also http://crbug.com/172614.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_SingleElementDeletedWithBraces \
-    DISABLED_SingleElementDeletedWithBraces
-#define MAYBE_ArrayDeletedWithoutBraces DISABLED_ArrayDeletedWithoutBraces
-#else
-#define MAYBE_ArrayDeletedWithoutBraces ArrayDeletedWithoutBraces
-#define MAYBE_SingleElementDeletedWithBraces SingleElementDeletedWithBraces
-#endif  // defined(ADDRESS_SANITIZER)
-
 TEST(ToolsSanityTest, AccessesToNewMemory) {
   char* foo = new char[16];
   MakeSomeErrors(foo, 16);
@@ -149,6 +134,18 @@ TEST(ToolsSanityTest, AccessesToStack) {
 
 #if defined(ADDRESS_SANITIZER)
 
+// alloc_dealloc_mismatch defaults to
+// !SANITIZER_MAC && !SANITIZER_WINDOWS && !SANITIZER_ANDROID,
+// in the sanitizer runtime upstream.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_SingleElementDeletedWithBraces \
+    DISABLED_SingleElementDeletedWithBraces
+#define MAYBE_ArrayDeletedWithoutBraces DISABLED_ArrayDeletedWithoutBraces
+#else
+#define MAYBE_ArrayDeletedWithoutBraces ArrayDeletedWithoutBraces
+#define MAYBE_SingleElementDeletedWithBraces SingleElementDeletedWithBraces
+#endif  // defined(ADDRESS_SANITIZER)
+
 static int* allocateArray() {
   // Clang warns about the mismatched new[]/delete if they occur in the same
   // function.
@@ -159,11 +156,12 @@ static int* allocateArray() {
 TEST(ToolsSanityTest, MAYBE_ArrayDeletedWithoutBraces) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile foo = allocateArray();
-  delete foo;
+  HARMFUL_ACCESS(delete foo, "alloc-dealloc-mismatch");
+  // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
+  // need to free the memory in the parent.
+  delete [] foo;
 }
-#endif
 
-#if defined(ADDRESS_SANITIZER)
 static int* allocateScalar() {
   // Clang warns about the mismatched new/delete[] if they occur in the same
   // function.
@@ -175,7 +173,10 @@ TEST(ToolsSanityTest, MAYBE_SingleElementDeletedWithBraces) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile foo = allocateScalar();
   (void) foo;
-  delete [] foo;
+  HARMFUL_ACCESS(delete [] foo, "alloc-dealloc-mismatch");
+  // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
+  // need to free the memory in the parent.
+  delete foo;
 }
 #endif
 
@@ -415,10 +416,6 @@ TEST(ToolsSanityTest, BadUnrelatedCast) {
 #endif  // CFI_ERROR_MSG
 
 #undef CFI_ERROR_MSG
-#undef MAYBE_AccessesToNewMemory
-#undef MAYBE_AccessesToMallocMemory
-#undef MAYBE_ArrayDeletedWithoutBraces
-#undef MAYBE_SingleElementDeletedWithBraces
 #undef HARMFUL_ACCESS
 #undef HARMFUL_ACCESS_IS_NOOP
 
