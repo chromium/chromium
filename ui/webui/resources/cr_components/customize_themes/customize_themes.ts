@@ -14,13 +14,14 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 import {hexColorToSkColor, skColorToRgba} from '../../js/color_utils.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CustomizeThemesBrowserProxyImpl} from './browser_proxy.js';
+import {getTemplate} from './customize_themes.html.js';
 import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, Theme, ThemeType} from './customize_themes.mojom-webui.js';
 import {ThemeIconElement} from './theme_icon.js';
 
@@ -42,6 +43,10 @@ const CustomizeThemesElementBase = I18nMixin(PolymerElement);
 export class CustomizeThemesElement extends CustomizeThemesElementBase {
   static get is() {
     return 'cr-customize-themes';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -229,10 +234,6 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
 
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

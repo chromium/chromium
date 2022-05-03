@@ -390,7 +390,6 @@ group("closure_compile") {
 
 group("polymer3_elements") {
   public_deps = [
-    "customize_themes:web_components",
     "iph_bubble:web_components",
     "localized_link:web_components",
     "managed_dialog:web_components",
