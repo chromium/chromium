@@ -196,6 +196,12 @@ class CleanExitBeacon {
   static void ResetUserDefaultsBeacon();
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+  // Denotes the time at which Chrome clients in the Extended Variations Safe
+  // Mode experiment's enabled group start watching for browser crashes.
+  base::TimeTicks extended_monitoring_stage_start_time_;
+#endif
+
   // Indicates whether the CleanExitBeacon has been initialized.
   bool initialized_ = false;
 
