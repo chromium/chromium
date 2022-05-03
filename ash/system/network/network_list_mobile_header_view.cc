@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -15,5 +16,8 @@ NetworkListMobileHeaderView::NetworkListMobileHeaderView(
                                    IDS_ASH_STATUS_TRAY_NETWORK_MOBILE) {}
 
 NetworkListMobileHeaderView::~NetworkListMobileHeaderView() = default;
+
+BEGIN_METADATA(NetworkListMobileHeaderView, NetworkListNetworkHeaderView)
+END_METADATA
 
 }  // namespace ash

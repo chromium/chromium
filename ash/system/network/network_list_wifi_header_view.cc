@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -15,5 +16,8 @@ NetworkListWifiHeaderView::NetworkListWifiHeaderView(
 }
 
 NetworkListWifiHeaderView::~NetworkListWifiHeaderView() = default;
+
+BEGIN_METADATA(NetworkListWifiHeaderView, NetworkListNetworkHeaderView)
+END_METADATA
 
 }  // namespace ash
