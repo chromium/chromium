@@ -547,11 +547,14 @@ TEST_F(TimerTest, RepeatingTimerDoesNotDrift) {
   platform_->RunForPeriod(base::Milliseconds(2100));
   // Next scheduled task to run at |start_time_| + 10s
   platform_->RunForPeriod(base::Milliseconds(2900));
-  // Next scheduled task to run at |start_time_| + 14s (skips a beat)
-  platform_->AdvanceClock(base::Milliseconds(3100));
+  // Next scheduled task to run at |start_time_| + 12s
+  platform_->AdvanceClock(base::Milliseconds(1800));
+  platform_->RunUntilIdle();
+  // Next scheduled task to run at |start_time_| + 14s
+  platform_->AdvanceClock(base::Milliseconds(1900));
   platform_->RunUntilIdle();
   // Next scheduled task to run at |start_time_| + 18s (skips a beat)
-  platform_->AdvanceClock(base::Seconds(4));
+  platform_->AdvanceClock(base::Milliseconds(50));
   platform_->RunUntilIdle();
   // Next scheduled task to run at |start_time_| + 28s (skips 5 beats)
   platform_->AdvanceClock(base::Seconds(10));
@@ -562,8 +565,8 @@ TEST_F(TimerTest, RepeatingTimerDoesNotDrift) {
       ElementsAre(
           start_time_ + base::Seconds(2), start_time_ + base::Seconds(4),
           start_time_ + base::Seconds(6), start_time_ + base::Seconds(8),
-          start_time_ + base::Seconds(10), start_time_ + base::Seconds(14),
-          start_time_ + base::Seconds(18), start_time_ + base::Seconds(28)));
+          start_time_ + base::Seconds(10), start_time_ + base::Seconds(12),
+          start_time_ + base::Seconds(14), start_time_ + base::Seconds(24)));
 }
 
 template <typename TimerFiredClass>

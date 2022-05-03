@@ -150,8 +150,8 @@ void TimerBase::RunInternal() {
     // The next tick is `next_fire_time_ + repeat_interval_`, but if late wakeup
     // happens we could miss ticks. To avoid posting immediate "catch-up" tasks,
     // the next task targets the tick following a minimum interval of
-    // repeat_interval_ / 2.
-    SetNextFireTime((now + repeat_interval_ / 2)
+    // repeat_interval_ / 20.
+    SetNextFireTime((now + repeat_interval_ / 20)
                         .SnappedToNextTick(next_fire_time_, repeat_interval_));
   } else {
     next_fire_time_ = base::TimeTicks::Max();
