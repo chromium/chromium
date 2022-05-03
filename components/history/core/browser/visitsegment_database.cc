@@ -198,7 +198,6 @@ bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
 
 std::vector<std::unique_ptr<PageUsageData>>
 VisitSegmentDatabase::QuerySegmentUsage(
-    base::Time from_time,
     int max_result_count,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
   // This function gathers the highest-ranked segments in two queries.
@@ -207,15 +206,12 @@ VisitSegmentDatabase::QuerySegmentUsage(
   // segments.
 
   // Gather all the segment scores.
-  sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
-      "SELECT segment_id, time_slot, visit_count "
-      "FROM segment_usage WHERE time_slot >= ? "
-      "ORDER BY segment_id"));
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT segment_id, time_slot, visit_count "
+                                 "FROM segment_usage ORDER BY segment_id"));
   if (!statement.is_valid())
     return std::vector<std::unique_ptr<PageUsageData>>();
-
-  base::Time ts = from_time.LocalMidnight();
-  statement.BindInt64(0, ts.ToInternalValue());
 
   std::vector<std::unique_ptr<PageUsageData>> segments;
   base::Time now = base::Time::Now();

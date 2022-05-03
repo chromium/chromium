@@ -229,8 +229,6 @@ void TopSitesImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 TopSitesImpl::~TopSitesImpl() = default;
 
 void TopSitesImpl::StartQueryForMostVisited() {
-  constexpr int kDaysOfHistory = 90;
-
   DCHECK(loaded_);
   timer_.Stop();
 
@@ -238,7 +236,7 @@ void TopSitesImpl::StartQueryForMostVisited() {
     return;
 
   history_service_->QueryMostVisitedURLs(
-      num_results_to_request_from_history(), kDaysOfHistory,
+      num_results_to_request_from_history(),
       base::BindOnce(&TopSitesImpl::OnTopSitesAvailableFromHistory,
                      base::Unretained(this)),
       &cancelable_task_tracker_);

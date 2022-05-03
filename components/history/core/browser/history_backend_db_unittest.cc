@@ -1683,7 +1683,7 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
   CreateBackendAndDatabase();
 
   std::vector<std::unique_ptr<PageUsageData>> results =
-      db_->QuerySegmentUsage(segment_time, 10, base::NullCallback());
+      db_->QuerySegmentUsage(/*max_result_count=*/10, base::NullCallback());
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(url, results[0]->GetURL());
   EXPECT_EQ(segment_id, results[0]->GetID());
@@ -1830,7 +1830,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
   CreateBackendAndDatabase();
 
   std::vector<std::unique_ptr<PageUsageData>> results = db_->QuerySegmentUsage(
-      segment_time, /*max_result_count=*/10, base::NullCallback());
+      /*max_result_count=*/10, base::NullCallback());
   ASSERT_EQ(1u, results.size());
   EXPECT_THAT(results[0]->GetURL(), testing::AnyOf(url1, url2));
   EXPECT_THAT(results[0]->GetTitle(), testing::AnyOf(title1, title2));
@@ -2620,15 +2620,15 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
 
   // Without a filter, the "file://" URL should win.
   std::vector<std::unique_ptr<PageUsageData>> results =
-      db_->QuerySegmentUsage(time, 1, base::NullCallback());
+      db_->QuerySegmentUsage(/*max_result_count=*/1, base::NullCallback());
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(url1, results[0]->GetURL());
   EXPECT_EQ(segment_id1, results[0]->GetID());
 
   // With the filter, the "file://" URL should be filtered out, so the "http://"
   // URL should win instead.
-  std::vector<std::unique_ptr<PageUsageData>> results2 =
-      db_->QuerySegmentUsage(time, 1, base::BindRepeating(&FilterURL));
+  std::vector<std::unique_ptr<PageUsageData>> results2 = db_->QuerySegmentUsage(
+      /*max_result_count=*/1, base::BindRepeating(&FilterURL));
   ASSERT_EQ(1u, results2.size());
   EXPECT_EQ(url2, results2[0]->GetURL());
   EXPECT_EQ(segment_id2, results2[0]->GetID());

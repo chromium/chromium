@@ -3457,7 +3457,7 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
     backend_->AddPage(args);
   }
 
-  MostVisitedURLList most_visited = backend_->QueryMostVisitedURLs(100, 100);
+  MostVisitedURLList most_visited = backend_->QueryMostVisitedURLs(100);
 
   const std::u16string kSomeTitle;  // Ignored by equality operator.
   EXPECT_THAT(

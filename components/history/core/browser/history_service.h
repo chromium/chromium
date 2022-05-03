@@ -323,14 +323,12 @@ class HistoryService : public KeyedService {
       base::CancelableTaskTracker* tracker);
 
   // Request the `result_count` most visited URLs and the chain of
-  // redirects leading to each of these URLs. `days_back` is the
-  // number of days of history to use. Used by TopSites.
+  // redirects leading to each of these URLs. Used by TopSites.
   using QueryMostVisitedURLsCallback =
       base::OnceCallback<void(MostVisitedURLList)>;
 
   base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
       int result_count,
-      int days_back,
       QueryMostVisitedURLsCallback callback,
       base::CancelableTaskTracker* tracker);
 

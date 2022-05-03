@@ -1911,8 +1911,7 @@ VisibleVisitCountToHostResult HistoryBackend::GetVisibleVisitCountToHost(
   return result;
 }
 
-MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count,
-                                                        int days_back) {
+MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
   if (!db_)
     return {};
 
@@ -1923,8 +1922,8 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count,
           ? base::BindRepeating(&HistoryBackendClient::IsWebSafe,
                                 base::Unretained(backend_client_.get()))
           : base::NullCallback();
-  std::vector<std::unique_ptr<PageUsageData>> data = db_->QuerySegmentUsage(
-      base::Time::Now() - base::Days(days_back), result_count, url_filter);
+  std::vector<std::unique_ptr<PageUsageData>> data =
+      db_->QuerySegmentUsage(result_count, url_filter);
 
   MostVisitedURLList result;
   for (const std::unique_ptr<PageUsageData>& current_data : data)

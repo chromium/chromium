@@ -128,12 +128,10 @@ class HistoryServiceTest : public testing::Test {
 
   void QueryMostVisitedURLs() {
     const int kResultCount = 20;
-    const int kDaysBack = 90;
 
     base::RunLoop run_loop;
     history_service_->QueryMostVisitedURLs(
-        kResultCount, kDaysBack,
-        base::BindLambdaForTesting([&](MostVisitedURLList urls) {
+        kResultCount, base::BindLambdaForTesting([&](MostVisitedURLList urls) {
           most_visited_urls_ = urls;
           run_loop.Quit();
         }),

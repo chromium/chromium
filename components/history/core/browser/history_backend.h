@@ -293,9 +293,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   VisibleVisitCountToHostResult GetVisibleVisitCountToHost(const GURL& url);
 
   // Request the `result_count` most visited URLs and the chain of
-  // redirects leading to each of these URLs. `days_back` is the
-  // number of days of history to use. Used by TopSites.
-  MostVisitedURLList QueryMostVisitedURLs(int result_count, int days_back);
+  // redirects leading to each of these URLs. Used by TopSites.
+  MostVisitedURLList QueryMostVisitedURLs(int result_count);
 
   // Statistics ----------------------------------------------------------------
 
