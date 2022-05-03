@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
+#include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
@@ -147,6 +148,12 @@ void GameProvider::OnSearchComplete(
 
   SearchProvider::Results results;
   for (size_t i = 0; i < std::min(matches.size(), kMaxResults); ++i) {
+    const apps::Result* result = matches[i].first;
+    if (!result->GetSourceExtras() ||
+        !result->GetSourceExtras()->AsGameExtras()) {
+      // Result was not a game.
+      continue;
+    }
     results.emplace_back(std::make_unique<GameResult>(
         profile_, list_controller_, app_discovery_service_, *matches[i].first,
         matches[i].second, query));

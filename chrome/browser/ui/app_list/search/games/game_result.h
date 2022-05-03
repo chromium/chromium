@@ -42,7 +42,7 @@ class GameResult : public ChromeSearchResult {
   Profile* profile_;
   AppListControllerDelegate* list_controller_;
 
-  const GURL launch_url_;
+  GURL launch_url_;
 
   base::WeakPtrFactory<GameResult> weak_ptr_factory_{this};
 };

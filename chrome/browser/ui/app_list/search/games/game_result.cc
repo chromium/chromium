@@ -70,12 +70,15 @@ GameResult::GameResult(Profile* profile,
                        const apps::Result& game,
                        double relevance,
                        const std::u16string& query)
-    : profile_(profile),
-      list_controller_(list_controller),
-      launch_url_(game.GetSourceExtras()->AsGameExtras()->GetDeeplinkUrl()) {
+    : profile_(profile), list_controller_(list_controller) {
   DCHECK(profile);
   DCHECK(list_controller);
   DCHECK(app_discovery_service);
+  // GameResult requires that apps::Result has GameExtras populated.
+  DCHECK(game.GetSourceExtras());
+  DCHECK(game.GetSourceExtras()->AsGameExtras());
+
+  launch_url_ = game.GetSourceExtras()->AsGameExtras()->GetDeeplinkUrl();
 
   set_id(launch_url_.spec());
   set_relevance(relevance);
