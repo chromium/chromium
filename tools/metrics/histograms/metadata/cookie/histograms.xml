@@ -888,7 +888,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Type" enum="CookieType" expires_after="2022-08-28">
+<histogram name="Cookie.Type" enum="CookieType" expires_after="2022-10-30">
   <owner>mkwst@chromium.org</owner>
   <summary>For each cookie added to the store, record it's type(s).</summary>
 </histogram>

@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCount2" units="entries"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>Number of serialized UKM entries when storing a UKM log.</summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2022-08-28">
+<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2022-10-30">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.KeptSourcesCount" units="sources"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
