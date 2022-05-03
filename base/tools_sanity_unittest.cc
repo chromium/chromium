@@ -20,6 +20,12 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 namespace base {
 
 namespace {
@@ -94,6 +100,40 @@ void MakeSomeErrors(char *ptr, size_t size) {
 }
 
 }  // namespace
+
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
+// build/sanitizers/sanitizer_options.cc defines symbols like
+// __asan_default_options which the sanitizer runtime calls if they exist
+// in the executable. If they don't, the sanitizer runtime silently uses an
+// internal default value instead. The build puts the symbol
+// _sanitizer_options_link_helper (which the sanitizer runtime doesn't know
+// about, it's a chrome thing) in that file and then tells the linker that
+// that symbol must exist. This causes sanitizer_options.cc to be part of
+// our binaries, which in turn makes sure our __asan_default_options are used.
+// We had problems with __asan_default_options not being used, so this test
+// verifies that _sanitizer_options_link_helper actually makes it into our
+// binaries.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1322143): Sanitizer options are currently broken
+// on Android.
+// TODO(https://crbug.com/1321584): __asan_default_options should be used
+// on Windows too, but currently isn't.
+#define MAYBE_LinksSanitizerOptions DISABLED_LinksSanitizerOptions
+#else
+#define MAYBE_LinksSanitizerOptions LinksSanitizerOptions
+#endif
+TEST(ToolsSanityTest, MAYBE_LinksSanitizerOptions) {
+  constexpr char kSym[] = "_sanitizer_options_link_helper";
+#if BUILDFLAG(IS_WIN)
+  auto sym = GetProcAddress(GetModuleHandle(nullptr), kSym);
+#else
+  void* sym = dlsym(RTLD_DEFAULT, kSym);
+#endif
+  EXPECT_TRUE(sym != nullptr);
+}
+#endif  // sanitizers
 
 // A memory leak detector should report an error in this test.
 TEST(ToolsSanityTest, MemoryLeak) {

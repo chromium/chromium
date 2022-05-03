@@ -10,13 +10,6 @@
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
     defined(UNDEFINED_SANITIZER)
-// Functions returning default options are declared weak in the tools' runtime
-// libraries. To make the linker pick the strong replacements for those
-// functions from this module, we explicitly force its inclusion by passing
-// -Wl,-u_sanitizer_options_link_helper
-extern "C"
-void _sanitizer_options_link_helper() { }
-
 // The callbacks we define here will be called from the sanitizer runtime, but
 // aren't referenced from the Chrome executable. We must ensure that those
 // callbacks are not sanitizer-instrumented, and that they aren't stripped by
@@ -26,6 +19,14 @@ void _sanitizer_options_link_helper() { }
   __attribute__((no_sanitize("address", "memory", "thread", "undefined"))) \
   __attribute__((visibility("default")))                                   \
   __attribute__((used))
+
+// Functions returning default options are declared weak in the tools' runtime
+// libraries. To make the linker pick the strong replacements for those
+// functions from this module, we explicitly force its inclusion by passing
+// -Wl,-u_sanitizer_options_link_helper
+// SANITIZER_HOOK_ATTRIBUTE instead of just `extern "C"` solely to make the
+// symbol externally visible, for ToolsSanityTest.LinksSanitizerOptions.
+SANITIZER_HOOK_ATTRIBUTE void _sanitizer_options_link_helper() {}
 #endif
 
 #if defined(ADDRESS_SANITIZER)
