@@ -980,21 +980,6 @@ void AuctionRunner::Auction::OnBidScored(
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
-  // Component Auctions must receive a `component_auction_modified_bid_params`,
-  // and top-level Auctions must not.
-  if (component_auction_modified_bid_params.is_null() != (parent_ == nullptr)) {
-    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
-    return;
-  }
-  // If a component seller modified, the new bid must also be valid.
-  if (component_auction_modified_bid_params &&
-      component_auction_modified_bid_params->has_bid &&
-      !IsValidBid(component_auction_modified_bid_params->bid)) {
-    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params bid");
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
-    return;
-  }
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
   // Use separate fields for component and top-level seller reports, so both can
@@ -1014,6 +999,23 @@ void AuctionRunner::Auction::OnBidScored(
   // A score <= 0 means the seller rejected the bid.
   if (score <= 0) {
     MaybeCompleteBiddingAndScoringPhase();
+    return;
+  }
+
+  // If they accept a bid / return a positive score, component auction
+  // SellerWorklets must return a `component_auction_modified_bid_params`, and
+  // top-level auctions must not.
+  if (component_auction_modified_bid_params.is_null() != (parent_ == nullptr)) {
+    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params");
+    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    return;
+  }
+  // If a component seller modified the bid, the new bid must also be valid.
+  if (component_auction_modified_bid_params &&
+      component_auction_modified_bid_params->has_bid &&
+      !IsValidBid(component_auction_modified_bid_params->bid)) {
+    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params bid");
+    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
 

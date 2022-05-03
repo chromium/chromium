@@ -3019,6 +3019,66 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
                   /*expected_sellers=*/3);
 }
 
+// Test case where a single component auction accepts one bid and rejects
+// another. This is a regression test for https://crbug.com/1321941, where a
+// rejected bid from a component auction would be treated as a security error,
+// and result in bidding in the component auction being aborted, and all
+// previous bids being thrown out.
+TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
+  // Script used by the winning bidder. It makes the lower bid.
+  const char kBidder1Script[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+        return {bid: 1, render: interestGroup.ads[0].renderUrl,
+                allowComponentAuction: true};
+      }
+
+    function reportWin() {}
+  )";
+
+  // Script used by the losing bidder. It makes the higher bid.
+  const char kBidder2Script[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+        return {bid: 2, render: interestGroup.ads[0].renderUrl,
+                allowComponentAuction: true};
+      }
+  )";
+
+  // Script used for both sellers. It rejects bids over 1.
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      if (bid > 1)
+        return {desirability: 0, allowComponentAuction: true};
+      return {desirability: bid, allowComponentAuction: true};
+    }
+
+    function reportResult() {}
+  )";
+
+  // Set up a component auction using the normal helper function, but then
+  // overwrite the scripts.
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/false);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidder1Script);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         kBidder2Script);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url, kSellerScript);
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  EXPECT_EQ("https://ad1.com/", result_.ad_url);
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
+}
+
 // A component auction with one component that has two buyers. In this auction,
 // the top-level auction would score kBidder2 higher (since it bids more), but
 // kBidder1 wins this auction, because the component auctions use a different
