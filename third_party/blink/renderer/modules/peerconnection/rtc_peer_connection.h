@@ -335,7 +335,7 @@ class MODULES_EXPORT RTCPeerConnection final
   void DidModifyTransceivers(webrtc::PeerConnectionInterface::SignalingState,
                              Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
                              Vector<uintptr_t>,
-                             bool is_remote_description) override;
+                             bool is_remote_description_or_rollback) override;
   void DidAddRemoteDataChannel(
       scoped_refptr<webrtc::DataChannelInterface> channel) override;
   void DidNoteInterestingUsage(int usage_pattern) override;

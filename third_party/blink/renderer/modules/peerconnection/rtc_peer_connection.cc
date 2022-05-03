@@ -3100,7 +3100,7 @@ void RTCPeerConnection::DidModifyTransceivers(
     webrtc::PeerConnectionInterface::SignalingState signaling_state,
     Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers,
     Vector<uintptr_t> removed_transceiver_ids,
-    bool is_remote_description) {
+    bool is_remote_description_or_rollback) {
   HeapVector<Member<MediaStreamTrack>> mute_tracks;
   HeapVector<std::pair<Member<MediaStream>, Member<MediaStreamTrack>>>
       remove_list;
@@ -3144,7 +3144,7 @@ void RTCPeerConnection::DidModifyTransceivers(
     // removed). A track event indicates either that the track was "added" in
     // the sense that FiredDirectionHasRecv() changed, or that a new remote
     // stream was added containing the receiver's track.
-    if (is_remote_description &&
+    if (is_remote_description_or_rollback &&
         ((!previously_had_recv && transceiver->FiredDirectionHasRecv()) ||
          add_list_prev_size != add_list.size())) {
       // "Process the addition of a remote track".

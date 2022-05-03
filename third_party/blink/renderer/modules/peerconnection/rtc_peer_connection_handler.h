@@ -338,7 +338,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   void OnModifyTransceivers(
       webrtc::PeerConnectionInterface::SignalingState signaling_state,
       std::vector<blink::RtpTransceiverState> transceiver_states,
-      bool is_remote_description);
+      bool is_remote_description,
+      bool is_rollback);
   void OnDataChannel(scoped_refptr<webrtc::DataChannelInterface> channel);
   void OnIceCandidate(const String& sdp,
                       const String& sdp_mid,

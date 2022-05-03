@@ -684,13 +684,15 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
       PeerConnectionTracker* tracker,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       PeerConnectionTracker::Action action,
-      webrtc::SdpSemantics sdp_semantics)
+      webrtc::SdpSemantics sdp_semantics,
+      bool is_rollback)
       : handler_(handler),
         main_thread_(task_runner),
         web_request_(web_request),
         tracker_(tracker),
         action_(action),
-        sdp_semantics_(sdp_semantics) {}
+        sdp_semantics_(sdp_semantics),
+        is_rollback_(is_rollback) {}
 
   void OnSetDescriptionComplete(
       webrtc::RTCError error,
@@ -842,7 +844,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     if (handler_) {
       handler_->OnModifyTransceivers(
           states.signaling_state, std::move(states.transceiver_states),
-          action_ == PeerConnectionTracker::kActionSetRemoteDescription);
+          action_ == PeerConnectionTracker::kActionSetRemoteDescription,
+          is_rollback_);
     }
   }
 
@@ -852,6 +855,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
   CrossThreadWeakPersistent<PeerConnectionTracker> tracker_;
   PeerConnectionTracker::Action action_;
   webrtc::SdpSemantics sdp_semantics_;
+  bool is_rollback_;
 };
 
 // Receives notifications from a PeerConnection object about state changes. The
@@ -1397,7 +1401,8 @@ void RTCPeerConnectionHandler::SetLocalDescription(
           weak_factory_.GetWeakPtr(), request, peer_connection_tracker_,
           task_runner_,
           PeerConnectionTracker::kActionSetLocalDescriptionImplicit,
-          configuration_.sdp_semantics);
+          configuration_.sdp_semantics,
+          /*is_rollback=*/true);
 
   // Surfacing transceivers is not applicable in Plan B.
   bool surface_receivers_only =
@@ -1475,7 +1480,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
       base::MakeRefCounted<WebRtcSetDescriptionObserverImpl>(
           weak_factory_.GetWeakPtr(), request, peer_connection_tracker_,
           task_runner_, PeerConnectionTracker::kActionSetLocalDescription,
-          configuration_.sdp_semantics);
+          configuration_.sdp_semantics, type == "rollback");
 
   bool surface_receivers_only =
       (configuration_.sdp_semantics == webrtc::SdpSemantics::kPlanB);
@@ -1554,7 +1559,7 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
       base::MakeRefCounted<WebRtcSetDescriptionObserverImpl>(
           weak_factory_.GetWeakPtr(), request, peer_connection_tracker_,
           task_runner_, PeerConnectionTracker::kActionSetRemoteDescription,
-          configuration_.sdp_semantics);
+          configuration_.sdp_semantics, type == "rollback");
 
   bool surface_receivers_only =
       (configuration_.sdp_semantics == webrtc::SdpSemantics::kPlanB);
@@ -2558,7 +2563,8 @@ void RTCPeerConnectionHandler::OnModifySctpTransport(
 void RTCPeerConnectionHandler::OnModifyTransceivers(
     webrtc::PeerConnectionInterface::SignalingState signaling_state,
     std::vector<blink::RtpTransceiverState> transceiver_states,
-    bool is_remote_description) {
+    bool is_remote_description,
+    bool is_rollback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(configuration_.sdp_semantics, webrtc::SdpSemantics::kUnifiedPlan);
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers(
@@ -2624,9 +2630,9 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
   }
   previous_transceiver_ids_ = ids;
   if (!is_closed_) {
-    client_->DidModifyTransceivers(signaling_state,
-                                   std::move(platform_transceivers),
-                                   removed_transceivers, is_remote_description);
+    client_->DidModifyTransceivers(
+        signaling_state, std::move(platform_transceivers), removed_transceivers,
+        is_remote_description || is_rollback);
   }
 }
 

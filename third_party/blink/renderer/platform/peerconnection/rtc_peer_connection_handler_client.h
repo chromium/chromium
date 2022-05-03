@@ -88,7 +88,7 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
       webrtc::PeerConnectionInterface::SignalingState,
       Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
       Vector<uintptr_t>,
-      bool is_remote_description) = 0;
+      bool is_remote_description_or_rollback) = 0;
   virtual void DidModifySctpTransport(WebRTCSctpTransportSnapshot) = 0;
   virtual void DidAddRemoteDataChannel(
       scoped_refptr<webrtc::DataChannelInterface>) = 0;
