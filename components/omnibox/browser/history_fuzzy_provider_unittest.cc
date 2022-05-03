@@ -33,6 +33,40 @@ void SwapRemoveElement(Container& container, const Item& item) {
   container.pop_back();
 }
 
+// This operator implementation is for debugging.
+std::ostream& operator<<(std::ostream& os,
+                         const fuzzy::Correction& correction) {
+  os << '{';
+  switch (correction.kind) {
+    case fuzzy::Correction::Kind::KEEP: {
+      os << 'K';
+      break;
+    }
+    case fuzzy::Correction::Kind::DELETE: {
+      os << 'D';
+      break;
+    }
+    case fuzzy::Correction::Kind::INSERT: {
+      os << 'I';
+      break;
+    }
+    case fuzzy::Correction::Kind::REPLACE: {
+      os << 'R';
+      break;
+    }
+    default: {
+      NOTREACHED();
+      break;
+    }
+  }
+  os << "," << correction.at << "," << static_cast<char>(correction.new_char)
+     << "}";
+  if (correction.next) {
+    os << "~" << *correction.next;
+  }
+  return os;
+}
+
 // Note: The `test_case` is destroyed in place as it is checked.
 void VerifyTestCase(fuzzy::Node* node,
                     TestCase& test_case,
@@ -43,7 +77,7 @@ void VerifyTestCase(fuzzy::Node* node,
   for (const fuzzy::Correction& correction : corrections) {
     std::u16string corrected_input = test_case.input;
     correction.ApplyTo(corrected_input);
-    DVLOG(1) << "-> " << corrected_input;
+    DVLOG(1) << correction << " -> " << corrected_input;
   }
   CHECK_EQ(found, test_case.expect_found)
       << " input(" << test_case.tolerance << "): " << test_case.input;
@@ -421,4 +455,43 @@ TEST_F(HistoryFuzzyProviderTest, ToleranceScheduleIsEnforced) {
 
   VerifyCasesWithSchedule(&node, cases,
                           {.start_index = 2, .step_length = 4, .limit = 3});
+}
+
+// This test covers a subtlety in the algorithm. It ensures we don't take
+// replacements at the same position of a previous insertion because we
+// only want one of {I,1,e}~{R,0,t} (ler ter) | {R,0,e}~{I,0,t} (er ter).
+TEST_F(HistoryFuzzyProviderTest, DoesNotProduceDuplicate) {
+  fuzzy::Node node;
+  node.Insert(u"ter", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          2,
+          u"lr",
+          false,
+          {
+              u"ter",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
+}
+
+TEST_F(HistoryFuzzyProviderTest, NodesDeleteAndPreserveStructure) {
+  fuzzy::Node node;
+  node.Insert(u"abc", 0);
+  CHECK(node.Delete(u"abc", 0));
+  CHECK(node.next.empty());
+  node.Insert(u"def", 0);
+  CHECK(!node.Delete(u"de", 0));
+  CHECK(!node.next.empty());
+  CHECK(node.Delete(u"def", 0));
+  node.Insert(u"ghi", 0);
+  node.Insert(u"ghost", 0);
+  CHECK(!node.Delete(u"gh", 0));
+  CHECK(!node.next.empty());
+  CHECK(!node.Delete(u"ghi", 0));
+  CHECK(node.Delete(u"ghost", 0));
+  CHECK(node.next.empty());
 }

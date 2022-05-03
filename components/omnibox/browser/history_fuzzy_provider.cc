@@ -94,7 +94,7 @@ std::unique_ptr<Correction> Correction::GetApplicableCorrection() {
 }
 
 // This operator implementation is for debugging.
-std::ostream& operator<<(std::ostream& os, Correction& correction) {
+std::ostream& operator<<(std::ostream& os, const Correction& correction) {
   os << '{';
   switch (correction.kind) {
     case Correction::Kind::KEEP: {
@@ -134,12 +134,25 @@ void Node::Insert(const std::u16string& text, size_t from) {
     relevance = 1;
     return;
   }
-  char16_t c = text[from];
-  std::unique_ptr<Node>& node = next[c];
+  std::unique_ptr<Node>& node = next[text[from]];
   if (!node) {
     node = std::make_unique<Node>();
   }
   node->Insert(text, from + 1);
+}
+
+bool Node::Delete(const std::u16string& text, size_t from) {
+  if (from < text.length()) {
+    auto it = next.find(text[from]);
+    if (it != next.end() && it->second->Delete(text, from + 1)) {
+      next.erase(it);
+    }
+  }
+  return next.empty();
+}
+
+void Node::Clear() {
+  next.clear();
 }
 
 bool Node::FindCorrections(const std::u16string& text,
@@ -283,13 +296,17 @@ bool Node::FindCorrections(const std::u16string& text,
                  step.length + 1,
                  {Correction::Kind::INSERT, step.index, entry.first,
                   step.correction.GetApplicableCorrection()}});
-        // Replace
-        pq.push({entry.second.get(),
-                 step.distance + 1,
-                 step.index + 1,
-                 step.length + 1,
-                 {Correction::Kind::REPLACE, step.index, entry.first,
-                  step.correction.GetApplicableCorrection()}});
+        // Replace. Note, we do not replace at the same position as a previous
+        // insertion because doing so could produce unnecessary duplicates.
+        if (step.correction.kind != Correction::Kind::INSERT ||
+            step.correction.at != step.index) {
+          pq.push({entry.second.get(),
+                   step.distance + 1,
+                   step.index + 1,
+                   step.length + 1,
+                   {Correction::Kind::REPLACE, step.index, entry.first,
+                    step.correction.GetApplicableCorrection()}});
+        }
       }
     }
   }
@@ -306,6 +323,12 @@ void Node::Log(std::u16string built) const {
   for (const auto& entry : next) {
     entry.second->Log(built + entry.first);
   }
+}
+
+size_t Node::EstimateMemoryUsage() const {
+  size_t res = 0;
+  res += base::trace_event::EstimateMemoryUsage(next);
+  return res;
 }
 
 // This task class loads URLs considered significant according to
@@ -396,6 +419,7 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
 size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
   size_t res = HistoryProvider::EstimateMemoryUsage();
   res += base::trace_event::EstimateMemoryUsage(autocomplete_input_);
+  res += base::trace_event::EstimateMemoryUsage(root_);
   return res;
 }
 
@@ -497,4 +521,18 @@ void HistoryFuzzyProvider::OnURLVisited(
     base::Time visit_time) {
   DVLOG(1) << "URL Visit: " << row.url();
   root_.Insert(base::ASCIIToUTF16(row.url().host()), 0);
+}
+
+void HistoryFuzzyProvider::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // Note, this implementation is conservative in terms of user privacy; it
+  // deletes hosts from the trie if any URL with the given host is deleted.
+  if (deletion_info.IsAllHistory()) {
+    root_.Clear();
+  } else {
+    for (const history::URLRow& row : deletion_info.deleted_rows()) {
+      root_.Delete(base::ASCIIToUTF16(row.url().host()), 0);
+    }
+  }
 }

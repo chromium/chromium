@@ -112,6 +112,13 @@ struct Node {
   // `text` and ensures recursion is bounded.
   void Insert(const std::u16string& text, size_t from);
 
+  // Delete nodes as necessary to remove given `text` from the trie.
+  // Returns true if this node is left empty and may be deleted.
+  bool Delete(const std::u16string& text, size_t from);
+
+  // Delete all nodes to clear the trie.
+  void Clear();
+
   // Produce corrections necessary to get `text` back on trie. Each correction
   // will be of size bounded by `tolerance_schedule`, and none will have smaller
   // edit distance than any other (i.e. all corrections are equally optimal).
@@ -128,6 +135,10 @@ struct Node {
 
   // TODO(orinj): Remove this. It's a development-only debugging utility.
   void Log(std::u16string built) const;
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
 
   // This is used to distinguish terminal nodes in the trie (nonzero values).
   // TODO(orinj): Consider removing this if we only correct inputs and leave
@@ -197,6 +208,10 @@ class HistoryFuzzyProvider : public HistoryProvider,
                     const history::URLRow& row,
                     const history::RedirectList& redirects,
                     base::Time visit_time) override;
+
+  // Removes deleted (or all) URLs from trie.
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
 
   AutocompleteInput autocomplete_input_;
 
