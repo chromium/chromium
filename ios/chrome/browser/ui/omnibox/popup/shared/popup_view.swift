@@ -158,8 +158,10 @@ struct PopupView: View {
           let highlighted = indexPath == model.highlightedMatchIndexPath
           // UI Variation 1 always has separators. Variation 2 doesn't have
           // one on the last row in a section.
+          // If there is only one row or less in a section, no row separators.
           let shouldDisplayCustomSeparator =
-            !highlighted && (matchIndex < section.matches.count - 1 || popupUIVariation == .one)
+            !highlighted && (section.matches.count > 1)
+            && (matchIndex < section.matches.count - 1 || popupUIVariation == .one)
 
           PopupMatchRowView(
             match: match,
@@ -274,7 +276,7 @@ struct PopupView: View {
         } else if index == 1 {
           // Spacing and separator below the top (pedal) section is inserted as
           // a header in the second section.
-          let separatorColor = (colorScheme == .dark) ? Color.grey700 : Color.grey200
+          let separatorColor = Color.separator
           let pedalSectionSeparator =
             separatorColor
             .frame(width: geometry.size.width, height: 0.5)
