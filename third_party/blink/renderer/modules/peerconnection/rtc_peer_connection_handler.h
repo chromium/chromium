@@ -470,6 +470,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Will be reset to nullptr when the handler is `CloseAndUnregister()`-ed, so
   // it doesn't prevent the factory from being garbage-collected.
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
+  // Reference that outlives `dependency_factory_`, used to free WebRTC
+  // references on the signaling thread during GC.
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
 
   blink::WebLocalFrame* frame_ = nullptr;
 

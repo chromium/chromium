@@ -865,17 +865,32 @@ class RTCPeerConnectionHandler::Observer
  public:
   Observer(const base::WeakPtr<RTCPeerConnectionHandler>& handler,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : handler_(handler),
-        main_thread_(task_runner),
-        native_peer_connection_(nullptr) {}
-  ~Observer() override = default;
+      : handler_(handler), main_thread_(task_runner) {}
+  ~Observer() override {
+    // `signaling_thread_` may be null in some testing-only environments.
+    if (!signaling_thread_) {
+      return;
+    }
+    // To avoid a PROXY block-invoke to ~webrtc::PeerConnection in the event
+    // that `native_peer_connection_` was the last reference, we move it to the
+    // signaling thread in a PostTask.
+    signaling_thread_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+                         // The binding releases `pc` on the signaling thread as
+                         // this method goes out of scope.
+                       },
+                       std::move(native_peer_connection_)));
+  }
 
-  void Initialize() {
+  void Initialize(
+      scoped_refptr<base::SingleThreadTaskRunner> signaling_thread) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(!native_peer_connection_);
     DCHECK(handler_);
     native_peer_connection_ = handler_->native_peer_connection_;
     DCHECK(native_peer_connection_);
+    signaling_thread_ = std::move(signaling_thread);
   }
 
   // When an RTC event log is sent back from PeerConnection, it arrives here.
@@ -1081,6 +1096,9 @@ class RTCPeerConnectionHandler::Observer
  private:
   const base::WeakPtr<RTCPeerConnectionHandler> handler_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
+  // The rest of the members are set at Initialize() but are otherwise constant
+  // until destruction.
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   // A copy of |handler_->native_peer_connection_| for use on the WebRTC
   // signaling thread.
   scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
@@ -1118,6 +1136,25 @@ RTCPeerConnectionHandler::~RTCPeerConnectionHandler() {
   if (!is_unregistered_) {
     CloseAndUnregister();
   }
+  // Delete RTP Media API objects that may have references to the native peer
+  // connection.
+  rtp_senders_.clear();
+  rtp_receivers_.clear();
+  rtp_transceivers_.clear();
+  // `signaling_thread_` may be null in some testing-only environments.
+  if (!signaling_thread_) {
+    return;
+  }
+  // To avoid a PROXY block-invoke to ~webrtc::PeerConnection in the event
+  // that `native_peer_connection_` was the last reference, we move it to the
+  // signaling thread in a PostTask.
+  signaling_thread_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+                       // The binding releases `pc` on the signaling thread as
+                       // this method goes out of scope.
+                     },
+                     std::move(native_peer_connection_)));
 }
 
 void RTCPeerConnectionHandler::CloseAndUnregister() {
@@ -1184,7 +1221,9 @@ bool RTCPeerConnectionHandler::Initialize(
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
-  peer_connection_observer_->Initialize();
+  // Now the signaling thread exists.
+  signaling_thread_ = dependency_factory_->GetWebRtcSignalingTaskRunner();
+  peer_connection_observer_->Initialize(signaling_thread_);
 
   if (peer_connection_tracker_) {
     peer_connection_tracker_->RegisterPeerConnection(this, configuration_,
@@ -1218,7 +1257,9 @@ bool RTCPeerConnectionHandler::InitializeForTest(
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
-  peer_connection_observer_->Initialize();
+  // Now the signaling thread exists.
+  signaling_thread_ = dependency_factory_->GetWebRtcSignalingTaskRunner();
+  peer_connection_observer_->Initialize(signaling_thread_);
   peer_connection_tracker_ = peer_connection_tracker;
   return true;
 }
@@ -2785,8 +2826,7 @@ RTCPeerConnectionHandler::CreateOrUpdateTransceiver(
 scoped_refptr<base::SingleThreadTaskRunner>
 RTCPeerConnectionHandler::signaling_thread() const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(dependency_factory_);
-  return dependency_factory_->GetWebRtcSignalingTaskRunner();
+  return signaling_thread_;
 }
 
 void RTCPeerConnectionHandler::ReportICEState(
