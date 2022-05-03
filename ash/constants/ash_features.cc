@@ -1436,6 +1436,11 @@ const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
 const base::Feature kWallpaperWebUI{"WallpaperWebUI",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable "daily" refresh wallpaper to refresh every ten seconds for testing.
+// Requires |kWallpaperWebUI| to also be enabled.
+const base::Feature kWallpaperFastRefresh{"WallpaperFastRefresh",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable full screen wallpaper preview in new wallpaper experience. Requires
 // |kWallpaperWebUI| to also be enabled.
 const base::Feature kWallpaperFullScreenPreview{
@@ -2161,6 +2166,11 @@ bool IsUseStorkSmdsServerAddressEnabled() {
 
 bool IsWallpaperWebUIEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperWebUI);
+}
+
+bool IsWallpaperFastRefreshEnabled() {
+  return IsWallpaperWebUIEnabled() &&
+         base::FeatureList::IsEnabled(kWallpaperFastRefresh);
 }
 
 bool IsWallpaperFullScreenPreviewEnabled() {

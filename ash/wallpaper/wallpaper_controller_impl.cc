@@ -3283,7 +3283,9 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
 
 void WallpaperControllerImpl::StartDailyRefreshTimer() {
   base::TimeDelta timer_delay =
-      FuzzTimeDelta(GetTimeToNextDailyRefreshUpdate());
+      features::IsWallpaperFastRefreshEnabled()
+          ? base::Seconds(10)
+          : FuzzTimeDelta(GetTimeToNextDailyRefreshUpdate());
   StartUpdateWallpaperTimer(timer_delay);
 }
 
