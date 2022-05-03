@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -22,6 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/page_info/core/features.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
@@ -68,6 +71,9 @@ ChromePageInfoDelegate::ChromePageInfoDelegate(
   sentiment_service_ =
       TrustSafetySentimentServiceFactory::GetForProfile(GetProfile());
 #endif
+  base::UmaHistogramBoolean("Security.PageInfo.AboutThisSiteLanguageSupported",
+                            page_info::IsAboutThisSiteFeatureEnabled(
+                                g_browser_process->GetApplicationLocale()));
 }
 
 Profile* ChromePageInfoDelegate::GetProfile() const {
