@@ -495,15 +495,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Local.RequestTypeOnError" enum="SyncRequestType"
-    expires_after="2022-09-25">
-  <owner>pastarmovj@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Tracks the types of requests that caused errors inside of the local server.
-  </summary>
-</histogram>
-
 <histogram name="Sync.Local.RoamingProfileUnavailable" enum="BooleanError"
     expires_after="2022-09-11">
   <owner>pastarmovj@chromium.org</owner>
