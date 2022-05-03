@@ -50,7 +50,6 @@ static ScopedJavaLocalRef<jobjectArray> JNI_LanguageBridge_GetULPModelLanguages(
   if (language_model) {
     std::vector<language::LanguageModel::LanguageDetails> languageDetails =
         language_model->GetLanguages();
-    DCHECK(!languageDetails.empty());
     for (const auto& details : languageDetails) {
       languages.push_back(details.lang_code);
     }
