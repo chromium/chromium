@@ -247,7 +247,7 @@ namespace media {
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
 // Enables android HW decoding of HEVC content.
-const base::Feature kMediaCodecHEVC{"AndroidHEVC",
+const base::Feature kMediaCodecHEVC{"MediaCodecHEVC",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
 
