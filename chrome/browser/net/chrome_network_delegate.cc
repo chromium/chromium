@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/chrome_paths.h"
@@ -24,8 +24,7 @@ namespace {
 
 bool g_access_to_all_files_enabled = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Returns true if |allowlist| contains |path| or a parent of |path|.
 bool IsPathOnAllowlist(const base::FilePath& path,
                        const std::vector<base::FilePath>& allowlist) {
@@ -40,7 +39,7 @@ bool IsPathOnAllowlist(const base::FilePath& path,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if access is allowed for |path| for a user with |profile_path).
 bool IsAccessAllowedChromeOS(const base::FilePath& path,
                              const base::FilePath& profile_path) {
@@ -120,7 +119,7 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
 
   return IsPathOnAllowlist(path, allowlist);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if access is allowed for |path|.
@@ -164,7 +163,7 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   if (g_access_to_all_files_enabled)
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return IsAccessAllowedChromeOS(path, profile_path);
 #elif BUILDFLAG(IS_ANDROID)
   return IsAccessAllowedAndroid(path);

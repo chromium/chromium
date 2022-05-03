@@ -350,7 +350,7 @@ class DownloadNotificationTestBase
   // Returns whether holding space in-progress downloads notification
   // suppression is enabled given test parameterization.
   bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     return GetParam();
 #else
     return false;

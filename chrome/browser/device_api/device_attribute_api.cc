@@ -29,7 +29,7 @@ const char kNotAllowedOriginErrorMessage[] =
     "The current origin cannot use this web API because it is not allowed by "
     "the DeviceAttributesAllowedForOrigins policy.";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedPlatformErrorMessage[] =
     "This web API is not supported on the current platform.";
 #endif

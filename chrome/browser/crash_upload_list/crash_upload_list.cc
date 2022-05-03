@@ -5,7 +5,6 @@
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
@@ -25,7 +24,7 @@
 #include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
 #endif
 
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
 #endif
 
@@ -51,8 +50,7 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
 // which isn't compatible with CrashUploadListCrashpad. crash_sender continues
 // to log uploads in CrashUploadList::kReporterLogFilename.
 // Linux is handled below.
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-      BUILDFLAG(IS_LINUX))
+#if !(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX))
   if (crash_reporter::IsCrashpadEnabled()) {
     return new CrashUploadListCrashpad();
   }
