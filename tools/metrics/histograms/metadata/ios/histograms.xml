@@ -1240,6 +1240,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
+    expires_after="2023-04-29">
+  <owner>ajuma@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    This histgram counts the frequency of sad tabs that occur while loading a
+    PDF file. This is logged once per sad tab shown.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SadTab.URLIsChromeExternalFile" enum="Boolean"
+    expires_after="2023-04-29">
+  <owner>ajuma@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    This histgram counts the frequency of sad tabs that occur while loading a
+    chrome://external-file URL. This is logged once per sad tab shown.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch"
     enum="BooleanMatched" expires_after="2022-11-06">
   <owner>ajuma@chromium.org</owner>

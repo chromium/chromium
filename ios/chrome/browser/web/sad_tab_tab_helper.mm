@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -182,6 +183,14 @@ void SadTabTabHelper::PresentSadTab() {
                repeatedFailure:repeated_failure_];
 
   SetIsShowingSadTab(true);
+
+  bool is_pdf = web_state_->GetContentsMimeType() == "application/pdf";
+  bool is_chrome_external_file_url =
+      last_failed_url_.host() == kChromeUIExternalFileHost &&
+      last_failed_url_.scheme() == kChromeUIScheme;
+  UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.FileIsPDF", is_pdf);
+  UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.URLIsChromeExternalFile",
+                        is_chrome_external_file_url);
 }
 
 void SadTabTabHelper::SetIsShowingSadTab(bool showing_sad_tab) {
