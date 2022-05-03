@@ -548,7 +548,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
   }
 }
-- (void)testNotSwitchButtonOnCurrentTab {
+
+// TODO(crbug.com/1322120): Reenable this test.
+- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
   if (@available(iOS 15, *)) {
     [super MAYBE_testNotSwitchButtonOnCurrentTab];
   } else {
