@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_counter.h"
@@ -231,7 +232,8 @@ class FormStructure {
   void ParseFieldTypesFromAutocompleteAttributes();
 
   // Classifies each field in |fields_| using the regular expressions.
-  void ParseFieldTypesWithPatterns(LogManager* log_manager);
+  void ParseFieldTypesWithPatterns(PredictionSource prediction_source,
+                                   LogManager* log_manager);
 
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"

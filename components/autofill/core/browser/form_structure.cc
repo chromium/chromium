@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
@@ -690,7 +689,14 @@ void FormStructure::DetermineHeuristicTypes(
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   ParseFieldTypesFromAutocompleteAttributes();
-  ParseFieldTypesWithPatterns(log_manager);
+  ParseFieldTypesWithPatterns(PredictionSource::kDefaultHeuristics,
+                              log_manager);
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+  ParseFieldTypesWithPatterns(PredictionSource::kExperimentalHeuristics,
+                              log_manager);
+  ParseFieldTypesWithPatterns(PredictionSource::kNextGenHeuristics,
+                              log_manager);
+#endif
 
   UpdateAutofillCount();
   IdentifySections(has_author_specified_sections_);
@@ -1650,41 +1656,29 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   was_parsed_for_autocomplete_attributes_ = true;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(LogManager* log_manager) {
-  // Then if there are enough active fields, and if we are dealing with either a
-  // proper <form> or a <form>-less checkout, run the heuristics and server
-  // prediction routines.
+void FormStructure::ParseFieldTypesWithPatterns(
+    PredictionSource prediction_source,
+    LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    field_type_map = FormField::ParseFormFields(
-        fields_, current_page_language_, is_form_tag_,
-        PredictionSource::kDefaultHeuristics, log_manager);
+    field_type_map = FormField::ParseFormFields(fields_, current_page_language_,
+                                                is_form_tag_, prediction_source,
+                                                log_manager);
   } else if (ShouldRunPromoCodeHeuristics()) {
     field_type_map = FormField::ParseFormFieldsForPromoCodes(
-        fields_, current_page_language_, is_form_tag_,
-        PredictionSource::kDefaultHeuristics, log_manager);
+        fields_, current_page_language_, is_form_tag_, prediction_source,
+        log_manager);
   }
-  if (!field_type_map.empty()) {
-    for (const auto& field : fields_) {
-      auto iter = field_type_map.find(field->global_id());
-      if (iter != field_type_map.end()) {
-        const FieldCandidates& candidates = iter->second;
-        field->set_heuristic_type(PredictionSource::kDefaultHeuristics,
-                                  candidates.BestHeuristicType());
+  if (field_type_map.empty())
+    return;
 
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-        auto set_hypothetical_type =
-            [&field, &candidates](PredictionSource source) -> void {
-          absl::optional<ServerFieldType> type =
-              candidates.GetHypotheticalType(source);
-          if (type)
-            field->set_heuristic_type(source, *type);
-        };
-        set_hypothetical_type(PredictionSource::kExperimentalHeuristics);
-        set_hypothetical_type(PredictionSource::kNextGenHeuristics);
-#endif
-      }
-    }
+  for (const auto& field : fields_) {
+    auto iter = field_type_map.find(field->global_id());
+    if (iter == field_type_map.end())
+      continue;
+    const FieldCandidates& candidates = iter->second;
+    field->set_heuristic_type(prediction_source,
+                              candidates.BestHeuristicType());
   }
 }
 

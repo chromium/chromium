@@ -134,8 +134,8 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(server_type());
   }
 
-  // If the explicit type is cc-exp and either the server or heuristics agree on
-  // a 2 vs 4 digit specialization of cc-exp, use that specialization.
+  // If the explicit type is cc-exp and either the server or heuristics agree
+  // on a 2 vs 4 digit specialization of cc-exp, use that specialization.
   if (html_type_ == HTML_TYPE_CREDIT_CARD_EXP) {
     if (server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
@@ -196,8 +196,8 @@ AutofillType AutofillField::ComputedType() const {
           (heuristic_type() == NAME_LAST_SECOND ||
            heuristic_type() == NAME_LAST_FIRST));
 
-    // For new address tokens the heuristic predictions get precedence over the
-    // server predictions.
+    // For new address tokens the heuristic predictions get precedence over
+    // the server predictions.
     // TODO(crbug.com/1098943): Remove feature check once launched.
     believe_server =
         believe_server &&
