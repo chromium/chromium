@@ -2775,11 +2775,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-table-ng",
-    "owners": [ "atotic@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-tflite-language-detection",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 110
