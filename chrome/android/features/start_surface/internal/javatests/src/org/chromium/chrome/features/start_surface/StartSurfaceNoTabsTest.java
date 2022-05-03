@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -128,7 +129,8 @@ public class StartSurfaceNoTabsTest {
         CriteriaHelper.pollUiThread(
                 ()
                         -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+                        && mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                                LayoutType.TAB_SWITCHER));
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
@@ -160,7 +162,8 @@ public class StartSurfaceNoTabsTest {
         CriteriaHelper.pollUiThread(
                 ()
                         -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+                        && mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                                LayoutType.TAB_SWITCHER));
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));

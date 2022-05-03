@@ -281,7 +281,7 @@ public class StartSurfaceMVTilesTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB);
         // This tab should be opened in the background.
-        Assert.assertTrue(cta.getLayoutManager().overviewVisible());
+        Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         // Verifies a new tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
     }
@@ -307,7 +307,6 @@ public class StartSurfaceMVTilesTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
         // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
     }

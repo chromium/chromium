@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
@@ -123,7 +124,7 @@ public class TabGroupUiTest {
         // Select the 1st tab in group.
         clickFirstCardFromTabSwitcher(cta);
         clickFirstTabInDialog(cta);
-        assertFalse(cta.getLayoutManager().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(withId(R.id.bottom_controls)).check(matches(isDisplayed()));
         verifyTabStripFaviconCount(cta, 2);
     }

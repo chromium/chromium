@@ -108,7 +108,7 @@ public class TabUiTestHelper {
      * @param cta  The current running activity.
      */
     public static void enterTabSwitcher(ChromeTabbedActivity cta) {
-        assertFalse(cta.getLayoutManager().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         // TODO(crbug.com/1145271): Replace this with clicking tab switcher button via espresso.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
@@ -120,7 +120,7 @@ public class TabUiTestHelper {
      * @param cta  The current running activity.
      */
     public static void leaveTabSwitcher(ChromeTabbedActivity cta) {
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         pressBack();
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
@@ -146,7 +146,7 @@ public class TabUiTestHelper {
 
     private static void clickTabSwitcherCardWithParent(
             ChromeTabbedActivity cta, int index, int parentId) {
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
     }
@@ -363,7 +363,7 @@ public class TabUiTestHelper {
      * @param count     The correct number of cards in tab switcher.
      */
     public static void verifyTabSwitcherCardCount(ChromeTabbedActivity cta, int count) {
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(allOf(withParent(withId(org.chromium.chrome.R.id.compositor_view_holder)),
                        withId(R.id.tab_list_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
@@ -375,7 +375,7 @@ public class TabUiTestHelper {
      * @param count     The correct number of favicons in tab strip.
      */
     static void verifyTabStripFaviconCount(ChromeTabbedActivity cta, int count) {
-        assertFalse(cta.getLayoutManager().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(allOf(withParent(withId(R.id.toolbar_container_view)), withId(R.id.tab_list_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
     }
@@ -592,7 +592,7 @@ public class TabUiTestHelper {
      */
     public static void switchTabModel(ChromeTabbedActivity cta, boolean isIncognito) {
         assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
-        assertTrue(cta.getOverviewModeBehavior().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
         onView(withContentDescription(isIncognito
                                ? R.string.accessibility_tab_switcher_incognito_stack

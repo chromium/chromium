@@ -10,7 +10,6 @@ import android.view.Window;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,8 +29,7 @@ public class TabbedSystemUiCoordinator {
      *
      * @param window The {@link Window} associated with the containing activity.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
-     * @param layoutManagerSupplier An {@link ObservableSupplier} for the
-     *         {@link OverviewModeBehavior} associated with the containing activity.
+     * @param layoutManagerSupplier {@link LayoutManager} associated with the containing activity.
      * @param mFullscreenManager The {@link FullscreenManager} used for containing activity
      */
     public TabbedSystemUiCoordinator(Window window, TabModelSelector tabModelSelector,

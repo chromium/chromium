@@ -89,7 +89,6 @@ import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -1738,15 +1737,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // cold-starts).
         // TODO(crbug.com/1151391): Remove after analysis is complete.
         ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE);
-    }
-
-    /**
-     * @return OverviewModeBehavior if this activity supports an overview mode and the
-     *         OverviewModeBehavior has been initialized, null otherwise.
-     */
-    @VisibleForTesting
-    public @Nullable OverviewModeBehavior getOverviewModeBehavior() {
-        return null;
     }
 
     /**

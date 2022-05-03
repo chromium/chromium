@@ -378,13 +378,14 @@ public class StartSurfaceTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(
-                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        CriteriaHelper.pollUiThread(()
+                                            -> cta.getLayoutManager() != null
+                        && cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         StartSurfaceTestUtils.waitForTabModel(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> cta.getTabCreator(true /*incognito*/).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
@@ -490,14 +491,14 @@ public class StartSurfaceTest {
             // omnibox.
             return;
         }
-        CriteriaHelper.pollUiThread(() -> !cta.getOverviewModeBehavior().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         TabUiTestHelper.enterTabSwitcher(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         // Click plus button from top toolbar should create NTP instead of showing start surface.
         onViewWaiting(withId(R.id.new_tab_button)).perform(click());
         TabUiTestHelper.verifyTabModelTabCount(cta, 3, 0);
-        assertFalse(cta.getOverviewModeBehavior().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
     @Test
@@ -529,7 +530,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
         CriteriaHelper.pollUiThread(
                 () -> UrlUtilities.isNTPUrl(cta.getTabModelSelector().getCurrentTab().getUrl()));
-        assertFalse(cta.getOverviewModeBehavior().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
     /**
@@ -764,7 +765,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
         waitForView(withId(R.id.primary_tasks_surface_view));
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(StartSurfaceUserData.getKeepTab(tab)); });
@@ -782,7 +783,7 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         assertEquals(1, cta.getTabModelSelector().getTotalTabCount());
         mActivityTestRule.waitForActivityNativeInitializationComplete();
-        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
         Assert.assertFalse(ReturnToChromeUtil.isPrimaryAccountSync());
         Assert.assertFalse(ReturnToChromeUtil.shouldShowOverviewPageOnStart(cta, cta.getIntent(),
@@ -815,7 +816,7 @@ public class StartSurfaceTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> cta.getTabCreator(true /*incognito*/).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
@@ -823,7 +824,7 @@ public class StartSurfaceTest {
         // Simulates pressing the home button. Incognito tab should stay and homepage shouldn't
         // show.
         onView(withId(R.id.home_button)).perform(click());
-        assertFalse(cta.getLayoutManager().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         int container_id = ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
                 ? R.id.revamped_incognito_ntp_container
                 : R.id.new_tab_incognito_container;
@@ -842,7 +843,7 @@ public class StartSurfaceTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
         SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         // Verifies that the START_NEXT_SHOW_ON_STARTUP_DECISION_MS has been set.
@@ -965,7 +966,7 @@ public class StartSurfaceTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
         SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         // Verifies that the START_NEXT_SHOW_ON_STARTUP_DECISION_MS has been set.

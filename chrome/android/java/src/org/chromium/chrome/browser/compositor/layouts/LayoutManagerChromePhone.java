@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
@@ -40,16 +39,14 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, topUiThemeColorProvider, jankTracker, null, null);
+                topUiThemeColorProvider, jankTracker, null, null);
     }
 
     @Override
@@ -144,7 +141,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // smoothly.
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {
-            if (!overviewVisible()) {
+            if (!isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                 if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
                     setNextLayout(mSimpleAnimationLayout, true);
                     // The method Layout#doneHiding() will automatically show the next layout.

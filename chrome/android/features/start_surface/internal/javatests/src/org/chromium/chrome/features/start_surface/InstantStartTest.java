@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -543,7 +544,7 @@ public class InstantStartTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
-        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

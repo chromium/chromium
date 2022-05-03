@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -197,7 +198,7 @@ public class TabGridDialogTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Enter first tab page.
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         clickFirstCardFromTabSwitcher(cta);
         clickFirstTabInDialog(cta);
         waitForDialogHidingAnimation(cta);
@@ -232,7 +233,7 @@ public class TabGridDialogTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Enter first tab page.
-        assertTrue(cta.getLayoutManager().overviewVisible());
+        assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         clickFirstCardFromTabSwitcher(cta);
         clickFirstTabInDialog(cta);
         waitForDialogHidingAnimation(cta);
@@ -1101,7 +1102,7 @@ public class TabGridDialogTest {
     }
 
     private void showDialogFromStrip(ChromeTabbedActivity cta) {
-        assertFalse(cta.getLayoutManager().overviewVisible());
+        assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(allOf(withId(R.id.toolbar_left_button),
                        isDescendantOfA(withId(R.id.bottom_controls))))
                 .perform(click());

@@ -289,7 +289,8 @@ public class TabSwitcherTabletTest {
 
     private void exitGTSAndVerifyThumbnailsAreReleased()
             throws TimeoutException, ExecutionException {
-        assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
 
         final int index = mActivityTestRule.getActivity().getCurrentTabModel().index();
         exitSwitcherWithTabClick(index);

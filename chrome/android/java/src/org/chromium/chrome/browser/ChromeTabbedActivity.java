@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
@@ -356,10 +355,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    // TODO(crbug.com/1108496): Removed after all usages has been migrated to LayoutStateProvider.
-    private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
-            new OneshotSupplierImpl<>();
-    private OverviewModeBehavior mOverviewModeController;
 
     private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier =
             new ObservableSupplierImpl<>();
@@ -620,7 +615,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                     boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                             ChromeTabbedActivity.this);
-                    boolean overviewVisible = mOverviewModeController.overviewVisible();
+                    boolean overviewVisible =
+                            mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
                     boolean hasNextTab = !(getTabModelSelector().getTotalTabCount() == 0
                             || (!getTabModelSelector().isIncognitoSelected()
                                     && getTabModelSelector().getModel(false).getCount() == 0));
@@ -703,11 +699,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
-            mOverviewModeController = mLayoutManager;
         }
     }
 
@@ -728,13 +722,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.grid_tab_switcher_view_holder);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier,
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
                     tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
                     getLifecycleDispatcher());
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
-            mOverviewModeController = mLayoutManager;
         }
     }
 
@@ -1104,11 +1096,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return (ChromeTabCreator) super.getCurrentTabCreator();
     }
 
-    @Override
-    public OverviewModeBehavior getOverviewModeBehavior() {
-        return mOverviewModeController;
-    }
-
     /**
      * @return The toolbar button in-product help controller for this activity.
      * TODO(pnoland, https://crbug.com/865801): remove this in favor
@@ -1147,7 +1134,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mHasDeterminedOverviewStateForCurrentSession) return;
 
         mHasDeterminedOverviewStateForCurrentSession = true;
-        boolean isOverviewVisible = mOverviewModeController.overviewVisible();
+        boolean isOverviewVisible = isInOverviewMode();
 
         if (shouldRefreshAndShowOverview(isOverviewVisible)) {
             if (getCurrentTabModel() != null) {
@@ -1176,8 +1163,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             showOverview(StartSurfaceState.SHOWING_START);
         }
 
-        if (IntentUtils.isMainIntentFromLauncher(getIntent())
-                && mOverviewModeController.overviewVisible()) {
+        if (IntentUtils.isMainIntentFromLauncher(getIntent()) && isInOverviewMode()) {
             RecordUserAction.record("MobileStartup.UserEnteredTabSwitcher");
         }
         mAppLaunchDrawBlocker.onOverviewPageAvailable(
@@ -1383,7 +1369,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         boolean accessibilityTabSwitcherEnabled =
                 DeviceClassManager.enableAccessibilityLayout(this);
-        if (mOverviewModeController != null && mOverviewModeController.overviewVisible()
+        if (isInOverviewMode()
                 && (mIsAccessibilityTabSwitcherEnabled == null
                         || mIsAccessibilityTabSwitcherEnabled
                                 != DeviceClassManager.enableAccessibilityLayout(this))) {
@@ -2137,8 +2123,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     /*isIncognito=*/true);
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
-            boolean isUrlBarVisible = !mOverviewModeController.overviewVisible()
-                    && (!isTablet() || getCurrentTabModel().getCount() != 0);
+            boolean isUrlBarVisible =
+                    !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
             if (isUrlBarVisible) {
                 getToolbarManager().setUrlBarFocus(
                         true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
@@ -2210,7 +2196,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If we are in the tab switcher mode (not in the Start surface homepage) and not a tablet,
         // then leave tab switcher mode on back.
-        if (mOverviewModeController.overviewVisible() && !isTablet()
+        if (isInOverviewMode() && !isTablet()
                 && (mStartSurfaceSupplier.get() == null
                         || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
@@ -2239,7 +2225,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If we aren't in the overview mode, we handle the Tab with launchType
         // TabLaunchType.FROM_START_SURFACE or has "OpenedFromStart" property.
-        if (!mOverviewModeController.overviewVisible()
+        if (!isInOverviewMode()
                 && (type == TabLaunchType.FROM_START_SURFACE
                         || StartSurfaceUserData.isOpenedFromStart(currentTab))) {
             if (StartSurfaceUserData.getKeepTab(currentTab)
@@ -2442,7 +2428,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || state == StartSurfaceState.SHOWING_PREVIOUS
                 || state == StartSurfaceState.SHOWING_START);
         if (mIsAccessibilityTabSwitcherEnabled != null && mIsAccessibilityTabSwitcherEnabled
-                && mOverviewModeController != null) {
+                && mLayoutManager != null) {
             // TODO(1200727): This is a temporary fix that should be removed once grid tab switcher
             //                is completely launched. The "start surface" is now created regardless
             //                of the state of accessibility, so we check that mode first and try
@@ -2456,9 +2442,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mStartSurfaceSupplier.get().getController().setOverviewState(state, launchOrigin);
         }
 
-        if (mOverviewModeController == null) return;
+        if (mLayoutManager == null) return;
 
-        if (mOverviewModeController.overviewVisible()) {
+        if (isInOverviewMode()) {
             if (didFinishNativeInitialization()) {
                 getCompositorViewHolderSupplier().get().hideKeyboard(() -> {});
             }
@@ -2478,7 +2464,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void hideOverview() {
-        assert (mOverviewModeController.overviewVisible());
+        assert (isInOverviewMode());
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
             mLayoutManager.showLayout(LayoutType.BROWSING, false);
@@ -2637,8 +2623,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mHandler.postDelayed(mShowHistoryRunnable, ViewConfiguration.getLongPressTimeout());
             return super.onKeyDown(keyCode, event);
         }
-        boolean isCurrentTabVisible = !mOverviewModeController.overviewVisible()
-                && (!isTablet() || getCurrentTabModel().getCount() != 0);
+        boolean isCurrentTabVisible =
+                !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
         return KeyboardShortcuts.onKeyDown(event, isCurrentTabVisible, true, getTabModelSelector(),
                        /* menuOrKeyboardActionController= */ this, getToolbarManager())
                 || super.onKeyDown(keyCode, event);
@@ -2733,7 +2719,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean isInOverviewMode() {
-        return mOverviewModeController != null && mOverviewModeController.overviewVisible();
+        return mLayoutManager != null && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
     }
 
     @Override

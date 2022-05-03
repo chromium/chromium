@@ -31,8 +31,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabGroup;
@@ -617,7 +615,8 @@ public class StartSurfaceLayoutTest {
             onView(tabSwitcherViewMatcher()).perform(actionOnItemAtPosition(targetIndex, click()));
             CriteriaHelper.pollUiThread(() -> {
                 boolean doneHiding =
-                        !mActivityTestRule.getActivity().getLayoutManager().overviewVisible();
+                        !mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                                LayoutType.TAB_SWITCHER);
                 if (!doneHiding) {
                     // Before overview hiding animation is done, the tab index should not change.
                     Criteria.checkThat(mActivityTestRule.getActivity().getCurrentTabModel().index(),
@@ -743,8 +742,8 @@ public class StartSurfaceLayoutTest {
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
 
         onView(tabSwitcherViewMatcher()).perform(actionOnItemAtPosition(0, click()));
-        CriteriaHelper.pollUiThread(
-                () -> !mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 
         enterGTSWithThumbnailChecking();
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
@@ -2243,17 +2242,16 @@ public class StartSurfaceLayoutTest {
      * If thumbnail checking is not needed, use {@link TabUiTestHelper#leaveTabSwitcher} instead.
      */
     private void leaveGTSAndVerifyThumbnailsAreReleased() {
-        assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
 
         StartSurface startSurface = mStartSurfaceLayout.getStartSurfaceForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { startSurface.getController().onBackPressed(); });
         // TODO(wychen): using default timeout or even converting to
         //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> !mActivityTestRule.getActivity().getLayoutManager().overviewVisible(),
-                "Overview not hidden yet", DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         assertThumbnailsAreReleased();
     }
 

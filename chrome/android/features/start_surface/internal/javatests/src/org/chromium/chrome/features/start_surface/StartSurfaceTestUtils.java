@@ -403,7 +403,6 @@ public class StartSurfaceTestUtils {
             }
         });
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
         // Verifies a new Tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, currentTabCount + 1, 0);
     }

@@ -305,7 +305,8 @@ public class StartSurfaceLayoutPerfTest {
                                                              -> frameRates.size() == expectedSize,
                     "Have not got PerfListener callback", DEFAULT_MAX_TIME_TO_POLL * 10,
                     DEFAULT_POLLING_INTERVAL);
-            assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
 
             mStartSurfaceLayout.setPerfListenerForTesting(null);
             // Make sure the fading animation is done.
@@ -313,12 +314,8 @@ public class StartSurfaceLayoutPerfTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> { startSurface.getController().onBackPressed(); });
             Thread.sleep(1000);
-            CriteriaHelper.pollInstrumentationThread(()
-                                                             -> !mActivityTestRule.getActivity()
-                                                                         .getLayoutManager()
-                                                                         .overviewVisible(),
-                    "Overview not hidden yet", DEFAULT_MAX_TIME_TO_POLL * 10,
-                    DEFAULT_POLLING_INTERVAL);
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         }
         assertEquals(mRepeat, frameRates.size());
         Log.i(TAG, "%s: fps = %.2f, maxFrameInterval = %.0f, dirtySpan = %.0f", description,

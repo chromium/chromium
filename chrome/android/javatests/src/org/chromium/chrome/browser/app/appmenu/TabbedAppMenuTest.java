@@ -215,13 +215,15 @@ public class TabbedAppMenuTest {
         // App menu is shown during setup.
         Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
         Assert.assertFalse("Overview shouldn't be showing.",
-                mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
+                mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                        LayoutType.TAB_SWITCHER));
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
         Assert.assertTrue("Overview should be showing.",
-                mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
+                mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                        LayoutType.TAB_SWITCHER));
         Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("App menu should be allowed to show.",
@@ -230,12 +232,11 @@ public class TabbedAppMenuTest {
         });
         showAppMenuAndAssertMenuShown();
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
-                                LayoutType.BROWSING, false));
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
         Assert.assertFalse("Overview shouldn't be showing.",
-                mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
+                mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                        LayoutType.TAB_SWITCHER));
         CriteriaHelper.pollUiThread(
                 () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
     }

@@ -178,7 +178,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
 
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         // Verifies the new Tab is deleted.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
@@ -194,7 +194,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.clickTabInCarousel(/* position = */ 1);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE,
                 cta.getTabModelSelector().getCurrentTab().getLaunchType());
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         // Verifies the tab isn't auto deleted from the TabModel.
@@ -255,7 +255,7 @@ public class StartSurfaceBackButtonTest {
         onView(allOf(withParent(withId(R.id.tasks_surface_body)),
                        withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         Assert.assertEquals(TabLaunchType.FROM_START_SURFACE,
                 cta.getTabModelSelector().getCurrentTab().getLaunchType());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -312,7 +312,7 @@ public class StartSurfaceBackButtonTest {
 
         TabUiTestHelper.mergeAllNormalTabsToAGroup(cta);
         StartSurfaceTestUtils.pressHomePageButton(cta);
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         StartSurfaceTestUtils.clickFirstTabInCarousel();
         onViewWaiting(allOf(
@@ -601,7 +601,7 @@ public class StartSurfaceBackButtonTest {
         Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
                 mActivityTestRule.getActivity(),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, 0));
-        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, incognitoTabs);
     }

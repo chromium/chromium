@@ -156,14 +156,16 @@ public class ReturnToChromeUtilTest {
                                 ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
                                         mActivityTestRule.getActivity())));
 
-        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
 
         waitTabModelRestoration();
         assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ReturnToChromeUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT));
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
     }
 
     /**
@@ -193,8 +195,8 @@ public class ReturnToChromeUtilTest {
                                         mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertFalse(
-                    mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
         }
 
         waitTabModelRestoration();
@@ -202,8 +204,8 @@ public class ReturnToChromeUtilTest {
         // 3 tabs since we created NTP in this case.
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertFalse(
-                    mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
         }
     }
 
@@ -267,14 +269,16 @@ public class ReturnToChromeUtilTest {
                                 mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
         }
 
         waitTabModelRestoration();
         // Not 3 because we don't create a tab for NTP in this case.
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
         }
     }
 
@@ -366,7 +370,8 @@ public class ReturnToChromeUtilTest {
         mActivityTestRule.startMainActivityFromLauncher();
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                    LayoutType.TAB_SWITCHER));
         }
 
         CriteriaHelper.pollUiThread(
@@ -443,7 +448,8 @@ public class ReturnToChromeUtilTest {
 
         mActivityTestRule.startMainActivityFromLauncher();
 
-        Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
 
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);

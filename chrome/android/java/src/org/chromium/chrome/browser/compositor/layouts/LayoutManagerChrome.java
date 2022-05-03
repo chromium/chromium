@@ -12,11 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -51,8 +49,8 @@ import java.util.List;
  * A {@link Layout} controller for the more complicated Chrome browser.  This is currently a
  * superset of {@link LayoutManagerImpl}.
  */
-public class LayoutManagerChrome extends LayoutManagerImpl
-        implements OverviewModeBehavior, ChromeAccessibilityUtil.Observer {
+public class LayoutManagerChrome
+        extends LayoutManagerImpl implements ChromeAccessibilityUtil.Observer {
     // Layouts
     /** An {@link Layout} that should be used as the accessibility tab switcher. */
     protected OverviewListLayout mOverviewListLayout;
@@ -67,11 +65,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
-    private final ObserverList<OverviewModeObserver> mOverviewModeObservers;
     private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -81,7 +77,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
      *         when overview is visible.
@@ -90,14 +85,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
             ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
-
-        mOverviewModeObservers = new ObserverList<OverviewModeObserver>();
 
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
@@ -138,9 +130,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 }
             }
         }
-
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplier.set(this);
     }
 
     /**
@@ -206,7 +195,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void destroy() {
         super.destroy();
-        mOverviewModeObservers.clear();
 
         if (mTabContentManagerSupplier != null) {
             mTabContentManagerSupplier = null;
@@ -269,62 +257,16 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     protected void startShowing(Layout layout, boolean animate) {
         mCreatingNtp = false;
         super.startShowing(layout, animate);
-
-        Layout layoutBeingShown = getActiveLayout();
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        // Check if we should notify OverviewModeObservers.
-        if (isOverviewLayout(layoutBeingShown)) {
-            boolean showToolbar = animate && (!mEnableAnimations
-                    || getTabModelSelector().getCurrentModel().getCount() <= 0);
-            notifyObserversStartedShowing(showToolbar);
-        }
-    }
-
-    @Override
-    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
-        super.startHiding(nextTabId, hintAtTabSelection);
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        Layout layoutBeingHidden = getActiveLayout();
-        if (isOverviewLayout(layoutBeingHidden)) {
-            boolean showToolbar = true;
-            if (mEnableAnimations && layoutBeingHidden == mOverviewLayout) {
-                final LayoutTab tab = layoutBeingHidden.getLayoutTab(nextTabId);
-                showToolbar = tab != null ? !tab.showToolbar() : true;
-            }
-
-            boolean creatingNtp = layoutBeingHidden == mOverviewLayout && mCreatingNtp;
-
-            notifyObserversStartedHiding(showToolbar, creatingNtp);
-        }
-    }
-
-    @Override
-    public void doneShowing() {
-        super.doneShowing();
-
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
-        if (isOverviewLayout(getActiveLayout())) {
-            notifyObserversFinishedShowing();
-        }
     }
 
     @Override
     public void doneHiding() {
-        Layout layoutBeingHidden = getActiveLayout();
-
         if (getNextLayout() == getDefaultLayout()) {
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
             emptyCachesExcept(tab != null ? tab.getId() : Tab.INVALID_TAB_ID);
         }
 
         super.doneHiding();
-
-        // TODO(crbug.com/1108496): Remove after migrates to Observer.
-        if (isOverviewLayout(layoutBeingHidden)) {
-            notifyObserversFinishedHiding();
-        }
     }
 
     @Override
@@ -402,22 +344,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @VisibleForTesting
     public boolean animationsEnabled() {
         return mEnableAnimations;
-    }
-
-    @Override
-    public boolean overviewVisible() {
-        Layout activeLayout = getActiveLayout();
-        return isOverviewLayout(activeLayout) && !activeLayout.isStartingToHide();
-    }
-
-    @Override
-    public void addOverviewModeObserver(OverviewModeObserver listener) {
-        mOverviewModeObservers.addObserver(listener);
-    }
-
-    @Override
-    public void removeOverviewModeObserver(OverviewModeObserver listener) {
-        mOverviewModeObservers.removeObserver(listener);
     }
 
     // ChromeAccessibilityUtil.Observer
@@ -570,37 +496,5 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                     .getModel(lastTab.isIncognito())
                     .closeTab(lastTab, tab, false, false, false);
         }
-    }
-
-    private void notifyObserversStartedShowing(boolean showToolbar) {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeStartedShowing(showToolbar);
-            }
-        });
-    }
-
-    private void notifyObserversFinishedShowing() {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeFinishedShowing();
-            }
-        });
-    }
-
-    private void notifyObserversStartedHiding(boolean showToolbar, boolean creatingNtp) {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeStartedHiding(showToolbar, creatingNtp);
-            }
-        });
-    }
-
-    private void notifyObserversFinishedHiding() {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeFinishedHiding();
-            }
-        });
     }
 }

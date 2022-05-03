@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -42,7 +41,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
      *         when overview is visible.
@@ -51,14 +49,13 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
             ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
-                tabContentManagerSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
-                jankTracker, startSurfaceScrimAnchor, scrimCoordinator);
+                tabContentManagerSupplier, topUiThemeColorProvider, jankTracker,
+                startSurfaceScrimAnchor, scrimCoordinator);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);

@@ -299,8 +299,9 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(
-                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        CriteriaHelper.pollUiThread(()
+                                            -> cta.getLayoutManager() != null
+                        && cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         StartSurfaceTestUtils.waitForTabModel(cta);
         onViewWaiting(withId(R.id.logo));
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
