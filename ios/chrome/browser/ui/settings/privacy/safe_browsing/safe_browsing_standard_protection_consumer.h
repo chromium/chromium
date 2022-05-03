@@ -13,6 +13,9 @@
 // Consumer protocol for Safe Browsing Standard Protection view.
 @protocol SafeBrowsingStandardProtectionConsumer
 
+// Reload cells for items. Does nothing if the model is not loaded yet.
+- (void)reloadCellsForItems;
+
 // Initializes item array for |safeBrowsingStandardProtectionItems|.
 - (void)setSafeBrowsingStandardProtectionItems:
     (NSArray<TableViewItem*>*)safeBrowsingStandardProtectionItems;

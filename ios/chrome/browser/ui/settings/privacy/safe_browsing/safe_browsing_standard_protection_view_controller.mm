@@ -148,6 +148,15 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 
 #pragma mark - SafeBrowsingStandardProtectionConsumer
 
+- (void)reloadCellsForItems {
+  if (!self.tableViewModel) {
+    // No need to reconfigure since the model has not been loaded yet.
+    return;
+  }
+  [self reloadCellsForItems:self.safeBrowsingStandardProtectionItems
+           withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
 - (void)setSafeBrowsingStandardProtectionItems:
     (ItemArray)safeBrowsingStandardProtectionItems {
   _safeBrowsingStandardProtectionItems = safeBrowsingStandardProtectionItems;

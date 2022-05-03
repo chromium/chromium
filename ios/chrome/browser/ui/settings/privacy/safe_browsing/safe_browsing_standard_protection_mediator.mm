@@ -10,13 +10,14 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
+#import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
@@ -38,10 +39,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeMetricIcon,
   ItemTypePasswordLeakCheckSwitch,
   ItemTypeSafeBrowsingExtendedReporting,
+  ItemTypeSafeBrowsingManagedExtendedReporting,
 };
 }  // namespace
 
-@interface SafeBrowsingStandardProtectionMediator ()
+@interface SafeBrowsingStandardProtectionMediator () <
+    BooleanObserver,
+    IdentityManagerObserverBridgeDelegate> {
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
+}
 
 // User pref service used to check if a specific pref is managed by enterprise
 // policies.
@@ -99,7 +106,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
-                            authService:(AuthenticationService*)authService {
+                            authService:(AuthenticationService*)authService
+                        identityManager:
+                            (signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
@@ -107,21 +116,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _userPrefService = userPrefService;
     _localPrefService = localPrefService;
     _authService = authService;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+
     _safeBrowsingEnhancedProtectionPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingEnhanced];
+    _safeBrowsingEnhancedProtectionPreference.observer = self;
     _safeBrowsingStandardProtectionPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingEnabled];
+    _safeBrowsingStandardProtectionPreference.observer = self;
     _safeBrowsingExtendedReportingPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingScoutReportingEnabled];
+    _safeBrowsingExtendedReportingPreference.observer = self;
     _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:password_manager::prefs::
                                 kPasswordLeakDetectionEnabled];
+    _passwordLeakCheckPreference.observer = self;
   }
   return self;
+}
+
+- (void)disconnect {
+  _identityManagerObserver = nil;
 }
 
 #pragma mark - Properties
@@ -131,8 +152,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     NSMutableArray* items = [NSMutableArray array];
     if (self.userPrefService->IsManagedPreference(
             prefs::kSafeBrowsingEnabled)) {
-      TableViewInfoButtonItem* safeBrowsingStandardProtectionManagedItem = [self
-          tableViewInfoButtonItemType:ItemTypeSafeBrowsingExtendedReporting
+      TableViewInfoButtonItem* safeBrowsingManagedExtendedReportingItem = [self
+          tableViewInfoButtonItemType:
+              ItemTypeSafeBrowsingManagedExtendedReporting
                          textStringID:
                              IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
                        detailStringID:
@@ -140,9 +162,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                status:
                                    self.safeBrowsingStandardProtectionPreference
                                        .value];
-      [items addObject:safeBrowsingStandardProtectionManagedItem];
+      [items addObject:safeBrowsingManagedExtendedReportingItem];
     } else {
-      SyncSwitchItem* safeBrowsingStandardProtectionItem = [self
+      SyncSwitchItem* safeBrowsingExtendedReportingItem = [self
           switchItemWithItemType:ItemTypeSafeBrowsingExtendedReporting
                     textStringID:
                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
@@ -151,9 +173,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                     defaultState:safe_browsing::IsExtendedReportingEnabled(
                                      *self.userPrefService)
                          enabled:self.inSafeBrowsingStandardProtection];
-      safeBrowsingStandardProtectionItem.accessibilityIdentifier =
+      safeBrowsingExtendedReportingItem.accessibilityIdentifier =
           kSafeBrowsingExtendedReportingCellId;
-      [items addObject:safeBrowsingStandardProtectionItem];
+      [items addObject:safeBrowsingExtendedReportingItem];
     }
     [items addObject:self.passwordLeakCheckItem];
 
@@ -198,22 +220,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
         initWithType:ItemTypePasswordLeakCheckSwitch];
     passwordLeakCheckItem.text = l10n_util::GetNSString(
         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE);
-    passwordLeakCheckItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
-    passwordLeakCheckItem.on = [self passwordLeakCheckItemOnState];
-    if (self.safeBrowsingStandardProtectionPreference.value &&
-        self.passwordLeakCheckPreference.value &&
-        ![self isPasswordLeakCheckEnabled]) {
-      // If the user is signed out and the sync preference is enabled, this
-      // informs that it will be turned on on sign in. Also disables the button.
-      passwordLeakCheckItem.detailText =
-          l10n_util::GetNSString(IDS_IOS_LEAK_CHECK_SIGNED_OUT_ENABLED_DESC);
-      passwordLeakCheckItem.on = NO;
-    }
     passwordLeakCheckItem.accessibilityIdentifier =
         kSafeBrowsingStandardProtectionPasswordLeakCellId;
-    passwordLeakCheckItem.enabled = self.inSafeBrowsingStandardProtection &&
-                                    [self isPasswordLeakCheckEnabled];
+    [self configureLeakCheckItem:passwordLeakCheckItem];
+
     _passwordLeakCheckItem = passwordLeakCheckItem;
   }
   return _passwordLeakCheckItem;
@@ -294,6 +304,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return switchItem;
 }
 
+// Updates switches' on and enabled status.
+- (void)updateSafeBrowsingStandardProtectionModel {
+  for (TableViewItem* item in self.safeBrowsingStandardProtectionItems) {
+    ItemType type = static_cast<ItemType>(item.type);
+    switch (type) {
+      case ItemTypePasswordLeakCheckSwitch:
+        [self configureLeakCheckItem:item];
+        break;
+      case ItemTypeSafeBrowsingExtendedReporting: {
+        SyncSwitchItem* syncSwitchItem =
+            base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+        syncSwitchItem.on =
+            safe_browsing::IsExtendedReportingEnabled(*self.userPrefService);
+        syncSwitchItem.enabled = self.inSafeBrowsingStandardProtection;
+        break;
+      }
+      case ItemTypeSafeBrowsingManagedExtendedReporting:
+        base::mac::ObjCCastStrict<TableViewInfoButtonItem>(item).statusText =
+            self.safeBrowsingExtendedReportingPreference.value
+                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+        break;
+      default:
+        break;
+    }
+  }
+
+  [self.consumer reloadCellsForItems];
+}
+
 // Returns a boolean indicating whether leak detection feature is enabled.
 - (BOOL)isPasswordLeakCheckEnabled {
   return self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
@@ -305,10 +345,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // based on the sync preference, the sign in status, and if the user has
 // selected Standard Protection as the Safe Browsing option.
 - (BOOL)passwordLeakCheckItemOnState {
-  return self.safeBrowsingEnhancedProtectionPreference.value ||
-         (self.safeBrowsingStandardProtectionPreference.value &&
-          self.passwordLeakCheckPreference.value &&
-          [self isPasswordLeakCheckEnabled]);
+  return [self isPasswordLeakCheckEnabled] &&
+         (self.safeBrowsingEnhancedProtectionPreference.value ||
+          (self.safeBrowsingStandardProtectionPreference.value &&
+           self.passwordLeakCheckPreference.value));
+}
+
+// Updates the detail text and on state of the leak check item based on the
+// state.
+- (void)configureLeakCheckItem:(TableViewItem*)item {
+  TableViewSwitchItem* leakCheckItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(item);
+  leakCheckItem.enabled = self.inSafeBrowsingStandardProtection &&
+                          [self isPasswordLeakCheckEnabled];
+  leakCheckItem.on = [self passwordLeakCheckItemOnState];
+
+  if (self.passwordLeakCheckPreference.value &&
+      ![self isPasswordLeakCheckEnabled] &&
+      self.safeBrowsingStandardProtectionPreference.value) {
+    // If the user is signed out and the sync preference is enabled, this
+    // informs that it will be turned on on sign in.
+    leakCheckItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_LEAK_CHECK_SIGNED_OUT_ENABLED_DESC);
+    return;
+  }
+  leakCheckItem.detailText = l10n_util::GetNSString(
+      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
 }
 
 #pragma mark - SafeBrowsingStandardProtectionViewControllerDelegate
@@ -329,6 +391,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
       NOTREACHED();
       break;
   }
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  [self updateSafeBrowsingStandardProtectionModel];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+// Used to update model when signing in/out is completed.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self updateSafeBrowsingStandardProtectionModel];
 }
 
 @end
