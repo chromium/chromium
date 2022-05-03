@@ -55,11 +55,12 @@ absl::optional<PixelFormat> GetSupportedColorFormatForMime(
 }
 
 MediaFormatPtr CreateVideoFormat(const std::string& mime,
-                                 gfx::Size frame_size,
-                                 Bitrate bitrate,
+                                 const VideoEncodeAccelerator::Config& config,
                                  int framerate,
-                                 int iframe_interval,
                                  PixelFormat format) {
+  const int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
+  const gfx::Size& frame_size = config.input_visible_size;
+  const Bitrate& bitrate = config.bitrate;
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
@@ -71,6 +72,8 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_I_FRAME_INTERVAL,
                         iframe_interval);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
+  if (config.require_low_delay)
+    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
 
   constexpr int32_t BITRATE_MODE_VBR = 1;
   constexpr int32_t BITRATE_MODE_CBR = 2;
@@ -228,9 +231,8 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
   effective_framerate_ = config.initial_framerate.value_or(kDefaultFramerate);
-  auto media_format = CreateVideoFormat(
-      mime, config.input_visible_size, config.bitrate, effective_framerate_,
-      config.gop_length.value_or(kDefaultGOPLength), format.value());
+  auto media_format =
+      CreateVideoFormat(mime, config, effective_framerate_, format.value());
 
   media_codec_.reset(AMediaCodec_createEncoderByType(mime.c_str()));
   if (!media_codec_) {
