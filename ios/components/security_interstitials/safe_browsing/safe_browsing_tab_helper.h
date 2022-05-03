@@ -26,6 +26,7 @@ class NavigationItem;
 }
 
 class SafeBrowsingClient;
+@protocol SafeBrowsingTabHelperDelegate;
 
 // A tab helper that uses Safe Browsing to check whether URLs that are being
 // navigated to are unsafe.
@@ -41,6 +42,11 @@ class SafeBrowsingTabHelper
 
   SafeBrowsingTabHelper(const SafeBrowsingTabHelper&) = delete;
   SafeBrowsingTabHelper& operator=(const SafeBrowsingTabHelper&) = delete;
+
+  // Sets delegate for safe browsing tab helper.
+  void SetDelegate(id<SafeBrowsingTabHelperDelegate> delegate);
+  // Tells delegate to open safe browsing settings.
+  void OpenSafeBrowsingSettings();
 
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;
@@ -218,6 +224,7 @@ class SafeBrowsingTabHelper
   PolicyDecider policy_decider_;
   QueryObserver query_observer_;
   NavigationObserver navigation_observer_;
+  __weak id<SafeBrowsingTabHelperDelegate> delegate_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

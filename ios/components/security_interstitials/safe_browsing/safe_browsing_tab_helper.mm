@@ -17,6 +17,7 @@
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#include "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper_delegate.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -82,6 +83,17 @@ SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state,
 SafeBrowsingTabHelper::~SafeBrowsingTabHelper() = default;
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingTabHelper)
+
+void SafeBrowsingTabHelper::SetDelegate(
+    id<SafeBrowsingTabHelperDelegate> delegate) {
+  delegate_ = delegate;
+}
+
+void SafeBrowsingTabHelper::OpenSafeBrowsingSettings() {
+  if (delegate_) {
+    [delegate_ openSafeBrowsingSettings];
+  }
+}
 
 #pragma mark - SafeBrowsingTabHelper::PolicyDecider
 

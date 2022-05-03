@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
+#import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
@@ -248,6 +249,9 @@
 
 // Coordinator for displaying Sad Tab.
 @property(nonatomic, strong) SadTabCoordinator* sadTabCoordinator;
+
+// Coordinator for Safe Browsing.
+@property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
 
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
@@ -591,6 +595,11 @@
   self.viewController.infobarModalOverlayContainerViewController =
       self.infobarModalOverlayContainerCoordinator.viewController;
 
+  self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.safeBrowsingCoordinator start];
+
   self.textFragmentsCoordinator = [[TextFragmentsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -656,6 +665,9 @@
   [self.sadTabCoordinator stop];
   [self.sadTabCoordinator disconnect];
   self.sadTabCoordinator = nil;
+
+  [self.safeBrowsingCoordinator stop];
+  self.safeBrowsingCoordinator = nil;
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;

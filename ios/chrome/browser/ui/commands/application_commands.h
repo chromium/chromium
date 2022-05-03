@@ -75,6 +75,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the Safety Check page and start Safety Check.
 - (void)showSafetyCheckSettingsAndStartSafetyCheck;
 
+// Shows the Safe Browsing page.
+- (void)showSafeBrowsingSettings;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

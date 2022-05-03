@@ -42,6 +42,7 @@ class SafeBrowsingBlockingPage
     void Proceed() override;
     void GoBack() override;
     void GoBackAfterNavigationCommitted() override;
+    void OpenEnhancedProtectionSettings() override;
 
     // The URL of the resource causing the insterstitial.
     GURL url_;

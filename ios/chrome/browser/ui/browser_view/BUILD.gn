@@ -151,6 +151,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/recent_tabs",
     "//ios/chrome/browser/ui/sad_tab",
     "//ios/chrome/browser/ui/sad_tab:coordinator",
+    "//ios/chrome/browser/ui/safe_browsing",
     "//ios/chrome/browser/ui/send_tab_to_self",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/sync/utils",

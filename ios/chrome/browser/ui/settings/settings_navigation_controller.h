@@ -165,6 +165,14 @@ extern NSString* const kSettingsDoneButtonId;
                            delegate:(id<SettingsNavigationControllerDelegate>)
                                         delegate;
 
+// Creates a new PrivacySafeBrowsingViewController and the chrome
+// around it. |browser| is the browser where settings are being displayed and
+// should not be nil. |delegate| may be nil.
++ (instancetype)
+    safeBrowsingControllerForBrowser:(Browser*)browser
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate;
+
 // Initializes the UINavigationController with |rootViewController|.
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController
                                    browser:(Browser*)browser
