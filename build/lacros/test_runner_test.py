@@ -80,7 +80,7 @@ class TestRunnerTest(unittest.TestCase):
       expected_ash_chrome_args = [
           '--user-data-dir=/tmp/ash-data', '--enable-wayland-server',
           '--no-startup-window',
-          '--enable-features=LacrosSupport,LacrosPrimary',
+          '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
           '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt'
       ]
       if command == 'lacros_chrome_browsertests':
