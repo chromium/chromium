@@ -8674,7 +8674,6 @@
         },
         {
             "platforms": [
-                "chromeos",
                 "chromeos_lacros"
             ],
             "experiments": [

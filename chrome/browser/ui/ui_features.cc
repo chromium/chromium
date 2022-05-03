@@ -240,8 +240,15 @@ const base::Feature kWebUIDownloadShelf{"WebUIDownloadShelf",
 
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.
-const base::Feature kWebUITabStrip{"WebUITabStrip",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebUITabStrip {
+  "WebUITabStrip",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_ENABLED_BY_DEFAULT
+};
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+};
+#endif
 
 // The default value of this flag is aligned with platform behavior to handle
 // context menu with touch.
