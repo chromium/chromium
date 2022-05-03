@@ -7840,6 +7840,29 @@
             ]
         }
     ],
+    "V8CrashOnEvacuationFailure": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CrashOnEvacuationFailure",
+                    "enable_features": [
+                        "V8CrashOnEvacuationFailure"
+                    ]
+                },
+                {
+                    "name": "Default"
+                }
+            ]
+        }
+    ],
     "V8FlushBaselineCode": [
         {
             "platforms": [
