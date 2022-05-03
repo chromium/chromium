@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Arahan utama</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
+<translation id="3336855445806447827">Tidak pasti</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Bermula</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
-<translation id="4485626319513081846">Buat pilihan ini jika peranti sedang distok semula atau diperbaharui untuk pengedaran kepada pelanggan baharu.</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Padanan nama alternatif subjek</translation>
@@ -575,7 +575,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6961170852793647506">Untuk bermula, letakkan dokumen anda di atas pengimbas</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
-<translation id="6992266763844448459">Buat pilihan ini jika pemilikan peranti tidak berubah. Contohnya, peranti sedang dipindahkan kepada orang lain dalam organisasi.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="7040230719604914234">Pengendali</translation>
 <translation id="7041549558901442110">Peranti tidak disambungkan.</translation>
@@ -607,7 +606,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Peranti akan menjadi milik orang lain</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan Cari dan Ruang untuk melihat hasil carian dalam Google Search.</translation>
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
@@ -775,7 +773,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan pertanyaan ini</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
-<translation id="9095415590198785865">Peranti akan menjadi milik pemilik yang sama</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>

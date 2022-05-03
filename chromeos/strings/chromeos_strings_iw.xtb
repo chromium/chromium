@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">כיוון המפתח</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
+<translation id="3336855445806447827">לא בטוח</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
-<translation id="4485626319513081846">צריך לבחור באפשרות הזו אם המכשיר מוחזר למלאי או מחודש לצורך הפצה ללקוח חדש.</translation>
 <translation id="4503223151711056411">חץ שמאלה</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
-<translation id="6992266763844448459">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה. לדוגמה: המכשיר מועבר למשתמש אחר באותו ארגון.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7041549558901442110">המכשיר לא מחובר.</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">המכשיר יועבר לבעלים אחרים</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">שימוש בסרטון הזה</translation>
 <translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
-<translation id="9095415590198785865">הבעלות על המכשיר לא תשתנה</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>

@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
+<translation id="1264116747675686718">Po përditësohet versioni i sistemit operativ</translation>
 <translation id="1264369926465113395">Kontrollo revistën e re dixhitale të Chromebook për krijuesit</translation>
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
+<translation id="2177831236093724629">U gjetën <ph name="LINK_BEGIN" />komponentë të pakualifikuar<ph name="LINK_END" />. Për t'u siguruar që të gjithë komponentët janë identifikuar, përditëso Chrome OS me versionin më të fundit.</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
+<translation id="320091191259649613">Nëse e shikon ende këtë problem pas përditësimit, ka mundësi që komponenti të jetë kualifikuar së fundmi dhe nuk ka arritur ende në bazën e të dhënave.</translation>
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Drejtimi i çelësit</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
+<translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
-<translation id="4485626319513081846">Zgjidh këtë opsion nëse pajisja do të jetë sërish në gjendje ose do të rinovohet për t'u dërguar te një klient i ri.</translation>
 <translation id="4503223151711056411">Shigjeta majtas</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Përputhje e emrit alternativ të subjektit</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>
 <translation id="4999333166442584738">Fshih raportin</translation>
+<translation id="5008611843832219958">Përditësoje në versionin më të fundit të Chrome OS për një proces të optimizuar riparimi</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kur ekrani yt është në gjendje joaktive, shfaq fotografitë, orën, motin dhe informacionet e medias.</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanimi nuk mund të përfundohej</translation>
 <translation id="5502931783115429516">Android nuk po punon</translation>
+<translation id="5507300744274596613">Sigurohu që Chrome OS është i përditësuar</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">Rivendos</translation>
 <translation id="594552776027197022">Gjenero çift të rastësishëm çelësash</translation>
 <translation id="5972388717451707488">Motori i përditësimit</translation>
+<translation id="5984145644188835034">Imazhi i parazgjedhur i sfondit</translation>
 <translation id="6034694447310538551">Aktivizo rivendosjen mujore automatike</translation>
 <translation id="6037291330010597344">Furnizuesi i dokumenteve i skanerit është bosh. Shto dokumente dhe provo përsëri.</translation>
 <translation id="6040143037577758943">Mbyll</translation>
@@ -568,7 +574,6 @@
 <translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
-<translation id="6992266763844448459">Zgjidh këtë opsion nëse zotërimi i pajisjes nuk do të ndryshojë. Për shembull, pajisja po transferohet te një person tjetër brenda një organizate.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>
@@ -600,7 +605,6 @@
 <translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Pajisja do të kalojë te një zotërues tjetër</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin në "Kërko në Google".</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
@@ -717,6 +721,7 @@
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8660881923941176839">paundë</translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Përditësoje në <ph name="VERSION_NUMBER" /> dhe rinise</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
@@ -767,7 +772,6 @@
 <translation id="9082718469794970195">Përdor këtë video</translation>
 <translation id="9087578468327036362">Raportoje këtë kërkesë</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
-<translation id="9095415590198785865">Pajisja do të kalojë tek i njëjti zotërues</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
@@ -781,6 +785,7 @@
 <translation id="917720651393141712">Provë</translation>
 <translation id="9204237731135241582">Portëkalimi nuk mund të kontaktohet nga aplikacionet për Android</translation>
 <translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>
+<translation id="922179502584117429">Versioni aktual; <ph name="VERSION_NUMBER" /> është i papërditësuar</translation>
 <translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>

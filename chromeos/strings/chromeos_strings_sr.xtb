@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Смер кључа</translation>
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
 <translation id="3328783797891415197">Тест је у току</translation>
+<translation id="3336855445806447827">Не знам</translation>
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3369013195428705271">Желите ли стварно да обришете сву историју штампања? Задаци штампања који су у току се не бришу.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
+<translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
 <translation id="3557205324756024651">Локални идентитет (опционално)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Пинговање мрежног пролаза који није подразумеван није успело</translation>
-<translation id="4485626319513081846">Изаберите ову опцију ако се обнављају залихе уређаја или се он ремонтује за дистрибуцију новом клијенту.</translation>
 <translation id="4503223151711056411">Стрелица налево</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Подударање алтернативног назива субјекта</translation>
@@ -554,6 +555,7 @@
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6723839937902243910">Енергија</translation>
+<translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
 <translation id="6747215703636344499">Заустављено – посуда за одштампани материјал је пуна</translation>
 <translation id="6749473226660745022">Слике</translation>
@@ -575,7 +577,6 @@
 <translation id="6961170852793647506">Да бисте започели, поставите документ на скенер</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
-<translation id="6992266763844448459">Изаберите ову опцију ако се власништво над уређајем не мења. На пример, ако се уређај пребацује другој особи унутар организације.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
 <translation id="7041549558901442110">Уређај није повезан.</translation>
@@ -607,7 +608,6 @@
 <translation id="7297226631177386107">Не можете да се повежете са HTTPS веб-сајтовима кроз заштитни зид</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Уређај ће прећи на другог власника</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
@@ -775,7 +775,6 @@
 <translation id="9082718469794970195">Користи овај видео</translation>
 <translation id="9087578468327036362">Пријавите овај упит</translation>
 <translation id="9088306295921699330">Тренутна искоришћеност</translation>
-<translation id="9095415590198785865">Уређај ће прећи на истог власника</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>

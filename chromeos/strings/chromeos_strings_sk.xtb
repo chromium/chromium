@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Smer kľúča</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
+<translation id="3336855445806447827">Neviem</translation>
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
+<translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3557205324756024651">Miestna identita (nepovinné)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
-<translation id="4485626319513081846">Túto možnosť vyberte, ak bolo zariadenie opätovne naskladnené alebo repasované na distribúciu novému zákazníkovi.</translation>
 <translation id="4503223151711056411">Šípka doľava</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Zhoda alternatívneho názvu subjektu</translation>
@@ -554,6 +555,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6723839937902243910">Napájanie</translation>
+<translation id="6723847290197874913">Podsvietenie klávesnice</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
 <translation id="6749473226660745022">Fotky</translation>
@@ -575,7 +577,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
-<translation id="6992266763844448459">Túto možnosť vyberte, ak sa vlastníctvo daného zariadenia nemení. Ak napríklad zariadenie prevediete na inú osobu v rámci organizácie.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7041549558901442110">Zariadenie nie je pripojené.</translation>
@@ -607,7 +608,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7297226631177386107">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Zariadenie dostane iný vlastník</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
@@ -775,7 +775,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9082718469794970195">Použiť toto video</translation>
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
-<translation id="9095415590198785865">Zariadenie zostane u rovnakého vlastníka</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>

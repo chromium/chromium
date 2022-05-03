@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">鍵の方向</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
+<translation id="3336855445806447827">わからない</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">始める</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
-<translation id="4485626319513081846">デバイスを保管または修理して新しい顧客に配布する場合は、このオプションを選択します。</translation>
 <translation id="4503223151711056411">左矢印</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">まずスキャナにドキュメントを置きます</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
-<translation id="6992266763844448459">デバイスの所有者が変わらない場合は、このオプションを選択します。たとえば、組織内の他の人がデバイスを使う場合などです。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7041549558901442110">デバイスは接続されていません。</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">ファイアウォールを介して HTTPS ウェブサイトに接続できません</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">デバイスの所有者が変わる場合</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">この動画を使う</translation>
 <translation id="9087578468327036362">このクエリを報告</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
-<translation id="9095415590198785865">デバイスの所有者が変わらない場合</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>

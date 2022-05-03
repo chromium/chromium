@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Un portail semble activé</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
+<translation id="1264116747675686718">Mise à jour de la version du système d'exploitation en cours…</translation>
 <translation id="1264369926465113395">Consultez le nouveau magazine numérique de Chromebook pour les créateurs</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal faible</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Composants non qualifiés<ph name="LINK_END" /> trouvés. Pour vous assurer que tous les composants qualifiés sont détectés, mettez à jour Chrome OS à la dernière version.</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
+<translation id="320091191259649613">Si le problème persiste après la mise à jour, il est possible que le composant ait été récemment qualifié et qu'il n'ait pas encore été intégré à la base de données.</translation>
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
+<translation id="3336855445806447827">Incertain</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
-<translation id="4485626319513081846">Sélectionnez cette option si l'appareil est de nouveau en stock ou s'il est remis à neuf pour être distribué à un nouveau client.</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4511264077854731334">Portail</translation>
 <translation id="4521826082652183069">Correspondance du nom alternatif du sujet</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
+<translation id="5008611843832219958">Mettez à jour Chrome OS à la dernière version pour profiter du processus de réparation optimisé</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quand l'écran est en veille, vous pouvez afficher des photos, l'heure, la météo et des informations multimédias.</translation>
@@ -431,6 +435,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossible de terminer la numérisation</translation>
 <translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
+<translation id="5507300744274596613">S'assurer que Chrome OS est à jour</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
+<translation id="5984145644188835034">Fond d'écran par défaut</translation>
 <translation id="6034694447310538551">Activer la réinitialisation mensuelle automatique</translation>
 <translation id="6037291330010597344">Le chargeur de documents du numériseur est vide. Ajoutez des documents, puis réessayez.</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -569,7 +575,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6961170852793647506">Pour commencer, placez le document sur le numériseur</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
-<translation id="6992266763844448459">Sélectionnez cette option si la propriété de l'appareil demeure la même. Par exemple, l'appareil est transféré à une autre personne au sein de l'organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
@@ -601,7 +606,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7297226631177386107">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">L'appareil appartiendra à un propriétaire différent</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
@@ -718,6 +722,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8655295600908251630">Version</translation>
 <translation id="8660881923941176839">livres</translation>
 <translation id="8662671328352114214">Se joindre au réseau <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Mettre à jour à la version <ph name="VERSION_NUMBER" /> et redémarrer</translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
@@ -768,7 +773,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>
 <translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
-<translation id="9095415590198785865">L'appareil appartiendra au même propriétaire</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
@@ -782,6 +786,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Impossible de communiquer avec la passerelle à partir d'applications Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
+<translation id="922179502584117429">La version actuelle (<ph name="VERSION_NUMBER" />) est obsolète</translation>
 <translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Désactivé</translation>

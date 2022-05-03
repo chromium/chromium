@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">डच (नेदरल्यान्ड)</translation>
 <translation id="174937106936716857">फाइलको कुल संख्या</translation>
 <translation id="1755345808328621801">यो फाइल Windows सफ्टवेयर प्रयोग गर्ने PC का लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। कृपया Chrome वेब स्टोरमा कुनै मिल्दो एप खोज्नुहोस् र उक्त एप इन्स्टल गर्नुहोस्।</translation>
+<translation id="1757915090001272240">वाइड ल्याटिन</translation>
 <translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र स्थायी रूपमा अस्विकार गरियो</translation>
 <translation id="1775381402323441512">भिडियोको जानकारी</translation>
 <translation id="180035236176489073">यी फाइलहरू पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">सेवाहरू</translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
+<translation id="1832073788765803750">आधा चौडाइ भएको काताकाना</translation>
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
 <translation id="1838709767668011582">Google को साइट</translation>
 <translation id="1844692022597038441">यो फाइल अफलाइन उपलब्ध छैन।</translation>
@@ -539,7 +541,7 @@
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
-<translation id="5583664733673201137">विराम चौडाइ पूर्ण छ</translation>
+<translation id="5583664733673201137">विरामको चौडाइ पूर्ण छ</translation>
 <translation id="5602622065581044566">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
 <translation id="5618330573454123917">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
@@ -749,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> फेला पर्‍यो
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा ब्याकअप गर्न तयार</translation>
+<translation id="749452993132003881">हिरागाना</translation>
 <translation id="7495372004724182530">मलयालम फोनेटिक</translation>
 <translation id="7505167922889582512">लुकेका फाइलहरू देखाउनुहोस्</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
@@ -837,7 +840,7 @@
 <translation id="8128733386027980860">अङ्ग्रेजी (संयुक्त अधिराज्य) ड्भोराक किबोर्ड</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" तपाईंसँग साझा गरिएको छ। तपाईंले यसलाई मेटाउन सक्नुहुन्न किनकी यसमा तपाईंको स्वामित्व छैन।</translation>
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
-<translation id="8147028810663464959">क्यारेक्टर चौडाइ पूर्ण छ</translation>
+<translation id="8147028810663464959">वर्णको चौडाइ पूर्ण छ</translation>
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
 <translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
@@ -847,6 +850,7 @@
 <translation id="8208580316430297579">कलाकृति</translation>
 <translation id="8223479393428528563">अफलाइन प्रयोगको लागि यी फाइलहरू सुरक्षित गर्न, अनलाइनमा फिर्ता जानुहोस्, फाइलमा दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
 <translation id="8249296373107784235">रद्द गर्नुहोस्</translation>
+<translation id="8250690786522693009">ल्याटिन</translation>
 <translation id="8250920743982581267">कागजातहरू</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8261561378965667560">चिनियाँ एरे</translation>

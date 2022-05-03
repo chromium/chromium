@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ڈچ (نیدرلینڈز)</translation>
 <translation id="174937106936716857">فائلوں کی کُل تعداد</translation>
 <translation id="1755345808328621801">‏یہ فائل Windows سافٹ ویئر استعمال کر رہے PC کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلہ کے ساتھ موافق نہیں ہے جو ChromeOS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے Chrome ویب اسٹور تلاش کریں۔</translation>
+<translation id="1757915090001272240">وائڈ لاطینی</translation>
 <translation id="1773212559869067373">توثیق کا سرٹیفکیٹ مقامی طور پر مسترد کر دیا گیا</translation>
 <translation id="1775381402323441512">ویڈیو کی معلومات</translation>
 <translation id="180035236176489073">ان فائلوں تک رسائی کیلئے آپ کا آن لائن ہونا ضروری ہے۔</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">سروسز</translation>
 <translation id="1829129547161959350">پینگوئن</translation>
 <translation id="183183971458492120">معلومات لوڈ ہو رہی ہے…</translation>
+<translation id="1832073788765803750">نصف چوڑائی کٹاکانا</translation>
 <translation id="1834290891154666894">موضوع کے متبادل نام سے مماثل اندراج غلط ہے</translation>
 <translation id="1838709767668011582">‏Google سائٹ</translation>
 <translation id="1844692022597038441">یہ فائل آف لائن دستیاب نہیں ہے۔</translation>
@@ -516,7 +518,7 @@
 <translation id="5335458522276292100">‏<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پر <ph name="FILE_COUNT" /> کا بیک اپ لیا جا رہا ہے</translation>
 <translation id="535792325654997756">بلیوں کے ساتھ شخص</translation>
 <translation id="5358764674931277">فریم ریٹ</translation>
-<translation id="5363339716524495120">ان پٹ کی زبان چینی ہے</translation>
+<translation id="5363339716524495120">ان پٹ زبان چینی ہے</translation>
 <translation id="5368191757080475556">‏Linux کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="5402367795255837559">بریل</translation>
 <translation id="5411472733320185105">ان میزبانوں اور ڈومینز کیلئے پراکسی ترتیبات استعمال نہ کریں:</translation>
@@ -749,6 +751,7 @@
 <translation id="7489215562877293245">‏<ph name="FILE_COUNT" /> ملیں
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پر بیک اپ لینے کیلئے تیار</translation>
+<translation id="749452993132003881">ہیراگنا</translation>
 <translation id="7495372004724182530">ملیالم فونیٹک</translation>
 <translation id="7505167922889582512">پوشیدہ فائلیں دکھائیں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
@@ -847,6 +850,7 @@
 <translation id="8208580316430297579">فنی شاہکار</translation>
 <translation id="8223479393428528563">آف لائن استعمال کیلئے یہ فائلیں محفوظ کرنے کیلئے، پھر سے آن لائن ہو جائیں، فائلوں پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
+<translation id="8250690786522693009">لاطينی</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8261561378965667560">‏چینی Array</translation>

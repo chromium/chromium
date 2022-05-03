@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Түлхүүрийн чиглэл</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
+<translation id="3336855445806447827">Итгэлгүй байна</translation>
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369013195428705271">Та хэвлэлийн бүх түүхийг арилгахдаа итгэлтэй байна уу? Таны хийж буй хэвлэлийн ажлуудыг арилгахгүй.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
-<translation id="4485626319513081846">Хэрэв төхөөрөмжийг шинэ харилцагчдад түгээхээр дахин нөөцөлж эсвэл сэргээж байвал энэ сонголтыг сонгоно уу.</translation>
 <translation id="4503223151711056411">Зүүн сум</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Субъектийн хоёрдогч нэрийн тохирол</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулна уу</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
-<translation id="6992266763844448459">Хэрэв төхөөрөмжийн өмчлөл өөрчлөгдөхгүй байвал энэ сонголтыг сонгоно уу. Жишээлбэл төхөөрөмжийг байгууллагын өөр хүн рүү шилжүүлж байна.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Төхөөрөмж холбогдоогүй байна.</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">HTTPS вебсайтуудад галт хана дундуур холбогдох боломжгүй</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Төхөөрөмжийг өөр өмчлөгч шилжүүлэх болно</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">Энэ видеог ашиглах</translation>
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
-<translation id="9095415590198785865">Төхөөрөмжийг ижил өмчлөгч шилжүүлэх болно</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>

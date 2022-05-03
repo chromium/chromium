@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">મુખ્ય દિશા</translation>
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
+<translation id="3336855445806447827">નિશ્ચિત નથી</translation>
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">ફર્મવેયર અપડેટ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આ અપડેટમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
+<translation id="3517001332549868749">ChromeOSની અપડેટ</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
 <translation id="3557205324756024651">સ્થાનિક ઓળખ (વૈકલ્પિક)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
-<translation id="4485626319513081846">જો ડિવાઇસ રિસ્ટોક કરવામાં અથવા નવા ગ્રાહકને વિતરણ માટે નવીનીકૃત કરવામાં આવી રહ્યું હોય, તો આ વિકલ્પ પસંદ કરો.</translation>
 <translation id="4503223151711056411">ડાબી ઍરો કી</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
@@ -553,6 +554,7 @@
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
 <translation id="6723839937902243910">પાવર</translation>
+<translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
 <translation id="6747215703636344499">બંધ - આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="6749473226660745022">ફોટા</translation>
@@ -574,7 +576,6 @@
 <translation id="6961170852793647506">શરૂ કરવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
-<translation id="6992266763844448459">જો ડિવાઇસની માલિકી બદલાતી ન હોય, તો આ વિકલ્પ પસંદ કરો. ઉદાહરણ તરીકે, ડિવાઇસ સંસ્થામાં અન્ય વ્યક્તિને ટ્રાન્સફર કરવામાં આવી રહ્યું છે.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7041549558901442110">ડિવાઇસ કનેક્ટ થયું નથી.</translation>
@@ -606,7 +607,6 @@
 <translation id="7297226631177386107">ફાયરવૉલ મારફતે HTTPS વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">ડિવાઇસ કોઈ અન્યની માલિકીનું હશે</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
@@ -774,7 +774,6 @@
 <translation id="9082718469794970195">આ વીડિયોનો ઉપયોગ કરો</translation>
 <translation id="9087578468327036362">આ ક્વેરીની જાણ કરો</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
-<translation id="9095415590198785865">ડિવાઇસના માલિક એના એ જ રહેશે</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>

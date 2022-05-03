@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
 <translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
+<translation id="1264116747675686718">جارٍ تحديث إصدار نظام التشغيل</translation>
 <translation id="1264369926465113395">‏اطّلِع على المجلة الرقمية الجديدة المخصّصة لمنشئي المحتوى على أجهزة Chromebook.</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
+<translation id="2177831236093724629">‏تم العثور على <ph name="LINK_BEGIN" />مكوّنات غير معتمَدة<ph name="LINK_END" />. للتأكُّد من تحديد جميع المكوّنات المعتمَدة، عليك تحديث نظام التشغيل Chrome إلى أحدث إصدار.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2212733584906323460">تحليل الأسماء</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
+<translation id="320091191259649613">في حال استمرار مواجهة المشكلة بعد التحديث، من المحتمَل أن يكون المكوّن قد تم اعتماده حديثًا ولم يصل بعد إلى قاعدة البيانات.</translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
+<translation id="3336855445806447827">غير متأكّد</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
-<translation id="4485626319513081846">حدِّد هذا الخيار في حال ما إذا كان ستتم إعادة توفير الجهاز أو تجديده لتوزيعه على عميل جديد.</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
 <translation id="4511264077854731334">المدخل</translation>
 <translation id="4521826082652183069">مطابقة الاسم البديل الخاص بالموضوع</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">الجدار الناري</translation>
 <translation id="4999333166442584738">إخفاء التقرير</translation>
+<translation id="5008611843832219958">‏يُرجى التحديث إلى أحدث إصدار من نظام التشغيل Chrome للحصول على عملية إصلاح مُحسَّنة.</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">تعذّر إكمال عمليّة المسح الضوئي</translation>
 <translation id="5502931783115429516">‏Android لا يعمل.</translation>
+<translation id="5507300744274596613">‏التأكُّد من حصول نظام التشغيل Chrome على آخر تحديث</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">خلفية تلقائية</translation>
 <translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">للبدء، يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
-<translation id="6992266763844448459">حدِّد هذا الخيار في حال عدم تغيير ملكية الجهاز، على سبيل المثال عند نقل الجهاز إلى مستخدم آخر داخل المؤسسة.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
 <translation id="7041549558901442110">الجهاز غير متصل.</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
-<translation id="7309920310754476121">سيتم نقل الجهاز إلى مالِك آخر</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8660881923941176839">رطل</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">التحديث إلى الإصدار <ph name="VERSION_NUMBER" /> ثم إعادة التشغيل</translation>
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">استخدام هذا الفيديو</translation>
 <translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
-<translation id="9095415590198785865">سيتم نقل الجهاز إلى المالِك نفسه</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">اختبار</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
+<translation id="922179502584117429">الإصدار الحالي رقم <ph name="VERSION_NUMBER" /> هو إصدار قديم.</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">غير نشطة</translation>

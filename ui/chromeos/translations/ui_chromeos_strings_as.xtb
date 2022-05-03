@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ডাট্‌চ (নেডাৰলেণ্ডছ)</translation>
 <translation id="174937106936716857">ফাইলৰ মুঠ সংখ্যা</translation>
 <translation id="1755345808328621801">এই ফাইলটো Windows ছফ্টৱেৰ ব্যৱহাৰ কৰা PCৰ বাবে ডিজাইন কৰা হৈছে। আপোনাৰ ChromeOSৰ দ্বাৰা চালিত ডিভাইচটোত এই ফাইলটো খুলিব নোৱাৰি। অনুগ্ৰহ কৰি Chrome Web Storeত এটা উপযোগী বিকল্প এপৰ সন্ধান কৰক।</translation>
+<translation id="1757915090001272240">বহল বৰ্ণৰ লেটিন</translation>
 <translation id="1773212559869067373">বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ স্থানীয়ভাৱে অগ্ৰাহ্য কৰা হৈছে</translation>
 <translation id="1775381402323441512">ভিডিঅ’ সম্পৰ্কীয় তথ্য</translation>
 <translation id="180035236176489073">আপুনি এই ফাইলখিনি এক্সেছ কৰিবলৈ অনলাইন হ’ব লাগিব।</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">সেৱা</translation>
 <translation id="1829129547161959350">পেংগুইন</translation>
 <translation id="183183971458492120">তথ্য ল’ড কৰি থকা হৈছে...</translation>
+<translation id="1832073788765803750">অৰ্ধ প্ৰস্থৰ কাটাকনা</translation>
 <translation id="1834290891154666894">বিষয়ৰ বিকল্প নামৰ সৈতে মিলা প্ৰবিষ্টি অমান্য</translation>
 <translation id="1838709767668011582">Googleৰ ছাইট</translation>
 <translation id="1844692022597038441">এই ফাইলটো অফলাইনত নাই।</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ত <ph name="FILE_COUNT" />ৰ বেক আপ লৈ থকা হৈছে</translation>
 <translation id="535792325654997756">মেকুৰীৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="5358764674931277">ফ্ৰেমৰ হাৰ</translation>
+<translation id="5363339716524495120">ইনপুট ভাষা হৈছে চীনা</translation>
 <translation id="5368191757080475556">Linuxৰ মাধ্যমেৰে ফ'ল্ডাৰ শ্বেয়াৰ কৰক</translation>
 <translation id="5402367795255837559">ব্ৰেইলি</translation>
 <translation id="5411472733320185105">এই হ’ষ্ট আৰু ড’মেইনসমূহৰ বাবে প্ৰ’ক্সি ছেটিংসমূহ ব্যৱহাৰ নকৰে:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">আকাৰ গণনা কৰি থকা হৈছে</translation>
 <translation id="554153475311314364">গ্ৰীক লিপ্যন্তৰণ</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
+<translation id="5583664733673201137">যতিচিহ্নৰ প্ৰস্থ পূৰ্ণ</translation>
 <translation id="5602622065581044566">ফ’নেটিক কীব’ৰ্ডৰ সৈতে বুলগেৰিয়ান</translation>
 <translation id="5605830556594064952">ইউ.এছ. ডভ’ৰাক</translation>
 <translation id="5618330573454123917">এই ফাইলটো Macintosh ছফ্টৱেৰ ব্যৱহাৰ কৰা কম্পিউটাৰৰ বাবে ডিজাইন কৰা হৈছে। আপোনাৰ ChromeOSৰ দ্বাৰা চালিত ডিভাইচটোত এই ফাইলটো খুলিব নোৱাৰি। ChromeOSত ফাইল খোলাৰ বিষয়ে <ph name="BEGIN_LINK_HELP" />অধিক জানক<ph name="END_LINK_HELP" />।</translation>
@@ -706,6 +710,7 @@
 <translation id="7037472120706603960">তামিল লিপ্যন্তৰণ</translation>
 <translation id="7040138676081995583">ইয়াৰ জৰিয়তে খোলক...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সংযোগ কৰক</translation>
+<translation id="7070804685954057874">পোনপটীয়া ইনপুট</translation>
 <translation id="7075931588889865715">TIS 820-2531 কীব’ৰ্ডৰ সৈতে থাই</translation>
 <translation id="708278670402572152">স্কেনিং সক্ষম কৰিবলৈ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="7086590977277044826">InScript কীব’ৰ্ডৰ সৈতে তামিল</translation>
@@ -746,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> বিচাৰি পোৱা গৈছে
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ত বেক আপ কৰিবলৈ সাজু আছে</translation>
+<translation id="749452993132003881">হিৰাগনা</translation>
 <translation id="7495372004724182530">মালায়ালম ফ’নেটিক</translation>
 <translation id="7505167922889582512">লুকুৱাই থোৱা ফাইলসমূহ দেখুৱাওক</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
@@ -806,6 +812,7 @@
 <translation id="7868774406711971383">প’লিশ্ব</translation>
 <translation id="7874321682039004450">ফিলিপিন’</translation>
 <translation id="78946041517601018">শ্বেয়াৰ কৰা ড্ৰাইভসমূহ</translation>
+<translation id="7903984238293908205">কাটাকনা</translation>
 <translation id="7908793776359722643">এটা বিভাজন ফৰ্মেট কৰা কাৰ্যই তাত ষ্ট'ৰ কৰি ৰখা সকলো ডেটা মচিব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="7925247922861151263">AAA পৰীক্ষা কৰিব পৰা নগ’ল</translation>
 <translation id="7925686952655276919">ছিংক কৰিবলৈ ম'বাইল ডেটা ব্যৱহাৰ নকৰিব</translation>
@@ -833,6 +840,7 @@
 <translation id="8128733386027980860">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="8137331602592933310">আপোনাৰ সৈতে "<ph name="FILENAME" />" শ্বেয়াৰ কৰা হৈছে। আপুনি ইয়াৰ গৰাকী নহয় বাবে আপুনি এইটো মচিব নোৱাৰে।</translation>
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
+<translation id="8147028810663464959">বৰ্ণৰ প্ৰস্থ পূৰ্ণ</translation>
 <translation id="8151638057146502721">কনফিগাৰ</translation>
 <translation id="8154842056504218462">বাছনি কৰা সকলো প্ৰবিষ্টি।</translation>
 <translation id="8157684860301034423">এপৰ তথ্য পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল।</translation>
@@ -842,6 +850,7 @@
 <translation id="8208580316430297579">শিল্পকৰ্ম</translation>
 <translation id="8223479393428528563">এই ফাইলবোৰ অফলাইন অৱস্থাত ব্যৱহাৰ কৰাৰ বাবে ছেভ কৰিবলৈ অনলাইন হওক আৰু তাৰপিছত ফাইলত সোঁফালে ক্লিক কৰি <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটো বাছনি কৰক।</translation>
 <translation id="8249296373107784235">নিষ্ফল কৰক</translation>
+<translation id="8250690786522693009">লেটিন</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8261561378965667560">চীনা বিন্যাস</translation>

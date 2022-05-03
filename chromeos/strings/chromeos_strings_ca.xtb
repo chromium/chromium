@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latència de DNS</translation>
 <translation id="123124571410524056">Possible portal</translation>
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
+<translation id="1264116747675686718">S'està actualitzant la versió del sistema operatiu</translation>
 <translation id="1264369926465113395">Dona un cop d'ull a la nova revista digital de Chromebook per a creadors</translation>
 <translation id="1270369111467284986">Possible portal captiu</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Torna-ho a provar</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2163937499206714165">Activa el mode fosc</translation>
+<translation id="2177831236093724629">S'han trobat <ph name="LINK_BEGIN" />components no qualificats<ph name="LINK_END" />. Per assegurar-te que tots els components qualificats estiguin identificats, actualitza Chrome OS a la versió més recent.</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
 <translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
+<translation id="320091191259649613">Si el problema continua després de l'actualització, és possible que el component s'hagi qualificat fa poc i que encara no s'hagi inclòs a la base de dades.</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Direcció de la clau</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
+<translation id="3336855445806447827">No ho sé</translation>
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
-<translation id="4485626319513081846">Selecciona aquesta opció si el dispositiu es tornarà a posar a la venda o es restaurarà per enviar-lo a un client nou.</translation>
 <translation id="4503223151711056411">Fletxa esquerra</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Nom alternatiu d'assumpte coincident</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>
 <translation id="4999333166442584738">Amaga l'informe</translation>
+<translation id="5008611843832219958">Actualitza Chrome OS a la versió més recent per gaudir d'un procés de reparació optimitzat</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia.</translation>
@@ -431,6 +435,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">L'escaneig no s'ha pogut completar</translation>
 <translation id="5502931783115429516">Android no s'està executant</translation>
+<translation id="5507300744274596613">Assegura't que Chrome OS estigui actualitzat</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="594552776027197022">Genera un parell de claus aleatori</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
 <translation id="6037291330010597344">L'alimentador de documents de l'escàner està buit. Afegeix documents i torna-ho a provar.</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -569,7 +575,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6961170852793647506">Per començar, col·loca el document a l'escàner</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
-<translation id="6992266763844448459">Selecciona aquesta opció si la propietat del dispositiu no canvia. Per exemple, si el dispositiu s'està transferint a una altra persona dins d'una organització.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositiu no està connectat.</translation>
@@ -601,7 +606,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7297226631177386107">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">El dispositiu es retornarà a un altre propietari</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
@@ -718,6 +722,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">lliures</translation>
 <translation id="8662671328352114214">Connecta't a una xarxa <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Actualitza a <ph name="VERSION_NUMBER" /> i reinicia</translation>
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
@@ -768,7 +773,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="9082718469794970195">Utilitza aquest vídeo</translation>
 <translation id="9087578468327036362">Informa d'aquesta consulta</translation>
 <translation id="9088306295921699330">Ús actual</translation>
-<translation id="9095415590198785865">El dispositiu es retornarà al mateix propietari</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="917720651393141712">Prova</translation>
 <translation id="9204237731135241582">No es pot contactar amb la passarel·la des d'aplicacions d'Android</translation>
 <translation id="9211490828691860325">Tots els escriptoris</translation>
+<translation id="922179502584117429">La versió actual, <ph name="VERSION_NUMBER" />, no està actualitzada</translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">No activat</translation>

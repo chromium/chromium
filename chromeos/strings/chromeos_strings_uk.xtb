@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
+<translation id="1264116747675686718">Оновлення версії ОС</translation>
 <translation id="1264369926465113395">Перегляньте новий цифровий журнал Chromebook для авторів</translation>
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторити</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
+<translation id="2177831236093724629">Виявлено <ph name="LINK_BEGIN" />неналежні компоненти<ph name="LINK_END" />. Щоб ідентифікувати всі належні компоненти, установіть останню версію ОС Chrome.</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
 <translation id="2212733584906323460">Перетворення імені</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
+<translation id="320091191259649613">Якщо після оновлення проблема не зникла, можливо, компонент став належним нещодавно, а тому ще недоступний у базі даних.</translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Напрямок ключа</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
+<translation id="3336855445806447827">Не знаю</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
-<translation id="4485626319513081846">Виберіть цей варіант, якщо пристрій знову в наявності або відремонтований для надання новому клієнту.</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Збіг з альтернативною назвою суб’єкта</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
 <translation id="4999333166442584738">Сховати звіт</translation>
+<translation id="5008611843832219958">Щоб ремонт був оптимізованим, установіть останню версію ОС Chrome</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показувати фотографії, час, прогноз погоди й медіадані на неактивному екрані.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не вдалося зісканувати</translation>
 <translation id="5502931783115429516">Android не працює</translation>
+<translation id="5507300744274596613">Переконайтеся, що використовуєте актуальну версію ОС Chrome</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">Технологія UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Скинути</translation>
 <translation id="594552776027197022">Створити випадкову пару ключів</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Фоновий малюнок за умовчанням</translation>
 <translation id="6034694447310538551">Увімкнути автоматичне скидання щомісяця</translation>
 <translation id="6037291330010597344">Автоподавач документів порожній. Покладіть документи та повторіть спробу.</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">Щоб почати, покладіть документ на сканер</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
-<translation id="6992266763844448459">Виберіть цей варіант, якщо власник пристрою не змінюється. Наприклад, коли він передається іншій особі в межах організації.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Пристрій не підключено.</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">Не вдається підключитися до веб-сайтів HTTPS через брандмауер</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Власник пристрою зміниться</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунт.</translation>
 <translation id="8662671328352114214">Під’єднатися до мережі <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Установити версію <ph name="VERSION_NUMBER" /> і перезапустити</translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">Використати це відео</translation>
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
-<translation id="9095415590198785865">Власник пристрою не зміниться</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9204237731135241582">Не вдається зв’язатися зі шлюзом із додатків для Android</translation>
 <translation id="9211490828691860325">Усі робочі столи</translation>
+<translation id="922179502584117429">Поточна версія <ph name="VERSION_NUMBER" /> застаріла</translation>
 <translation id="932327136139879170">Домашня сторінка</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не активовано</translation>

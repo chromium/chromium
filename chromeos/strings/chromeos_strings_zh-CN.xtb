@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">密钥方向</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
+<translation id="3336855445806447827">不确定</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
-<translation id="4485626319513081846">若要将设备重新上架或翻新后发放给新客户，请选择此选项。</translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6977381486153291903">固件版本</translation>
-<translation id="6992266763844448459">如果设备的所有权未变，请选择此选项。例如，将这部设备转给同一单位内的另一个人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">无法通过防火墙连接到 HTTPS 网站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">设备将由新所有者使用</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">使用此视频</translation>
 <translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
-<translation id="9095415590198785865">设备将由原所有者使用</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>

@@ -607,16 +607,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1654087023995670109">Applica modalità ospite del browser</translation>
 <translation id="1655229863189977773">Imposta le dimensioni della cache su disco in byte</translation>
 <translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
-<translation id="1661930501743720282">Questo criterio consente di stabilire la visibilità dei percorsi nella pagina Cronologia di Chrome.
-
-      Se il criterio viene impostato su Enabled, i percorsi saranno visibili all'indirizzo chrome://history/journeys.
-
-      Se viene impostato su Disabled, i percorsi non saranno visibili all'indirizzo chrome://history/journeys.
-
-      Se non viene configurato, i percorsi saranno visibili all'indirizzo chrome://history/journeys per impostazione predefinita e gli utenti potranno modificare la visibilità dei percorsi.
-
-      Tieni presente che se il criterio <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> viene impostato su Disabled, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene impostato su Enabled o non viene configurato, i percorsi continueranno a essere disponibili all'indirizzo chrome://history/journeys, ma potrebbero non essere presenti nella omnibox ed essere meno pertinenti per l'utente.
-      </translation>
 <translation id="166427968280387991">Server proxy</translation>
 <translation id="1669584285557771729">Se questo criterio viene impostato, consente di controllare il tipo di lente d'ingrandimento che viene attivato.
 

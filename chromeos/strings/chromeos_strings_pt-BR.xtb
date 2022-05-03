@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
+<translation id="3336855445806447827">Não sei</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Não desconecte este dispositivo externo ou desligue o computador enquanto o firmware estiver atualizando. Você pode minimizar esta janela. Esta atualização pode levar alguns minutos e é possível que o dispositivo externo não funcione durante esse período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
+<translation id="3517001332549868749">Atualização do Chrome OS</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
-<translation id="4485626319513081846">Selecione esta opção caso o dispositivo volte para o estoque ou seja recondicionado e distribuído para um novo cliente.</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Correspondência do nome alternativo do assunto</translation>
@@ -554,6 +555,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6723839937902243910">Energia</translation>
+<translation id="6723847290197874913">Luz de fundo do teclado</translation>
 <translation id="672609503628871915">Veja o que há de novo</translation>
 <translation id="6747215703636344499">Parado (saída cheia)</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -575,7 +577,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
-<translation id="6992266763844448459">Selecione esta opção caso a propriedade do dispositivo continue a mesma. Por exemplo, caso o dispositivo esteja sendo transferido para uma pessoa diferente dentro da organização.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">Dispositivo não conectado.</translation>
@@ -607,7 +608,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">O dispositivo vai mudar de proprietário</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pressione Pesquisar + barra de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
@@ -775,7 +775,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
-<translation id="9095415590198785865">O dispositivo vai continuar com o mesmo proprietário</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>

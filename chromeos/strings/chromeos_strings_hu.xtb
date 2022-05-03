@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Kulcs iránya</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
+<translation id="3336855445806447827">Nem tudom</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nem sikerült a nem alapértelmezett hálózati átjáró pingelése</translation>
-<translation id="4485626319513081846">Akkor válassza ezt a lehetőséget, ha az eszközt újraértékesítik vagy felújítják új ügyfél számára történő értékesítéshez.</translation>
 <translation id="4503223151711056411">Balra nyíl</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Tárgy alternatív neve – egyezés</translation>
@@ -575,7 +575,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6961170852793647506">A kezdéshez helyezze dokumentumát a szkennerbe</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
-<translation id="6992266763844448459">Akkor válassza ezt a lehetőséget, ha az eszköz tulajdonosa nem változik. Ha például az eszközt másik személynek adják át a szervezeten belül.</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
 <translation id="7041549558901442110">Az eszköz nincs csatlakoztatva.</translation>
@@ -607,7 +606,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Az eszköznek más lesz a tulajdonosa</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; A Keresés és a szóköz billentyűkombináció lenyomásával megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
@@ -775,7 +773,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="9082718469794970195">E videó használata</translation>
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
-<translation id="9095415590198785865">Az eszköznek ugyanaz lesz a tulajdonosa</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>

@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Kierunek klucza</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
+<translation id="3336855445806447827">Nie wiem</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
-<translation id="4485626319513081846">Wybierz tę opcję, jeśli urządzenie zostało przywrócone do użytku lub odnowione w celu przekazania nowemu klientowi.</translation>
 <translation id="4503223151711056411">Strzałka w lewo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
@@ -575,7 +575,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6961170852793647506">Aby rozpocząć, umieść dokument na skanerze</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
-<translation id="6992266763844448459">Wybierz tę opcję, jeśli nie zmienia się właściciel urządzenia. Na przykład wtedy, gdy urządzenie zostaje przekazane innemu członkowi organizacji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Urządzenie nie ma połączenia.</translation>
@@ -607,7 +606,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7297226631177386107">Nie można połączyć się z witrynami HTTPS przez zaporę sieciową</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Właściciel urządzenia się zmienia</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w wyszukiwarce Google.</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
@@ -775,7 +773,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9082718469794970195">Użyj tego filmu</translation>
 <translation id="9087578468327036362">Zgłoś to zapytanie</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
-<translation id="9095415590198785865">Właściciel urządzenia się nie zmienia</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>

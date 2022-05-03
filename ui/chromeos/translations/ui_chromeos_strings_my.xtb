@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ဒတ်ချ် (နယ်သာလန်)</translation>
 <translation id="174937106936716857">စုစုပေါင်းဖိုင်အရေအတွက်</translation>
 <translation id="1755345808328621801">ဤဖိုင်ကို PC အတွက် Windows ဆော့ဖ်ဝဲဖြင့် ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ ChromeOS သုံးသော သင့်စက်နှင့် တွဲဖက်အသုံးမပြုနိုင်ပါ။ သင့်လျော်သည့် အစားထိုးအက်ပ်အား Chrome Web Store တွင် ရှာဖွေပါ။</translation>
+<translation id="1757915090001272240">လက်တင် အကျယ်</translation>
 <translation id="1773212559869067373">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အတွင်းမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="1775381402323441512">ဗီဒီယိုအချက်အလက်</translation>
 <translation id="180035236176489073">ဤဖိုင်များကို အသုံးပြုရန် သင် online ဖြစ်ရန် လိုသည်။</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">ဝန်​ဆောင်​မှု​များ</translation>
 <translation id="1829129547161959350">ပင်ဂွင်</translation>
 <translation id="183183971458492120">အချက်အလက်များကို ဖွင့်နေသည်...</translation>
+<translation id="1832073788765803750">အကျယ်တစ်ဝက် ခတခန (ဂျပန်)</translation>
 <translation id="1834290891154666894">မှန်ကန်မှုမရှိသည့် အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု ထည့်သွင်းခြင်း</translation>
 <translation id="1838709767668011582">Google ဆိုက်</translation>
 <translation id="1844692022597038441">ဒီဖိုင်ကို အော့ဖ်လိုင်း မရနိုင်ပါ။</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> ကို <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးနေသည်</translation>
 <translation id="535792325654997756">ကြောင်များနှင့်လူ</translation>
 <translation id="5358764674931277">ဖရိမ်ပြနှုန်း</translation>
+<translation id="5363339716524495120">လက်ကွက်ဘာသာစကားသည် Chinese ဖြစ်သည်</translation>
 <translation id="5368191757080475556">Linux နှင့် ဖိုင်တွဲကို မျှဝေရန်</translation>
 <translation id="5402367795255837559">မျက်မမြင်စာ</translation>
 <translation id="5411472733320185105">ဒီဟို့စ်များ နှင့် ဒိုမိန်များ အတ ွက် ပရောက်စီ ဆက်တင်များကို မသုံးပါနှင့်:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">ဆိုက</translation>
 <translation id="554153475311314364">ဂရိ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
+<translation id="5583664733673201137">ပုဒ်ဖြတ်ပုဒ်ရပ်အကျယ် ပြည့်သွားပြီ</translation>
 <translation id="5602622065581044566">အသံထွက်ကီးဘုတ်ဖြင့် ဘူလ်ဂေးရီးယား</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">ဤဖိုင်ကို ကွန်ပျူတာအတွက် Macintosh ဆော့ဖ်ဝဲဖြင့် ထုတ်လုပ်ထားသည်။ ChromeOS သုံးသော သင့်စက်နှင့် တွဲဖက်အသုံးမပြုနိုင်ပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" />။</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> တွေ့ပါသည်
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးရန် အဆင်သင့်ဖြစ်ပါပြီ</translation>
+<translation id="749452993132003881">ဟိရဂန</translation>
 <translation id="7495372004724182530">မလေယာလမ် အသံထွက်</translation>
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ကို သင့်အား မျှဝေပေးခဲ့သည်။ သင်သည် ၎င်းကို မပိုင်ဆိုင်၍ ၎င်းကို သင် မဖျက်နိုင်ပါ။</translation>
 <translation id="813913629614996137">စတင်နေသည်…</translation>
+<translation id="8147028810663464959">စာလုံးအကျယ် ပြည့်သွားပြီ</translation>
 <translation id="8151638057146502721">ပြုပြင်</translation>
 <translation id="8154842056504218462">ထည့်သွင်းမှုအားလုံး ရွေးချယ်ထားသည်။</translation>
 <translation id="8157684860301034423">အက်ပ်အချက်အလက်များကို ရယူ၍မရပါ။</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">ပုံ</translation>
 <translation id="8223479393428528563">အင်တာနက်ပေါ်တွင်မရှိသည့်အခါ အသုံးပြုရန်အတွက် ဤဖိုင်များအား သိမ်းရန်  အွန်လိုင်းပေါ်ပြန်လာပြီး ဖိုင်များအား ညာဘက်ကလစ်ခေါက်ပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ရွေးချယ်စရာအား ရွေးချယ်ပါ။</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
+<translation id="8250690786522693009">လက်တင်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8261561378965667560">တရုတ်လက်ကွက် အခင်းအကျင်း</translation>

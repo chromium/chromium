@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS 延遲</translation>
 <translation id="123124571410524056">可能有網路入口</translation>
 <translation id="1238612778414822719">HTTPS 延遲</translation>
+<translation id="1264116747675686718">正在更新 OS 版本</translation>
 <translation id="1264369926465113395">查看 Chromebook 為創作者提供的全新數位雜誌</translation>
 <translation id="1270369111467284986">可疑的網頁認證入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2163937499206714165">開啟深色模式</translation>
+<translation id="2177831236093724629">已偵測到<ph name="LINK_BEGIN" />不合格元件<ph name="LINK_END" />。為確保系統可偵測到所有合格元件，請將 Chrome OS 更新至最新版本。</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
+<translation id="320091191259649613">如果更新後仍發生問題，有可能是系統剛認定元件合格，但尚未新增至資料庫中。</translation>
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">金鑰方向</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3328783797891415197">正在執行測試</translation>
+<translation id="3336855445806447827">不確定</translation>
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
-<translation id="4485626319513081846">如果要將裝置重新上架或整新以發布給新客戶，請選取這個選項。</translation>
 <translation id="4503223151711056411">向左鍵</translation>
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4521826082652183069">主體替代名稱比對</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
 <translation id="4999333166442584738">隱藏報告</translation>
+<translation id="5008611843832219958">更新至最新版 Chrome OS，以享有最佳化的維修程序</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊。</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">無法完成掃描</translation>
 <translation id="5502931783115429516">Android 未執行</translation>
+<translation id="5507300744274596613">確認 Chrome OS 是最新版本</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">重設</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">預設桌布</translation>
 <translation id="6034694447310538551">啟用每月自動重設功能</translation>
 <translation id="6037291330010597344">掃描器的文件送紙器是空的。請新增文件，然後再試一次。</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">請先將文件放入掃描機</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6977381486153291903">韌體版本</translation>
-<translation id="6992266763844448459">如果裝置的擁有權未變更，請選取這個選項。比方說，將裝置轉移給機構中的其他人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 管理這個裝置，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
 <translation id="7040230719604914234">電信業者</translation>
 <translation id="7041549558901442110">未連接裝置。</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">無法透過防火牆連線到 HTTPS 網站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">裝置的擁有者會變更</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 搜尋中查看結果。</translation>
 <translation id="7343649194310845056">網路裝置</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8660881923941176839">磅</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
+<translation id="8671972493856476349">更新至 <ph name="VERSION_NUMBER" /> 並重新啟動</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">使用這部影片</translation>
 <translation id="9087578468327036362">請回報這項查詢</translation>
 <translation id="9088306295921699330">目前用量</translation>
-<translation id="9095415590198785865">裝置的擁有者不會變更</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">測試</translation>
 <translation id="9204237731135241582">無法從 Android 應用程式連線至閘道</translation>
 <translation id="9211490828691860325">所有桌面</translation>
+<translation id="922179502584117429">目前版本 <ph name="VERSION_NUMBER" /> 過舊</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">未啟用</translation>

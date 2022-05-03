@@ -33,6 +33,7 @@
 <translation id="1019101089073227242">设置用户数据目录</translation>
 <translation id="1022361784792428773">应禁止用户安装的扩展程序的 ID（或者用“*”表示禁止安装所有扩展程序）</translation>
 <translation id="102492767056134033">设置屏幕键盘在登录屏幕上的默认状态</translation>
+<translation id="102658870205613876">弹出式窗口设置</translation>
 <translation id="1027000705181149370">指定在用户登录期间由 SAML IdP 设置的身份验证 Cookie 是否应转移到用户的个人资料中。
 
       当用户在登录期间通过 SAML IdP 进行身份验证时，由 IdP 设置的 Cookie 会先写入到临时的个人资料中。这些 Cookie 可以转移到用户的个人资料中，以便更新身份验证状态。
@@ -598,16 +599,6 @@
 <translation id="1654087023995670109">强制采用浏览器访客模式</translation>
 <translation id="1655229863189977773">设置磁盘缓存大小（字节）</translation>
 <translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
-<translation id="1661930501743720282">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
-
-      如果此政策设为启用，历程将会显示在 chrome://history/journeys 页面上。
-
-      如果此政策设为停用，历程将不会显示在 chrome://history/journeys 页面上。
-
-      如果将此政策保留未设置状态，历程将默认显示在 chrome://history/journeys 页面上，但用户可以更改是否显示历程。
-
-      请注意，如果 <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> 政策设为停用，但 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 设为启用或保留未设置状态，历程仍会显示在 chrome://history/journeys 页面上，但可能不会显示在多功能框中，而且与用户的相关程度会变低。
-      </translation>
 <translation id="166427968280387991">代理服务器</translation>
 <translation id="1669584285557771729">如果设置了此政策，它就会控制启用的放大镜类型。
 
@@ -2170,6 +2161,7 @@
 
       此政策只能设为云端用户政策。
       </translation>
+<translation id="3248019773260441802">允许页面在取消加载的过程中显示弹出式窗口</translation>
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
       配置的网站将自动在其他浏览器（而非 <ph name="PRODUCT_NAME" />）中打开。</translation>
@@ -3330,6 +3322,7 @@
 <translation id="4680961954980851756">启用自动填充</translation>
 <translation id="4685721728282448265">已为 TLS 启用 CECPQ2 后量子密钥协议算法</translation>
 <translation id="4693779768620889402">基于扩展程序的目的地</translation>
+<translation id="4697581738794063407">控制网址参数过滤功能</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699592681017489215">借助此政策，您可以配置一个用于停用 DNS 拦截检查功能的本地开关。该检查功能旨在尝试检测浏览器是否使用了会重定向不明主机名的代理。
 
@@ -3377,6 +3370,7 @@
       <ph name="PAGE_SIZE_NAME" /> 应包含所列格式之一，如果所需页面大小不在列表中，则应包含“custom”值。如果提供了“custom”值，则应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性，用于指定所需的高度和宽度（以微米为单位）。如果未提供“custom”值，便不应指定 <ph name="PAGE_SIZE_CUSTOM_SIZE" /> 属性。系统会忽略违反这些规则的政策。
 
       如果这一页面大小在用户选择的打印机上不适用，系统会忽略此政策。</translation>
+<translation id="4789450349513792856">禁止这些网站显示弹出式窗口</translation>
 <translation id="4790588245699320140">允许 Google 助理访问屏幕上的内容</translation>
 <translation id="4802744647065138872">限制为供执行紧急回滚时使用而保留的用户数据快照的数量。</translation>
 <translation id="4802905909524200151">配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新行为</translation>
@@ -4180,6 +4174,7 @@
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
 <translation id="5679540979548648200">禁止此设备的用户使用 ADB 旁加载；如果先前已启用旁加载，就对设备强制执行 Powerwash</translation>
+<translation id="5681258683432554972">默认弹出式窗口设置</translation>
 <translation id="5689430183304951538">默认打印页面大小</translation>
 <translation id="5691637243722588222">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 支持的 HTTP 身份验证方案。
 
@@ -4379,6 +4374,7 @@
 <translation id="5899751601113377553">禁止用户使用 <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">报告网络配置</translation>
 <translation id="5901427587865226597">仅限双面打印</translation>
+<translation id="5905114360004248993">允许这些网站显示弹出式窗口</translation>
 <translation id="5905473632148429217">启用在线 OCSP/CRL 检查</translation>
 <translation id="5907283448020542268">除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。将此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
 
@@ -5403,6 +5399,7 @@
       如果此政策已停用或未设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
 
        在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="6990736882800900101">允许所有以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个请求打开弹出式窗口的页面互动，除非这个页面已明确拒绝此类互动 </translation>
 <translation id="6994082778848658360">指定如何使用板载安全元件硬件提供双重身份验证（如果该硬件与此功能兼容的话）。使用机器电源按钮检测用户是否真实存在。
 
       如果选择“停用”，系统将不会提供任何双重身份验证。
@@ -6645,6 +6642,7 @@
       如果此政策已启用或未设置，用户便可在任务管理器中结束进程。</translation>
 <translation id="8367209241899435947">在 Windows 系统上启用 Chrome 清理功能</translation>
 <translation id="8367473200119029349">云报告</translation>
+<translation id="8367488518695804749">不允许任何网站显示弹出式窗口</translation>
 <translation id="8369602308428138533">使用交流电源供电时的屏幕关闭延迟时间</translation>
 <translation id="8371178326720637170">允许受管理的扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止在这些网站上向文件和目录写入内容</translation>
@@ -7019,6 +7017,7 @@
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
 <translation id="8804685015028424497">停用无痕模式</translation>
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
+<translation id="8812091410765157924">允许以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个打开弹出式窗口的页面互动，但前提是这个页面已明确接受此类互动</translation>
 <translation id="8816370949847593408">Chrome 应用能否运行取决于弃用安排的状态。</translation>
 <translation id="8818173863808665831">报告设备的地理位置。
 
@@ -7269,6 +7268,13 @@
 
       如果此政策已停用，已注册的设备将不会记录或报告音频状态。
       例外情况：对于 M95 及更低版本，系统音量信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
+<translation id="9072475476775217730">如果此政策已停用，定位到“<ph name="BLANK_PAGE_NAME" />”页面的弹出式窗口将能够（通过 JavaScript）访问请求打开弹出式窗口的页面。
+
+      如果此政策已启用或未设置，<ph name="WINDOW_OPENER_PROPERTY" /> 属性会设为 <ph name="NULL_VALUE" />，除非锚标记指定了 <ph name="REL_OPENER_ATTRIBUTE" />。
+
+      此政策已在 <ph name="PRODUCT_NAME" /> 102 版中移除。
+
+      请参阅 https://chromestatus.com/feature/6140064063029248。</translation>
 <translation id="9073405975862312795">如果此政策已启用或未设置，已注册的设备将会报告用户在设备上处于活跃状态的时间段。
 
       如果此政策已停用，已注册的设备将不会记录或报告活动时间。</translation>

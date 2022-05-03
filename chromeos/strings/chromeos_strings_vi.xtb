@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="123124571410524056">Nghi là có cổng</translation>
 <translation id="1238612778414822719">Độ trễ HTTPS</translation>
+<translation id="1264116747675686718">Đang cập nhật phiên bản OS</translation>
 <translation id="1264369926465113395">Hãy xem tạp chí kỹ thuật số mới của Chromebook dành cho nhà sáng tạo</translation>
 <translation id="1270369111467284986">Tin là có trang xác thực</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Thử lại</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2163937499206714165">Bật chế độ tối</translation>
+<translation id="2177831236093724629">Tìm thấy <ph name="LINK_BEGIN" />thành phần không hợp lệ<ph name="LINK_END" />. Để đảm bảo xác định được tất cả thành phần hợp lệ, hãy cập nhật Chrome OS lên phiên bản mới nhất.</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
 <translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
 <translation id="2212733584906323460">Độ phân giải tên</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
 <translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
+<translation id="320091191259649613">Nếu bạn vẫn gặp vấn đề sau khi cập nhật, thì có thể thành phần này vừa mới hợp lệ và chưa được đưa vào cơ sở dữ liệu.</translation>
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Hướng khoá</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
+<translation id="3336855445806447827">Không rõ</translation>
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
-<translation id="4485626319513081846">Chọn lựa chọn này nếu thiết bị đang được bổ sung hoặc được tân trang lại để phân phối cho một khách hàng mới.</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4511264077854731334">Cổng</translation>
 <translation id="4521826082652183069">Khớp tên thay thế của tiêu đề</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Chạy</translation>
 <translation id="4987769320337599931">Tường lửa</translation>
 <translation id="4999333166442584738">Ẩn báo cáo</translation>
+<translation id="5008611843832219958">Cập nhật lên phiên bản Chrome OS mới nhất để tối ưu hoá quy trình sửa chữa</translation>
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
@@ -431,6 +435,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Không thể hoàn tất quá trình quét</translation>
 <translation id="5502931783115429516">Android hiện không chạy</translation>
+<translation id="5507300744274596613">Đảm bảo rằng Chrome OS đã được cập nhật</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="594552776027197022">Tạo cặp khóa ngẫu nhiên</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Hình nền mặc định</translation>
 <translation id="6034694447310538551">Bật chế độ tự động đặt lại hằng tháng</translation>
 <translation id="6037291330010597344">Khay nạp tài liệu của máy quét đang trống. Hãy nạp tài liệu rồi thử lại.</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -567,7 +573,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6961170852793647506">Hãy đặt tài liệu của bạn lên máy quét để bắt đầu</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
-<translation id="6992266763844448459">Chọn lựa chọn này nếu quyền sở hữu thiết bị không thay đổi. Ví dụ: thiết bị đang được chuyển cho một người khác trong cùng một tổ chức.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
 <translation id="7041549558901442110">Thiết bị chưa được kết nối.</translation>
@@ -599,7 +604,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7297226631177386107">Không thể kết nối với các trang web HTTPS qua tường lửa</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Thiết bị sẽ thuộc về một chủ sở hữu khác</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Google Tìm kiếm.</translation>
 <translation id="7343649194310845056">Thiết bị mạng</translation>
@@ -716,6 +720,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8660881923941176839">pao</translation>
 <translation id="8662671328352114214">Kết nối mạng <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Cập nhật lên <ph name="VERSION_NUMBER" /> rồi khởi động lại</translation>
 <translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Dùng phím mũi tên Trái hoặc Phải để quản lý tính năng này.</translation>
@@ -766,7 +771,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9082718469794970195">Dùng video này</translation>
 <translation id="9087578468327036362">Báo lỗi truy vấn này</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
-<translation id="9095415590198785865">Thiết bị sẽ thuộc về cùng một chủ sở hữu</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
@@ -780,6 +784,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="917720651393141712">Kiểm tra</translation>
 <translation id="9204237731135241582">Không thể kết nối với cổng vào từ các ứng dụng Android</translation>
 <translation id="9211490828691860325">Tất cả các không gian làm việc</translation>
+<translation id="922179502584117429">Phiên bản <ph name="VERSION_NUMBER" /> này đã lỗi thời</translation>
 <translation id="932327136139879170">Trang chủ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Chưa được kích hoạt</translation>

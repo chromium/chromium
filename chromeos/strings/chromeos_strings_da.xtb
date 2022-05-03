@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
+<translation id="3336855445806447827">Ved ikke</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
-<translation id="4485626319513081846">Vælg denne mulighed, hvis enheden sendes tilbage til lageret eller renoveres med henblik på levering til en ny kunde.</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Match af alternativt emnenavn</translation>
@@ -574,7 +574,6 @@
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
-<translation id="6992266763844448459">Vælg denne mulighed, hvis ejerskabet over enheden ikke ændres. Det kan f.eks. være, hvis enheden overdrages til en anden person i samme organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7041549558901442110">Enheden er ikke tilsluttet.</translation>
@@ -606,7 +605,6 @@
 <translation id="7297226631177386107">Der kan ikke oprettes forbindelse gennem firewallen til HTTPS-websites</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Enheden overdrages til en anden ejer</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tryk på søgetasten og mellemrumstasten for at se resultater i Google Søgning.</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
@@ -774,7 +772,6 @@
 <translation id="9082718469794970195">Brug denne video</translation>
 <translation id="9087578468327036362">Rapportér denne forespørgsel</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
-<translation id="9095415590198785865">Enheden bliver hos den samme ejer</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>

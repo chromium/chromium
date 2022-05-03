@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
+<translation id="1264116747675686718">ओएस वर्शन अपडेट किया जा रहा है</translation>
 <translation id="1264369926465113395">क्रिएटर्स के लिए तैयार की गई, Chromebook की नई डिजिटल पत्रिका देखें</translation>
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />अमान्य कॉम्पोनेंट<ph name="LINK_END" /> मिले. यह पक्का करने के लिए कि सभी मान्य कॉम्पोनेंट को पहचाना जाए, अपने Chrome OS को सबसे नए वर्शन में अपडेट करें.</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2212733584906323460">होस्ट के नाम से आईपी पता बनाएं</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
+<translation id="320091191259649613">अगर अपडेट करने के बाद भी समस्या आती है, तो हो सकता है कि कॉम्पोनेंट हाल ही में मान्य के तौर पर मार्क हुआ हो और फ़िलहाल डेटाबेस में शामिल नहीं हुआ हो.</translation>
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
+<translation id="3336855445806447827">पक्के तौर पर नहीं बता सकता</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
@@ -317,7 +321,6 @@
 <translation id="4472575034687746823">शुरू करें</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
-<translation id="4485626319513081846">अगर किसी नए ग्राहक को डिवाइस बेचने के लिए, उसे रीस्टॉक या नए जैसा किया जा रहा हो, तो यह विकल्प चुनें.</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषय के दूसरे नाम से मिलते-जुलते</translation>
@@ -378,6 +381,7 @@
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
+<translation id="5008611843832219958">रिपेयर की प्रोसेस को ऑप्टिमाइज़ करने के लिए, Chrome OS के सबसे नए वर्शन में अपडेट करें</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">अगर स्क्रीन इस्तेमाल में न हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं.</translation>
@@ -432,6 +436,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">स्कैन नहीं किया जा सका</translation>
 <translation id="5502931783115429516">Android नहीं चल रहा है</translation>
+<translation id="5507300744274596613">पक्का करें कि Chrome OS अप-टू-डेट हो</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -470,6 +475,7 @@
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="594552776027197022">रैंडम कुंजी के जोड़े बनाएं</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">डिफ़ॉल्ट वॉलपेपर</translation>
 <translation id="6034694447310538551">हर महीने के लिए, अपने-आप रीसेट होने की सुविधा चालू करें</translation>
 <translation id="6037291330010597344">स्कैनर का डॉक्यूमेंट फ़ीडर खाली है. डॉक्यूमेंट जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
@@ -571,7 +577,6 @@
 <translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
-<translation id="6992266763844448459">अगर डिवाइस के मालिकाना हक में बदलाव नहीं हो रहा है, तो यह विकल्प चुनें. उदाहरण के लिए, जब डिवाइस को संगठन के ही किसी अन्य व्यक्ति को ट्रांसफ़र किया जा रहा हो.</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
@@ -603,7 +608,6 @@
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">डिवाइस का मालिकाना हक किसी और को दे दिया जाएगा</translation>
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
@@ -720,6 +724,7 @@
 <translation id="8655295600908251630">चैनल</translation>
 <translation id="8660881923941176839">पाउंड</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> वर्शन में अपडेट करें और रीस्टार्ट करें</translation>
 <translation id="8675354002693747642">पहले से शेयर की गई कुंजी</translation>
 <translation id="8677859815076891398">कोई एल्बम नहीं. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> में एल्बम बनाएं.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> इस सुविधा को प्रबंधित करने के लिए लेफ़्ट और राइट ऐरो बटन इस्तेमाल करें.</translation>
@@ -770,7 +775,6 @@
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>
 <translation id="9087578468327036362">इस क्वेरी की शिकायत करें</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
-<translation id="9095415590198785865">डिवाइस का मालिकाना हक किसी और को नहीं दिया जाएगा</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
@@ -784,6 +788,7 @@
 <translation id="917720651393141712">टेस्ट</translation>
 <translation id="9204237731135241582">Android ऐप्लिकेशन से, गेटवे के साथ संपर्क नहीं किया जा सकता</translation>
 <translation id="9211490828691860325">सभी डेस्क</translation>
+<translation id="922179502584117429">मौजूदा वर्शन <ph name="VERSION_NUMBER" /> पुराना है</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>

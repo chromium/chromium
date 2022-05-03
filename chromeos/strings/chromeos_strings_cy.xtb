@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Cyfeiriad allwedd</translation>
 <translation id="3310640316857623290">Mae cuddni DNS yn sylweddol uwch na'r trothwy a ganiateir</translation>
 <translation id="3328783797891415197">Mae prawf wrthi'n rhedeg</translation>
+<translation id="3336855445806447827">Ddim yn siŵr</translation>
 <translation id="3340011300870565703">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri bud dde.</translation>
 <translation id="3368922792935385530">Wedi cysylltu</translation>
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4483049906298469269">Wedi methu â phingio porth y rhwydwaith nad yw'n ddiofyn</translation>
-<translation id="4485626319513081846">Dewiswch yr opsiwn hwn os yw'r ddyfais yn cael ei hailstocio neu'i hadnewyddu ar gyfer dosbarthiad i gwsmer newydd.</translation>
 <translation id="4503223151711056411">Saeth chwith</translation>
 <translation id="4511264077854731334">Porth</translation>
 <translation id="4521826082652183069">Cyfateb enw amgen pwnc</translation>
@@ -575,7 +575,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6961170852793647506">I gychwyn arni, rhowch eich dogfen ar y sganiwr</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6977381486153291903">Adolygiad cadarnwedd</translation>
-<translation id="6992266763844448459">Dewiswch yr opsiwn hwn os nad yw perchnogaeth y ddyfais yn newid. Er enghraifft, mae'r ddyfais yn cael ei throsglwyddo i berson gwahanol o fewn sefydliad.</translation>
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
 <translation id="7040230719604914234">Gweithredydd</translation>
 <translation id="7041549558901442110">Nid yw'r ddyfais wedi'i chysylltu.</translation>
@@ -607,7 +606,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7297226631177386107">Methu â chysylltu â gwefannau HTTPS drwy fur cadarn</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Bydd y ddyfais yn mynd i berchennog gwahanol</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pwyswch Search a Space i weld y canlyniad yn Google Search.</translation>
 <translation id="7343649194310845056">Dyfeisiau Rhwydwaith</translation>
@@ -775,7 +773,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="9082718469794970195">Defnyddio'r fideo hwn</translation>
 <translation id="9087578468327036362">Adrodd am yr ymholiad hwn</translation>
 <translation id="9088306295921699330">Defnydd presennol</translation>
-<translation id="9095415590198785865">Bydd y ddyfais yn mynd i'r un perchennog</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Adnewyddu'r tocyn ar gyfer <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Wrthi'n sganio'r dudalen <ph name="PAGE_NUMBER" /></translation>

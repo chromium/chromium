@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Забавяне на DNS</translation>
 <translation id="123124571410524056">Предполага се наличие на портал</translation>
 <translation id="1238612778414822719">Забавяне на HTTPS</translation>
+<translation id="1264116747675686718">Версията на операционната система се актуализира</translation>
 <translation id="1264369926465113395">Разгледайте новото дигитално списание на Chromebook за създатели</translation>
 <translation id="1270369111467284986">Предполага се наличие на портал за удостоверяване</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2163937499206714165">Включване на тъмния режим</translation>
+<translation id="2177831236093724629">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. За да бъдат идентифицирани всички отговарящи на изискванията компоненти, актуализирайте до най-новата версия на Chrome OS.</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
+<translation id="320091191259649613">Ако проблемът не бъде отстранен след актуализацията, възможно е компонентът да отговаря на изискванията отскоро и още да не е добавен към базата от данни.</translation>
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
+<translation id="3336855445806447827">Не знам със сигурност</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
-<translation id="4485626319513081846">Изберете тази опция, ако устройството се връща за продажба или ремонтира за предоставяне на нов клиент.</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Съответствие на алтернативното име на субекта</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4999333166442584738">Скриване на отчета</translation>
+<translation id="5008611843832219958">Актуализирайте до най-новата версия на Chrome OS, за да оптимизирате процедурата за ремонт</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="5502931783115429516">Android не работи</translation>
+<translation id="5507300744274596613">Уверете се, че версията на Chrome OS е актуална</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Тапет по подразбиране</translation>
 <translation id="6034694447310538551">Активиране на автоматичното ежемесечно нулиране</translation>
 <translation id="6037291330010597344">Подавачът на документи на скенера е празен. Добавете документи и опитайте отново.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">За да започнете, поставете документа върху скенера</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
-<translation id="6992266763844448459">Изберете тази опция, ако собствеността върху устройството не се променя. Например то се предава на друг човек в рамките на същата организация.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройството не е свързано.</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Устройството преминава в друг собственик</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунта</translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
+<translation id="8671972493856476349">Актуализиране до <ph name="VERSION_NUMBER" /> и рестартиране</translation>
 <translation id="8675354002693747642">Предварително споделен ключ</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">Използване на този видеоклип</translation>
 <translation id="9087578468327036362">Подаване на сигнал за тази заявка</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
-<translation id="9095415590198785865">Устройството остава в същия собственик</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">Тест</translation>
 <translation id="9204237731135241582">Не може да бъде установена връзка с шлюза от приложения за Android</translation>
 <translation id="9211490828691860325">Всички работни кътове</translation>
+<translation id="922179502584117429">Текущата версия <ph name="VERSION_NUMBER" /> не е актуална</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не е активиран</translation>

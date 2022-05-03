@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS ଲାଟେନ୍ସି</translation>
 <translation id="123124571410524056">ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1238612778414822719">HTTPS ଲାଟେନ୍ସି</translation>
+<translation id="1264116747675686718">OS ସଂସ୍କରଣ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="1264369926465113395">କ୍ରିଏଟରମାନଙ୍କ ପାଇଁ Chromebookର ନୂଆ ଡିଜିଟାଲ୍ ପତ୍ରିକାକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="1270369111467284986">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />ଅଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକ<ph name="LINK_END" /> ମିଳିଛି। ସମସ୍ତ ଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଥିବା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ, ଆପଣଙ୍କ Chrome OSକୁ ନବୀନତମ ସଂସ୍କରଣରେ ଅପଡେଟ କରନ୍ତୁ।</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2209788852729124853">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2212733584906323460">ନାମ ରିଜୋଲ୍ୟୁସନ</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3192947282887913208">ଅଡିଓ ଫାଇଲ୍ସ</translation>
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
+<translation id="320091191259649613">ଯଦି ଆପଣ ଅପଡେଟ ହେବା ପରେ ମଧ୍ୟ ସମସ୍ୟା ଦେଖନ୍ତି, ତେବେ କମ୍ପୋନେଣ୍ଟଟି ନୂଆ କରି ଯୋଗ୍ୟ ହୋଇଥିବା ଏବଂ ଏହାକୁ ଏପର୍ଯ୍ୟନ୍ତ ଡାଟାବେସରେ ଯୋଗ କରାଯାଇନଥିବା ସମ୍ଭବ ଅଟେ।</translation>
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
+<translation id="3336855445806447827">ନିଶ୍ଚିତ ନୁହେଁ</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
-<translation id="4485626319513081846">ଯଦି ଡିଭାଇସଟି ଜଣେ ନୂଆ ଗ୍ରାହକଙ୍କୁ ବିତରଣ କରିବା ପାଇଁ ରିଷ୍ଟକ କିମ୍ବା ରିଫର୍ବିସ କରାଯାଉଥାଏ, ତେବେ ଏହି ବିକଳ୍ପକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
 <translation id="4521826082652183069">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
+<translation id="5008611843832219958">ଏକ ଅପ୍ଟିମାଇଜ କରାଯାଇଥିବା ମରାମତି ପ୍ରକ୍ରିୟା ପାଇଁ Chrome OSର ନବୀନତମ ସଂସ୍କରଣରେ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ଆପଣଙ୍କ ସ୍କ୍ରିନ ନିଷ୍କ୍ରିୟ ଥିବା ବେଳେ ଫଟୋ, ସମୟ, ପାଣିପାଗ ଏବଂ ମିଡିଆ ସମ୍ବନ୍ଧିତ ସୂଚନା ଦେଖାନ୍ତୁ।</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="5502931783115429516">Android ଚାଲୁ ନାହିଁ</translation>
+<translation id="5507300744274596613">Chrome OS ଅପଟୁଡେଟ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
 <translation id="594552776027197022">ରେଣ୍ଡମ କୀପେୟାର ସୃଷ୍ଟି କରନ୍ତୁ</translation>
 <translation id="5972388717451707488">ଇଞ୍ଜିନ୍ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
+<translation id="5984145644188835034">ଡିଫଲ୍ଟ ୱାଲପେପର</translation>
 <translation id="6034694447310538551">ସ୍ୱଚାଳିତ ମାସିକ ରିସେଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6037291330010597344">ସ୍କାନରର ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ ଖାଲି ଅଛି। ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ ଯୋଗ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">ଆରମ୍ଭ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6977381486153291903">ଫାର୍ମୱେର୍ ପୁନରାବୃତ୍ତି</translation>
-<translation id="6992266763844448459">ଯଦି ଡିଭାଇସର ମାଲିକାନା ପରିବର୍ତ୍ତନ ହେଉନାହିଁ, ତେବେ ଏହି ବିକଳ୍ପକୁ ଚୟନ କରନ୍ତୁ। ଉଦାହରଣ ସ୍ୱରୂପ, ଡିଭାଇସଟି ଏକ ସଂସ୍ଥା ମଧ୍ୟରେ ଜଣେ ଭିନ୍ନ ବ୍ୟକ୍ତିଙ୍କୁ ଟ୍ରାନ୍ସଫର ହେଉଛି।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରେ ଏବଂ ଏହା ପାଖରେ ଭିଜିଟ୍ କରାଯାଇଥିବା ୱେବପୃଷ୍ଠା, ପାସୱାର୍ଡ ଏବଂ ଇମେଲ୍ ସମେତ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
 <translation id="7040230719604914234">ଅପରେଟର୍</translation>
 <translation id="7041549558901442110">ଡିଭାଇସଟି ସଂଯୋଗ ହୋଇନାହିଁ।</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">ଡିଭାଇସଟି ଏକ ଭିନ୍ନ ମାଲିକଙ୍କ ପାଖକୁ ଯିବ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8660881923941176839">ପାଉଣ୍ଡ</translation>
 <translation id="8662671328352114214"><ph name="TYPE" />ନେଟ୍‌ୱର୍କରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" />ରେ ଅପଡେଟ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8675354002693747642">ପୂର୍ବରୁ-ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="8677859815076891398">କୌଣସି ଆଲବମ୍ ନାହିଁ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ରେ ଏକ ଆଲବମ୍ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ଏହି ଫିଚରକୁ ପରିଚାଳନା କରିବା ପାଇଁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
-<translation id="9095415590198785865">ଡିଭାଇସଟି ସେହି ସମାନ ମାଲିକଙ୍କ ପାଖରେ ରହିବ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="9204237731135241582">Android ଆପଗୁଡ଼ିକରୁ ଗେଟୱେ ସହ ଯୋଗାଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9211490828691860325">ସମସ୍ତ ଡେସ୍କ</translation>
+<translation id="922179502584117429">ବର୍ତ୍ତମାନର ସଂସ୍କରଣ <ph name="VERSION_NUMBER" /> ପୁରୁଣା ଅଟେ</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>

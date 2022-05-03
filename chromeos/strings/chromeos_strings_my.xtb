@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS တုံ့ပြန်ချိန်</translation>
 <translation id="123124571410524056">စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1238612778414822719">HTTPS တုံ့ပြန်ချိန်</translation>
+<translation id="1264116747675686718">OS ဗားရှင်း အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="1264369926465113395">ထုတ်လုပ်သူများအတွက် Chromebook ၏ ဒစ်ဂျစ်တယ် မဂ္ဂဇင်းအသစ်ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="1270369111467284986">စတင်ဝင်ရန်စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />- ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />အရည်အသွေးမပြည့်မီသော အစိတ်အပိုင်းများ<ph name="LINK_END" /> တွေ့ရှိသည်။ အရည်အသွေးပြည့်မီသော အစိတ်အပိုင်းအားလုံး တွေ့ရှိကြောင်းသေချာစေရန် သင်၏ Chrome OS ကို နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="2209788852729124853">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2212733584906323460">ပုံရိပ်ပြတ်သားကိန်းကို အမည်ပေးရန်</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
+<translation id="320091191259649613">အပ်ဒိတ်လုပ်ပြီးနောက် ဤပြဿနာတွေ့နေရသေးပါက အစိတ်အပိုင်းသည် လောလောလတ်လတ် အရည်အသွေးပြည့်မီမှု ရရှိထားခြင်းဖြစ်ပြီး ဒေတာဘေ့စ်တွင်းသို့ မရောက်ရှိသေးခြင်း ဖြစ်နိုင်သည်။</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">ကီးလမ်းညွှန်ချက်</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
+<translation id="3336855445806447827">မသေချာပါ</translation>
 <translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
@@ -225,6 +229,7 @@
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
+<translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
@@ -316,7 +321,6 @@
 <translation id="4472575034687746823">စကြရအောင်</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
-<translation id="4485626319513081846">ဝယ်ယူသူအသစ်ထံသို့ ပေးပို့ရန်အတွက် စက်ကို ပစ္စည်းပြန်ဖြည့်နေပါက (သို့) ပြန်မွမ်းမံနေပါက ၎င်းကိုရွေးပါ။</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
 <translation id="4521826082652183069">အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု</translation>
@@ -377,6 +381,7 @@
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">အစီရင်ခံစာကို ဖျောက်ထားရန်</translation>
+<translation id="5008611843832219958">အကောင်းဆုံ ပြင်ဆင်ရေးလုပ်ငန်းစဉ်အတွက် Chrome OS နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="500920857929044050">စစ်ဆေးမှု ရပ်ရန်</translation>
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5019310272469539976">သင့်ဖန်သားပြင်ကို အသုံးမပြုသောအခါ ဓာတ်ပုံများ၊ အချိန်၊ ရာသီဥတုနှင့် မီဒီယာအချက်အလက်များ ပြသည်။</translation>
@@ -430,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />− <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">စကင်ဖတ်၍ မရပါ</translation>
 <translation id="5502931783115429516">Android မလုပ်ဆောင်တော့ပါ</translation>
+<translation id="5507300744274596613">Chrome OS အပ်ဒိတ်ဖြစ်နေကြောင်း သေချာပါစေ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +474,7 @@
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="594552776027197022">ကျပန်းကီးအတွဲ ထုတ်ရန်</translation>
 <translation id="5972388717451707488">အင်ဂျင် အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="5984145644188835034">မူရင်း နောက်ခံ</translation>
 <translation id="6034694447310538551">လစဉ်အလိုအလျောက် ပြင်ဆင်သတ်မှတ်ခြင်း ဖွင့်ရန်</translation>
 <translation id="6037291330010597344">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ကုန်သွားသည်။ စာရွက်များထည့်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
@@ -547,6 +554,7 @@
 <translation id="6692996468359469499">သင့်ရွေးချယ်မှုနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရယူခြင်း</translation>
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6723839937902243910">ပါဝါ</translation>
+<translation id="6723847290197874913">ကီးဘုတ်နောက်ခံအလင်းရောင်</translation>
 <translation id="672609503628871915">အသစ် ဘာတွေလဲ ကြည့်ရအောင်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
 <translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
@@ -568,7 +576,6 @@
 <translation id="6961170852793647506">စတင်ရန် စာရွက်စာတမ်းကို စကင်နာပေါ်တင်ပါ</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
-<translation id="6992266763844448459">စက်ပိုင်ဆိုင်မှု ပြောင်းလဲခြင်းမရှိပါက ၎င်းကိုရွေးပါ။ ဥပမာအားဖြင့် စက်ကို အဖွဲ့အစည်းအတွင်းရှိ အခြားပုဂ္ဂိုလ်ထံသို့ လွှဲပြောင်းခြင်း။</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7041549558901442110">ကိရိယာကို ကွန်ရက်ချိတ်မထားပါ။</translation>
@@ -600,7 +607,6 @@
 <translation id="7297226631177386107">HTTPS ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">အခြားပိုင်ရှင်ထံသို့ စက် ရောက်ရှိသွားမည်</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />။ <ph name="RESULT_TEXT" />။ Google Search တွင် ရလဒ်ကိုကြည့်ရန် ‘ရှာဖွေရန်’ နှင့် Space ကိုနှိပ်ပါ။</translation>
 <translation id="7343649194310845056">ကွန်ရက်ရှိ စက်များ</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">လိုင်း</translation>
 <translation id="8660881923941176839">ပေါင်</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> သို့ အပ်ဒိတ်လုပ်ပြီး ပြန်စရန်</translation>
 <translation id="8675354002693747642">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="8677859815076891398">အယ်လ်ဘမ် မရှိပါ။ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> တွင် အယ်လ်ဘမ်တစ်ခု ပြုလုပ်ပါ။</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
@@ -767,7 +774,6 @@
 <translation id="9082718469794970195">ဤဗီဒီယိုသုံးရန်</translation>
 <translation id="9087578468327036362">ဤမေးမြန်းချက်ကို အကြောင်းကြားရန်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>
-<translation id="9095415590198785865">လက်ရှိပိုင်ရှင်သို့ စက် ရောက်ရှိသွားမည်</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>
@@ -781,6 +787,7 @@
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>
 <translation id="9204237731135241582">Android အက်ပ်များမှ ဂိတ်ဝကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="9211490828691860325">မျက်နှာပြင်နေရာအားလုံး</translation>
+<translation id="922179502584117429">လက်ရှိဗားရှင်း <ph name="VERSION_NUMBER" /> က ဟောင်းနေပါပြီ</translation>
 <translation id="932327136139879170">ပင်မ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ဖွင့်မသုံးရသေး</translation>

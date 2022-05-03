@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
 <translation id="1238612778414822719">HTTPS लेटन्सी</translation>
+<translation id="1264116747675686718">OS आवृत्ती अपडेट करत आहे</translation>
 <translation id="1264369926465113395">Chromebook चे निर्माणकर्त्यांसाठीचे नवीन डिजिटल मासिक पहा</translation>
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />अपात्र घटक<ph name="LINK_END" /> सापडले. सर्व पात्र घटकांची ओळख पटल्याची खात्री करण्यासाठी तुमची Chrome OS नवीनतम आवृत्तीवर अपडेट करा.</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2209788852729124853">ट्रॅफिक काउंटर रीसेट करा</translation>
 <translation id="2212733584906323460">नाव रेझोल्यूशन</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3192947282887913208">ऑडिओ फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
+<translation id="320091191259649613">अपडेट केल्यानंतरही तुम्हाला समस्या दिसत असल्यास, असे होऊ शकते की, घटक नव्याने पात्र झाला आहे आणि त्याचा डेटाबेसमध्ये अद्याप समावेश केलेला नाही.</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">कीची दिशा</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
+<translation id="3336855445806447827">खात्री नाही</translation>
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
@@ -225,6 +229,7 @@
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
+<translation id="3517001332549868749">ChromeOS अपडेट</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="3557205324756024651">स्थानिक आयडेंटिटी (पर्यायी)</translation>
@@ -316,7 +321,6 @@
 <translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
-<translation id="4485626319513081846">डिव्हाइस हे पुन्हा स्टॉक केले जात असल्यास किंवा नवीन ग्राहकाला देण्यासाठी त्याचे नूतनीकरण केले जात असल्यास, हा पर्याय निवडा.</translation>
 <translation id="4503223151711056411">लेफ्ट अ‍ॅरो</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषयाच्या पर्यायी नावाची जुळणी</translation>
@@ -377,6 +381,7 @@
 <translation id="4985509611418653372">रन</translation>
 <translation id="4987769320337599931">फायरवॉल</translation>
 <translation id="4999333166442584738">अहवाल लपवा</translation>
+<translation id="5008611843832219958">ऑप्टिमाइझ केलेल्या दुरुस्ती प्रक्रियेसाठी Chrome OS च्या नवीनतम आवृत्तीवर अपडेट करा</translation>
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">तुमची स्क्रीन निष्क्रिय असते, तेव्‍हा फोटो, वेळ, हवामान आणि मीडियाशी संबंधित माहिती दाखवा.</translation>
@@ -431,6 +436,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">स्कॅन करणे पूर्ण करता आले नाही</translation>
 <translation id="5502931783115429516">Android रन होत नाही</translation>
+<translation id="5507300744274596613">Chrome OS अप टू डेट असल्याची खात्री करा</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +475,7 @@
 <translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="594552776027197022">रँडम कीपेअर जनरेट करा</translation>
 <translation id="5972388717451707488">इंजीन अपडेट करा</translation>
+<translation id="5984145644188835034">डीफॉल्ट वॉलपेपर</translation>
 <translation id="6034694447310538551">ऑटोमॅटिक मासिक रीसेट सुरू करा</translation>
 <translation id="6037291330010597344">स्कॅनरचा दस्तऐवज फीडर रिकामा आहे. दस्तऐवज जोडा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -548,6 +555,7 @@
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6723839937902243910">सामर्थ्य</translation>
+<translation id="6723847290197874913">कीबोर्ड बॅकलाइट</translation>
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="6749473226660745022">फोटो</translation>
@@ -569,7 +577,6 @@
 <translation id="6961170852793647506">सुरुवात करण्यासाठी, तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6977381486153291903">फर्मवेयर पुनरावृत्ती</translation>
-<translation id="6992266763844448459">डिव्हाइसची मालकी बदलत नसल्यास, हा पर्याय निवडा. उदाहरणार्थ, डिव्हाइस हे संस्थेमधील दुसऱ्या व्यक्तीकडे ट्रान्सफर केले जात आहे.</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिव्हाइस हे कनेक्ट केलेले नाही.</translation>
@@ -601,7 +608,6 @@
 <translation id="7297226631177386107">फायरवॉलद्वारे HTTPS वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">डिव्हाइस दुसऱ्या मालकाला दिले जाईल</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
@@ -718,6 +724,7 @@
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8660881923941176839">पाउंड</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> वर अपडेट करा आणि रीस्टार्ट करा</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
@@ -768,7 +775,6 @@
 <translation id="9082718469794970195">हा व्हिडिओ वापरा</translation>
 <translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
-<translation id="9095415590198785865">डिव्हाइस त्याच मालकाला दिले जाईल</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
@@ -782,6 +788,7 @@
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9204237731135241582">Android अ‍ॅप्सवरून गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="9211490828691860325">सर्व डेस्क</translation>
+<translation id="922179502584117429"><ph name="VERSION_NUMBER" /> ही सध्याची आवृत्ती कालबाह्य झाली आहे</translation>
 <translation id="932327136139879170">होम</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>

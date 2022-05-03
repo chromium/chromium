@@ -671,6 +671,7 @@
 <translation id="4758061975920522644">ပုံသီးသန့် မျှဝေပါ</translation>
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
 <translation id="4763480195061959176">ဗီဒီယို</translation>
+<translation id="4766313118839197559">စကားဝှက်များကို ဤစက်ရှိ ‘စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်</translation>
 <translation id="4766678251456904326">စက်သို့ အကောင့်ထည့်ရန်</translation>
 <translation id="4791358705705538979">ဝဘ်တွင် ငွေရှင်းခြင်းကဲ့သို့ အလုပ်များအပြီးသတ်ရန် ကူညီသည်</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -929,6 +930,7 @@
 <translation id="6162892189396105610">Chrome က သင်ဝင်ကြည့်လိုသည်ဟု ထင်သည့် စာမျက်နှာများကို ကြိုဖွင့်ပေးသည်။</translation>
 <translation id="6186394685773237175">ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
+<translation id="6196315980958524839">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်</translation>
 <translation id="620197886010707372"><ph name="APPNAME" /> အတွက် အက်ပ်ကို Google Play ဖြင့် ဖွင့်မလား။</translation>
 <translation id="6203593061661911168">Wi-Fi ချိတ်မိပါက ဒေါင်းလုဒ် စတင်ပါမည်</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> မဟုတ်ဘူးလား။</translation>
@@ -1258,6 +1260,7 @@
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>
 <translation id="7961926449547174351">'သိုလှောင်ခန်း' အသုံးပြုခွင့်ကို သင် ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် 'ဆက်တင်များ' သို့သွားပါ။</translation>
 <translation id="7963646190083259054">လုပ်ကိုင်ပေးသူ:</translation>
+<translation id="7965838025086216108">သိမ်းထားသော စကားဝှက်များကို မည်သည့်စက်တွင်မဆို သုံးနိုင်သည်။ ၎င်းတို့ကို <ph name="ACCOUNT" /> အတွက် ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်။</translation>
 <translation id="7968014550143838305">ဖတ်ရန်စာရင်းသို့ ထည့်လိုက်ပါပြီ</translation>
 <translation id="7971136598759319605">ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်</translation>
 <translation id="7975379999046275268">စာမျက်နှာ အစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>

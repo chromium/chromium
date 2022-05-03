@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Avaimen suunta</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
 <translation id="3328783797891415197">Testi käynnissä</translation>
+<translation id="3336855445806447827">En tiedä</translation>
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
-<translation id="4485626319513081846">Valitse tämä vaihtoehto, jos laite varastoidaan uudelleen tai kunnostetaan uutta asiakasta varten.</translation>
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
@@ -575,7 +575,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
-<translation id="6992266763844448459">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu, esimerkiksi jos laite siirretään toiselle henkilölle organisaation sisällä.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
 <translation id="7041549558901442110">Laitetta ei ole yhdistetty.</translation>
@@ -607,7 +606,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7297226631177386107">HTTPS-sivustoihin ei voi yhdistää palomuurin läpi</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Laitteen omistaja vaihtuu</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; katso tulos Google Haussa painamalla Haku ja Välilyönti.</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
@@ -775,7 +773,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9082718469794970195">Käytä tätä videota</translation>
 <translation id="9087578468327036362">Ilmoita tästä kyselystä</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
-<translation id="9095415590198785865">Laite pysyy samalla omistajalla</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>

@@ -591,16 +591,6 @@
 <translation id="1654087023995670109">ブラウザのゲストモードを強制的に適用する</translation>
 <translation id="1655229863189977773">ディスク キャッシュ サイズをバイト単位で設定する</translation>
 <translation id="165769015320654523">特定のベンダー ID と製品 ID を持つ HID デバイスへの接続を自動的にこれらのサイトに許可します。</translation>
-<translation id="1661930501743720282">このポリシーでは、Chrome 履歴ページにジャーニーを表示するかどうかを管理します。
-
-      ポリシーを有効に設定した場合、chrome://history/journeys にジャーニーが表示されます。
-
-      ポリシーを無効に設定した場合、chrome://history/journeys にジャーニーは表示されません。
-
-      ポリシーを未設定のままにした場合、chrome://history/journeys にデフォルトでジャーニーが表示され、ユーザーはジャーニーを表示するかどうかを変更できます。
-
-      <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> ポリシーを無効に設定しても、<ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> が有効に設定されているか未設定のままの場合、chrome://history/journeys にジャーニーが引き続き表示されますが、アドレスバーには表示されない可能性があります。また、ユーザーとの関連性も低くなります。
-      </translation>
 <translation id="166427968280387991">プロキシ サーバー</translation>
 <translation id="1669584285557771729">このポリシーでは、有効にする拡大鏡のタイプを管理します。
 

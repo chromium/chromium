@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Nøkkelretning</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
+<translation id="3336855445806447827">Usikker</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
+<translation id="3517001332549868749">ChromeOS-oppdatering</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfritt)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
-<translation id="4485626319513081846">Velg dette alternativet hvis enheten skal lagerføres på nytt eller overhales for distribusjon til en ny kunde.</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Samsvarende alternativt emnenavn</translation>
@@ -554,6 +555,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6723839937902243910">Strøm</translation>
+<translation id="6723847290197874913">Bakgrunnsbelysning for tastatur</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
 <translation id="6749473226660745022">Bilder</translation>
@@ -575,7 +577,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6961170852793647506">For å begynne, legg dokumentet på skanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Fastvareversjon</translation>
-<translation id="6992266763844448459">Velg dette alternativet hvis enheten ikke skal få ny eier. Eksempel: Enheten skal overføres til en annen person i samme organisasjon.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="7040230719604914234">Operatør</translation>
 <translation id="7041549558901442110">Enheten er ikke tilkoblet.</translation>
@@ -607,7 +608,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7297226631177386107">Kan ikke koble til HTTPS-nettsteder gjennom brannmuren</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Enheten skal få ny eier</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
@@ -775,7 +775,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9082718469794970195">Bruk denne videoen</translation>
 <translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
-<translation id="9095415590198785865">Enheten skal ha samme eier som før</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>

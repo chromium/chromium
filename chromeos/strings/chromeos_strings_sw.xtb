@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
 <translation id="123124571410524056">Inashukiwa kuna ukurasa wa mwanzo</translation>
 <translation id="1238612778414822719">Muda wa kusubiri maombi ya HTTPS</translation>
+<translation id="1264116747675686718">Inasasisha toleo la mfumo wa uendeshaji</translation>
 <translation id="1264369926465113395">Angalia gazeti jipya la dijitali la watayarishi kwenye Chromebook</translation>
 <translation id="1270369111467284986">Inashukiwa kwamba kuna ukurasa wa mwanzo</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Jaribu tena</translation>
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
 <translation id="2163937499206714165">Washa hali nyeusi</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Vipengele visivyo na sifa<ph name="LINK_END" /> vimepatikana. Ili kuhakikisha kuwa vipengele vyote vilivyoidhinishwa vimetambuliwa, sasisha mfumo wa uendeshaji wa Chrome uwe toleo jipya zaidi.</translation>
 <translation id="2180197493692062006">Hitilafu fulani imetokea. Jaribu kufungua programu upya.</translation>
 <translation id="2209788852729124853">Badilisha Hesabu za Trafiki</translation>
 <translation id="2212733584906323460">Upe Usuluhishaji huu Jina</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Faili zangu</translation>
 <translation id="3192947282887913208">Faili za Sauti</translation>
 <translation id="3199982728237701504">Mashine ya kuingiza Hati (Pande mbili)</translation>
+<translation id="320091191259649613">Ikiwa bado unaona tatizo baada ya kusasisha, yawezekana kipengele kimepitishwa hivi karibuni na bado hakijawekwa kwenye hifadhidata.</translation>
 <translation id="3226405216343213872">Inatafuta vichanganuzi</translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Uelekeo wa ufunguo</translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
+<translation id="3336855445806447827">Sina uhakika</translation>
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
-<translation id="4485626319513081846">Teua chaguo hili ikiwa kifaa kinaletwa dukani baada ya kuisha au kinarekebishwa ili kisambazwe kwa mteja mpya.</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>
 <translation id="4511264077854731334">Tovuti kuu</translation>
 <translation id="4521826082652183069">Jina mbadala la kichwa linalolingana</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Tekeleza</translation>
 <translation id="4987769320337599931">Kinga mtandao</translation>
 <translation id="4999333166442584738">Ficha ripoti</translation>
+<translation id="5008611843832219958">Sasisha toleo jipya zaidi la mfumo wa uendeshaji wa Chrome kwa mchakato wa ukarabati ulioboreshwa</translation>
 <translation id="500920857929044050">Komesha jaribio</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Onyesha picha, saa, hali ya hewa na maelezo ya maudhui wakati skrini haitumiki.</translation>
@@ -430,6 +434,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Imeshindwa kukamilisha uchanganuzi</translation>
 <translation id="5502931783115429516">Android haifanyi kazi</translation>
+<translation id="5507300744274596613">Hakikisha mfumo wa uendeshaji wa Chrome umesasishwa</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -468,6 +473,7 @@
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="594552776027197022">Zalisha jozi ya funguo nasibu</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Mandhari chaguomsingi</translation>
 <translation id="6034694447310538551">Washa uwekaji upya wa data kiotomatiki kila mwezi</translation>
 <translation id="6037291330010597344">Mashine ya kichanganuzi ya kuingiza hati haina chochote. Weka hati kisha ujaribu tena.</translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -568,7 +574,6 @@
 <translation id="6961170852793647506">Ili uanze, weka hati yako kwenye kichanganuzi</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6977381486153291903">Sahihisho la programu dhibiti</translation>
-<translation id="6992266763844448459">Teua chaguo hili ikiwa umiliki wa kifaa haubadiliki. Kwa mfano, ikiwa kifaa kinapewa mtu tofauti ndani ya shirika.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hudhibiti kifaa hiki na ina idhini ya kufikia shughuli zote za mtumiaji, zikiwemo kurasa za wavuti alizotembelea, manenosiri na anwani za barua pepe.</translation>
 <translation id="7040230719604914234">Mtoa huduma</translation>
 <translation id="7041549558901442110">Kifaa hakijaunganishwa.</translation>
@@ -600,7 +605,6 @@
 <translation id="7297226631177386107">Imeshindwa kuunganisha kwenye tovuti za HTTPS kupitia kinga mtandao</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Kifaa kitaenda kwa mmiliki tofauti</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
@@ -717,6 +721,7 @@
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8660881923941176839">wakia</translation>
 <translation id="8662671328352114214">Jiunge na mtandao wa <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Sasisha iwe <ph name="VERSION_NUMBER" /> na uzime kisha uwashe</translation>
 <translation id="8675354002693747642">Kitufe kilichoshirikiwa awali</translation>
 <translation id="8677859815076891398">Hakuna albamu. Anzisha albamu mpya katika <ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tumia vitufe vya vishale vya Kushoto au Kulia kudhibiti kipengele hiki.</translation>
@@ -767,7 +772,6 @@
 <translation id="9082718469794970195">Tumia video hii</translation>
 <translation id="9087578468327036362">Ripoti hoja hii</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>
-<translation id="9095415590198785865">Kifaa kitaenda kwa mmiliki yule yule</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Onyesha upya tiketi ya <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" /></translation>
@@ -781,6 +785,7 @@
 <translation id="917720651393141712">Jaribu</translation>
 <translation id="9204237731135241582">Imeshindwa kuwasiliana na lango kutoka kwenye programu za Android</translation>
 <translation id="9211490828691860325">Maeneokazi yote</translation>
+<translation id="922179502584117429">Toleo la sasa <ph name="VERSION_NUMBER" /> limepitwa na wakati</translation>
 <translation id="932327136139879170">Mwanzo</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Haijaamilishwa</translation>

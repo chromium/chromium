@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
+<translation id="1264116747675686718">OS sürümü güncelleniyor</translation>
 <translation id="1264369926465113395">Chromebook'un içerik üreticiler için hazırladığı yeni dijital dergisine göz atın</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yeniden dene</translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
 <translation id="2163937499206714165">Koyu modu aç</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Uygun olmayan bileşenler<ph name="LINK_END" /> bulundu. Uygun olan tüm bileşenlerin tanımlandığından emin olmak için Chrome OS'i en son sürüme güncelleyin.</translation>
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
 <translation id="2209788852729124853">Trafik Sayaçlarını Sıfırla</translation>
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3192947282887913208">Ses Dosyaları</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
+<translation id="320091191259649613">Güncelleme yaptıktan sonra bu sorunu görmeye devam ediyorsanız bileşen, uygun hale yeni gelmiş ve henüz veritabanına girilmemiş demektir.</translation>
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Anahtar yönü</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
+<translation id="3336855445806447827">Emin değilim</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
-<translation id="4485626319513081846">Cihaz yeni bir müşteriye dağıtılmak üzere yenileniyor veya tekrar stoklara ekleniyorsa bu seçeneği belirleyin.</translation>
 <translation id="4503223151711056411">Sol ok</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternatif konu adı eşleşmesi</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Çalıştır</translation>
 <translation id="4987769320337599931">Güvenlik duvarı</translation>
 <translation id="4999333166442584738">Raporu gizle</translation>
+<translation id="5008611843832219958">Optimize edilmiş bir onarım süreci için Chrome OS'i en son sürüme güncelleyin</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ekranınız aktif değilken fotoğrafları, saati, hava durumunu ve medya bilgilerini gösterir.</translation>
@@ -431,6 +435,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Tarama işlemi tamamlanamadı</translation>
 <translation id="5502931783115429516">Android çalışmıyor</translation>
+<translation id="5507300744274596613">Chrome OS'in güncel olduğundan emin olun</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
 <translation id="594552776027197022">Rastgele anahtar çifti oluşturun</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Varsayılan Duvar Kağıdı</translation>
 <translation id="6034694447310538551">Aylık otomatik sıfırlamayı etkinleştir</translation>
 <translation id="6037291330010597344">Tarayıcının doküman besleyicisi boş. Doküman ekleyip tekrar deneyin.</translation>
 <translation id="6040143037577758943">Kapat</translation>
@@ -569,7 +575,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
-<translation id="6992266763844448459">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
@@ -601,7 +606,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7297226631177386107">HTTPS web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Cihazın sahibi değişir</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Google Arama'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
@@ -718,6 +722,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">libre</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> sürümüne güncelle ve yeniden başlat</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
 <translation id="8677859815076891398">Albüm yok. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'da albüm oluşturun.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
@@ -768,7 +773,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="9082718469794970195">Bu videoyu kullan</translation>
 <translation id="9087578468327036362">Bu sorguyu bildirir</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
-<translation id="9095415590198785865">Cihazın sahibi değişmez</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
@@ -782,6 +786,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Android uygulamalarından ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="9211490828691860325">Tüm masalar</translation>
+<translation id="922179502584117429">Mevcut sürüm olan <ph name="VERSION_NUMBER" /> güncel değil</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Etkin değil</translation>

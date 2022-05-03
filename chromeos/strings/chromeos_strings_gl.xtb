@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
+<translation id="1264116747675686718">Actualizando versión do sistema operativo</translation>
 <translation id="1264369926465113395">Bótalle un ollo á nova revista dixital para creadores de Chromebook</translation>
 <translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
+<translation id="2177831236093724629">Detectáronse <ph name="LINK_BEGIN" />compoñentes non compatibles<ph name="LINK_END" />. Para asegurarte de que se identifiquen todos os compoñentes compatibles, actualiza Chrome OS á última versión.</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nomes</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
+<translation id="320091191259649613">Se o problema persiste tras a actualización, é posible que o compoñente sexa compatible desde hai pouco e aínda non estea na base de datos.</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Dirección da clave</translation>
 <translation id="3310640316857623290">A latencia do DNS supera considerablemente o límite permitido</translation>
 <translation id="3328783797891415197">Proba en curso</translation>
+<translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
-<translation id="4485626319513081846">Selecciona esta opción se o dispositivo se vai reacondicionar ou volver poñer en distribución para novos clientes.</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia do nome alternativo do asunto</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
+<translation id="5008611843832219958">Actualiza Chrome OS á última versión para usar un proceso de reparación optimizado</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación.</translation>
@@ -431,6 +435,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Non se puido completar o escaneamento</translation>
 <translation id="5502931783115429516">Android non se está executando</translation>
+<translation id="5507300744274596613">Asegúrate de que Chrome OS estea actualizado</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="6034694447310538551">Activar restablecemento mensual automático</translation>
 <translation id="6037291330010597344">O alimentador de documentos do escáner está baleiro. Engade algún documento e téntao de novo.</translation>
 <translation id="6040143037577758943">Pechar</translation>
@@ -569,7 +575,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
-<translation id="6992266763844448459">Selecciona esta opción se non vai cambiar a propiedade do dispositivo (por exemplo, se o dispositivo se vai transferir a unha persoa diferente dentro da mesma organización).</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">O dispositivo non está conectado.</translation>
@@ -601,7 +606,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Vai cambiar a propiedade do dispositivo</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
@@ -718,6 +722,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Actualiza á versión <ph name="VERSION_NUMBER" /> e reinicia o dispositivo</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizar teclas frecha cara á esquerda ou frecha arriba para xestionar esta función.</translation>
@@ -768,7 +773,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
-<translation id="9095415590198785865">Non vai cambiar a propiedade do dispositivo</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="917720651393141712">Probar</translation>
 <translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións Android</translation>
 <translation id="9211490828691860325">Todos os ordenadores</translation>
+<translation id="922179502584117429">A versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Non activado</translation>

@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Затрымка DNS</translation>
 <translation id="123124571410524056">Магчыма, выяўлены партал</translation>
 <translation id="1238612778414822719">Затрымка HTTPS</translation>
+<translation id="1264116747675686718">Ідзе абнаўленне версіі АС</translation>
 <translation id="1264369926465113395">Азнаёмцеся з новым лічбавым часопісам Chromebook для стваральнікаў змесціва</translation>
 <translation id="1270369111467284986">Магчыма, партал узаемадзеяння</translation>
 <translation id="1290331692326790741">Слабы сігнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Паўтарыць спробу</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
 <translation id="2163937499206714165">Уключыць цёмны рэжым</translation>
+<translation id="2177831236093724629">Выяўлены <ph name="LINK_BEGIN" />кампаненты, якія не адпавядаюць патрабаванням<ph name="LINK_END" />. Каб усе кампаненты, якія адпавядаюць патрабаванням, былі ідэнтыфікаваны, абнавіце Chrome OS да апошняй версіі.</translation>
 <translation id="2180197493692062006">Нешта пайшло не так. Паспрабуйце адкрыць праграму паўторна.</translation>
 <translation id="2209788852729124853">Скінуць лічыльнікі трафіка</translation>
 <translation id="2212733584906323460">Пераўтварэнне імён</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
+<translation id="320091191259649613">Калі пасля абнаўлення праблема не знікла, магчыма, кампанент быў правераны на адпаведнасць патрабаванням нядаўна і даныя пра гэта яшчэ не з'явіліся ў базе даных.</translation>
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Кірунак ключа</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
+<translation id="3336855445806447827">Не ведаю</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
-<translation id="4485626319513081846">Выберыце гэты параметр, калі прылада адпраўляецца на склад або на аднаўленне для продажу новаму кліенту.</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
 <translation id="4511264077854731334">Партал</translation>
 <translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб'екта</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Запусціць</translation>
 <translation id="4987769320337599931">Брандмаўар</translation>
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
+<translation id="5008611843832219958">Абнавіце Chrome OS да апошняй версіі, каб аптымізаваць працэс выпраўлення непаладак</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Паказваць фота, час, надвор'е і інфармацыю пра медыяфайлы, калі экран неактыўны.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не ўдалося завяршыць сканіраванне</translation>
 <translation id="5502931783115429516">Android не працуе</translation>
+<translation id="5507300744274596613">Праверка актуальнасці Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="594552776027197022">Стварэнне выпадковай пары ключоў</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Стандартныя шпалеры</translation>
 <translation id="6034694447310538551">Уключыць аўтаматычны штомесячны скід</translation>
 <translation id="6037291330010597344">Прыстасаванне сканера для падачы дакументаў не загружана. Пакладзіце ў яго дакументы і паўтарыце спробу.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -569,7 +575,6 @@
 <translation id="6961170852793647506">Для пачатку палажыце дакумент у сканер</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
-<translation id="6992266763844448459">Выберыце гэты параметр, калі права ўласнасці на прыладу не зменіцца (напрыклад, калі прылада перадаецца іншай асобе ўнутры арганізацыі).</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7041549558901442110">Прылада не падключана.</translation>
@@ -601,7 +606,6 @@
 <translation id="7297226631177386107">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Прылада будзе перададзена іншаму ўладальніку</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Каб пабачыць вынік у Google Пошуку, націсніце "Пошук" і клавішу прабелу.</translation>
 <translation id="7343649194310845056">Сеткавыя прылады</translation>
@@ -718,6 +722,7 @@
 <translation id="8655295600908251630">Версія</translation>
 <translation id="8660881923941176839">фунт.</translation>
 <translation id="8662671328352114214">Падключэнне да сеткі <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Абнавіць да версіі <ph name="VERSION_NUMBER" /> і перазапусціць</translation>
 <translation id="8675354002693747642">Папярэдне абагулены ключ</translation>
 <translation id="8677859815076891398">Альбомаў няма. Стварыце альбом у <ph name="LINK_BEGIN" />Google Фота<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Каб кіраваць гэтай функцыяй, выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа</translation>
@@ -768,7 +773,6 @@
 <translation id="9082718469794970195">Выкарыстоўваць гэта відэа</translation>
 <translation id="9087578468327036362">Паскардзіцца на гэты запыт</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
-<translation id="9095415590198785865">Прылада застанецца ў ранейшага ўладальніка</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9204237731135241582">Не ўдалося звязацца са шлюзам з праграм для Android</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>
+<translation id="922179502584117429">Бягучая версія <ph name="VERSION_NUMBER" /> састарэла.</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Неактыўнае</translation>

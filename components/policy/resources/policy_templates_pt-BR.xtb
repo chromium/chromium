@@ -603,16 +603,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1654087023995670109">Aplicar o modo visitante do navegador</translation>
 <translation id="1655229863189977773">Define o tamanho do cache de disco em bytes</translation>
 <translation id="165769015320654523">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID com determinados IDs de fornecedores e de produtos.</translation>
-<translation id="1661930501743720282">Esta política controla a visibilidade de jornadas na página do histórico do Chrome.
-
-      Se ela for ativada, as jornadas vão ficar visíveis em chrome://history/journeys.
-
-      Se for desativada, as jornadas não vão ficar visíveis nessa página.
-
-      Se a política for deixada sem definição, as jornadas vão ficar visíveis em chrome://history/journeys por padrão e os usuários vão poder mudar a visibilidade.
-
-      Caso a política <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> seja desativada, mas a <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> seja ativada ou deixada sem definição, as jornadas ainda ficam disponíveis em chrome://history/journeys, mas talvez não estejam na omnibox e sejam menos relevantes para o usuário.
-      </translation>
 <translation id="166427968280387991">Servidor proxy</translation>
 <translation id="1669584285557771729">Se esta política for definida, ela controlará o tipo de lupa ativada.
 

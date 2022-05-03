@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Schlüsselrichtung</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
+<translation id="3336855445806447827">Weiß nicht</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
-<translation id="4485626319513081846">Wähle diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird, damit es an einen neuen Kunden weitergegeben werden kann.</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
@@ -575,7 +575,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
-<translation id="6992266763844448459">Wähle diese Option aus, wenn der Eigentümer des Geräts gleich bleibt. Beispielsweise, wenn das Gerät an eine andere Person innerhalb derselben Organisation weitergegeben wird.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Das Gerät ist nicht verbunden.</translation>
@@ -607,7 +606,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Eigentümer des Geräts ändert sich</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
@@ -775,7 +773,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9082718469794970195">Dieses Video verwenden</translation>
 <translation id="9087578468327036362">Diese Anfrage melden</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
-<translation id="9095415590198785865">Eigentümer des Geräts ändert sich nicht</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>

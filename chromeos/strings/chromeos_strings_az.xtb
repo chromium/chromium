@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Açar istiqaməti</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
 <translation id="3328783797891415197">Test icra edilir</translation>
+<translation id="3336855445806447827">Əmin deyiləm</translation>
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
+<translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="3557205324756024651">Lokal kimlik (istəyə görə)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
-<translation id="4485626319513081846">Cihaz yeni müştəriyə verilmək üçün ehtiyatda saxlansa və ya yenilənsə, bu seçimi edin.</translation>
 <translation id="4503223151711056411">Sol ox</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subyektin alternativ adının uyğunluğu</translation>
@@ -553,6 +554,7 @@
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6723839937902243910">Enerji</translation>
+<translation id="6723847290197874913">Klaviaturanın arxa işığı</translation>
 <translation id="672609503628871915">Yeniliklərə baxın</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
 <translation id="6749473226660745022">Foto</translation>
@@ -574,7 +576,6 @@
 <translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
-<translation id="6992266763844448459">Cihazın mülkiyyəti dəyişmirsə, bu seçimi edin. Məsələn, cihaz təşkilat daxilində başqa bir şəxsə ötürüldükdə.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Cihaz qoşulmayıb.</translation>
@@ -606,7 +607,6 @@
 <translation id="7297226631177386107">Alov divarı aktiv olduqda HTTPS vebsaytlarına qoşulmaq olmur</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Cihaz başqa şəxsin mülkiyyətinə keçəcək</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
@@ -774,7 +774,6 @@
 <translation id="9082718469794970195">Bu videonu istifadə edin</translation>
 <translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
-<translation id="9095415590198785865">Cihaz eyni şəxsin mülkiyyətinə keçəcək</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>

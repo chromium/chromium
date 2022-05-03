@@ -143,7 +143,6 @@
 <translation id="1137589305610962734">временные данные</translation>
 <translation id="1137673463384776352">Открыть ссылку в приложении "<ph name="APP" />"</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
-<translation id="1139343347646843679">При настройке Linux произошла ошибка. Обратитесь к администратору.</translation>
 <translation id="1139923033416533844">Использование памяти</translation>
 <translation id="1140351953533677694">Доступ к Bluetooth- и последовательным устройствам</translation>
 <translation id="114036956334641753">Звук и субтитры</translation>
@@ -254,6 +253,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{SMS}one{# SMS}few{# SMS}many{# SMS}other{# SMS}}</translation>
 <translation id="1236009322878349843">Измените сведения о смартфоне</translation>
 <translation id="1239594683407221485">Чтобы посмотреть контент, хранящийся на устройстве, откройте приложение "Файлы".</translation>
+<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1241753985463165747">Просмотр и изменение всех ваших данных на текущем сайте</translation>
@@ -406,7 +406,6 @@
 <translation id="1403222014593521787">Не удалось подключиться к прокси-серверу.</translation>
 <translation id="1405779994569073824">Произошел сбой</translation>
 <translation id="1406500794671479665">Проверка…</translation>
-<translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="140723521119632973">Активация мобильной сети</translation>
 <translation id="1407489512183974736">Кадрировать и выровнять по центру</translation>
@@ -705,7 +704,6 @@
 <translation id="1660763353352708040">Адаптер питания неисправен</translation>
 <translation id="1661156625580498328">Использовать шифрование по алгоритму AES (рекомендуется).</translation>
 <translation id="16620462294541761">К сожалению, не удалось подтвердить пароль. Повторите попытку.</translation>
-<translation id="1662777896967868795">Включена. Автоматически выключится на рассвете.</translation>
 <translation id="166278006618318542">Алгоритм открытого ключа субъекта</translation>
 <translation id="1662801900924515589">Приложение "<ph name="APP" />" установлено.</translation>
 <translation id="1666232093776384142">Снять ограничение на доступ к данным для периферийных устройств?</translation>
@@ -724,7 +722,6 @@
 <translation id="16815041330799488">Не предоставлять сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="1682548588986054654">Новое окно в режиме инкогнито</translation>
 <translation id="1682867089915960590">Включить режим активного курсора?</translation>
-<translation id="1684279041537802716">Цвет элементов</translation>
 <translation id="1686550358074589746">Включить непрерывный ввод</translation>
 <translation id="168715261339224929">Чтобы получить доступ к закладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="1688867105868176567">Удалить данные сайта?</translation>
@@ -787,7 +784,6 @@
 <translation id="1745732479023874451">Управление контактами</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Использовать это веб-приложение для просмотра и редактирования # файла?}few{Использовать это веб-приложение для просмотра и редактирования # файлов?}many{Использовать это веб-приложение для просмотра и редактирования # файлов?}other{Использовать это веб-приложение для просмотра и редактирования # файла?}}</translation>
 <translation id="1748563609363301860">Вы можете сохранить пароль в аккаунте Google или только на этом устройстве.</translation>
-<translation id="1750048572964661931">Чтобы защитить приложения на телефоне от несанкционированного доступа, задайте PIN-код или пароль на устройстве Chromebook.</translation>
 <translation id="1750172676754093297">На этом электронном ключе не сохраняются цифровые отпечатки.</translation>
 <translation id="1751249301761991853">Персональные настройки</translation>
 <translation id="1751262127955453661">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />", пока вы не закроете все вкладки этого сайта.</translation>
@@ -846,7 +842,6 @@
 <translation id="1795214765651529549">Использовать классическую тему</translation>
 <translation id="1796588414813960292">Функции, которые используют звук, не будут работать</translation>
 <translation id="1800502858278951817">Ни одно расширение не запрашивало разрешение на чтение и изменение данных сайта <ph name="SITE_NAME" /></translation>
-<translation id="1801418420130173017">Отключить тёмную тему</translation>
 <translation id="1802624026913571222">Перейти в спящий режим, когда обложка закрыта</translation>
 <translation id="1802687198411089702">Страница не отвечает. Вы можете закрыть ее или дождаться ответа сервера.</translation>
 <translation id="1803531841600994172">Язык перевода</translation>
@@ -937,7 +932,6 @@
 <translation id="187145082678092583">Меньше приложений</translation>
 <translation id="1871463148436682760">Готово!</translation>
 <translation id="1871534214638631766">Показывать информацию о контенте, когда вы выбираете его с помощью правого клика или долгого нажатия</translation>
-<translation id="1871569928317311284">Выключить тёмную тему</translation>
 <translation id="1871615898038944731">На вашем устройстве <ph name="DEVICE_TYPE" /> установлены все необходимые обновления</translation>
 <translation id="1874248162548993294">Разрешить сайтам показывать все объявления</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Открыть вкладку в другом окне}one{Открыть вкладки в другом окне}few{Открыть вкладки в другом окне}many{Открыть вкладки в другом окне}other{Открыть вкладки в другом окне}}</translation>
@@ -950,7 +944,6 @@
 <translation id="1879000426787380528">Войти как</translation>
 <translation id="18802377548000045">вкладки уменьшаются в два раза</translation>
 <translation id="1880905663253319515">Удалить сертификат <ph name="CERTIFICATE_NAME" />?</translation>
-<translation id="188114911237521550">Выключить тёмную тему</translation>
 <translation id="1881445033931614352">Раскладка клавиатуры</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="1884340228047885921">Ваше устройство могут обнаруживать некоторые пользователи из списка контактов</translation>
@@ -1237,7 +1230,6 @@
 <translation id="2162155940152307086">Синхронизация начнется, когда вы покинете страницу с настройками синхронизации.</translation>
 <translation id="2162926944953615670">Нет доступных профилей eSIM.</translation>
 <translation id="2163470535490402084">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
-<translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё 1 переключатель</translation>
 <translation id="2165102982098084499">Вы связали эти устройства с помощью QR-кода.</translation>
 <translation id="2165177462441582039">Задайте скорость перемещения между элементами.</translation>
@@ -1343,7 +1335,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Обмен данными с любыми устройствами в доменах <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Назначьте переключатель для действия "Выбрать"</translation>
-<translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2272430695183451567">Не назначено переключателей</translation>
 <translation id="2272570998639520080">Бокал мартини</translation>
 <translation id="2273119997271134996">Проблема с видеопортом док-станции</translation>
@@ -1421,7 +1412,6 @@
 <translation id="2318143611928805047">Размер бумаги</translation>
 <translation id="2318817390901984578">Чтобы пользоваться приложениями Android, зарядите и обновите устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2319993584768066746">Фото на экране входа</translation>
-<translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2322193970951063277">Верхние и нижние колонтитулы</translation>
 <translation id="2322318151094136999">Запрашивать разрешение на доступ сайтов к последовательным портам (рекомендуется)</translation>
 <translation id="2322622365472107569">Время окончания: <ph name="TIME" /></translation>
@@ -1874,7 +1864,6 @@
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
-<translation id="275085171842676231">Запрос на чтение и изменение данных сайта <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />:</translation>
 <translation id="2753677631968972007">Управление доступом к сайтам вручную</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Настроить специальные возможности</translation>
@@ -2596,6 +2585,7 @@
 <translation id="3473241910002674503">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями.</translation>
 <translation id="3473479545200714844">Лупа</translation>
 <translation id="3474218480460386727">В новых словах не должно быть больше 99 букв.</translation>
+<translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3475843873335999118">Не удалось распознать отпечаток пальца. Введите пароль.</translation>
 <translation id="3476303763173086583">Отправка данных о работе устройства. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Установить личность ребенка по этим данным нельзя. Они нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Он вправе разрешить автоматическую отправку в Google данных об использовании и диагностике устройства. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в аккаунте ребенка. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Не удалось извлечь правила для вашего устройства.</translation>
@@ -3670,7 +3660,6 @@
 <translation id="4535127706710932914">Профиль по умолчанию</translation>
 <translation id="4535767533210902251">Сканер отпечатков пальцев – это клавиша в правом верхнем углу клавиатуры. Слегка коснитесь ее любым пальцем.</translation>
 <translation id="4536140153723794651">Сайты, которые всегда могут использовать файлы cookie</translation>
-<translation id="4538163005498287211">На основе ваших обоев</translation>
 <translation id="4538417792467843292">Удалить слово</translation>
 <translation id="4538792345715658285">Установлено в соответствии с корпоративным правилом.</translation>
 <translation id="4541123282641193691">Не удалось подтвердить аккаунт. Повторите попытку или перезагрузите устройство Chromebook.</translation>
@@ -3757,7 +3746,6 @@
 <translation id="4622051949285931942">Отключить автоматическое обновление?</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4623189117674524348">Не удалось предоставить доступ API на этом устройстве.</translation>
-<translation id="4624054169152573743">Цветовая тема</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4627427111733173920">Файлы cookie заблокированы</translation>
 <translation id="4627442949885028695">Продолжить на другом устройстве</translation>
@@ -3934,7 +3922,6 @@
 <translation id="4808667324955055115">Всплывающие окна заблокированы</translation>
 <translation id="4809079943450490359">Инструкции от администратора вашего устройства:</translation>
 <translation id="480990236307250886">Перейти на главную страницу</translation>
-<translation id="4809927044794281115">Светлая тема</translation>
 <translation id="4811212958317149293">Автосканирование клавиатуры с помощью функции Switch Access</translation>
 <translation id="4811503964269049987">Добавить выбранную вкладку в группу</translation>
 <translation id="4813136279048157860">Мои изображения</translation>
@@ -4337,14 +4324,12 @@
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
 <translation id="521582610500777512">Фотография удалена.</translation>
-<translation id="522155068793322853">Не удалось запустить приложение "<ph name="APP_NAME" />"</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
 <translation id="52254442782792731">Вы пока не указали, кому разрешено обнаруживать ваше устройство</translation>
 <translation id="5225463052809312700">Включить камеру</translation>
 <translation id="5227679487546032910">Аватар по умолчанию (сине-зеленый)</translation>
-<translation id="5227902338748591677">Расписание тёмной темы</translation>
 <translation id="5228579091201413441">Включить синхронизацию</translation>
 <translation id="5230516054153933099">Окно</translation>
 <translation id="5233019165164992427">Порт отладки NaCl</translation>
@@ -4494,7 +4479,6 @@
 <translation id="5372632722660566343">Продолжить без входа в аккаунт</translation>
 <translation id="5375318608039113175">Чтобы с помощью функции "Обмен с окружением" отправлять пользователям контент и принимать от них файлы или ссылки, добавьте в контакты адреса электронной почты, связанные с аккаунтами Google нужных пользователей.</translation>
 <translation id="5376169624176189338">Нажмите, чтобы вернуться. Удерживайте, чтобы просмотреть историю.</translation>
-<translation id="5376354385557966694">Автоматическая светлая тема</translation>
 <translation id="5376931455988532197">Слишком большой файл</translation>
 <translation id="5379140238605961210">Всегда блокировать доступ к микрофону</translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
@@ -4528,6 +4512,7 @@
 <translation id="5413640305322530561">Подробнее об отправке данных об использовании и диагностике…</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
 <translation id="5414566801737831689">Доступ к значкам посещаемых сайтов</translation>
+<translation id="5414836363063783498">Проверка…</translation>
 <translation id="5417312524372586921">Темы браузера</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">В целях безопасности запрашивать пароль для разблокировки устройства</translation>
@@ -5404,7 +5389,6 @@
 <translation id="6283438600881103103">Вы автоматически выйдете из системы.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
 <translation id="628352644014831790">4 секунды</translation>
-<translation id="6284632978374966585">Включить тёмную тему</translation>
 <translation id="6285120108426285413">Файл <ph name="FILE_NAME" /> скачивают редко. Возможно, он вредоносный.</translation>
 <translation id="6285770818046456882">Отправитель отменил передачу данных.</translation>
 <translation id="6290613030083731160">Поблизости нет устройств, с которыми можно обмениваться данными. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5451,7 +5435,6 @@
 <translation id="6326175484149238433">Удалить</translation>
 <translation id="6326855256003666642">Количество соединений keepalive</translation>
 <translation id="6327785803543103246">Автоматическое определение настроек прокси-сервера</translation>
-<translation id="6331191339300272798">Автоматическая тёмная тема</translation>
 <translation id="6331818708794917058">Разрешить сайтам отправлять запрос на подключение к MIDI-устройствам</translation>
 <translation id="6333064448949140209">Файл будет отправлен в Google для отладки</translation>
 <translation id="6335920438823100346">Для запуска Linux требуется (источник правила: <ph name="MANAGER" />) выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
@@ -5476,7 +5459,6 @@
 <translation id="63566973648609420">Ваши зашифрованные данные может прочитать только тот, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется <ph name="BEGIN_LINK" />сбросить параметры синхронизации<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />" и "<ph name="APP_NAME_2" />".</translation>
 <translation id="6358884629796491903">Дракон</translation>
-<translation id="6359706544163531585">Отключить светлую тему</translation>
 <translation id="6361470537267923629">Вы можете использовать сохраненные пароли на любом устройстве. Место хранения для аккаунта <ph name="EMAIL" />: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6361850914223837199">Сведения об ошибке:</translation>
 <translation id="6362853299801475928">&amp;Сообщить о проблеме...</translation>
@@ -5970,7 +5952,6 @@
 <translation id="6833479554815567477">Вкладка удалена из группы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Перейдите на умный и безопасный браузер</translation>
 <translation id="6833996806551876956">Пробная версия Privacy Sandbox</translation>
-<translation id="6834652994408928492">Тёмная тема автоматически включается на закате</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
@@ -6282,7 +6263,6 @@
 <translation id="7136694880210472378">Использовать по умолчанию</translation>
 <translation id="7136993520339022828">Произошла ошибка. Выберите другое изображение.</translation>
 <translation id="7137472406312798422">Сайтам можно запрашивать сведения о ваших экранах, чтобы открывать и размещать окна</translation>
-<translation id="7138515695467025690">Отключена. Автоматически включится на закате.</translation>
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7139627972753429585">Приложение "<ph name="APP_NAME" />" использует микрофон</translation>
 <translation id="7141105143012495934">Ошибка входа: не удалось получить данные аккаунта. Обратитесь к администратору или повторите попытку.</translation>
@@ -6441,7 +6421,6 @@
 <translation id="7328867076235380839">Недопустимое сочетание</translation>
 <translation id="7329154610228416156">Не удалось выполнить вход из-за перенаправления на небезопасный URL (<ph name="BLOCKED_URL" />). Обратитесь к администратору.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="7334014994694414993">Выберите цветовую тему для панели запуска, быстрых настроек и других элементов</translation>
 <translation id="7334274148831027933">Включить закрепленную лупу</translation>
 <translation id="7335974957018254119">Для каких языков применяется проверка правописания</translation>
 <translation id="7336799713063880535">Заблокировано.</translation>
@@ -6510,7 +6489,6 @@
 <translation id="7395774987022469191">Весь экран</translation>
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Вернуться к поисковой системе "<ph name="OLD_SEARCH_PROVIDER" />"?</translation>
@@ -6655,7 +6633,6 @@
 <translation id="7531779363494549572">Откройте настройки устройства и выберите "Приложения и уведомления &gt; Уведомления".</translation>
 <translation id="7532009420053991888">Приложение "<ph name="LINUX_APP_NAME" />" не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7535730537657706072">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито.</translation>
-<translation id="7535791657097741517">Включить светлую тему</translation>
 <translation id="7537451260744431038">Сайты не могут использовать файлы cookie, чтобы сделать работу в браузере более удобной, например запоминая товары в корзине или информацию о том, что вы вошли в аккаунт</translation>
 <translation id="7538932151125743389">Чтение серийных номеров устройства Chrome OS и его компонентов.</translation>
 <translation id="7540972813190816353">При проверке обновлений произошла ошибка: <ph name="ERROR" /></translation>
@@ -6736,7 +6713,6 @@
 <translation id="7617263010641145920">Включить Play Маркет</translation>
 <translation id="7617366389578322136">Подключение к устройству "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7617648809369507487">Использовать режим важных уведомлений</translation>
-<translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7621382409404463535">Не удалось сохранить конфигурацию устройства.</translation>
 <translation id="7622114377921274169">Зарядка…</translation>
 <translation id="7622768823216805500">Обычно сайты устанавливают обработчики платежей, чтобы использовать такие функции, как упрощенная оплата покупок.</translation>
@@ -6947,7 +6923,6 @@
 <translation id="7792388396321542707">Закрыть доступ</translation>
 <translation id="779308894558717334">Светло-зеленый</translation>
 <translation id="7793098747275782155">Темно-синий</translation>
-<translation id="7797246427375693110">Включена. Автоматически выключится в <ph name="TIME" />.</translation>
 <translation id="7797571222998226653">ВЫКЛ</translation>
 <translation id="7798844538707273832">Автоматически отключено разрешение "<ph name="PERMISSION" />"</translation>
 <translation id="7799299114731150374">Обои установлены.</translation>
@@ -6988,7 +6963,6 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}one{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}few{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}many{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}other{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}}</translation>
 <translation id="7839051173341654115">Просмотреть/сохранить медиафайлы</translation>
 <translation id="7839192898639727867">Идентификатор ключа субъекта сертификата</translation>
-<translation id="7841134249932030522">Использовать тёмную тему</translation>
 <translation id="7842692330619197998">Чтобы создать аккаунт, перейдите на страницу g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Удалить Linux</translation>
 <translation id="7843786652787044762">Войти в сервис "<ph name="WEB_DRIVE" />"</translation>
@@ -7016,7 +6990,6 @@
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
 <translation id="7865127013871431856">Параметры перевода</translation>
-<translation id="7869143217755017858">Отключить тёмную тему</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="7869655448736341731">Все</translation>
 <translation id="7870730066603611552">Проверять параметры синхронизации после начала сеанса</translation>
@@ -7285,7 +7258,6 @@
 <translation id="8114199541033039755">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями. Этот параметр активируется, когда включается ChromeVox или автоматическое нажатие.</translation>
 <translation id="8115139559594092084">С Google Диска</translation>
 <translation id="8116972784401310538">&amp;Диспетчер закладок</translation>
-<translation id="8117752106453549166">Администратор настраивает Linux. Это займет несколько минут.</translation>
 <translation id="8118362518458010043">Расширение отключено браузером Chrome. Оно может быть небезопасным.</translation>
 <translation id="8118488170956489476">Этим браузером <ph name="BEGIN_LINK" />управляет<ph name="END_LINK" /> ваша организация.</translation>
 <translation id="8118515372935001629">Частота обновления экрана</translation>
@@ -7577,6 +7549,7 @@
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
 <translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
+<translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Примечания</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
@@ -7614,7 +7587,6 @@
 <translation id="8449008133205184768">Вставить с соблюдением стиля</translation>
 <translation id="8449036207308062757">Управление хранилищем</translation>
 <translation id="8456512334795994339">Приложения для работы и отдыха</translation>
-<translation id="8456761643544401578">Автоматическая тёмная тема</translation>
 <translation id="845702320058262034">Не удается подключиться к телефону. Убедитесь, что на нем включен Bluetooth.</translation>
 <translation id="8457451314607652708">Импортировать закладки</translation>
 <translation id="8458341576712814616">Быстрая команда</translation>
@@ -7817,7 +7789,6 @@
 <translation id="8666759526542103597">О персонализации рекламы на основе данных браузера</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> работает в полноэкранном режиме и не показывает курсор.</translation>
 <translation id="8667760277771450375">Мы стремимся найти способы ограничить межсайтовое отслеживание, предоставляя сайтам возможность бороться со спамом и мошенничеством.</translation>
-<translation id="8668052347555487755">Цвета</translation>
 <translation id="8669284339312441707">Теплее</translation>
 <translation id="8670537393737592796">Для удобства дальнейшего использования установите "<ph name="APP_NAME" />", нажав кнопку установки</translation>
 <translation id="867085395664725367">Произошла ошибка сервера.</translation>
@@ -8020,7 +7991,6 @@
 <translation id="8859402192569844210">Не удалось загрузить Условия использования</translation>
 <translation id="8859662783913000679">Аккаунт родителя</translation>
 <translation id="8862003515646449717">Перейдите на быстрый браузер</translation>
-<translation id="8863170912498892583">Использовать тёмную тему</translation>
 <translation id="8863753581171631212">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="8864055848767439877">Отправка вкладки "<ph name="TAB_NAME" />" в приложение "<ph name="APP_NAME" />"…</translation>
 <translation id="8864458770072227512">Аккаунт <ph name="EMAIL" /> удален с устройства.</translation>
@@ -8314,7 +8284,6 @@
 <translation id="9148058034647219655">Выйти</translation>
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9148963623915467028">Этому сайту разрешено получать информацию о том, где вы находитесь.</translation>
-<translation id="9149529198050266366">Тёмная тема автоматически выключается на рассвете</translation>
 <translation id="9149866541089851383">Изменить...</translation>
 <translation id="9150045010208374699">Использование камеры</translation>
 <translation id="9150079578948279438">Не удалось удалить профиль. Повторите попытку или обратитесь к своему оператору за технической поддержкой.</translation>
@@ -8443,7 +8412,6 @@
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Общие</translation>
-<translation id="987363316774788151">Отключена. Автоматически включится в <ph name="TIME" />.</translation>
 <translation id="987897973846887088">Нет изображений</translation>
 <translation id="988320949174893488">С внезапными остановками</translation>
 <translation id="988978206646512040">Поле с кодовой фразой не должно быть пустым</translation>

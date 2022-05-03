@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Direcția cheii</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
+<translation id="3336855445806447827">Nu știu sigur</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
+<translation id="3517001332549868749">Actualizare SO Chrome</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
 <translation id="3557205324756024651">Identitate locală (opțională)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
-<translation id="4485626319513081846">Selectează această opțiune dacă dispozitivul este înlocuit sau recondiționat pentru distribuirea către un client nou.</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Potrivire a numelui alternativ al subiectului</translation>
@@ -554,6 +555,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6723839937902243910">Alimentare</translation>
+<translation id="6723847290197874913">Retroiluminarea tastaturii</translation>
 <translation id="672609503628871915">Vedeți noutățile</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
 <translation id="6749473226660745022">Fotografii</translation>
@@ -575,7 +577,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6961170852793647506">Pentru a începe, așază documentul pe scaner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
-<translation id="6992266763844448459">Selectează această opțiune dacă nu se schimbă calitatea de proprietar al dispozitivului. De exemplu, dispozitivul este transferat unei alte persoane din organizație.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Dispozitivul nu este conectat.</translation>
@@ -607,7 +608,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7297226631177386107">Nu se poate conecta la site-uri HTTPS prin firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Dispozitivul va avea alt proprietar</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
@@ -775,7 +775,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9082718469794970195">Folosește videoclipul</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
-<translation id="9095415590198785865">Dispozitivul va avea același proprietar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>

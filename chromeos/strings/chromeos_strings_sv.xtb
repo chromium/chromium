@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-latens</translation>
 <translation id="123124571410524056">Misstänkt portal</translation>
 <translation id="1238612778414822719">HTTPS-fördröjning</translation>
+<translation id="1264116747675686718">Uppdaterar operativsystemsversionen</translation>
 <translation id="1264369926465113395">Kolla in Chromebooks nya digitala tidskrift för skapare</translation>
 <translation id="1270369111467284986">Misstänkt infångstportal</translation>
 <translation id="1290331692326790741">svag signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
 <translation id="2163937499206714165">Aktivera mörkt läge</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Komponenter som inte uppfyller kraven<ph name="LINK_END" /> hittades. Uppdatera Chrome OS till den senaste versionen för att säkerställa att alla komponenter som uppfyller kraven identifieras.</translation>
 <translation id="2180197493692062006">Något gick fel. Testa att öppna appen igen.</translation>
 <translation id="2209788852729124853">Återställ trafikräknare</translation>
 <translation id="2212733584906323460">Namnmatchning</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Mina filer</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
+<translation id="320091191259649613">Om problemet kvarstår efter uppdateringen är det möjligt att komponenten nyligen uppfyllde kraven och inte finns i databasen än.</translation>
 <translation id="3226405216343213872">Söker efter skannrar</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Nyckelriktning</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
 <translation id="3328783797891415197">Testet körs</translation>
+<translation id="3336855445806447827">Vet ej</translation>
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
-<translation id="4485626319513081846">Välj det här alternativet om enheten ska åter till lagret eller restaureras så att den kan skickas till en ny kund senare.</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Matchning av ämnets andra namn</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Kör</translation>
 <translation id="4987769320337599931">Brandvägg</translation>
 <translation id="4999333166442584738">Dölj rapporten</translation>
+<translation id="5008611843832219958">Uppdatera till den senaste versionen av Chrome OS för en optimerad reparationsprocess</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
@@ -431,6 +435,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Det gick inte att slutföra skanningen</translation>
 <translation id="5502931783115429516">Android körs inte</translation>
+<translation id="5507300744274596613">Kontrollera att Chrome OS är aktuellt</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Standardbakgrund</translation>
 <translation id="6034694447310538551">Aktivera automatisk månadsåterställning</translation>
 <translation id="6037291330010597344">Skannerns dokumentmatare är tom. Fyll på med dokument och försök igen.</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -569,7 +575,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6961170852793647506">Sätt dokumentet i skannern för att komma igång</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
-<translation id="6992266763844448459">Använd det här alternativet om enheten inte ska byta ägare, till exempel om någon annan inom samma organisation övertar enheten.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Enheten är inte ansluten.</translation>
@@ -601,7 +606,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7297226631177386107">Det gick inte att ansluta till HTTPS-webbplatser genom brandvägg</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">En annan ägare tar över enheten</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />: <ph name="RESULT_TEXT" />. Om du trycker på Sök och blanksteg visas resultatet på Google Sök.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
@@ -718,6 +722,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">pund</translation>
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>
+<translation id="8671972493856476349">Uppdatera till version <ph name="VERSION_NUMBER" /> och starta om enheten</translation>
 <translation id="8675354002693747642">I förväg delad nyckel</translation>
 <translation id="8677859815076891398">Du har inga album. Skapa ett album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Hantera den här funktionen med tangenterna vänster- och högerpil.</translation>
@@ -768,7 +773,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="9082718469794970195">Använd den här videon</translation>
 <translation id="9087578468327036362">Rapportera sökfrågan</translation>
 <translation id="9088306295921699330">Nuvarande användning</translation>
-<translation id="9095415590198785865">Samma ägare behåller enheten</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar sidan <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="917720651393141712">Testa</translation>
 <translation id="9204237731135241582">Det gick inte att kontakta gateway från Android-appar</translation>
 <translation id="9211490828691860325">Alla skrivbord</translation>
+<translation id="922179502584117429">Nuvarande version <ph name="VERSION_NUMBER" /> är inte uppdaterad</translation>
 <translation id="932327136139879170">Startsida</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>

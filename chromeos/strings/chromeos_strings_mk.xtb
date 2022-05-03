@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Насока на клучот</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
 <translation id="3328783797891415197">Тестот се извршува</translation>
+<translation id="3336855445806447827">Не знам</translation>
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
@@ -228,6 +229,7 @@
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
+<translation id="3517001332549868749">Ажурирање на Chrome OS</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3557205324756024651">Локален идентитет (незадолжително)</translation>
@@ -319,7 +321,6 @@
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
-<translation id="4485626319513081846">Изберете ја опцијава ако уредот се подготвува или обновува за дистрибуција кај нов клиент.</translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Совпаѓање на алтернативното име на субјектот</translation>
@@ -554,6 +555,7 @@
 <translation id="6692996468359469499">Добивајте информации поврзани со вашиот избор</translation>
 <translation id="6704062477274546131">Одредување со DNS</translation>
 <translation id="6723839937902243910">Енергија</translation>
+<translation id="6723847290197874913">Заднинско светло на тастатура</translation>
 <translation id="672609503628871915">Погледнете што има ново</translation>
 <translation id="6747215703636344499">Запрено - излезната фиока е полна</translation>
 <translation id="6749473226660745022">Фотографии</translation>
@@ -575,7 +577,6 @@
 <translation id="6961170852793647506">За да започнете, ставете го документот на скенерот</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
-<translation id="6992266763844448459">Изберете ја опцијава ако сопственоста не уредот нема да се промени. На пример, уредот се префрла на друго лице во организација.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Уредот не е поврзан.</translation>
@@ -607,7 +608,6 @@
 <translation id="7297226631177386107">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Уредот ќе се префрли на друг сопственик</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; притиснете „Пребарување“ и Space за да видите резултат во „Пребарување на Google“.</translation>
 <translation id="7343649194310845056">Мрежни уреди</translation>
@@ -775,7 +775,6 @@
 <translation id="9082718469794970195">Користи го ова видео</translation>
 <translation id="9087578468327036362">Пријавете го барањево</translation>
 <translation id="9088306295921699330">Моментално користење</translation>
-<translation id="9095415590198785865">Уредот ќе остане кај истиот сопственик</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Се скенира страницата <ph name="PAGE_NUMBER" /></translation>

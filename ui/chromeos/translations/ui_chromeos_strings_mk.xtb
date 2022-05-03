@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">холандски (Холандија)</translation>
 <translation id="174937106936716857">Вкупен број датотеки</translation>
 <translation id="1755345808328621801">Датотекава е создадена за компјутер што користи софтвер на Windows. Таа не е компатибилна со вашиот уред што извршува Chrome OS. Пребарајте ја „Веб-продавницата на Chrome“ за да најдете соодветна апликација за замена.</translation>
+<translation id="1757915090001272240">Широка латиница</translation>
 <translation id="1773212559869067373">Одбиена локална автентикација на сертификат</translation>
 <translation id="1775381402323441512">Информации за видеото</translation>
 <translation id="180035236176489073">Мора да сте поврзани на интернет за да пристапите до датотеките.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Услуги</translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Се вчитуваат информации…</translation>
+<translation id="1832073788765803750">катакана со половина ширина</translation>
 <translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
 <translation id="1838709767668011582">Сајт на Google</translation>
 <translation id="1844692022597038441">Датотеката не е достапна локално.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100">Се прави бекап на <ph name="FILE_COUNT" /> на <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Човек со мачки</translation>
 <translation id="5358764674931277">Стапка на слики</translation>
+<translation id="5363339716524495120">Јазикот за внесување е кинески</translation>
 <translation id="5368191757080475556">Споделување папка со Linux</translation>
 <translation id="5402367795255837559">Браилово писмо</translation>
 <translation id="5411472733320185105">Не користете ги поставките за прокси на овие домаќини и домени:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Се пресметува големината</translation>
 <translation id="554153475311314364">транслитерација на грчки</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
+<translation id="5583664733673201137">Ширината на интерпункцијата е полна</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">Датотекава е создадена за компјутер што користи софтвер на Macintosh. Таа не е компатибилна со вашиот уред што извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245">Најдени се <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Направете бекап на <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалски</translation>
 <translation id="7505167922889582512">Прикажи скриени датотеки</translation>
 <translation id="7514365320538308">Преземи</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">англиски (САД) со тастатура Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ е споделен со вас. Не може да го избришете затоа што не го поседувате.</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
+<translation id="8147028810663464959">Ширината на знакот е полна</translation>
 <translation id="8151638057146502721">Конфигурирај</translation>
 <translation id="8154842056504218462">Избрани се сите записи.</translation>
 <translation id="8157684860301034423">Не успеа да вчита информации за апликацијата.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Илустрации</translation>
 <translation id="8223479393428528563">За да ги зачувате овие датотеки за локална употреба, вклучете се повторно, десен клик на датотеките и изберете ја опцијата <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Прекини</translation>
+<translation id="8250690786522693009">латиница</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261561378965667560">кинески со низа</translation>

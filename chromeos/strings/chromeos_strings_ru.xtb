@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Направление ключа</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
+<translation id="3336855445806447827">Не знаю</translation>
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
-<translation id="4485626319513081846">Выберите этот вариант, если устройство будет возвращено на склад или восстановлено и передано новому клиенту.</translation>
 <translation id="4503223151711056411">Стрелка влево</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Совпадение с альтернативным именем субъекта</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">Чтобы начать, положите документ в сканер.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6977381486153291903">Версия встроенного ПО</translation>
-<translation id="6992266763844448459">Выберите этот вариант, если владелец устройства не изменится. Например, оно будет передано другому человеку в той же организации.</translation>
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройство не подключено.</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">Не удается подключиться к HTTPS-сайтам через брандмауэр.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Устройство будет передано новому владельцу</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">Использовать это видео</translation>
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
-<translation id="9095415590198785865">Устройство будет возвращено прежнему владельцу</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>

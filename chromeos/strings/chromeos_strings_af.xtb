@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Sleutelrigting</translation>
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3328783797891415197">Toets loop tans</translation>
+<translation id="3336855445806447827">Nie seker nie</translation>
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
@@ -320,7 +321,6 @@
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
-<translation id="4485626319513081846">Kies hierdie opsie as die toestel teruggeplaas word in voorraad of opgeknap word om na 'n nuwe klant versprei te word.</translation>
 <translation id="4503223151711056411">Linkspyl</translation>
 <translation id="4511264077854731334">Portaal</translation>
 <translation id="4521826082652183069">Passing vir onderwerp se alternatiewe naam</translation>
@@ -577,7 +577,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6961170852793647506">Plaas jou dokument op die skandeerder om te begin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
-<translation id="6992266763844448459">Kies hierdie opsie as die eienaarskap van die toestel nie verander nie. Byvoorbeeld, die toestel word na 'n ander persoon binne 'n organisasie oorgedra.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7041549558901442110">Toestel is nie gekoppel nie.</translation>
@@ -609,7 +608,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7297226631177386107">Kan nie deur brandmuur aan HTTPS-webwerwe koppel nie</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Toestel sal na 'n ander eienaar gaan</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
@@ -777,7 +775,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="9082718469794970195">Gebruik hierdie video</translation>
 <translation id="9087578468327036362">Gee hierdie navraag aan</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
-<translation id="9095415590198785865">Toestel sal na dieselfde eienaar gaan</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>

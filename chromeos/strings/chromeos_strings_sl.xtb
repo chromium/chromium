@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
 <translation id="123124571410524056">Sum na portal</translation>
 <translation id="1238612778414822719">Zakasnitev HTTPS</translation>
+<translation id="1264116747675686718">Posodabljanje različice operacijskega sistema</translation>
 <translation id="1264369926465113395">Preverite novo Chromebookovo digitalno revijo za ustvarjalce.</translation>
 <translation id="1270369111467284986">Sum na prestrezni portal</translation>
 <translation id="1290331692326790741">Šibek signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
+<translation id="2177831236093724629">Najdene so bile <ph name="LINK_BEGIN" />neustrezne komponente<ph name="LINK_END" />. Če se želite prepričati, da bodo prepoznane vse ustrezne komponente, posodobite sistem Chrome OS na najnovejšo različico.</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
+<translation id="320091191259649613">Če bo težava prisotna še po posodobitvi, je bila komponenta morda šele nedavno označena kot ustrezna in še ni bila dodana v zbirko podatkov.</translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Smer ključa</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
+<translation id="3336855445806447827">Ne vem</translation>
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
@@ -225,6 +229,7 @@
 <translation id="3484914941826596830">Med posodabljanjem vdelane programske opreme ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="3486220673238053218">opredelitev</translation>
 <translation id="3488065109653206955">Delno aktivirano</translation>
+<translation id="3517001332549868749">Posodobitev sistema Chrome OS</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3557205324756024651">Lokalna identiteta (izbirno)</translation>
@@ -316,7 +321,6 @@
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
-<translation id="4485626319513081846">Izberite to možnost, če bo ta naprava vrnjena med zaloge ali obnovljena za distribucijo novi stranki.</translation>
 <translation id="4503223151711056411">Puščica levo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Ujemanje nadomestnega imena subjekta</translation>
@@ -377,6 +381,7 @@
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="4987769320337599931">Požarni zid</translation>
 <translation id="4999333166442584738">Skrij poročilo</translation>
+<translation id="5008611843832219958">Posodobite Chrome OS na najnovejšo različico, če želite optimizirani postopek popravljanja.</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ko je zaslon nedejaven, prikaži fotografije, uro, vreme in podatke o predstavnosti.</translation>
@@ -431,6 +436,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Optičnega branja ni bilo mogoče dokončati</translation>
 <translation id="5502931783115429516">Android se ne izvaja</translation>
+<translation id="5507300744274596613">Chrome OS mora biti posodobljen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +475,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="594552776027197022">Ustvarjanje naključnega para ključev</translation>
 <translation id="5972388717451707488">Posodobitev mehanizma</translation>
+<translation id="5984145644188835034">Privzeto ozadje</translation>
 <translation id="6034694447310538551">Omogoči samodejno mesečno ponastavitev</translation>
 <translation id="6037291330010597344">Podajalnik papirja optičnega bralnika je prazen. Dodajte dokumente in poskusite znova.</translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -544,10 +551,11 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6647510110698214773">Algoritem šifriranja</translation>
 <translation id="6650062777702288430">Preklop med tipkovnico kana/alfanumerično tipkovnico</translation>
 <translation id="6657585470893396449">Geslo</translation>
-<translation id="6659594942844771486">Tabulator</translation>
+<translation id="6659594942844771486">Zavihek</translation>
 <translation id="6692996468359469499">Prejemanje podatkov, povezanih z izborom</translation>
 <translation id="6704062477274546131">Razrešitev DNS-ja</translation>
 <translation id="6723839937902243910">Napajanje</translation>
+<translation id="6723847290197874913">Osvetlitev tipkovnice</translation>
 <translation id="672609503628871915">Oglejte si novosti</translation>
 <translation id="6747215703636344499">Ustavljeno – izhodni pladenj je poln</translation>
 <translation id="6749473226660745022">Fotografije</translation>
@@ -569,7 +577,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
-<translation id="6992266763844448459">Izberite to možnost, če se lastništvo naprave ne spreminja. Ta naprava se na primer prenaša na drugo osebo v organizaciji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Naprava ni povezana.</translation>
@@ -601,7 +608,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Naprava bo dobila drugega lastnika</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
@@ -718,6 +724,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funti</translation>
 <translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Posodobi na različico <ph name="VERSION_NUMBER" /> in zaženi znova</translation>
 <translation id="8675354002693747642">Ključ v predhodni skupni rabi</translation>
 <translation id="8677859815076891398">Ni albumov. Ustvarite album v <ph name="LINK_BEGIN" />Googlu Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte to funkcijo s tipkama puščica levo ali desno.</translation>
@@ -768,7 +775,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="9082718469794970195">Uporabi ta videoposnetek</translation>
 <translation id="9087578468327036362">Prijavite to poizvedbo</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
-<translation id="9095415590198785865">Naprava se prenaša k istemu lastniku</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
@@ -782,6 +788,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="917720651393141712">Preizkus</translation>
 <translation id="9204237731135241582">Iz aplikacij za Android ni mogoče vzpostaviti stika s prehodom.</translation>
 <translation id="9211490828691860325">Vsa namizja</translation>
+<translation id="922179502584117429">Trenutna različica <ph name="VERSION_NUMBER" /> je zastarela</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ni aktivirano</translation>

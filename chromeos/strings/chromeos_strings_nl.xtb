@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Sleutelrichting</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
+<translation id="3336855445806447827">Weet niet</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
-<translation id="4485626319513081846">Selecteer deze optie als het apparaat weer aan de voorraad wordt toegevoegd of wordt refurbished voor distributie naar een nieuwe klant.</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
@@ -575,7 +575,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6961170852793647506">Leg je document op de scanner om aan de slag te gaan</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
-<translation id="6992266763844448459">Selecteer deze optie als het eigendom van het apparaat niet verandert. Het apparaat wordt bijvoorbeeld overgedragen aan een andere persoon binnen een organisatie.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
@@ -607,7 +606,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Het apparaat gaat naar een andere eigenaar</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
@@ -775,7 +773,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9082718469794970195">Deze video gebruiken</translation>
 <translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
-<translation id="9095415590198785865">Het apparaat gaat naar dezelfde eigenaar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>

@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Arah kunci</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
+<translation id="3336855445806447827">Tidak yakin</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
-<translation id="4485626319513081846">Pilih opsi ini jika perangkat sedang di-stok ulang atau di-refurbished untuk dikirimkan kepada pelanggan baru.</translation>
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
@@ -575,7 +575,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6961170852793647506">Untuk memulai, letakkan dokumen Anda pada pemindai</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
-<translation id="6992266763844448459">Pilih opsi ini jika kepemilikan perangkat tidak berubah. Misalnya, perangkat sedang ditransfer kepada pengguna lain dalam organisasi.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Perangkat tidak terhubung.</translation>
@@ -607,7 +606,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Perangkat akan diberikan kepada pemilik lain</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
@@ -775,7 +773,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan kueri ini</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
-<translation id="9095415590198785865">Perangkat akan diberikan kepada pemilik yang sama</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>

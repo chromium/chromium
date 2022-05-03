@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">გასაღების მიმართულება</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
+<translation id="3336855445806447827">დარწმუნებული არ ვარ</translation>
 <translation id="3340011300870565703">მოწყობილობის მარჯვენა ყურსაცვამის ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
@@ -320,7 +321,6 @@
 <translation id="4472575034687746823">დაწყება</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
-<translation id="4485626319513081846">აირჩიეთ ეს ვარიანტი, თუ აპირებთ ამ მოწყობილობის შეკეთებას ან მარაგის შევსებას მისი ახალი კლიენტისთვის გადასაცემად.</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>
 <translation id="4511264077854731334">პორტალი</translation>
 <translation id="4521826082652183069">სუბიექტის ალტერნატიული სახელის დამთხვევა</translation>
@@ -577,7 +577,6 @@
 <translation id="6961170852793647506">დასაწყისისთვის მოათავსეთ თქვენი დოკუმენტი სკანერზე</translation>
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
-<translation id="6992266763844448459">აირჩიეთ ეს ვარიანტი, თუ მოწყობილობის მფლობელობა არ იცვლება. მაგალითად, მოწყობილობა გადაეცემა სხვა პიროვნებას იმავე ორგანიზაციაში.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7041549558901442110">მოწყობილობა დაკავშირებული არ არის.</translation>
@@ -609,7 +608,6 @@
 <translation id="7297226631177386107">ქსელის დაცვიდან HTTPS ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">მოწყობილობა სხვის მფლობელობაში გადავა</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის Google Search-ში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="7343649194310845056">ქსელური მოწყობილობები</translation>
@@ -777,7 +775,6 @@
 <translation id="9082718469794970195">ამ ვიდეოს გამოყენება</translation>
 <translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
-<translation id="9095415590198785865">მოწყობილობას იგივე მფლობელი ეყოლება</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>

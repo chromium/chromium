@@ -33,6 +33,7 @@
 <translation id="1019101089073227242">Gegevensdirectory voor gebruiker instellen</translation>
 <translation id="1022361784792428773">Id's van extensies die de gebruiker niet mag installeren (of '*' voor alle extensies)</translation>
 <translation id="102492767056134033">De standaardstatus van het schermtoetsenbord op het inlogscherm instellen</translation>
+<translation id="102658870205613876">Instellingen voor pop-ups</translation>
 <translation id="1027000705181149370">Hiermee wordt gespecificeerd of verificatiecookies die tijdens het inloggen door een SAML IdP zijn ingesteld, moeten worden overgedragen naar het profiel van de gebruiker.
 
       Wanneer een gebruiker tijdens het inloggen wordt geverifieerd via een SAML IdP, worden cookies die door de IdP zijn ingesteld, eerst naar een tijdelijk profiel weggeschreven. Deze cookies kunnen worden overgedragen naar het profiel van de gebruiker om de verificatiestatus door te geven.
@@ -606,16 +607,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1654087023995670109">Gastmodus voor browser afdwingen</translation>
 <translation id="1655229863189977773">Grootte van schijfcache in bytes instellen</translation>
 <translation id="165769015320654523">Automatisch rechten aan deze sites geven om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
-<translation id="1661930501743720282">Dit beleid bepaalt de zichtbaarheid van Trajecten op de Chrome-geschiedenispagina.
-
-      Als je het beleid toepast, zijn Trajecten zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet toepast, zijn Trajecten niet zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet instelt, zijn Trajecten standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van Trajecten wijzigen.
-
-      Als het beleid <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> niet wordt toegepast, maar <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> wel wordt toegepast of niet is ingesteld, zijn Trajecten nog steeds beschikbaar op chrome://history/journeys, maar misschien niet aanwezig in de omnibox en minder relevant voor de gebruiker.
-      </translation>
 <translation id="166427968280387991">Proxyserver</translation>
 <translation id="1669584285557771729">Als dit beleid is ingesteld, bepaalt dit het type vergrootglas dat wordt gebruikt.
 
@@ -2173,6 +2164,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 
       Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.
       </translation>
+<translation id="3248019773260441802">Hiermee wordt toegestaan dat een pagina pop-ups toont tijdens het unloaden</translation>
 <translation id="3251500716404598358">Configureer de beleidsregels om te schakelen tussen browsers.
 
       Geconfigureerde websites worden automatisch geopend in een andere browser dan <ph name="PRODUCT_NAME" />.</translation>
@@ -3333,6 +3325,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
 <translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>
 <translation id="4693779768620889402">Op extensies gebaseerde bestemmingen</translation>
+<translation id="4697581738794063407">De filterfunctie voor URL-parameters beheren</translation>
 <translation id="4699172675775169585">Afbeeldingen en bestanden in cachegeheugen</translation>
 <translation id="4699592681017489215">Met dit beleid wordt een lokale schakelaar ingesteld die kan worden gebruikt om controles voor DNS-onderschepping uit te zetten. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
 
@@ -3380,6 +3373,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       <ph name="PAGE_SIZE_NAME" /> moet een van de vermelde indelingen bevatten of 'custom' als het vereiste papierformaat niet in de lijst staat. Als de waarde 'custom' is opgegeven, moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> worden gespecificeerd. Dit beschrijft de gewenste hoogte en breedte in micrometers. Anders moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> niet worden gespecificeerd. Beleid dat deze regels schendt, wordt genegeerd.
 
       Als het paginaformaat niet beschikbaar is op de printer die de gebruiker heeft gekozen, wordt dit beleid genegeerd.</translation>
+<translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
 <translation id="4802744647065138872">Beperkt het aantal momentopnamen van gebruikersgegevens dat wordt bewaard voor gebruik bij een noodrollback.</translation>
 <translation id="4802905909524200151">Updategedrag voor <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware configureren</translation>
@@ -4185,6 +4179,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="567377007899266033">Als het beleid wordt ingesteld op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor extensies naar Google gestuurd. Er worden geen gebeurtenissen geregistreerd als het beleid is ingesteld op False. Als het beleid niet is ingesteld, is True de standaardwaarde.</translation>
 <translation id="5676740747107495269">Toegankelijkheidsopties tonen in het systeemvakmenu op het inlogscherm</translation>
 <translation id="5679540979548648200">Voorkomen dat gebruikers van dit apparaat ADB-sideloading gebruiken en een Powerwash van het apparaat afdwingen als sideloading eerder was aangezet</translation>
+<translation id="5681258683432554972">Standaardinstelling voor pop-ups</translation>
 <translation id="5689430183304951538">Standaard paginagrootte voor afdrukken</translation>
 <translation id="5691637243722588222">Als je het beleid instelt, geef je aan welke HTTP-verificatieschema's worden ondersteund door <ph name="PRODUCT_NAME" />.
 
@@ -4383,6 +4378,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5899751601113377553">Voorkomen dat gebruikers <ph name="LACROS_NAME" /> gebruiken</translation>
 <translation id="5900919753933009463">Netwerkconfiguratie rapporteren</translation>
 <translation id="5901427587865226597">Alleen dubbelzijdig afdrukken</translation>
+<translation id="5905114360004248993">Pop-ups toestaan op deze sites</translation>
 <translation id="5905473632148429217">Online OCSP/CRL-controles aanzetten</translation>
 <translation id="5907283448020542268">Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, zorgt het instellen van <ph name="GLS_ENABLED" /> bij de eerste configuratie ervoor dat Google-locatieservices wordt aangezet. Locatieservices blijft uit tijdens de configuratie als het beleid wordt ingesteld op <ph name="GLS_DISABLED" /> of niet wordt ingesteld.
 
@@ -5402,6 +5398,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als je het beleid niet toepast of niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
 
        In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="6990736882800900101">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
 <translation id="6994082778848658360">Geeft aan hoe de ingebouwde Secure Element-hardware kan worden gebruikt voor authenticatie met meerdere factoren, indien de hardware geschikt is voor deze functie. De aan/uit-knop van de machine wordt gebruikt om de fysieke aanwezigheid van de gebruiker te detecteren.
 
       Als Uitgezet is geselecteerd, wordt er geen tweede factor verstrekt.
@@ -6654,6 +6651,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je het beleid toepast of niet instelt, kunnen gebruikers processen beëindigen in Taakbeheer.</translation>
 <translation id="8367209241899435947">Chrome Cleanup in Windows aanzetten</translation>
 <translation id="8367473200119029349">Cloudrapportage</translation>
+<translation id="8367488518695804749">Niet toestaan dat sites pop-ups tonen</translation>
 <translation id="8369602308428138533">Vertraging voor uitzetten van scherm als op netstroom wordt gewerkt</translation>
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
@@ -7028,6 +7026,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8801680448782904838">Een gebruiker laten weten dat het aanbevolen of vereist is om de browser of het apparaat opnieuw op te starten</translation>
 <translation id="8804685015028424497">Incognitomodus uitzetten</translation>
 <translation id="8807313206348471682">Het bevestigingsdialoogvenster voor uitloggen tonen</translation>
+<translation id="8812091410765157924">Alleen toestaan dat pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die de pop-up heeft geopend als de openende pagina expliciet toestemming geeft voor dergelijke interactie</translation>
 <translation id="8816370949847593408">Afhankelijk van de status van de uitrol van de beëindiging kun je mogelijk geen Chrome-apps uitvoeren.</translation>
 <translation id="8818173863808665831">De geografische locatie van het apparaat rapporteren.
 
@@ -7278,6 +7277,13 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen audiostatus vastleggen of rapporteren.
       Uitzondering: informatie over het systeemvolumeniveau wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
+<translation id="9072475476775217730">Als je het beleid niet toepast, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, toegang (via JavaScript) tot de pagina die het openen van de pop-up heeft aangevraagd.
+
+      Als je het beleid toepast of niet instelt, wordt de property <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.
+
+      Dit beleid is verwijderd in <ph name="PRODUCT_NAME" />-versie 102.
+
+      Zie https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="9073405975862312795">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de perioden dat een gebruiker actief is op het apparaat.
 
       Als je het beleid niet toepast, registreren of rapporteren ingeschreven apparaten geen tijden van activiteit.</translation>

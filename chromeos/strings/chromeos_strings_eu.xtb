@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Gakoaren norabidea</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
+<translation id="3336855445806447827">Ez dakit ziur</translation>
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
-<translation id="4485626319513081846">Hautatu aukera hau gailua guztiz eraberritu behar bada beste bezero batek bana dezan.</translation>
 <translation id="4503223151711056411">Ezkerrera gezi-tekla</translation>
 <translation id="4511264077854731334">Ataria</translation>
 <translation id="4521826082652183069">Gaiaren ordezko izenaren bat-etortzea</translation>
@@ -575,7 +575,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6961170852793647506">Hasteko, jarri dokumentua eskanerrean</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
-<translation id="6992266763844448459">Hautatu aukera hau gailuak jabe bera izaten jarraituko badu. Esate baterako, hemendik aurrera erakunde bereko beste norbaitek erabili behar badu.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
 <translation id="7041549558901442110">Gailua ez dago konektatuta.</translation>
@@ -607,7 +606,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7297226631177386107">Ezin da konektatu HTTPS darabilten webguneetara suebakiaren bidez</translation>
 <translation id="7302860742311162920">ICCIDa</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Gailuaren jabea aldatu egingo da</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; emaitza Google Bilaketa zerbitzuan ikusteko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
@@ -775,7 +773,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="9082718469794970195">Erabili bideoa</translation>
 <translation id="9087578468327036362">Salatu kontsulta</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
-<translation id="9095415590198785865">Gailuak jabe bera izaten jarraituko du</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>

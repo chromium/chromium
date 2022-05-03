@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Direksyon ng key</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
+<translation id="3336855445806447827">Hindi sigurado</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
-<translation id="4485626319513081846">Piliin ang opsyong ito kung ire-restock o ire-refurbish ang device para sa pamamahagi sa bagong customer.</translation>
 <translation id="4503223151711056411">Kaliwang arrow</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Pagtugma sa alternatibong pangalan ng subject</translation>
@@ -575,7 +575,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
-<translation id="6992266763844448459">Piliin ang opsyong ito kung hindi magbabago ang pagmamay-ari ng device. Halimbawa, inililipat ang device sa ibang tao sa loob ng isang organisasyon.</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Hindi nakakonekta ang device.</translation>
@@ -607,7 +606,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7297226631177386107">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTPS na website</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Mapupunta ang device sa ibang may-ari</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
@@ -775,7 +773,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9082718469794970195">Gamitin ang video na ito</translation>
 <translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
-<translation id="9095415590198785865">Mapupunta ang device sa parehong may-ari</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>

@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">جهت کلید</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
+<translation id="3336855445806447827">مطمئن نیستم</translation>
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
-<translation id="4485626319513081846">اگر دستگاه در انبار دوباره موجود می‌شود یا برای توزیع به مشتری جدید مرمت می‌شود، این گزینه را انتخاب کنید.</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
 <translation id="4511264077854731334">پورتال</translation>
 <translation id="4521826082652183069">مطابقت نام جایگزین موضوع</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">برای شروع‌، سند را روی اسکنر قرار دهید</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
-<translation id="6992266763844448459">اگر مالکیت دستگاه تغییر نمی‌کند، این گزینه را انتخاب کنید. برای مثال، دستگاه به شخص دیگری در همان سازمان انتقال می‌یابد.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7041549558901442110">دستگاه متصل نشده است.</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">‏نمی‌توان ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">دستگاه به مالک دیگری منتقل خواهد شد</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ کلیدهای «جستجو» و «فاصله» را فشار دهید تا نتیجه را در «جستجوی Google» ببینید</translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">استفاده از این ویدیو</translation>
 <translation id="9087578468327036362">گزارش کردن این پرسمان</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
-<translation id="9095415590198785865">دستگاه به همان مالک قبلی ارائه خواهد شد</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>

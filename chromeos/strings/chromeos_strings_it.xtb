@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Direzione chiave</translation>
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
+<translation id="3336855445806447827">Non so</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369013195428705271">Vuoi cancellare l'intera cronologia di stampa? I processi di stampa in corso non verranno cancellati.</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
-<translation id="4485626319513081846">Seleziona questa opzione se il dispositivo viene riassortito o ricondizionato per la distribuzione a un nuovo cliente.</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>
 <translation id="4511264077854731334">Portale</translation>
 <translation id="4521826082652183069">Corrispondenza nome alternativo del soggetto</translation>
@@ -575,7 +575,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
-<translation id="6992266763844448459">Seleziona questa opzione se la proprietà del dispositivo non cambia. Ad esempio, il dispositivo viene assegnato a un'altra persona all'interno di un'organizzazione.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7040230719604914234">Operatore</translation>
 <translation id="7041549558901442110">Il dispositivo non è collegato.</translation>
@@ -607,7 +606,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7297226631177386107">Impossibile collegarti tramite firewall ai siti web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Il dispositivo passerà a un altro proprietario</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
@@ -775,7 +773,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9082718469794970195">Utilizza questo video</translation>
 <translation id="9087578468327036362">Segnala questa query</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
-<translation id="9095415590198785865">Il dispositivo resterà dello stesso proprietario</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>

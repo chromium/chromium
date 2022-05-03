@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Podezření na portál</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
+<translation id="1264116747675686718">Aktualizace verze operačního systému</translation>
 <translation id="1264369926465113395">Prohlédněte si nový digitální časopis Chromebooku pro autory</translation>
 <translation id="1270369111467284986">Podezření na captive portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zkusit znovu</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
+<translation id="2177831236093724629">Byly zjištěny <ph name="LINK_BEGIN" />nekvalifikované komponenty<ph name="LINK_END" />. Pokud chcete zajistit, aby byly identifikovány všechny kvalifikované komponenty, aktualizujte systém Chrome OS na nejnovější verzi.</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
 <translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
 <translation id="2212733584906323460">Rozlišení názvu</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
+<translation id="320091191259649613">Pokud se problém objevuje i po aktualizaci, je možné, že je komponenta kvalifikovaná nově a ještě se nedostala do databáze.</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
+<translation id="3336855445806447827">Nevím</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
-<translation id="4485626319513081846">Tuto možnost vyberte, pokud toto zařízení bude znovu nabídnuto k prodeji nebo je repasováno k distribuci novému zákazníkovi.</translation>
 <translation id="4503223151711056411">Šipka vlevo</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Shoda alternativních názvů subjektu</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Skrýt přehled</translation>
+<translation id="5008611843832219958">Pro optimalizovaný proces opravy aktualizujte operační systém Chrome na nejnovější verzi.</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Když je obrazovka nečinná, zobrazovat fotky, čas, počasí a informace z médií.</translation>
@@ -431,6 +435,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenování se nepodařilo dokončit</translation>
 <translation id="5502931783115429516">Android neběží</translation>
+<translation id="5507300744274596613">Ujistěte se, zda je systém Chrome OS aktuální</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="594552776027197022">Vygenerovat náhodnou dvojici klíčů</translation>
 <translation id="5972388717451707488">Modul aktualizací</translation>
+<translation id="5984145644188835034">Výchozí tapeta</translation>
 <translation id="6034694447310538551">Povolit automatické resetování každý měsíc</translation>
 <translation id="6037291330010597344">Podavač dokumentů skeneru je prázdný. Vložte do něj dokumenty a zkuste to znovu.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
@@ -569,7 +575,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6961170852793647506">Začněte položením dokumentu na skener</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
-<translation id="6992266763844448459">Tuto možnost vyberte v případě, že se nemění vlastník zařízení. Jako příklad lze uvést předání jiné osobě v rámci organizace.</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7041549558901442110">Zařízení není připojeno.</translation>
@@ -601,7 +606,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Zařízení přejde na jiného vlastníka</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ve Vyhledávání Google výsledek zobrazíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
@@ -718,6 +722,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8660881923941176839">libry</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Aktualizovat na verzi <ph name="VERSION_NUMBER" /> a restartovat</translation>
 <translation id="8675354002693747642">Předsdílený klíč</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>
@@ -768,7 +773,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="9082718469794970195">Použít toto video</translation>
 <translation id="9087578468327036362">Nahlaste tento dotaz</translation>
 <translation id="9088306295921699330">Současné využití</translation>
-<translation id="9095415590198785865">Zařízení zůstane stejnému vlastníkovi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
@@ -782,6 +786,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Z aplikací pro Android nelze kontaktovat bránu</translation>
 <translation id="9211490828691860325">Všechny plochy</translation>
+<translation id="922179502584117429">Aktuální verze <ph name="VERSION_NUMBER" /> je zastaralá</translation>
 <translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939519157834106403">Identifikátor SSID</translation>
 <translation id="952992212772159698">Není aktivováno</translation>

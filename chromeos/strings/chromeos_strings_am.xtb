@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">የቁልፍ አቅጣጫ</translation>
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
+<translation id="3336855445806447827">እርግጠኛ አይደለሁም</translation>
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3369013195428705271">እርግጠኛ ነዎት ሁሉንም የህትመት ታሪክ ማጥፋት ይፈልጋሉ? በመካሄድ ላይ ያሉ የህትመት ስራዎችዎ አይጠፉም።</translation>
@@ -319,7 +320,6 @@
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
-<translation id="4485626319513081846">መሣሪያው ወደ አዲስ ደንበኛ ለማሰራጨት ዳግም እየተከማቸ ወይም እየታደሰ ከሆነ ይህንን አማራጭ ይምረጡ።</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>
 <translation id="4511264077854731334">መተላለፊያ</translation>
 <translation id="4521826082652183069">ርዕስ ተለዋጭ ስም ዝምድና</translation>
@@ -575,7 +575,6 @@
 <translation id="6961170852793647506">ለመጀመር ሰነድዎን በቃኚው ላይ ያስቀምጡት</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
-<translation id="6992266763844448459">የመሳሪያው ባለቤትነት ካልተቀየረ ይህን አማራጭ ይምረጡ። ለምሳሌ፣ መሣሪያው በድርጅቱ ውስጥ ወደ ሌላ ሰው እየተላለፈ ነው።</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7040230719604914234">ከዋኝ</translation>
 <translation id="7041549558901442110">መሣሪያ አልተገናኘም።</translation>
@@ -607,7 +606,6 @@
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
-<translation id="7309920310754476121">መሣሪያው ወደ ሌላ ባለቤት ይሄዳል</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
@@ -775,7 +773,6 @@
 <translation id="9082718469794970195">ይህን ቪዲዮ ተጠቀም</translation>
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
-<translation id="9095415590198785865">መሣሪያው ወደ ተመሳሳይ ባለቤት ይሄዳል</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>

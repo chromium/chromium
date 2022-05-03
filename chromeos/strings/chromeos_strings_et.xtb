@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-i latentsusaeg</translation>
 <translation id="123124571410524056">Kahtlustatakse portaali</translation>
 <translation id="1238612778414822719">HTTPS-i latentsusaeg</translation>
+<translation id="1264116747675686718">OS-i versiooni värskendamine</translation>
 <translation id="1264369926465113395">Vaadake Chromebooki uut kujundajatele ja kunstnikele mõeldud digiajakirja</translation>
 <translation id="1270369111467284986">Kahtlustatakse hõiveportaali</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: proovige uuesti</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
 <translation id="2163937499206714165">Tumeda režiimi sisselülitamine</translation>
+<translation id="2177831236093724629">Leiti <ph name="LINK_BEGIN" />kvalifitseerimata komponendid<ph name="LINK_END" />. Selleks et kõik kvalifitseeritud komponendid oleksid tuvastatud, värskendage Chrome OS uusimale versioonile.</translation>
 <translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3192947282887913208">Helifailid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
+<translation id="320091191259649613">Kui näete probleemi ka pärast värskendamist, on võimalik, et komponent on alles kvalifitseeritud ja see pole veel andmebaasi jõudnud.</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
@@ -211,6 +214,7 @@
 <translation id="3291996639387199448">Võtme suund</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
+<translation id="3336855445806447827">Pole kindel</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
@@ -316,7 +320,6 @@
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
-<translation id="4485626319513081846">Tehke see valik, kui seade läheb uuesti lattu või see taastatakse, et anda edasi uuele kliendile.</translation>
 <translation id="4503223151711056411">Vasaknool</translation>
 <translation id="4511264077854731334">Portaal</translation>
 <translation id="4521826082652183069">Teema alternatiivse nime vaste</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="4987769320337599931">Tulemüür</translation>
 <translation id="4999333166442584738">Peida aruanne</translation>
+<translation id="5008611843832219958">Värskendage Chrome OS-i uusimale versioonile, et parandusprotsessi optimeerida</translation>
 <translation id="500920857929044050">Lõpeta test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kui ekraanikuva on tegevusetu, kuvatakse fotosid, kellaaega, ilmateadet ja meediateavet.</translation>
@@ -431,6 +435,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skannimist ei saanud lõpetada</translation>
 <translation id="5502931783115429516">Android ei tööta</translation>
+<translation id="5507300744274596613">Veenduge, et Chrome OS oleks värskendatud</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="594552776027197022">Loo juhuslik võtmepaar</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5984145644188835034">Vaiketaustapilt</translation>
 <translation id="6034694447310538551">Lubage igakuine automaatne lähtestamine</translation>
 <translation id="6037291330010597344">Skanneri dokumendisöötur on tühi. Lisage dokumendid ja proovige uuesti.</translation>
 <translation id="6040143037577758943">Sulge</translation>
@@ -569,7 +575,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6961170852793647506">Alustamiseks asetage dokument skannerisse</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Püsivara redaktsioon</translation>
-<translation id="6992266763844448459">Tehke see valik, kui seadme omandiline kuuluvus ei muutu. Näiteks antakse seade organisatsioonis edasi teisele inimesele.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele. sealhulgas külastatud veebilehed, paroolid ja e-post.</translation>
 <translation id="7040230719604914234">Operaator</translation>
 <translation id="7041549558901442110">Seade pole ühendatud.</translation>
@@ -601,7 +606,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7297226631177386107">Ei saa HTTPS-veebisaitidega läbi tulemüüri ühendust luua</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Seade antakse teisele omanikule</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google'i otsingus tulemuste nägemiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="7343649194310845056">Võrguseadmed</translation>
@@ -718,6 +722,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">naela</translation>
 <translation id="8662671328352114214"><ph name="TYPE" />-võrguga liitumine</translation>
+<translation id="8671972493856476349">Värskenda versioonile <ph name="VERSION_NUMBER" /> ja taaskäivita</translation>
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Kasutage selle funktsiooni haldamiseks vasak- või paremnooleklahvi.</translation>
@@ -768,7 +773,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="9082718469794970195">Kasuta seda videot</translation>
 <translation id="9087578468327036362">Teatage sellest päringust</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>
-<translation id="9095415590198785865">Seade antakse samale omanikule</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
@@ -782,6 +786,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9204237731135241582">Ei saa Androidi rakendustest lüüsiga ühendust</translation>
 <translation id="9211490828691860325">Kõik töölauad</translation>
+<translation id="922179502584117429">Praegune versioon <ph name="VERSION_NUMBER" /> on aegunud</translation>
 <translation id="932327136139879170">Kodu</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Aktiveerimata</translation>

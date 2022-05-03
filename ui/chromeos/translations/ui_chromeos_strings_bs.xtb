@@ -105,7 +105,7 @@
 <translation id="1813278315230285598">Usluge</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje informacija…</translation>
-<translation id="1832073788765803750">uska katakana</translation>
+<translation id="1832073788765803750">Uska katakana</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva predmeta</translation>
 <translation id="1838709767668011582">Google web lokacija</translation>
 <translation id="1844692022597038441">Ovaj fajl nije dostupan van mreže.</translation>
@@ -519,7 +519,7 @@
 <translation id="5335458522276292100">Izrada sigurnosne kopije <ph name="FILE_COUNT" /> na <ph name="BEGIN_LINK" />Google Disku<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Broj slika u sekundi</translation>
-<translation id="5363339716524495120">Jezik je unosa kineski</translation>
+<translation id="5363339716524495120">Jezik unosa je kineski</translation>
 <translation id="5368191757080475556">Dijelite folder s Linuxom</translation>
 <translation id="5402367795255837559">Brailleovo pismo</translation>
 <translation id="5411472733320185105">Nemoj koristiti postavke proksija za ove host računare i domene:</translation>
@@ -542,7 +542,7 @@
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="554153475311314364">grčki (transliteracija)</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
-<translation id="5583664733673201137">Širina je interpunkcije "puna"</translation>
+<translation id="5583664733673201137">Interpunkcija je u punoj širini</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
 <translation id="5618330573454123917">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
@@ -841,7 +841,7 @@
 <translation id="8128733386027980860">engleski (UK) s Dvorak tastaturom</translation>
 <translation id="8137331602592933310">Fajl "<ph name="FILENAME" />" se dijeli s vama. Ne možete ga izbrisati jer niste njegov vlasnik.</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
-<translation id="8147028810663464959">Širina je znakova "puna"</translation>
+<translation id="8147028810663464959">Znakovi su u punoj širini</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154842056504218462">Svi unosi su odabrani.</translation>
 <translation id="8157684860301034423">Preuzimanje informacija o aplikaciji nije uspjelo.</translation>

@@ -214,6 +214,7 @@
 <translation id="3291996639387199448">Key direction</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>
+<translation id="3336855445806447827">Not sure</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
@@ -320,7 +321,6 @@
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
-<translation id="4485626319513081846">Select this option if the device is being restocked or refurbished for distribution to a new customer.</translation>
 <translation id="4503223151711056411">Left arrow</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subject alternative name match</translation>
@@ -577,7 +577,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
-<translation id="6992266763844448459">Select this option if the ownership of the device isn't changing. For example, the device is being transferred to a different person within an organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Device is not connected.</translation>
@@ -609,7 +608,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7297226631177386107">Can't connect through firewall to HTTPS websites</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7309920310754476121">Device will go to a different owner</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
@@ -777,7 +775,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9082718469794970195">Use this video</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
-<translation id="9095415590198785865">Device will go to the same owner</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>

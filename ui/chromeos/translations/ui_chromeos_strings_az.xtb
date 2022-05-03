@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Holland (Niderland)</translation>
 <translation id="174937106936716857">Ümumi fayl sayı</translation>
 <translation id="1755345808328621801">Bu fayl Windows proqram təminatından istifadə edən stolüstü kompüter üçündür, ChromeOS işlədən cihazınız üçün uyğun deyil.</translation>
+<translation id="1757915090001272240">Enli Latın</translation>
 <translation id="1773212559869067373">Doğrulama təsdiqi lokal olaraq ləğv edildi</translation>
 <translation id="1775381402323441512">Video məlumatı</translation>
 <translation id="180035236176489073">Bu fayllara daxil olmaq üçün onlayn olmalısınız.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Xidmətlər</translation>
 <translation id="1829129547161959350">Pinqvin</translation>
 <translation id="183183971458492120">İnfo yüklənir...</translation>
+<translation id="1832073788765803750">Yarım enli katakana</translation>
 <translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1844692022597038441">Bu fayl oflayn olaraq əlçatan deyil.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> element <ph name="BEGIN_LINK" />Google Diskə<ph name="END_LINK" /> yedəklənir</translation>
 <translation id="535792325654997756">Pişiklərin əhatəsində olan adam</translation>
 <translation id="5358764674931277">Çərçivə nisbəti</translation>
+<translation id="5363339716524495120">Daxiletmə dili Çin dilidir</translation>
 <translation id="5368191757080475556">Linux'da qovluq paylaşın</translation>
 <translation id="5402367795255837559">Brayl</translation>
 <translation id="5411472733320185105">Bu host və domenlər üçün proksi ayarlarını istifadə etməyin:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Ölçü hesablanılır</translation>
 <translation id="554153475311314364">Yunan dilində Transliterasiya</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
+<translation id="5583664733673201137">Durğu işarələrinin eni Tamdır</translation>
 <translation id="5602622065581044566">Fonetik klaviatura ilə Bolqar dili</translation>
 <translation id="5605830556594064952">ABŞ Dvorak</translation>
 <translation id="5618330573454123917">Bu fayl Macintosh proqram təminatından istifadə edən kompüter üçündür. Bu, ChromeOS işlədən cihazınız üçün uyğun deyil. ChromeOS'də faylların açılması barədə <ph name="BEGIN_LINK_HELP" />ətraflı məlumat<ph name="END_LINK_HELP" />.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> nəticə
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Diskə<ph name="END_LINK" /> yedəkləmək üçün hazırdır</translation>
+<translation id="749452993132003881">Hiraqana</translation>
 <translation id="7495372004724182530">Malayalam Fonetikası</translation>
 <translation id="7505167922889582512">Gizlədilmiş faylları göstərin</translation>
 <translation id="7514365320538308">Endirmə</translation>
@@ -833,6 +838,7 @@
 <translation id="8128733386027980860">Dvorak klaviaturası ilə İngilis dili (BK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Sizinlə paylaşılıb. Onun sahibi olmadığınız üçün onu silə bilməzsiniz.</translation>
 <translation id="813913629614996137">Başladılır...</translation>
+<translation id="8147028810663464959">Simvol eni Tamdır</translation>
 <translation id="8151638057146502721">Konfiqurasiya edin</translation>
 <translation id="8154842056504218462">Bütün daxiletmələri seçin</translation>
 <translation id="8157684860301034423">Tətbiq məlumatını əldə etmək alınmadı.</translation>
@@ -842,6 +848,7 @@
 <translation id="8208580316430297579">Sənət əsəri</translation>
 <translation id="8223479393428528563">Bu faylları oflayn istifadəyə saxlamaq üçün onlayn olun, faylları sağ klikləyin və <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini edin.</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
+<translation id="8250690786522693009">Latın</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8261561378965667560">Çin dili (Array)</translation>
