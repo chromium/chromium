@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_family.h"
@@ -38,7 +37,7 @@ namespace {
 
 const char kHostName[] = "unresolvable.host.name";
 
-IPAddress ParseIP(base::StringPiece ip) {
+IPAddress ParseIP(const std::string& ip) {
   IPAddress address;
   CHECK(address.AssignFromIPLiteral(ip));
   return address;
@@ -1037,6 +1036,86 @@ TEST_F(TransportConnectJobTest, EndpointResultOverride) {
   EXPECT_EQ(transport_connect_job.GetHostResolverEndpointResult(), endpoint);
   EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
               testing::ElementsAre("alias.example", kHostName));
+}
+
+// If two `HostResolverEndpointResult`s share an IP endpoint,
+// `TransportConnectJob` should not try to connect a second time.
+TEST_F(TransportConnectJobTest, DedupIPEndPoints) {
+  std::vector<HostResolverEndpointResult> endpoints(4);
+  // Some initial IPEndPoints.
+  endpoints[0].ip_endpoints = {IPEndPoint(ParseIP("1::"), 443),
+                               IPEndPoint(ParseIP("1.1.1.1"), 443)};
+  endpoints[0].metadata.supported_protocol_alpns = {"h2", "http/1.1"};
+  // Contains a new IPEndPoint, but no common protocols.
+  endpoints[1].ip_endpoints = {IPEndPoint(ParseIP("2::"), 443)};
+  endpoints[1].metadata.supported_protocol_alpns = {"h3"};
+  // Contains mixture of previously seen and new IPEndPoints, so we should only
+  // try a subset of them.
+  endpoints[2].ip_endpoints = {
+      // Duplicate from `endpoints[0]`, should be filtered out.
+      IPEndPoint(ParseIP("1::"), 443),
+      // Same IP but new port. Should be used.
+      IPEndPoint(ParseIP("1::"), 444),
+      // Duplicate from `endpoints[1]`, but `endpoints[1]` was dropped, so this
+      // should be used.
+      IPEndPoint(ParseIP("2::"), 443),
+      // Duplicate from `endpoints[0]`, should be filtered out.
+      IPEndPoint(ParseIP("1.1.1.1"), 443),
+      // New endpoint. Should be used.
+      IPEndPoint(ParseIP("2.2.2.2"), 443)};
+  endpoints[2].metadata.supported_protocol_alpns = {"h2", "http/1.1"};
+  // Contains only previously seen IPEndPoints, so should be filtered out
+  // entirely.
+  endpoints[3].ip_endpoints = {IPEndPoint(ParseIP("1::"), 443),
+                               IPEndPoint(ParseIP("1::"), 444),
+                               IPEndPoint(ParseIP("2.2.2.2"), 443)};
+  endpoints[3].metadata.supported_protocol_alpns = {"h2", "http/1.1"};
+  host_resolver_.rules()->AddRule(kHostName, endpoints);
+
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // `endpoints[0]`'s IPv6-prefering socket.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          endpoints[0].ip_endpoints),
+
+      // `endpoints[1]` is unusable, so it is ignored, including for purposes of
+      // duplicate endpoints.
+
+      // Only new IP endpoints from `endpoints[2]` should be considered. Note
+      // different ports count as different.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 444),
+                      IPEndPoint(ParseIP("2::"), 443),
+                      IPEndPoint(ParseIP("2.2.2.2"), 443)}),
+
+      // `endpoints[3]` only contains duplicate IP endpoints and should be
+      // skipped.
+  };
+
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job,
+                                        ERR_CONNECTION_FAILED,
+                                        /*expect_sync_result=*/false);
+
+  // Check that failed connection attempts are reported.
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
+  ASSERT_EQ(5u, attempts.size());
+  EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1::"), 443));
+  EXPECT_THAT(attempts[1].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("1.1.1.1"), 443));
+  EXPECT_THAT(attempts[2].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[2].endpoint, IPEndPoint(ParseIP("1::"), 444));
+  EXPECT_THAT(attempts[3].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[3].endpoint, IPEndPoint(ParseIP("2::"), 443));
+  EXPECT_THAT(attempts[4].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[4].endpoint, IPEndPoint(ParseIP("2.2.2.2"), 443));
 }
 
 }  // namespace

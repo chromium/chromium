@@ -122,10 +122,7 @@ class MockFailingClientSocket : public TransportClientSocket {
                           net::NetLog* net_log)
       : addrlist_(addrlist),
         connect_error_(connect_error),
-        net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
-    DCHECK_LT(connect_error_, 0);
-    DCHECK_NE(connect_error_, ERR_IO_PENDING);
-  }
+        net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
 
   MockFailingClientSocket(const MockFailingClientSocket&) = delete;
   MockFailingClientSocket& operator=(const MockFailingClientSocket&) = delete;
@@ -194,12 +191,12 @@ class MockFailingClientSocket : public TransportClientSocket {
 
 class MockTriggerableClientSocket : public TransportClientSocket {
  public:
-  // |connect_result| is the resulting net::Error from the connection attempt.
-  // If OK, the connection attempt will succeed.
+  // |connect_error| indicates whether the socket should successfully complete
+  // or fail.
   MockTriggerableClientSocket(const AddressList& addrlist,
-                              Error connect_result,
+                              Error connect_error,
                               net::NetLog* net_log)
-      : connect_result_(connect_result),
+      : connect_error_(connect_error),
         is_connected_(false),
         addrlist_(addrlist),
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {}
@@ -218,10 +215,10 @@ class MockTriggerableClientSocket : public TransportClientSocket {
 
   static std::unique_ptr<TransportClientSocket> MakeMockPendingClientSocket(
       const AddressList& addrlist,
-      Error connect_result,
+      Error connect_error,
       net::NetLog* net_log) {
     auto socket = std::make_unique<MockTriggerableClientSocket>(
-        addrlist, connect_result, net_log);
+        addrlist, connect_error, net_log);
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   socket->GetConnectCallback());
     return std::move(socket);
@@ -229,11 +226,11 @@ class MockTriggerableClientSocket : public TransportClientSocket {
 
   static std::unique_ptr<TransportClientSocket> MakeMockDelayedClientSocket(
       const AddressList& addrlist,
-      Error connect_result,
+      Error connect_error,
       const base::TimeDelta& delay,
       net::NetLog* net_log) {
     auto socket = std::make_unique<MockTriggerableClientSocket>(
-        addrlist, connect_result, net_log);
+        addrlist, connect_error, net_log);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, socket->GetConnectCallback(), delay);
     return std::move(socket);
@@ -242,13 +239,13 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   static std::unique_ptr<TransportClientSocket> MakeMockStalledClientSocket(
       const AddressList& addrlist,
       net::NetLog* net_log,
-      Error connect_result) {
+      Error connect_error) {
     auto socket = std::make_unique<MockTriggerableClientSocket>(
-        addrlist, connect_result, net_log);
-    if (connect_result != OK) {
+        addrlist, connect_error, net_log);
+    if (connect_error != OK) {
       DCHECK_LE(1u, addrlist.size());
       socket->connection_attempts_.push_back(
-          ConnectionAttempt(addrlist[0], connect_result));
+          ConnectionAttempt(addrlist[0], connect_error));
     }
     return std::move(socket);
   }
@@ -316,11 +313,11 @@ class MockTriggerableClientSocket : public TransportClientSocket {
 
  private:
   void DoCallback() {
-    is_connected_ = connect_result_ == OK;
-    std::move(callback_).Run(connect_result_);
+    is_connected_ = connect_error_ == OK;
+    std::move(callback_).Run(connect_error_);
   }
 
-  const Error connect_result_;
+  Error connect_error_;
   bool is_connected_;
   const AddressList addrlist_;
   NetLogWithSource net_log_;

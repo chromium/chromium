@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -387,9 +388,27 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
 int TransportConnectJob::DoResolveHostCallbackComplete() {
   const auto& unfiltered_results = *request_->GetEndpointResults();
   bool svcb_optional = IsSvcbOptional(unfiltered_results);
+  std::set<IPEndPoint> ip_endpoints_seen;
   for (const auto& result : unfiltered_results) {
-    if (IsEndpointResultUsable(result, svcb_optional)) {
-      endpoint_results_.push_back(result);
+    if (!IsEndpointResultUsable(result, svcb_optional)) {
+      continue;
+    }
+    // The TCP connect itself does not depend on any metadata, so we can dedup
+    // by IP endpoint. In particular, the fallback A/AAAA route will often use
+    // the same IP endpoints as the HTTPS route. If they do not work for one
+    // route, there is no use in trying a second time.
+    std::vector<IPEndPoint> ip_endpoints;
+    for (const auto& ip_endpoint : result.ip_endpoints) {
+      auto [iter, inserted] = ip_endpoints_seen.insert(ip_endpoint);
+      if (inserted) {
+        ip_endpoints.push_back(ip_endpoint);
+      }
+    }
+    if (!ip_endpoints.empty()) {
+      HostResolverEndpointResult new_result;
+      new_result.ip_endpoints = std::move(ip_endpoints);
+      new_result.metadata = result.metadata;
+      endpoint_results_.push_back(std::move(new_result));
     }
   }
   dns_aliases_ = *request_->GetDnsAliasResults();

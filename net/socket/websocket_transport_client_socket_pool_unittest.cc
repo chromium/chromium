@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,7 +62,7 @@ const int kMaxSockets = 32;
 const int kMaxSocketsPerGroup = 6;
 const RequestPriority kDefaultPriority = LOW;
 
-IPAddress ParseIP(base::StringPiece ip) {
+IPAddress ParseIP(const std::string& ip) {
   IPAddress address;
   CHECK(address.AssignFromIPLiteral(ip));
   return address;
