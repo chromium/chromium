@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

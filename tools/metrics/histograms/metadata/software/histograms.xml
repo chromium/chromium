@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SoftwareReporter.Cleaner.ChromePromptChannelError"
-    enum="SoftwareReporterChromePromptChannelError" expires_after="2022-08-25">
+    enum="SoftwareReporterChromePromptChannelError" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.LogsUploadResult"
-    enum="SoftwareReporterLogsUploadResult" expires_after="2022-08-25">
+    enum="SoftwareReporterLogsUploadResult" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SoftwareReporter.LogsUploadResultRegistryError"
     enum="SoftwareReporterLogsUploadResultRegistryError"
-    expires_after="2022-08-25">
+    expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.NoPromptReason"
-    enum="SoftwareReporterNoPromptReason" expires_after="2022-08-25">
+    enum="SoftwareReporterNoPromptReason" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.PromptDialogResponse"
-    enum="SoftwareReporterPromptDialogResponse" expires_after="2022-08-25">
+    enum="SoftwareReporterPromptDialogResponse" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.ReporterSequenceType"
-    enum="SoftwareReporterSequenceType" expires_after="2022-08-25">
+    enum="SoftwareReporterSequenceType" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

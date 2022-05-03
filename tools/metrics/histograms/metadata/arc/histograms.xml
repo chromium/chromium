@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FileSystemWatcher.Created" enum="BooleanEnabled"
-    expires_after="2022-08-26">
+    expires_after="2022-10-30">
   <owner>risan@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -942,7 +942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FileSystemWatcher.ExceedLimit"
-    enum="ArcFileSystemWatcherExceedLimitState" expires_after="2022-08-26">
+    enum="ArcFileSystemWatcherExceedLimitState" expires_after="2022-10-30">
   <owner>risan@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>

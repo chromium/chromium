@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileLazyMicroSeconds" units="microseconds"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>hablich@chromium.org</owner>
   <summary>
     Aggregated time spent compiling functions lazily during a single script
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>cbruni@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -1432,7 +1432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.RegExpBacktracks" units="backtracks"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>jgruber@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>

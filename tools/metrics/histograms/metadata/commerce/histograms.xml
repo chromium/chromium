@@ -192,7 +192,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage"
-    enum="Boolean" expires_after="2022-08-28">
+    enum="Boolean" expires_after="2022-10-30">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -484,7 +484,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.BrowsingTime" units="ms"
-    expires_after="2022-10-23">
+    expires_after="2022-10-30">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -511,7 +511,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.NavigationCount"
-    units="navigations" expires_after="2022-10-23">
+    units="navigations" expires_after="2022-10-30">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

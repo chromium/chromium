@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>

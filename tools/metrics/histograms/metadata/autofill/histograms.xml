@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
-    units="microseconds" expires_after="2022-08-31">
+    units="microseconds" expires_after="2022-10-30">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1258,7 +1258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FindFormControlElementsByUniqueRendererIdDuration"
-    units="microseconds" expires_after="2022-08-31">
+    units="microseconds" expires_after="2022-10-30">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1546,7 +1546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.HasPasswordFieldDuration" units="microseconds"
-    expires_after="2022-08-31">
+    expires_after="2022-10-30">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1669,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.IsSomeControlElementVisibleDuration"
-    units="microseconds" expires_after="2022-08-31">
+    units="microseconds" expires_after="2022-10-30">
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2325,7 +2325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
-    expires_after="2022-08-01">
+    expires_after="2022-10-30">
   <owner>mamir@google.com</owner>
   <owner>koerber@google.com</owner>
   <summary>
@@ -3530,7 +3530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UsedCachedServerCard" units="uses"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>

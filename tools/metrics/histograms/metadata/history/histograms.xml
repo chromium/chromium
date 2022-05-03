@@ -926,7 +926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.ToggledVisibility"
-    enum="BooleanVisible" expires_after="2022-08-25">
+    enum="BooleanVisible" expires_after="2022-10-30">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -1483,7 +1483,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLTableCount" units="URLs" expires_after="2022-08-29">
+<histogram name="History.URLTableCount" units="URLs" expires_after="2022-10-30">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
