@@ -288,12 +288,13 @@ void NotificationGroupingController::RemoveGroupedChild(
 message_center::NotificationViewController*
 NotificationGroupingController::GetActiveNotificationViewController() {
   if (tray_->IsMessageCenterBubbleShown()) {
-    return tray_->message_center_bubble()
-        ->message_center_view()
-        ->message_list_view();
-  } else {
-    return tray_->GetMessagePopupCollection();
+    auto* message_list_view = tray_->message_center_bubble()
+                                  ->message_center_view()
+                                  ->message_list_view();
+    if (message_list_view)
+      return message_list_view;
   }
+  return tray_->GetMessagePopupCollection();
 }
 
 void NotificationGroupingController::OnNotificationAdded(

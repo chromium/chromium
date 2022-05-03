@@ -195,7 +195,8 @@ void UnifiedMessageCenterBubble::ActivateQuickSettingsBubble() {
 }
 
 bool UnifiedMessageCenterBubble::IsMessageCenterVisible() {
-  return !!bubble_widget_ && message_center_view_->GetVisible();
+  return !!bubble_widget_ && message_center_view_ &&
+         message_center_view_->GetVisible();
 }
 
 bool UnifiedMessageCenterBubble::IsMessageCenterCollapsed() {
