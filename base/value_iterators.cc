@@ -4,6 +4,8 @@
 
 #include "base/value_iterators.h"
 
+#include "base/values.h"
+
 namespace base {
 
 namespace detail {
