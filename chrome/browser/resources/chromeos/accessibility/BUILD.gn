@@ -9,7 +9,7 @@ import("//chrome/test/base/js2gtest.gni")
 import("//chromecast/chromecast.gni")
 import("strings/accessibility_strings.gni")
 
-assert(is_chromeos_ash || is_chromecast)
+assert(is_chromeos_ash || is_castos)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
 

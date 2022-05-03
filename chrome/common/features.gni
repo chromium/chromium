@@ -35,8 +35,8 @@ declare_args() {
   builtin_cert_verifier_policy_supported = is_mac
 
   # Enables support for background apps.
-  enable_background_contents = !is_android && !is_chromecast
-  enable_background_mode = !is_android && !is_chromecast && !is_chromeos
+  enable_background_contents = !is_android && !is_castos
+  enable_background_mode = !is_android && !is_castos && !is_chromeos
 
   # Enable the printing system dialog for platforms that support printing
   # and have a system dialog.
@@ -53,13 +53,13 @@ declare_args() {
   enable_hangout_services_extension = is_chrome_branded
 
   enable_one_click_signin = is_win || is_mac || is_fuchsia ||
-                            ((is_linux && !is_chromecast) || is_chromeos_lacros)
+                            ((is_linux && !is_castos) || is_chromeos_lacros)
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
-  enable_session_service = !is_android && !is_chromecast
+  enable_session_service = !is_android && !is_castos
 
   # Enables usage of the side search feature, which is disabled by default.
   enable_side_search = toolkit_views
