@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {getDisplayApi} from './device_page_browser_proxy.js';
-// clang-format on
-
 /**
  * @fileoverview Behavior for handling display layout, specifically
  *     edge snapping and collisions.
  */
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {getDisplayApi} from './device_page_browser_proxy.js';
 
 /** @polymerBehavior */
 export const LayoutBehavior = {
@@ -733,3 +732,49 @@ export const LayoutBehavior = {
     }
   },
 };
+
+/** @interface */
+export class LayoutBehaviorInterface {
+  constructor() {
+    /**
+     * Array of display layouts.
+     * @type {!Array<!chrome.system.display.DisplayLayout>}
+     */
+    this.layouts;
+
+    /**
+     * Whether or not mirroring is enabled.
+     * @type {boolean}
+     */
+    this.mirroring;
+  }
+
+  /**
+   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
+   * @param {!Array<!chrome.system.display.DisplayLayout>} layouts
+   */
+  initializeDisplayLayout(displays, layouts) {}
+
+
+  /**
+   * Called when a drag event occurs. Checks collisions and updates the layout.
+   * @param {string} id
+   * @param {!chrome.system.display.Bounds} newBounds The new calculated
+   *     bounds for the display.
+   * @return {!chrome.system.display.Bounds}
+   */
+  updateDisplayBounds(id, newBounds) {}
+
+  /**
+   * Called when dragging ends. Sends the updated layout to chrome.
+   * @param {string} id
+   */
+  finishUpdateDisplayBounds(id) {}
+
+  /**
+   * @param {string} displayId
+   * @param {boolean=} opt_notest Set to true if bounds may not be set.
+   * @return {!chrome.system.display.Bounds} bounds
+   */
+  getCalculatedDisplayBounds(displayId, opt_notest) {}
+}

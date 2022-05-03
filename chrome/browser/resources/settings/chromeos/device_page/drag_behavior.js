@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// clang-format on
-
 /**
  * @fileoverview Behavior for handling dragging elements in a container.
  *     Draggable elements must have the 'draggable' attribute set.
  */
+
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
 /**
  * @typedef {{
@@ -411,3 +409,24 @@ export const DragBehavior = {
     }
   },
 };
+
+/** @interface */
+export class DragBehaviorInterface {
+  constructor() {
+    /** @type {boolean} */
+    this.dragEnabled;
+
+    /** @type {boolean} */
+    this.keyboardDragEnabled;
+
+    /** @type {number} */
+    this.keyboardDragStepSize;
+  }
+
+  /**
+   * @param {boolean} enabled
+   * @param {(HTMLDivElement|Element)=} opt_container
+   * @param {!function(string, ?DragPosition):void=} opt_callback
+   */
+  initializeDrag(enabled, opt_container, opt_callback) {}
+}
