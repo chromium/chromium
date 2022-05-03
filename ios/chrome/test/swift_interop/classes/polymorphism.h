@@ -15,6 +15,7 @@ class Shape {
 
   // Virtual or not, this cannot be called on inherited classes unless it
   // is redefined in their declaration.
+  // https://github.com/apple/swift/issues/55192
   bool HasSides() { return true; }
 
  protected:
@@ -38,6 +39,7 @@ class Square : public Rectangle {
 
   // Even though these should not be necessary, they are. Without them, calling
   // these methods on a Square object results in a compiler error.
+  // https://github.com/apple/swift/issues/55192
   virtual int Area() { return width_ * height_; }
   virtual int NumberOfSides() { return 4; }
 };

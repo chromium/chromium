@@ -23,6 +23,10 @@ class PolymorphismTest: XCTestCase {
     #endif
   }
 
+  // The primary bug for inherited methods not working is
+  // https://github.com/apple/swift/issues/55192. That covers several of
+  // these tests.
+
   func testInheritedMethods_noCompile() throws {
     // Test calling a public method defined in the public base class.
     // DOESN'T COMPILE: value of type 'Rectangle' has no member 'HasSides'

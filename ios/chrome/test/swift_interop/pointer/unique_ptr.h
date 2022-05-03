@@ -10,6 +10,7 @@
 // As of Xcode 13.3, any C++ classes that contain a std::unique_ptr<T>
 // fails to emit the definition to Swift, and use of the object in Swift
 // results in an error: "cannot find 'T' in scope".
+// https://github.com/apple/swift/issues/58639
 #define SWIFT_INTEROP_UNIQUE_PTR_WORKS 0
 
 class Value {

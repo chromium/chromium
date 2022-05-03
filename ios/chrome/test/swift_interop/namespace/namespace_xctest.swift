@@ -61,7 +61,7 @@ class NamespaceTest: XCTestCase {
 
     // Test the enum class in a namespace.
     // CRASHES in XCTAssertNotEqual()
-    // In theory, this is fixed by https://github.com/apple/swift/pull/42494.
+    // In progress CL: https://github.com/apple/swift/pull/42494.
     // let moreFood = sameName.SameNameEnum.watermelon;
     // XCTAssertNotEqual(moreFood, sameName.SameNameEnum.orange, "something broke")
   }
