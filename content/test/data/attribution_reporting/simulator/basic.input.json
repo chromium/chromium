@@ -1,7 +1,7 @@
 {
   "sources": [
     {
-      "timestamp": 1643235573,
+      "timestamp": "1643235573123",
       "source_origin": "https://s.test",
       "reporting_origin": "https://r.test",
       "source_type": "navigation",
@@ -13,7 +13,7 @@
   ],
   "triggers": [
     {
-      "timestamp": 1643235574,
+      "timestamp": "1643235574123",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d.test",
       "Attribution-Reporting-Register-Event-Trigger": [

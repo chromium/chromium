@@ -1,7 +1,7 @@
 {
   "sources": [
     {
-      "timestamp": 1643235573,
+      "timestamp": "1643235573000",
       "source_origin": "https://s.test",
       "reporting_origin": "https://r.test",
       "source_type": "navigation",

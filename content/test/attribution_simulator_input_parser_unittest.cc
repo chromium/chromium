@@ -110,7 +110,7 @@ TEST(AttributionSimulatorInputParserTest, EmptyInputParses) {
 TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
   constexpr char kJson[] = R"json({"sources": [
     {
-      "timestamp": 1643235574,
+      "timestamp": "1643235574123",
       "source_type": "navigation",
       "reporting_origin": "https://a.r.test",
       "source_origin": "https://a.s.test",
@@ -123,7 +123,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       }
     },
     {
-      "timestamp": 1643235573,
+      "timestamp": "1643235573123",
       "source_type": "event",
       "reporting_origin": "https://b.r.test",
       "source_origin": "https://b.s.test",
@@ -133,7 +133,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       }
     },
     {
-      "timestamp": 1643235575,
+      "timestamp": "1643235575123",
       "source_type": "event",
       "reporting_origin": "https://c.r.test",
       "source_origin": "https://c.s.test",
@@ -148,7 +148,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       }
     },
     {
-      "timestamp": 1643235576,
+      "timestamp": "1643235576123",
       "source_type": "event",
       "reporting_origin": "https://c.r.test",
       "source_origin": "https://c.s.test",
@@ -170,7 +170,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       ParseAttributionSimulationInput(std::move(value), kOffsetTime,
                                       error_stream),
       Optional(ElementsAre(
-          Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235574))
+          Pair(SourceBuilder(kOffsetTime + base::Milliseconds(1643235574123))
                    .SetSourceType(AttributionSourceType::kNavigation)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://a.r.test")))
@@ -184,7 +184,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetDebugKey(14)
                    .Build(),
                _),
-          Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235573))
+          Pair(SourceBuilder(kOffsetTime + base::Milliseconds(1643235573123))
                    .SetSourceType(AttributionSourceType::kEvent)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://b.r.test")))
@@ -199,7 +199,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .Build(),
                _),
           Pair(
-              SourceBuilder(kOffsetTime + base::Seconds(1643235575))
+              SourceBuilder(kOffsetTime + base::Milliseconds(1643235575123))
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
                       url::Origin::Create(GURL("https://c.r.test")))
@@ -219,7 +219,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .Build(),
               _),
           Pair(
-              SourceBuilder(kOffsetTime + base::Seconds(1643235576))
+              SourceBuilder(kOffsetTime + base::Milliseconds(1643235576123))
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
                       url::Origin::Create(GURL("https://c.r.test")))
@@ -242,7 +242,7 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
   constexpr char kJson[] = R"json({
     "sources": [
       {
-        "timestamp": 1643235574,
+        "timestamp": "1643235574123",
         "source_type": "navigation",
         "reporting_origin": "https://r.test",
         "source_origin": "https://s.test",
@@ -258,7 +258,7 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
     ],
     "triggers": [
       {
-        "timestamp": 1643235576,
+        "timestamp": "1643235576123",
         "reporting_origin": "https://a.r.test",
         "destination_origin": " https://a.d1.test",
         "trigger_data": "10",
@@ -283,7 +283,7 @@ TEST(AttributionSimulatorInputParserTest, OutputRetainsInputJSON) {
 TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   constexpr char kJson[] = R"json({"triggers": [
     {
-      "timestamp": 1643235576,
+      "timestamp": "1643235576123",
       "reporting_origin": "https://a.r.test",
       "destination_origin": " https://a.d1.test",
       "Attribution-Reporting-Register-Event-Trigger": [
@@ -307,12 +307,12 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       }
     },
     {
-      "timestamp": 1643235575,
+      "timestamp": "1643235575123",
       "reporting_origin": "https://b.r.test",
       "destination_origin": " https://a.d2.test"
     },
     {
-      "timestamp": 1643235574,
+      "timestamp": "1643235574123",
       "reporting_origin": "https://b.r.test",
       "destination_origin": " https://a.d2.test",
       "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
@@ -372,7 +372,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               /*not_filters=*/AttributionFilterData()),
                       },
                       AttributionAggregatableTrigger()),
-                  .time = kOffsetTime + base::Seconds(1643235576),
+                  .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
               _),
           Pair(
@@ -385,7 +385,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
                       /*event_triggers=*/{}, AttributionAggregatableTrigger()),
-                  .time = kOffsetTime + base::Seconds(1643235575),
+                  .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
               _),
           Pair(
@@ -403,7 +403,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               std::move(aggregatable_trigger_data),
                               AttributionAggregatableTrigger::Values{
                                   {"a", 1}}))),
-                  .time = kOffsetTime + base::Seconds(1643235574),
+                  .time = kOffsetTime + base::Milliseconds(1643235574123),
               },
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
@@ -412,7 +412,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
 TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
   constexpr char kJson[] = R"json({
     "sources": [{
-      "timestamp": 1643235573,
+      "timestamp": "1643235573123",
       "source_type": "event",
       "reporting_origin": "https://b.r.test",
       "source_origin": "https://b.s.test",
@@ -422,7 +422,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
       }
     }],
     "triggers": [{
-      "timestamp": 1643235575,
+      "timestamp": "1643235575123",
       "reporting_origin": "https://b.r.test",
       "destination_origin": " https://a.d2.test"
     }]
@@ -447,14 +447,14 @@ TEST(AttributionSimulatorInputParserTest, ValidCookieParses) {
 
   constexpr char kJson[] = R"json({"cookies": [
     {
-      "timestamp": 1643235574,
+      "timestamp": "1643235574123",
       "url": "https://r.test/x",
       "Set-Cookie": "a=b; Secure; Max-Age=5"
     }
   ]})json";
 
   const base::Time expected_creation_time =
-      kOffsetTime + base::Seconds(1643235574);
+      kOffsetTime + base::Milliseconds(1643235574123);
 
   base::Value value = base::test::ParseJson(kJson);
   std::ostringstream error_stream;
@@ -486,12 +486,12 @@ TEST(AttributionSimulatorInputParserTest, ValidCookieParses) {
 TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
   constexpr char kJson[] = R"json({"data_clears": [
     {
-      "timestamp": 1643235574,
-      "delete_begin": 1643235573,
+      "timestamp": "1643235574123",
+      "delete_begin": "1643235573123",
     },
     {
-      "timestamp": 1643235574,
-      "delete_end": 1643235575,
+      "timestamp": "1643235574123",
+      "delete_end": "1643235575123",
       "origins": [
         "https://r.test",
         "https://s.test"
@@ -506,15 +506,17 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
                                       error_stream),
       Optional(ElementsAre(
           Pair(AttributionDataClear(
-                   /*time=*/kOffsetTime + base::Seconds(1643235574),
-                   /*delete_begin=*/kOffsetTime + base::Seconds(1643235573),
+                   /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
+                   /*delete_begin=*/kOffsetTime +
+                       base::Milliseconds(1643235573123),
                    /*delete_end=*/base::Time::Max(),
                    /*origins=*/absl::nullopt),
                _),
           Pair(AttributionDataClear(
-                   /*time=*/kOffsetTime + base::Seconds(1643235574),
+                   /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
                    /*delete_begin=*/base::Time::Min(),
-                   /*delete_end=*/kOffsetTime + base::Seconds(1643235575),
+                   /*delete_end=*/kOffsetTime +
+                       base::Milliseconds(1643235575123),
                    /*origins=*/
                    base::flat_set<url::Origin>{
                        url::Origin::Create(GURL("https://r.test")),
@@ -552,7 +554,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test"
         }]})json",
@@ -568,7 +570,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "source_origin": "https://a.s.test"
         }]})json",
@@ -576,7 +578,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "source_origin": "https://a.s.test",
           "reporting_origin": "http://r.test"
@@ -585,7 +587,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["source_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.s.test"
         }]})json",
@@ -593,7 +595,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]: must be present)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test"
@@ -602,7 +604,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]: must be a dictionary)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -612,7 +614,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -624,7 +626,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["destination"]: must be a valid, secure origin)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -636,7 +638,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "NAVIGATION",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test"
@@ -645,7 +647,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["expiry"]: must be a positive number of)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -659,7 +661,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["priority"]: must be an int64)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -673,7 +675,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -686,7 +688,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]: must be a dictionary)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -700,7 +702,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"]: must be a list)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -716,7 +718,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"][0]: must be a string)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -732,7 +734,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"]: must be a list)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "event",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -746,7 +748,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]: must be a dictionary)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "event",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -760,7 +762,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["id"]: must be a string)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "event",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -774,7 +776,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["sources"][0]["Attribution-Reporting-Register-Aggregatable-Source"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
         R"json({"sources": [{
-          "timestamp": 1643235574,
+          "timestamp": "1643235574000",
           "source_type": "event",
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
@@ -802,14 +804,14 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["destination_origin"]: must be a valid, secure origin)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test"
         }]})json",
     },
     {
         R"(["triggers"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "destination_origin": " https://a.d1.test"
         }]})json",
     },
@@ -820,7 +822,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Event-Trigger"]: must be a list)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Event-Trigger": 1
@@ -829,7 +831,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"]: must be a list)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": 5
@@ -838,7 +840,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]: must be a dictionary)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [ 5 ]
@@ -847,7 +849,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"]: must be present)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{}]
@@ -856,7 +858,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"]: must be a list)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
@@ -867,7 +869,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["source_keys"][0]: must be a string)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
@@ -878,7 +880,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [{
@@ -890,7 +892,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]: must be a dictionary)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Values": 5
@@ -899,7 +901,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]["a"]: must be a positive integer)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Values": {
@@ -910,7 +912,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Event-Trigger"][0]: must be a dictionary)",
         R"json({"triggers":[{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Event-Trigger":[true]
@@ -919,7 +921,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Trigger-Data"]: must be present)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Values": {}
@@ -928,64 +930,64 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     {
         R"(["triggers"][0]["Attribution-Reporting-Register-Aggregatable-Values"]: must be present)",
         R"json({"triggers": [{
-          "timestamp": 1643235576,
+          "timestamp": "1643235576000",
           "reporting_origin": "https://a.r.test",
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": []
         }]})json",
     },
     {
-        R"(["cookies"][0]["timestamp"]: must be an integer number of seconds)",
+        R"(["cookies"][0]["timestamp"]: must be an integer number of milliseconds)",
         R"json({"cookies": [{}]})json",
     },
     {
         R"(["cookies"][0]["url"]: must be a valid URL)",
         R"json({"cookies": [{
-        "timestamp": 1643235576
+        "timestamp": "1643235576000"
       }]})json",
     },
     {
         R"(["cookies"][0]["url"]: must be a valid URL)",
         R"json({"cookies": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "url": "!!!"
       }]})json",
     },
     {
         R"(["cookies"][0]["Set-Cookie"]: must be present)",
         R"json({"cookies": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "url": "https://r.test"
       }]})json",
     },
     {
         R"(["cookies"][0]: invalid cookie)",
         R"json({"cookies": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "url": "https://r.test",
         "Set-Cookie": ""
       }]})json",
     },
-    {R"(["data_clears"][0]["timestamp"]: must be an integer number of seconds)",
+    {R"(["data_clears"][0]["timestamp"]: must be an integer number of milliseconds)",
      R"json({"data_clears": [{}]})json"},
-    {R"(["data_clears"][0]["delete_begin"]: must be an integer number of seconds)",
+    {R"(["data_clears"][0]["delete_begin"]: must be an integer number of milliseconds)",
      R"json({"data_clears": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "delete_begin": ""
       }]})json"},
-    {R"(["data_clears"][0]["delete_end"]: must be an integer number of seconds)",
+    {R"(["data_clears"][0]["delete_end"]: must be an integer number of milliseconds)",
      R"json({"data_clears": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "delete_end": ""
       }]})json"},
     {R"(["data_clears"][0]["origins"]: must be a list)",
      R"json({"data_clears": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "origins": ""
       }]})json"},
     {R"(["data_clears"][0]["origins"][0]: must be a string)",
      R"json({"data_clears": [{
-        "timestamp": 1643235576,
+        "timestamp": "1643235576000",
         "origins": [1]
       }]})json"}};
 

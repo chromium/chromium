@@ -1,7 +1,7 @@
 {
   "sources": [
     {
-      "timestamp": 1643235573,
+      "timestamp": "1643235573000",
       "source_origin": "https://s.test",
       "reporting_origin": "https://r.test",
       "source_type": "navigation",
@@ -11,7 +11,7 @@
       }
     },
     {
-      "timestamp": 1643235573,
+      "timestamp": "1643235573000",
       "source_origin": "https://s.test",
       "reporting_origin": "https://r.test",
       "source_type": "navigation",
@@ -23,7 +23,7 @@
   ],
   "triggers": [
     {
-      "timestamp": 1643235575,
+      "timestamp": "1643235575000",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d1.test",
       "Attribution-Reporting-Register-Event-Trigger": [
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "timestamp": 1643235575,
+      "timestamp": "1643235575000",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d2.test",
       "Attribution-Reporting-Register-Event-Trigger": [
@@ -45,9 +45,9 @@
   ],
   "data_clears": [
     {
-      "timestamp": 1643235574,
-      "delete_begin": 1643235573,
-      "delete_end":  1643235573,
+      "timestamp": "1643235574000",
+      "delete_begin": "1643235573000",
+      "delete_end":  "1643235573000",
       "origins": ["https://d1.test"]
     }
   ]

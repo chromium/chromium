@@ -5,9 +5,9 @@ JSON schema for the input of the simulator.
   // List of zero or more sources to register.
   "sources": [
     {
-      // Required time at which to register the source in seconds since the
-      // UNIX epoch.
-      "timestamp": 123,
+      // Required time at which to register the source in milliseconds since
+      // the UNIX epoch formatted as a base-10 string.
+      "timestamp": "123",
 
       // Required origin to which the report will be sent if the source is
       // attributed.
@@ -63,9 +63,9 @@ JSON schema for the input of the simulator.
   // List of zero or more triggers to register.
   "triggers": [
     {
-      // Required time at which to register the trigger in seconds since the
-      // UNIX epoch.
-      "timestamp": 123,
+      // Required time at which to register the trigger in milliseconds since
+      // the UNIX epoch formatted as a base-10 string.
+      "timestamp": "123",
 
       // Required origin to which the report will be sent.
       "reporting_origin": "https://reporting.example",
@@ -148,9 +148,9 @@ JSON schema for the input of the simulator.
   // List of zero or more cookies to store, for use with debug keys.
   "cookies": [
     {
-      // Required time at which to store the cookie in seconds since the
-      // UNIX epoch.
-      "timestamp": 123,
+      // Required time at which to store the cookie in milliseconds since the
+      // UNIX epoch formatted as a base-10 string.
+      "timestamp": "123",
 
       // Required URL for which to store the cookie.
       "url": "https://r.test",
@@ -163,18 +163,19 @@ JSON schema for the input of the simulator.
   // List of zero or more times to clear Attribution Reporting data.
   "data_clears": [
     {
-      // Required time at which to clear data in seconds since the UNIX epoch.
-      "timestamp": 123,
+      // Required time at which to clear data in milliseconds since the UNIX
+      // epoch formatted as a base-10 string.
+      "timestamp": "123",
 
-      // Optional time in seconds since the UNIX epoch. Only Attribution
-      // Reporting data at or after this time will be deleted. If omitted,
-      // defaults to the beginning of time.
-      "delete_begin": 123,
+      // Optional time in milliseconds since the UNIX epoch formatted as a
+      // base-10 string. Only Attribution Reporting data at or after this time 
+      // will be deleted. If omitted, defaults to the beginning of time.
+      "delete_begin": "123",
 
-      // Optional time in seconds since the UNIX epoch. Only Attribution
-      // Reporting data at or before this time will be deleted. If omitted,
-      // defaults to the end of time.
-      "delete_end": 456,
+      // Optional time in milliseconds since the UNIX epoch formatted as a
+      // base-10 string. Only Attribution Reporting data at or before this
+      // time will be deleted. If omitted, defaults to the end of time.
+      "delete_end": "456",
 
       // Optional list of origins whose data to delete. If omitted, data for all
       // origins will be deleted.
