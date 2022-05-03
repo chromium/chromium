@@ -27,6 +27,7 @@ src/common/internal/test_suite_listing.ts
 src/common/internal/util.ts
 src/common/internal/tree.ts
 src/common/internal/file_loader.ts
+src/common/util/colors.ts
 src/common/util/navigator_gpu.ts
 src/common/runtime/helper/sys.ts
 src/common/runtime/cmdline.ts
@@ -43,7 +44,6 @@ src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/presubmit.ts
 src/common/tools/version.ts
 src/common/util/collect_garbage.ts
-src/common/util/colors.ts
 src/common/util/preprocessor.ts
 src/unittests/unit_test.ts
 src/demo/a.spec.ts
