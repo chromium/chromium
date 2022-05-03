@@ -191,8 +191,10 @@ TEST_F(AXNativeWidgetMacTest, Lifetime) {
   // attribute normally and returns its size (if it's an array).
   base::scoped_nsprotocol<id<NSAccessibility>> ax_parent(
       ax_obj.accessibilityParent, base::scoped_policy::RETAIN);
-  EXPECT_EQ(1u, ax_parent.get().accessibilityChildren.count);
-  EXPECT_EQ(ax_node.get(), ax_parent.get().accessibilityChildren[0]);
+
+  // There are two children: a NativeFrameView and the TextField.
+  EXPECT_EQ(2u, ax_parent.get().accessibilityChildren.count);
+  EXPECT_EQ(ax_node.get(), ax_parent.get().accessibilityChildren[1]);
 
   // If it is not an array, the default implementation throws an exception, so
   // it's impossible to test these methods further on |ax_node|, apart from the
@@ -225,8 +227,9 @@ TEST_F(AXNativeWidgetMacTest, Lifetime) {
   EXPECT_EQ(NSNotFound, static_cast<NSInteger>(
                             [ax_node accessibilityIndexOfChild:ax_node]));
 
-  // The Widget is currently still around, but the child should be gone.
-  EXPECT_EQ(0u, ax_parent.get().accessibilityChildren.count);
+  // The Widget is currently still around, but the TextField should be gone,
+  // leaving just the NativeFrameView.
+  EXPECT_EQ(1u, ax_parent.get().accessibilityChildren.count);
 }
 
 // Check that potentially keyboard-focusable elements are always leaf nodes.
@@ -259,9 +262,10 @@ TEST_F(AXNativeWidgetMacTest, FocusableElementsAreLeafNodes) {
 // Test for NSAccessibilityChildrenAttribute, and ensure it excludes ignored
 // children from the accessibility tree.
 TEST_F(AXNativeWidgetMacTest, ChildrenAttribute) {
-  // Check childless views don't have accessibility children.
-  id<NSAccessibility> ax_node = A11yElementAtMidpoint();
-  EXPECT_EQ(0u, ax_node.accessibilityChildren.count);
+  // The ContentsView initially has a single child, a NativeFrameView.
+  id<NSAccessibility> ax_node =
+      widget()->GetContentsView()->GetNativeViewAccessible();
+  EXPECT_EQ(1u, ax_node.accessibilityChildren.count);
 
   const size_t kNumChildren = 3;
   for (size_t i = 0; i < kNumChildren; ++i) {
@@ -269,12 +273,13 @@ TEST_F(AXNativeWidgetMacTest, ChildrenAttribute) {
     AddChildTextfield(gfx::Size());
   }
 
-  EXPECT_EQ(kNumChildren, ax_node.accessibilityChildren.count);
+  // Having added three non-ignored children, the count is four.
+  EXPECT_EQ(kNumChildren + 1, ax_node.accessibilityChildren.count);
 
   // Check ignored children don't show up in the accessibility tree.
   widget()->GetContentsView()->AddChildView(
       new FlexibleRoleTestView(ax::mojom::Role::kNone));
-  EXPECT_EQ(kNumChildren, ax_node.accessibilityChildren.count);
+  EXPECT_EQ(kNumChildren + 1, ax_node.accessibilityChildren.count);
 }
 
 // Test for NSAccessibilityParentAttribute, including for a Widget with no
