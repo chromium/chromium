@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumFilesCreated" units="files"
-    expires_after="2022-06-15">
+    expires_after="2022-12-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of files created in a successful scan.</summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scanning.ReadyTime" units="ms" expires_after="2022-06-15">
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2022-12-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.FileType"
-    enum="ScanJobSettingsFileType" expires_after="2022-06-15">
+    enum="ScanJobSettingsFileType" expires_after="2022-12-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
-    expires_after="2022-06-15">
+    expires_after="2022-12-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
