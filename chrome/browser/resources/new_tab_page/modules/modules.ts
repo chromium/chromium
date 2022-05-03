@@ -540,8 +540,13 @@ export class ModulesElement extends PolymerElement {
     };
 
     const dragEnter = (e: MouseEvent) => {
+      // Move hidden module containers to end of list to ensure user's new
+      // layout stays intact.
       const moduleContainers = [
-        ...this.shadowRoot!.querySelectorAll<HTMLElement>('.module-container')
+        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.module-container:not([hidden])'),
+        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.module-container[hidden]')
       ];
       const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
       const dropIndex =
@@ -559,6 +564,7 @@ export class ModulesElement extends PolymerElement {
       const firstRects = undraggedModuleWrappers.map(moduleWrapper => {
         return moduleWrapper.getBoundingClientRect();
       });
+
       // If a tall module is dragged to a short module sibling container, the
       // modules in the sibling container should move together.
       // We add or subtract 1, from the drop index, to make sure the tall module
