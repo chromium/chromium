@@ -367,12 +367,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   // Privacy Sandbox
-  bool isPrivacySandboxRestricted =
+  bool is_privacy_sandbox_restricted =
       PrivacySandboxServiceFactory::GetForProfile(profile)
           ->IsPrivacySandboxRestricted();
   html_source->AddBoolean("isPrivacySandboxRestricted",
-                          isPrivacySandboxRestricted);
-  if (!isPrivacySandboxRestricted) {
+                          is_privacy_sandbox_restricted);
+  if (!is_privacy_sandbox_restricted) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
