@@ -54,7 +54,7 @@ public class EmptyTabModel implements TabModel {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id) {
+    public Tab getNextTabIfClosed(int id, boolean uponExit) {
         return null;
     }
 

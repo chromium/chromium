@@ -1009,7 +1009,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         tab.setIsDying(true);
 
         // 3. Fake a selection on the next tab now.
-        Tab nextTab = mModel.getNextTabIfClosed(tab.getId());
+        Tab nextTab = mModel.getNextTabIfClosed(tab.getId(), /*uponExit=*/false);
         if (nextTab != null) tabSelected(time, nextTab.getId(), tab.getId());
     }
 

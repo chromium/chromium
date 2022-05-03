@@ -186,4 +186,27 @@ public class TabModelUtils {
         }
         return tabIds;
     }
+
+    /**
+     * Returns the most recently visited Tab in the specified TabList that is not {@code tabId}.
+     * @param model The {@link TabModel} to act on.
+     * @param tabId The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
+     * @return the most recently visited Tab or null if none can be found.
+     */
+    public static Tab getMostRecentTab(TabList model, int tabId) {
+        Tab mostRecentTab = null;
+        long mostRecentTabTime = 0;
+        for (int i = 0; i < model.getCount(); i++) {
+            final Tab currentTab = model.getTabAt(i);
+            if (currentTab.getId() == tabId || currentTab.isClosing()) continue;
+
+            final long currentTime = CriticalPersistedTabData.from(currentTab).getTimestampMillis();
+            if (currentTime != CriticalPersistedTabData.INVALID_TIMESTAMP
+                    && mostRecentTabTime < currentTime) {
+                mostRecentTabTime = currentTime;
+                mostRecentTab = currentTab;
+            }
+        }
+        return mostRecentTab;
+    }
 }
