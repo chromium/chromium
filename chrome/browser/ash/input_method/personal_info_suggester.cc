@@ -179,11 +179,11 @@ PersonalInfoSuggester::PersonalInfoSuggester(
 PersonalInfoSuggester::~PersonalInfoSuggester() = default;
 
 void PersonalInfoSuggester::OnFocus(int context_id) {
-  context_id_ = context_id;
+  focused_context_id_ = context_id;
 }
 
 void PersonalInfoSuggester::OnBlur() {
-  context_id_ = -1;
+  focused_context_id_ = absl::nullopt;
 }
 
 void PersonalInfoSuggester::OnExternalSuggestionsUpdated(
@@ -345,6 +345,11 @@ std::u16string PersonalInfoSuggester::GetSuggestion(
 
 void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
                                            const size_t confirmed_length) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "Failed to show suggestion. No context id.";
+    return;
+  }
+
   if (ChromeKeyboardControllerClient::Get()->is_keyboard_visible()) {
     const std::vector<std::string> args{base::UTF16ToUTF8(text)};
     suggestion_handler_->OnSuggestionsChanged(args);
@@ -367,7 +372,8 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
       GetPrefValue(kPersonalInfoSuggesterAcceptanceCount) == 0 &&
       GetPrefValue(kPersonalInfoSuggesterShowSettingCount) <
           kMaxShowSettingCount;
-  suggestion_handler_->SetSuggestion(context_id_, details, &error);
+  suggestion_handler_->SetSuggestion(focused_context_id_.value(), details,
+                                     &error);
   if (!error.empty()) {
     LOG(ERROR) << "Fail to show suggestion. " << error;
   }
@@ -431,8 +437,13 @@ std::vector<TextSuggestion> PersonalInfoSuggester::GetSuggestions() {
 }
 
 bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "Failed to accept suggestion. No context id.";
+    return false;
+  }
+
   std::string error;
-  suggestion_handler_->AcceptSuggestion(context_id_, &error);
+  suggestion_handler_->AcceptSuggestion(focused_context_id_.value(), &error);
 
   if (!error.empty()) {
     LOG(ERROR) << "Failed to accept suggestion. " << error;
@@ -448,8 +459,13 @@ bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
 }
 
 void PersonalInfoSuggester::DismissSuggestion() {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "Failed to dismiss suggestion. No context id.";
+    return;
+  }
+
   std::string error;
-  suggestion_handler_->DismissSuggestion(context_id_, &error);
+  suggestion_handler_->DismissSuggestion(focused_context_id_.value(), &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to dismiss suggestion. " << error;
     return;
@@ -461,9 +477,14 @@ void PersonalInfoSuggester::DismissSuggestion() {
 void PersonalInfoSuggester::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "Failed to set button highlighted. No context id.";
+    return;
+  }
+
   std::string error;
-  suggestion_handler_->SetButtonHighlighted(context_id_, button, highlighted,
-                                            &error);
+  suggestion_handler_->SetButtonHighlighted(focused_context_id_.value(), button,
+                                            highlighted, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to set button highlighted. " << error;
   }
