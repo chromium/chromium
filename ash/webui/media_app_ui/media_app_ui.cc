@@ -153,6 +153,12 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
                        ContentSettingsType::JAVASCRIPT,
                        ContentSettingsType::SOUND,
                    });
+  const url::Origin guest_origin =
+      url::Origin::Create(GURL(kChromeUIMediaAppGuestURL));
+  allowlist->RegisterAutoGrantedPermissions(guest_origin,
+                                            {
+                                                ContentSettingsType::COOKIES,
+                                            });
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
