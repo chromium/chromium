@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium.linux builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
@@ -142,6 +143,25 @@ ci.builder(
     ],
     cq_mirrors_console_view = "mirrors",
     notifies = ["cr-fuchsia"],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_arm64",
+                "fuchsia_arm64_host",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )
 
 ci.builder(
@@ -161,6 +181,24 @@ ci.builder(
     ],
     cq_mirrors_console_view = "mirrors",
     notifies = ["cr-fuchsia"],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )
 
 ci.builder(
@@ -269,6 +307,24 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["cr-fuchsia", "close-on-any-step-failure"],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_arm64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )
 
 ci.builder(
@@ -300,6 +356,24 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["cr-fuchsia", "close-on-any-step-failure"],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )
 
 ci.builder(
@@ -317,6 +391,25 @@ ci.builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )
 
 ci.builder(
