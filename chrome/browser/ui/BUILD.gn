@@ -7,7 +7,6 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
@@ -3910,6 +3909,7 @@ static_library("ui") {
       "//ui/base/ime",
       "//ui/events:dom_keycode_converter",
       "//ui/platform_window",
+      "//ui/views/linux_ui:linux_ui_factory",
     ]
 
     if (use_dbus) {
@@ -3949,10 +3949,6 @@ static_library("ui") {
         "views/frame/browser_desktop_window_tree_host_lacros.cc",
         "views/frame/browser_desktop_window_tree_host_lacros.h",
       ]
-    }
-    if (use_gtk) {
-      # This is the only component that can interact with gtk.
-      deps += [ "//ui/gtk" ]
     }
   }
 
@@ -5126,10 +5122,6 @@ static_library("ui") {
           "//ui/base/cursor",
           "//ui/ozone",
         ]
-
-        if (use_gtk) {
-          deps += [ "//ui/gtk" ]
-        }
       }
     }
 

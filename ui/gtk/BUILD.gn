@@ -69,6 +69,7 @@ generate_stubs("gtk_stubs") {
 }
 
 component("gtk") {
+  visibility = [ "//ui/views/linux_ui:linux_ui_factory" ]
   public = [ "gtk_ui_factory.h" ]
 
   sources = [

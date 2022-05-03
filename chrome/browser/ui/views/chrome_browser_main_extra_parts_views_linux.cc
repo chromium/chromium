@@ -9,15 +9,12 @@
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/ime/linux/fake_input_method_context_factory.h"
-#include "ui/views/linux_ui/linux_ui.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/linux/fake_input_method_context_factory.h"
 #include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/ozone/public/ozone_platform.h"
-
-#if BUILDFLAG(USE_GTK)
-#include "ui/gtk/gtk_ui_factory.h"
-#endif
+#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/views/linux_ui/linux_ui_factory.h"
 
 namespace {
 
@@ -27,12 +24,7 @@ std::unique_ptr<views::LinuxUI> BuildLinuxUI() {
   if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
 
-  // GtkUi is the only LinuxUI implementation for now.
-#if BUILDFLAG(USE_GTK)
-  return BuildGtkUi();
-#else
-  return nullptr;
-#endif
+  return CreateLinuxUi();
 }
 
 }  // namespace
@@ -54,16 +46,15 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
           return ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
               GetThemeProfileForWindow(window));
         }));
-
-    linux_ui->Initialize();
     views::LinuxUI::SetInstance(std::move(linux_ui));
 
     // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
   } else {
-    // In case if GTK is not used, input method factory won't be set for X11 and
-    // Ozone/X11. Set a fake one instead to avoid crashing browser later.
+    // In case if the toolkit is not used, input method factory won't be set for
+    // X11 and Ozone/X11. Set a fake one instead to avoid crashing browser
+    // later.
     DCHECK(!ui::LinuxInputMethodContextFactory::instance());
     // Try to create input method through Ozone so that the backend has a chance
     // to set factory by itself.

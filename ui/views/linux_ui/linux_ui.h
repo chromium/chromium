@@ -100,7 +100,9 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // running with the "--ash" flag.)
   static LinuxUI* instance();
 
-  virtual bool Initialize() = 0;
+  // Returns true on success.  If false is returned, this instance shouldn't
+  // be used and the behavior of all functions is undefined.
+  [[nodiscard]] virtual bool Initialize() = 0;
   virtual bool GetTint(int id, color_utils::HSL* tint) const = 0;
   virtual bool GetColor(int id,
                         SkColor* color,

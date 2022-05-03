@@ -5,7 +5,6 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -308,8 +307,8 @@ static_library("content_shell_lib") {
     deps += [ "//gin" ]
   }
 
-  if (use_gtk) {
-    deps += [ "//ui/gtk" ]
+  if (is_linux) {
+    deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
   }
 
   if (is_android) {

@@ -1,3 +1,10 @@
 include_rules = [
   "+ui/shell_dialogs",
 ]
+
+specific_include_rules = {
+  "linux_ui_factory.cc": [
+    "+ui/gtk",
+    "+ui/qt",
+  ],
+}

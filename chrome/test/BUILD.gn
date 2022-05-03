@@ -8,7 +8,6 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/util/version.gni")
@@ -6745,9 +6744,9 @@ test("unit_tests") {
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
-    if (use_gtk) {
+    if (is_linux) {
       sources += [ "../browser/themes/theme_service_linux_unittest.cc" ]
-      deps += [ "//ui/gtk" ]
+      deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
     }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -50,11 +51,11 @@
 #include "ui/native_theme/test_native_theme.h"
 #include "ui/views/views_features.h"
 
-#if BUILDFLAG(USE_GTK)
-#include "ui/gtk/gtk_ui_factory.h"
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
-#endif  // BUILDFLAG(USE_GTK)
+#include "ui/views/linux_ui/linux_ui_factory.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -206,16 +207,16 @@ class ThemeProviderRedirectedEquivalenceTest
     // Only perform mixer initialization once.
     static bool initialized_mixers = false;
     if (!initialized_mixers) {
-#if BUILDFLAG(USE_GTK)
-      // Ensures GTK is configured on supported linux platforms. Initializing
-      // GTK also adds the native GTK ColorMixers.
+#if BUILDFLAG(IS_LINUX)
+      // Ensures LinuxUI is configured on supported linux platforms.
+      // Initializing the toolkit also adds the native toolkit ColorMixers.
       ui::OzonePlatform::InitParams ozone_params;
       ozone_params.single_process = true;
       ui::OzonePlatform::InitializeForUI(ozone_params);
-      auto linux_ui = BuildGtkUi();
-      linux_ui->Initialize();
+      auto linux_ui = CreateLinuxUi();
+      ASSERT_TRUE(linux_ui);
       views::LinuxUI::SetInstance(std::move(linux_ui));
-#endif  // BUILDFLAG(USE_GTK)
+#endif  // BUILDFLAG(IS_LINUX)
 
       // Add the Chrome ColorMixers after native ColorMixers.
       ui::ColorProviderManager::Get().AppendColorProviderInitializer(
@@ -223,13 +224,13 @@ class ThemeProviderRedirectedEquivalenceTest
 
       initialized_mixers = true;
     }
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
     views::LinuxUI::instance()->SetUseSystemThemeCallback(base::BindRepeating(
         [](bool use_system_theme, aura::Window* window) {
           return use_system_theme;
         },
         std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom));
-#endif  // BUILDFLAG(USE_GTK)
+#endif  // BUILDFLAG(IS_LINUX)
 
     const auto param_tuple = GetParam();
     auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
@@ -239,7 +240,7 @@ class ThemeProviderRedirectedEquivalenceTest
     // ThemeService tracks the global NativeTheme instance for native UI. Update
     // this to reflect test params and propagate any updates.
     native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
     if (system_theme == SystemTheme::kCustom) {
       const auto* linux_ui = views::LinuxUI::instance();
       native_theme_ = linux_ui->GetNativeTheme(nullptr);
@@ -761,18 +762,18 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
 }
 
 TEST_P(ThemeProviderRedirectedEquivalenceTest, GetColor) {
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
   const auto param_tuple = GetParam();
   const auto color_scheme = std::get<ui::NativeTheme::ColorScheme>(param_tuple);
   const auto contrast_mode = std::get<ContrastMode>(param_tuple);
   const auto system_theme = std::get<SystemTheme>(param_tuple);
-  // For GTK, test only the light, non high contrast mode.
-  // TODO(crbug.com/1310397): make a dedicated test for GTK colors.
+  // For LinuxUI, test only the light, non high contrast mode.
+  // TODO(crbug.com/1310397): make a dedicated test for LinuxUI colors.
   if (system_theme == SystemTheme::kCustom &&
       !(color_scheme == ui::NativeTheme::ColorScheme::kLight &&
         contrast_mode == ContrastMode::kNonHighContrast))
     return;
-#endif  // BUILDFLAG(USE_GTK)
+#endif  // BUILDFLAG(IS_LINUX)
 
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());

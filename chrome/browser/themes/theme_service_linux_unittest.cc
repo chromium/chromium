@@ -36,10 +36,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gtk/gtk_ui_factory.h"
 #include "ui/native_theme/test_native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
+#include "ui/views/linux_ui/linux_ui_factory.h"
 #include "ui/views/views_features.h"
 
 namespace theme_service_internal {
@@ -84,14 +84,14 @@ class ThemeProviderRedirectedEquivalenceLinuxTest : public ThemeServiceTest {
     // Only perform mixer initialization once.
     static bool initialized_mixers = false;
     if (!initialized_mixers) {
-      // Ensures GTK is configured on supported linux platforms. Initializing
-      // GTK also adds the native GTK ColorMixers.
+      // Ensures the toolkit is configured on supported linux platforms.
+      // Initializing the toolkit also adds the native toolkit ColorMixers.
       ui::OzonePlatform::InitParams ozone_params;
       ozone_params.single_process = true;
       ui::OzonePlatform::InitializeForUI(ozone_params);
-      auto linux_ui = BuildGtkUi();
+      auto linux_ui = CreateLinuxUi();
       linux_ui_ = linux_ui.get();
-      linux_ui->Initialize();
+      ASSERT_TRUE(linux_ui_);
       views::LinuxUI::SetInstance(std::move(linux_ui));
 
       // Add the Chrome ColorMixers after native ColorMixers.
@@ -115,7 +115,7 @@ class ThemeProviderRedirectedEquivalenceLinuxTest : public ThemeServiceTest {
   views::LinuxUI* linux_ui_;
 };
 
-// TODO(crbug.com/1310397): There're mismatched colors in some GTK themes.
+// TODO(crbug.com/1310397): There're mismatched colors in some Linux themes.
 // Enable this test after fixing them.
 TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, GetColor) {
   const ui::ThemeProvider& theme_provider =
@@ -129,15 +129,15 @@ TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, GetColor) {
        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP,
        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND});
 
-  std::vector<std::string> gtk_themes =
+  std::vector<std::string> themes =
       linux_ui_->GetAvailableSystemThemeNamesForTest();
-  for (const std::string& gtk_theme : gtk_themes) {
-    linux_ui_->SetSystemThemeByNameForTest(gtk_theme);
+  for (const std::string& theme : themes) {
+    linux_ui_->SetSystemThemeByNameForTest(theme);
     for (auto color_id : theme_service::test::kTestColorIds) {
       if (ignored_color_ids.contains(color_id))
         continue;
       std::string error_message =
-          base::StrCat({"GTK theme ", gtk_theme, ": ",
+          base::StrCat({"GTK theme ", theme, ": ",
                         theme_service::test::ColorIdToString(color_id),
                         " has mismatched values"});
       theme_service::test::TestOriginalAndRedirectedColorMatched(

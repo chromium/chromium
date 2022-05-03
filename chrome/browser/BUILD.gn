@@ -9,7 +9,6 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
-import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
@@ -6350,8 +6349,8 @@ static_library("browser") {
       "//ui/snapshot",
       "//ui/wm",
     ]
-    if (use_gtk) {
-      deps += [ "//ui/gtk" ]
+    if (is_linux) {
+      deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
     }
   }
 

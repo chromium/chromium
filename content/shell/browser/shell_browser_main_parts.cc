@@ -65,9 +65,9 @@
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 #endif
 
-#if BUILDFLAG(USE_GTK)
-#include "ui/gtk/gtk_ui_factory.h"
+#if BUILDFLAG(IS_LINUX)
 #include "ui/views/linux_ui/linux_ui.h"  // nogncheck
+#include "ui/views/linux_ui/linux_ui_factory.h"  // nogncheck
 #endif
 
 namespace content {
@@ -149,16 +149,12 @@ void ShellBrowserMainParts::InitializeMessageLoopContext() {
                          gfx::Size());
 }
 
-// Copied from ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized().
-// See that function for details.
 void ShellBrowserMainParts::ToolkitInitialized() {
-#if BUILDFLAG(USE_GTK)
   if (switches::IsRunWebTestsSwitchPresent())
     return;
 
-  auto linux_ui = BuildGtkUi();
-  linux_ui->Initialize();
-  views::LinuxUI::SetInstance(std::move(linux_ui));
+#if BUILDFLAG(IS_LINUX)
+  views::LinuxUI::SetInstance(CreateLinuxUi());
 #endif
 }
 
@@ -202,7 +198,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StopHttpHandler();
   browser_context_.reset();
   off_the_record_browser_context_.reset();
-#if BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_LINUX)
   views::LinuxUI::SetInstance(nullptr);
 #endif
   performance_manager_lifetime_.reset();
