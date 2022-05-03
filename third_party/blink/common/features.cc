@@ -1375,6 +1375,8 @@ const base::Feature kOptimizeViewportConstrainedPaintInvalidation{
 
 const base::Feature kReduceUserAgentMinorVersion{
     "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
+    &kReduceUserAgentMinorVersion, "build_version", "0"};
 
 const base::Feature kReportFCPOnlyOnSuccessfulCommit{
     "ReportFCPOnlyOnSuccessfulCommit", base::FEATURE_DISABLED_BY_DEFAULT};

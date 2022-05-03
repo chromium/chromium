@@ -6279,6 +6279,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "build_version": "9999"
+                    },
                     "enable_features": [
                         "ReduceUserAgentMinorVersion"
                     ]

@@ -677,6 +677,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 // If enabled, the minor version of the User-Agent string will be reduced.
 BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kUserAgentFrozenBuildVersion;
 
 // If enabled, we only report FCP if there’s a successful commit to the
 // compositor. Otherwise, FCP may be reported if first BeginMainFrame results in

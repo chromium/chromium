@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -23,10 +24,12 @@ const std::string& GetProductNameAndVersionForUserAgent() {
   return *product_and_version;
 }
 
-const std::string& GetProductNameAndVersionForReducedUserAgent() {
-  static const base::NoDestructor<std::string> product_and_version(
-      "Chrome/" + GetMajorVersionNumber() + ".0.0.0");
-  return *product_and_version;
+const std::string GetProductNameAndVersionForReducedUserAgent(
+    const std::string& build_version) {
+  std::string product_and_version;
+  base::StrAppend(&product_and_version, {"Chrome/", GetMajorVersionNumber(),
+                                         ".0.", build_version, ".0"});
+  return product_and_version;
 }
 
 std::string GetProductName() {

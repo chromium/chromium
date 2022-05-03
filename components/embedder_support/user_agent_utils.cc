@@ -341,7 +341,8 @@ std::string GetProductAndVersion(
   } else {
     if (base::FeatureList::IsEnabled(
             blink::features::kReduceUserAgentMinorVersion)) {
-      return version_info::GetProductNameAndVersionForReducedUserAgent();
+      return version_info::GetProductNameAndVersionForReducedUserAgent(
+          blink::features::kUserAgentFrozenBuildVersion.Get().data());
     } else {
       return version_info::GetProductNameAndVersionForUserAgent();
     }
