@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
@@ -50,7 +51,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   rgbkbd::RgbKeyboardCapabilities capabilities_ =
       rgbkbd::RgbKeyboardCapabilities::kNone;
 
-  ImeControllerImpl* ime_controller_raw_ptr_;
+  raw_ptr<ImeControllerImpl> ime_controller_ptr_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

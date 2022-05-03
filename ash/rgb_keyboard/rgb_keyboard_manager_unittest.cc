@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
@@ -43,7 +44,7 @@ class RgbKeyboardManagerTest : public testing::Test {
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
-  FakeRgbkbdClient* client_;
+  raw_ptr<FakeRgbkbdClient> client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

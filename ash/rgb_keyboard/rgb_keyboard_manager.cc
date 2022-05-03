@@ -22,18 +22,18 @@ RgbKeyboardManager* g_instance = nullptr;
 }  // namespace
 
 RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
-    : ime_controller_raw_ptr_(ime_controller) {
-  DCHECK(ime_controller_raw_ptr_);
+    : ime_controller_ptr_(ime_controller) {
+  DCHECK(ime_controller_ptr_);
   DCHECK(!g_instance);
   g_instance = this;
 
-  ime_controller_raw_ptr_->AddObserver(this);
+  ime_controller_ptr_->AddObserver(this);
 
   FetchRgbKeyboardSupport();
 }
 
 RgbKeyboardManager::~RgbKeyboardManager() {
-  ime_controller_raw_ptr_->RemoveObserver(this);
+  ime_controller_ptr_->RemoveObserver(this);
 
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -87,7 +87,7 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
   // Upon login, CapsLock may already be enabled.
   if (IsRgbKeyboardSupported()) {
     RgbkbdClient::Get()->SetCapsLockState(
-        ime_controller_raw_ptr_->IsCapsLockEnabled());
+        ime_controller_ptr_->IsCapsLockEnabled());
   }
 }
 
