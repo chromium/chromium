@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -1098,8 +1099,9 @@ std::string TemplateURLRef::HandleReplacements(
                 &serialized_searchbox_stats);
             if (!serialized_searchbox_stats.empty()) {
               std::string encoded_searchbox_stats;
-              base::Base64Encode(serialized_searchbox_stats,
-                                 &encoded_searchbox_stats);
+              base::Base64UrlEncode(serialized_searchbox_stats,
+                                    base::Base64UrlEncodePolicy::OMIT_PADDING,
+                                    &encoded_searchbox_stats);
               HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
                                 &url);
               base::UmaHistogramCounts1000(

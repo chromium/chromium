@@ -687,7 +687,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
       // HTTPS and non-empty gs_lcrp: replace gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:searchboxStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE=&"},
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&"},
       // HTTPS and non-empty gs_lcrp but no google:searchboxStats: no gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
@@ -702,7 +702,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
       // gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "https://foo/?{searchTerms}&{google:searchboxStats}",
-       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE=&"},
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE&"},
       // Non-Google search provider, HTTPS and non-empty gs_lcrp but no
       // google:searchboxStats: no gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
@@ -725,7 +725,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
   }
   // Expect correct histograms to have been logged.
   histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 16, 2);
+  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
 }
 
 // Tests replacing searchbox stats (gs_lcrp) and assisted query stats (AQS).
@@ -751,13 +751,13 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
       {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:searchboxStats}{google:"
        "assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE=&aqs=chrome.0.0l6&"},
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&aqs=chrome.0.0l6&"},
       // Non-Google search provider, HTTPS and non-empty gs_lcrp and AQS:
       // replace both.
       {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
        "https://foo/"
        "?{searchTerms}&{google:searchboxStats}{google:assistedQueryStats}",
-       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE=&aqs=chrome.0.0l6&"},
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE&aqs=chrome.0.0l6&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");
@@ -780,7 +780,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
   histogram_tester.ExpectBucketCount("Omnibox.AssistedQueryStats.Length", 12,
                                      2);
   histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 16, 2);
+  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
 }
 
 // Tests replacing cursor position.

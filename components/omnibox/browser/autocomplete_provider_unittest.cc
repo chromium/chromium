@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/test/scoped_feature_list.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -674,13 +674,17 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
     result_.match_at(i)->search_terms_args->searchbox_stats.SerializeToString(
         &serialized_searchbox_stats);
     std::string encoded_searchbox_stats;
-    base::Base64Encode(serialized_searchbox_stats, &encoded_searchbox_stats);
+    base::Base64UrlEncode(serialized_searchbox_stats,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &encoded_searchbox_stats);
     std::string expected_serialized_searchbox_stats;
     aqs_test_data[i].expected_searchbox_stats.SerializeToString(
         &expected_serialized_searchbox_stats);
     std::string expected_encoded_searchbox_stats;
-    base::Base64Encode(expected_serialized_searchbox_stats,
-                       &expected_encoded_searchbox_stats);
+    base::Base64UrlEncode(expected_serialized_searchbox_stats,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+
+                          &expected_encoded_searchbox_stats);
     EXPECT_EQ(expected_encoded_searchbox_stats, encoded_searchbox_stats);
   }
 }
@@ -1332,11 +1336,13 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
   match.search_terms_args->searchbox_stats.set_client_name("chrome");
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA==&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA&", url.path());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
-    base::Base64Decode("EgZjaHJvbWXSAQgyNDU2ajBqMA==", &serialized_proto);
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajBqMA",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
     metrics::ChromeSearchboxStats expected;
     expected.ParseFromString(serialized_proto);
     EXPECT_EQ("chrome", expected.client_name());
@@ -1345,11 +1351,13 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   // Test field trial triggered bit set.
   set_search_provider_field_trial_triggered_in_session(true);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqMA==&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqMA&", url.path());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
-    base::Base64Decode("EgZjaHJvbWXSAQgyNDU2ajFqMA==", &serialized_proto);
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajFqMA",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
     metrics::ChromeSearchboxStats expected;
     expected.ParseFromString(serialized_proto);
     EXPECT_EQ("2456j1j0", expected.experiment_stats());
@@ -1359,11 +1367,13 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   set_search_provider_field_trial_triggered_in_session(false);
   set_current_page_classification(metrics::OmniboxEventProto::OTHER);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqNA==&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqNA&", url.path());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
-    base::Base64Decode("EgZjaHJvbWXSAQgyNDU2ajBqNA==", &serialized_proto);
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajBqNA",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
     metrics::ChromeSearchboxStats expected;
     expected.ParseFromString(serialized_proto);
     EXPECT_EQ("2456j0j4", expected.experiment_stats());
@@ -1373,11 +1383,13 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   set_search_provider_field_trial_triggered_in_session(true);
   set_current_page_classification(metrics::OmniboxEventProto::OTHER);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNA==&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNA&", url.path());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
-    base::Base64Decode("EgZjaHJvbWXSAQgyNDU2ajFqNA==", &serialized_proto);
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajFqNA",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
     metrics::ChromeSearchboxStats expected;
     expected.ParseFromString(serialized_proto);
     EXPECT_EQ("2456j1j4", expected.experiment_stats());
@@ -1387,13 +1399,14 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   add_zero_suggest_provider_experiment_stat(
       base::test::ParseJson(R"json({"2":"0:67","4":10001})json"));
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg==&",
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg&",
             url.path());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
-    base::Base64Decode("EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg==",
-                       &serialized_proto);
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
     metrics::ChromeSearchboxStats expected;
     expected.ParseFromString(serialized_proto);
     EXPECT_EQ(1, expected.experiment_stats_v2_size());
@@ -1453,7 +1466,7 @@ TEST_F(AutocompleteProviderTest,
   EXPECT_EQ(
       "//"
       "aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j0j0&gs_lcrp="
-      "EgZjaHJvbWXSAQgyNDU2ajBqMA==&",
+      "EgZjaHJvbWXSAQgyNDU2ajBqMA&",
       url.path());
 }
 
