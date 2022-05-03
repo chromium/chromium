@@ -2,11 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export type ProfileState = {
+  profilePath: string,
+  localProfileName: string,
+  signinState: string,
+  signinRequired: boolean,
+  gaiaName: string,
+  gaiaId: string,
+  userName: string,
+  hostedDomain: string,
+};
+
 /**
  * @fileoverview A helper object used by the profile internals debug page
  * to interact with the browser.
  */
-
 export interface ProfileInternalsBrowserProxy {
   getProfilesList(): void;
 }

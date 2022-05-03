@@ -1,2 +1,38 @@
-<h1>Profile Internals</h1>
-<div id="example-div">[[message_]]</div>
+<h2>Profiles</h2>\
+<template is="dom-repeat" items="[[profilesList_]]">
+    <h3>[[item.localProfileName]]</h3>
+    <table class="profile">
+        <tr>
+            <td>Profile Path</td>
+            <td>[[item.profilePath]]</td>
+        </tr>
+        <tr>
+            <td>Local Profile Name</td>
+            <td>[[item.localProfileName]]</td>
+        </tr>
+        <tr>
+            <td>Signin State</td>
+            <td>[[item.signinState]]</td>
+        </tr>
+        <tr>
+            <td>Signin Required</td>
+            <td>[[item.signinRequired]]</td>
+        </tr>
+        <tr>
+            <td>Gaia Name</td>
+            <td>[[item.gaiaName]]</td>
+        </tr>
+        <tr>
+            <td>Gaia Id</td>
+            <td>[[item.gaiaId]]</td>
+        </tr>
+        <tr>
+            <td>User Name</td>
+            <td>[[item.userName]]</td>
+        </tr>
+        <tr>
+            <td>Hosted Domain</td>
+            <td>[[item.hostedDomain]]</td>
+        </tr>
+    </table>
+</template>

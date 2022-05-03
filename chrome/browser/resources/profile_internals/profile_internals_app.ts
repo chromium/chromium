@@ -8,7 +8,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_internals_app.html.js';
-import {ProfileInternalsBrowserProxy, ProfileInternalsBrowserProxyImpl} from './profile_internals_browser_proxy.js';
+import {ProfileInternalsBrowserProxy, ProfileInternalsBrowserProxyImpl, ProfileState} from './profile_internals_browser_proxy.js';
 
 const ProfileInternalsAppElementBase = WebUIListenerMixin(PolymerElement);
 
@@ -23,30 +23,31 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
 
   static get properties() {
     return {
-      message_: {
-        type: String,
-        value: '',
-      },
+      /**
+       * Profiles list supplied by ProfileInternalsBrowserProxy.
+       */
+      profilesList_: {type: Array, value: () => []},
     };
   }
 
   private profileInternalsBrowserProxy_: ProfileInternalsBrowserProxy =
       ProfileInternalsBrowserProxyImpl.getInstance();
-  private message_: string;
+  private profilesList_: Array<ProfileState>;
 
   override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
-        'profiles-changed',
-        (message: string) => this.handleProfilesChanged_(message));
+        'profiles-list-changed',
+        (profilesList: Array<ProfileState>) =>
+            this.handleProfilesListChanged_(profilesList));
     this.profileInternalsBrowserProxy_.getProfilesList();
   }
 
   /**
    * Handler for when the profiles list are updated.
    */
-  private handleProfilesChanged_(message: string) {
-    this.message_ = message;
+  private handleProfilesListChanged_(profilesList: Array<ProfileState>) {
+    this.profilesList_ = profilesList;
   }
 }
 

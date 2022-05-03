@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PROFILE_INTERNALS_PROFILE_INTERNALS_HANDLER_H_
 
 #include "base/values.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // Handles actions on Profile Internals debug page.
@@ -22,7 +23,12 @@ class ProfileInternalsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleProfilesChanged(const base::Value::List& args);
+  void HandleGetProfilesList(const base::Value::List& args);
+
+  void PushProfilesList();
+
+  // Returns the list of profiles ordered by the local profile name.
+  base::Value GetProfilesList();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PROFILE_INTERNALS_PROFILE_INTERNALS_HANDLER_H_
