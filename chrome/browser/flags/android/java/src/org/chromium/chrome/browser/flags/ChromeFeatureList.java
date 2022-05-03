@@ -492,6 +492,7 @@ public abstract class ChromeFeatureList {
             "SmartSuggestionForLargeDownloads";
     public static final String SNOOZABLE_IPH = "IPH_Snooze";
     public static final String SPANNABLE_INLINE_AUTOCOMPLETE = "SpannableInlineAutocomplete";
+    public static final String SPLIT_COMPOSITOR_TASK = "SplitCompositorTask";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";

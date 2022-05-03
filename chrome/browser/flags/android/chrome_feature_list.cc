@@ -270,6 +270,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
     &kSuppressToolbarCaptures,
+    &kSplitCompositorTask,
     &kStoreHoursAndroid,
     &kSwapPixelFormatToFixConvertFromTranslucent,
     &kTabEngagementReportingAndroid,
@@ -736,6 +737,9 @@ const base::Feature kSpecialLocaleWrapper{"SpecialLocaleWrapper",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSpecialUserDecision{"SpecialUserDecision",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSplitCompositorTask{"SplitCompositorTask",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kStoreHoursAndroid{"StoreHoursAndroid",

@@ -133,6 +133,7 @@ extern const base::Feature kShowScrollableMVTOnNTPAndroid;
 extern const base::Feature kSpannableInlineAutocomplete;
 extern const base::Feature kSpecialLocaleWrapper;
 extern const base::Feature kSpecialUserDecision;
+extern const base::Feature kSplitCompositorTask;
 extern const base::Feature kStoreHoursAndroid;
 extern const base::Feature kSuppressToolbarCaptures;
 extern const base::Feature kSwapPixelFormatToFixConvertFromTranslucent;

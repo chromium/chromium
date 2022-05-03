@@ -770,7 +770,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             mLayoutManager.setEnableAnimations(DeviceClassManager.enableAnimations());
+        }
+    }
 
+    private void initializeCompositorContent() {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeCompositorContent")) {
             // TODO(yusufo): get rid of findViewById(R.id.url_bar).
             initializeCompositorContent(mLayoutManager, findViewById(R.id.url_bar),
                     mContentContainer, mControlContainer);
@@ -930,6 +934,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.startNativeInitialization")) {
             // This is on the critical path so don't delay.
             setupCompositorContentPostNative();
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPLIT_COMPOSITOR_TASK)) {
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                        mCallbackController.makeCancelable(this::initializeCompositorContent));
+            } else {
+                initializeCompositorContent();
+            }
 
             // All this initialization can be expensive so it's split into multiple tasks.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
