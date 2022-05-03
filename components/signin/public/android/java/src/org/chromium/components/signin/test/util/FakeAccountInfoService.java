@@ -6,6 +6,7 @@ package org.chromium.components.signin.test.util;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
@@ -69,11 +70,20 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
      */
     public void addAccountInfo(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
+        addAccountInfo(
+                email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
+    }
+
+    /**
+     * Adds {@link AccountInfo} with the given information to the fake service.
+     */
+    public void addAccountInfo(String email, String fullName, String givenName,
+            @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
         final CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
                 email, FakeAccountManagerFacade.toGaiaId(email));
-        final AccountInfo accountInfo = new AccountInfo(coreAccountInfo.getId(),
-                coreAccountInfo.getEmail(), coreAccountInfo.getGaiaId(), fullName, givenName,
-                avatar, new AccountCapabilities(new HashMap<>()));
+        final AccountInfo accountInfo =
+                new AccountInfo(coreAccountInfo.getId(), coreAccountInfo.getEmail(),
+                        coreAccountInfo.getGaiaId(), fullName, givenName, avatar, capabilities);
         mAccountInfos.put(email, accountInfo);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {

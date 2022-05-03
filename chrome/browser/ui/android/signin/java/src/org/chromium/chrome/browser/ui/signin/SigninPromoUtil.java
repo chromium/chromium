@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
+import org.chromium.base.Promise;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -16,6 +17,9 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -93,7 +97,15 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        if (!accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(false)) {
+        final Promise<AccountInfo> firstAccountPromise =
+                AccountInfoServiceProvider.get().getAccountInfoByEmail(accounts.get(0).name);
+        if (!(firstAccountPromise.isFulfilled()
+                    && firstAccountPromise.getResult()
+                                    .getAccountCapabilities()
+                                    .canOfferExtendedSyncPromos()
+                            == Tribool.TRUE)) {
+            // Show promo only when CanOfferExtendedSyncPromos capability for the first account
+            // is fetched and true.
             return false;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {

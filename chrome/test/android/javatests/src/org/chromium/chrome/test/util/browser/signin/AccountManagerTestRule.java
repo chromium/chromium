@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -37,6 +38,8 @@ import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.HashMap;
 
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
@@ -134,8 +137,18 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo addAccount(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
+        return addAccount(
+                email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
+    }
+
+    /**
+     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to
+     * {@link FakeAccountInfoService}.
+     */
+    public CoreAccountInfo addAccount(String email, String fullName, String givenName,
+            @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
         assert mFakeAccountInfoService != null;
-        mFakeAccountInfoService.addAccountInfo(email, fullName, givenName, avatar);
+        mFakeAccountInfoService.addAccountInfo(email, fullName, givenName, avatar, capabilities);
         final Account account = AccountUtils.createAccountFromName(email);
         mFakeAccountManagerFacade.addAccount(account);
         return toCoreAccountInfo(email);
