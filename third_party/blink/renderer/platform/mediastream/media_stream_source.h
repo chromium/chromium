@@ -67,7 +67,7 @@ class PLATFORM_EXPORT MediaStreamSource final
    public:
     virtual ~Observer() = default;
     virtual void SourceChangedState() = 0;
-    virtual void SourceChangedCaptureHandle(media::mojom::CaptureHandlePtr) = 0;
+    virtual void SourceChangedCaptureHandle() = 0;
   };
 
   enum StreamType { kTypeAudio, kTypeVideo };

@@ -34,8 +34,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
@@ -50,7 +48,6 @@
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/capture_handle_change_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
@@ -820,24 +817,14 @@ void MediaStreamTrackImpl::SourceChangedState() {
   SendLogMessage(String::Format("%s()", __func__));
 }
 
-void MediaStreamTrackImpl::SourceChangedCaptureHandle(
-    media::mojom::CaptureHandlePtr capture_handle_ptr) {
+void MediaStreamTrackImpl::SourceChangedCaptureHandle() {
+  DCHECK(IsMainThread());
+
   if (Ended()) {
     return;
   }
 
-  CaptureHandleChangeEventInit* init = CaptureHandleChangeEventInit::Create();
-  if (capture_handle_ptr) {
-    CaptureHandle* const capture_handle = CaptureHandle::Create();
-    if (!capture_handle_ptr->origin.opaque()) {
-      capture_handle->setOrigin(capture_handle_ptr->origin.Serialize().c_str());
-    }
-    capture_handle->setHandle(capture_handle_ptr->capture_handle.c_str());
-    init->setCaptureHandle(capture_handle);
-  }
-
-  DispatchEvent(*CaptureHandleChangeEvent::Create(
-      event_type_names::kCapturehandlechange, init));
+  DispatchEvent(*Event::Create(event_type_names::kCapturehandlechange));
 }
 
 void MediaStreamTrackImpl::PropagateTrackEnded() {

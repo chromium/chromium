@@ -57,11 +57,8 @@
       }
 
       function onCaptureHandleChange(event) {
-        if (event == undefined || event.captureHandle == undefined) {
-          throw "Unexpected event type.";
-        }
         window.domAutomationController.send(
-          JSON.stringify(event.captureHandle())
+          JSON.stringify(event.target.getCaptureHandle())
         );
       }
 
