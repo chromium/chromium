@@ -71,6 +71,13 @@ _CUSTOM_ANDROID_DEPS_FILES = [
     'subprojects.txt',
 ]
 
+# Dictionary mapping long path names to shorter ones to avoid paths being over
+# 200 chars. This should match the dictionary in BuildConfigGenerator.groovy.
+_REDUCED_ID_LENGTH_MAP = {
+    'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+    'com_google_android_accessibility_test_framework',
+}
+
 # If this file exists in an aar file then it is appended to LICENSE
 _THIRD_PARTY_LICENSE_FILENAME = 'third_party_licenses.txt'
 
@@ -349,6 +356,18 @@ def _CheckVulnerabilities(build_android_deps_dir, report_dst):
             CopyFileOrDirectory(report_src, report_dst)
 
 
+def _ReduceNameLength(path_str):
+    """Returns a shorter path string if needed.
+
+  Args:
+    path_str: A String representing the path.
+  Returns:
+    A String (possibly shortened) of that path.
+  """
+    return path_str if path_str not in _REDUCED_ID_LENGTH_MAP else _REDUCED_ID_LENGTH_MAP[
+        path_str]
+
+
 def GetCipdPackageInfo(cipd_yaml_path):
     """Returns the CIPD package name corresponding to a given cipd.yaml file.
 
@@ -415,7 +434,8 @@ def _CreateAarInfos(aar_files):
 
     for aar_file in aar_files:
         aar_dirname = os.path.dirname(aar_file)
-        aar_info_name = os.path.basename(aar_dirname) + '.info'
+        aar_info_name = _ReduceNameLength(
+            os.path.basename(aar_dirname)) + '.info'
         aar_info_path = os.path.join(aar_dirname, aar_info_name)
 
         logging.debug('- %s', aar_info_name)

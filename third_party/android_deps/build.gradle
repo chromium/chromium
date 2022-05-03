@@ -175,6 +175,10 @@ dependencies {
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
     buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
 
+    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:3.1.2'
+    // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
+    // vulnerability, so grab a later version.
+    androidTestCompile 'org.jsoup:jsoup:1.14.2'
     androidTestCompile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'

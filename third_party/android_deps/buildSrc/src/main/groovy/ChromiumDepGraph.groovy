@@ -134,6 +134,10 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
+        com_google_protobuf_protobuf_lite: new PropertyOverride(
+            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
+            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+            licenseName: 'BSD'),
         javax_annotation_javax_annotation_api: new PropertyOverride(
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.1',
@@ -154,6 +158,13 @@ class ChromiumDepGraph {
         org_checkerframework_dataflow_errorprone: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
+        org_hamcrest_hamcrest: new PropertyOverride(
+            licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE.txt',
+            licenseName: 'BSD'),
+        org_jsoup_jsoup: new PropertyOverride(
+            cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.2',
+            licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
+            licenseName: 'The MIT License'),
         org_ow2_asm_asm: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
             licenseName: 'BSD'),

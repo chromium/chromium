@@ -55,8 +55,6 @@ class BuildConfigGenerator extends DefaultTask {
     static final Map<String, String> EXISTING_LIBS = [
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
-        com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework:
-            '//third_party/accessibility_test_framework:accessibility_test_framework_java',
         junit_junit: '//third_party/junit:junit',
         org_bouncycastle_bcprov_jdk15on: '//third_party/bouncycastle:bouncycastle_java',
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
@@ -65,6 +63,14 @@ class BuildConfigGenerator extends DefaultTask {
         // Remove androidx_window_window from being depended upon since it currently addes <uses-library>
         // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
         androidx_window_window: EXCLUDE_THIS_LIB,
+    ]
+
+    // Some libraries have such long names they'll create a path that exceeds the 200 char path
+    // limit, which is enforce by presubmit checks for Windows.
+    // Needs to match mapping in fetch_all.py.
+    static final Map<String, String> REDUCED_ID_LENGTH_MAP = [
+        'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+            'com_google_android_accessibility_test_framework',
     ]
 
     /**
@@ -136,6 +142,13 @@ class BuildConfigGenerator extends DefaultTask {
     @Input
     @SourceURI
     URI sourceUri
+
+    static void reduceDependencyStrLength(ChromiumDepGraph.DependencyDescription dependency) {
+      String reduced_id = REDUCED_ID_LENGTH_MAP.get(dependency.id)
+      if (reduced_id) {
+          dependency.id = reduced_id
+      }
+    }
 
     static String translateTargetName(String targetName) {
         if (isPlayServicesTarget(targetName)) {
@@ -452,6 +465,7 @@ class BuildConfigGenerator extends DefaultTask {
             return
         }
 
+        reduceDependencyStrLength(dependency)
         String targetName = translateTargetName(dependency.id) + '_java'
         List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
 
