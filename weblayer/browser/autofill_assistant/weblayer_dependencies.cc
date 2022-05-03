@@ -35,6 +35,20 @@ static jlong JNI_WebLayerAssistantStaticDependencies_Init(
       new WebLayerDependencies(env, jstatic_dependencies)));
 }
 
+static ScopedJavaLocalRef<jobject>
+JNI_WebLayerAssistantStaticDependencies_GetJavaProfile(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  if (!web_contents) {
+    return nullptr;
+  }
+  return ScopedJavaLocalRef<jobject>(
+      ProfileImpl::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetJavaProfile());
+}
+
 WebLayerDependencies::WebLayerDependencies(
     JNIEnv* env,
     const JavaParamRef<jobject>& jstatic_dependencies)

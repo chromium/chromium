@@ -24,7 +24,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class WebLayerAssistantDependencies
         extends WebLayerAssistantStaticDependencies implements AssistantDependencies {
-    public WebLayerAssistantDependencies(Activity activity) {
+    public WebLayerAssistantDependencies(Activity activity, WebContents webContents) {
+        super(webContents);
         maybeUpdateDependencies(activity);
     }
 

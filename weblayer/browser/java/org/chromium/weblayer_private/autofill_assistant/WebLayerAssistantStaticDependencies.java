@@ -27,6 +27,7 @@ import org.chromium.components.autofill_assistant.AssistantTabUtil;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.weblayer_private.ProfileImpl;
@@ -38,15 +39,21 @@ import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
  */
 @JNINamespace("weblayer")
 public class WebLayerAssistantStaticDependencies implements AssistantStaticDependencies {
+    private final WebContents mWebContents;
+
+    WebLayerAssistantStaticDependencies(WebContents webContents) {
+        mWebContents = webContents;
+    }
+
     @Override
     public long createNative() {
         return WebLayerAssistantStaticDependenciesJni.get().init(
-                new WebLayerAssistantStaticDependencies());
+                new WebLayerAssistantStaticDependencies(mWebContents));
     }
 
     @Override
     public AssistantDependencies createDependencies(Activity activity) {
-        return new WebLayerAssistantDependencies(activity);
+        return new WebLayerAssistantDependencies(activity, mWebContents);
     }
 
     @Override
@@ -93,8 +100,7 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
 
     @Override
     public BrowserContextHandle getBrowserContext() {
-        // TODO(b/222671580): Implement
-        return null;
+        return WebLayerAssistantStaticDependenciesJni.get().getJavaProfile(mWebContents);
     }
 
     @Override
@@ -138,5 +144,7 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     @NativeMethods
     interface Natives {
         long init(AssistantStaticDependencies staticDependencies);
+
+        ProfileImpl getJavaProfile(WebContents webContents);
     }
 }
