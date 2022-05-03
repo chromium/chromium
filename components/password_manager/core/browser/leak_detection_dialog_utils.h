@@ -10,6 +10,8 @@
 
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -90,6 +92,222 @@ metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);
 // Returns the URL used to launch the password checkup.
 GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer =
                                PasswordCheckupReferrer::kLeakDetectionDialog);
+
+// Captures common traits needed for a leak dialog.
+class LeakDialogTraits {
+ public:
+  explicit LeakDialogTraits(CredentialLeakType leak_type);
+
+  virtual ~LeakDialogTraits() = default;
+
+  // Returns the label for the accept button.
+  virtual std::u16string GetAcceptButtonLabel() const = 0;
+
+  // Returns the label for the cancel button.
+  virtual std::u16string GetCancelButtonLabel() const = 0;
+
+  // Returns the dialog message based on credential leak type.
+  virtual std::u16string GetDescription() const = 0;
+
+  // Returns the dialog title based on credential leak type.
+  virtual std::u16string GetTitle() const = 0;
+
+  // Checks whether the dialog should prompt user to password checkup.
+  virtual bool ShouldCheckPasswords() const = 0;
+
+  // Checks whether the dialog should show cancel button.
+  virtual bool ShouldShowCancelButton() const = 0;
+
+ protected:
+  bool uses_password_manager_updated_naming() const {
+    return uses_password_manager_updated_naming_;
+  }
+
+  bool uses_password_manager_google_branding() const {
+    return uses_password_manager_google_branding_;
+  }
+
+ private:
+  // Set iff Unified Password Manager / Updated branding strings are used.
+  const bool uses_password_manager_updated_naming_;
+  // Set iff Google Chrome Branding strings are used.
+  const bool uses_password_manager_google_branding_;
+};
+
+// Creates a dialog traits object.
+std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
+    CredentialLeakType leak_type);
+
+template <metrics_util::LeakDialogType kDialogType>
+class LeakDialogTraitsImp : public LeakDialogTraits {
+ public:
+  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
+      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
+  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
+
+  std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetDescription() const override;
+  std::u16string GetTitle() const override;
+  bool ShouldCheckPasswords() const override;
+  bool ShouldShowCancelButton() const override;
+};
+
+// Implementation of a leak checkup dialog.
+template <>
+class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
+    : public LeakDialogTraits {
+ public:
+  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
+      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
+  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
+
+  std::u16string GetAcceptButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
+  }
+
+  std::u16string GetCancelButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_CLOSE);
+  }
+
+  std::u16string GetDescription() const override {
+    if (uses_password_manager_updated_naming()) {
+      return l10n_util::GetStringUTF16(
+          uses_password_manager_google_branding()
+              ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+              : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
+    } else {
+      return l10n_util::GetStringUTF16(
+          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE);
+    }
+  }
+
+  std::u16string GetTitle() const override {
+    return l10n_util::GetStringUTF16(uses_password_manager_updated_naming()
+                                         ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
+                                         : IDS_CREDENTIAL_LEAK_TITLE_CHECK);
+  }
+
+  bool ShouldCheckPasswords() const override { return true; }
+
+  bool ShouldShowCancelButton() const override { return true; };
+};
+
+// Implementation of a leak change dialog.
+template <>
+class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChange>
+    : public LeakDialogTraits {
+ public:
+  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
+      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
+  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
+
+  std::u16string GetAcceptButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_OK);
+  }
+
+  std::u16string GetCancelButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_CLOSE);
+  }
+
+  std::u16string GetDescription() const override {
+    if (uses_password_manager_updated_naming()) {
+      return l10n_util::GetStringUTF16(
+          uses_password_manager_google_branding()
+              ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
+              : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
+    } else {
+      return l10n_util::GetStringUTF16(
+          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
+    }
+  }
+
+  std::u16string GetTitle() const override {
+    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
+  }
+
+  bool ShouldCheckPasswords() const override { return false; }
+
+  bool ShouldShowCancelButton() const override { return false; };
+};
+
+// Implementation of a leak checkup and change dialog.
+template <>
+class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
+    : public LeakDialogTraits {
+ public:
+  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
+      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
+  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
+
+  std::u16string GetAcceptButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
+  }
+
+  std::u16string GetCancelButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_CLOSE);
+  }
+
+  std::u16string GetDescription() const override {
+    if (uses_password_manager_updated_naming())
+      return l10n_util::GetStringUTF16(
+          uses_password_manager_google_branding()
+              ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+              : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
+    else
+      return l10n_util::GetStringUTF16(
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE);
+  }
+
+  std::u16string GetTitle() const override {
+    return l10n_util::GetStringUTF16(uses_password_manager_updated_naming()
+                                         ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
+                                         : IDS_CREDENTIAL_LEAK_TITLE_CHECK);
+  }
+
+  bool ShouldCheckPasswords() const override { return true; }
+
+  bool ShouldShowCancelButton() const override { return true; };
+};
+
+// Implementation of a leak automatic change dialog.
+template <>
+class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChangeAutomatically>
+    : public LeakDialogTraits {
+ public:
+  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
+      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
+  LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
+
+  std::u16string GetAcceptButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY);
+  }
+
+  std::u16string GetCancelButtonLabel() const override {
+    return l10n_util::GetStringUTF16(IDS_CLOSE);
+  }
+
+  std::u16string GetDescription() const override {
+    return l10n_util::GetStringUTF16(
+        uses_password_manager_updated_naming()
+            ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM
+            : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
+  }
+
+  std::u16string GetTitle() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
+  }
+
+  bool ShouldCheckPasswords() const override { return false; }
+
+  bool ShouldShowCancelButton() const override { return true; };
+};
 
 }  // namespace password_manager
 

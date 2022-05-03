@@ -9,15 +9,20 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
+using password_manager::CreateDialogTraits;
 using password_manager::CredentialLeakFlags;
 using password_manager::CredentialLeakType;
+using password_manager::LeakDialogTraitsImp;
 using password_manager::metrics_util::LeakDialogDismissalReason;
+using password_manager::metrics_util::LeakDialogType;
 using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
     CredentialLeakType leak_type)
-    : delegate_(delegate), leak_type_(leak_type) {}
+    : delegate_(delegate),
+      leak_type_(leak_type),
+      leak_dialog_traits_(CreateDialogTraits(leak_type)) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
   ResetDialog();
@@ -77,24 +82,24 @@ void CredentialLeakDialogControllerImpl::ResetDialog() {
 
 std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
     const {
-  return password_manager::GetAcceptButtonLabel(leak_type_);
+  return leak_dialog_traits_->GetAcceptButtonLabel();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
     const {
-  return password_manager::GetCancelButtonLabel(leak_type_);
+  return leak_dialog_traits_->GetCancelButtonLabel();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {
-  return password_manager::GetDescription(leak_type_);
+  return leak_dialog_traits_->GetDescription();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetTitle() const {
-  return password_manager::GetTitle(leak_type_);
+  return leak_dialog_traits_->GetTitle();
 }
 
 bool CredentialLeakDialogControllerImpl::ShouldCheckPasswords() const {
-  return password_manager::ShouldCheckPasswords(leak_type_);
+  return leak_dialog_traits_->ShouldCheckPasswords();
 }
 
 bool CredentialLeakDialogControllerImpl::ShouldOfferAutomatedPasswordChange()
@@ -103,5 +108,5 @@ bool CredentialLeakDialogControllerImpl::ShouldOfferAutomatedPasswordChange()
 }
 
 bool CredentialLeakDialogControllerImpl::ShouldShowCancelButton() const {
-  return password_manager::ShouldShowCancelButton(leak_type_);
+  return leak_dialog_traits_->ShouldShowCancelButton();
 }

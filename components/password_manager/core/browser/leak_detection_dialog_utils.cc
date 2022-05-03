@@ -235,4 +235,44 @@ GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer) {
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
 }
 
+LeakDialogTraits::LeakDialogTraits(CredentialLeakType leak_type)
+    :
+#if BUILDFLAG(IS_IOS)
+      uses_password_manager_updated_naming_(base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)),
+      uses_password_manager_google_branding_(true)
+#elif BUILDFLAG(IS_ANDROID)
+      uses_password_manager_updated_naming_(
+          password_manager::features::UsesUnifiedPasswordManagerUi()),
+      uses_password_manager_google_branding_(
+          password_manager_util::UsesPasswordManagerGoogleBranding(
+              IsSyncingPasswordsNormally(leak_type)))
+#else
+      uses_password_manager_updated_naming_(base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)),
+      uses_password_manager_google_branding_(
+          password_manager_util::UsesPasswordManagerGoogleBranding(
+              IsSyncingPasswordsNormally(leak_type)))
+#endif
+{
+}
+
+std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
+    CredentialLeakType leak_type) {
+  switch (password_manager::GetLeakDialogType(leak_type)) {
+    case LeakDialogType::kChange:
+      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kChange>>(
+          leak_type);
+    case LeakDialogType::kCheckup:
+      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kCheckup>>(
+          leak_type);
+    case LeakDialogType::kCheckupAndChange:
+      return std::make_unique<
+          LeakDialogTraitsImp<LeakDialogType::kCheckupAndChange>>(leak_type);
+    case LeakDialogType::kChangeAutomatically:
+      return std::make_unique<
+          LeakDialogTraitsImp<LeakDialogType::kChangeAutomatically>>(leak_type);
+  }
+}
+
 }  // namespace password_manager
