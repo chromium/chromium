@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_is_visible_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
@@ -7847,6 +7848,64 @@ FocusgroupFlags Element::GetFocusgroupFlags() const {
   if (!RuntimeEnabledFeatures::FocusgroupEnabled() || !HasRareData())
     return FocusgroupFlags::kNone;
   return GetElementRareData()->GetFocusgroupFlags();
+}
+
+bool Element::isVisible(IsVisibleOptions* options) const {
+  // Unlock ancestor content-visibility:auto elements. If this element is
+  // offscreen and locked due to content-visibility:auto, this method should not
+  // count that as invisible.
+  DisplayLockUtilities::ScopedForcedUpdate force_locks(
+      this, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree,
+      /*include_self=*/false, /*only_cv_auto=*/true,
+      /*emit_warnings=*/false);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  if (!GetLayoutObject())
+    return false;
+
+  auto* style = GetComputedStyle();
+  if (!style)
+    return false;
+
+  DCHECK(options);
+  if (options->checkVisibilityCSS() &&
+      style->Visibility() != EVisibility::kVisible) {
+    return false;
+  }
+
+  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
+    // Check for content-visibility:hidden
+    if (&ancestor != this) {
+      if (Element* ancestor_element = DynamicTo<Element>(ancestor)) {
+        if (auto* lock = ancestor_element->GetDisplayLockContext()) {
+          if (lock->IsLocked() &&
+              !lock->IsActivatable(DisplayLockActivationReason::kViewport)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Check for opacity:0
+    if (options->checkOpacity()) {
+      if (auto* style = ancestor.GetComputedStyle()) {
+        if (style->Opacity() == 0.f) {
+          return false;
+        }
+      }
+    }
+
+    // Check for inert
+    if (options->checkInert()) {
+      if (HTMLElement* ancestor_element = DynamicTo<HTMLElement>(&ancestor)) {
+        if (ancestor_element->IsInertRoot()) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
 }  // namespace blink

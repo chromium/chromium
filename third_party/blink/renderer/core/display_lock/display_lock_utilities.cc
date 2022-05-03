@@ -249,8 +249,9 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
 
 DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     const Range* range,
-    DisplayLockContext::ForcedPhase phase)
-    : node_(range->FirstNode()), phase_(phase) {
+    DisplayLockContext::ForcedPhase phase,
+    bool only_cv_auto)
+    : node_(range->FirstNode()), phase_(phase), only_cv_auto_(only_cv_auto) {
   if (!node_)
     return;
 
@@ -316,8 +317,10 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
 DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     const Node* node,
     DisplayLockContext::ForcedPhase phase,
-    bool include_self)
-    : node_(node), phase_(phase) {
+    bool include_self,
+    bool only_cv_auto,
+    bool emit_warnings)
+    : node_(node), phase_(phase), only_cv_auto_(only_cv_auto) {
   if (!node_)
     return;
 
@@ -362,12 +365,11 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     if (!ancestor_node)
       continue;
     if (auto* context = ancestor_node->GetDisplayLockContext()) {
-      if (context->IsLocked() &&
+      if (emit_warnings && context->IsLocked() &&
           !context->IsActivatable(DisplayLockActivationReason::kAny)) {
         WarnOnForcedUpdateInNonActivatableContext(node->GetDocument());
       }
-      context->NotifyForcedUpdateScopeStarted(phase_);
-      forced_context_set_.insert(context);
+      ForceDisplayLockIfNeeded(context);
     }
   }
 }
@@ -397,9 +399,18 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
 
 void DisplayLockUtilities::ScopedForcedUpdate::Impl::
     AddForcedUpdateScopeForContext(DisplayLockContext* context) {
-  auto result = forced_context_set_.insert(context);
-  if (result.is_new_entry)
+  if (!forced_context_set_.Contains(context)) {
+    ForceDisplayLockIfNeeded(context);
+  }
+}
+
+void DisplayLockUtilities::ScopedForcedUpdate::Impl::ForceDisplayLockIfNeeded(
+    DisplayLockContext* context) {
+  if (!only_cv_auto_ ||
+      context->IsActivatable(DisplayLockActivationReason::kViewport)) {
+    forced_context_set_.insert(context);
     context->NotifyForcedUpdateScopeStarted(phase_);
+  }
 }
 
 Element* DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(

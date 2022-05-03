@@ -101,6 +101,7 @@ class ResizeObservation;
 class ResizeObserver;
 class ResizeObserverSize;
 class ScrollIntoViewOptions;
+class IsVisibleOptions;
 class ScrollToOptions;
 class ShadowRoot;
 class ShadowRootInit;
@@ -1125,6 +1126,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsInertRoot();
 
   FocusgroupFlags GetFocusgroupFlags() const;
+
+  bool isVisible(IsVisibleOptions* options) const;
 
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }

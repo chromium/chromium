@@ -62,6 +62,7 @@ class CORE_EXPORT DisplayLockUtilities {
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
     friend gfx::RectF Range::BoundingRect() const;
     friend DOMRectList* Range::getClientRects() const;
+    friend bool Element::isVisible(IsVisibleOptions*) const;
 
     friend class DisplayLockContext;
 
@@ -69,12 +70,21 @@ class CORE_EXPORT DisplayLockUtilities {
     friend class DisplayLockContextRenderingTest;
     friend class DisplayLockContextTest;
 
+    // This method will emit console warnings for content-visibility:hidden
+    // subtrees when |emit_warnings| is true and |only_cv_auto| is false.
     explicit ScopedForcedUpdate(const Node* node,
                                 DisplayLockContext::ForcedPhase phase,
-                                bool include_self = false)
-        : impl_(MakeGarbageCollected<Impl>(node, phase, include_self)) {}
+                                bool include_self = false,
+                                bool only_cv_auto = false,
+                                bool emit_warnings = true)
+        : impl_(MakeGarbageCollected<Impl>(node,
+                                           phase,
+                                           include_self,
+                                           only_cv_auto,
+                                           emit_warnings)) {}
     explicit ScopedForcedUpdate(const Range* range,
-                                DisplayLockContext::ForcedPhase phase)
+                                DisplayLockContext::ForcedPhase phase,
+                                bool only_cv_auto = false)
         : impl_(MakeGarbageCollected<Impl>(range, phase)) {}
 
     friend class DisplayLockDocumentState;
@@ -83,8 +93,12 @@ class CORE_EXPORT DisplayLockUtilities {
      public:
       Impl(const Node* node,
            DisplayLockContext::ForcedPhase phase,
-           bool include_self = false);
-      Impl(const Range* range, DisplayLockContext::ForcedPhase phase);
+           bool include_self = false,
+           bool only_cv_auto = false,
+           bool emit_warnings = true);
+      Impl(const Range* range,
+           DisplayLockContext::ForcedPhase phase,
+           bool only_cv_auto = false);
 
       // Adds another display-lock scope to this chain. Added when a new lock is
       // created in the ancestor chain of this chain's node.
@@ -101,10 +115,13 @@ class CORE_EXPORT DisplayLockUtilities {
       }
 
      private:
+      void ForceDisplayLockIfNeeded(DisplayLockContext* context);
+
       Member<const Node> node_;
       DisplayLockContext::ForcedPhase phase_;
       HeapHashSet<Member<DisplayLockContext>> forced_context_set_;
       Member<Impl> parent_frame_impl_;
+      bool only_cv_auto_;
     };
 
     Impl* impl_ = nullptr;

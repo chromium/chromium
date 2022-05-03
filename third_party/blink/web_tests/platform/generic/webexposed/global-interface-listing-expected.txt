@@ -2299,6 +2299,7 @@ interface Element : Node
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
+    method isVisible
     method matches
     method prepend
     method querySelector

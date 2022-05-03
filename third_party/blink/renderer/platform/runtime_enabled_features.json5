@@ -1304,6 +1304,10 @@
       status: "stable",
     },
     {
+      name: "isVisible",
+      status: "experimental",
+    },
+    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
     },
