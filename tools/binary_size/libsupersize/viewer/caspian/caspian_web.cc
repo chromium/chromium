@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <cctype>  // std::isupper()
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -23,6 +24,38 @@
 
 namespace caspian {
 namespace {
+
+class FilterBuffer {
+ public:
+  FilterBuffer() = default;
+  FilterBuffer(const FilterBuffer&) = delete;
+  FilterBuffer& operator=(const FilterBuffer&) = delete;
+
+  size_t remaining() { return kFilterBufferSize - (cursor_ - data_); }
+  void Reset() { cursor_ = data_; }
+  re2::StringPiece Get() { return re2::StringPiece(data_, cursor_ - data_); }
+
+  void Append(char c) {
+    if (remaining() > 0) {
+      cursor_[0] = c;
+      ++cursor_;
+    }
+  }
+
+  void Append(std::string_view str) {
+    size_t nchars = std::min(remaining(), str.size());
+    memcpy(cursor_, str.data(), nchars);
+    cursor_ += nchars;
+  }
+
+ private:
+  static constexpr size_t kFilterBufferSize = 4 * 1024;
+  char data_[kFilterBufferSize];
+  char* cursor_;
+};
+
+FilterBuffer filter_buffer;
+
 std::unique_ptr<SizeInfo> info;
 std::unique_ptr<SizeInfo> before_info;
 std::unique_ptr<DeltaSizeInfo> diff_info;
@@ -43,16 +76,39 @@ re2::StringPiece Re2StringPiece(std::string_view str) {
   return re2::StringPiece(str.data(), str.size());
 }
 
+bool ContainsUpper(const char* str) {
+  while (*str) {
+    if (std::isupper(*str)) {
+      return true;
+    }
+    ++str;
+  }
+  return false;
+}
+
+std::unique_ptr<RE2> CreateFilterRegex(const char* pattern) {
+  RE2::Options options;
+  options.set_case_sensitive(ContainsUpper(pattern));
+  return std::make_unique<RE2>(pattern, options);
+}
+
 bool MatchesRegex(const GroupedPath& id_path,
                   const BaseSymbol& sym,
                   const RE2& regex) {
-  if (RE2::PartialMatch(Re2StringPiece(id_path.path), regex)) {
+  // Write the entire path to a buffer so that regex to match across it.
+  filter_buffer.Reset();
+  filter_buffer.Append(id_path.group);
+  filter_buffer.Append('/');
+  filter_buffer.Append(id_path.path);
+  filter_buffer.Append(':');
+  filter_buffer.Append(sym.FullName());
+
+  // Always match against container even when not grouping by container.
+  if (RE2::PartialMatch(filter_buffer.Get(), regex)) {
     return true;
   }
-  if (RE2::PartialMatch(Re2StringPiece(id_path.group), regex)) {
-    return true;
-  }
-  return RE2::PartialMatch(Re2StringPiece(sym.FullName()), regex);
+
+  return RE2::PartialMatch(Re2StringPiece(sym.ContainerName()), regex);
 }
 
 bool IsMultiContainer() {
@@ -149,9 +205,10 @@ bool BuildTree(bool method_count_mode,
     });
   }
 
+  // Ensure lifetime of regex lasts until filter is used.
   std::unique_ptr<RE2> include_regex;
   if (include_regex_str && *include_regex_str) {
-    include_regex.reset(new RE2(include_regex_str));
+    include_regex = CreateFilterRegex(include_regex_str);
     if (include_regex->error_code() == RE2::NoError) {
       filters.push_back([&include_regex](const GroupedPath& id_path,
                                          const BaseSymbol& sym) -> bool {
@@ -162,7 +219,7 @@ bool BuildTree(bool method_count_mode,
 
   std::unique_ptr<RE2> exclude_regex;
   if (exclude_regex_str && *exclude_regex_str) {
-    exclude_regex.reset(new RE2(exclude_regex_str));
+    exclude_regex = CreateFilterRegex(exclude_regex_str);
     if (exclude_regex->error_code() == RE2::NoError) {
       filters.push_back([&exclude_regex](const GroupedPath& id_path,
                                          const BaseSymbol& sym) -> bool {
