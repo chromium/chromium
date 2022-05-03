@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -136,7 +137,10 @@ class TestSearchProvider : public SearchProvider {
 
 class MixerTest : public testing::Test {
  public:
-  MixerTest() {}
+  MixerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kProductivityLauncher);
+  }
 
   MixerTest(const MixerTest&) = delete;
   MixerTest& operator=(const MixerTest&) = delete;

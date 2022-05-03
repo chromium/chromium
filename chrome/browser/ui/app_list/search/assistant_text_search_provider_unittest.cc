@@ -31,7 +31,9 @@ class AssistantTextSearchProviderTest
   AssistantTextSearchProviderTest() {
     feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
                                        GetParam());
-    search_provider_.set_controller(&search_controller_);
+    auto search_provider = std::make_unique<AssistantTextSearchProvider>();
+    search_provider_ = search_provider.get();
+    search_controller_.AddProvider(0, std::move(search_provider));
   }
   AssistantTextSearchProviderTest(const AssistantTextSearchProviderTest&) =
       delete;
@@ -40,10 +42,8 @@ class AssistantTextSearchProviderTest
   ~AssistantTextSearchProviderTest() override = default;
 
   void SendText(const std::string& text) {
-    search_provider_.Start(base::UTF8ToUTF16(text));
+    search_controller_.StartSearch(base::UTF8ToUTF16(text));
   }
-
-  AssistantTextSearchProvider& search_provider() { return search_provider_; }
 
   ash::MockAssistantState& assistant_state() { return assistant_state_; }
 
@@ -55,7 +55,7 @@ class AssistantTextSearchProviderTest
     if (app_list_features::IsCategoricalSearchEnabled()) {
       return search_controller_.last_results();
     } else {
-      return search_provider_.results();
+      return search_provider_->results();
     }
   }
 
@@ -76,7 +76,7 @@ class AssistantTextSearchProviderTest
   ash::MockAssistantState assistant_state_;
   testing::NiceMock<ash::MockAssistantController> assistant_controller_;
   TestSearchController search_controller_;
-  AssistantTextSearchProvider search_provider_;
+  AssistantTextSearchProvider* search_provider_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,

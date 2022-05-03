@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 
 namespace app_list {
@@ -11,10 +13,26 @@ namespace app_list {
 TestSearchController::TestSearchController() = default;
 TestSearchController::~TestSearchController() = default;
 
-void TestSearchController::StartSearch(const std::u16string& query) {}
+void TestSearchController::StartSearch(const std::u16string& query) {
+  // The search controller used when categorical search is enabled clears all
+  // results when starging another search query - simulate this behavior in
+  // tests when categorical search is enabled.
+  if (!ash::IsContinueSectionResultType(provider_->ResultType()) &&
+      app_list_features::IsCategoricalSearchEnabled()) {
+    last_results_.clear();
+  }
+  provider_->Start(query);
+}
 
 void TestSearchController::StartZeroState(base::OnceClosure on_done,
-                                          base::TimeDelta timeout) {}
+                                          base::TimeDelta timeout) {
+  // The search controller used when categorical search is enabled clears all
+  // results when starging another search query - simulate this behavior in
+  // tests when categorical search is enabled.
+  if (app_list_features::IsCategoricalSearchEnabled())
+    last_results_.clear();
+  provider_->StartZeroState();
+}
 
 void TestSearchController::ViewClosing() {}
 
@@ -31,7 +49,11 @@ size_t TestSearchController::AddGroup(size_t max_results) {
 
 void TestSearchController::AddProvider(
     size_t group_id,
-    std::unique_ptr<SearchProvider> provider) {}
+    std::unique_ptr<SearchProvider> provider) {
+  DCHECK(!provider_);
+  provider_ = std::move(provider);
+  provider_->set_controller(this);
+}
 
 void TestSearchController::SetResults(const SearchProvider* provider,
                                       Results results) {

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -15,7 +17,16 @@
 
 namespace app_list {
 
-class KeyboardShortcutProviderTest : public testing::Test {
+// Parameterized by feature ProductivityLauncher.
+class KeyboardShortcutProviderTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  KeyboardShortcutProviderTest() {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       GetParam());
+  }
+
  protected:
   void SetUp() override {
     // A DCHECK inside a KSV metadata utility function relies on device lists
@@ -24,8 +35,10 @@ class KeyboardShortcutProviderTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    provider_ = std::make_unique<KeyboardShortcutProvider>(profile_.get());
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(0, std::move(provider));
+
     Wait();
   }
 
@@ -39,19 +52,28 @@ class KeyboardShortcutProviderTest : public testing::Test {
     }
   }
 
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<KeyboardShortcutProvider> provider_;
+  KeyboardShortcutProvider* provider_ = nullptr;
 };
+
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         KeyboardShortcutProviderTest,
+                         testing::Bool());
 
 // Make search queries which yield shortcut results with shortcut key
 // combinations of differing length and format. Check that the top result has a
 // high relevance score, and correctly set title and accessible name.
-TEST_F(KeyboardShortcutProviderTest, Search) {
+TEST_P(KeyboardShortcutProviderTest, Search) {
   // Result format: Single Key
-  provider_->Start(u"overview mode");
+  StartSearch(u"overview mode");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -61,7 +83,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Overview mode, Shortcuts, Overview mode key");
 
   // Result format: Modifier + Key
-  provider_->Start(u"lock");
+  StartSearch(u"lock");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -71,7 +93,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Lock screen, Shortcuts, Search+ l");
 
   // Result format: Modifier1 + Modifier2 + Key
-  provider_->Start(u"previous tab");
+  StartSearch(u"previous tab");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -81,7 +103,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Go to previous tab, Shortcuts, Ctrl+ Shift+ Tab");
 
   // Result format: Modifier1 + Key1 or Modifier2 + Key2
-  provider_->Start(u"focus address");
+  StartSearch(u"focus address");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -91,7 +113,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
             u"Focus address bar, Shortcuts, Ctrl+ l or Alt+ d");
 
   // Result format: Custom template string which embeds a Modifier and a Key.
-  provider_->Start(u"switch quickly between windows");
+  StartSearch(u"switch quickly between windows");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -103,7 +125,7 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
       u"until you get to the window you want to open, then release.");
 
   // Result format: Special case result for Take screenshot/recording.
-  provider_->Start(u"take screenshot");
+  StartSearch(u"take screenshot");
   Wait();
 
   ASSERT_FALSE(results().empty());

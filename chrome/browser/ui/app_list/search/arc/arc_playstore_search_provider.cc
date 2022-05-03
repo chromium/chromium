@@ -120,6 +120,7 @@ void ArcPlayStoreSearchProvider::OnResults(
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {
   if (state != arc::ArcPlayStoreSearchRequestState::SUCCESS) {
+    ClearResults();
     DCHECK(
         state ==
             arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA ||

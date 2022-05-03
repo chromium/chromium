@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
@@ -41,15 +43,24 @@ apps::Result MakeAppsResult(const std::u16string& title) {
 
 }  // namespace
 
-class GameProviderTest : public testing::Test {
+// Parameterized by feature ProductivityLauncher.
+class GameProviderTest : public testing::Test,
+                         public testing::WithParamInterface<bool> {
+ public:
+  GameProviderTest() {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       GetParam());
+  }
+
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    provider_ =
+    auto provider =
         std::make_unique<GameProvider>(profile_.get(), &list_controller_);
+    provider_ = provider.get();
 
     search_controller_ = std::make_unique<TestSearchController>();
-    provider_->set_controller(search_controller_.get());
+    search_controller_->AddProvider(0, std::move(provider));
   }
 
   const SearchProvider::Results& LastResults() {
@@ -70,24 +81,33 @@ class GameProviderTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ::test::TestAppListControllerDelegate list_controller_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<Profile> profile_;
 
-  std::unique_ptr<GameProvider> provider_;
+  GameProvider* provider_ = nullptr;
 };
+
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         GameProviderTest,
+                         testing::Bool());
 
 // TODO(crbug.com/1305880): Enable this test once the app discovery service
 // backend has been implemented.
-TEST_F(GameProviderTest, DISABLED_SearchResultsMatchQuery) {
+TEST_P(GameProviderTest, DISABLED_SearchResultsMatchQuery) {
   SetUpTestingIndex();
 
-  provider_->Start(u"first");
+  StartSearch(u"first");
   Wait();
   EXPECT_THAT(LastResults(), ElementsAre(Title("First Title")));
 
-  provider_->Start(u"title");
+  StartSearch(u"title");
   Wait();
   EXPECT_THAT(LastResults(),
               UnorderedElementsAre(Title("First Title"), Title("Second Title"),

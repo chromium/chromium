@@ -47,6 +47,39 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   }
 }
 
+bool IsContinueSectionResultType(AppListSearchResultType result_type) {
+  switch (result_type) {
+    case AppListSearchResultType::kZeroStateFile:
+    case AppListSearchResultType::kZeroStateDrive:
+    case AppListSearchResultType::kZeroStateHelpApp:
+      return true;
+    case AppListSearchResultType::kUnknown:
+    case AppListSearchResultType::kInstalledApp:
+    case AppListSearchResultType::kPlayStoreApp:
+    case AppListSearchResultType::kInstantApp:
+    case AppListSearchResultType::kInternalApp:
+    case AppListSearchResultType::kOmnibox:
+    case AppListSearchResultType::kLauncher:
+    case AppListSearchResultType::kAnswerCard:
+    case AppListSearchResultType::kPlayStoreReinstallApp:
+    case AppListSearchResultType::kArcAppShortcut:
+    case AppListSearchResultType::kFileChip:
+    case AppListSearchResultType::kDriveChip:
+    case AppListSearchResultType::kAssistantChip:
+    case AppListSearchResultType::kOsSettings:
+    case AppListSearchResultType::kInternalPrivacyInfo:
+    case AppListSearchResultType::kAssistantText:
+    case AppListSearchResultType::kHelpApp:
+    case AppListSearchResultType::kFileSearch:
+    case AppListSearchResultType::kDriveSearch:
+    case AppListSearchResultType::kKeyboardShortcut:
+    case AppListSearchResultType::kOpenTab:
+    case AppListSearchResultType::kGames:
+    case AppListSearchResultType::kPersonalization:
+      return false;
+  }
+}
+
 // IconColor -------------------------------------------------------------------
 
 // static

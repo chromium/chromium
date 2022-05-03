@@ -175,9 +175,10 @@ class AppSearchProviderTest : public AppListTestBase {
   void CreateSearch() {
     clock_.SetNow(kTestCurrentTime);
     search_controller_ = std::make_unique<TestSearchController>();
-    app_search_ = std::make_unique<AppSearchProvider>(
+    auto app_search = std::make_unique<AppSearchProvider>(
         profile_.get(), nullptr, &clock_, model_updater_.get());
-    app_search_->set_controller(search_controller_.get());
+    app_search_ = app_search.get();
+    search_controller_->AddProvider(0, std::move(app_search));
   }
 
   void CreateSearchWithContinueReading() {
@@ -194,7 +195,7 @@ class AppSearchProviderTest : public AppListTestBase {
   }
 
   std::string RunQuery(const std::string& query) {
-    app_search_->Start(base::UTF8ToUTF16(query));
+    search_controller_->StartSearch(base::UTF8ToUTF16(query));
 
     // Sort results by relevance.
     std::vector<ChromeSearchResult*> sorted_results;
@@ -221,7 +222,7 @@ class AppSearchProviderTest : public AppListTestBase {
   // container based on index flags instead of relevance, use this methodology
   // to generate list of test results.
   std::string RunQueryNotSortingByRelevance(const std::string& query) {
-    app_search_->Start(base::UTF8ToUTF16(query));
+    search_controller_->StartSearch(base::UTF8ToUTF16(query));
 
     std::vector<ChromeSearchResult*> non_relevance_results;
     std::vector<ChromeSearchResult*> priority_results;
@@ -329,7 +330,7 @@ class AppSearchProviderTest : public AppListTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<AppSearchProvider> app_search_;
+  AppSearchProvider* app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
 

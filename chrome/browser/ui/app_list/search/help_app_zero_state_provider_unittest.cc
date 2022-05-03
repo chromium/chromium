@@ -86,9 +86,10 @@ class HelpAppZeroStateProviderTest
           std::make_unique<AppListNotifierImplOld>(&app_list_controller_);
     }
 
-    provider_ = std::make_unique<HelpAppZeroStateProvider>(
+    auto provider = std::make_unique<HelpAppZeroStateProvider>(
         profile(), app_list_notifier_.get());
-    provider_->set_controller(&search_controller_);
+    provider_ = provider.get();
+    search_controller_.AddProvider(0, std::move(provider));
   }
 
   ash::SearchResultDisplayType GetExpectedReleaseNotesDisplayType() {
@@ -101,13 +102,17 @@ class HelpAppZeroStateProviderTest
                       : IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP;
   }
 
+  void StartZeroStateSearch() {
+    search_controller_.StartZeroState(base::DoNothing(), base::TimeDelta());
+  }
+
   const app_list::Results& GetLatestResults() {
     // When productivity launcher (and thus categorical search) is enabled,
     // results are managed by the search controller instead of individual search
     // providers.
     if (GetParam())
       return search_controller_.last_results();
-    return provider()->results();
+    return provider_->results();
   }
 
   ::test::TestAppListController* app_list_controller() {
@@ -116,13 +121,11 @@ class HelpAppZeroStateProviderTest
 
   ash::AppListNotifier* app_list_notifier() { return app_list_notifier_.get(); }
 
-  HelpAppZeroStateProvider* provider() { return provider_.get(); }
-
  private:
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
-  std::unique_ptr<HelpAppZeroStateProvider> provider_;
+  HelpAppZeroStateProvider* provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -138,7 +141,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   EXPECT_TRUE(GetLatestResults().empty());
 }
@@ -150,7 +153,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   ASSERT_EQ(GetParam() ? 0u : 1u, GetLatestResults().size());
   if (GetParam())
@@ -167,7 +170,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   ASSERT_EQ(1u, GetLatestResults().size());
   ChromeSearchResult* result = GetLatestResults().at(0).get();
@@ -181,7 +184,7 @@ TEST_P(HelpAppZeroStateProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   ASSERT_EQ(1u, GetLatestResults().size());
 
@@ -199,7 +202,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   if (GetParam()) {
     EXPECT_EQ(0u, GetLatestResults().size());
@@ -232,7 +235,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   ASSERT_EQ(1u, GetLatestResults().size());
 
@@ -271,7 +274,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   if (GetParam()) {
     EXPECT_EQ(0u, GetLatestResults().size());
@@ -291,7 +294,7 @@ TEST_P(HelpAppZeroStateProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   ChromeSearchResult* result = GetLatestResults().at(0).get();
   result->Open(/*event_flags=*/0);
@@ -325,7 +328,7 @@ TEST_P(HelpAppZeroStateProviderWithDiscoverTabDisabledTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->StartZeroState();
+  StartZeroStateSearch();
 
   EXPECT_TRUE(GetLatestResults().empty());
 }

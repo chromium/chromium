@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,13 +110,18 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   const size_t kMaxResults = launchable ? 4 : 0;
   constexpr char16_t kQuery[] = u"shortlabel";
 
+  TestSearchController search_controller;
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
-  EXPECT_TRUE(provider->results().empty());
+  ArcAppShortcutsSearchProvider* provider_ptr = provider.get();
+  search_controller.AddProvider(0, std::move(provider));
+  EXPECT_TRUE(search_controller.last_results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
-  provider->Start(kQuery);
-  const auto& results = provider->results();
+  search_controller.StartSearch(kQuery);
+  const auto& results = app_list_features::IsCategoricalSearchEnabled()
+                            ? search_controller.last_results()
+                            : provider_ptr->results();
   EXPECT_EQ(kMaxResults, results.size());
   // Verify search results.
   for (size_t i = 0; i < results.size(); ++i) {

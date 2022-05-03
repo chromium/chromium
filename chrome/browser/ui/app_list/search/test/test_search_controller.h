@@ -55,6 +55,8 @@ class TestSearchController : public SearchController {
   void disable_ranking_for_test() override;
 
  private:
+  std::unique_ptr<SearchProvider> provider_;
+
   Results last_results_;
 };
 

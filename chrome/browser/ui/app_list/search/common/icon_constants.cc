@@ -28,8 +28,10 @@ int GetImageIconDimension() {
 }
 
 SkColor GetGenericIconColor() {
-  if (ash::features::IsProductivityLauncherEnabled()) {
-    return ash::ColorProvider::Get()->GetContentLayerColor(
+  // May be null in tests.
+  ash::ColorProvider* const color_provider = ash::ColorProvider::Get();
+  if (color_provider && ash::features::IsProductivityLauncherEnabled()) {
+    return color_provider->GetContentLayerColor(
         ash::ColorProvider::ContentLayerType::kButtonIconColor);
   }
   return kOmniboxGenericIconColor;

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
@@ -16,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,13 +36,25 @@ MATCHER_P(Title, title, "") {
 
 }  // namespace
 
-class ZeroStateFileProviderTest : public testing::Test {
+// Parameterized by feature ProductivityLauncher.
+class ZeroStateFileProviderTest : public testing::Test,
+                                  public ::testing::WithParamInterface<bool> {
  protected:
+  ZeroStateFileProviderTest() {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       GetParam());
+  }
+  ~ZeroStateFileProviderTest() override = default;
+
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-    provider_ = std::make_unique<ZeroStateFileProvider>(profile_.get());
     app_list_color_provider_ =
         std::make_unique<ash::TestAppListColorProvider>();
+
+    profile_ = std::make_unique<TestingProfile>();
+
+    auto provider = std::make_unique<ZeroStateFileProvider>(profile_.get());
+    provider_ = provider.get();
+    search_controller_.AddProvider(0, std::move(provider));
 
     Wait();
   }
@@ -64,25 +78,47 @@ class ZeroStateFileProviderTest : public testing::Test {
     return e;
   }
 
+  void StartSearch(const std::u16string& query) {
+    search_controller_.StartSearch(query);
+  }
+
+  void StartZeroStateSearch() {
+    search_controller_.StartZeroState(base::DoNothing(), base::TimeDelta());
+  }
+
+  const SearchProvider::Results& LastResults() {
+    if (app_list_features::IsCategoricalSearchEnabled()) {
+      return search_controller_.last_results();
+    }
+
+    return provider_->results();
+  }
+
   void Wait() { task_environment_.RunUntilIdle(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<Profile> profile_;
-  std::unique_ptr<ZeroStateFileProvider> provider_;
+  TestSearchController search_controller_;
+  ZeroStateFileProvider* provider_ = nullptr;
   std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
 };
 
-TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
-  provider_->Start(u"query");
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         ZeroStateFileProviderTest,
+                         testing::Bool());
+
+TEST_P(ZeroStateFileProviderTest, NoResultsWithQuery) {
+  StartSearch(u"query");
   Wait();
-  EXPECT_TRUE(provider_->results().empty());
+  EXPECT_TRUE(LastResults().empty());
 }
 
-TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
+TEST_P(ZeroStateFileProviderTest, ResultsProvided) {
   // Disable flag.
-  scoped_feature_list_.InitWithFeatures(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
       {}, {app_list_features::kEnableSuggestedLocalFiles});
 
   WriteFile("exists_1.txt");
@@ -93,17 +129,17 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
 
-  provider_->StartZeroState();
+  StartZeroStateSearch();
   Wait();
 
-  EXPECT_THAT(
-      provider_->results(),
-      UnorderedElementsAre(Title("exists_1.txt"), Title("exists_2.png")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("exists_1.txt"),
+                                                  Title("exists_2.png")));
 }
 
-TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
+TEST_P(ZeroStateFileProviderTest, OldFilesNotReturned) {
   // Disable flag.
-  scoped_feature_list_.InitWithFeatures(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
       {}, {app_list_features::kEnableSuggestedLocalFiles});
 
   WriteFile("new.txt");
@@ -113,10 +149,10 @@ TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
 
   provider_->OnFilesOpened({OpenEvent("new.txt"), OpenEvent("old.png")});
 
-  provider_->StartZeroState();
+  StartZeroStateSearch();
   Wait();
 
-  EXPECT_THAT(provider_->results(), UnorderedElementsAre(Title("new.txt")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("new.txt")));
 }
 
 }  // namespace app_list

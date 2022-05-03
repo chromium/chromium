@@ -383,6 +383,11 @@ enum class AppListSearchResultType {
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
     AppListSearchResultType result_type);
 
+// Returns whether the result type is a type of result shown in launcher
+// continue section when productivity launcher is enabled.
+ASH_PUBLIC_EXPORT bool IsContinueSectionResultType(
+    AppListSearchResultType result_type);
+
 // The different categories a search result can be part of. Every search result
 // to be displayed in the search box should be associated with one category. It
 // is an error for results displayed in the search box to have a kUnknown
