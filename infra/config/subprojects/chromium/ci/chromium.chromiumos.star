@@ -511,6 +511,25 @@ ci.builder(
 ci.builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "rel",
