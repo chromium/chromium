@@ -3,9 +3,16 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, appendParam} from 'chrome://resources/js/util.m.js';
+import {appendParam} from 'chrome://resources/js/util.m.js';
+
+
+type EventLogEntry = {
+  [key: string]: number|string,
+};
 
 /**
  * Requests the list of WebRTC logs from the backend.
@@ -16,18 +23,25 @@ function requestWebRtcLogsList() {
 
 /**
  * Callback from backend with the list of WebRTC logs. Builds the UI.
- * @param {!{textLogs: !Array, eventLogs: !Array, version: string}} results
  */
-function updateWebRtcLogsList({textLogs, eventLogs, version}) {
-  updateWebRtcTextLogsList(textLogs, version);
-  updateWebRtcEventLogsList(eventLogs);
+function updateWebRtcLogsList(results: {
+  textLogs: EventLogEntry[],
+  eventLogs: EventLogEntry[],
+  version: string,
+}) {
+  updateWebRtcTextLogsList(results.textLogs, results.version);
+  updateWebRtcEventLogsList(results.eventLogs);
 }
 
-function updateWebRtcTextLogsList(textLogsList, version) {
-  $('text-log-banner').textContent =
+function updateWebRtcTextLogsList(
+    textLogsList: EventLogEntry[], version: string) {
+  const banner = document.querySelector<HTMLElement>('#text-log-banner');
+  assert(banner);
+  banner.textContent =
       loadTimeData.getStringF('webrtcTextLogCountFormat', textLogsList.length);
 
-  const textLogSection = $('text-log-list');
+  const textLogSection = document.querySelector<HTMLElement>('#text-log-list');
+  assert(textLogSection);
 
   // Clear any previous list.
   textLogSection.textContent = '';
@@ -43,21 +57,23 @@ function updateWebRtcTextLogsList(textLogsList, version) {
     logBlock.appendChild(title);
 
     const localFileLine = document.createElement('p');
-    if (textLog['local_file'].length === 0) {
+    const localFile = textLog['local_file'] as string;
+    if (localFile.length === 0) {
       localFileLine.textContent =
           loadTimeData.getString('noLocalLogFileMessage');
     } else {
       localFileLine.textContent =
           loadTimeData.getString('webrtcLogLocalFileLabelFormat') + ' ';
       const localFileLink = document.createElement('a');
-      localFileLink.href = 'file://' + textLog['local_file'];
-      localFileLink.textContent = textLog['local_file'];
+      localFileLink.href = 'file://' + localFile;
+      localFileLink.textContent = localFile;
       localFileLine.appendChild(localFileLink);
     }
     logBlock.appendChild(localFileLine);
 
     const uploadLine = document.createElement('p');
-    if (textLog['id'].length === 0) {
+    const id = textLog['id'] as string;
+    if (id.length === 0) {
       uploadLine.textContent =
           loadTimeData.getString('webrtcLogNotUploadedMessage');
     } else {
@@ -79,7 +95,7 @@ function updateWebRtcTextLogsList(textLogsList, version) {
         '', '1.', '2.', '3.', '',
         '*Please note that issues filed with no information filled in ' +
             'above will be marked as WontFix*',
-        '', '****DO NOT CHANGE BELOW THIS LINE****', 'report_id:' + textLog.id
+        '', '****DO NOT CHANGE BELOW THIS LINE****', 'report_id:' + id
       ];
       const params = {
         template: 'Defect report from user',
@@ -87,7 +103,8 @@ function updateWebRtcTextLogsList(textLogsList, version) {
       };
       let href = 'http://code.google.com/p/chromium/issues/entry';
       for (const param in params) {
-        href = appendParam(href, param, params[param]);
+        href = appendParam(
+            href, param, (params as {[key: string]: string})[param]);
       }
       link.href = href;
       link.target = '_blank';
@@ -99,11 +116,15 @@ function updateWebRtcTextLogsList(textLogsList, version) {
     textLogSection.appendChild(logBlock);
   }
 
-  $('text-no-logs').hidden = (textLogsList.length !== 0);
+  const noLogs = document.querySelector<HTMLElement>('#text-no-logs');
+  assert(noLogs);
+  noLogs.hidden = (textLogsList.length !== 0);
 }
 
-function updateWebRtcEventLogsList(eventLogsList) {
-  const eventLogSection = $('event-log-list');
+function updateWebRtcEventLogsList(eventLogsList: EventLogEntry[]) {
+  const eventLogSection =
+      document.querySelector<HTMLElement>('#event-log-list');
+  assert(eventLogSection);
 
   eventLogSection.textContent = '';  // Clear any previous list.
 
@@ -117,19 +138,24 @@ function updateWebRtcEventLogsList(eventLogsList) {
     }
   }
 
-  $('event-log-banner').textContent =
+  const banner = document.querySelector<HTMLElement>('#event-log-banner');
+  assert(banner);
+  banner.textContent =
       loadTimeData.getStringF('webrtcEventLogCountFormat', entries);
 
-  $('event-no-logs').hidden = (entries !== 0);
+  const noLogs = document.querySelector<HTMLElement>('#event-no-logs');
+  assert(noLogs);
+  noLogs.hidden = (entries !== 0);
 }
 
-function createEventLogEntryElement(eventLogEntry) {
+function createEventLogEntryElement(eventLogEntry: EventLogEntry): HTMLElement|
+    null {
   // See LogHistory in webrtc_event_log_manager_remote.cc for an explanation
   // of the various states.
   const state = eventLogEntry['state'];
   if (!state) {
     console.error('Unknown state.');
-    return;
+    return null;
   } else if (state === 'pending' || state === 'actively_uploaded') {
     return createPendingOrActivelyUploadedEventLogEntryElement(eventLogEntry);
   } else if (state === 'not_uploaded') {
@@ -139,14 +165,15 @@ function createEventLogEntryElement(eventLogEntry) {
   } else if (state === 'upload_successful') {
     return createUploadSuccessfulEventLogEntryElement(eventLogEntry);
   } else {
-    console.error('Unrecognized state.');
+    assertNotReached();
   }
 }
 
-function createPendingOrActivelyUploadedEventLogEntryElement(eventLogEntry) {
+function createPendingOrActivelyUploadedEventLogEntryElement(
+    eventLogEntry: EventLogEntry): HTMLElement|null {
   const expectedFields = ['capture_time', 'local_file'];
   if (!verifyExpectedFields(eventLogEntry, expectedFields)) {
-    return;
+    return null;
   }
 
   const logBlock = document.createElement('div');
@@ -166,10 +193,11 @@ function createPendingOrActivelyUploadedEventLogEntryElement(eventLogEntry) {
   return logBlock;
 }
 
-function createNotUploadedEventLogEntryElement(eventLogEntry) {
+function createNotUploadedEventLogEntryElement(eventLogEntry: EventLogEntry):
+    HTMLElement|null {
   const expectedFields = ['capture_time', 'local_id'];
   if (!verifyExpectedFields(eventLogEntry, expectedFields)) {
-    return;
+    return null;
   }
 
   const logBlock = document.createElement('div');
@@ -185,10 +213,11 @@ function createNotUploadedEventLogEntryElement(eventLogEntry) {
   return logBlock;
 }
 
-function createUploadUnsuccessfulEventLogEntryElement(eventLogEntry) {
+function createUploadUnsuccessfulEventLogEntryElement(
+    eventLogEntry: EventLogEntry): HTMLElement|null {
   const expectedFields = ['capture_time', 'local_id', 'upload_time'];
   if (!verifyExpectedFields(eventLogEntry, expectedFields)) {
-    return;
+    return null;
   }
 
   const logBlock = document.createElement('div');
@@ -204,11 +233,12 @@ function createUploadUnsuccessfulEventLogEntryElement(eventLogEntry) {
   return logBlock;
 }
 
-function createUploadSuccessfulEventLogEntryElement(eventLogEntry) {
+function createUploadSuccessfulEventLogEntryElement(
+    eventLogEntry: EventLogEntry): HTMLElement|null {
   const expectedFields =
       ['capture_time', 'local_id', 'upload_id', 'upload_time'];
   if (!verifyExpectedFields(eventLogEntry, expectedFields)) {
-    return;
+    return null;
   }
 
   const logBlock = document.createElement('div');
@@ -229,7 +259,8 @@ function createUploadSuccessfulEventLogEntryElement(eventLogEntry) {
   return logBlock;
 }
 
-function verifyExpectedFields(entry, expectedFields) {
+function verifyExpectedFields(
+    entry: {[key: string]: string|number}, expectedFields: string[]): boolean {
   for (const fieldIdx in expectedFields) {
     const field = expectedFields[fieldIdx];
     if (!entry[field]) {
@@ -240,26 +271,28 @@ function verifyExpectedFields(entry, expectedFields) {
   return true;
 }
 
-function appendCaptureTime(logBlock, eventLogEntry) {
+function appendCaptureTime(
+    logBlock: HTMLElement, eventLogEntry: EventLogEntry) {
   const title = document.createElement('h3');
   title.textContent = loadTimeData.getStringF(
       'webrtcLogHeaderFormat', eventLogEntry['capture_time']);
   logBlock.appendChild(title);
 }
 
-function appendLocalFile(logBlock, eventLogEntry) {
+function appendLocalFile(logBlock: HTMLElement, eventLogEntry: EventLogEntry) {
   // Local file on disk, if still on disk.
   const localFileLine = document.createElement('p');
   localFileLine.textContent =
       loadTimeData.getString('webrtcLogLocalFileLabelFormat') + ' ';
   const localFileLink = document.createElement('a');
-  localFileLink.href = 'file://' + eventLogEntry['local_file'];
-  localFileLink.textContent = eventLogEntry['local_file'];
+  const fileName = eventLogEntry['local_file'] as string;
+  localFileLink.href = 'file://' + fileName;
+  localFileLink.textContent = fileName;
   localFileLine.appendChild(localFileLink);
   logBlock.appendChild(localFileLine);
 }
 
-function appendLocalLogId(logBlock, eventLogEntry) {
+function appendLocalLogId(logBlock: HTMLElement, eventLogEntry: EventLogEntry) {
   const localIdLine = document.createElement('p');
   localIdLine.textContent =
       loadTimeData.getStringF(

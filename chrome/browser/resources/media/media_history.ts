@@ -14,9 +14,9 @@ import {MediaHistoryStats, MediaHistoryStore, MediaHistoryStoreRemote} from './m
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated.
 const mediaHistoryPageIsPopulatedResolver = new PromiseResolver<void>();
-const whenPageIsPopulatedForTest = function() {
+function whenPageIsPopulatedForTest(): Promise<void> {
   return mediaHistoryPageIsPopulatedResolver.promise;
-};
+}
 Object.assign(window, {whenPageIsPopulatedForTest});
 
 let store: MediaHistoryStoreRemote|null = null;

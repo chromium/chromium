@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -12,7 +11,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocess_folder = "preprocessed"
 copy("copy_mojo") {
   deps = [ "//chrome/browser/media:mojo_bindings_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/media/media_engagement_score_details.mojom-webui.js",
+  ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
@@ -21,20 +23,33 @@ preprocess_if_expr("preprocess_src") {
   in_files = [
     "media_history.ts",
     "media_data_table.ts",
+    "media_engagement.ts",
+    "webrtc_logs.ts",
   ]
   out_folder = "$target_gen_dir/$preprocess_folder"
 }
+
+# Exclude these files from ts_library()'s output manifest, since they are
+# manually registered in dev_ui_browser_resources.grd.
+non_manifest_files = [
+  "media_history.ts",
+  "media_data_table.ts",
+  "media_engagement.ts",
+  "media_engagement_score_details.mojom-webui.js",
+  "media_history_store.mojom-webui.js",
+]
 
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = target_gen_dir
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "media_history.ts",
-    "media_data_table.ts",
-    "media_history_store.mojom-webui.js",
+  in_files = non_manifest_files + [ "webrtc_logs.ts" ]
+  manifest_excludes = non_manifest_files
+
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
-  deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
     ":copy_mojo",
     ":preprocess_src",
@@ -47,9 +62,10 @@ generate_grd("build_grd") {
   input_files = [
     "webrtc_logs.css",
     "webrtc_logs.html",
-    "webrtc_logs.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  deps = [ ":build_ts" ]
 }
 
 grit("webrtc_logs_resources") {
@@ -65,29 +81,4 @@ grit("webrtc_logs_resources") {
     "webrtc_logs_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/media/history",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/media/",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/services/media_session/public/mojom/",
-                            root_build_dir),
-                  ]
-  deps = [ ":media_engagement" ]
-}
-
-js_library("media_engagement") {
-  deps = [
-    "//chrome/browser/media:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
 }
