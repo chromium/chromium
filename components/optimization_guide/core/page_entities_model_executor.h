@@ -15,21 +15,6 @@
 
 namespace optimization_guide {
 
-// TODO(crbug/1278828): Remove this entirely.
-class HumanReadablePageEntitiesModelExecutor {
- public:
-  virtual ~HumanReadablePageEntitiesModelExecutor() = default;
-
-  using PageEntitiesModelExecutedCallback = base::OnceCallback<void(
-      const absl::optional<std::vector<tflite::task::core::Category>>&)>;
-
-  // Annotates |text| with page entities likely represented on the page. Invokes
-  // |callback| when done.
-  virtual void ExecuteModelWithInput(
-      const std::string& text,
-      PageEntitiesModelExecutedCallback callback) = 0;
-};
-
 // The PageEntitiesModelExecutor is responsible for executing the PAGE_ENTITIES
 // model.
 class PageEntitiesModelExecutor {
