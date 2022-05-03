@@ -124,6 +124,20 @@ export function getNumberOfGridItemsPerRow(): number {
 }
 
 /**
+ * Returns the attribution list from local storage.
+ * Such as attribution (image title, author...) of a downloaded image.
+ */
+export function getLocalStorageAttribution(key: string): string[] {
+  const attributionMap =
+      JSON.parse((window.localStorage['attribution'] || '{}'));
+  const attribution = attributionMap[key];
+  if (!attribution) {
+    console.warn('Unable to get attribution from local storage.', key);
+  }
+  return attribution;
+}
+
+/**
  * Normalizes the given |key| for RTL.
  */
 export function normalizeKeyForRTL(key: string, isRTL: boolean): string {

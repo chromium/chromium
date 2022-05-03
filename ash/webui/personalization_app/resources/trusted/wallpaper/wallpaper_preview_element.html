@@ -70,7 +70,7 @@
   <template is="dom-if" if="[[showImage_]]">
       <div id="imageContainer" class="photo-images-container clickable"
           on-click="onClickWallpaper_" on-keypress="onClickWallpaper_">
-        <img src$="[[getImageSrc_(image_)]]" aria-hidden="true">
+        <img src$="[[getImageSrc_(image_)]]" alt$="[[getImageAltDescription_(image_)]]">
         <div id="shelf"></div>
       </div>
   </template>

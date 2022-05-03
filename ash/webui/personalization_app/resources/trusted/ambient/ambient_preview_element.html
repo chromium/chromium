@@ -200,35 +200,38 @@
       <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums available.
            Currently, we show blank containers -->
       <template is="dom-if" if="[[previewAlbums_]]">
-        <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+        <div id="imageContainer" class="preview-image-container">
           <template is="dom-if" if="[[clickable]]">
             <img class="preview-image clickable" is="cr-auto-img"
                 on-click="onClickPreviewImage_"
                 on-keypress="onClickPreviewImage_"
                 auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
                 is-google-photos>
           </template>
           <template is="dom-if" if="[[!clickable]]">
             <img class="preview-image" is="cr-auto-img"
                 auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
                 is-google-photos>
           </template>
         </div>
-        <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
+        <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
+            aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
           <span id="currentlySet" class="currently-set-text" aria-hidden="true">
             $i18n{currentlySet}
           </span>
           <span id="albumTitle" aria-hidden="true">
             [[getAlbumTitle_(firstPreviewAlbum_)]]
           </span>
-          <paper-tooltip id="albumTitleTooltip" for="albumTitle">
+          <paper-tooltip id="albumTitleTooltip" for="albumTitle" aria-hidden="true">
             <span>[[getAlbumTitle_(firstPreviewAlbum_)]]</span>
           </paper-tooltip>
           <span id="albumDescription" aria-hidden="true">
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
         </h2>
-        <div id="collageContainer" class$="[[getCollageContainerClass_(collageImages_)]]">
+        <div id="collageContainer" class$="[[getCollageContainerClass_(collageImages_)]]" aria-hidden="true">
           <template is="dom-repeat" items="[[collageImages_]]">
             <img class="collage-item" is="cr-auto-img"
                 auto-src="[[item.url]]" is-google-photos>

@@ -193,6 +193,11 @@ export class AmbientPreview extends WithPersonalizationStore {
         '';
   }
 
+  private getPreviewTextAriaLabel_(): string {
+    return `${this.i18n('currentlySet')} ${this.getAlbumTitle_()} ${
+        this.getAlbumDescription_()}`;
+  }
+
   private getAlbumTitle_(): string {
     return this.firstPreviewAlbum_ ? this.firstPreviewAlbum_.title : '';
   }

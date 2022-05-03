@@ -14,7 +14,8 @@ import '../../common/styles.js';
 import './styles.js';
 import '../cros_button_style.js';
 
-import {CurrentWallpaper, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
+import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
@@ -86,6 +87,26 @@ export class WallpaperPreview extends WithPersonalizationStore {
       return image.url.url;
     }
     return '';
+  }
+
+  private getImageAltDescription_(image: CurrentWallpaper|null): string {
+    if (!image) {
+      return `${this.i18n('currentlySet')} ${
+          this.i18n('unknownImageAttribution')}`;
+    }
+    if (image.type === WallpaperType.kDefault) {
+      return `${this.i18n('currentlySet')} ${this.i18n('defaultWallpaper')}`;
+    }
+    if (isNonEmptyArray(image.attribution)) {
+      return [this.i18n('currentlySet'), ...image.attribution].join(' ');
+    }
+    // Fallback to cached attribution.
+    const attribution = getLocalStorageAttribution(image.key);
+    if (isNonEmptyArray(attribution)) {
+      return [this.i18n('currentlySet'), ...attribution].join(' ');
+    }
+    return `${this.i18n('currentlySet')} ${
+        this.i18n('unknownImageAttribution')}`;
   }
 
   private computeShowImage_(image: CurrentWallpaper|null, loading: boolean):
