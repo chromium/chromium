@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -493,13 +494,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
   AppId app_id2 = InstallAppAsUserInitiated(
       GetProfile(0), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GetUserInitiatedAppURL2());
-
   ASSERT_NE(app_id1, app_id2);
-
+  
   // Wait for both of the webapps to be installed on profile 1.
-  WebAppTestInstallObserver(GetProfile(1))
-      .BeginListeningAndWait({app_id1, app_id2});
-  EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
+  ASSERT_TRUE(AwaitQuiescence());
+  apps_helper::AwaitWebAppQuiescence({GetProfile(0), GetProfile(1)});
+
+  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
   syncer::StringOrdinal page_ordinal =
       GetAppSorting(GetProfile(0))->CreateFirstAppPageOrdinal();
