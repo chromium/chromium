@@ -100,7 +100,11 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   void CreateHotseatWidget(aura::Window* container);
   void CreateStatusAreaWidget(aura::Window* status_container);
   void CreateShelfWidget(aura::Window* root);
+
+  // Begins shutdown of the ShelfWidget and all child widgets.
   void ShutdownShelfWidget();
+
+  // Resets `shelf_widget_`.
   void DestroyShelfWidget();
 
   // Returns true if the shelf is visible. Shelf can be visible in 1)
@@ -187,6 +191,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   void RemoveObserver(ShelfObserver* observer);
 
   void NotifyShelfIconPositionsChanged();
+
   StatusAreaWidget* GetStatusAreaWidget() const;
 
   // Get the tray button that the system tray bubble and the notification center

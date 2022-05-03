@@ -2103,6 +2103,7 @@ ShelfLayoutManager::CalculateAutoHideStateBasedOnCursorLocation() const {
 bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
   if (!window)
     return false;
+
   const aura::Window* shelf_window = shelf_widget_->GetNativeWindow();
   const aura::Window* navigation_window =
       shelf_->navigation_widget()->GetNativeWindow();

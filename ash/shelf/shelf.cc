@@ -442,13 +442,16 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
 }
 
 void Shelf::ShutdownShelfWidget() {
+  // Remove observers prior to destroying child widgets, this prevents
+  // activation changes from triggering during shutdown, see
+  // https://crbug.com/1307898.
+  shelf_widget_->Shutdown();
+
   // The contents view of the hotseat widget may rely on the status area widget.
   // So do explicit destruction here.
   hotseat_widget_.reset();
   status_area_widget_.reset();
   navigation_widget_.reset();
-
-  shelf_widget_->Shutdown();
 }
 
 void Shelf::DestroyShelfWidget() {

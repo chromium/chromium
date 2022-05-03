@@ -83,6 +83,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   void SetTrayBubbleHeight(int height) {
     message_popup_collection_->SetTrayBubbleHeight(height);
   }
+
   message_center::MessagePopupView* GetPopupViewForNotificationID(
       const std::string& notification_id) {
     return message_popup_collection_->GetPopupViewForNotificationID(
