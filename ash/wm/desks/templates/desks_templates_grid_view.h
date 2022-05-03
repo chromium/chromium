@@ -61,16 +61,9 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // shuffle `grid_items_` to their final positions.
   void DeleteTemplates(const std::vector<std::string>& uuids);
 
-  // Returns the grid item view if there is a template name is being modified,
-  // otherwise returns `nullptr`.
-  DesksTemplatesItemView* GridItemBeingModified();
-
-  // Returns whether the given `point_in_screen` intersects with the feedback
-  // button.
-  bool IntersectsWithFeedbackButton(const gfx::Point& point_in_screen);
-
-  // Returns whether the given `point_in_screen` intersect with any grid item.
-  bool IntersectsWithGridItem(const gfx::Point& point_in_screen);
+  // Returns true if a template name is being modified using an item view's
+  // `DesksTemplatesNameView` in this grid.
+  bool IsTemplateNameBeingModified() const;
 
   // Returns the item view associated with `uuid`.
   DesksTemplatesItemView* GetItemForUUID(const base::GUID& uuid);

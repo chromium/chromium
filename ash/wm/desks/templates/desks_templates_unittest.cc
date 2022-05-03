@@ -3377,6 +3377,39 @@ TEST_F(DesksTemplatesTest, ClickOrTapToExitGridView) {
   }
 }
 
+// Tests that right clicking on the wallpaper while showing the saved desks grid
+// does not exit overview.
+TEST_F(DesksTemplatesTest, RightClickOnWallpaperStaysInOverview) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Find a point that doesn't touch the item view, but is still in the grid
+  // widget's window bounds. Right clicking this point should not close
+  // overview, as it should open the wallpaper context menu.
+  DesksTemplatesItemView* item_view =
+      GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
+  DCHECK(item_view);
+  gfx::Rect item_view_expanded_bounds = item_view->GetBoundsInScreen();
+  item_view_expanded_bounds.Outset(40);
+  const gfx::Rect grid_widget_bounds = GetOverviewGridList()[0]
+                                           ->desks_templates_grid_widget()
+                                           ->GetWindowBoundsInScreen();
+  ASSERT_TRUE(grid_widget_bounds.Contains(item_view_expanded_bounds));
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(item_view_expanded_bounds.bottom_right());
+  event_generator->ClickRightButton();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Left click twice to exit overview, once to close the context menu and once
+  // to do the actual exiting.
+  event_generator->ClickLeftButton();
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(InOverviewSession());
+}
+
 // Tests that if there is an existing visible on all desks window, after
 // launching a new desk the window is part of the new desk and is in an overview
 // item.

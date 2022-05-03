@@ -27,6 +27,7 @@
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -87,6 +88,43 @@ gfx::Transform GetScaleTransformForView(views::View* view) {
 }
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// CustomWindowTargeter:
+
+// A custom targeter that only allows us to handle events which are located on
+// the children of the grid. The grid takes up all the available space in
+// overview, but we still want some events to fall through to the
+// `OverviewGridEventHandler`, if they are not handled by the grid's children.
+class CustomWindowTargeter : public aura::WindowTargeter {
+ public:
+  explicit CustomWindowTargeter(DesksTemplatesGridView* owner)
+      : owner_(owner) {}
+  CustomWindowTargeter(const CustomWindowTargeter&) = delete;
+  CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
+  ~CustomWindowTargeter() override = default;
+
+  // aura::WindowTargeter:
+  bool SubtreeShouldBeExploredForEvent(aura::Window* window,
+                                       const ui::LocatedEvent& event) override {
+    // TODO(dandersson|yongshun): For desk templates this is sufficient, but for
+    // save and recall we may have children that are not buttons, offscreen
+    // children or invisible children.
+    for (views::View* child : owner_->children()) {
+      if (child->GetBoundsInScreen().Contains(event.location())) {
+        return aura::WindowTargeter::SubtreeShouldBeExploredForEvent(window,
+                                                                     event);
+      }
+    }
+
+    // None of the grids' children will handle the event, so `window` won't
+    // handle the event and it will fall through to the wallpaper.
+    return false;
+  }
+
+ private:
+  DesksTemplatesGridView* const owner_;
+};
 
 // -----------------------------------------------------------------------------
 // DesksTemplatesEventHandler:
@@ -317,15 +355,15 @@ void DesksTemplatesGridView::DeleteTemplates(
   NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
-DesksTemplatesItemView* DesksTemplatesGridView::GridItemBeingModified() {
+bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
   if (!GetWidget()->IsActive())
-    return nullptr;
+    return false;
 
   for (auto* grid_item : grid_items_) {
     if (grid_item->IsTemplateNameBeingModified())
-      return grid_item;
+      return true;
   }
-  return nullptr;
+  return false;
 }
 
 void DesksTemplatesGridView::Layout() {
@@ -353,6 +391,8 @@ void DesksTemplatesGridView::AddedToWidget() {
   widget_window_ = GetWidget()->GetNativeWindow();
   widget_window_->AddObserver(this);
   widget_window_->AddPreTargetHandler(event_handler_.get());
+  widget_window_->SetEventTargeter(
+      std::make_unique<CustomWindowTargeter>(this));
 }
 
 void DesksTemplatesGridView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -380,21 +420,6 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
   widget_window_->RemoveObserver(this);
   event_handler_.reset();
   widget_window_ = nullptr;
-}
-
-bool DesksTemplatesGridView::IntersectsWithFeedbackButton(
-    const gfx::Point& point_in_screen) {
-  return feedback_button_ &&
-         feedback_button_->bounds().Contains(point_in_screen);
-}
-
-bool DesksTemplatesGridView::IntersectsWithGridItem(
-    const gfx::Point& point_in_screen) {
-  for (DesksTemplatesItemView* grid_item : grid_items_) {
-    if (grid_item->bounds().Contains(point_in_screen))
-      return true;
-  }
-  return false;
 }
 
 DesksTemplatesItemView* DesksTemplatesGridView::GetItemForUUID(
@@ -442,35 +467,6 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
     }
     default:
       break;
-  }
-
-  // If the event is `ui::ET_MOUSE_RELEASED` or `ui::ET_GESTURE_TAP`, it might
-  // be a click/tap outside grid item and feedback button to exit overview or
-  // to commit name changes.
-  if (event->type() == ui::ET_MOUSE_RELEASED ||
-      event->type() == ui::ET_GESTURE_TAP) {
-    DesksTemplatesItemView* grid_item_being_modified = GridItemBeingModified();
-    if (grid_item_being_modified &&
-        !grid_item_being_modified->bounds().Contains(event->location())) {
-      // When there is a desk grid template name being modified, and the
-      // location is outside of the current grid item, commit the name change.
-      DesksTemplatesNameView::CommitChanges(GetWidget());
-      event->StopPropagation();
-      event->SetHandled();
-      return;
-    }
-    if (!grid_item_being_modified &&
-        !IntersectsWithGridItem(event->location()) &&
-        !IntersectsWithFeedbackButton(event->location())) {
-      // When there is no desk grid template name being modified, and the
-      // location does not intersect with any grid item or the feedback button,
-      // exit overview.
-      Shell::Get()->overview_controller()->EndOverview(
-          OverviewEndAction::kClickingOutsideWindowsInOverview);
-      event->StopPropagation();
-      event->SetHandled();
-      return;
-    }
   }
 }
 
