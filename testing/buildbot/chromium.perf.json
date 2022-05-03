@@ -1054,6 +1054,45 @@
       }
     ]
   },
+  "chromeos-arm-generic-lacros-builder-perf": {
+    "additional_compile_targets": [
+      "chrome",
+      "lacros_version_metadata"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--arch=arm32"
+        ],
+        "isolate_name": "resource_sizes_lacros_chrome",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_lacros_chrome",
+        "override_compile_targets": [
+          "resource_sizes_lacros_chrome"
+        ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
+    ]
+  },
   "lacros-eve-perf": {
     "isolated_scripts": [
       {

@@ -29,6 +29,7 @@ _VALID_PERF_POOLS = {
     'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
+    'chromeos-arm-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
     'fuchsia-perf-atlas-fyi': {'chrome.tests'},
     'fuchsia-perf-sherlock-fyi': {'chrome.tests'},

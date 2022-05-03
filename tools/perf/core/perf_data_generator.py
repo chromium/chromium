@@ -1087,6 +1087,29 @@ BUILDERS = {
         'perf_trigger':
         False,
     },
+    'chromeos-arm-generic-lacros-builder-perf': {
+        'additional_compile_targets': ['chrome', 'lacros_version_metadata'],
+        'tests': [
+            {
+                'name': 'resource_sizes_lacros_chrome',
+                'isolate': 'resource_sizes_lacros_chrome',
+                'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
+                'extra_args': [
+                    '--arch=arm32',
+                ],
+            },
+        ],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
+    },
     'lacros-eve-perf': {
         'tests': [
             {
