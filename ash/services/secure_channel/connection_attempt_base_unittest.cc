@@ -128,10 +128,11 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
   }
 
   FakePendingConnectionRequest<BleInitiatorFailureType>* AddNewRequest(
-      ConnectionPriority connection_priority) {
+      ConnectionPriority connection_priority,
+      bool notify_on_failure = false) {
     auto request =
         std::make_unique<FakePendingConnectionRequest<BleInitiatorFailureType>>(
-            connection_attempt_.get(), connection_priority);
+            connection_attempt_.get(), connection_priority, notify_on_failure);
     FakePendingConnectionRequest<BleInitiatorFailureType>* request_raw =
         request.get();
     active_requests_.insert(request_raw);
@@ -359,6 +360,16 @@ TEST_F(SecureChannelConnectionAttemptBaseTest, TwoRequests_FailThenSuccess) {
 
   EXPECT_EQ(ConnectionPriority::kLow, fake_operation()->connection_priority());
   FinishOperationSuccessfully();
+}
+
+TEST_F(SecureChannelConnectionAttemptBaseTest, TwoRequests_FailAndNotify) {
+  // By setting these to "notify on failure" we make sure that we can safely
+  // remove multiple items while iterating in
+  // OnConnectToDeviceOperationFailure().
+  AddNewRequest(ConnectionPriority::kLow, /*notify_on_failure=*/true);
+  AddNewRequest(ConnectionPriority::kLow, /*notify_on_failure=*/true);
+  fake_operation()->OnFailedConnectionAttempt(
+      BleInitiatorFailureType::kAuthenticationError);
 }
 
 TEST_F(SecureChannelConnectionAttemptBaseTest, ManyRequests_UpdatePriority) {
