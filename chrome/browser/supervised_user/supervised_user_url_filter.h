@@ -53,8 +53,7 @@ class SupervisedUserURLFilter {
     INVALID = 3,
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This enum describes the filter types of Chrome on Chrome OS, which is
+  // This enum describes the filter types of Chrome, which is
   // set by Family Link App or at families.google.com/families. These values
   // are logged to UMA. Entries should not be renumbered and numeric values
   // should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
@@ -98,7 +97,6 @@ class SupervisedUserURLFilter {
     // above this comment. Sync with enums.xml.
     kMaxValue = kBoth,
   };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   using FilteringBehaviorCallback = base::OnceCallback<void(
       FilteringBehavior,
@@ -126,13 +124,10 @@ class SupervisedUserURLFilter {
 
   ~SupervisedUserURLFilter();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   static const char* GetWebFilterTypeHistogramNameForTest();
   static const char* GetManagedSiteListHistogramNameForTest();
   static const char* GetApprovedSitesCountHistogramNameForTest();
   static const char* GetBlockedSitesCountHistogramNameForTest();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   static const char* GetManagedSiteListConflictHistogramNameForTest();
 
   // Returns true if the parental allowlist/blocklist should be skipped in
@@ -234,7 +229,6 @@ class SupervisedUserURLFilter {
   void SetBlockingTaskRunnerForTesting(
       const scoped_refptr<base::TaskRunner>& task_runner);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   WebFilterType GetWebFilterType() const;
 
   // Reports FamilyUser.WebFilterType metrics when `is_filter_initialized_` is
@@ -247,7 +241,6 @@ class SupervisedUserURLFilter {
 
   // Set value for `is_filter_initialized_`.
   void SetFilterInitialized(bool is_filter_initialized);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class SupervisedUserURLFilterTest;
@@ -289,9 +282,7 @@ class SupervisedUserURLFilter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_filter_initialized_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };

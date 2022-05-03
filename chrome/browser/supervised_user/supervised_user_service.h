@@ -230,13 +230,11 @@ class SupervisedUserService : public KeyedService,
   void RecordExtensionEnablementUmaMetrics(bool enabled) const;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
   // LaCrOS.
   // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList
   // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
   void ReportNonDefaultWebFilterValue() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;
@@ -415,7 +413,6 @@ class SupervisedUserService : public KeyedService,
   bool signout_required_after_supervision_enabled_ = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
   // LaCrOS.
   // When there is change between WebFilterType::kTryToBlockMatureSites and
@@ -425,7 +422,6 @@ class SupervisedUserService : public KeyedService,
   // reports. Initialized in the SetActive().
   SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
       SupervisedUserURLFilter::WebFilterType::kMaxValue;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };

@@ -119,7 +119,6 @@ base::FilePath GetDenylistPath() {
   return denylist_dir.AppendASCII(kDenylistFilename);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool AreWebFilterPrefsDefault(PrefService* pref_service) {
   return pref_service
              ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
@@ -127,8 +126,6 @@ bool AreWebFilterPrefsDefault(PrefService* pref_service) {
          pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
              ->IsDefaultValue();
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -358,7 +355,6 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
   if (AreWebFilterPrefsDefault(profile_->GetPrefs()))
     return;
@@ -366,21 +362,16 @@ void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
   url_filter_.ReportManagedSiteListMetrics();
   url_filter_.ReportWebFilterTypeMetrics();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SupervisedUserService::SetActive(bool active) {
   if (active_ == active)
     return;
   active_ = active;
 
-  if (!delegate_ || !delegate_->SetActive(active_)) {
-#if BUILDFLAG(IS_ANDROID)
-    DCHECK(!active_);
-#endif
-  }
+  if (delegate_)
+    delegate_->SetActive(active_);
 
-  // Now activate/deactivate anything not handled by the delegate yet.
-
+    // Now activate/deactivate anything not handled by the delegate yet.
 #if !BUILDFLAG(IS_ANDROID)
   // Re-set the default theme to turn the SU theme on/off.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
@@ -432,10 +423,8 @@ void SupervisedUserService::SetActive(bool active) {
     UpdateManualHosts();
     UpdateManualURLs();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     GetURLFilter()->SetFilterInitialized(true);
     current_web_filter_type_ = url_filter_.GetWebFilterType();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     RefreshApprovedExtensionsFromPrefs();
@@ -503,7 +492,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
@@ -511,7 +499,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool SupervisedUserService::IsSafeSitesEnabled() const {
@@ -535,7 +522,6 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 
   UpdateAsyncUrlChecker();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
@@ -543,7 +529,6 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateAsyncUrlChecker() {
@@ -679,10 +664,8 @@ void SupervisedUserService::UpdateManualHosts() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
     url_filter_.ReportManagedSiteListMetrics();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateManualURLs() {
@@ -698,10 +681,8 @@ void SupervisedUserService::UpdateManualURLs() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
     url_filter_.ReportManagedSiteListMetrics();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::Shutdown() {

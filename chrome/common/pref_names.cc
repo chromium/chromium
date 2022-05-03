@@ -136,6 +136,12 @@ const char kSupervisedUserApprovedExtensions[] =
     "profile.managed.approved_extensions";
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+// Integer pref to record the day id (number of days since origin of time) when
+// supervised user metrics were last recorded.
+const char kSupervisedUserMetricsDayId[] = "supervised_user.metrics.day_id";
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 // Stores the email address associated with the google account of the custodian
 // of the supervised user, set when the supervised user is created.
 const char kSupervisedUserCustodianEmail[] = "profile.managed.custodian_email";

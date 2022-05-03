@@ -51,6 +51,9 @@ extern const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[];
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kSupervisedUserApprovedExtensions[];
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extern const char kSupervisedUserMetricsDayId[];
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kSupervisedUserCustodianEmail[];
 extern const char kSupervisedUserCustodianName[];
 extern const char kSupervisedUserCustodianObfuscatedGaiaId[];

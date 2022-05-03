@@ -46,6 +46,12 @@
 #include "base/test/test_reg_util_win.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_metrics_service.h"
+#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
+#endif
+
 // A test fixture that sets up a test task runner and makes it the thread's
 // runner. The fixture implements a fake environment data collector, extension
 // data collector and a fake report uploader.
@@ -272,6 +278,14 @@ class IncidentReportingServiceTest : public testing::Test {
         profile_name, std::move(prefs), base::ASCIIToUTF16(profile_name),
         0,  // avatar_id (unused)
         TestingProfile::TestingFactories());
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    // Disable supervised user metrics reporting, otherwise the calls to
+    // FastForwardUntilNoTasksRemain() never return.
+    SupervisedUserMetricsServiceFactory::GetForBrowserContext(profile)
+        ->Shutdown();
+#endif
+
     mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
     return profile;
