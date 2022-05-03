@@ -165,4 +165,7 @@ const char kAllowChromeDataInBackups[] = "ios.allow_chrome_data_in_backups";
 // NTP Location policy.
 const char kNewTabPageLocationOverride[] = "ios.ntp.location_override";
 
+// A boolean specifying whether HTTPS-Only Mode is enabled.
+const char kHttpsOnlyModeEnabled[] = "ios.https_only_mode_enabled";
+
 }  // namespace prefs

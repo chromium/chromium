@@ -329,6 +329,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
 
   registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
+
+  registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

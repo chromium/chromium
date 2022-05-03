@@ -55,6 +55,8 @@ extern const char kAllowChromeDataInBackups[];
 
 extern const char kNewTabPageLocationOverride[];
 
+extern const char kHttpsOnlyModeEnabled[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREF_NAMES_H_

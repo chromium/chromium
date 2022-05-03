@@ -2392,6 +2392,12 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DESCRIPTION" desc="Description text on the Safe Browsing element describing what the Safe Browsing check does.">
         Stay protected from dangerous websites
       </message>
+      <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE" desc="Title for HTTPS-Only Mode toggle in settings">
+        Try to use secure connections
+      </message>
+      <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Description text of HTTPS-Only Mode in  settings">
+        Upgrade to HTTPS, when possible. Secure sites might embed content that isn't secure.
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing disabled">
         Off - Not recommended
       </message>

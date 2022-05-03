@@ -3536,6 +3536,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "https-only-mode",
+    "owners": [ "meacer", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "https-only-mode-setting",
     "owners": [ "cthomp", "trusty-transport@chromium.org" ],
     "expiry_milestone": 97

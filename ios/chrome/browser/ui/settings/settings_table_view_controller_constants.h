@@ -146,4 +146,6 @@ extern NSString* const kSettingsDefaultSiteModeCellId;
 // The accessibility identifier of the default browser settings TableView.
 extern NSString* const kDefaultBrowserSettingsTableViewId;
 
+extern NSString* const kSettingsHttpsOnlyModeCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

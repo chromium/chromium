@@ -44,6 +44,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/components/security_interstitials/https_only_mode/feature.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
@@ -69,6 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoReauth,
   ItemTypeIncognitoReauthFooter,
   ItemTypePrivacySafeBrowsing,
+  ItemTypeHTTPSOnlyMode,
 };
 
 // Only used in this class to openn the Sync and Google services settings.
@@ -104,6 +106,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 // Authentication module used when the user toggles the biometric auth on.
 @property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
+
+// Accessor for the HTTPS-Only Mode pref.
+@property(nonatomic, strong) PrefBackedBoolean* HTTPSOnlyModePref;
+
+// The item related to the switch for the "HTTPS Only Mode" setting.
+@property(nonatomic, strong) TableViewSwitchItem* HTTPSOnlyModeItem;
 
 @end
 
@@ -144,6 +152,11 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         initWithPrefService:GetApplicationContext()->GetLocalState()
                    prefName:prefs::kIncognitoAuthenticationSetting];
     [_incognitoReauthPref setObserver:self];
+
+    _HTTPSOnlyModePref = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kHttpsOnlyModeEnabled];
+    [_HTTPSOnlyModePref setObserver:self];
   }
   return self;
 }
@@ -210,9 +223,30 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           forSectionWithIdentifier:SectionIdentifierIncognitoAuth];
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    [model addItem:self.HTTPSOnlyModeItem
+        toSectionWithIdentifier:SectionIdentifierPrivacyContent];
+  }
 }
 
 #pragma mark - Model Objects
+
+- (TableViewSwitchItem*)HTTPSOnlyModeItem {
+  if (!_HTTPSOnlyModeItem) {
+    _HTTPSOnlyModeItem =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeHTTPSOnlyMode];
+
+    _HTTPSOnlyModeItem.text =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE);
+    _HTTPSOnlyModeItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION);
+    _HTTPSOnlyModeItem.on = [self.HTTPSOnlyModePref value];
+    _HTTPSOnlyModeItem.accessibilityIdentifier = kSettingsHttpsOnlyModeCellId;
+  }
+  return _HTTPSOnlyModeItem;
+}
 
 - (TableViewItem*)handoffDetailItem {
   NSString* detailText =
@@ -375,8 +409,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     [switchCell.switchView addTarget:self
                               action:@selector(switchTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeHTTPSOnlyMode) {
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(HTTPSOnlyModeTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
   }
-
   return cell;
 }
 
@@ -406,6 +445,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Update the cell.
   self.incognitoReauthItem.on = self.incognitoReauthPref.value;
   [self reconfigureCellsForItems:@[ self.incognitoReauthItem ]];
+
+  self.HTTPSOnlyModeItem.on = self.HTTPSOnlyModePref.value;
+  [self reconfigureCellsForItems:@[ self.HTTPSOnlyModeItem ]];
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
@@ -423,6 +465,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 #pragma mark - private
+
+// Called from the HTTPS-Only Mode setting's UIControlEventTouchUpInside.
+// When this is called, |switchView| already has the updated value:
+// If the switch was off, and user taps it, when this method is called,
+// switchView.on is YES.
+- (void)HTTPSOnlyModeTapped:(UISwitch*)switchView {
+  BOOL isOn = switchView.isOn;
+  [_HTTPSOnlyModePref setValue:isOn];
+}
 
 // Called from the reauthentication setting's UIControlEventTouchUpInside.
 // When this is called, |switchView| already has the updated value:

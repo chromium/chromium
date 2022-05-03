@@ -250,6 +250,10 @@ extern const char kEnableUnicornAccountSupportDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
+// Title and description for the flag to enable HTTPS-Only Mode setting.
+extern const char kHttpsOnlyModeName[];
+extern const char kHttpsOnlyModeDescription[];
+
 // Title and description for the flag to enable dark mode colors while in
 // Incognito mode.
 extern const char kIncognitoBrandConsistencyForIOSName[];
