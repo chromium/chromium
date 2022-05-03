@@ -135,6 +135,9 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.MIXEDSCRIPT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
+              ContentSettingsTypes.FEDERATED_IDENTITY_API,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
               ContentSettingsTypes.HID_DEVICES,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(

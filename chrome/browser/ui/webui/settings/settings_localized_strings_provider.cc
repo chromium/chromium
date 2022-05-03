@@ -2141,6 +2141,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"cookiesManageSiteSpecificExceptions",
      IDS_SETTINGS_COOKIES_SITE_SPECIFIC_EXCEPTIONS},
     {"siteSettingsCategoryCookies", IDS_SITE_SETTINGS_TYPE_COOKIES},
+    {"siteSettingsCategoryFederatedIdentityApi",
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API},
     {"siteSettingsCategoryHandlers", IDS_SITE_SETTINGS_TYPE_HANDLERS},
     {"siteSettingsCategoryImages", IDS_SITE_SETTINGS_TYPE_IMAGES},
     {"siteSettingsCategoryInsecureContent",
@@ -2584,6 +2586,20 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED_EXCEPTIONS},
     {"siteSettingsDeviceUseBlockedExceptions",
      IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS},
+    {"siteSettingsFederatedIdentityApi",
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API},
+    {"siteSettingsFederatedIdentityApiAllowed",
+     IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_ALLOWED},
+    {"siteSettingsFederatedIdentityApiBlocked",
+     IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_BLOCKED},
+    {"siteSettingsFederatedIdentityApiAllowedExceptions",
+     IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_ALLOWED_EXCEPTIONS},
+    {"siteSettingsFederatedIdentityApiBlockedExceptions",
+     IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_BLOCKED_EXCEPTIONS},
+    {"siteSettingsFederatedIdentityApiDescription",
+     IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_DESCRIPTION},
+    {"siteSettingsFederatedIdentityApiMidSentence",
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE},
     {"siteSettingsFileSystemWriteDescription",
      IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION},
     {"siteSettingsFileSystemWriteAllowed",
@@ -2828,6 +2844,12 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "enablePaymentHandlerContentSetting",
       base::FeatureList::IsEnabled(features::kServiceWorkerPaymentApps));
+
+  html_source->AddBoolean(
+      "enableFederatedIdentityApiContentSetting",
+      GetFieldTrialParamByFeatureAsBool(
+          features::kFedCm, features::kFedCmDesktopSettingsFieldTrialParamName,
+          false));
 
   base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
   html_source->AddBoolean(

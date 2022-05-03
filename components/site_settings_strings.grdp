@@ -148,6 +148,12 @@
 
   <!-- Site Settings desktop-only -->
   <if expr="not is_android">
+  <message name="IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API" desc="The label used for the third-party sign-in site settings controls.">
+    Third-party sign-in
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE" desc="The label used for the third-party sign-in site settings controls when used mid-sentence.">
+    third-party sign-in
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE" desc="The label used for the File System Access write site settings controls. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
     File editing
   </message>

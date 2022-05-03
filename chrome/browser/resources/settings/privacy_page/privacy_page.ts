@@ -129,6 +129,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         }
       },
 
+      enableFederatedIdentityApiContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableFederatedIdentityApiContentSetting');
+        }
+      },
+
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value() {
@@ -244,6 +252,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private cookieSettingDescription_: string;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
+  private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;

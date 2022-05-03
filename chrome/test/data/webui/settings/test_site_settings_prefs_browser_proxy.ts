@@ -78,6 +78,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.BLUETOOTH_SCANNING,
       ContentSettingsTypes.CAMERA,
       ContentSettingsTypes.CLIPBOARD,
+      ContentSettingsTypes.FEDERATED_IDENTITY_API,
       ContentSettingsTypes.FILE_SYSTEM_WRITE,
       ContentSettingsTypes.GEOLOCATION,
       ContentSettingsTypes.HID_DEVICES,

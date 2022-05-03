@@ -184,6 +184,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
+      route: routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
+      id: Id.FEDERATED_IDENTITY_API,
+      label: 'siteSettingsFederatedIdentityApi',
+      icon: 'settings:federated-identity-api',
+      enabledLabel: 'siteSettingsFederatedIdentityApiAllowed',
+      disabledLabel: 'siteSettingsFederatedIdentityApiBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableFederatedIdentityApiContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
@@ -385,6 +395,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.PDF_DOCUMENTS,
               Id.PROTECTED_CONTENT,
               Id.MIXEDSCRIPT,
+              Id.FEDERATED_IDENTITY_API,
             ]),
           };
         }

@@ -19,6 +19,7 @@ export enum ContentSettingsTypes {
   CAMERA = 'media-stream-camera',
   CLIPBOARD = 'clipboard',
   COOKIES = 'cookies',
+  FEDERATED_IDENTITY_API = 'federated-identity-api',
   FILE_SYSTEM_WRITE = 'file-system-write',
   GEOLOCATION = 'location',
   HID_DEVICES = 'hid-devices',

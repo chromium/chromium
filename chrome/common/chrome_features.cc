@@ -416,6 +416,12 @@ const base::Feature kExtensionWorkflowJustification{
 const base::Feature kExternalExtensionDefaultButtonControl{
     "ExternalExtensionDefaultButtonControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if !BUILDFLAG(IS_ANDROID)
+// Field trial boolean parameter which indicates whether FedCM desktop settings
+// are enabled.
+const char kFedCmDesktopSettingsFieldTrialParamName[] = "DesktopSettings";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Show Flash deprecation warning to users who have manually enabled Flash.
 // https://crbug.com/918428

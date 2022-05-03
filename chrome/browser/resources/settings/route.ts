@@ -86,6 +86,10 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
     r.SITE_SETTINGS_PAYMENT_HANDLER =
         r.SITE_SETTINGS.createChild('paymentHandler');
   }
+  if (loadTimeData.getBoolean('enableFederatedIdentityApiContentSetting')) {
+    r.SITE_SETTINGS_FEDERATED_IDENTITY_API =
+        r.SITE_SETTINGS.createChild('federatedIdentityApi');
+  }
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =

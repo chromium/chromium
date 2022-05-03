@@ -14,6 +14,7 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
+GEN('#include "content/public/common/content_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
@@ -444,6 +445,13 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
         'features::kPrivacyGuide2',
       ]
     };
+  }
+
+  get featuresWithParameters() {
+    return [{
+      featureName: 'features::kFedCm',
+      parameters: [{name: 'DesktopSettings', value: true}]
+    }];
   }
 };
 

@@ -293,6 +293,11 @@ extern const base::Feature kEnterpriseReportingInChromeOS;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExternalExtensionDefaultButtonControl;
 
+#if !BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kFedCmDesktopSettingsFieldTrialParamName[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFlashDeprecationWarning;

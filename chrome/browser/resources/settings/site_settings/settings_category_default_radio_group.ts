@@ -129,6 +129,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
     switch (this.category) {
       case ContentSettingsTypes.ADS:
       case ContentSettingsTypes.BACKGROUND_SYNC:
+      case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:
       case ContentSettingsTypes.JAVASCRIPT:
       case ContentSettingsTypes.MIXEDSCRIPT:

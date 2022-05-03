@@ -179,6 +179,8 @@ export class SettingsRecentSitePermissionsElement extends
         return this.i18n('siteSettingsPaymentHandlerMidSentence');
       case ContentSettingsTypes.MIXEDSCRIPT:
         return this.i18n('siteSettingsInsecureContentMidSentence');
+      case ContentSettingsTypes.FEDERATED_IDENTITY_API:
+        return this.i18n('siteSettingsFederatedIdentityApiMidSentence');
       case ContentSettingsTypes.BLUETOOTH_SCANNING:
         return this.i18n('siteSettingsBluetoothScanningMidSentence');
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:

@@ -2391,6 +2391,21 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the device use content setting.">
     Not allowed to know when you're actively using your device
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_DESCRIPTION" desc="Description of the third-party sign-in content setting.">
+    Lets you sign in to websites using the account you have with an identity service
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_ALLOWED" desc="Label for the enabled option of the third-party sign-in content setting.">
+    Sites can show sign-in prompts from identity services
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_BLOCKED" desc="Label for the disabled option of the third-party sign-in content setting.">
+    Block sign-in prompts from identity services
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the third-party sign-in content setting.">
+    Allowed to show third-party sign-in prompts
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FEDERATED_IDENTITY_API_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the third-party sign-in content setting.">
+    Not allowed to show third-party sign-in prompts
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
