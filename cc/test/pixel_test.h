@@ -21,7 +21,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/software_renderer.h"
@@ -129,14 +128,10 @@ class PixelTest : public testing::Test {
   raw_ptr<viz::SoftwareRenderer> software_renderer_ = nullptr;
   std::unique_ptr<SkBitmap> result_bitmap_;
 
-  void SetUpGLWithoutRenderer(gfx::SurfaceOrigin output_surface_origin);
-  void SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin);
   void SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin);
   void SetUpSoftwareRenderer();
 
   void TearDown() override;
-
-  void EnableExternalStencilTest();
 
  private:
   void ReadbackResult(base::OnceClosure quit_run_loop,

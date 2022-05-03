@@ -159,26 +159,9 @@ LayerTreePixelTest::CreateDisplaySkiaOutputSurfaceOnThread(
 std::unique_ptr<viz::OutputSurface>
 LayerTreePixelTest::CreateDisplayOutputSurfaceOnThread(
     scoped_refptr<viz::ContextProvider> compositor_context_provider) {
-  std::unique_ptr<PixelTestOutputSurface> display_output_surface;
-  if (renderer_type_ == viz::RendererType::kGL) {
-    // Pixel tests use a separate context for the Display to more closely
-    // mimic texture transport from the renderer process to the Display
-    // compositor.
-    auto display_context_provider =
-        base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGLES2, /*support_locking=*/false);
-    gpu::ContextResult result = display_context_provider->BindToCurrentThread();
-    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-
-    gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
-    display_output_surface = std::make_unique<PixelTestOutputSurface>(
-        std::move(display_context_provider), surface_origin);
-  } else {
-    EXPECT_EQ(viz::RendererType::kSoftware, renderer_type_);
-    display_output_surface = std::make_unique<PixelTestOutputSurface>(
-        std::make_unique<viz::SoftwareOutputDevice>());
-  }
-  return std::move(display_output_surface);
+  EXPECT_EQ(viz::RendererType::kSoftware, renderer_type_);
+  return std::make_unique<PixelTestOutputSurface>(
+      std::make_unique<viz::SoftwareOutputDevice>());
 }
 
 std::unique_ptr<viz::CopyOutputRequest>

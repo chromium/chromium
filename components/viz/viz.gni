@@ -10,10 +10,6 @@ import("//testing/test.gni")
 # that code path.
 enable_gl_backend_tests = !is_fuchsia
 
-# Controls if GLRenderer related tests should be built and run.
-# TODO(crbug.com/1247756): Delete this flag along with GLRenderer.
-enable_gl_renderer_tests = false
-
 # TODO(samans): Support more configurations.
 # CFI issue: https://crbug.com/967819
 # Fuchsia ARM64 https://crbug.com/1058247

@@ -32,8 +32,6 @@ class LayerTreeHostFiltersPixelTest
   // generating separate base line file paths.
   const char* GetRendererSuffix() {
     switch (renderer_type_) {
-      case viz::RendererType::kGL:
-        return "gl";
       case viz::RendererType::kSkiaGL:
         return "skia_gl";
       case viz::RendererType::kSkiaVk:

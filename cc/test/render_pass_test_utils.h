@@ -12,6 +12,7 @@
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
@@ -28,7 +29,6 @@ class ClientResourceProvider;
 class ContextProvider;
 class DisplayResourceProvider;
 class CompositorRenderPass;
-class SolidColorDrawQuad;
 }  // namespace viz
 
 namespace cc {

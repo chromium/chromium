@@ -11,7 +11,6 @@
 namespace viz {
 
 enum class RendererType {
-  kGL,
   kSkiaGL,
   kSkiaVk,
   // SkiaRenderer with the Dawn backend will be used; on Linux this will

@@ -591,14 +591,6 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (enable_gl_renderer_tests) {
-    sources += [
-      "display/gl_renderer_copier_pixeltest.cc",
-      "display/gl_renderer_copier_unittest.cc",
-      "display/gl_renderer_unittest.cc",
-    ]
-  }
-
   if (!use_aura && !is_mac) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
@@ -690,7 +682,6 @@ viz_source_set("perf_tests") {
   sources = [
     "display/bsp_tree_perftest.cc",
     "display/display_perftest.cc",
-    "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
     "display/viz_perftest.cc",

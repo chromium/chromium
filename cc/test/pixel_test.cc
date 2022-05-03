@@ -32,7 +32,6 @@
 #include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display/software_renderer.h"
@@ -259,39 +258,6 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
       base::DoNothing());
 }
 
-void PixelTest::SetUpGLWithoutRenderer(
-    gfx::SurfaceOrigin output_surface_origin) {
-  enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
-
-  auto context_provider =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2, /*support_locking=*/false);
-  gpu::ContextResult result = context_provider->BindToCurrentThread();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  output_surface_ = std::make_unique<PixelTestOutputSurface>(
-      std::move(context_provider), output_surface_origin);
-  output_surface_->BindToClient(output_surface_client_.get());
-
-  child_context_provider_ =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2, /*support_locking=*/false);
-  result = child_context_provider_->BindToCurrentThread();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
-}
-
-void PixelTest::SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin) {
-  SetUpGLWithoutRenderer(output_surface_origin);
-  auto resource_provider = std::make_unique<viz::DisplayResourceProviderGL>(
-      output_surface_->context_provider());
-  renderer_ = std::make_unique<viz::GLRenderer>(
-      &renderer_settings_, &debug_settings_, output_surface_.get(),
-      resource_provider.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
-  resource_provider_ = std::move(resource_provider);
-  renderer_->Initialize();
-  renderer_->SetVisible(true);
-}
-
 void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
   // Set up the GPU service.
@@ -335,11 +301,6 @@ void PixelTest::TearDown() {
   renderer_.reset();
   resource_provider_.reset();
   output_surface_.reset();
-}
-
-void PixelTest::EnableExternalStencilTest() {
-  static_cast<PixelTestOutputSurface*>(output_surface_.get())
-      ->set_has_external_stencil_test(true);
 }
 
 void PixelTest::SetUpSoftwareRenderer() {

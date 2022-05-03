@@ -399,18 +399,6 @@ viz_source_set("unit_tests") {
     "yuv_readback_unittest.cc",
   ]
 
-  if (enable_gl_renderer_tests) {
-    sources += [
-      "gl_i420_converter_pixeltest.cc",
-      "gl_i420_converter_unittest.cc",
-      "gl_nv12_converter_pixeltest.cc",
-      "gl_scaler_overscan_pixeltest.cc",
-      "gl_scaler_pixeltest.cc",
-      "gl_scaler_shader_pixeltest.cc",
-      "gl_scaler_unittest.cc",
-    ]
-  }
-
   if (enable_vulkan) {
     sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
   }

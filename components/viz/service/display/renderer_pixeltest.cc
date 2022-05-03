@@ -29,13 +29,16 @@
 #include "cc/test/test_types.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display/delegated_ink_point_pixel_test_helper.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display/viz_pixel_test.h"
 #include "components/viz/test/buildflags.h"
@@ -905,27 +908,6 @@ INSTANTIATE_TEST_SUITE_P(,
 // GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GPURendererPixelTest);
 
-// Provides an exact comparator for GLRenderer and fuzzy comparator for Skia
-// based (eg. SoftwareRenderer and SkiaRenderer).
-class FuzzyForSkiaOnlyPixelComparator : public cc::PixelComparator {
- public:
-  explicit FuzzyForSkiaOnlyPixelComparator(RendererType type) {
-    if (type == RendererType::kGL) {
-      comparator_ = std::make_unique<cc::ExactPixelComparator>(false);
-    } else {
-      comparator_ = std::make_unique<cc::FuzzyPixelOffByOneComparator>(false);
-    }
-  }
-
-  bool Compare(const SkBitmap& actual_bmp,
-               const SkBitmap& expected_bmp) const override {
-    return comparator_->Compare(actual_bmp, expected_bmp);
-  }
-
- private:
-  std::unique_ptr<cc::PixelComparator> comparator_;
-};
-
 TEST_P(RendererPixelTest, SimpleGreenRect) {
   gfx::Rect rect(this->device_viewport_size_);
 
@@ -1788,25 +1770,16 @@ class VideoRendererPixelTestBase : public VizPixelTest {
 };
 
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-class VideoRendererPixelHiLoTest
-    : public VideoRendererPixelTestBase,
-      public testing::WithParamInterface<std::tuple<RendererType, bool>> {
+class VideoRendererPixelHiLoTest : public VideoRendererPixelTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
   VideoRendererPixelHiLoTest()
-      : VideoRendererPixelTestBase(std::get<0>(GetParam())) {}
+      : VideoRendererPixelTestBase(RendererType::kSkiaGL) {}
 
-  bool IsHighbit() const { return std::get<1>(GetParam()); }
+  bool IsHighbit() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VideoRendererPixelHiLoTest,
-                         testing::Combine(testing::Values(
-#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
-                                              RendererType::kGL,
-#endif
-                                              RendererType::kSkiaGL),
-                                          testing::Bool()),
-                         cc::PrintTupleToStringParamName());
+INSTANTIATE_TEST_SUITE_P(, VideoRendererPixelHiLoTest, testing::Bool());
 
 TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   gfx::Rect rect(this->device_viewport_size_);
@@ -2222,7 +2195,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
   // renderer so use a fuzzy comparator.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha.png")),
-      FuzzyForSkiaOnlyPixelComparator(renderer_type())));
+      cc::FuzzyPixelOffByOneComparator(false)));
 }
 
 TEST_P(RendererPixelTest, FastPassSaturateFilter) {
@@ -2282,7 +2255,7 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
   // renderer so use a fuzzy comparator.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha.png")),
-      FuzzyForSkiaOnlyPixelComparator(renderer_type())));
+      cc::FuzzyPixelOffByOneComparator(false)));
 }
 
 TEST_P(RendererPixelTest, FastPassFilterChain) {
@@ -2344,7 +2317,7 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_filter_chain.png")),
-      FuzzyForSkiaOnlyPixelComparator(renderer_type())));
+      cc::FuzzyPixelOffByOneComparator(false)));
 }
 
 TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
@@ -2427,7 +2400,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha_translate.png")),
-      FuzzyForSkiaOnlyPixelComparator(renderer_type())));
+      cc::FuzzyPixelOffByOneComparator(false)));
 }
 
 TEST_P(RendererPixelTest, EnlargedRenderPassTexture) {
@@ -3090,11 +3063,6 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
-  // TODO(crbug.com/989312): Delete this condition with GLRendere. The mask
-  // appears to be offset from the correct location but this isn't relevant.
-  if (is_gl_renderer())
-    return;
-
   this->backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
   this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
   this->filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
@@ -3111,170 +3079,6 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
   EXPECT_TRUE(this->RunPixelTest(&this->pass_list_, expected_path,
                                  cc::FuzzyPixelOffByOneComparator(false)));
 }
-
-#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
-class GLRendererPixelTestWithBackdropFilter : public VizPixelTest {
- public:
-  GLRendererPixelTestWithBackdropFilter() : VizPixelTest(RendererType::kGL) {}
-
- protected:
-  void SetUpRenderPassList() {
-    pass_list_.clear();
-    gfx::Rect device_viewport_rect(this->device_viewport_size_);
-
-    AggregatedRenderPassId root_id{1};
-    auto root_pass = CreateTestRootRenderPass(root_id, device_viewport_rect);
-    root_pass->has_transparent_background = false;
-
-    gfx::Transform identity_quad_to_target_transform;
-
-    AggregatedRenderPassId filter_pass_id{2};
-    gfx::Transform transform_to_root;
-    auto filter_pass = CreateTestRenderPass(
-        filter_pass_id, filter_pass_layer_rect_, transform_to_root);
-    filter_pass->backdrop_filters = this->backdrop_filters_;
-    filter_pass->backdrop_filter_bounds = this->backdrop_filter_bounds_;
-
-    // A non-visible quad in the filtering render pass.
-    {
-      SharedQuadState* shared_state = CreateTestSharedQuadState(
-          identity_quad_to_target_transform, filter_pass_layer_rect_,
-          filter_pass.get(), gfx::MaskFilterInfo());
-      auto* color_quad =
-          filter_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-      color_quad->SetNew(shared_state, filter_pass_layer_rect_,
-                         filter_pass_layer_rect_, SK_ColorTRANSPARENT, false);
-    }
-
-    {
-      SharedQuadState* shared_state = CreateTestSharedQuadState(
-          filter_pass_to_target_transform_, filter_pass_layer_rect_,
-          filter_pass.get(), gfx::MaskFilterInfo());
-      auto* filter_pass_quad =
-          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-      filter_pass_quad->SetAll(
-          shared_state, filter_pass_layer_rect_, filter_pass_layer_rect_,
-          /*needs_blending=*/true, filter_pass_id, kInvalidResourceId,
-          gfx::RectF(), gfx::Size(),
-          gfx::Vector2dF(1.0f, 1.0f),  // filters_scale
-          gfx::PointF(),               // filters_origin
-          gfx::RectF(),                // tex_coord_rect
-          false,                       // force_anti_aliasing_off
-          backdrop_filter_quality_,    // backdrop_filter_quality
-          intersects_damage_under_);
-    }
-
-    const int kGridWidth = device_viewport_rect.width() / 3;
-    const int kGridHeight = device_viewport_rect.height() / 3;
-    gfx::Rect left_rect =
-        gfx::Rect(kGridWidth / 2, kGridHeight, kGridWidth, kGridHeight);
-
-    SharedQuadState* shared_state = CreateTestSharedQuadState(
-        identity_quad_to_target_transform, left_rect, root_pass.get(),
-        gfx::MaskFilterInfo());
-    auto* color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-    color_quad->SetNew(shared_state, left_rect, left_rect, SK_ColorGREEN,
-                       false);
-
-    gfx::Rect right_rect =
-        gfx::Rect(kGridWidth * 3 / 2, kGridHeight, kGridWidth, kGridHeight);
-    shared_state = CreateTestSharedQuadState(
-        identity_quad_to_target_transform, right_rect, root_pass.get(),
-        gfx::MaskFilterInfo());
-    color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-    color_quad->SetNew(shared_state, right_rect, right_rect, SK_ColorRED,
-                       false);
-
-    shared_state = CreateTestSharedQuadState(
-        identity_quad_to_target_transform, device_viewport_rect,
-        root_pass.get(), gfx::MaskFilterInfo());
-    auto* background_quad =
-        root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-    background_quad->SetNew(shared_state, device_viewport_rect,
-                            device_viewport_rect, SK_ColorWHITE, false);
-
-    pass_list_.push_back(std::move(filter_pass));
-    pass_list_.push_back(std::move(root_pass));
-  }
-
-  AggregatedRenderPassList pass_list_;
-  cc::FilterOperations backdrop_filters_;
-  absl::optional<gfx::RRectF> backdrop_filter_bounds_;
-  float backdrop_filter_quality_ = 1.0f;
-  bool intersects_damage_under_ = true;
-  gfx::Transform filter_pass_to_target_transform_;
-  gfx::Rect filter_pass_layer_rect_;
-};
-
-TEST_F(GLRendererPixelTestWithBackdropFilter, FilterQuality) {
-  this->backdrop_filters_.Append(cc::FilterOperation::CreateBlurFilter(2.0f));
-  this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->backdrop_filter_bounds_ =
-      gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
-  this->backdrop_filter_quality_ = 1.0f;
-  this->SetUpRenderPassList();
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-
-  if (this->context_provider()->ContextCapabilities().major_version < 3)
-    return;
-  this->backdrop_filter_quality_ = 0.33f;
-  this->SetUpRenderPassList();
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_2.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-}
-
-TEST_F(GLRendererPixelTestWithBackdropFilter, CachedResultOfBackdropFilter) {
-  this->backdrop_filters_.Append(cc::FilterOperation::CreateBlurFilter(2.0f));
-  this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->backdrop_filter_bounds_ =
-      gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
-  // Set the flag to use cached backdrop filtered texture. This makes the
-  // GLRenderer cache backdrop filtered result.
-  this->intersects_damage_under_ = false;
-  this->SetUpRenderPassList();
-
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-
-  // Same render pass list makes the GLRenderer to skip backdrop filter
-  // calculation and use cached texture. This should correctly produce the
-  // same output image.
-  this->SetUpRenderPassList();
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-
-  // To prove the cached texture is used, change a quad on the root pass which
-  // is beneath the backdrop filter. The output image should still be the same
-  // as before.
-  this->SetUpRenderPassList();
-  DrawQuad* background_quad = *pass_list_.back()->quad_list.rbegin();
-  static_cast<SolidColorDrawQuad*>(background_quad)->color = SK_ColorYELLOW;
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-
-  // Set |intersects_damage_under_| to true to make GLRenderer re-run the
-  // backdrop filter calculation
-  this->intersects_damage_under_ = true;
-  this->SetUpRenderPassList();
-  background_quad = *pass_list_.back()->quad_list.rbegin();
-  static_cast<SolidColorDrawQuad*>(background_quad)->color = SK_ColorYELLOW;
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_3.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
-}
-#endif
 
 // Software renderer does not support anti-aliased edges.
 TEST_P(GPURendererPixelTest, AntiAliasing) {
@@ -4597,21 +4401,10 @@ TEST_P(RendererPixelTest, RoundedCornerSimpleSolidDrawQuad) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(root_pass));
 
-  if (is_gl_renderer()) {
-    // GL Renderer should have an exact match as that is the reference point.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-        cc::ExactPixelComparator(true)));
-  } else {
-    // Software/skia renderer uses skia rrect to create rounded corner clip.
-    // This results in a different corner path due to a different anti aliasing
-    // approach than the fragment shader in gl renderer.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-        cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
-  }
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
+      cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
 }
 
 TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
@@ -4666,21 +4459,10 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(root_pass));
 
-  if (is_gl_renderer()) {
-    // GL Renderer should have an exact match as that is the reference point.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-        cc::ExactPixelComparator(true)));
-  } else {
-    // SkiaRenderer uses skia rrect to create rounded corner clip. This results
-    // in a different corner path due to a different anti aliasing approach than
-    // the fragment shader in gl renderer.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-        cc::FuzzyPixelComparator(true, 0.6f, 0.f, 255.f, 255, 0)));
-  }
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
+      cc::FuzzyPixelComparator(true, 0.6f, 0.f, 255.f, 255, 0)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
@@ -4781,21 +4563,13 @@ TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(root_pass));
 
-  if (is_gl_renderer()) {
-    // GL Renderer should have an exact match as that is the reference point.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_radii.png")),
-        cc::ExactPixelComparator(true)));
-  } else {
-    // Software/skia renderer uses skia rrect to create rounded corner clip.
-    // This results in a different corner path due to a different anti aliasing
-    // approach than the fragment shader in gl renderer.
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_radii.png")),
-        cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
-  }
+  // Software/skia renderer uses skia rrect to create rounded corner clip.
+  // This results in a different corner path due to a different anti aliasing
+  // approach than the fragment shader in gl renderer.
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_radii.png")),
+      cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
@@ -4874,21 +4648,11 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(root_pass));
 
-  // GL Renderer should have an exact match as that is the reference point.
-  // Software/skia renderer use skia rrect to create rounded corner clip.
-  // This results in a different corner path due to a different anti aliasing
-  // approach than the fragment shader in gl renderer.
-  std::unique_ptr<cc::PixelComparator> comparator;
-  comparator.reset(
-      is_gl_renderer()
-          ? static_cast<cc::PixelComparator*>(
-                new cc::ExactPixelComparator(true))
-          : static_cast<cc::PixelComparator*>(
-                new cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
+  cc::FuzzyPixelComparator comparator(true, 0.55f, 0.f, 255.f, 255, 0);
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_quad.png")),
-      *comparator));
+      comparator));
 }
 
 class RendererPixelTestWithOverdrawFeedback : public VizPixelTestWithParam {
@@ -4920,19 +4684,12 @@ TEST_P(RendererPixelTestWithOverdrawFeedback, TranslucentRectangles) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  if (is_gl_renderer()) {
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("translucent_rectangles.png")),
-        cc::ExactPixelComparator(true)));
-  } else {
-    // TODO(xing.xu): investigate why overdraw feedback has small difference
-    // (http://crbug.com/909971)
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("skia_translucent_rectangles.png")),
-        cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f)));
-  }
+  // TODO(xing.xu): investigate why overdraw feedback has small difference
+  // (http://crbug.com/909971)
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("translucent_rectangles.png")),
+      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

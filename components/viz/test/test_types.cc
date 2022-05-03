@@ -13,8 +13,6 @@ namespace {
 // Provides a test renderer suffix appropriate for |type|.
 const char* RendererTypeTestSuffix(RendererType type) {
   switch (type) {
-    case RendererType::kGL:
-      return "GL";
     case RendererType::kSkiaGL:
       return "SkiaGL";
     case RendererType::kSkiaVk:
@@ -33,10 +31,6 @@ std::vector<RendererType> GetRendererTypes(bool include_software,
   if (include_software && !skia_only)
     types.push_back(RendererType::kSoftware);
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
-  if (!skia_only)
-    types.push_back(RendererType::kGL);
-#endif
   types.push_back(RendererType::kSkiaGL);
 #endif
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)

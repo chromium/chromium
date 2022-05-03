@@ -30,9 +30,6 @@ void VizPixelTest::SetUp() {
     case RendererType::kSoftware:
       SetUpSoftwareRenderer();
       break;
-    case RendererType::kGL:
-      SetUpGLRenderer(GetSurfaceOrigin());
-      break;
     case RendererType::kSkiaGL:
     case RendererType::kSkiaVk:
     case RendererType::kSkiaDawn:

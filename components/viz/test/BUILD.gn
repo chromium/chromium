@@ -11,7 +11,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
-    "ENABLE_GL_RENDERER_TESTS=$enable_gl_renderer_tests",
     "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
     "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
     "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",

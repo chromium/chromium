@@ -25,8 +25,6 @@ LayerTreeHostPixelResourceTest::LayerTreeHostPixelResourceTest(
 
 const char* LayerTreeHostPixelResourceTest::GetRendererSuffix() const {
   switch (renderer_type_) {
-    case viz::RendererType::kGL:
-      return "gl";
     case viz::RendererType::kSkiaGL:
       return "skia_gl";
     case viz::RendererType::kSkiaVk:

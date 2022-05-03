@@ -20,14 +20,6 @@
 namespace cc {
 
 PixelTestOutputSurface::PixelTestOutputSurface(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    gfx::SurfaceOrigin origin)
-    : OutputSurface(std::move(context_provider)) {
-  capabilities_.output_surface_origin = origin;
-  capabilities_.supports_stencil = true;
-}
-
-PixelTestOutputSurface::PixelTestOutputSurface(
     std::unique_ptr<viz::SoftwareOutputDevice> software_device)
     : OutputSurface(std::move(software_device)) {
   capabilities_.supports_stencil = true;
@@ -43,29 +35,18 @@ void PixelTestOutputSurface::EnsureBackbuffer() {}
 
 void PixelTestOutputSurface::DiscardBackbuffer() {}
 
-void PixelTestOutputSurface::BindFramebuffer() {
-  context_provider()->ContextGL()->BindFramebuffer(GL_FRAMEBUFFER, 0);
-}
+void PixelTestOutputSurface::BindFramebuffer() {}
 
 void PixelTestOutputSurface::Reshape(const gfx::Size& size,
                                      float device_scale_factor,
                                      const gfx::ColorSpace& color_space,
                                      gfx::BufferFormat format,
                                      bool use_stencil) {
-  // External stencil test cannot be tested at the same time as |use_stencil|.
-  DCHECK(!use_stencil || !external_stencil_test_);
-  if (context_provider()) {
-    const bool has_alpha = gfx::AlphaBitsForBufferFormat(format);
-    context_provider()->ContextGL()->ResizeCHROMIUM(
-        size.width(), size.height(), device_scale_factor,
-        color_space.AsGLColorSpace(), has_alpha);
-  } else {
-    software_device()->Resize(size, device_scale_factor);
-  }
+  software_device()->Resize(size, device_scale_factor);
 }
 
 bool PixelTestOutputSurface::HasExternalStencilTest() const {
-  return external_stencil_test_;
+  return false;
 }
 
 void PixelTestOutputSurface::ApplyExternalStencil() {}

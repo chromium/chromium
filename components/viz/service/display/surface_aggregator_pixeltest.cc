@@ -339,10 +339,6 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
 // Draw a simple frame with a delegated ink trail on top of it, then confirm
 // that it is erased by the next aggregation.
 TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
-  // DelegatedInkTrail isn't supported on non-Skia renderers.
-  if (renderer_type() == RendererType::kGL)
-    return;
-
   DelegatedInkPointPixelTestHelper delegated_ink_helper(renderer_.get());
 
   // Create and send metadata and points to the renderer that will be drawn.

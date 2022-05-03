@@ -74,8 +74,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   std::string TestTypeToString() {
     switch (renderer_type_) {
-      case viz::RendererType::kGL:
-        return "GL";
       case viz::RendererType::kSkiaGL:
         return "Skia GL";
       case viz::RendererType::kSkiaVk:
