@@ -91,7 +91,9 @@ const base::Value* WebRTCInternals::PendingUpdate::event_data() const {
   return event_data_.is_none() ? nullptr : &event_data_;
 }
 
-WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {}
+WebRTCInternals::WebRTCInternals() : WebRTCInternals(500, true) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
                                  bool should_block_power_saving)
@@ -141,17 +143,24 @@ WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
 }
 
 WebRTCInternals::~WebRTCInternals() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(g_webrtc_internals);
   g_webrtc_internals = nullptr;
 }
 
 WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!g_webrtc_internals);
   g_webrtc_internals = new WebRTCInternals;
   return g_webrtc_internals;
 }
 
 WebRTCInternals* WebRTCInternals::GetInstance() {
+  // TODO(crbug.com/1322082): DCHECK calling from UI thread.
+  // Currently, some unit tests call this from outside of the UI thread,
+  // but that's not a real issue as these tests neglect setting
+  // `g_webrtc_internals` to begin with, and therefore just ignore it.
+  DCHECK(!g_webrtc_internals || BrowserThread::CurrentlyOn(BrowserThread::UI));
   return g_webrtc_internals;
 }
 
@@ -256,6 +265,8 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                                          int lid,
                                          base::Value::List value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   if (observers_.empty())
     return;
 
@@ -271,6 +282,8 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
 void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                                        int lid,
                                        base::Value::List value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   if (observers_.empty())
     return;
 
@@ -453,8 +466,10 @@ void WebRTCInternals::EnableAudioDebugRecordings(
 #if BUILDFLAG(IS_ANDROID)
   EnableAudioDebugRecordingsOnAllRenderProcessHosts();
 #else
+  if (select_file_dialog_) {
+    return;
+  }
   selection_type_ = SelectionType::kAudioDebugRecordings;
-  DCHECK(!select_file_dialog_);
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
@@ -496,15 +511,19 @@ const base::FilePath& WebRTCInternals::GetAudioDebugRecordingsFilePath() const {
 void WebRTCInternals::EnableLocalEventLogRecordings(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(web_contents);
   DCHECK(CanToggleEventLogRecordings());
+
 #if BUILDFLAG(IS_ANDROID)
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->EnableLocalLogging(event_log_recordings_file_path_);
   }
 #else
-  DCHECK(web_contents);
-  DCHECK(!select_file_dialog_);
+  if (select_file_dialog_) {
+    return;
+  }
+
   selection_type_ = SelectionType::kRtcEventLogs;
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
@@ -517,6 +536,8 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
 }
 
 void WebRTCInternals::DisableLocalEventLogRecordings() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   event_log_recordings_ = false;
   // Tear down the dialog since the user has unchecked the event log checkbox.
   select_file_dialog_ = nullptr;
@@ -533,6 +554,7 @@ bool WebRTCInternals::IsEventLogRecordingsEnabled() const {
 }
 
 bool WebRTCInternals::CanToggleEventLogRecordings() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return command_line_derived_logging_path_.empty();
 }
 
@@ -672,6 +694,7 @@ void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
 }
 
 void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   absl::optional<bool> is_open = record.FindBoolKey("isOpen");
   DCHECK(is_open.has_value());
   if (!*is_open)
@@ -682,6 +705,7 @@ void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
 }
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool was_connected = record.FindBoolKey("connected").value_or(true);
   if (!was_connected) {
     ++num_connected_connections_;
@@ -694,6 +718,7 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
     base::Value& record) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool was_connected = record.FindBoolKey("connected").value_or(false);
   if (was_connected) {
     record.SetBoolKey("connected", false);
@@ -724,6 +749,7 @@ void WebRTCInternals::UpdateWakeLock() {
 }
 
 device::mojom::WakeLock* WebRTCInternals::GetWakeLock() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!wake_lock_) {
     mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
