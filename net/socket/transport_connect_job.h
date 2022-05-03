@@ -89,7 +89,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
 // logic for IPv6 connect() timeouts (which may happen due to networks / routers
 // with broken IPv6 support). Those timeouts take 20s, so rather than make the
 // user wait 20s for the timeout to fire, we use a fallback timer
-// (kIPv6FallbackTimerInMs) and start a connect() to a IPv4 address if the timer
+// (kIPv6FallbackTime) and start a connect() to a IPv4 address if the timer
 // fires. Then we race the IPv4 connect() against the IPv6 connect() (which has
 // a headstart) and return the one that completes first to the socket pool.
 class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
@@ -108,14 +108,14 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
         const NetLogWithSource* net_log);
   };
 
-  // TransportConnectJobs will time out after this many seconds.  Note this is
-  // the total time, including both host resolution and TCP connect() times.
-  static const int kTimeoutInSeconds;
-
   // In cases where both IPv6 and IPv4 addresses were returned from DNS,
   // TransportConnectJobs will start a second connection attempt to just the
-  // IPv4 addresses after this many milliseconds. (This is "Happy Eyeballs".)
-  static const int kIPv6FallbackTimerInMs;
+  // IPv4 addresses after this much time. (This is "Happy Eyeballs".)
+  //
+  // TODO(willchan): Base this off RTT instead of statically setting it. Note we
+  // choose a timeout that is different from the backup connect job timer so
+  // they don't synchronize.
+  static constexpr base::TimeDelta kIPv6FallbackTime = base::Milliseconds(300);
 
   // Creates a TransportConnectJob or WebSocketTransportConnectJob, depending on
   // whether or not |common_connect_job_params.web_socket_endpoint_lock_manager|

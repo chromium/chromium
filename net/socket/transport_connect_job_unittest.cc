@@ -390,8 +390,8 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
                       IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)})};
 
   client_socket_factory_.SetRules(rules);
-  client_socket_factory_.set_delay(
-      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
+  client_socket_factory_.set_delay(TransportConnectJob::kIPv6FallbackTime +
+                                   base::Milliseconds(50));
 
   // Resolve an AddressList with a IPv6 address first and then a IPv4 address.
   host_resolver_.rules()->AddIPLiteralRule(kHostName, "2:abcd::3:4:ff,2.2.2.2",

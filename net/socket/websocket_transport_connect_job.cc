@@ -242,8 +242,7 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
       // This use of base::Unretained is safe because |fallback_timer_| is
       // owned by this object.
       fallback_timer_.Start(
-          FROM_HERE,
-          base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs),
+          FROM_HERE, TransportConnectJob::kIPv6FallbackTime,
           base::BindOnce(&WebSocketTransportConnectJob::StartIPv4JobAsync,
                          base::Unretained(this)));
     }
