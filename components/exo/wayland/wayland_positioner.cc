@@ -56,12 +56,12 @@ DecomposeStableAnchor(uint32_t anchor) {
     case XDG_POSITIONER_ANCHOR_TOP_LEFT:
       return std::make_pair(WaylandPositioner::Direction::kNegative,
                             WaylandPositioner::Direction::kNegative);
-    case XDG_POSITIONER_ANCHOR_TOP_RIGHT:
-      return std::make_pair(WaylandPositioner::Direction::kPositive,
-                            WaylandPositioner::Direction::kNegative);
     case XDG_POSITIONER_ANCHOR_BOTTOM_LEFT:
       return std::make_pair(WaylandPositioner::Direction::kNegative,
                             WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_ANCHOR_TOP_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNegative);
     case XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT:
       return std::make_pair(WaylandPositioner::Direction::kPositive,
                             WaylandPositioner::Direction::kPositive);
@@ -113,12 +113,12 @@ DecomposeStableGravity(uint32_t gravity) {
     case XDG_POSITIONER_GRAVITY_TOP_LEFT:
       return std::make_pair(WaylandPositioner::Direction::kNegative,
                             WaylandPositioner::Direction::kNegative);
-    case XDG_POSITIONER_GRAVITY_TOP_RIGHT:
-      return std::make_pair(WaylandPositioner::Direction::kPositive,
-                            WaylandPositioner::Direction::kNegative);
     case XDG_POSITIONER_GRAVITY_BOTTOM_LEFT:
       return std::make_pair(WaylandPositioner::Direction::kNegative,
                             WaylandPositioner::Direction::kPositive);
+    case XDG_POSITIONER_GRAVITY_TOP_RIGHT:
+      return std::make_pair(WaylandPositioner::Direction::kPositive,
+                            WaylandPositioner::Direction::kNegative);
     case XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT:
       return std::make_pair(WaylandPositioner::Direction::kPositive,
                             WaylandPositioner::Direction::kPositive);
