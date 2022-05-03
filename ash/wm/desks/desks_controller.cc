@@ -222,9 +222,7 @@ void ShowDeskRemovalUndoToast(base::RepeatingClosure dismiss_callback,
 // confirm its deletion.
 class DesksController::RemovedDeskData {
  public:
-  RemovedDeskData(std::unique_ptr<Desk> desk,
-                  int index,
-                  DesksCreationRemovalSource source)
+  RemovedDeskData(std::unique_ptr<Desk> desk, int index)
       : was_active_(desk->is_active()), desk_(std::move(desk)), index_(index) {
     desk_->set_is_desk_being_removed(true);
   }
@@ -1373,8 +1371,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   }
 
   // Keep the removed desk alive until at least the end of this function.
-  auto temporary_removed_desk = std::make_unique<RemovedDeskData>(
-      std::move(*iter), removed_desk_index, source);
+  auto temporary_removed_desk =
+      std::make_unique<RemovedDeskData>(std::move(*iter), removed_desk_index);
   auto* temporary_removed_desk_ptr = temporary_removed_desk.get();
   Desk* removed_desk = temporary_removed_desk_ptr->desk();
 
