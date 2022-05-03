@@ -642,7 +642,9 @@ TEST_F(AutocompleteHistoryManagerTest,
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/false,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -682,7 +684,9 @@ TEST_F(AutocompleteHistoryManagerTest,
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/true,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -761,7 +765,9 @@ TEST_F(AutocompleteHistoryManagerTest,
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/false,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -865,12 +871,13 @@ TEST_F(AutocompleteHistoryManagerTest,
       "Some Type", suggestions_handler->GetWeakPtr());
 
   // Setting up mock to verify that we can get the second response first.
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(
-          test_query_id_second, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(
-              &Suggestion::value, expected_values_second[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(
+                  test_query_id_second, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_second[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, second request comes back before.
   autocomplete_manager_->OnWebDataServiceRequestDone(
@@ -931,24 +938,26 @@ TEST_F(AutocompleteHistoryManagerTest,
       "Some Type", suggestions_handler_second->GetWeakPtr());
 
   // Setting up mock to verify that we get the second response first.
-  EXPECT_CALL(
-      *suggestions_handler_second.get(),
-      OnSuggestionsReturned(
-          test_query_id_second, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(
-              &Suggestion::value, expected_values_second[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_second.get(),
+              OnSuggestionsReturned(
+                  test_query_id_second, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_second[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, second request comes back before.
   autocomplete_manager_->OnWebDataServiceRequestDone(
       mocked_db_query_id_second, std::move(mocked_results_second));
 
   // Setting up mock to verify that we get the first response second.
-  EXPECT_CALL(
-      *suggestions_handler_first.get(),
-      OnSuggestionsReturned(
-          test_query_id_first, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(&Suggestion::value,
-                                     expected_values_first[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_first.get(),
+              OnSuggestionsReturned(
+                  test_query_id_first, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_first[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, first request comes back after.
   autocomplete_manager_->OnWebDataServiceRequestDone(
@@ -1003,12 +1012,13 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->CancelPendingQueries(suggestions_handler_one.get());
 
   // Simulate second handler receiving the suggestions.
-  EXPECT_CALL(
-      *suggestions_handler_two.get(),
-      OnSuggestionsReturned(
-          test_query_id_two, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(&Suggestion::value,
-                                     expected_values_two[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_two.get(),
+              OnSuggestionsReturned(
+                  test_query_id_two, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_two[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
   autocomplete_manager_->OnWebDataServiceRequestDone(
       mocked_db_query_id_two, std::move(mocked_results_two));
 

@@ -70,7 +70,7 @@ using autofill::Suggestion;
 using autofill::SuggestionVectorIconsAre;
 using autofill::SuggestionVectorIdsAre;
 using autofill::SuggestionVectorLabelsAre;
-using autofill::SuggestionVectorValuesAre;
+using autofill::SuggestionVectorMainTextsAre;
 using autofill::password_generation::PasswordGenerationType;
 using base::test::RunOnceCallback;
 using device_reauth::BiometricAuthRequester;
@@ -964,10 +964,15 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(testing::UnorderedElementsAre(
-                  test_username_, u"Gohn Foo", u"John Foo", u"Kohn Foo",
-                  GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Gohn Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"John Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Kohn Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorLabelsAre(testing::Contains(u"foo.com")));
   EXPECT_THAT(open_args.suggestions,
@@ -980,18 +985,26 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
       base::i18n::RIGHT_TO_LEFT, u"John",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(additional.username, GetManagePasswordsTitle())));
+              SuggestionVectorMainTextsAre(testing::ElementsAre(
+                  Suggestion::Text(additional.username,
+                                   Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true)))));
 
   // Finally, simulate displaying all suggestions, without any prefix matching.
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, u"xyz", autofill::SHOW_ALL, element_bounds);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(test_username_, u"Gohn Foo", u"John Foo",
-                              u"Kohn Foo", GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Gohn Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"John Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Kohn Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
 }
 
 // Verify that, for Android application credentials, the prettified realms of
@@ -1050,9 +1063,12 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, test_username_, autofill::IS_PASSWORD_FIELD,
       element_bounds);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(test_username_, GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1089,8 +1105,12 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
       base::i18n::RIGHT_TO_LEFT, u"foo",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(testing::UnorderedElementsAre(
-                  username, additional.username, GetManagePasswordsTitle())));
+              SuggestionVectorMainTextsAre(ElementsAre(
+                  Suggestion::Text(username, Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(additional.username,
+                                   Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1160,8 +1180,11 @@ TEST_F(PasswordAutofillManagerTest,
       base::i18n::RIGHT_TO_LEFT, u"foo@exam",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(additional.username, GetManagePasswordsTitle())));
+              SuggestionVectorMainTextsAre(ElementsAre(
+                  Suggestion::Text(additional.username,
+                                   Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1200,8 +1223,13 @@ TEST_F(PasswordAutofillManagerTest,
       base::i18n::RIGHT_TO_LEFT, u"foo",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(ElementsAre(
-                  username, additional.username, GetManagePasswordsTitle())));
+              SuggestionVectorMainTextsAre(ElementsAre(
+                  Suggestion::Text(username, Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(additional.username,
+                                   Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true)))));
+
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1270,9 +1298,12 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
   histograms.ExpectUniqueSample(kDropdownShownHistogram,
                                 metrics_util::PasswordDropdownState::kStandard,
                                 1);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(test_username_, GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
 
   // Clicking at the "Show all passwords row" should trigger a call to open
   // the Password Manager settings page and hide the popup.
@@ -1323,9 +1354,12 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnNonPasswordField) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, test_username_,
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(test_username_, GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1376,9 +1410,14 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorIconsAre(ElementsAre("globeIcon", "keyIcon",
                                                    GetManagePasswordsIcon())));
-  EXPECT_THAT(open_args.suggestions, SuggestionVectorValuesAre(ElementsAre(
-                                         test_username_, generation_string,
-                                         GetManagePasswordsTitle())));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(ElementsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(generation_string,
+                           Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true)))));
 
   // Click "Generate password".
   EXPECT_CALL(client, GeneratePassword(PasswordGenerationType::kAutomatic));
@@ -1420,9 +1459,13 @@ TEST_F(PasswordAutofillManagerTest,
           /*show_password_suggestions=*/false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(ElementsAre(
                                          "keyIcon", GetManagePasswordsIcon())));
+
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorValuesAre(
-                  ElementsAre(generation_string, GetManagePasswordsTitle())));
+              SuggestionVectorMainTextsAre(ElementsAre(
+                  Suggestion::Text(generation_string,
+                                   Suggestion::Text::IsPrimary(true)),
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true)))));
 }
 
 // Test that if the "opt in and generate" button gets displayed, the regular
@@ -1824,7 +1867,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_EQ(open_args.suggestions[0].backend_id, kId);
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
-  EXPECT_EQ(open_args.suggestions[0].value, kDisplayName);
+  EXPECT_EQ(open_args.suggestions[0].main_text.value, kDisplayName);
   EXPECT_EQ(open_args.suggestions[0].label, kName);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 

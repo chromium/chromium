@@ -315,7 +315,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           const JavaParamRef<jobject>& object,
                                           jint position) {
   if (delegate_) {
-    delegate_->DidAcceptSuggestion(suggestions_[position].value,
+    delegate_->DidAcceptSuggestion(suggestions_[position].main_text.value,
                                    suggestions_[position].frontend_id,
                                    suggestions_[position].backend_id, position);
   }
@@ -354,7 +354,7 @@ void AwAutofillClient::ShowAutofillPopupImpl(
 
   for (size_t i = 0; i < count; ++i) {
     ScopedJavaLocalRef<jstring> name =
-        ConvertUTF16ToJavaString(env, suggestions[i].value);
+        ConvertUTF16ToJavaString(env, suggestions[i].main_text.value);
     ScopedJavaLocalRef<jstring> label =
         ConvertUTF16ToJavaString(env, suggestions[i].label);
     Java_AwAutofillClient_addToAutofillSuggestionArray(

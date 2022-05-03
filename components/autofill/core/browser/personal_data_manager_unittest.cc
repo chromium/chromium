@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -2134,7 +2135,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions) {
       std::vector<ServerFieldType>());
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
-            suggestions[0].value);
+            suggestions[0].main_text.value);
 }
 
 TEST_F(PersonalDataManagerTest,
@@ -2155,7 +2156,7 @@ TEST_F(PersonalDataManagerTest,
       AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false,
       std::vector<ServerFieldType>());
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"12345678910", suggestions[0].value);
+  EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2177,7 +2178,7 @@ TEST_F(PersonalDataManagerTest,
       AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false,
       std::vector<ServerFieldType>());
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"(234) 567-8910", suggestions[0].value);
+  EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2288,7 +2289,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
   ASSERT_EQ(suggestion_selection::kMaxSuggestedProfilesCount + 1,
             personal_data_->GetProfiles().size());
   ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(u"Marion", suggestions[0].value);
+  EXPECT_EQ(u"Marion", suggestions[0].main_text.value);
 }
 
 // Tests that GetProfileSuggestions orders its suggestions based on the frecency
@@ -2327,9 +2328,9 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(NAME_FIRST), u"Ma", false, std::vector<ServerFieldType>());
   ASSERT_EQ(3U, suggestions.size());
-  EXPECT_EQ(suggestions[0].value, u"Marion1");
-  EXPECT_EQ(suggestions[1].value, u"Marion2");
-  EXPECT_EQ(suggestions[2].value, u"Marion3");
+  EXPECT_EQ(suggestions[0].main_text.value, u"Marion1");
+  EXPECT_EQ(suggestions[1].main_text.value, u"Marion2");
+  EXPECT_EQ(suggestions[2].main_text.value, u"Marion3");
 }
 
 // Tests that GetProfileSuggestions returns all profiles suggestions.
@@ -2411,7 +2412,7 @@ TEST_F(PersonalDataManagerTest,
         std::vector<ServerFieldType>());
     ASSERT_EQ(1U, suggestions.size());
     EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
-              suggestions[0].value);
+              suggestions[0].main_text.value);
   }
 
   // Query with prefix for profile2 returns profile2.
@@ -2421,7 +2422,7 @@ TEST_F(PersonalDataManagerTest,
         std::vector<ServerFieldType>());
     EXPECT_EQ(1U, suggestions.size());
     EXPECT_EQ(u"456 Zoo St., Second Line, Third line, unit 5",
-              suggestions[0].value);
+              suggestions[0].main_text.value);
   }
 }
 
@@ -2559,7 +2560,9 @@ TEST_F(PersonalDataManagerTest,
           AutofillType(NAME_FIRST), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(testing::Field(&Suggestion::value, u"Hoa")));
+      ElementsAre(testing::Field(
+          &Suggestion::main_text,
+          Suggestion::Text(u"Hoa", Suggestion::Text::IsPrimary(true)))));
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileSuggestionsMadeWithFormatter", true, 1);
 }

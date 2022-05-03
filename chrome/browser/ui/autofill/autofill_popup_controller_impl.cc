@@ -35,7 +35,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
@@ -212,7 +211,8 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   // Prepend the parameters to the suggestions we already have.
   suggestions_.insert(suggestions_.begin(), values.size(), Suggestion());
   for (size_t i = 0; i < values.size(); i++) {
-    suggestions_[i].value = values[i];
+    suggestions_[i].main_text =
+        Suggestion::Text(values[i], Suggestion::Text::IsPrimary(true));
     suggestions_[i].label = labels[i];
     suggestions_[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
   }
@@ -356,8 +356,9 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
   }
 
-  delegate_->DidAcceptSuggestion(suggestion.value, suggestion.frontend_id,
-                                 suggestion.backend_id, index);
+  delegate_->DidAcceptSuggestion(suggestion.main_text.value,
+                                 suggestion.frontend_id, suggestion.backend_id,
+                                 index);
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
@@ -395,19 +396,12 @@ const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
 
 std::u16string AutofillPopupControllerImpl::GetSuggestionMainTextAt(
     int row) const {
-  return suggestions_[row].frontend_id ==
-                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
-             ? l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
-             : suggestions_[row].value;
+  return suggestions_[row].main_text.value;
 }
 
 std::u16string AutofillPopupControllerImpl::GetSuggestionMinorTextAt(
     int row) const {
-  return suggestions_[row].frontend_id ==
-                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
-             ? suggestions_[row].value
-             : std::u16string();
+  return suggestions_[row].minor_text.value;
 }
 
 const std::u16string& AutofillPopupControllerImpl::GetSuggestionLabelAt(
@@ -420,8 +414,8 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
     std::u16string* title,
     std::u16string* body) {
   return delegate_->GetDeletionConfirmationText(
-      suggestions_[list_index].value, suggestions_[list_index].frontend_id,
-      title, body);
+      suggestions_[list_index].main_text.value,
+      suggestions_[list_index].frontend_id, title, body);
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
@@ -435,7 +429,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
   if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
     return false;
-  if (!delegate_->RemoveSuggestion(suggestions_[list_index].value,
+  if (!delegate_->RemoveSuggestion(suggestions_[list_index].main_text.value,
                                    suggestions_[list_index].frontend_id)) {
     return false;
   }
@@ -492,9 +486,10 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
   view_->OnSelectedRowChanged(previous_selected_line, selected_line_);
 
   if (selected_line_) {
-    delegate_->DidSelectSuggestion(suggestions_[*selected_line_].value,
-                                   suggestions_[*selected_line_].frontend_id,
-                                   suggestions_[*selected_line_].backend_id);
+    delegate_->DidSelectSuggestion(
+        suggestions_[*selected_line_].main_text.value,
+        suggestions_[*selected_line_].frontend_id,
+        suggestions_[*selected_line_].backend_id);
   } else {
     delegate_->ClearPreviewedForm();
   }

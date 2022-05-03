@@ -2029,9 +2029,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       if (profile) {
         const std::u16string phone_home_city_and_number =
             profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
-        suggestion.value = FieldFiller::GetPhoneNumberValueForInput(
-            autofill_field, suggestion.value, phone_home_city_and_number,
-            field);
+        suggestion.main_text =
+            Suggestion::Text(FieldFiller::GetPhoneNumberValueForInput(
+                                 autofill_field, suggestion.main_text.value,
+                                 phone_home_city_and_number, field),
+                             Suggestion::Text::IsPrimary(true));
       }
     }
   }

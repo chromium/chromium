@@ -117,9 +117,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   EXPECT_EQ(suggestions.size(), 2u);
-  EXPECT_EQ(suggestions[0].value, base::UTF8ToUTF16(DisplayName1()));
+  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(DisplayName1()));
   EXPECT_EQ(suggestions[0].label, base::UTF8ToUTF16(UserName1()));
-  EXPECT_EQ(suggestions[1].value, base::UTF8ToUTF16(DisplayName2()));
+  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(DisplayName2()));
   EXPECT_EQ(suggestions[1].label, base::UTF8ToUTF16(UserName2()));
 }
 
@@ -150,7 +150,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   std::u16string error_string = u"Unknown account";
   EXPECT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].value, error_string);
+  EXPECT_EQ(suggestions[0].main_text.value, error_string);
   EXPECT_EQ(suggestions[0].label, base::UTF8ToUTF16(UserName1()));
 }
 
@@ -169,7 +169,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   EXPECT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].value, base::UTF8ToUTF16(DisplayName1()));
+  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(DisplayName1()));
   EXPECT_EQ(suggestions[0].label, std::u16string());
 }
 

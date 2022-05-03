@@ -299,7 +299,6 @@ TEST_F(AutofillPopupViewNativeViewsTest, VoiceOverTest) {
   const std::u16string voice_over_value = u"Password for user@gmail.com";
   // Create a realistic suggestion for a password.
   autofill::Suggestion suggestion(u"user@gmail.com");
-  suggestion.is_value_secondary = false;
   suggestion.label = u"example.com";
   suggestion.voice_over = voice_over_value;
   suggestion.additional_label = u"\u2022\u2022\u2022\u2022";

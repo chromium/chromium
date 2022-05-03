@@ -8201,6 +8201,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 #endif
 
   Suggestion virtual_card_suggestion = Suggestion(
+      "Virtual card",
       std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
       label, kVisaCard, autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
 
@@ -8225,7 +8226,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 #endif
 
   virtual_card_suggestion =
-      Suggestion(std::string("Elvis Presley"), label, kVisaCard,
+      Suggestion("Virtual card", std::string("Elvis Presley"), label, kVisaCard,
                  autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
 
   CheckSuggestions(

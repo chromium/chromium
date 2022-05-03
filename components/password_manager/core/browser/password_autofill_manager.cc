@@ -124,12 +124,13 @@ void AppendSuggestionIfMatching(
     bool replaced_username;
     autofill::Suggestion suggestion(
         ReplaceEmptyUsername(field_suggestion, &replaced_username));
-    suggestion.is_value_secondary = replaced_username;
+    suggestion.main_text.is_primary =
+        autofill::Suggestion::Text::IsPrimary(!replaced_username);
     suggestion.label = GetHumanReadableRealm(signon_realm);
     suggestion.additional_label =
         std::u16string(password_length, kPasswordReplacementChar);
     suggestion.voice_over = l10n_util::GetStringFUTF16(
-        IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.value);
+        IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.main_text.value);
     if (!suggestion.label.empty()) {
       // The domainname is only shown for passwords with a common eTLD+1
       // but different subdomain.
@@ -187,7 +188,7 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
 
   std::sort(suggestions->begin() + prefered_match, suggestions->end(),
             [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
-              return a.value < b.value;
+              return a.main_text.value < b.main_text.value;
             });
 
   // Prefix matches should precede other token matches.

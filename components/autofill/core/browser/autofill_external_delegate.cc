@@ -451,7 +451,7 @@ void AutofillExternalDelegate::InsertDataListValues(
                                          data_list_values_.end());
   base::EraseIf(*suggestions, [&data_list_set](const Suggestion& suggestion) {
     return suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
-           base::Contains(data_list_set, suggestion.value);
+           base::Contains(data_list_set, suggestion.main_text.value);
   });
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -467,7 +467,8 @@ void AutofillExternalDelegate::InsertDataListValues(
   suggestions->insert(suggestions->begin(), data_list_values_.size(),
                       Suggestion());
   for (size_t i = 0; i < data_list_values_.size(); i++) {
-    (*suggestions)[i].value = data_list_values_[i];
+    (*suggestions)[i].main_text = Suggestion::Text(
+        data_list_values_[i], Suggestion::Text::IsPrimary(true));
     (*suggestions)[i].label = data_list_labels_[i];
     (*suggestions)[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
   }

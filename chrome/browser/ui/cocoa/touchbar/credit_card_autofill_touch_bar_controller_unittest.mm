@@ -68,7 +68,7 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
   }
 
   std::u16string GetSuggestionMainTextAt(int row) const override {
-    return suggestions_.at(row).value;
+    return suggestions_.at(row).main_text.value;
   }
 
   std::u16string GetSuggestionMinorTextAt(int row) const override {

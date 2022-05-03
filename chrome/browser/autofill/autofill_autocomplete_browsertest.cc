@@ -159,9 +159,11 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     MockSuggestionsHandler handler;
     GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix, handler);
 
-    EXPECT_THAT(
-        handler.last_suggestions(),
-        ElementsAre(Field(&Suggestion::value, ASCIIToUTF16(expected_value))));
+    EXPECT_THAT(handler.last_suggestions(),
+                ElementsAre(Field(
+                    &Suggestion::main_text,
+                    Suggestion::Text(ASCIIToUTF16(expected_value),
+                                     Suggestion::Text::IsPrimary(true)))));
   }
 
   void ValidateNoValue() {

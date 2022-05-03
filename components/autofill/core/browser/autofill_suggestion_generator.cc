@@ -22,6 +22,8 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -172,7 +174,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const std::string& app_locale) const {
   Suggestion suggestion;
 
-  suggestion.value = credit_card.GetInfo(type, app_locale);
+  suggestion.main_text = Suggestion::Text(credit_card.GetInfo(type, app_locale),
+                                          Suggestion::Text::IsPrimary(true));
   suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
   std::string backend_id = credit_card.guid();
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
@@ -207,8 +210,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // Otherwise the label is the card number, or if that is empty the
   // cardholder name. The label should never repeat the value.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    suggestion.value = credit_card.CardIdentifierStringForAutofillDisplay(
-        suggestion_nickname, obfuscation_length);
+    suggestion.main_text =
+        Suggestion::Text(credit_card.CardIdentifierStringForAutofillDisplay(
+                             suggestion_nickname, obfuscation_length),
+                         Suggestion::Text::IsPrimary(true));
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestion.label = credit_card.GetInfo(
@@ -251,6 +256,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 #endif  // BUILDFLAG(IS_ANDROID)
 
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    suggestion.minor_text.value = suggestion.main_text.value;
+    suggestion.main_text.value = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 

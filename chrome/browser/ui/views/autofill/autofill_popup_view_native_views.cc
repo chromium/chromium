@@ -855,10 +855,10 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
   std::u16string text =
       popup_view()->controller()->GetSuggestionMainTextAt(GetLineNumber());
-  if (popup_view()
-          ->controller()
-          ->GetSuggestionAt(GetLineNumber())
-          .is_value_secondary) {
+  if (!popup_view()
+           ->controller()
+           ->GetSuggestionAt(GetLineNumber())
+           .main_text.is_primary) {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
         UseImprovedSuggestionUi() ? views::style::STYLE_PRIMARY
@@ -1279,7 +1279,8 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
   if (!controller)
     return;
 
-  node_data->SetName(controller->GetSuggestionAt(GetLineNumber()).value);
+  node_data->SetName(
+      controller->GetSuggestionAt(GetLineNumber()).main_text.value);
   node_data->role = ax::mojom::Role::kStaticText;
 }
 

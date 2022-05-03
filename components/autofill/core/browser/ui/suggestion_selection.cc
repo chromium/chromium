@@ -166,7 +166,8 @@ std::vector<Suggestion> GetUniqueSuggestions(
       AutofillProfile* profile_b = matched_profiles[j];
       // Check if profile A is a subset of profile B. If not, continue.
       if (i == j ||
-          !comparator.Compare(suggestions[i].value, suggestions[j].value) ||
+          !comparator.Compare(suggestions[i].main_text.value,
+                              suggestions[j].main_text.value) ||
           !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b, app_locale,
                                             types)) {
         continue;
@@ -292,7 +293,7 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
 
     bool text_inserted = suggestion_text
                              .insert(comparator.NormalizeForComparison(
-                                 (*suggestions)[i].value + label,
+                                 (*suggestions)[i].main_text.value + label,
                                  AutofillProfileComparator::DISCARD_WHITESPACE))
                              .second;
 
@@ -308,8 +309,9 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
       // cases, e.g. when a credit card form contains a zip code field and the
       // user clicks on the zip code, a suggestion's value and the label
       // produced for it may both be a zip code.
-      if (!comparator.Compare((*suggestions)[index_to_add_suggestion].value,
-                              labels[i])) {
+      if (!comparator.Compare(
+              (*suggestions)[index_to_add_suggestion].main_text.value,
+              labels[i])) {
         (*suggestions)[index_to_add_suggestion].label = labels[i];
       }
       ++index_to_add_suggestion;

@@ -436,12 +436,12 @@ void ChromePasswordManagerClient::ShowTouchToFill(
       GetWebAuthnCredentialsDelegate()->IsWebAuthnAutofillEnabled()) {
     const std::vector<autofill::Suggestion>& suggestions =
         GetWebAuthnCredentialsDelegate()->GetWebAuthnSuggestions();
-    base::ranges::transform(suggestions,
-                            std::back_inserter(webauthn_credentials),
-                            [](const auto& suggestion) {
-                              return TouchToFillWebAuthnCredential(
-                                  suggestion.value, suggestion.backend_id);
-                            });
+    base::ranges::transform(
+        suggestions, std::back_inserter(webauthn_credentials),
+        [](const auto& suggestion) {
+          return TouchToFillWebAuthnCredential(suggestion.main_text.value,
+                                               suggestion.backend_id);
+        });
   }
 
   GetOrCreateTouchToFillController()->Show(

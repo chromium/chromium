@@ -83,8 +83,8 @@ MATCHER_P(equalsSuggestion, other, "") {
     *result_listener << "has frontend_id " << arg.frontend_id;
     return false;
   }
-  if (arg.value != other.value) {
-    *result_listener << "has value " << arg.value;
+  if (arg.main_text != other.main_text) {
+    *result_listener << "has main_text " << arg.main_text.value;
     return false;
   }
   if (arg.label != other.label) {
@@ -102,8 +102,8 @@ MATCHER_P(equalsSuggestion, other, "") {
 
 // Automagically used to pretty-print Suggestion. Must be in same namespace.
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << "(value: \"" << suggestion.value << "\", label: \"" << suggestion.label
-      << "\", frontend_id: " << suggestion.frontend_id
+  *os << "(main_text: \"" << suggestion.main_text.value << "\", label: \""
+      << suggestion.label << "\", frontend_id: " << suggestion.frontend_id
       << ", additional_label: \"" << suggestion.additional_label << "\")";
 }
 
