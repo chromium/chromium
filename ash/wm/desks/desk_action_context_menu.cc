@@ -46,10 +46,6 @@ void DeskActionContextMenu::UpdateCombineDesksTargetName(
                                  new_combine_desks_target_name));
 }
 
-void DeskActionContextMenu::SetCombineDesksMenuItemVisibility(bool visible) {
-  context_menu_model_.SetVisibleAt(CommandId::kCombineDesks, visible);
-}
-
 void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case CommandId::kCombineDesks:
