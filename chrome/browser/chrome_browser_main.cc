@@ -1611,10 +1611,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
-  } else {
-    // Initialize First-Party Sets even if component updater is disabled.
-    content::FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(
-        base::File());
   }
 
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.

@@ -2224,6 +2224,16 @@ class CONTENT_EXPORT ContentBrowserClient {
   // should not change in a single browser session.
   virtual bool IsFirstPartySetsEnabled();
 
+  // Returns true iff the embedder will provide a list of First-Party Sets via
+  // content::FirstPartySetsHandler::SetPublicFirstPartySets during startup, at
+  // some point. If `IsFirstPartySetsEnabled()` returns false, this method will
+  // still be called, but its return value will be ignored.
+  //
+  // If this method returns false but `IsFirstPartySetsEnabled()` returns true
+  // (e.g. in tests), an empty list will be used instead of waiting for the
+  // embedder to call content::FirstPartySetsHandler::SetPublicFirstPartySets.
+  virtual bool WillProvidePublicFirstPartySets();
+
   // Returns a base::Value::Dict containing the value of the First-Party Sets
   // Overrides enterprise policy.
   // If the policy was not present or it was invalid, this returns an empty

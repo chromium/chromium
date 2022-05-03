@@ -74,7 +74,8 @@ FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
 // static
 FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
   static base::NoDestructor<FirstPartySetsHandlerImpl> instance(
-      GetContentClient()->browser()->IsFirstPartySetsEnabled());
+      GetContentClient()->browser()->IsFirstPartySetsEnabled(),
+      GetContentClient()->browser()->WillProvidePublicFirstPartySets());
   return instance.get();
 }
 
@@ -89,8 +90,12 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
       policy, /*out_sets=*/nullptr);
 }
 
-FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(bool enabled)
-    : enabled_(enabled) {
+FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
+    bool enabled,
+    bool embedder_will_provide_public_sets)
+    : enabled_(enabled),
+      embedder_will_provide_public_sets_(enabled &&
+                                         embedder_will_provide_public_sets) {
   sets_loader_ = std::make_unique<FirstPartySetsLoader>(
       base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
                      // base::Unretained(this) is safe here because
@@ -115,10 +120,14 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
   on_sets_ready_ = std::move(on_sets_ready);
   SetPersistedSets(user_data_dir);
 
-  if (!IsEnabled())
-    SetCompleteSets({});
-  else
+  if (IsEnabled()) {
     sets_loader_->SetManuallySpecifiedSet(flag_value);
+    if (!embedder_will_provide_public_sets_) {
+      sets_loader_->SetComponentSets(base::File());
+    }
+  } else {
+    SetCompleteSets({});
+  }
 }
 
 bool FirstPartySetsHandlerImpl::IsEnabled() const {
@@ -128,16 +137,16 @@ bool FirstPartySetsHandlerImpl::IsEnabled() const {
 
 void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEnabled()) {
-    sets_loader_->DisposeFile(std::move(sets_file));
-    return;
-  }
+  DCHECK(enabled_);
+  DCHECK(embedder_will_provide_public_sets_);
   sets_loader_->SetComponentSets(std::move(sets_file));
 }
 
 void FirstPartySetsHandlerImpl::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
+  embedder_will_provide_public_sets_ =
+      GetContentClient()->browser()->WillProvidePublicFirstPartySets();
 
   // Initializes the `sets_loader_` member with a callback to SetCompleteSets
   // and the result of content::GetFirstPartySetsOverrides.

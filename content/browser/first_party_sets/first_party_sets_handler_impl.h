@@ -78,6 +78,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
     enabled_ = enabled;
   }
 
+  void SetEmbedderWillProvidePublicSetsForTesting(bool will_provide) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    embedder_will_provide_public_sets_ = enabled_ && will_provide;
+  }
+
   // Compares the map `old_sets` to `current_sets` and returns the set of sites
   // that: 1) were in `old_sets` but are no longer in `current_sets`, i.e. leave
   // the FPSs; or, 2) mapped to a different owner site.
@@ -92,7 +97,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImpl>;
 
-  explicit FirstPartySetsHandlerImpl(bool enabled);
+  FirstPartySetsHandlerImpl(bool enabled,
+                            bool embedder_will_provide_public_sets);
 
   // This method reads the persisted First-Party Sets from the file under
   // `user_data_dir`.
@@ -137,6 +143,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   base::FilePath persisted_sets_path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool embedder_will_provide_public_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We use a OnceCallback to ensure we only pass along the sets once
   // during Chrome's lifetime (modulo reconfiguring the network service).

@@ -6476,6 +6476,12 @@ bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
   return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
 }
 
+bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableComponentUpdate) &&
+         base::FeatureList::IsEnabled(features::kFirstPartySets);
+}
+
 base::Value::Dict ChromeContentBrowserClient::GetFirstPartySetsOverrides() {
   if (!g_browser_process) {
     // If browser process doesn't exist (e.g. in minimal mode on Android),

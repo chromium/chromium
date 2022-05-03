@@ -183,8 +183,6 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   InitializeMessageLoopContext();
-  // The First-Party Sets feature always expects to be initialized
-  FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(base::File());
   return 0;
 }
 

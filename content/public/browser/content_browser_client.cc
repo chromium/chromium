@@ -1326,6 +1326,10 @@ bool ContentBrowserClient::IsFirstPartySetsEnabled() {
   return base::FeatureList::IsEnabled(features::kFirstPartySets);
 }
 
+bool ContentBrowserClient::WillProvidePublicFirstPartySets() {
+  return false;
+}
+
 base::Value::Dict ContentBrowserClient::GetFirstPartySetsOverrides() {
   return base::Value::Dict();
 }
