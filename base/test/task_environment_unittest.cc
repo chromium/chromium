@@ -782,7 +782,10 @@ TEST_F(TaskEnvironmentTest, MultiThreadedMockTimeAndThreadPoolQueuedMode) {
       TaskEnvironment::TimeSource::MOCK_TIME,
       TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
-  int count = 0;
+  // Atomic because it's updated from concurrent tasks in the ThreadPool
+  // (could use std::memory_order_releaxed on all accesses but keeping implicit
+  // operators because the test reads better that way).
+  std::atomic_int count = 0;
   const TimeTicks start_time = task_environment.NowTicks();
 
   RunLoop run_loop;
