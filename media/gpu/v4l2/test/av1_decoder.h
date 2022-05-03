@@ -8,11 +8,18 @@
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include <set>
+
 #include "media/filters/ivf_parser.h"
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
 #include "third_party/libgav1/src/src/obu_parser.h"
+
+// TODO(stevecho): Remove ANALYZER_ALLOW_UNUSED() later if this is added later
+// in base/logging.h for Chromium. Note that this already exists in
+// base/logging.h for ChromeOS.
+#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 // TODO(stevecho): This is temporary until the change to define
 // V4L2_PIX_FMT_AV1_FRAME lands in videodev2.h.
@@ -31,6 +38,8 @@ namespace media {
 class IvfParser;
 
 namespace v4l2_test {
+
+constexpr int8_t kAv1NumRefFrames = libgav1::kNumReferenceFrameTypes;
 
 // A Av1Decoder decodes AV1-encoded IVF streams using v4l2 ioctl calls.
 class Av1Decoder : public VideoDecoder {
@@ -79,6 +88,18 @@ class Av1Decoder : public VideoDecoder {
   // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
   void CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
                      std::unique_ptr<V4L2Queue>& queue);
+
+  // Refreshes |ref_frames_| slots with the current |buffer| and refreshes
+  // |state_| with |current_frame|. Returns |reusable_buffer_slots| to indicate
+  // which CAPTURE buffers can be reused for VIDIOC_QBUF ioctl call.
+  std::set<int> RefreshReferenceSlots(
+      uint8_t refresh_frame_flags,
+      libgav1::RefCountedBufferPtr current_frame,
+      scoped_refptr<MmapedBuffer> buffer,
+      uint32_t last_queued_buffer_index);
+
+  // Reference frames currently in use.
+  std::array<scoped_refptr<MmapedBuffer>, kAv1NumRefFrames> ref_frames_;
 
   IvfFrameHeader ivf_frame_header_{};
   const uint8_t* ivf_frame_data_ = nullptr;

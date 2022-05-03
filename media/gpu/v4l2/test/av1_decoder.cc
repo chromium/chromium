@@ -12,6 +12,12 @@ namespace media {
 
 namespace v4l2_test {
 
+constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
+
+static_assert(kNumberOfBuffersInCaptureQueue <= 16,
+              "Too many CAPTURE buffers are used. The number of CAPTURE "
+              "buffers is currently assumed to be no larger than 16.");
+
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
@@ -118,6 +124,82 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
          ivf_frame_data_, ivf_frame_header_.frame_size);
 }
 
+std::set<int> Av1Decoder::RefreshReferenceSlots(
+    uint8_t refresh_frame_flags,
+    libgav1::RefCountedBufferPtr current_frame,
+    scoped_refptr<MmapedBuffer> buffer,
+    uint32_t last_queued_buffer_index) {
+  static_assert(
+      kAv1NumRefFrames == sizeof(refresh_frame_flags) * CHAR_BIT,
+      "|refresh_frame_flags| size must be equal to |kAv1NumRefFrames|");
+
+  const std::bitset<kAv1NumRefFrames> refresh_frame_slots(refresh_frame_flags);
+
+  std::set<int> reusable_buffer_ids;
+
+  constexpr uint8_t kRefreshFrameFlagsNone = 0;
+  if (refresh_frame_flags == kRefreshFrameFlagsNone) {
+    // Indicates to reuse currently decoded CAPTURE buffer.
+    reusable_buffer_ids.insert(buffer->buffer_id());
+
+    return reusable_buffer_ids;
+  }
+
+  constexpr uint8_t kRefreshFrameFlagsAll = 0xFF;
+  if (refresh_frame_flags == kRefreshFrameFlagsAll) {
+    // After decoding a key frame, all CAPTURE buffers can be reused except the
+    // CAPTURE buffer corresponding to the key frame.
+    for (size_t i = 0; i < kNumberOfBuffersInCaptureQueue; i++)
+      reusable_buffer_ids.insert(i);
+
+    reusable_buffer_ids.erase(buffer->buffer_id());
+
+    // Note that the CAPTURE buffer for previous frame can be used as well,
+    // but it is already queued again at this point.
+    reusable_buffer_ids.erase(last_queued_buffer_index);
+
+    // Updates to assign current key frame as a reference frame for all
+    // reference frame slots in the reference frames list.
+    ref_frames_.fill(buffer);
+
+    return reusable_buffer_ids;
+  }
+
+  // More than one slot in |refresh_frame_flags| can be set.
+  for (size_t i = 0; i < kAv1NumRefFrames; i++) {
+    if (!refresh_frame_slots[i])
+      continue;
+
+    // It is not required to check whether existing reference frame slot is
+    // already pointing to a reference frame. This is because reference
+    // frame slots are empty only after the first key frame decoding.
+    const uint16_t reusable_candidate_buffer_id = ref_frames_[i]->buffer_id();
+    reusable_buffer_ids.insert(reusable_candidate_buffer_id);
+
+    // Checks to make sure |reusable_candidate_buffer_id| is not used in
+    // different reference frame slots in the reference frames list. If
+    // |reusable_candidate_buffer_id| is already being used, then it is no
+    // longer qualified as a reusable buffer. Thus, it is removed from
+    // |reusable_buffer_ids|.
+    for (size_t j = 0; j < kAv1NumRefFrames; j++) {
+      const bool is_refresh_slot_not_used = (refresh_frame_slots[j] == false);
+      const bool is_candidate_used =
+          (ref_frames_[j]->buffer_id() == reusable_candidate_buffer_id);
+
+      if (is_refresh_slot_not_used && is_candidate_used) {
+        reusable_buffer_ids.erase(reusable_candidate_buffer_id);
+        break;
+      }
+    }
+    ref_frames_[i] = buffer;
+  }
+
+  state_->UpdateReferenceFrames(current_frame,
+                                base::strict_cast<int>(refresh_frame_flags));
+
+  return reusable_buffer_ids;
+}
+
 VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                                                  std::vector<char>& u_plane,
                                                  std::vector<char>& v_plane,
@@ -151,7 +233,28 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
-  // TODO(b/228534725): add changes to support reference frames management
+  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
+  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
+  for (const auto ref_frame_index :
+       current_frame_header.reference_frame_index) {
+    LOG_ASSERT(ref_frame_index < kAv1NumRefFrames)
+        << "Invalid reference frame index.\n";
+
+    constexpr size_t kTimestampToNanoSecs = 1000;
+
+    // |reference_id| is needed to use previously decoded frames
+    // from reference frames list.
+    const auto reference_id =
+        ref_frames_[ref_frame_index]
+            ? ref_frames_[ref_frame_index]->frame_number() *
+                  kTimestampToNanoSecs
+            : kInvalidSurface;
+
+    // TODO(stevecho): add setup for frame parameters using |reference_id|
+    // when av1 kernel header is ready.
+    ANALYZER_ALLOW_UNUSED(reference_id);
+  }
 
   // TODO(b/228534730): add changes to prepare parameters for V4L2 AV1 stateless
   // decoding
@@ -171,6 +274,19 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
+
+  const std::set<int> reusable_buffer_ids =
+      RefreshReferenceSlots(current_frame_header.refresh_frame_flags,
+                            current_frame, CAPTURE_queue_->GetBuffer(index),
+                            CAPTURE_queue_->last_queued_buffer_index());
+
+  for (const auto reusable_buffer_id : reusable_buffer_ids) {
+    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_id))
+      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
+
+    if (!libgav1::IsIntraFrame(current_frame_header.frame_type))
+      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_id);
+  }
 
   return VideoDecoder::kOk;
 }

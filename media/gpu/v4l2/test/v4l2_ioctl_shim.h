@@ -17,9 +17,7 @@ namespace media {
 namespace v4l2_test {
 
 // MmapedBuffer maintains |mmaped_planes_| for each buffer as well as
-// |reference_id_|. Reference ID is computed from buffer ID, which is an
-// index used for VIDIOC_REQBUFS ioctl call. Reference ID is needed to use
-// previously decoded frames from reference frames list.
+// |buffer_id_|. |buffer_id_| is an index used for VIDIOC_REQBUFS ioctl call.
 class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
  public:
   MmapedBuffer(const base::PlatformFile decode_fd,
@@ -100,6 +98,8 @@ class V4L2Queue {
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
 
+  // TODO(stevecho): change naming from |last_queued_buffer_index| to
+  // |last_queued_buffer_id|
   uint32_t last_queued_buffer_index() const {
     return last_queued_buffer_index_;
   }
