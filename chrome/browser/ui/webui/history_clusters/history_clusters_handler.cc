@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -222,18 +221,6 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
   return result_mojom;
 }
 
-// An internal only class used to track WebUI lifetime.
-class HistoryClustersHandler::ScopedElapsedTimer {
- public:
-  ~ScopedElapsedTimer() {
-    base::UmaHistogramLongTimes100("History.Clusters.WebUISessionDuration",
-                                   timer_.Elapsed());
-  }
-
- private:
-  base::ElapsedTimer timer_;
-};
-
 HistoryClustersHandler::HistoryClustersHandler(
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
     Profile* profile,
@@ -262,17 +249,6 @@ void HistoryClustersHandler::ToggleVisibility(
     ToggleVisibilityCallback callback) {
   profile_->GetPrefs()->SetBoolean(prefs::kVisible, visible);
   std::move(callback).Run(visible);
-}
-
-void HistoryClustersHandler::NotifyHistoryClustersSelected(
-    bool history_clusters_selected) {
-  if (history_clusters_selected) {
-    if (!webui_session_duration_) {
-      webui_session_duration_ = std::make_unique<ScopedElapsedTimer>();
-    }
-  } else {
-    webui_session_duration_.reset();
-  }
 }
 
 void HistoryClustersHandler::StartQueryClusters(const std::string& query) {

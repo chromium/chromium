@@ -131,10 +131,6 @@ interface PageHandler {
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
 
-  // Notifies the native handler whether the History Clusters Page is selected.
-  // Called when the WebUI page is loaded, and when the user switches tabs.
-  NotifyHistoryClustersSelected(bool history_clusters_selected);
-
   // Toggles the visibility of the History Clusters. The returned Promise echos
   // the given value for `visible`. The page uses the returned value to update
   // its state once the request is fulfilled by the browser.

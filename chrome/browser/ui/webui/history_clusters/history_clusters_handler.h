@@ -59,7 +59,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
   void ToggleVisibility(bool visible,
                         ToggleVisibilityCallback callback) override;
-  void NotifyHistoryClustersSelected(bool history_clusters_selected) override;
   void StartQueryClusters(const std::string& query) override;
   void LoadMoreClusters(const std::string& query) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
@@ -70,9 +69,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void OnDebugMessage(const std::string& message) override;
 
  private:
-  // An internal only class used to track WebUI lifetime.
-  class ScopedElapsedTimer;
-
   // Called with the result of querying clusters. Subsequently, `query_result`
   // is sent to the JS to update the UI.
   void OnClustersQueryResult(mojom::QueryResultPtr query_result);
@@ -95,11 +91,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   // Encapsulates the currently loaded clusters state on the page.
   std::unique_ptr<QueryClustersState> query_clusters_state_;
-
-  // A page lifetime timer used to record how long the user spends on the WebUI.
-  // This is specifically not constructed in the class constructor because the
-  // user may be looking at a different tab.
-  std::unique_ptr<ScopedElapsedTimer> webui_session_duration_;
 
   base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };

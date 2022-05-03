@@ -32,7 +32,6 @@ import {getTemplate} from './app.html.js';
 import {BrowserService, BrowserServiceImpl} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
-import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
 import {HistoryListElement} from './history_list.js';
 import {HistoryToolbarElement} from './history_toolbar.js';
 import {Page, TABBED_PAGES} from './router.js';
@@ -551,13 +550,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.browserService_!.recordHistogram(
         'History.HistoryPageView', histogramValue,
         HistoryPageViewHistogram.END);
-
-    // We don't use `this.browserService_` here, because its chrome.send message
-    // handling is deprecated, and none of the handlers attached to
-    // `this.browserService_` handle History Clusters logic.
-    BrowserProxyImpl.getInstance().handler.notifyHistoryClustersSelected(
-        this.historyClustersSelected_(
-            this.selectedPage_!, this.showHistoryClusters_));
   }
 
   // Override FindShortcutMixin methods.
