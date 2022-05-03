@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -317,6 +318,11 @@ void ChromeOSMetricsProvider::SetFullHardwareClass(
     base::OnceClosure callback,
     std::string full_hardware_class) {
   full_hardware_class_ = full_hardware_class;
+
+  // Structured metrics needs to know when full hardware class is available
+  // since events should have full hardware class populated. Notify structured
+  // metrics recorder that HWID is available to start sending events.
+  metrics::structured::Recorder::GetInstance()->OnHardwareClassInitialized();
   std::move(callback).Run();
 }
 
