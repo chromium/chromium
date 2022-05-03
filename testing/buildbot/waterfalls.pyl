@@ -4807,29 +4807,6 @@
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
-      'Optional Linux Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_optional_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_optional_linux_telemetry_tests',
-        },
-      },
-      'Optional Linux Release (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_optional_gtests',
-          'isolated_scripts': 'gpu_test_buildbucket_api_gpu_use_cases',
-          'gpu_telemetry_tests': 'gpu_fyi_optional_linux_telemetry_tests',
-        },
-      },
       'Optional Mac Release (Intel)': {
         'os_type': 'mac',
         'browser_config': 'release',

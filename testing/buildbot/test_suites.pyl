@@ -6415,10 +6415,6 @@
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
-    'gpu_fyi_linux_optional_gtests': [
-      'gpu_gles2_conform_gtests',
-    ],
-
     'gpu_fyi_linux_release_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
@@ -6537,14 +6533,6 @@
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_optional_linux_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
     'gpu_fyi_optional_mac_passthrough_telemetry_tests': [
@@ -6737,10 +6725,6 @@
 
     'gpu_swangle_telemetry_tests': [
       'gpu_webgl_conformance_swangle_passthrough_telemetry_tests',
-    ],
-
-    'gpu_test_buildbucket_api_gpu_use_cases': [
-      'test_buildbucket_api_gpu_use_cases',
     ],
 
     'gpu_v8_desktop_passthrough_telemetry_tests': [
