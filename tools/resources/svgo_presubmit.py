@@ -12,7 +12,7 @@ BLOCKLIST = [
 
 def CheckOptimized(input_api, output_api):
   file_filter = lambda f: f.LocalPath().endswith('.svg') and \
-      f.LocalPath() not in BLOCKLIST
+      f.LocalPath().replace('\\', '/') not in BLOCKLIST
   svgs = input_api.AffectedFiles(file_filter=file_filter, include_deletes=False)
 
   if not svgs:
