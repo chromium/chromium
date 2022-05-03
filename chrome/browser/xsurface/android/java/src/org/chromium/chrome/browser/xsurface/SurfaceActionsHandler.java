@@ -42,6 +42,9 @@ public interface SurfaceActionsHandler {
     /** Add the url to the reading list and make it available offline. */
     default void addToReadingList(String title, String url) {}
 
+    /** Opens Crow CCT for the URL. */
+    default void navigateCrow(String url) {}
+
     /**
      * Open a bottom sheet with the view as contents.
      * @param view The bottom sheet contents view.
