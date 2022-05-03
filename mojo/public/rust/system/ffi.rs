@@ -182,8 +182,6 @@ pub use raw_ffi::MojoReadData;
 pub use raw_ffi::MojoReadMessage;
 pub use raw_ffi::MojoRemoveTrigger;
 pub use raw_ffi::MojoUnmapBuffer;
-pub use raw_ffi::MojoWait;
-pub use raw_ffi::MojoWaitMany;
 pub use raw_ffi::MojoWaitSetAdd;
 pub use raw_ffi::MojoWaitSetRemove;
 pub use raw_ffi::MojoWaitSetWait;

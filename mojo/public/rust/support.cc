@@ -35,24 +35,6 @@ struct WaitSetAdapter {
 
 extern "C" {
 
-MojoResult MojoWait(MojoHandle handle,
-                    MojoHandleSignals signals,
-                    struct MojoHandleSignalsState* signals_state) {
-  return mojo::Wait(mojo::Handle(handle), signals, signals_state);
-}
-
-MojoResult MojoWaitMany(const MojoHandle* raw_handles,
-                        const MojoHandleSignals* signals,
-                        size_t num_handles,
-                        size_t* result_index,
-                        MojoHandleSignalsState* signals_states) {
-  std::vector<mojo::Handle> handles(num_handles);
-  for (size_t i = 0; i < handles.size(); ++i)
-    handles[i] = mojo::Handle(raw_handles[i]);
-  return mojo::WaitMany(handles.data(), signals, num_handles, result_index,
-                        signals_states);
-}
-
 MojoResult MojoCreateWaitSet(const MojoCreateWaitSetOptions*,
                              MojoWaitSetHandle* handle) {
   auto adapter = std::make_unique<WaitSetAdapter>();

@@ -14,6 +14,8 @@
 //! but act much the same as untyped handles.
 
 use crate::system::ffi;
+use crate::system::wait::*;
+
 // This full import is intentional; nearly every type in mojo_types needs to be used.
 use crate::system::mojo_types::*;
 
@@ -46,12 +48,21 @@ pub trait Handle {
     ///
     /// Returns the satisfied and satisfiable signals respectively for this
     /// handle when waiting is done.
-    fn wait(&self, signals: HandleSignals) -> (SignalsState, MojoResult) {
+    fn wait(&self, signals: HandleSignals) -> WaitResult {
+        wait(self.get_native_handle(), signals)
+    }
+
+    /// Gets the last known signals state of the handle. The state may change at any time during or after this call.
+    fn query_signals_state(&self) -> Result<SignalsState, MojoResult> {
         let mut state: SignalsState = Default::default();
-        let r = unsafe {
-            ffi::MojoWait(self.get_native_handle(), signals.get_bits(), &mut state.0 as *mut _)
-        };
-        (state, MojoResult::from_code(r))
+        let r = MojoResult::from_code(unsafe {
+            ffi::MojoQueryHandleSignalsState(self.get_native_handle(), state.as_raw_mut_ptr())
+        });
+
+        match r {
+            MojoResult::Okay => Ok(state),
+            r => Err(r),
+        }
     }
 }
 

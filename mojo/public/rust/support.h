@@ -42,22 +42,6 @@ struct MOJO_ALIGNAS(8) MojoWaitSetResult {
 extern "C" {
 #endif
 
-// These functions support waiting on handle signal changes, e.g. to wait for
-// a pipe to become readable. They used to be in the C API, but now the C API
-// only exposes more primitive building blocks such as traps.
-//
-// We re-implement these functions in terms of the C++ API functions.
-
-MojoResult MojoWait(MojoHandle handle,
-                    MojoHandleSignals signals,
-                    struct MojoHandleSignalsState* signals_state);
-
-MojoResult MojoWaitMany(const MojoHandle* raw_handles,
-                        const MojoHandleSignals* signals,
-                        size_t num_handles,
-                        size_t* result_index,
-                        struct MojoHandleSignalsState* signals_states);
-
 // Similar to the above, wait sets could wait for one of several handles to be
 // signalled. Unlike WaitMany they maintained a set of handles in their state.
 // They are long gone as first-class objects of the Mojo API. Previously they

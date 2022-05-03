@@ -16,8 +16,7 @@ use mojo::system::trap::{
     ArmResult, Trap, TrapEvent, TriggerCondition, UnsafeTrap, UnsafeTrapEvent,
 };
 use mojo::system::wait_set;
-use mojo::system::{self, MojoResult};
-use mojo::system::{CastHandle, Handle};
+use mojo::system::{self, CastHandle, Handle, MojoResult, SignalsState};
 
 use std::string::String;
 use std::sync::{Arc, Condvar, Mutex};
@@ -90,8 +89,7 @@ tests! {
             let endpt0 = unsafe { message_pipe::MessageEndpoint::from_untyped(endpt_u) };
             assert_eq!(endpt0.get_native_handle(), endpt_h);
             {
-                let (s, r) = endpt0.wait(signals!(Signals::Writable));
-                assert_eq!(r, mojo::MojoResult::Okay);
+                let s: SignalsState = endpt0.wait(signals!(Signals::Writable)).satisfied().unwrap();
                 assert!(s.satisfied().is_writable());
                 assert!(s.satisfiable().is_readable());
                 assert!(s.satisfiable().is_writable());
@@ -105,8 +103,7 @@ tests! {
             let write_result = endpt1.write(&hello, Vec::new(), mpflags!(Write::None));
             assert_eq!(write_result, mojo::MojoResult::Okay);
             {
-                let (s, r) = endpt0.wait(signals!(Signals::Readable));
-                assert_eq!(r, mojo::MojoResult::Okay);
+                let s: SignalsState = endpt0.wait(signals!(Signals::Readable)).satisfied().unwrap();
                 assert!(s.satisfied().is_readable());
                 assert!(s.satisfied().is_writable());
                 assert!(s.satisfiable().is_readable());
@@ -120,8 +117,7 @@ tests! {
             }
             assert_eq!(String::from_utf8(hello_data).unwrap(), "hello".to_string());
         }
-        let (s, r) = endpt1.wait(signals!(Signals::Readable, Signals::Writable));
-        assert_eq!(r, mojo::MojoResult::FailedPrecondition);
+        let s: SignalsState = endpt1.wait(signals!(Signals::Readable, Signals::Writable)).unsatisfiable().unwrap();
         assert!(s.satisfied().is_peer_closed());
         // For some reason QuotaExceeded is also set. TOOD(collinbaker): investigate.
         assert!(s.satisfiable().get_bits() & (system::Signals::PeerClosed as u32) > 0);
@@ -142,20 +138,14 @@ tests! {
         assert_eq!(cons.get_native_handle(), cons_h);
         assert_eq!(prod.get_native_handle(), prod_h);
         // Test waiting on producer
-        {
-            let (_s, r) = prod.wait(signals!(Signals::Writable));
-            assert_eq!(r, mojo::MojoResult::Okay);
-        }
+        prod.wait(signals!(Signals::Writable)).satisfied().unwrap();
         // Test one-phase read/write.
         // Writing.
         let hello = "hello".to_string().into_bytes();
         let bytes_written = prod.write(&hello, dpflags!(Write::None)).unwrap();
         assert_eq!(bytes_written, hello.len());
         // Reading.
-        {
-            let (_s, r) = cons.wait(signals!(Signals::Readable));
-            assert_eq!(r, mojo::MojoResult::Okay);
-        }
+        cons.wait(signals!(Signals::Readable)).satisfied().unwrap();
         let data_string = String::from_utf8(cons.read(dpflags!(Read::None)).unwrap()).unwrap();
         assert_eq!(data_string, "hello".to_string());
         {
@@ -175,10 +165,7 @@ tests! {
                 None => (),
             }
             // Reading.
-            {
-                let (_s, r) = cons.wait(signals!(Signals::Readable));
-                assert_eq!(r, mojo::MojoResult::Okay);
-            }
+            cons.wait(signals!(Signals::Readable)).satisfied().unwrap();
             let mut data_goodbye: Vec<u8> = Vec::with_capacity(goodbye.len());
             {
                 let read_buf = match cons.begin() {

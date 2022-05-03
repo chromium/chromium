@@ -193,6 +193,11 @@ impl SignalsState {
     pub fn to_raw(self) -> MojoHandleSignalsState {
         self.0
     }
+
+    /// Get a pointer to the inner struct for FFI calls.
+    pub fn as_raw_mut_ptr(&mut self) -> *mut MojoHandleSignalsState {
+        &mut self.0 as *mut _
+    }
 }
 
 impl std::default::Default for SignalsState {
