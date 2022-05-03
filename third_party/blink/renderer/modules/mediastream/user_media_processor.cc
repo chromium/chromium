@@ -1205,7 +1205,7 @@ void UserMediaProcessor::OnDeviceStopped(const MediaStreamDevice& device) {
 
   MediaStreamSource* source = FindLocalSource(device);
   if (!source) {
-    // This happens if the same device is used in several guM requests or
+    // This happens if the same device is used in several gUM requests or
     // if a user happens to stop a track from JS at the same time
     // as the underlying media device is unplugged from the system.
     return;
