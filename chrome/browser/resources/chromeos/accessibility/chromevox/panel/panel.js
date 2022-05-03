@@ -495,24 +495,12 @@ export class Panel extends PanelInterface {
             Panel.onClose();
           });
 
-      const roleListMenuMapping = [
-        {menuTitle: 'role_heading', predicate: AutomationPredicate.heading},
-        {menuTitle: 'role_landmark', predicate: AutomationPredicate.landmark},
-        {menuTitle: 'role_link', predicate: AutomationPredicate.link}, {
-          menuTitle: 'panel_menu_form_controls',
-          predicate: AutomationPredicate.formField
-        },
-        {menuTitle: 'role_table', predicate: AutomationPredicate.table}
-      ];
-
-      for (let i = 0; i < roleListMenuMapping.length; ++i) {
-        const menuTitle = roleListMenuMapping[i].menuTitle;
-        const predicate = roleListMenuMapping[i].predicate;
+      for (const menuData of ALL_NODE_MENU_DATA) {
         // Create node menus asynchronously (because it may require
         // searching a long document) unless that's the specific menu the
         // user requested.
-        const async = (menuTitle !== opt_activateMenuTitle);
-        Panel.addNodeMenu(menuTitle, node, predicate, async);
+        const isActivatedMenu = (menuData.titleId === opt_activateMenuTitle);
+        Panel.addNodeMenu(menuData, node, isActivatedMenu);
       }
 
       if (node && node.standardActions) {
@@ -751,20 +739,22 @@ export class Panel extends PanelInterface {
 
   /**
    * Create a new node menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
+   * @param {!PanelNodeMenuData} menuData The title/predicate for the new menu.
    * @param {!chrome.automation.AutomationNode} node
-   * @param {AutomationPredicate.Unary} pred
-   * @param {boolean} defer If true, defers populating the menu.
+   * @param {boolean} isActivatedMenu Whether the menu was explicitly activated
+   *     or not. If not, defer population to asynchronous callbacks.
    * @return {PanelMenu} The menu just created.
    */
-  static addNodeMenu(menuMsg, node, pred, defer) {
-    const menu = new PanelNodeMenu(menuMsg, node, pred, defer);
+  static addNodeMenu(menuData, node, isActivatedMenu) {
+    const menu = new PanelNodeMenu(
+        menuData.titleId, node, menuData.predicate,
+        /* defer= */ !isActivatedMenu);
     $('menu-bar').appendChild(menu.menuBarItemElement);
-    menu.menuBarItemElement.addEventListener('mouseover', function() {
+    menu.menuBarItemElement.addEventListener('mouseover', () => {
       Panel.activateMenu(menu, true /* activateFirstItem */);
-    }, false);
+    });
     menu.menuBarItemElement.addEventListener(
-        'mouseup', Panel.onMouseUpOnMenuTitle_.bind(this, menu), false);
+        'mouseup', event => Panel.onMouseUpOnMenuTitle_(menu, event));
     $('menus_background').appendChild(menu.menuContainerElement);
     Panel.menus_.push(menu);
     return menu;

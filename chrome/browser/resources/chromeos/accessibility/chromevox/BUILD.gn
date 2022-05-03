@@ -61,6 +61,7 @@ chromevox_modules = [
   "common/log_types.js",
   "common/msgs.js",
   "common/panel_command.js",
+  "common/panel_menu_data.js",
   "common/spannable.js",
   "common/tree_dumper.js",
   "common/tts_interface.js",
