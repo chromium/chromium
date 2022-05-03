@@ -62,6 +62,7 @@ component("auth") {
     "challenge_response/known_user_pref_utils.h",
     "cryptohome_authenticator.cc",
     "cryptohome_authenticator.h",
+    "cryptohome_error.cc",
     "cryptohome_error.h",
     "cryptohome_key_constants.cc",
     "cryptohome_key_constants.h",

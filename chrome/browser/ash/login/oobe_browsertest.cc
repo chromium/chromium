@@ -126,23 +126,19 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));
 
-  // Verify the parameters that were passed to the latest
-  // AuthenticateAuthSession or MountEx call.
-  const cryptohome::AuthorizationRequest& cryptohome_auth =
-      is_auth_session_enabled_
-          ? FakeUserDataAuthClient::Get()
-                ->get_last_authenticate_auth_session_authorization()
-          : FakeUserDataAuthClient::Get()->get_last_mount_authentication();
-
-  EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
-            cryptohome_auth.key().data().type());
-  EXPECT_TRUE(cryptohome_auth.key().data().label().empty());
-  EXPECT_FALSE(cryptohome_auth.key().secret().empty());
-
-  // create does not make sense in the context of AuthSession,
+  // Create does not make sense in the context of AuthSession,
   // so we only check passed params when AuthSession feature
   // is disabled.
   if (!is_auth_session_enabled_) {
+    // Key that was passed as mount authentication does not actually matter,
+    // but checking it for the sake of completeness.
+    const cryptohome::AuthorizationRequest& cryptohome_auth =
+        FakeUserDataAuthClient::Get()->get_last_mount_authentication();
+    EXPECT_TRUE(cryptohome_auth.key().data().label().empty());
+    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
+              cryptohome_auth.key().data().type());
+    EXPECT_FALSE(cryptohome_auth.key().secret().empty());
+
     const ::user_data_auth::MountRequest& last_mount_request =
         FakeUserDataAuthClient::Get()->get_last_mount_request();
     ASSERT_TRUE(last_mount_request.has_create());
@@ -152,6 +148,14 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
     EXPECT_EQ(kCryptohomeGaiaKeyLabel,
               last_mount_request.create().keys(0).data().label());
     EXPECT_FALSE(last_mount_request.create().keys(0).secret().empty());
+  } else {
+    // Verify the parameters that were passed to the latest AddCredentials call.
+    const cryptohome::AuthorizationRequest& cryptohome_auth =
+        FakeUserDataAuthClient::Get()->get_last_add_credentials_request();
+    EXPECT_EQ(cryptohome_auth.key().data().label(), kCryptohomeGaiaKeyLabel);
+    EXPECT_FALSE(cryptohome_auth.key().secret().empty());
+    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
+              cryptohome_auth.key().data().type());
   }
 }
 

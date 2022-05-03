@@ -42,6 +42,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   // afterwards, but there is no guarantees about state of the session.
   void InvalidateCurrentAttempts();
 
+  base::WeakPtr<AuthPerformer> AsWeakPtr();
+
   // Starts new AuthSession using identity passed in `context`,
   // fills information about supported (and configured if user exists) keys.
   // `Context` should not have associated auth session.

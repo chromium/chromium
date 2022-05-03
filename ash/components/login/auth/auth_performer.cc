@@ -23,6 +23,10 @@ void AuthPerformer::InvalidateCurrentAttempts() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
                                      StartSessionCallback callback) {
@@ -39,6 +43,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
     // TODO(crbug.com/1262139): Maybe have this error surfaced to UI.
     LOG(FATAL) << "Cryptohome service could not start";
   }
+  LOGIN_LOG(EVENT) << "Starting AuthSession";
   user_data_auth::StartAuthSessionRequest request;
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(context->GetAccountId());
@@ -104,6 +109,7 @@ void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
 
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
+  LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
   user_data_auth::AuthenticateAuthSessionRequest request;
   request.set_auth_session_id(context->GetAuthSessionId());
 
@@ -141,6 +147,8 @@ void AuthPerformer::OnStartAuthSession(
     return;
   }
   CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "AuthSession started, user "
+                   << (reply->user_exists() ? "exists" : "does not exist");
 
   context->SetAuthSessionId(reply->auth_session_id());
   // Remember key metadata
@@ -173,7 +181,7 @@ void AuthPerformer::OnAuthenticateAuthSession(
     absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
-    LOGIN_LOG(EVENT) << "Failed to authenticate session " << error;
+    LOGIN_LOG(EVENT) << "Failed to authenticate session, error code " << error;
     std::move(callback).Run(std::move(context), CryptohomeError{error});
     return;
   }

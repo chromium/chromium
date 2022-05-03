@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) MountPerformer {
   // afterwards, but there is no guarantee about state of the active mounts.
   void InvalidateCurrentAttempts();
 
+  base::WeakPtr<MountPerformer> AsWeakPtr();
+
   // Creates persistent home directory for the user identified by auth session
   // in `context`.
   // It is assumed that auth session has `user_exists` set to false.

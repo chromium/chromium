@@ -193,7 +193,8 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override;
-
+  void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
+                      AddCredentialsCallback callback) override;
   void Mount(const ::user_data_auth::MountRequest& request,
              MountCallback callback) override;
 
@@ -211,6 +212,13 @@ void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
     AuthenticateAuthSessionCallback callback) {
   salted_hashed_secret_ = request.authorization().key().secret();
   FakeUserDataAuthClient::AuthenticateAuthSession(request, std::move(callback));
+}
+
+void SecretInterceptingFakeUserDataAuthClient::AddCredentials(
+    const ::user_data_auth::AddCredentialsRequest& request,
+    AddCredentialsCallback callback) {
+  salted_hashed_secret_ = request.authorization().key().secret();
+  FakeUserDataAuthClient::AddCredentials(request, std::move(callback));
 }
 
 void SecretInterceptingFakeUserDataAuthClient::Mount(

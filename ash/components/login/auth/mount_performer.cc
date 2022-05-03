@@ -6,18 +6,33 @@
 
 #include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/user_context.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
+
+namespace {
+
+bool ShouldUseOldEncryptionForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kCryptohomeUseOldEncryptionForTesting);
+}
+
+}  // namespace
 
 MountPerformer::MountPerformer() = default;
 MountPerformer::~MountPerformer() = default;
 
 void MountPerformer::InvalidateCurrentAttempts() {
   weak_factory_.InvalidateWeakPtrs();
+}
+
+base::WeakPtr<MountPerformer> MountPerformer::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void MountPerformer::CreateNewUser(std::unique_ptr<UserContext> context,
@@ -37,7 +52,12 @@ void MountPerformer::MountPersistentDirectory(
   user_data_auth::PreparePersistentVaultRequest request;
   LOGIN_LOG(EVENT) << "Mount persistent directory";
   request.set_auth_session_id(context->GetAuthSessionId());
-  request.set_block_ecryptfs(context->IsForcingDircrypto());
+  if (ShouldUseOldEncryptionForTesting()) {
+    request.set_encryption_type(
+        user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS);
+  } else if (context->IsForcingDircrypto()) {
+    request.set_block_ecryptfs(true);
+  }
   UserDataAuthClient::Get()->PreparePersistentVault(
       request, base::BindOnce(&MountPerformer::OnPreparePersistentVault,
                               weak_factory_.GetWeakPtr(), std::move(context),

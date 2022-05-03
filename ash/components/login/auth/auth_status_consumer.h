@@ -104,7 +104,10 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFailure {
         return "TPM firmware update required.";
       case UNRECOVERABLE_CRYPTOHOME:
         return "Cryptohome is corrupted.";
-      default:
+      case USERNAME_HASH_FAILED:
+        return "Failed to get hashed username";
+      case NONE:
+      case NUM_FAILURE_REASONS:
         NOTREACHED();
         return std::string();
     }

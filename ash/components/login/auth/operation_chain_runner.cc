@@ -4,7 +4,7 @@
 
 #include "ash/components/login/auth/operation_chain_runner.h"
 
-#include <initializer_list>
+#include <memory>
 #include <vector>
 
 #include "ash/components/login/auth/user_context.h"

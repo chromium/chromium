@@ -263,12 +263,17 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   }
 
   const ::cryptohome::AuthorizationRequest&
-  get_last_authenticate_auth_session_authorization() {
+  get_last_authenticate_auth_session_authorization() const {
     return last_authenticate_auth_session_request_.authorization();
   }
 
+  const ::cryptohome::AuthorizationRequest& get_last_add_credentials_request()
+      const {
+    return last_add_credentials_request_.authorization();
+  }
+
   const ::user_data_auth::AuthenticateAuthFactorRequest&
-  get_last_authenticate_auth_factor_request() {
+  get_last_authenticate_auth_factor_request() const {
     return last_authenticate_auth_factor_request_;
   }
 
@@ -360,6 +365,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // AuthenticateAuthSession() call.
   ::user_data_auth::AuthenticateAuthSessionRequest
       last_authenticate_auth_session_request_;
+
+  // The AddCredentialsRequest passed in for the last AddCredentials() call.
+  ::user_data_auth::AddCredentialsRequest last_add_credentials_request_;
 
   // The AuthenticateAuthFactorRequest passed in for the last
   // AuthenticateAuthFactor() call.

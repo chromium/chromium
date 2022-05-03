@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -304,13 +305,34 @@ void FakeUserDataAuthClient::StartAuthSession(
   session.id = auth_session_id;
   session.account = request.account_id();
 
+  std::string user_id = request.account_id().account_id();
+  // See device_local_account.h
+  bool is_kiosk = base::EndsWith(user_id, "kiosk-apps.device-local.localhost");
+
   ::user_data_auth::StartAuthSessionReply reply;
   reply.set_auth_session_id(auth_session_id);
-
-  reply.set_user_exists(UserExists(request.account_id()));
-
+  bool user_exists = UserExists(request.account_id());
+  reply.set_user_exists(user_exists);
+  if (user_exists) {
+    if (is_kiosk) {
+      // see kCryptohomePublicMountLabel
+      std::string kiosk_label = "publicmount";
+      cryptohome::KeyData kiosk_key;
+      kiosk_key.set_label(kiosk_label);
+      kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+      (*reply.mutable_key_label_data())[kiosk_label] = std::move(kiosk_key);
+    } else {
+      // see kCryptohomeGaiaKeyLabel
+      std::string gaia_label = "gaia";
+      cryptohome::KeyData gaia_key;
+      gaia_key.set_label(gaia_label);
+      gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+      (*reply.mutable_key_label_data())[gaia_label] = std::move(gaia_key);
+    }
+  }
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
+
 void FakeUserDataAuthClient::AuthenticateAuthSession(
     const ::user_data_auth::AuthenticateAuthSessionRequest& request,
     AuthenticateAuthSessionCallback callback) {
@@ -323,6 +345,9 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
   if (it == auth_sessions_.end()) {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  } else if (cryptohome_error_ !=
+             ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(cryptohome_error_);
   } else {
     it->second.authenticated = true;
     reply.set_authenticated(true);
@@ -333,6 +358,7 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
 void FakeUserDataAuthClient::AddCredentials(
     const ::user_data_auth::AddCredentialsRequest& request,
     AddCredentialsCallback callback) {
+  last_add_credentials_request_ = request;
   ::user_data_auth::AddCredentialsReply reply;
 
   const std::string auth_session_id = request.auth_session_id();
@@ -391,12 +417,17 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
                         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
   } else {
     account = auth_session->second.account;
-    reply.set_sanitized_username(GetStubSanitizedUsername(account));
-    if (!auth_session->second.authenticated) {
-      LOG(ERROR) << "AuthSession is not authenticated";
+    // Ephemeral mount does not require session to be authenticated;
+    // It authenticates session instead.
+    if (auth_session->second.authenticated) {
+      LOG(ERROR) << "AuthSession is authenticated";
       reply.set_error(::user_data_auth::CryptohomeErrorCode::
                           CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    } else {
+      auth_session->second.authenticated = true;
     }
+
+    reply.set_sanitized_username(GetStubSanitizedUsername(account));
   }
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
@@ -440,6 +471,9 @@ void FakeUserDataAuthClient::PreparePersistentVault(
   } else if (!UserExists(authenticated_auth_session->account)) {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+  } else {
+    reply.set_sanitized_username(
+        GetStubSanitizedUsername(authenticated_auth_session->account));
   }
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
@@ -655,10 +689,15 @@ base::FilePath FakeUserDataAuthClient::GetUserProfileDir(
 
 bool FakeUserDataAuthClient::UserExists(
     const cryptohome::AccountIdentifier& account_id) const {
-  if (existing_users_.find(account_id) != std::end(existing_users_))
+  if (existing_users_.find(account_id) != std::end(existing_users_)) {
+    LOG(INFO) << "User exists : specified by mixin";
     return true;
+  }
   base::ScopedAllowBlockingForTesting allow_io;
-  return base::PathExists(GetUserProfileDir(account_id));
+  bool result = base::PathExists(GetUserProfileDir(account_id));
+  LOG(INFO) << "User " << (result ? "exists" : "does not exist")
+            << " profile dir";
+  return result;
 }
 
 const FakeUserDataAuthClient::AuthSessionData*

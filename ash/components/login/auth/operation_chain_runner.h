@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_LOGIN_AUTH_OPERATION_CHAIN_RUNNER_H_
 #define ASH_COMPONENTS_LOGIN_AUTH_OPERATION_CHAIN_RUNNER_H_
 
+#include <memory>
 #include <vector>
 
 #include "ash/components/login/auth/auth_callbacks.h"
