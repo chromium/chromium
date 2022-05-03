@@ -533,6 +533,9 @@ export class StatsRatesCalculator {
               'lastPacketReceivedTimestamp'),
           estimatedPlayoutTimestamp: new DateCalculator(
               'estimatedPlayoutTimestamp'),
+          totalProcessingDelay: new RateCalculator(
+              'totalProcessingDelay', 'framesDecoded',
+              CalculatorModifier.kMillisecondsFromSeconds),
         },
       },
       {
