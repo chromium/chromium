@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -170,6 +172,159 @@ void ThreadDebugger::beginUserGesture() {
   LocalFrame::NotifyUserActivation(
       window ? window->GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kDevTools);
+}
+
+namespace {
+static const char kType[] = "type";
+static const char kValue[] = "value";
+
+v8::Local<v8::String> TypeStringKey(v8::Isolate* isolate_) {
+  return V8String(isolate_, kType);
+}
+v8::Local<v8::String> ValueStringKey(v8::Isolate* isolate_) {
+  return V8String(isolate_, kValue);
+}
+
+v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
+                                              v8::Isolate* isolate_,
+                                              int max_depth) {
+  static const char kAttributes[] = "attributes";
+  static const char kChildren[] = "children";
+  static const char kChildNodeCount[] = "childNodeCount";
+  static const char kLocalName[] = "localName";
+  static const char kNamespaceURI[] = "namespaceURI";
+  static const char kNode[] = "node";
+  static const char kNodeName[] = "nodeName";
+  static const char kNodeType[] = "nodeType";
+  static const char kNodeValue[] = "nodeValue";
+
+  Vector<v8::Local<v8::Name>> serialized_value_keys;
+  Vector<v8::Local<v8::Value>> serialized_value_values;
+  serialized_value_keys.push_back(V8String(isolate_, kNodeType));
+  serialized_value_values.push_back(
+      v8::Number::New(isolate_, node->getNodeType()));
+
+  serialized_value_keys.push_back(V8String(isolate_, kNodeValue));
+  serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+
+  serialized_value_keys.push_back(V8String(isolate_, kNodeName));
+  serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+
+  if (node->IsElementNode()) {
+    Element* element = To<Element>(node);
+
+    serialized_value_keys.push_back(V8String(isolate_, kLocalName));
+    serialized_value_values.push_back(V8String(isolate_, element->localName()));
+
+    serialized_value_keys.push_back(V8String(isolate_, kNamespaceURI));
+    serialized_value_values.push_back(
+        V8String(isolate_, element->namespaceURI()));
+
+    serialized_value_keys.push_back(V8String(isolate_, kChildNodeCount));
+    serialized_value_values.push_back(
+        v8::Number::New(isolate_, node->CountChildren()));
+
+    Vector<v8::Local<v8::Name>> node_attributes_keys;
+    Vector<v8::Local<v8::Value>> node_attributes_values;
+
+    for (const Attribute& attribute : element->Attributes()) {
+      node_attributes_keys.push_back(
+          V8String(isolate_, attribute.GetName().ToString()));
+      node_attributes_values.push_back(V8String(isolate_, attribute.Value()));
+    }
+
+    DCHECK(node_attributes_values.size() == node_attributes_keys.size());
+    v8::Local<v8::Object> node_attributes = v8::Object::New(
+        isolate_, v8::Null(isolate_), node_attributes_keys.data(),
+        node_attributes_values.data(), node_attributes_keys.size());
+
+    serialized_value_keys.push_back(V8String(isolate_, kAttributes));
+    serialized_value_values.push_back(node_attributes);
+  }
+
+  if (max_depth > 0) {
+    NodeList* child_nodes = node->childNodes();
+
+    v8::Local<v8::Array> children =
+        v8::Array::New(isolate_, child_nodes->length());
+
+    for (unsigned int i = 0; i < child_nodes->length(); i++) {
+      Node* child_node = child_nodes->item(i);
+      v8::Local<v8::Object> serialized_child_node =
+          SerializeNodeToV8Object(child_node, isolate_, max_depth - 1);
+
+      children
+          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+                               serialized_child_node)
+          .Check();
+
+      serialized_value_keys.push_back(V8String(isolate_, kChildren));
+      serialized_value_values.push_back(children);
+    }
+  }
+
+  DCHECK(serialized_value_values.size() == serialized_value_keys.size());
+
+  v8::Local<v8::Object> serialized_value = v8::Object::New(
+      isolate_, v8::Null(isolate_), serialized_value_keys.data(),
+      serialized_value_values.data(), serialized_value_keys.size());
+
+  Vector<v8::Local<v8::Name>> result_keys;
+  Vector<v8::Local<v8::Value>> result_values;
+
+  result_keys.push_back(TypeStringKey(isolate_));
+  result_values.push_back(V8String(isolate_, kNode));
+
+  result_keys.push_back(ValueStringKey(isolate_));
+  result_values.push_back(serialized_value);
+
+  return v8::Object::New(isolate_, v8::Null(isolate_), result_keys.data(),
+                         result_values.data(), result_keys.size());
+}
+
+std::unique_ptr<v8_inspector::WebDriverValue> SerializeNodeToWebDriverValue(
+    Node* node,
+    v8::Isolate* isolate_,
+    int max_depth) {
+  v8::Local<v8::Object> node_v8_object =
+      SerializeNodeToV8Object(node, isolate_, max_depth);
+
+  v8::Local<v8::Value> value_v8_object =
+      node_v8_object
+          ->Get(isolate_->GetCurrentContext(), ValueStringKey(isolate_))
+          .ToLocalChecked();
+
+  // Safely get `type` from object value.
+  v8::MaybeLocal<v8::Value> maybe_type_v8_value = node_v8_object->Get(
+      isolate_->GetCurrentContext(), TypeStringKey(isolate_));
+  DCHECK(!maybe_type_v8_value.IsEmpty());
+  v8::Local<v8::Value> type_v8_value = maybe_type_v8_value.ToLocalChecked();
+  DCHECK(type_v8_value->IsString());
+  v8::Local<v8::String> type_v8_string = type_v8_value.As<v8::String>();
+  String type_string = ToCoreString(type_v8_string);
+  StringView type_string_view = StringView(type_string);
+  std::unique_ptr<v8_inspector::StringBuffer> type_string_buffer =
+      ToV8InspectorStringBuffer(type_string_view);
+
+  return std::make_unique<v8_inspector::WebDriverValue>(
+      std::move(type_string_buffer), value_v8_object);
+}
+}  // namespace
+
+std::unique_ptr<v8_inspector::WebDriverValue>
+ThreadDebugger::serializeToWebDriverValue(v8::Local<v8::Value> v8_value,
+                                          int max_depth) {
+  // Serialize according to https://w3c.github.io/webdriver-bidi.
+  if (V8Node::HasInstance(v8_value, isolate_)) {
+    Node* node = V8Node::ToImplWithTypeCheck(isolate_, v8_value);
+    return SerializeNodeToWebDriverValue(node, isolate_, max_depth);
+  }
+
+  if (V8Window::HasInstance(v8_value, isolate_)) {
+    return std::make_unique<v8_inspector::WebDriverValue>(
+        ToV8InspectorStringBuffer("window"));
+  }
+  return nullptr;
 }
 
 std::unique_ptr<v8_inspector::StringBuffer> ThreadDebugger::valueSubtype(
