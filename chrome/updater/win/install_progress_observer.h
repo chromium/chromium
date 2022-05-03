@@ -79,7 +79,7 @@ struct AppCompletionInfo {
 struct ObserverCompletionInfo {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
   std::wstring completion_text;
-  std::u16string help_url;
+  std::string help_url;
   std::vector<AppCompletionInfo> apps_info;
 
   ObserverCompletionInfo();

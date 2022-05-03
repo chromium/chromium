@@ -88,7 +88,7 @@ bool CompleteWnd::MaybeCloseWindow() {
 
 void CompleteWnd::DisplayCompletionDialog(bool is_success,
                                           const std::wstring& text,
-                                          const std::u16string& help_url) {
+                                          const std::string& help_url) {
   if (!OmahaWnd::OnComplete())
     return;
 

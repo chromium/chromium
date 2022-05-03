@@ -230,6 +230,15 @@ Enterprise policies can prevent the installation of applications:
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
+#### UI
+TODO(crbug.com/1035895): Document UI.
+
+##### Help Button
+If the installation fails, the updater shows an error message with a "Help"
+button. Clicking the help button opens a web page in the user's default browser.
+The page is opened with a query string:
+`?product={AppId}&errorcode={ErrorCode}`.
+
 #### Dynamic Install Parameters
 
 ##### `needsadmin`

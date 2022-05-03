@@ -9,13 +9,21 @@
 #include <string>
 #include <vector>
 
+#include <shldisp.h>
+#include <shlobj.h>
+#include <wrl/client.h>
+
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/launch.h"
 #include "base/sequence_checker.h"
+#include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -27,13 +35,20 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "base/win/scoped_bstr.h"
+#include "base/win/scoped_variant.h"
+#include "base/win/shlwapi.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/install_progress_observer.h"
+#include "chrome/updater/win/scoped_impersonation.h"
+#include "chrome/updater/win/user_info.h"
+#include "chrome/updater/win/win_util.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
@@ -47,6 +62,30 @@
 
 namespace updater {
 namespace {
+
+bool GetShellDispatch(Microsoft::WRL::ComPtr<IShellDispatch2>* shell_dispatch) {
+  long hwnd = 0;
+  Microsoft::WRL::ComPtr<IShellWindows> shell;
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  Microsoft::WRL::ComPtr<IServiceProvider> service;
+  Microsoft::WRL::ComPtr<IShellBrowser> browser;
+  Microsoft::WRL::ComPtr<IShellView> view;
+  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
+  return SUCCEEDED(::CoCreateInstance(CLSID_ShellWindows, nullptr, CLSCTX_ALL,
+                                      IID_PPV_ARGS(&shell))) &&
+         SUCCEEDED(shell->FindWindowSW(
+             base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(), nullptr,
+             SWC_DESKTOP, &hwnd, SWFO_NEEDDISPATCH, &dispatch)) &&
+         SUCCEEDED(dispatch.As(&service)) &&
+         SUCCEEDED(service->QueryService(SID_STopLevelBrowser,
+                                         IID_PPV_ARGS(&browser))) &&
+         SUCCEEDED(browser->QueryActiveShellView(&view)) &&
+         SUCCEEDED(
+             view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch))) &&
+         SUCCEEDED(dispatch.As(&folder)) &&
+         SUCCEEDED(folder->get_Application(&dispatch)) &&
+         SUCCEEDED(dispatch.As(shell_dispatch));
+}
 
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.
@@ -389,7 +428,7 @@ class AppInstallControllerImpl : public AppInstallController,
   void DoExit() override;
 
   // Overrides for CompleteWndEvents. This function is called on the UI thread.
-  bool DoLaunchBrowser(const std::u16string& url) override;
+  bool DoLaunchBrowser(const std::string& url) override;
 
   // Overrides for ProgressWndEvents. These functions are called on the UI
   // thread.
@@ -611,8 +650,10 @@ void AppInstallControllerImpl::HandleInstallResult(
   ObserverCompletionInfo observer_info;
   observer_info.completion_code = completion_code;
   observer_info.completion_text = completion_text;
-  // TODO(sorin): implement handling the help URL. https://crbug.com/1014622
-  observer_info.help_url = u"http://www.google.com";
+  observer_info.help_url =
+      base::StringPrintf("%s?product=%s&error=%d", HELP_CENTER_URL,
+                         base::EscapeUrlEncodedData(app_id_, false).c_str(),
+                         update_state.error_code);
   // TODO(sorin): implement the installer API and provide the
   // application info in the observer info. https://crbug.com/1014630
   observer_info.apps_info.push_back({});
@@ -668,9 +709,16 @@ DWORD AppInstallControllerImpl::GetUIThreadID() const {
   return ::GetWindowThreadProcessId(progress_wnd_->m_hWnd, nullptr);
 }
 
-bool AppInstallControllerImpl::DoLaunchBrowser(const std::u16string& url) {
+bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
-  return false;
+  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
+  base::win::ScopedVariant empty(L"");
+#undef ShellExecute
+  return GetShellDispatch(&shell_dispatch) &&
+         SUCCEEDED(shell_dispatch->ShellExecute(
+             base::win::ScopedBstr(base::SysUTF8ToWide(url).c_str()).Get(),
+             *empty.AsInput(), *empty.AsInput(), *empty.AsInput(),
+             *base::win::ScopedVariant(SW_SHOWNORMAL).AsInput()));
 }
 
 bool AppInstallControllerImpl::DoRestartBrowser(
