@@ -7741,8 +7741,8 @@ crbug.com/1315753 virtual/selectmenu-new-popup/the-selectmenu-element/selectmenu
 # HighlightOverlayPainting: decoration painting hasn’t landed yet.
 crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 
-crbug.com/1295980 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
-crbug.com/1295980 [ Mac ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
+crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
+crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 
 # Branch Sheriff 2022-04-21
 crbug.com/1316804 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/urn.https.html [ Skip ]
