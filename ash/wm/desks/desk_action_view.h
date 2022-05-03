@@ -32,6 +32,10 @@ class DeskActionView : public views::BoxLayoutView {
   void UpdateCombineDesksTooltip(
       const std::u16string& new_combine_desks_target_name);
 
+  // Changes the visibility of the combine desks button so that it can reflect
+  // whether there are windows on the desk.
+  void SetCombineDesksButtonVisibility(bool visible);
+
  private:
   CloseButton* combine_desks_button_;
   CloseButton* close_all_button_;

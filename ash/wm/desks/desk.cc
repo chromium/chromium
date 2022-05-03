@@ -358,6 +358,14 @@ base::AutoReset<bool> Desk::GetScopedNotifyContentChangedDisabler() {
   return base::AutoReset<bool>(&should_notify_content_changed_, false);
 }
 
+bool Desk::ContainsAppWindows() const {
+  return std::find_if(windows_.begin(), windows_.end(),
+                      [](aura::Window* window) {
+                        return window->GetProperty(aura::client::kAppType) !=
+                               static_cast<int>(AppType::NON_APP);
+                      }) != windows_.end();
+}
+
 void Desk::SetName(std::u16string new_name, bool set_by_user) {
   // Even if the user focuses the DeskNameView for the first time and hits enter
   // without changing the desk's name (i.e. |new_name| is the same,
