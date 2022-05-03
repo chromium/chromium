@@ -4,27 +4,12 @@
 
 static_library("browser") {
   sources = [
-    "browser/ctr_aggregator.cc",
-    "browser/ctr_aggregator.h",
     "browser/public.cc",
     "browser/public.h",
-    "browser/weekly_activity_storage.cc",
-    "browser/weekly_activity_storage.h",
   ]
   deps = [
     "//base",
     "//components/contextual_search:buildflags",
     "//components/prefs:prefs",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "browser/ctr_aggregator_unittest.cc" ]
-
-  deps = [
-    ":browser",
-    "//base",
-    "//testing/gtest",
   ]
 }

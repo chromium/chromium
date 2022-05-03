@@ -702,49 +702,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchPrevious28DayCtr" units="%"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The CTR from the previous 28 day period for each user, expressed as a
-    percentage. Logged the first time the panel is closed in each new week.
-    Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPrevious28DayImpressions" units="views"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of user impressions of the Bar from the previous 28 day period.
-    Logged the first time the panel is closed in each new week. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPreviousWeekCtr" units="%"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The CTR from the previous week for each user, expressed as a percentage.
-    Logged the first time the panel is closed in each new week. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPreviousWeekImpressions" units="views"
-    expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of user impressions of the Bar from the previous week. Logged the
-    first time the panel is closed in each new week. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchPrivacyOptInPreferenceStateChange"
     enum="BooleanOptedIn" expires_after="2022-08-28">
   <owner>donnd@chromium.org</owner>

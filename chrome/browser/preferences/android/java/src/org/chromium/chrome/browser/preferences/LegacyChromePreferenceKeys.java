@@ -34,12 +34,9 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_OPEN_COUNT,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_COUNT,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_QUICK_ANSWER_COUNT,
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_CURRENT_WEEK_NUMBER,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_ENTITY_IMPRESSIONS_COUNT,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_ENTITY_OPENS_COUNT,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_LAST_ANIMATION_TIME,
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_NEWEST_WEEK,
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_OLDEST_WEEK,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_ENCODED_OUTCOMES,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_EVENT_ID,
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_TIMESTAMP,
@@ -174,8 +171,6 @@ public class LegacyChromePreferenceKeys {
     static List<KeyPrefix> getPrefixesInUse() {
         // clang-format off
         return Arrays.asList(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_CLICKS_WEEK_PREFIX,
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_IMPRESSIONS_WEEK_PREFIX,
                 ChromePreferenceKeys.CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE,

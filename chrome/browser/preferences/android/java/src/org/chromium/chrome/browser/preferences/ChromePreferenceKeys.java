@@ -177,10 +177,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String CONTEXTUAL_SEARCH_ALL_TIME_TAP_QUICK_ANSWER_COUNT =
             "contextual_search_all_time_tap_quick_answer_count";
-    public static final KeyPrefix CONTEXTUAL_SEARCH_CLICKS_WEEK_PREFIX =
-            new KeyPrefix("contextual_search_clicks_week_*");
-    public static final String CONTEXTUAL_SEARCH_CURRENT_WEEK_NUMBER =
-            "contextual_search_current_week_number";
     /**
      * The entity-data impressions count for Contextual Search, i.e. thumbnails shown in the Bar.
      * Cumulative, starting at M-69.
@@ -193,12 +189,8 @@ public final class ChromePreferenceKeys {
      */
     public static final String CONTEXTUAL_SEARCH_ENTITY_OPENS_COUNT =
             "contextual_search_entity_opens_count";
-    public static final KeyPrefix CONTEXTUAL_SEARCH_IMPRESSIONS_WEEK_PREFIX =
-            new KeyPrefix("contextual_search_impressions_week_*");
     public static final String CONTEXTUAL_SEARCH_LAST_ANIMATION_TIME =
             "contextual_search_last_animation_time";
-    public static final String CONTEXTUAL_SEARCH_NEWEST_WEEK = "contextual_search_newest_week";
-    public static final String CONTEXTUAL_SEARCH_OLDEST_WEEK = "contextual_search_oldest_week";
     /**
      * An encoded set of outcomes of user interaction with Contextual Search, stored as an int.
      */

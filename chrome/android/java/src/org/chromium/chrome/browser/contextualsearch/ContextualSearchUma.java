@@ -1375,30 +1375,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs the number of impressions and CTR for the previous week for the current user.
-     * @param previousWeekImpressions The number of times the user saw the Contextual Search Bar.
-     * @param previousWeekCtr The CTR expressed as a percentage.
-     */
-    public static void logPreviousWeekCtr(int previousWeekImpressions, int previousWeekCtr) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchPreviousWeekImpressions", previousWeekImpressions);
-        RecordHistogram.recordPercentageHistogram(
-                "Search.ContextualSearchPreviousWeekCtr", previousWeekCtr);
-    }
-
-    /**
-     * Logs the number of impressions and CTR for previous 28-day period for the current user.
-     * @param previous28DayImpressions The number of times the user saw the Contextual Search Bar.
-     * @param previous28DayCtr The CTR expressed as a percentage.
-     */
-    public static void logPrevious28DayCtr(int previous28DayImpressions, int previous28DayCtr) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchPrevious28DayImpressions", previous28DayImpressions);
-        RecordHistogram.recordPercentageHistogram(
-                "Search.ContextualSearchPrevious28DayCtr", previous28DayCtr);
-    }
-
-    /**
      * Logs a duration since the outcomes (and associated timestamp) were saved in persistent
      * storage.
      * @param durationMs The duration to log, in milliseconds.
