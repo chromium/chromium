@@ -135,6 +135,10 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   rt += base::StringPrintf(", LUID={%ld,%lu}", gpu.luid.HighPart,
                            gpu.luid.LowPart);
 #endif
+  if (!gpu.driver_vendor.empty())
+    rt += ", DRIVER_VENDOR=" + gpu.driver_vendor;
+  if (!gpu.driver_version.empty())
+    rt += ", DRIVER_VERSION=" + gpu.driver_version;
   if (gpu.active)
     rt += " *ACTIVE*";
   return rt;
@@ -218,10 +222,6 @@ std::vector<base::Value> GetBasicGpuInfo(
       gpu::VulkanVersionToString(gpu_info.vulkan_version)));
 #endif
 
-  basic_info.push_back(
-      display::BuildGpuInfoEntry("Driver vendor", active_gpu.driver_vendor));
-  basic_info.push_back(
-      display::BuildGpuInfoEntry("Driver version", active_gpu.driver_version));
   basic_info.push_back(display::BuildGpuInfoEntry(
       "GPU CUDA compute capability major version",
       base::Value(active_gpu.cuda_compute_capability_major)));
