@@ -29,6 +29,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -58,13 +59,16 @@ class TestClusteringBackend : public ClusteringBackend {
 
   // Fetches a scored visit by an ID. `visit_id` must be valid. This is a
   // convenience method used for constructing the fake response.
-  history::ClusterVisit GetVisitById(int visit_id, float score = 0.5) {
+  history::ClusterVisit GetVisitById(int visit_id,
+                                     float score = 0.5,
+                                     int engagement_score = 0) {
     for (auto& visit : last_clustered_visits_) {
       if (visit.visit_row.visit_id == visit_id) {
         history::ClusterVisit cluster_visit;
         cluster_visit.annotated_visit = visit;
         cluster_visit.normalized_url = visit.url_row.url();
         cluster_visit.score = score;
+        cluster_visit.engagement_score = engagement_score;
         return cluster_visit;
       }
     }
@@ -736,6 +740,183 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
   test_clustering_backend_->FulfillCallback(clusters2);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+}
+
+TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
+  Config config;
+  config.omnibox_action_on_urls = true;
+  config.omnibox_action_on_noisy_urls = true;
+  SetConfigForTesting(config);
+
+  AddHardcodedTestDataToHistoryService();
+
+  // Verify that initially, the test URL doesn't match anything, but this
+  // query should have kicked off a cache population request. This is the URL
+  // for visit 5.
+  EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Helper to flush out the multiple history and cluster backend requests made
+  // by `DoesURLMatchAnyCluster()`. It won't populate the cache until all its
+  // requests have been completed. It makes 1 request (to each) per unique day
+  // with at least 1 visit; i.e. `number_of_days_with_visits`.
+  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
+    test_clustering_backend_->WaitForGetClustersCall();
+
+    std::vector<history::Cluster> clusters;
+    clusters.push_back(history::Cluster(
+        0,
+        {
+            test_clustering_backend_->GetVisitById(5),
+            test_clustering_backend_->GetVisitById(
+                /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
+        },
+        {u"apples", u"oranges", u"z", u"apples bananas"},
+        /*should_show_on_prominent_ui_surfaces=*/true));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(5),
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"sensitive"},
+                         /*should_show_on_prominent_ui_surfaces=*/false));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"singlevisit"},
+                         /*should_show_on_prominent_ui_surfaces=*/true));
+
+    test_clustering_backend_->FulfillCallback(clusters);
+
+    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
+    // backend requests until it has exhausted history. We have to flush out
+    // these requests before it will populate the cache.
+    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
+      test_clustering_backend_->WaitForGetClustersCall();
+      history::BlockUntilHistoryProcessesPendingRequests(
+          history_service_.get());
+      test_clustering_backend_->FulfillCallback({});
+    }
+    // One last wait to flush out the last, empty history request.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  };
+
+  // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
+  flush_keyword_requests(3);
+
+  // Now the exact query should match the populated cache.
+  EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Github should be shown since we are including visits from noisy URLs.
+  EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://github.com/"))));
+
+  // Deleting a history entry should clear the keyword cache.
+  history_service_->DeleteURLs({GURL{"https://google.com/"}});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
+  // 2-day-old visit.
+  flush_keyword_requests(2);
+
+  // The keyword cache should be repopulated.
+  EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+}
+
+TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
+  Config config;
+  config.omnibox_action_on_urls = true;
+  config.omnibox_action_on_noisy_urls = false;
+  SetConfigForTesting(config);
+
+  AddHardcodedTestDataToHistoryService();
+
+  // Verify that initially, the test URL doesn't match anything, but this
+  // query should have kicked off a cache population request. This is the URL
+  // for visit 5.
+  EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Helper to flush out the multiple history and cluster backend requests made
+  // by `DoesURLMatchAnyCluster()`. It won't populate the cache until all its
+  // requests have been completed. It makes 1 request (to each) per unique day
+  // with at least 1 visit; i.e. `number_of_days_with_visits`.
+  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
+    test_clustering_backend_->WaitForGetClustersCall();
+
+    std::vector<history::Cluster> clusters;
+    clusters.push_back(history::Cluster(
+        0,
+        {
+            test_clustering_backend_->GetVisitById(5),
+            test_clustering_backend_->GetVisitById(
+                /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
+        },
+        {u"apples", u"oranges", u"z", u"apples bananas"},
+        /*should_show_on_prominent_ui_surfaces=*/true));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(5),
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"sensitive"},
+                         /*should_show_on_prominent_ui_surfaces=*/false));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"singlevisit"},
+                         /*should_show_on_prominent_ui_surfaces=*/true));
+
+    test_clustering_backend_->FulfillCallback(clusters);
+
+    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
+    // backend requests until it has exhausted history. We have to flush out
+    // these requests before it will populate the cache.
+    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
+      test_clustering_backend_->WaitForGetClustersCall();
+      history::BlockUntilHistoryProcessesPendingRequests(
+          history_service_.get());
+      test_clustering_backend_->FulfillCallback({});
+    }
+    // One last wait to flush out the last, empty history request.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  };
+
+  // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
+  flush_keyword_requests(3);
+
+  // Now the exact query should match the populated cache.
+  EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Github should never be shown (highly-engaged for cluster 1, sensitive for
+  // cluster 2, single visit cluster for cluster 3).
+  EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://github.com/"))));
+
+  // Deleting a history entry should clear the keyword cache.
+  history_service_->DeleteURLs({GURL{"https://google.com/"}});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+
+  // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
+  // 2-day-old visit.
+  flush_keyword_requests(2);
+
+  // The keyword cache should be repopulated.
+  EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
+      ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
 }
 
 class HistoryClustersServiceMaxKeywordsTest

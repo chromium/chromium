@@ -73,6 +73,10 @@ Config::Config() {
       internal::kOmniboxAction, "omnibox_action_on_urls",
       omnibox_action_on_urls);
 
+  omnibox_action_on_noisy_urls = base::GetFieldTrialParamByFeatureAsBool(
+      internal::kOmniboxAction, "omnibox_action_on_noisy_urls",
+      omnibox_action_on_noisy_urls);
+
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
 
