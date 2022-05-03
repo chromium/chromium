@@ -59,6 +59,7 @@
 // constrainst for the guides have been applied.
 
 namespace {
+
 // Height and width of the slider.
 const CGFloat kSliderHeight = 40.0;
 const CGFloat kSliderWidth = 78.0;
@@ -109,17 +110,27 @@ CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
-// Convenience method that composes an asset name and returns the correct image
-// (in template rendering mode) based on the segment name (one of "regular",
-// "incognito, "remote") and whether the selected state image is needed or not.
-UIImage* ImageForSegment(NSString* segment, BOOL selected) {
-  NSString* asset =
-      [NSString stringWithFormat:@"page_control_%@_tabs%@", segment,
-                                 selected ? @"_selected" : @""];
-  return [[UIImage imageNamed:asset]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+// Image names for the different icon state.
+NSString* kImagePageControlRegularSelected =
+    @"page_control_regular_tabs_selected";
+NSString* kImagePageControlRegularNotSelected = @"page_control_regular_tabs";
+NSString* kImagePageControlIncognitoSelected =
+    @"page_control_incognito_tabs_selected";
+NSString* kImagePageControlIncognitoNotSelected =
+    @"page_control_incognito_tabs";
+NSString* kImagePageControlRemoteSelected =
+    @"page_control_remote_tabs_selected";
+NSString* kImagePageControlRemoteNotSelected = @"page_control_remote_tabs";
+
+// Returns an UIImageView for the given imgageName.
+UIImageView* ImageViewForImageNamed(NSString* imageName) {
+  return [[UIImageView alloc]
+      initWithImage:
+          [[UIImage imageNamed:imageName]
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
 }
-}
+
+}  // namespace
 
 // View class used for the background of this control; it draws the grey
 // rectangles with clear separators.
@@ -143,13 +154,13 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @property(nonatomic, weak) UIView* selectedImageView;
 // The labels for the incognito and regular sections, in regular and selected
 // variants.
-@property(nonatomic, weak) UIView* incognitoIcon;
+@property(nonatomic, weak) UIView* incognitoNotSelectedIcon;
 @property(nonatomic, weak) UIView* incognitoSelectedIcon;
-@property(nonatomic, weak) UIView* regularIcon;
+@property(nonatomic, weak) UIView* regularNotSelectedIcon;
 @property(nonatomic, weak) UIView* regularSelectedIcon;
 @property(nonatomic, weak) UILabel* regularLabel;
 @property(nonatomic, weak) UILabel* regularSelectedLabel;
-@property(nonatomic, weak) UIView* remoteIcon;
+@property(nonatomic, weak) UIView* remoteNotSelectedIcon;
 @property(nonatomic, weak) UIView* remoteSelectedIcon;
 
 // Standard pointer interactions provided UIKit require views on which to attach
@@ -381,18 +392,21 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 
   // Position the section images, labels and hover views, which depend on the
   // layout guides.
-  self.incognitoIcon.center = [self centerOfSegment:TabGridPageIncognitoTabs];
+  self.incognitoNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageIncognitoTabs];
   self.incognitoSelectedIcon.center =
       [self centerOfSegment:TabGridPageIncognitoTabs];
 
-  self.regularIcon.center = [self centerOfSegment:TabGridPageRegularTabs];
+  self.regularNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageRegularTabs];
   self.regularSelectedIcon.center =
       [self centerOfSegment:TabGridPageRegularTabs];
   self.regularLabel.center = [self centerOfSegment:TabGridPageRegularTabs];
   self.regularSelectedLabel.center =
       [self centerOfSegment:TabGridPageRegularTabs];
 
-  self.remoteIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
+  self.remoteNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageRemoteTabs];
   self.remoteSelectedIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
   self.incognitoHoverView.center =
@@ -456,6 +470,44 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 }
 
 #pragma mark - Private
+
+// Configures and Adds icon to the tab grid page control for the given tab.
+- (void)addTabsIcon:(TabGridPage)tab {
+  UIImageView* iconSelected;
+  UIImageView* iconNotSelected;
+  switch (tab) {
+    case TabGridPageRegularTabs: {
+      iconSelected = ImageViewForImageNamed(kImagePageControlRegularSelected);
+      iconNotSelected =
+          ImageViewForImageNamed(kImagePageControlRegularNotSelected);
+      self.regularSelectedIcon = iconSelected;
+      self.regularNotSelectedIcon = iconNotSelected;
+      break;
+    }
+    case TabGridPageIncognitoTabs: {
+      iconSelected = ImageViewForImageNamed(kImagePageControlIncognitoSelected);
+      iconNotSelected =
+          ImageViewForImageNamed(kImagePageControlIncognitoNotSelected);
+      self.incognitoSelectedIcon = iconSelected;
+      self.incognitoNotSelectedIcon = iconNotSelected;
+      break;
+    }
+    case TabGridPageRemoteTabs: {
+      iconSelected = ImageViewForImageNamed(kImagePageControlRemoteSelected);
+      iconNotSelected =
+          ImageViewForImageNamed(kImagePageControlRemoteNotSelected);
+      self.remoteSelectedIcon = iconSelected;
+      self.remoteNotSelectedIcon = iconNotSelected;
+      break;
+    }
+  }
+
+  iconNotSelected.tintColor = UIColorFromRGB(kSliderColor);
+  iconSelected.tintColor = UIColorFromRGB(kSelectedColor);
+
+  [self insertSubview:iconNotSelected belowSubview:self.sliderView];
+  [self.selectedImageView addSubview:iconSelected];
+}
 
 // Sets up all of the subviews for this control, as well as the layout guides
 // used to position the section content.
@@ -521,47 +573,16 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   [self.sliderView addSubview:selectedImageView];
   self.selectedImageView = selectedImageView;
 
-  // Icons and labels for the regular tabs.
-  UIImageView* regularIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"regular", NO)];
-  regularIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:regularIcon belowSubview:self.sliderView];
-  self.regularIcon = regularIcon;
-  UIImageView* regularSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"regular", YES)];
-  regularSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:regularSelectedIcon];
-  self.regularSelectedIcon = regularSelectedIcon;
+  [self addTabsIcon:TabGridPageRegularTabs];
+  [self addTabsIcon:TabGridPageIncognitoTabs];
+  [self addTabsIcon:TabGridPageRemoteTabs];
+
   UILabel* regularLabel = [self labelSelected:NO];
   [self insertSubview:regularLabel belowSubview:self.sliderView];
   self.regularLabel = regularLabel;
   UILabel* regularSelectedLabel = [self labelSelected:YES];
   [self.selectedImageView addSubview:regularSelectedLabel];
   self.regularSelectedLabel = regularSelectedLabel;
-
-  // Icons for the incognito tabs section.
-  UIImageView* incognitoIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"incognito", NO)];
-  incognitoIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:incognitoIcon belowSubview:self.sliderView];
-  self.incognitoIcon = incognitoIcon;
-  UIImageView* incognitoSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"incognito", YES)];
-  incognitoSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:incognitoSelectedIcon];
-  self.incognitoSelectedIcon = incognitoSelectedIcon;
-
-  // Icons for the remote tabs section.
-  UIImageView* remoteIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"remote", NO)];
-  remoteIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:remoteIcon belowSubview:self.sliderView];
-  self.remoteIcon = remoteIcon;
-  UIImageView* remoteSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"remote", YES)];
-  remoteSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:remoteSelectedIcon];
-  self.remoteSelectedIcon = remoteSelectedIcon;
 
   CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
   UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
