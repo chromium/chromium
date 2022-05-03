@@ -79,6 +79,39 @@ class DlpConfidentialContentsTest : public testing::Test {
   const std::unique_ptr<TestingProfile> profile_;
 };
 
+TEST_F(DlpConfidentialContentsTest, ComparisonWithDifferentUrls) {
+  DlpConfidentialContent content1 = CreateConfidentialContent(title1, url1);
+  DlpConfidentialContent content2 = CreateConfidentialContent(title2, url2);
+
+  EXPECT_TRUE(content1 != content2);
+  EXPECT_TRUE(content1 < content2);
+  EXPECT_TRUE(content1 <= content2);
+  EXPECT_TRUE(content2 > content1);
+  EXPECT_TRUE(content2 >= content1);
+}
+
+TEST_F(DlpConfidentialContentsTest, ComparisonWithSameUrls) {
+  DlpConfidentialContent content1 = CreateConfidentialContent(title1, url1);
+  DlpConfidentialContent content2 = CreateConfidentialContent(title2, url1);
+
+  EXPECT_TRUE(content1 == content2);
+  EXPECT_FALSE(content1 != content2);
+  EXPECT_FALSE(content1 < content2);
+  EXPECT_TRUE(content1 <= content2);
+  EXPECT_FALSE(content2 > content1);
+  EXPECT_TRUE(content2 >= content1);
+}
+
+TEST_F(DlpConfidentialContentsTest, ComparisonAfterAssignement) {
+  DlpConfidentialContent content1 = CreateConfidentialContent(title1, url1);
+  DlpConfidentialContent content2 = CreateConfidentialContent(title2, url2);
+
+  EXPECT_FALSE(content1 == content2);
+
+  content2 = content1;
+  EXPECT_TRUE(content1 == content2);
+}
+
 TEST_F(DlpConfidentialContentsTest, EmptyContents) {
   DlpConfidentialContents contents;
   EXPECT_TRUE(contents.IsEmpty());

@@ -69,7 +69,7 @@ bool DlpConfidentialContent::operator!=(
 
 bool DlpConfidentialContent::operator<(
     const DlpConfidentialContent& other) const {
-  return title < other.title;
+  return url < other.url;
 }
 
 bool DlpConfidentialContent::operator<=(
