@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
+#include "base/check.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,13 +29,17 @@ UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
 UIImage* SymbolWithConfiguration(NSString* symbolName,
                                  UIImageConfiguration* configuration,
                                  BOOL systemSymbol) {
+  UIImage* symbol;
   if (systemSymbol) {
-    return [UIImage systemImageNamed:symbolName
-                   withConfiguration:configuration];
+    symbol = [UIImage systemImageNamed:symbolName
+                     withConfiguration:configuration];
+  } else {
+    symbol = [UIImage imageNamed:symbolName
+                        inBundle:nil
+               withConfiguration:configuration];
   }
-  return [UIImage imageNamed:symbolName
-                    inBundle:nil
-           withConfiguration:configuration];
+  DCHECK(symbol);
+  return symbol;
 }
 
 }  // namespace
