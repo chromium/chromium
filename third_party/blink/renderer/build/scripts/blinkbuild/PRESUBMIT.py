@@ -13,8 +13,6 @@ def _RunBindingsTests(input_api, output_api):
     cmd = [input_api.python_executable, run_bindings_tests_path]
     if input_api.verbose:
         print('Running ' + cmd_name)
-    else:
-        cmd.append('--suppress-diff')
     test_cmd = input_api.Command(
         name=cmd_name, cmd=cmd, kwargs={}, message=output_api.PresubmitError)
     return input_api.RunTests([test_cmd])
