@@ -1514,6 +1514,9 @@ extern const char kVp9kSVCHWDecodingDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
+extern const char kWallpaperFastRefreshName[];
+extern const char kWallpaperFastRefreshDescription[];
+
 extern const char kWallpaperFullScreenPreviewName[];
 extern const char kWallpaperFullScreenPreviewDescription[];
 

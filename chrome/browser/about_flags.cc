@@ -2659,6 +2659,7 @@ constexpr FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
+constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
 constexpr char kWallpaperGooglePhotosIntegrationInternalName[] =
@@ -7461,6 +7462,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPersonalizationHubName,
      flag_descriptions::kPersonalizationHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPersonalizationHub)},
+    {kWallpaperFastRefreshInternalName,
+     flag_descriptions::kWallpaperFastRefreshName,
+     flag_descriptions::kWallpaperFastRefreshDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWallpaperFastRefresh)},
     {kWallpaperFullScreenPreviewInternalName,
      flag_descriptions::kWallpaperFullScreenPreviewName,
      flag_descriptions::kWallpaperFullScreenPreviewDescription, kOsCrOS,
@@ -8627,6 +8632,16 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kBorealisPermittedInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  // Only show wallpaper fast refresh flag if:
+  // * channel is one of Dev/Canary/Unknown, and
+  // * wallpaper Web UI flag is enabled.
+  if (!strcmp(kWallpaperFastRefreshInternalName, entry.internal_name)) {
+    return (channel != version_info::Channel::DEV &&
+            channel != version_info::Channel::CANARY &&
+            channel != version_info::Channel::UNKNOWN) ||
+           !ash::features::IsWallpaperWebUIEnabled();
   }
 
   // Only show full screen preview flag if wallpaper flag is enabled.

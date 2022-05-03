@@ -6039,6 +6039,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "wallpaper-fast-refresh",
+    "owners": ["ckincaid@google.com", "assistive-eng@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "wallpaper-fullscreen-preview",
     "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
     "expiry_milestone": 98

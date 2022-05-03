@@ -2708,6 +2708,12 @@ const char kWalletServiceUseSandboxName[] =
 const char kWalletServiceUseSandboxDescription[] =
     "For developers: use the sandbox service for Google Payments API calls.";
 
+const char kWallpaperFastRefreshName[] =
+    "Enable shortened wallpaper daily refresh interval for manual testing";
+const char kWallpaperFastRefreshDescription[] =
+    "Allows developers to see a new wallpaper once every ten seconds rather "
+    "than once per day when using the daily refresh feature.";
+
 const char kWallpaperFullScreenPreviewName[] =
     "Enable wallpaper full screen preview UI";
 const char kWallpaperFullScreenPreviewDescription[] =
