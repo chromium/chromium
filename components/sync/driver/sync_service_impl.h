@@ -107,7 +107,6 @@ class SyncServiceImpl : public SyncService,
 
   // Initializes the object. This must be called at most once, and
   // immediately after an object of this class is constructed.
-  // TODO(mastiz): Rename this to Start().
   void Initialize();
 
   // SyncService implementation
