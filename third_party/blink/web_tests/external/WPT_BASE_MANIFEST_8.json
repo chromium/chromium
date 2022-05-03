@@ -87477,6 +87477,45 @@
        {}
       ]
      ],
+     "revert-layer-013.html": [
+      "862ee72746bb9085c3102e555a601e6220add639",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-014.html": [
+      "6b968625628309959508d452e3b30d5b9a9799f0",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-015.html": [
+      "a60f5d78f5e3640312ee562ccab9b57bc95ef2d3",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/revert-layer-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "revert-val-001.html": [
       "b3d79d9e6909afc2a8fbd8a7e7ab4c5db6ebb3ab",
       [
@@ -259650,6 +259689,10 @@
        []
       ]
      },
+     "revert-layer-015-ref.html": [
+      "661016619c0c46c113dedc57aa890f62b35e137c",
+      []
+     ],
      "support": {
       "test-green.css": [
        "da8e1014d2a95eb3300124b8d6b7c2baa04b8fcd",
@@ -455217,10 +455260,12 @@
       ]
      ],
      "popup-meta-http-equiv.https.html": [
-      "e36b5190aafc0b42b043802422dd411a831a20a5",
+      "157f7aef46af78ede303f3ed4066cb51fcdecb2a",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "popup-redirect-cache.https.html": [
@@ -455381,7 +455426,7 @@
       ]
      ],
      "popup-with-structured-header.https.html": [
-      "a1b355f15b51cff3a622cce86854c45ddfd9108a",
+      "4066595b8978b410156cbf0287b2df00816eb092",
       [
        null,
        {
@@ -544866,6 +544911,13 @@
     ],
     "RTCTrackEvent-fire.html": [
      "9435d7b6e54dcb496c98533e0aae5117a8067864",
+     [
+      null,
+      {}
+     ]
+    ],
+    "RollbackEvents.https.html": [
+     "0207a076c88be713abd564f6ea2826dbf3b99d61",
      [
       null,
       {}
