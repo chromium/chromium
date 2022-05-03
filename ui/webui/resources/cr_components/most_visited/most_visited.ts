@@ -25,9 +25,10 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {DomRepeat, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MostVisitedBrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './most_visited.html.js';
 import {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from './window_proxy.js';
 
@@ -86,6 +87,10 @@ export interface MostVisitedElement {
 export class MostVisitedElement extends MostVisitedElementBase {
   static get is() {
     return 'cr-most-visited';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -832,10 +837,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
         this.windowProxy_.now());
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

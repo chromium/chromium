@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("most_visited.gni")
 
 assert(!is_android && !is_ios)
 
@@ -22,15 +23,8 @@ mojom("mojom") {
   webui_module_path = "chrome://resources/cr_components/most_visited/"
 }
 
-html_to_js("web_components_local") {
-  js_files = [ "most_visited.ts" ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":mojom_webui_js",
-    ":web_components_local",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 copy("copy_mojom") {
@@ -40,10 +34,7 @@ copy("copy_mojom") {
 }
 
 copy("copy_src") {
-  sources = [
-    "browser_proxy.ts",
-    "window_proxy.ts",
-  ]
+  sources = ts_files
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -51,10 +42,7 @@ generate_grd("build_grdp") {
   grd_prefix = "cr_components_most_visited"
   out_grd = "$target_gen_dir/resources.grdp"
 
-  deps = [
-    ":build_ts",
-    ":mojom_webui_js",
-  ]
+  deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "cr_components/most_visited"
 }
@@ -64,12 +52,7 @@ ts_library("build_ts") {
   out_dir = preprocess_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "most_visited.ts",
-    "most_visited.mojom-webui.js",
-    "window_proxy.ts",
-  ]
+  in_files = ts_files + html_wrapper_files + mojo_files
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
@@ -78,6 +61,6 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_mojom",
     ":copy_src",
-    ":web_components_local",
+    ":html_wrapper_files",
   ]
 }

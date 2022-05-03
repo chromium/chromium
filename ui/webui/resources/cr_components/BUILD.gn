@@ -395,7 +395,6 @@ group("polymer3_elements") {
     "localized_link:web_components",
     "managed_dialog:web_components",
     "managed_footnote:web_components",
-    "most_visited:web_components",
   ]
 
   if (is_chromeos_ash) {
