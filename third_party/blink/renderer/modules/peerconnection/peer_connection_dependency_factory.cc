@@ -898,10 +898,35 @@ void PeerConnectionDependencyFactory::ContextDestroyed() {
 }
 
 void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "PeerConnectionDependencyFactory::CleanupPeerConnectionFactory()";
   webrtc_video_perf_reporter_.Shutdown();
   socket_factory_ = nullptr;
-  pc_factory_ = nullptr;
+  // Not obtaining `signaling_thread` using GetWebRtcSignalingTaskRunner()
+  // because that method triggers EnsureInitialized() and we're trying to
+  // perform cleanup.
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread =
+      GetChromeSignalingThread().IsRunning()
+          ? GetChromeSignalingThread().task_runner()
+          : nullptr;
+  if (signaling_thread) {
+    // To avoid a PROXY block-invoke to ~webrtc::PeerConnectionFactory(), we
+    // move our reference to the signaling thread in a PostTask.
+    scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf(
+        pc_factory_.get());  // rtc::scoped_refptr to scoped_refptr
+    pc_factory_ = nullptr;
+    signaling_thread->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf) {
+              // The binding releases `pcf` on the signaling thread as this
+              // method goes out of scope.
+            },
+            std::move(pcf)));
+  } else {
+    pc_factory_ = nullptr;
+  }
+  DCHECK(!pc_factory_);
   if (network_manager_) {
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
