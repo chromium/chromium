@@ -31,7 +31,7 @@
 #define HAS_AAC_ENCODER 1
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif
