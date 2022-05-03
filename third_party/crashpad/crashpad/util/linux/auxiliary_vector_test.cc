@@ -182,13 +182,13 @@ TEST(AuxiliaryVector, SignedBit) {
   constexpr uint64_t type = 0x0000000012345678;
 
   constexpr int32_t neg1_32 = -1;
-  aux.Insert(type, bit_cast<uint32_t>(neg1_32));
+  aux.Insert(type, base::bit_cast<uint32_t>(neg1_32));
   int32_t outval32s;
   ASSERT_TRUE(aux.GetValue(type, &outval32s));
   EXPECT_EQ(outval32s, neg1_32);
 
   constexpr int32_t int32_max = std::numeric_limits<int32_t>::max();
-  aux.Insert(type, bit_cast<uint32_t>(int32_max));
+  aux.Insert(type, base::bit_cast<uint32_t>(int32_max));
   ASSERT_TRUE(aux.GetValue(type, &outval32s));
   EXPECT_EQ(outval32s, int32_max);
 
@@ -199,13 +199,13 @@ TEST(AuxiliaryVector, SignedBit) {
   EXPECT_EQ(outval32u, uint32_max);
 
   constexpr int64_t neg1_64 = -1;
-  aux.Insert(type, bit_cast<uint64_t>(neg1_64));
+  aux.Insert(type, base::bit_cast<uint64_t>(neg1_64));
   int64_t outval64s;
   ASSERT_TRUE(aux.GetValue(type, &outval64s));
   EXPECT_EQ(outval64s, neg1_64);
 
   constexpr int64_t int64_max = std::numeric_limits<int64_t>::max();
-  aux.Insert(type, bit_cast<uint64_t>(int64_max));
+  aux.Insert(type, base::bit_cast<uint64_t>(int64_max));
   ASSERT_TRUE(aux.GetValue(type, &outval64s));
   EXPECT_EQ(outval64s, int64_max);
 

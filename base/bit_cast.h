@@ -13,6 +13,8 @@
 #include <string.h>  // memcpy
 #endif
 
+namespace base {
+
 // This is C++20's std::bit_cast<>(). It morally does what
 // `*reinterpret_cast<Dest*>(&source)` does, but the cast/deref pair is
 // undefined behavior, while bit_cast<>() isn't.
@@ -40,5 +42,7 @@ inline
   return dest;
 #endif
 }
+
+}  // namespace base
 
 #endif  // BASE_BIT_CAST_H_

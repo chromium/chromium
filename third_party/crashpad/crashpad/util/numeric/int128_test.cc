@@ -33,7 +33,7 @@ TEST(Int128, UInt128) {
   uint128_struct uint128;
   static_assert(sizeof(uint128) == sizeof(kBytes), "sizes must be equal");
 
-  uint128 = bit_cast<uint128_struct>(kBytes);
+  uint128 = base::bit_cast<uint128_struct>(kBytes);
 
   EXPECT_EQ(uint128.lo, 0x0706050403020100u);
   EXPECT_EQ(uint128.hi, 0x0f0e0d0c0b0a0908u);

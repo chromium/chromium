@@ -1116,7 +1116,7 @@ class BASE_EXPORT GSL_OWNER Value {
     //       SomeFunction(member);
     //     }
     //   });
-    operator double() const { return bit_cast<double>(v_); }
+    operator double() const { return base::bit_cast<double>(v_); }
 
    private:
     friend bool operator==(const DoubleStorage& lhs, const DoubleStorage& rhs) {

@@ -588,7 +588,7 @@ void TestInvalidStaticImage(const char* avif_file, ErrorPhase error_phase) {
 float HalfFloatToUnorm(uint16_t h) {
   const uint32_t f = ((h & 0x8000) << 16) | (((h & 0x7c00) + 0x1c000) << 13) |
                      ((h & 0x03ff) << 13);
-  return bit_cast<float>(f);
+  return base::bit_cast<float>(f);
 }
 
 void ReadYUV(const char* file_name,

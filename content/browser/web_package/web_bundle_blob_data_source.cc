@@ -56,8 +56,8 @@ void OnReadComplete(web_package::mojom::BundleDataSource::ReadCallback callback,
     return;
   }
   std::vector<uint8_t> vec;
-  vec.assign(bit_cast<uint8_t*>(io_buf->data()),
-             bit_cast<uint8_t*>(io_buf->data()) + bytes_read);
+  vec.assign(base::bit_cast<uint8_t*>(io_buf->data()),
+             base::bit_cast<uint8_t*>(io_buf->data()) + bytes_read);
   std::move(callback).Run(std::move(vec));
 }
 

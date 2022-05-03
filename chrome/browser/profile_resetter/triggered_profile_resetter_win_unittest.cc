@@ -75,7 +75,7 @@ TEST_F(TriggeredProfileResetterTest, HasDuplicateResetTrigger) {
   FILETIME ft = {};
   SetRegTimestampAndToolName(std::wstring(), &ft);
   profile_->GetPrefs()->SetInt64(prefs::kLastProfileResetTimestamp,
-                                 bit_cast<int64_t, FILETIME>(ft));
+                                 base::bit_cast<int64_t, FILETIME>(ft));
 
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();

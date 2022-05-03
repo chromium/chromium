@@ -66,8 +66,9 @@ void InitializeContext(NativeCPUContext* context) {
 
 void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
   EXPECT_EQ(actual.architecture, kCPUArchitectureX86);
-  EXPECT_EQ(actual.x86->eax,
-            bit_cast<uint32_t>(expected.ucontext.uc_mcontext.gregs[REG_EAX]));
+  EXPECT_EQ(
+      actual.x86->eax,
+      base::bit_cast<uint32_t>(expected.ucontext.uc_mcontext.gregs[REG_EAX]));
   for (unsigned int byte_offset = 0; byte_offset < sizeof(actual.x86->fxsave);
        ++byte_offset) {
     SCOPED_TRACE(base::StringPrintf("byte offset = %u\n", byte_offset));
@@ -87,7 +88,7 @@ void InitializeContext(NativeCPUContext* context) {
 void ExpectContext(const CPUContext& actual, const NativeCPUContext& expected) {
   EXPECT_EQ(actual.architecture, kCPUArchitectureX86_64);
   EXPECT_EQ(actual.x86_64->rax,
-            bit_cast<uint64_t>(expected.uc_mcontext.gregs[REG_RAX]));
+            base::bit_cast<uint64_t>(expected.uc_mcontext.gregs[REG_RAX]));
   for (unsigned int byte_offset = 0;
        byte_offset < sizeof(actual.x86_64->fxsave);
        ++byte_offset) {

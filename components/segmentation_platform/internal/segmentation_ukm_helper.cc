@@ -197,7 +197,7 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
 // static
 int64_t SegmentationUkmHelper::FloatToInt64(float f) {
   // Encode the float number in IEEE754 double precision.
-  return bit_cast<int64_t>(static_cast<double>(f));
+  return base::bit_cast<int64_t>(static_cast<double>(f));
 }
 
 }  // namespace segmentation_platform

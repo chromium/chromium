@@ -96,8 +96,8 @@ void CheckJump(void* source, void* target) {
   Code* patched = reinterpret_cast<Code*>(source);
   EXPECT_EQ(kJump32, patched->jump);
 
-  ULONG source_addr = bit_cast<ULONG>(source);
-  ULONG target_addr = bit_cast<ULONG>(target);
+  ULONG source_addr = base::bit_cast<ULONG>(source);
+  ULONG target_addr = base::bit_cast<ULONG>(target);
   EXPECT_EQ(target_addr + 19 - source_addr, patched->delta);
 #endif
 }

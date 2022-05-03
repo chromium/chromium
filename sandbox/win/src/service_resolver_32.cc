@@ -245,7 +245,7 @@ bool ServiceResolverThunk::IsFunctionAService(void* local_thunk) const {
   if (kCallEdx != function_code.call_ptr_edx) {
     DWORD ki_system_call;
     if (!::ReadProcessMemory(process_,
-                             bit_cast<const void*>(function_code.stub),
+                             base::bit_cast<const void*>(function_code.stub),
                              &ki_system_call, sizeof(ki_system_call), &read)) {
       return false;
     }
@@ -257,7 +257,7 @@ bool ServiceResolverThunk::IsFunctionAService(void* local_thunk) const {
     // last check, call_stub should point to a KiXXSystemCall function on ntdll
     if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                           bit_cast<const wchar_t*>(ki_system_call),
+                           base::bit_cast<const wchar_t*>(ki_system_call),
                            &module_1)) {
       return false;
     }
@@ -299,7 +299,8 @@ NTSTATUS ServiceResolverThunk::PerformPatch(void* local_thunk,
   intercepted_code.mov_eax = kMovEax;
   intercepted_code.service_id = full_local_thunk->original.service_id;
   intercepted_code.mov_edx = kMovEdx;
-  intercepted_code.stub = bit_cast<ULONG>(&full_remote_thunk->internal_thunk);
+  intercepted_code.stub =
+      base::bit_cast<ULONG>(&full_remote_thunk->internal_thunk);
   intercepted_code.call_ptr_edx = kJmpEdx;
   bytes_to_write = kMinServiceSize;
 
@@ -357,7 +358,8 @@ bool ServiceResolverThunk::SaveOriginalFunction(void* local_thunk,
     ULONG relative = function_code.service_id;
 
     // First, fix our copy of their patch.
-    relative += bit_cast<ULONG>(target_) - bit_cast<ULONG>(remote_thunk);
+    relative +=
+        base::bit_cast<ULONG>(target_) - base::bit_cast<ULONG>(remote_thunk);
 
     function_code.service_id = relative;
 
@@ -367,8 +369,8 @@ bool ServiceResolverThunk::SaveOriginalFunction(void* local_thunk,
 
     const ULONG kJmp32Size = 5;
 
-    relative_jump_ = bit_cast<ULONG>(&full_thunk->internal_thunk) -
-                     bit_cast<ULONG>(target_) - kJmp32Size;
+    relative_jump_ = base::bit_cast<ULONG>(&full_thunk->internal_thunk) -
+                     base::bit_cast<ULONG>(target_) - kJmp32Size;
   }
 
   // Save the verified code

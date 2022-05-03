@@ -527,7 +527,7 @@ id ObjcExceptionPreprocessor(id exception) {
           LoggingUnwStep(&cursor) > 0 &&
           unw_get_proc_info(&cursor, &caller_frame_info) == UNW_ESUCCESS) {
         auto uiwindowimp_lambda = [](IMP* max) {
-          IMP min = *max = bit_cast<IMP>(nullptr);
+          IMP min = *max = base::bit_cast<IMP>(nullptr);
           unsigned int method_count = 0;
           std::unique_ptr<Method[], base::FreeDeleter> method_list(
               class_copyMethodList(NSClassFromString(@"UIWindow"),

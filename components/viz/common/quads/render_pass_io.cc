@@ -467,7 +467,7 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
       dict.SetKey("drop_shadow_offset",
                   PointToDict(filter.drop_shadow_offset()));
       dict.SetIntKey("drop_shadow_color",
-                     bit_cast<int>(filter.drop_shadow_color()));
+                     base::bit_cast<int>(filter.drop_shadow_color()));
       break;
     case cc::FilterOperation::REFERENCE:
       dict.SetStringKey("image_filter",
@@ -540,7 +540,7 @@ bool FilterOperationFromDict(const base::Value& dict,
       }
       filter.set_drop_shadow_offset(offset);
       filter.set_drop_shadow_color(
-          bit_cast<SkColor>(drop_shadow_color.value()));
+          base::bit_cast<SkColor>(drop_shadow_color.value()));
     } break;
     case cc::FilterOperation::REFERENCE:
       if (!image_filter)
@@ -1179,7 +1179,7 @@ void SurfaceDrawQuadToDict(const SurfaceDrawQuad* draw_quad,
   DCHECK(dict);
   dict->SetKey("surface_range", SurfaceRangeToDict(draw_quad->surface_range));
   dict->SetIntKey("default_background_color",
-                  bit_cast<int>(draw_quad->default_background_color));
+                  base::bit_cast<int>(draw_quad->default_background_color));
   dict->SetBoolKey("stretch_content",
                    draw_quad->stretch_content_to_fill_bounds);
   dict->SetBoolKey("is_reflection", draw_quad->is_reflection);
@@ -1424,7 +1424,7 @@ bool SurfaceDrawQuadFromDict(const base::Value& dict,
 
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
                     common.needs_blending, *surface_range,
-                    bit_cast<SkColor>(*default_background_color),
+                    base::bit_cast<SkColor>(*default_background_color),
                     *stretch_content, *is_reflection, *allow_merge);
   return true;
 }

@@ -46,3 +46,4 @@ Local Modifications:
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
  - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
+ - Qualified calls to bit_cast<>() with base::.

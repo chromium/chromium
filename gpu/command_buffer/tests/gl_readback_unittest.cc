@@ -98,7 +98,7 @@ static float HalfToFloat32(uint16_t value) {
   if (e == 0) {
     if (m == 0) {
       uint32_t result = s << 31;
-      return bit_cast<float>(result);
+      return base::bit_cast<float>(result);
     } else {
       while (!(m & 0x00000400)) {
         m <<= 1;
@@ -111,10 +111,10 @@ static float HalfToFloat32(uint16_t value) {
   } else if (e == 31) {
     if (m == 0) {
       uint32_t result = (s << 31) | 0x7f800000;
-      return bit_cast<float>(result);
+      return base::bit_cast<float>(result);
     } else {
       uint32_t result = (s << 31) | 0x7f800000 | (m << 13);
-      return bit_cast<float>(result);
+      return base::bit_cast<float>(result);
     }
   }
 
@@ -122,7 +122,7 @@ static float HalfToFloat32(uint16_t value) {
   m = m << 13;
 
   uint32_t result = (s << 31) | (e << 23) | m;
-  return bit_cast<float>(result);
+  return base::bit_cast<float>(result);
 }
 
 static GLuint CompileShader(GLenum type, const char *data) {

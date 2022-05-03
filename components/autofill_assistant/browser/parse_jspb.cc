@@ -85,7 +85,7 @@ bool AppendFieldValue(const std::string& jspb_id_prefix,
       // Encode these as floats (in a fixed32)
       WriteTag(field_tag, WIRETYPE_FIXED32, out);
       out->WriteLittleEndian32(
-          bit_cast<uint32_t>(static_cast<float>(value.GetDouble())));
+          base::bit_cast<uint32_t>(static_cast<float>(value.GetDouble())));
       break;
 
     case base::Value::Type::STRING: {

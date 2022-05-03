@@ -157,7 +157,8 @@ class TimeClamper {
 
  private:
   inline double ThresholdFor(double clamped_time) const {
-    uint64_t time_hash = MurmurHash3(bit_cast<int64_t>(clamped_time) ^ secret_);
+    uint64_t time_hash =
+        MurmurHash3(base::bit_cast<int64_t>(clamped_time) ^ secret_);
     return clamped_time + kResolutionSeconds * ToDouble(time_hash);
   }
 
@@ -166,7 +167,7 @@ class TimeClamper {
     static const uint64_t kExponentBits = uint64_t{0x3FF0000000000000};
     static const uint64_t kMantissaMask = uint64_t{0x000FFFFFFFFFFFFF};
     uint64_t random = (value & kMantissaMask) | kExponentBits;
-    return bit_cast<double>(random) - 1;
+    return base::bit_cast<double>(random) - 1;
   }
 
   static inline uint64_t MurmurHash3(uint64_t value) {

@@ -106,6 +106,7 @@ _CONFIG = [
             'base::WrapRefCounted',
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
+            'base::bit_cast',
             'base::in_place',
             'absl::make_optional',
             'base::make_span',

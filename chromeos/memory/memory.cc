@@ -37,7 +37,7 @@ int ParseElfHeaderAndMlockBinaryText(struct dl_phdr_info* info,
     if (info->dlpi_phdr[i].p_type == PT_LOAD &&
         info->dlpi_phdr[i].p_flags == (PF_R | PF_X)) {
       void* vaddr =
-          bit_cast<void*>(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
+          base::bit_cast<void*>(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
       size_t segsize = info->dlpi_phdr[i].p_filesz;
 
       ssize_t max_lockable_size = kCrOSLockMainProgramTextMaxSize.Get();

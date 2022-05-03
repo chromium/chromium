@@ -244,7 +244,8 @@ static int FilterElfHeader(struct dl_phdr_info* info, size_t size, void* data) {
   for (int i = 0; i < info->dlpi_phnum; i++) {
     if (info->dlpi_phdr[i].p_type == PT_LOAD &&
         info->dlpi_phdr[i].p_flags == (PF_R | PF_X)) {
-      vaddr = bit_cast<void*>(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
+      vaddr =
+          base::bit_cast<void*>(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
       segsize = info->dlpi_phdr[i].p_filesz;
       RemapHugetlbTextWithOrderfileLayout(vaddr, segsize);
       return 1;

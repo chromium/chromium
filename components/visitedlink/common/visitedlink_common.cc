@@ -98,7 +98,7 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
   // on arbitrary alignment on some processors. This reinterpret_casts it
   // down to a char array of the same size as fingerprint, and then does the
   // bit cast, which amounts to a memcpy. This does not handle endian issues.
-  return bit_cast<Fingerprint, uint8_t[8]>(
+  return base::bit_cast<Fingerprint, uint8_t[8]>(
       *reinterpret_cast<uint8_t(*)[8]>(&digest.a));
 }
 

@@ -134,9 +134,10 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
       case STATE_SNIFFING_DEFLATE_HEADER: {
         DCHECK_EQ(TYPE_DEFLATE, type());
 
-        zlib_stream_.get()->next_in = bit_cast<Bytef*>(input_data);
+        zlib_stream_.get()->next_in = base::bit_cast<Bytef*>(input_data);
         zlib_stream_.get()->avail_in = input_data_size;
-        zlib_stream_.get()->next_out = bit_cast<Bytef*>(output_buffer->data());
+        zlib_stream_.get()->next_out =
+            base::bit_cast<Bytef*>(output_buffer->data());
         zlib_stream_.get()->avail_out = output_buffer_size;
 
         int ret = inflate(zlib_stream_.get(), Z_NO_FLUSH);
@@ -212,9 +213,10 @@ int GzipSourceStream::FilterData(IOBuffer* output_buffer,
         DCHECK_LE(0, input_data_size);
 
         state_compressed_entered = true;
-        zlib_stream_.get()->next_in = bit_cast<Bytef*>(input_data);
+        zlib_stream_.get()->next_in = base::bit_cast<Bytef*>(input_data);
         zlib_stream_.get()->avail_in = input_data_size;
-        zlib_stream_.get()->next_out = bit_cast<Bytef*>(output_buffer->data());
+        zlib_stream_.get()->next_out =
+            base::bit_cast<Bytef*>(output_buffer->data());
         zlib_stream_.get()->avail_out = output_buffer_size;
 
         int ret = inflate(zlib_stream_.get(), Z_NO_FLUSH);
@@ -257,9 +259,9 @@ bool GzipSourceStream::InsertZlibHeader() {
   char dummy_output[4];
 
   inflateReset(zlib_stream_.get());
-  zlib_stream_.get()->next_in = bit_cast<Bytef*>(&dummy_header[0]);
+  zlib_stream_.get()->next_in = base::bit_cast<Bytef*>(&dummy_header[0]);
   zlib_stream_.get()->avail_in = sizeof(dummy_header);
-  zlib_stream_.get()->next_out = bit_cast<Bytef*>(&dummy_output[0]);
+  zlib_stream_.get()->next_out = base::bit_cast<Bytef*>(&dummy_output[0]);
   zlib_stream_.get()->avail_out = sizeof(dummy_output);
 
   int ret = inflate(zlib_stream_.get(), Z_NO_FLUSH);

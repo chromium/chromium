@@ -16,7 +16,7 @@ desired.
 
 The initial commit is not a pristine import -- the patch in the chromium/
 subdirectory documents the changes made to the original sources. This patch was
-produced via `git format-patch` and can be applied using `git am`.
+produced via `git diff` and can be applied using `git apply`.
 
 Changes from V8 upstream:
 - Changed namespace to fdlibm.

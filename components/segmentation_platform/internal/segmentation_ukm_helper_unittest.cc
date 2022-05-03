@@ -24,7 +24,7 @@ namespace {
 static const double kRoundingError = 1E-5;
 
 float Int64ToFloat(int64_t encoded) {
-  return static_cast<float>(bit_cast<double>(encoded));
+  return static_cast<float>(base::bit_cast<double>(encoded));
 }
 
 void CompareEncodeDecodeDifference(float tensor) {

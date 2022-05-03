@@ -75,27 +75,27 @@ TEST(ReinterpretBytes, ToSigned) {
   ExpectReinterpret(from64, &to64, static_cast<int64_t>(0));
 
   to32 = -1;
-  from64 = bit_cast<uint32_t>(to32);
+  from64 = base::bit_cast<uint32_t>(to32);
   ExpectReinterpret(from64, &to32, to32);
 
   to32 = std::numeric_limits<int32_t>::max();
-  from64 = bit_cast<uint32_t>(to32);
+  from64 = base::bit_cast<uint32_t>(to32);
   ExpectReinterpret(from64, &to32, to32);
 
   to32 = std::numeric_limits<int32_t>::min();
-  from64 = bit_cast<uint32_t>(to32);
+  from64 = base::bit_cast<uint32_t>(to32);
   ExpectReinterpret(from64, &to32, to32);
 
   to64 = -1;
-  from64 = bit_cast<uint64_t>(to64);
+  from64 = base::bit_cast<uint64_t>(to64);
   ExpectReinterpret(from64, &to64, to64);
 
   to64 = std::numeric_limits<int64_t>::max();
-  from64 = bit_cast<uint64_t>(to64);
+  from64 = base::bit_cast<uint64_t>(to64);
   ExpectReinterpret(from64, &to64, to64);
 
   to64 = std::numeric_limits<int64_t>::min();
-  from64 = bit_cast<uint64_t>(to64);
+  from64 = base::bit_cast<uint64_t>(to64);
   ExpectReinterpret(from64, &to64, to64);
 }
 

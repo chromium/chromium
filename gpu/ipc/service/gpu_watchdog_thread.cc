@@ -591,8 +591,9 @@ base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
 
     // Need to bit_cast to fix alignment, then divide by 10 to convert
     // 100-nanoseconds to microseconds.
-    int64_t user_time_us = bit_cast<int64_t, FILETIME>(user_time) / 10;
-    int64_t kernel_time_us = bit_cast<int64_t, FILETIME>(kernel_time) / 10;
+    int64_t user_time_us = base::bit_cast<int64_t, FILETIME>(user_time) / 10;
+    int64_t kernel_time_us =
+        base::bit_cast<int64_t, FILETIME>(kernel_time) / 10;
 
     return base::ThreadTicks() +
            base::Microseconds(user_time_us + kernel_time_us);

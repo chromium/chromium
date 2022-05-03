@@ -99,9 +99,9 @@ class BrotliSourceStream : public FilterSourceStream {
     if (decoding_status_ != DecodingStatus::DECODING_IN_PROGRESS)
       return ERR_CONTENT_DECODING_FAILED;
 
-    const uint8_t* next_in = bit_cast<uint8_t*>(input_buffer->data());
+    const uint8_t* next_in = base::bit_cast<uint8_t*>(input_buffer->data());
     size_t available_in = input_buffer_size;
-    uint8_t* next_out = bit_cast<uint8_t*>(output_buffer->data());
+    uint8_t* next_out = base::bit_cast<uint8_t*>(output_buffer->data());
     size_t available_out = output_buffer_size;
 
     BrotliDecoderResult result =
