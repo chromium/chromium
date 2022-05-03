@@ -134,7 +134,7 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kNone:
       return {};
     case mojom::CursorType::kGrab:
-      return {"openhand", "grab"};
+      return {"openhand", "grab", "hand1"};
     case mojom::CursorType::kGrabbing:
       return {"closedhand", "grabbing", "hand2"};
     case mojom::CursorType::kCross:
