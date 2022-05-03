@@ -58,7 +58,7 @@ void CreateHistoricalTab(TabAndroid* tab_android) {
 }
 
 void CreateHistoricalGroup(TabModel* model,
-                           std::u16string group_title,
+                           const std::u16string& group_title,
                            std::vector<TabAndroid*> tabs) {
   DCHECK(model);
   sessions::TabRestoreService* service =
@@ -191,7 +191,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
       env, base::android::ScopedJavaLocalRef(jtabs_android));
   CreateHistoricalGroup(TabModelList::FindNativeTabModelForJavaObject(
                             ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),
-                        title, tabs_android);
+                        title, std::move(tabs_android));
 }
 
 // static
@@ -215,7 +215,8 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
   CreateHistoricalBulkClosure(
       TabModelList::FindNativeTabModelForJavaObject(
           ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),
-      android_group_ids, group_titles, per_tab_android_group_id,
+      std::move(android_group_ids), std::move(group_titles),
+      std::move(per_tab_android_group_id),
       TabAndroid::GetAllNativeTabs(
           env, base::android::ScopedJavaLocalRef(jtabs_android)));
 }
