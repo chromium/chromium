@@ -32,7 +32,7 @@ shouldBe('valueAsNumberFor("1970-01-01T00:00:00.000")', 'Date.UTC(1970, 0, 1, 0,
 shouldBe('valueAsNumberFor("2009-12-22T11:32:11")', 'Date.UTC(2009, 11, 22, 11, 32, 11)');
 
 shouldBeEqualToString('setValueAsNumberAndGetValue(1969, 11, 1, 0, 0, 0, 0)', '1969-12-01T00:00');
-shouldBeEqualToString('setValueAsNumberAndGetValue(1970, 0, 1, 10, 1, 0, 100)', '1970-01-01T10:01:00.100');
+shouldBeEqualToString('setValueAsNumberAndGetValue(1970, 0, 1, 10, 1, 0, 100)', '1970-01-01T10:01:00.1');
 shouldBeEqualToString('setValueAsNumberAndGetValue(2009, 11, 31, 23, 59, 59, 999)', '2009-12-31T23:59:59.999');
 shouldBeEqualToString('setValueAsNumberAndGetValue(10000, 0, 1, 12, 0, 1, 0)', '10000-01-01T12:00:01');
 
@@ -57,10 +57,10 @@ shouldBeNaN('input.valueAsNumber = Date.UTC(275760, 8, 13, 0, 0, 0, 1); input.va
 shouldBeEqualToString('input.valueAsNumber = Date.UTC(275760, 8, 13, 0, 0, 0, 1); input.value', '');
 
 debug('Step attribute value and string representation:');
-// If the step attribute value is 1 second and the second part is 0, we should show the second part.
-shouldBe('input.step = "1"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0)', '"2010-01-21T00:00:00"');
-// If the step attribute value is 0.001 second and the millisecond part is 0, we should show the millisecond part.
-shouldBe('input.step = "0.001"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0)', '"2010-01-21T00:00:00.000"');
+// If the step attribute value is 1 second and the second part is 0, we should not show the second part.
+shouldBe('input.step = "1"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0)', '"2010-01-21T00:00"');
+// If the step attribute value is 0.001 second and the millisecond part is 0, we should not show the millisecond part.
+shouldBe('input.step = "0.001"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0)', '"2010-01-21T00:00"');
 </script>
 </body>
 </html>

@@ -41,6 +41,7 @@ function shouldBeInvalid(value, disabled)
 // Valid values
 shouldBeValid('');
 shouldBeValid('2009-09-07T16:49');
+shouldBeValid('2009-09-07 16:49');
 shouldBeValid('2009-09-07T16:49:31');
 shouldBeValid('2009-09-07T16:49:31.1');
 shouldBeValid('2009-09-07T16:49:31.12');
@@ -51,7 +52,6 @@ shouldBeValid('0001-01-01T00:00:00.000');
 // Invalid values
 shouldBeInvalid(' 2009-09-07T16:49 ');
 shouldBeInvalid('2009-09-07t16:49');
-shouldBeInvalid('2009-09-07 16:49');
 shouldBeInvalid('2009/09/07T16:49');
 shouldBeInvalid('2009-09-07T16:49:31.1234567890');
 shouldBeInvalid('a');

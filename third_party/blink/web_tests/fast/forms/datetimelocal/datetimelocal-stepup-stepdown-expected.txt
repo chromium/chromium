@@ -23,10 +23,10 @@ Step=any
 PASS stepUp("2010-02-10T20:13", "any", null) threw exception InvalidStateError: Failed to execute 'stepUp' on 'HTMLInputElement': This form element does not have an allowed value step..
 PASS stepDown("2010-02-10T20:13", "any", null) threw exception InvalidStateError: Failed to execute 'stepDown' on 'HTMLInputElement': This form element does not have an allowed value step..
 Overflow/underflow
-PASS stepUp("2010-02-10T20:13", "3.40282346e+38", null) is "1970-01-01T00:00:00"
-PASS stepDown("2010-02-10T20:13", "3.40282346e+38", null) is "1970-01-01T00:00:00"
-PASS stepUp("2010-02-10T20:13", "1", "2010-02-10T20:13") is "2010-02-10T20:13:00"
-PASS stepDown("2010-02-10T20:13", "1", "2010-02-10T20:13") is "2010-02-10T20:13:00"
+PASS stepUp("2010-02-10T20:13", "3.40282346e+38", null) is "1970-01-01T00:00"
+PASS stepDown("2010-02-10T20:13", "3.40282346e+38", null) is "1970-01-01T00:00"
+PASS stepUp("2010-02-10T20:13", "1", "2010-02-10T20:13") is "2010-02-10T20:13"
+PASS stepDown("2010-02-10T20:13", "1", "2010-02-10T20:13") is "2010-02-10T20:13"
 PASS successfullyParsed is true
 
 TEST COMPLETE

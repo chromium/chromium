@@ -58,10 +58,10 @@ debug('Step=any');
 shouldThrow('stepUp("2010-02-10T20:13", "any", null)');
 shouldThrow('stepDown("2010-02-10T20:13", "any", null)');
 debug('Overflow/underflow');
-shouldBeEqualToString('stepUp("2010-02-10T20:13", "3.40282346e+38", null)', '1970-01-01T00:00:00');
-shouldBeEqualToString('stepDown("2010-02-10T20:13", "3.40282346e+38", null)', '1970-01-01T00:00:00');
-shouldBeEqualToString('stepUp("2010-02-10T20:13", "1", "2010-02-10T20:13")', '2010-02-10T20:13:00');
-shouldBeEqualToString('stepDown("2010-02-10T20:13", "1", "2010-02-10T20:13")', '2010-02-10T20:13:00');
+shouldBeEqualToString('stepUp("2010-02-10T20:13", "3.40282346e+38", null)', '1970-01-01T00:00');
+shouldBeEqualToString('stepDown("2010-02-10T20:13", "3.40282346e+38", null)', '1970-01-01T00:00');
+shouldBeEqualToString('stepUp("2010-02-10T20:13", "1", "2010-02-10T20:13")', '2010-02-10T20:13');
+shouldBeEqualToString('stepDown("2010-02-10T20:13", "1", "2010-02-10T20:13")', '2010-02-10T20:13');
 </script>
 </body>
 </html>

@@ -126,18 +126,18 @@ String TimeInputType::FormatDateTimeFieldsState(
     return g_empty_string;
   if (date_time_fields_state.HasMillisecond()) {
     return String::Format(
-        "%02u:%02u:%02u.%03u", date_time_fields_state.Hour23(),
+        "%02u:%02u:%02u.%03u", date_time_fields_state.Hour24(),
         date_time_fields_state.Minute(),
         date_time_fields_state.HasSecond() ? date_time_fields_state.Second()
                                            : 0,
         date_time_fields_state.Millisecond());
   }
   if (date_time_fields_state.HasSecond()) {
-    return String::Format("%02u:%02u:%02u", date_time_fields_state.Hour23(),
+    return String::Format("%02u:%02u:%02u", date_time_fields_state.Hour24(),
                           date_time_fields_state.Minute(),
                           date_time_fields_state.Second());
   }
-  return String::Format("%02u:%02u", date_time_fields_state.Hour23(),
+  return String::Format("%02u:%02u", date_time_fields_state.Hour24(),
                         date_time_fields_state.Minute());
 }
 

@@ -325,7 +325,7 @@ bool DateComponents::ParseDateTimeLocal(const String& src,
     return false;
   if (index >= src.length())
     return false;
-  if (src[index] != 'T')
+  if (src[index] != 'T' && src[index] != ' ')
     return false;
   ++index;
   if (!ParseTime(src, index, end))

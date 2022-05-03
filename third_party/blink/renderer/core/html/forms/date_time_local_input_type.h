@@ -55,6 +55,8 @@ class DateTimeLocalInputType final : public BaseTemporalInputType {
   String LocalizeValue(const String&) const override;
   void WarnIfValueIsInvalid(const String&) const override;
 
+  String SanitizeValue(const String&) const override;
+
   // BaseTemporalInputType functions
   String FormatDateTimeFieldsState(const DateTimeFieldsState&) const final;
   void SetupLayoutParameters(DateTimeEditElement::LayoutParameters&,
