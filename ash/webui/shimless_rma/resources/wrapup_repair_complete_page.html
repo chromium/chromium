@@ -3,13 +3,22 @@
     width: 512px;
   }
 
-  #logsDialog [slot=body] {
+  #logsDialog::part(wrapper) {
     height: 480px;
   }
 
-  #logsDialog [slot=footer] {
+  #logsDialog [slot=button-container] {
     padding-bottom: 24px;
     padding-top: 24px;
+  }
+
+  #logsDialog [slot=title] {
+    align-items: center;
+    display: flex;
+    font-size: 15px;
+    height: 32px;
+    justify-content: center;
+    padding: 0 24px 0 24px;
   }
 
   #buttonContainer {
@@ -217,8 +226,7 @@
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>
-    <cr-button id="rmaLogButton" class="text-button action-button"
-        on-click="onRmaLogButtonClick_">
+    <cr-button id="saveLogDialogButton" class="text-button action-button">
       [[i18n('rmaLogsSaveToUsbButtonText')]]
     </cr-button>
   </div>
