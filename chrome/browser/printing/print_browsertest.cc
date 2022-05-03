@@ -3255,8 +3255,9 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+// https://crbug.com/1320681 flaky.
 IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
-                       StartBasicPrintUseDefaultFails) {
+                       DISABLED_StartBasicPrintUseDefaultFails) {
   PrimeForFailInUseDefaultSettings();
 
   ASSERT_TRUE(embedded_test_server()->Started());
