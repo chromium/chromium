@@ -639,9 +639,10 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
     const NGBreakToken* child_break_token = entry.token;
 
     if (child.IsOutOfFlowPositioned()) {
-      // We don't support fragmentation inside out-of-flow positioned boxes yet,
-      // but breaking before is fine. This may happen when a column spanner is
-      // directly followed by an OOF.
+      // Out-of-flow fragmentation is a special step that takes place after
+      // regular layout, so we should never resume anything here. However, we
+      // may have break-before tokens, when a column spanner is directly
+      // followed by an OOF.
       DCHECK(!child_break_token ||
              (child_break_token->IsBlockType() &&
               To<NGBlockBreakToken>(child_break_token)->IsBreakBefore()));
