@@ -78,7 +78,7 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
         path = host.port_factory.get().web_tests_dir() + '/TestExpectations'
         host.filesystem.write_text_file(
             path, self._raw_baseline_expectations)
-        path = host.port_factory.get().web_tests_dir() + '/external/wpt/new2-expected.txt'
+        path = host.port_factory.get().web_tests_dir() + '/platform/generic/external/wpt/new2-expected.txt'
         host.filesystem.write_text_file(
             path, self._raw_expected_text)
 

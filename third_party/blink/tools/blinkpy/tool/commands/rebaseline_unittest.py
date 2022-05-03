@@ -221,9 +221,9 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
         baseline_paths = self.command._generic_baseline_paths(
             test_baseline_set)
         self.assertEqual(baseline_paths, [
-            '/test.checkout/wtests/passes/text-expected.png',
-            '/test.checkout/wtests/passes/text-expected.txt',
-            '/test.checkout/wtests/passes/text-expected.wav',
+            '/test.checkout/wtests/platform/generic/passes/text-expected.png',
+            '/test.checkout/wtests/platform/generic/passes/text-expected.txt',
+            '/test.checkout/wtests/platform/generic/passes/text-expected.wav',
         ])
 
     def test_unstaged_baselines(self):

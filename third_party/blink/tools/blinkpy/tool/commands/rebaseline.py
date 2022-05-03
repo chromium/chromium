@@ -644,7 +644,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 for suffix in BASELINE_SUFFIX_LIST
             ]
             baseline_paths += [
-                filesystem.join(self._web_tests_dir(), filename)
+                filesystem.join(self._web_tests_dir(), 'platform/generic', filename)
                 for filename in filenames
             ]
         baseline_paths.sort()

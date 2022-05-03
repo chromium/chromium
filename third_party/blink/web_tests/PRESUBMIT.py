@@ -69,11 +69,10 @@ def _TestharnessGenericBaselinesToCheck(input_api):
         path = f.AbsoluteLocalPath()
         if not path.endswith('-expected.txt'):
             continue
-        if (input_api.os_path.join(this_dir, 'platform') in path or
-            input_api.os_path.join(this_dir, 'virtual') in path or
-            input_api.os_path.join(this_dir, 'flag-specific') in path):
-            continue
-        baseline_files.append(path)
+        if (input_api.os_path.join(this_dir, 'platform', 'generic') in path and
+                input_api.os_path.join(this_dir, 'platform', 'generic',
+                                       'virtual') not in path):
+            baseline_files.append(path)
     return baseline_files
 
 
@@ -168,7 +167,7 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
     """Checks all the test folders under web_tests are listed in BUILD.gn.
     """
     this_dir = input_api.PresubmitLocalPath()
-    possible_new_dirs = []
+    possible_new_dirs = set()
     for f in input_api.AffectedFiles():
         if f.Action() == 'A':
             # We only check added folders. For deleted folders, if BUILD.gn is
@@ -178,7 +177,7 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
             path = f.AbsoluteLocalPath()
             fns = path[len(this_dir)+1:].split('/')
             if len(fns) > 1:
-                possible_new_dirs.append(fns[0])
+                possible_new_dirs.add(fns[0])
 
     if possible_new_dirs:
         path_build_gn = input_api.os_path.join(input_api.change.RepositoryRoot(), 'BUILD.gn')
@@ -229,9 +228,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
         local_path = os_path.relpath(local_path, local_dir)
         path_components = local_path.split(os_path.sep)
         if f.Action() == 'A':
-            if len(path_components) > 2 and path_components[0] == 'virtual':
-                check_files.append((local_path, path_components[1]))
-            elif (len(path_components) > 4 and path_components[2] == 'virtual'
+            if (len(path_components) > 4 and path_components[2] == 'virtual'
                   and (path_components[0] == 'platform'
                        or path_components[0] == 'flag-specific')):
                 check_files.append((local_path, path_components[3]))
@@ -248,27 +245,13 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
 
     from blinkpy.common.host import Host
     port_factory = Host().port_factory
-    known_virtual_suites = set()
-    for port_name in port_factory.all_port_names():
-        known_virtual_suites.update([
-            suite.full_prefix[8:-1]
-            for suite in port_factory.get(port_name).virtual_test_suites()
-        ])
-    known_virtual_suites = list(known_virtual_suites)
+    known_virtual_suites = [
+        suite.full_prefix[8:-1] for suite in port_factory.get(
+            port_factory.all_port_names()[0]).virtual_test_suites()
+    ]
 
     results = []
     if check_all:
-        for f in input_api.change.AllFiles(
-                os_path.join(input_api.PresubmitLocalPath(), "virtual")):
-            suite = f.split('/')[0]
-            if not suite in known_virtual_suites:
-                path = os_path.relpath(
-                    os_path.join(input_api.PresubmitLocalPath(), "virtual", f),
-                    input_api.change.RepositoryRoot())
-                results.append(
-                    output_api.PresubmitError(
-                        "Baseline %s exists, but %s is not a known virtual test suite."
-                        % (path, suite)))
         for subdir in ["platform", "flag-specific"]:
             for f in input_api.change.AllFiles(
                     os_path.join(input_api.PresubmitLocalPath(), subdir)):

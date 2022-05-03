@@ -1,0 +1,5 @@
+set noparent
+
+# Web-exposed API changes may require approval from blink API OWNERS.
+# See http://www.chromium.org/blink#new-features for details.
+file://third_party/blink/API_OWNERS
