@@ -1998,7 +1998,7 @@
   {
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 110
   },
   {
     "name": "enable-enhanced-safe-browsing",
