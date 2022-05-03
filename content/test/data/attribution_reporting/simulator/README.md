@@ -190,14 +190,14 @@ JSON schema for the input of the simulator.
 
 JSON schema for the output of the simulator.
 
-```json
+```jsonc
 {
-  // List of zero or more event-level reports.
+  // List of event-level reports. Omitted if empty.
   "event_level_reports": [
     {
-      // Time at which the report would have been sent in seconds since the
-      // UNIX epoch.
-      "report_time": 123,
+      // Time at which the report would have been sent in milliseconds since
+      // the UNIX epoch formatted as a base-10 string.
+      "report_time": "123",
 
       // URL to which the report would have been sent.
       "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
@@ -220,9 +220,9 @@ JSON schema for the output of the simulator.
   // List of aggregatable reports. Omitted if empty.
   "aggregatable_reports": [
     {
-      // Time at which the report would have been sent in seconds since the
-      // UNIX epoch.
-      "report_time": 123,
+      // Time at which the report would have been sent in milliseconds since
+      // the UNIX epoch formatted as a base-10 string.
+      "report_time": "123",
 
       // URL to which the report would have been sent.
       "report_url": "https://reporting.example/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -276,8 +276,9 @@ JSON schema for the output of the simulator.
   // These reports were never sent, but were replaced by higher-priority ones.
   "replaced_event_level_reports": [
     {
-      // Time at which the report was replaced in seconds since the UNIX epoch.
-      "replacement_time": 123,
+      // Time at which the report was replaced in milliseconds since the UNIX
+      // epoch formatted as a base-10 string.
+      "replacement_time": "123",
 
       // The report id that the report was replaced by. Omitted if
       // `remove_report_ids` option is true.

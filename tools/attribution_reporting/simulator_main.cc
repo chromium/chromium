@@ -151,13 +151,13 @@ Switches:
                               output more deterministic.
 
   --report_time_format=<format>
-                            - Optional. Either `seconds_since_unix_epoch`
+                            - Optional. Either `milliseconds_since_unix_epoch`
                               (default) or `iso8601`. Controls the report time
                               output format.
 
-                              `seconds_since_unix_epoch`: Report times are
-                              integer seconds since the Unix epoch, e.g.
-                              1643408373.
+                              `milliseconds_since_unix_epoch`: Report times are
+                              integer milliseconds since the Unix epoch, e.g.
+                              1643408373000.
 
                               `iso8601`: Report times are ISO 8601 strings,
                               e.g. "2022-01-28T22:19:33.000Z".
@@ -337,13 +337,13 @@ int main(int argc, char* argv[]) {
   }
 
   auto report_time_format =
-      content::AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+      content::AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
   if (command_line.HasSwitch(kSwitchReportTimeFormat)) {
     std::string str = command_line.GetSwitchValueASCII(kSwitchReportTimeFormat);
 
     if (str == "iso8601") {
       report_time_format = content::AttributionReportTimeFormat::kISO8601;
-    } else if (str != "seconds_since_unix_epoch") {
+    } else if (str != "milliseconds_since_unix_epoch") {
       std::cerr << "unknown report time format: " << str << std::endl;
       return 1;
     }

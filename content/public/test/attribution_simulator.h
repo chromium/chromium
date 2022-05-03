@@ -18,8 +18,8 @@ class Value;
 namespace content {
 
 enum class AttributionReportTimeFormat {
-  // Times are an integer number of seconds since the Unix epoch.
-  kSecondsSinceUnixEpoch,
+  // Times are an integer number of milliseconds since the Unix epoch.
+  kMillisecondsSinceUnixEpoch,
   // Times are strings in the ISO 8601 format.
   kISO8601,
 };
@@ -47,7 +47,7 @@ struct AttributionSimulationOptions {
   bool remove_report_ids = false;
 
   AttributionReportTimeFormat report_time_format =
-      AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+      AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
 
   // If true, removes the `shared_info`, `aggregation_service_payloads` and
   // `source_registration_time` fields from aggregatable reports before output.

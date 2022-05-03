@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -137,8 +138,8 @@ struct AttributionReportJsonConverter {
 
     base::TimeDelta time_delta = base::Time::Now() - time_origin;
     switch (report_time_format) {
-      case AttributionReportTimeFormat::kSecondsSinceUnixEpoch:
-        value.Set(time_key, base::checked_cast<int>(time_delta.InSeconds()));
+      case AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch:
+        value.Set(time_key, base::NumberToString(time_delta.InMilliseconds()));
         break;
       case AttributionReportTimeFormat::kISO8601:
         value.Set(time_key,

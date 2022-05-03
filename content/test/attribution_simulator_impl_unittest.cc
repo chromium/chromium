@@ -98,10 +98,10 @@ void ParseOptions(const base::Value& dict,
     if (*report_time_format == "iso8601") {
       options.report_time_format = AttributionReportTimeFormat::kISO8601;
     } else {
-      ASSERT_EQ(*report_time_format, "seconds_since_unix_epoch")
+      ASSERT_EQ(*report_time_format, "milliseconds_since_unix_epoch")
           << "unknown report time format: " << *report_time_format;
       options.report_time_format =
-          AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+          AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
     }
   }
 
@@ -123,7 +123,8 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
       .noise_mode = AttributionNoiseMode::kNone,
       .delay_mode = AttributionDelayMode::kDefault,
       .remove_report_ids = true,
-      .report_time_format = AttributionReportTimeFormat::kSecondsSinceUnixEpoch,
+      .report_time_format =
+          AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
       .remove_assembled_report = true,
   };
 

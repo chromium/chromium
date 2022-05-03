@@ -8,7 +8,7 @@
         "source_type": "event",
         "trigger_data": "1"
       },
-      "report_time": 1645831173,
+      "report_time": "1645831173000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": false
@@ -24,7 +24,7 @@
         "source_type": "event",
         "trigger_data": "0"
       },
-      "replacement_time": 1643235575,
+      "replacement_time": "1643235575000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": false

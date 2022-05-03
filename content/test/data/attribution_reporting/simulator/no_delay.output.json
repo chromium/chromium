@@ -8,7 +8,7 @@
          "source_type": "navigation",
          "trigger_data": "7"
       },
-      "report_time": 1643235574,
+      "report_time": "1643235574000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
          "randomized_trigger": false
