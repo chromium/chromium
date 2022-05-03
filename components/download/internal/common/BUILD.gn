@@ -112,7 +112,6 @@ if (is_android) {
   android_library("internal_java") {
     sources = [
       "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
-      "android/java/src/org/chromium/components/download/DownloadDelegate.java",
     ]
 
     deps = [

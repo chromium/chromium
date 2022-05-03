@@ -28,7 +28,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -46,7 +45,6 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.Website.StoredDataClearedCallback;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.version_info.VersionInfo;
 
 import java.util.Collection;
 
@@ -122,8 +120,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             }
         };
 
-        String productVersion =
-                AboutChromeSettings.getApplicationVersion(this, VersionInfo.getProductVersion());
+        String productVersion = null;
         String failedVersion = SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
         if (TextUtils.equals(failedVersion, productVersion)) {

@@ -1,2 +1,0 @@
-file://chrome/android/java/src/org/chromium/chrome/browser/autofill/OWNERS
-per-file AutofillUpstreamTest.java=file://components/autofill/core/browser/payments/OWNERS

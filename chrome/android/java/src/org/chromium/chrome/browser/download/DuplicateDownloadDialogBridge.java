@@ -50,10 +50,7 @@ public class DuplicateDownloadDialogBridge {
             onConfirmed(callbackId, false);
             return;
         }
-        new DuplicateDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), filePath, pageUrl,
-                totalBytes, duplicateExists, otrProfileID,
-                (accepted) -> { onConfirmed(callbackId, accepted); });
+        // TODO
     }
 
     @CalledByNative

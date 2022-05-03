@@ -54,7 +54,6 @@ _DEFAULT_TARGETS = [
     '//android_webview/test:webview_instrumentation_apk',
     '//android_webview/test:webview_instrumentation_test_apk',
     '//base:base_junit_tests',
-    '//chrome/android:chrome_junit_tests',
     '//chrome/android:chrome_public_apk',
     '//chrome/android:chrome_public_test_apk',
     '//chrome/android:chrome_public_unit_test_apk',

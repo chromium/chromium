@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -133,7 +132,6 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     private OMADownloadHandler mOMADownloadHandler;
     private DownloadSnackbarController mDownloadSnackbarController;
-    private DownloadMessageUiController mMessageUiController;
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.
     private boolean mIsUIUpdateScheduled;
@@ -252,7 +250,6 @@ public class DownloadManagerService implements DownloadController.Observer,
         mHandler = handler;
         mDownloadSnackbarController = new DownloadSnackbarController();
         mOMADownloadHandler = new OMADownloadHandler(applicationContext);
-        DownloadCollectionBridge.setDownloadDelegate(new DownloadDelegateImpl());
         // Note that this technically leaks the native object, however, DownloadManagerService
         // is a singleton that lives forever and there's no clean shutdown of Chrome on Android.
         init();
@@ -284,15 +281,6 @@ public class DownloadManagerService implements DownloadController.Observer,
         return mDownloadNotifier;
     }
 
-    /** @return The {@link DownloadMessageUiController} controller associated with the profile. */
-    public DownloadMessageUiController getMessageUiController(OTRProfileID otrProfileID) {
-        return mMessageUiController;
-    }
-
-    /** For testing only. */
-    public void setInfoBarControllerForTesting(DownloadMessageUiController infoBarController) {
-        mMessageUiController = infoBarController;
-    }
 
     // Deprecated after new download backend.
     @Override
@@ -360,9 +348,8 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Called when browser activity is launched. For background resumption and cancellation, this
      * will not be called.
      */
-    public void onActivityLaunched(DownloadMessageUiController.Delegate delegate) {
+    public void onActivityLaunched() {
         if (!mActivityLaunched) {
-            mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
 
             DownloadNotificationService.clearResumptionAttemptLeft();
 
@@ -711,10 +698,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             onDownloadFailed(downloadItem, response.failureReason);
             return;
         }
-
-        DownloadMessageUiController messageUiController =
-                getMessageUiController(downloadItem.getDownloadInfo().getOTRProfileId());
-        if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
     @Nullable
@@ -1127,16 +1110,6 @@ public class DownloadManagerService implements DownloadController.Observer,
                 item.setSystemDownloadId(systemDownloadId);
                 handleAutoOpenAfterDownload(item);
             } else {
-                DownloadMessageUiController infobarController =
-                        getMessageUiController(info.getOTRProfileId());
-                if (infobarController != null) {
-                    infobarController.onNotificationShown(info.getContentId(), notificationId);
-                }
-            }
-        } else {
-            if (getMessageUiController(info.getOTRProfileId()) != null) {
-                getMessageUiController(info.getOTRProfileId())
-                        .onNotificationShown(info.getContentId(), notificationId);
             }
         }
 
@@ -1196,14 +1169,6 @@ public class DownloadManagerService implements DownloadController.Observer,
                             if (MimeUtils.canAutoOpenMimeType(result.mimeType)
                                     && item.getDownloadInfo().hasUserGesture() && canResolve) {
                                 handleAutoOpenAfterDownload(item);
-                            } else {
-                                DownloadMessageUiController infoBarController =
-                                        getMessageUiController(
-                                                item.getDownloadInfo().getOTRProfileId());
-                                if (infoBarController != null) {
-                                    infoBarController.onItemUpdated(
-                                            DownloadItem.createOfflineItem(item), null);
-                                }
                             }
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

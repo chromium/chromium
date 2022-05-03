@@ -17,7 +17,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.settings.AutofillEditorBase;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -49,6 +48,8 @@ import java.util.Map;
 @JNINamespace("autofill")
 public class PersonalDataManager {
     private static final String TAG = "PersonalDataManager";
+
+    public static final String SETTINGS_ORIGIN = "Chrome settings";
 
     /**
      * Observer of PersonalDataManager events.
@@ -249,7 +250,7 @@ public class PersonalDataManager {
          * because JNI does not handle null strings.
          */
         public AutofillProfile() {
-            this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /* origin */, true /* isLocal */,
+            this("" /* guid */, SETTINGS_ORIGIN /* origin */, true /* isLocal */,
                     ValueWithStatus.EMPTY /* honorificPrefix */,
                     ValueWithStatus.EMPTY /* fullName */, ValueWithStatus.EMPTY /* companyName */,
                     ValueWithStatus.EMPTY /* streetAddress */, ValueWithStatus.EMPTY /* region */,
@@ -617,7 +618,7 @@ public class PersonalDataManager {
         }
 
         public CreditCard() {
-            this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /*origin */, true /* isLocal */,
+            this("" /* guid */, SETTINGS_ORIGIN /*origin */, true /* isLocal */,
                     false /* isCached */, "" /* name */, "" /* number */, "" /* obfuscatedNumber */,
                     "" /* month */, "" /* year */, "" /* basicCardIssuerNetwork */,
                     0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);

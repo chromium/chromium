@@ -8,9 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.download.dialogs.MixedContentDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * Glues mixed-content download dialogs UI code and handles the communication to download native
@@ -48,9 +46,7 @@ public class MixedContentDownloadDialogBridge {
             return;
         }
 
-        new MixedContentDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                isOffTheRecord, (accepted) -> { onConfirmed(callbackId, accepted); });
+        //  TODO
     }
 
     @CalledByNative

@@ -1,5 +1,0 @@
-# For tests that apply to parts of feature implemented in components with a thin Java layer (e.g. host APIs).
-file://components/feed/OWNERS
-
-# For tests affecting Android specific parts (e.g. Stream).
-file://chrome/android/feed/OWNERS

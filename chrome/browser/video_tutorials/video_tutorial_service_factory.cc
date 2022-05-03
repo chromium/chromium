@@ -24,13 +24,6 @@
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/VideoTutorialsServiceUtils_jni.h"
-#endif
-
 namespace video_tutorials {
 namespace {
 
@@ -55,13 +48,6 @@ std::string GetGoogleAPIKey() {
 
 std::string GetDefaultServerUrl() {
   std::string default_server_url;
-#if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_server_url =
-      Java_VideoTutorialsServiceUtils_getDefaultServerUrl(env);
-  default_server_url =
-      base::android::ConvertJavaStringToUTF8(env, j_server_url);
-#endif
   return default_server_url;
 }
 

@@ -213,14 +213,12 @@ public class AutofillProfileBridge {
 
     @CalledByNative
     private static void showAutofillProfileSettings(WebContents webContents) {
-        RecordUserAction.record("AutofillAddressesViewed");
-        showSettingSubpage(webContents, AutofillProfilesFragment.class);
+        // TOOD
     }
 
     @CalledByNative
     private static void showAutofillCreditCardSettings(WebContents webContents) {
-        RecordUserAction.record("AutofillCreditCardsViewed");
-        showSettingSubpage(webContents, AutofillPaymentMethodsFragment.class);
+        // TODO
     }
 
     private static void showSettingSubpage(

@@ -105,7 +105,6 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
      */
     public void showSearchEnginePromoIfNeeded(
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
-        mDelegate.showSearchEnginePromoIfNeeded(activity, onSearchEngineFinalized);
     }
 
     /**

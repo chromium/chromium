@@ -134,9 +134,6 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
-        DownloadMessageUiController messageUiController =
-                DownloadManagerService.getDownloadManagerService().getMessageUiController(
-                        otrProfileID);
-        return messageUiController == null ? false : messageUiController.isShowing();
+        return false;
     }
 }

@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support",
-]

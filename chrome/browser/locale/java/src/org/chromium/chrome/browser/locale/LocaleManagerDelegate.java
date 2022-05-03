@@ -24,9 +24,7 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelpe
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
-import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -66,9 +64,7 @@ public class LocaleManagerDelegate {
 
         @Override
         public void onAction(Object actionData) {
-            assert mSettingsLauncher != null;
-            Context context = ContextUtils.getApplicationContext();
-            mSettingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
+
         }
     };
 
@@ -178,75 +174,6 @@ public class LocaleManagerDelegate {
         }
         preferences.writeBoolean(
                 ChromePreferenceKeys.LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE, isInSpecialLocale);
-    }
-
-    /**
-     * @see {@link LocaleManager#showSearchEnginePromoIfNeeded()}
-     */
-    public void showSearchEnginePromoIfNeeded(
-            final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
-        assert LibraryLoader.getInstance().isInitialized();
-        TemplateUrlServiceFactory.get().runWhenLoaded(() -> {
-            handleSearchEnginePromoWithTemplateUrlsLoaded(activity, onSearchEngineFinalized);
-        });
-    }
-
-    private void handleSearchEnginePromoWithTemplateUrlsLoaded(
-            final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
-        assert TemplateUrlServiceFactory.get().isLoaded();
-
-        final Callback<Boolean> finalizeInternalCallback = (result) -> {
-            if (result != null && result) {
-                mSearchEnginePromoCheckedThisSession = true;
-            } else {
-                @SearchEnginePromoType
-                int promoType = getSearchEnginePromoShowType();
-                if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                        || promoType == SearchEnginePromoType.SHOW_NEW) {
-                    onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
-                }
-            }
-            if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
-        };
-        if (TemplateUrlServiceFactory.get().isDefaultSearchManaged()
-                || ApiCompatibilityUtils.isDemoUser()) {
-            finalizeInternalCallback.onResult(true);
-            return;
-        }
-
-        @SearchEnginePromoType
-        final int shouldShow = getSearchEnginePromoShowType();
-        Supplier<PromoDialog> dialogSupplier;
-
-        switch (shouldShow) {
-            case SearchEnginePromoType.DONT_SHOW:
-                finalizeInternalCallback.onResult(true);
-                return;
-            case SearchEnginePromoType.SHOW_SOGOU:
-                dialogSupplier = ()
-                        -> new SogouPromoDialog(activity, this::onSelectSearchEngine,
-                                finalizeInternalCallback, mSettingsLauncher);
-                break;
-            case SearchEnginePromoType.SHOW_EXISTING:
-            case SearchEnginePromoType.SHOW_NEW:
-                dialogSupplier = ()
-                        -> new DefaultSearchEnginePromoDialog(activity, mSearchEngineHelperDelegate,
-                                shouldShow, finalizeInternalCallback);
-                break;
-            default:
-                assert false;
-                finalizeInternalCallback.onResult(true);
-                return;
-        }
-
-        // If the activity has been destroyed by the time the TemplateUrlService has
-        // loaded, then do not attempt to show the dialog.
-        if (ApplicationStatus.getStateForActivity(activity) == ActivityState.DESTROYED) {
-            finalizeInternalCallback.onResult(false);
-            return;
-        }
-        dialogSupplier.get().show();
-        mSearchEnginePromoShownThisSession = true;
     }
 
     /**

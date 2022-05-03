@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
-import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment;
@@ -62,7 +61,6 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
-import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -391,12 +389,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment,
                     HelpAndFeedbackLauncherImpl.getInstance());
         }
-        if (fragment instanceof SearchEngineSettings) {
-            SearchEngineSettings settings = (SearchEngineSettings) fragment;
-            settings.setDisableAutoSwitchRunnable(
-                    () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
-            settings.setSettingsLauncher(mSettingsLauncher);
-        }
         if (fragment instanceof ImageDescriptionsSettings) {
             Profile profile = Profile.getLastUsedRegularProfile();
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;
@@ -442,10 +434,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((ClearBrowsingDataFragmentBasic) fragment)
                     .setCustomTabIntentHelper(
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
-        }
-        if (fragment instanceof PrivacySettings) {
-            ((PrivacySettings) fragment).setBottomSheetController(mBottomSheetController);
-            ((PrivacySettings) fragment).setDialogContainer(findViewById(R.id.dialog_container));
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)

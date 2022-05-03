@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/omnibox/browser/android/javatests/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java",
-]
-

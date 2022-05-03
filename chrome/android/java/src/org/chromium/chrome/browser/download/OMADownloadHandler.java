@@ -882,19 +882,6 @@ public class OMADownloadHandler extends BroadcastReceiver {
     }
 
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
-        DownloadMessageUiController messageUiController =
-                DownloadManagerService.getDownloadManagerService().getMessageUiController(
-                        downloadItem.getDownloadInfo().getOTRProfileId());
-        if (messageUiController == null) return;
-        OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
-        offlineItem.id.namespace = LegacyHelpers.LEGACY_ANDROID_DOWNLOAD_NAMESPACE;
-        if (downloadStatus == DownloadStatus.COMPLETE) {
-            offlineItem.state = OfflineItemState.COMPLETE;
-        } else if (downloadStatus == DownloadStatus.FAILED) {
-            offlineItem.state = OfflineItemState.FAILED;
-        }
-
-        messageUiController.onItemUpdated(offlineItem, null);
     }
 
     /**

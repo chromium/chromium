@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.MainSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,7 +29,6 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -105,9 +102,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 /*onClickListener=*/
                 view
                 -> {
-                    recordIdentityDiscUsed();
-                    SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                    settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
+                    
                 },
                 R.string.accessibility_toolbar_btn_identity_disc, /*supportsTinting=*/false,
                 new IPHCommandBuilder(mContext.getResources(),

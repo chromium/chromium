@@ -8,10 +8,6 @@ import android.app.Activity;
 
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
-import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
-import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -49,13 +45,6 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
                 == 0) {
             unregister();
             return;
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
-                && navigation.isDownload()) {
-            DownloadInterstitialCoordinator coordinator =
-                    DownloadInterstitialCoordinatorFactory.create(tab.getContext(),
-                            tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
-            NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }
 

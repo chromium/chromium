@@ -22,18 +22,14 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.app.download.home.DownloadActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -80,20 +76,6 @@ public class OfflinePageDownloadBridge {
     @CalledByNative
     private static void openItem(final String url, final long offlineId, final int location,
             final boolean isIncognito, final boolean openInCct) {
-        OfflinePageUtils.getLoadUrlParamsForOpeningOfflineVersion(
-                url, offlineId, location, (params) -> {
-                    if (params == null) return;
-                    boolean openingFromDownloadsHome =
-                            ApplicationStatus.getLastTrackedFocusedActivity()
-                                    instanceof DownloadActivity;
-                    if (location == LaunchLocation.NET_ERROR_SUGGESTION) {
-                        openItemInCurrentTab(offlineId, params);
-                    } else if (openInCct && openingFromDownloadsHome) {
-                        openItemInCct(offlineId, params, isIncognito);
-                    } else {
-                        openItemInNewTab(offlineId, params, isIncognito);
-                    }
-                }, Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -180,9 +162,6 @@ public class OfflinePageDownloadBridge {
      */
     @CalledByNative
     public static void showDownloadingToast() {
-        DownloadManagerService.getDownloadManagerService()
-                .getMessageUiController(/*otrProfileID=*/null)
-                .onDownloadStarted();
     }
 
     /**

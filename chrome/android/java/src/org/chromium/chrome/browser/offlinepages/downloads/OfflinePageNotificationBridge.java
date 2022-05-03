@@ -150,10 +150,6 @@ public class OfflinePageNotificationBridge {
      */
     @CalledByNative
     public static void showDownloadingToast() {
-        intializeOfflineItemsCollection();
-        DownloadManagerService.getDownloadManagerService()
-                .getMessageUiController(/*otrProfileID=*/null)
-                .onDownloadStarted();
     }
 
     /**

@@ -8,9 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * Glues dangerous download dialogs UI code and handles the communication to download native
@@ -48,16 +46,7 @@ public class DangerousDownloadDialogBridge {
             onCancel(guid);
             return;
         }
-
-        new DangerousDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                iconId, isOffTheRecord, (accepted) -> {
-                    if (accepted) {
-                        onAccepted(guid);
-                    } else {
-                        onCancel(guid);
-                    }
-                });
+        // TODO
     }
 
     @CalledByNative

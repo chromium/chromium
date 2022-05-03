@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
-import static org.chromium.base.ContextUtils.getApplicationContext;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
-
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -17,13 +14,10 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -31,10 +25,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
+import static org.chromium.base.ContextUtils.getApplicationContext;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
+
 /**
- * Shared code between the old {@link org.chromium.chrome.browser.infobar.SyncErrorInfobar}
- * and the new UI based on {@link SyncErrorMessage}.
- *
  * TODO(crbug.com/1246073): make private as methods of message ui controller once the migration to
  *                          the new UI is completed.
  */
@@ -133,9 +127,6 @@ public class SyncErrorPromptUtils {
             case SyncErrorPromptType.PASSPHRASE_REQUIRED:
             case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
             case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(getApplicationContext(),
-                        ManageSyncSettings.class, ManageSyncSettings.createArguments(false));
                 return;
 
             case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
@@ -145,7 +136,6 @@ public class SyncErrorPromptUtils {
 
             case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
             case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                openTrustedVaultRecoverabilityDegradedActivity();
                 return;
         }
     }
@@ -216,28 +206,6 @@ public class SyncErrorPromptUtils {
                         },
                         (exception)
                                 -> Log.w(TAG, "Error creating trusted vault key retrieval intent: ",
-                                        exception));
-    }
-
-    private static void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
-        if (primaryAccountInfo == null) {
-            return;
-        }
-        TrustedVaultClient.get()
-                .createRecoverabilityDegradedIntent(primaryAccountInfo)
-                .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
-                                    SyncTrustedVaultProxyActivity
-                                            .createRecoverabilityDegradedProxyIntent(intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
-                        },
-                        (exception)
-                                -> Log.w(TAG,
-                                        "Error creating trusted vault recoverability intent: ",
                                         exception));
     }
 

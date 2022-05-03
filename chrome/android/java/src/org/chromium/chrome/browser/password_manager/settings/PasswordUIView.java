@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
@@ -18,7 +16,8 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  * Production implementation of PasswordManagerHandler, making calls to native C++ code to retrieve
  * the data.
  */
-public final class PasswordUIView implements PasswordManagerHandler {
+public final class PasswordUIView {
+
     @CalledByNative
     private static SavedPasswordEntry createSavedPasswordEntry(
             String url, String name, String password) {
@@ -28,77 +27,52 @@ public final class PasswordUIView implements PasswordManagerHandler {
     // Pointer to native implementation, set to 0 in destroy().
     private long mNativePasswordUIViewAndroid;
 
-    // This class has exactly one observer, set on construction and expected to last at least as
-    // long as this object (a good candidate is the owner of this object).
-    private final PasswordListObserver mObserver;
-
-    /**
-     * Constructor creates the native object as well. Callers should call destroy() after usage.
-     *
-     * @param PasswordListObserver The only observer.
-     */
-    public PasswordUIView(PasswordListObserver observer) {
+    public PasswordUIView() {
         mNativePasswordUIViewAndroid = PasswordUIViewJni.get().init(PasswordUIView.this);
-        mObserver = observer;
     }
 
     @CalledByNative
     private void passwordListAvailable(int count) {
-        mObserver.passwordListAvailable(count);
+        // TODO
     }
 
     @CalledByNative
     private void passwordExceptionListAvailable(int count) {
-        mObserver.passwordExceptionListAvailable(count);
+        // TODO
     }
 
-    @Override
-    @VisibleForTesting
-    public void insertPasswordEntryForTesting(String origin, String username, String password) {
-        PasswordUIViewJni.get().insertPasswordEntryForTesting(
-                mNativePasswordUIViewAndroid, origin, username, password);
-    }
 
-    // Calls native to refresh password and exception lists. The native code calls back into
-    // passwordListAvailable and passwordExceptionListAvailable.
-    @Override
     public void updatePasswordLists() {
         PasswordUIViewJni.get().updatePasswordLists(
                 mNativePasswordUIViewAndroid, PasswordUIView.this);
     }
 
-    @Override
     public SavedPasswordEntry getSavedPasswordEntry(int index) {
         return PasswordUIViewJni.get().getSavedPasswordEntry(
                 mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
-    @Override
     public String getSavedPasswordException(int index) {
         return PasswordUIViewJni.get().getSavedPasswordException(
                 mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
-    @Override
     public void removeSavedPasswordEntry(int index) {
         PasswordUIViewJni.get().handleRemoveSavedPasswordEntry(
                 mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
-    @Override
     public void removeSavedPasswordException(int index) {
         PasswordUIViewJni.get().handleRemoveSavedPasswordException(
                 mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
-    @Override
     public void serializePasswords(
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback) {
         PasswordUIViewJni.get().handleSerializePasswords(mNativePasswordUIViewAndroid,
                 PasswordUIView.this, targetPath, successCallback, errorCallback);
     }
 
-    @Override
     public void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher,
             int index, boolean isBlockedCredential) {
         if (isBlockedCredential) {

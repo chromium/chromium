@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import static org.chromium.base.ContextUtils.getApplicationContext;
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -26,6 +24,8 @@ import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.content_public.browser.WebContents;
+
+import static org.chromium.base.ContextUtils.getApplicationContext;
 
 /**
  * An {@link InfoBar} that shows sync errors and prompts the user to open settings page.

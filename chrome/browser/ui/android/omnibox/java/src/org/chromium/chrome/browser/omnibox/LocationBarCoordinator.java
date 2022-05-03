@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoActi
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
@@ -159,7 +158,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull ExploreIconProvider exploreIconProvider,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             Callback<Throwable> reportExceptionCallback) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
@@ -190,7 +188,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
                 shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
                 bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
-                exploreIconProvider, omniboxPedalDelegate);
+                exploreIconProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 modalDialogManagerSupplier, locationBarDataProvider, mTemplateUrlServiceSupplier,

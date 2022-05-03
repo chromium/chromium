@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.settings;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.hasChosenToSyncPasswords;
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -37,27 +34,19 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SignInPreference;
-import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
-import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
-import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
@@ -65,6 +54,9 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.hasChosenToSyncPasswords;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 /**
  * The main settings screen, shown when the user first opens Settings.
@@ -95,8 +87,6 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
-    private SyncPromoPreference mSyncPromoPreference;
-    private SignInPreference mSignInPreference;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -129,7 +119,6 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mSyncPromoPreference.onPreferenceFragmentDestroyed();
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
         // by the system.
@@ -174,8 +163,6 @@ public class MainSettings extends PreferenceFragmentCompat
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
 
         cachePreferences();
-
-        mSyncPromoPreference.setOnStateChangedCallback(this::onSyncPromoPreferenceStateChanged);
 
         updatePasswordsPreference();
 
@@ -228,8 +215,6 @@ public class MainSettings extends PreferenceFragmentCompat
             Preference preference = getPreferenceScreen().getPreference(index);
             mAllPreferences.put(preference.getKey(), preference);
         }
-        mSyncPromoPreference = (SyncPromoPreference) mAllPreferences.get(PREF_SYNC_PROMO);
-        mSignInPreference = (SignInPreference) mAllPreferences.get(PREF_SIGN_IN);
         mManageSync = (ChromeBasePreference) findPreference(PREF_MANAGE_SYNC);
     }
 
@@ -262,12 +247,6 @@ public class MainSettings extends PreferenceFragmentCompat
         } else {
             removePreferenceIfPresent(PREF_UI_THEME);
         }
-
-        if (DeveloperSettings.shouldShowDeveloperSettings()) {
-            addPreferenceIfAbsent(PREF_DEVELOPER);
-        } else {
-            removePreferenceIfPresent(PREF_DEVELOPER);
-        }
     }
 
     private Preference addPreferenceIfAbsent(String key) {
@@ -298,16 +277,6 @@ public class MainSettings extends PreferenceFragmentCompat
         mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
         mManageSync.setOnPreferenceClickListener(pref -> {
-            Context context = getContext();
-            if (SyncService.get().isSyncDisabledByEnterprisePolicy()) {
-                SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
-            } else if (isSyncConsentAvailable) {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
-            } else {
-                SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                        context, SigninAccessPoint.SETTINGS, primaryAccountName);
-            }
             return true;
         });
     }
@@ -392,15 +361,6 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onSignedOut() {
         updatePreferences();
-    }
-
-    private void onSyncPromoPreferenceStateChanged() {
-        // Remove "Account" section header if the personalized sign-in promo is shown.
-        boolean isShowingPersonalizedSigninPromo =
-                mSyncPromoPreference.getState() == State.PERSONALIZED_SIGNIN_PROMO;
-        findPreference(PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
-                .setVisible(!isShowingPersonalizedSigninPromo);
-        mSignInPreference.setIsShowingPersonalizedSigninPromo(isShowingPersonalizedSigninPromo);
     }
 
     // TemplateUrlService.LoadListener implementation.

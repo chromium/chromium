@@ -10,7 +10,6 @@ android_library("test_support_java") {
 
   visibility = [
     ":*",
-    "//chrome/android:chrome_junit_tests__java_binary",
     "//chrome/browser/ui/android/autofill/internal:junit",
   ]
   sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/FakeModalDialogManager.java" ]

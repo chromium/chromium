@@ -27,6 +27,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForQ;
+//import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
+//import org.chromium.chrome.browser.download.DownloadUtils;
+//import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.third_party.android.provider.MediaStoreUtils;
 import org.chromium.third_party.android.provider.MediaStoreUtils.PendingParams;
 import org.chromium.third_party.android.provider.MediaStoreUtils.PendingSession;
@@ -55,8 +58,6 @@ public class DownloadCollectionBridge {
     private static final List<String> COMMON_DOUBLE_EXTENSIONS =
             new ArrayList<String>(Arrays.asList("tar.gz", "tar.z", "tar.bz2", "tar.bz", "user.js"));
 
-    private static DownloadDelegate sDownloadDelegate = new DownloadDelegate();
-
     /**
      *  Class representing the Uri and display name pair for downloads.
      */
@@ -77,21 +78,6 @@ public class DownloadCollectionBridge {
         @CalledByNative("DisplayNameInfo")
         private String getDisplayName() {
             return mDisplayName;
-        }
-    }
-
-    /**
-     * Sets the DownloadDelegate to be used for utility methods.
-     * TODO(qinmin): remove this method once we moved all the utility methods into
-     * components/.
-     * @param downloadDelegate The new delegate to be used.
-     */
-    public static void setDownloadDelegate(DownloadDelegate downloadDelegate) {
-        // TODO(qinmin): On Android O, ClassLoader may need to access disk when
-        // setting the |sDownloadDelegate|. Move this to a background thread.
-        // See http://crbug.com/1061042.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            sDownloadDelegate = downloadDelegate;
         }
     }
 
@@ -130,11 +116,11 @@ public class DownloadCollectionBridge {
      */
     @CalledByNative
     public static boolean shouldPublishDownload(final String filePath) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (filePath == null) return false;
-            // Only need to publish downloads that are on primary storage.
-            return !sDownloadDelegate.isDownloadOnSDCard(filePath);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (filePath == null) return false;
+//            // Only need to publish downloads that are on primary storage.
+//            return !DownloadDirectoryProvider.isDownloadOnSDCard(filePath);
+//        }
         return false;
     }
 
@@ -363,15 +349,15 @@ public class DownloadCollectionBridge {
     @RequiresApi(29)
     private static PendingParams createPendingParams(final String fileName, final String mimeType,
             final String originalUrl, final String referrer) {
-        Uri downloadsUri = Downloads.EXTERNAL_CONTENT_URI;
-        String newMimeType =
-                sDownloadDelegate.remapGenericMimeType(mimeType, originalUrl, fileName);
-        PendingParams pendingParams = new PendingParams(downloadsUri, fileName, newMimeType);
-        Uri originalUri = sDownloadDelegate.parseOriginalUrl(originalUrl);
-        Uri referrerUri = TextUtils.isEmpty(referrer) ? null : Uri.parse(referrer);
-        pendingParams.setDownloadUri(originalUri);
-        pendingParams.setRefererUri(referrerUri);
-        return pendingParams;
+//        Uri downloadsUri = Downloads.EXTERNAL_CONTENT_URI;
+//        String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, fileName);
+//        PendingParams pendingParams = new PendingParams(downloadsUri, fileName, newMimeType);
+//        Uri originalUri = DownloadUtils.parseOriginalUrl(originalUrl);
+//        Uri referrerUri = TextUtils.isEmpty(referrer) ? null : Uri.parse(referrer);
+//        pendingParams.setDownloadUri(originalUri);
+//        pendingParams.setRefererUri(referrerUri);
+//        return pendingParams;
+        return null;
     }
 
     /**

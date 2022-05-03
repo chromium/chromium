@@ -15,7 +15,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -172,16 +171,6 @@ public class NativePageFactory {
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
         }
 
-        protected NativePage buildDownloadsPage(Tab tab) {
-            // For preloaded tabs, the tab model might not be initialized yet. Use tab to figure
-            // out if it is a regular profile.
-            Profile profile = tab.isIncognito() ? mTabModelSelector.getCurrentModel().getProfile()
-                                                : Profile.getLastUsedRegularProfile();
-            return new DownloadPage(mActivity, mSnackbarManagerSupplier.get(),
-                    mWindowAndroid.getModalDialogManager(), profile.getOTRProfileID(),
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
-        }
-
         protected NativePage buildExploreSitesPage(Tab tab) {
             return new ExploreSitesPage(mActivity,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab,
@@ -253,9 +242,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.BOOKMARKS:
                 page = getBuilder().buildBookmarksPage(tab);
-                break;
-            case NativePageType.DOWNLOADS:
-                page = getBuilder().buildDownloadsPage(tab);
                 break;
             case NativePageType.HISTORY:
                 page = getBuilder().buildHistoryPage(tab);

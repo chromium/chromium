@@ -20,7 +20,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/FREMobileIdentityConsistencyFieldTrial.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
-    "java/src/org/chromium/chrome/browser/signin/services/SigninChecker.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",

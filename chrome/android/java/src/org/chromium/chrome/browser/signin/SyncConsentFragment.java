@@ -11,10 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
@@ -93,12 +90,6 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
 
     @Override
     protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
-        if (settingsClicked) {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
-                    ManageSyncSettings.createArguments(true));
-        }
-
         recordSigninCompletedHistogramAccountInfo();
 
         Activity activity = getActivity();

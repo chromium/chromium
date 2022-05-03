@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.LocalizationUtils;
@@ -148,7 +147,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private void createFirstPage() {
         BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
         } else {
             // TODO(crbug.com/1111490): Revisit during post-MVP.
             // There's an edge case where we accept the welcome page in the main app, abort the FRE,
@@ -189,13 +187,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         BooleanSupplier showSearchEnginePromo =
                 () -> mFreProperties.getBoolean(SHOW_SEARCH_ENGINE_PAGE);
         BooleanSupplier showSyncConsent = () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
-
-        // An optional page to select a default search engine.
-        if (showSearchEnginePromo.getAsBoolean()) {
-            mPages.add(new FirstRunPage<>(
-                    DefaultSearchEngineFirstRunFragment.class, showSearchEnginePromo));
-            mFreProgressStates.add(MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN);
-        }
 
         // An optional sync consent page, the visibility of this page will be decided on the fly
         // according to the situation.

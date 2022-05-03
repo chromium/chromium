@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -63,11 +62,7 @@ final class SigninBridge {
     @CalledByNative
     private static void openAccountManagementScreen(
             WindowAndroid windowAndroid, @GAIAServiceType int gaiaServiceType) {
-        ThreadUtils.assertOnUiThread();
-        final Context context = windowAndroid.getContext().get();
-        if (context != null) {
-            AccountManagementFragment.openAccountManagementScreen(context, gaiaServiceType);
-        }
+
     }
 
     /**
