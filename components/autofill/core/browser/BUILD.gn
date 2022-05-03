@@ -825,6 +825,7 @@ source_set("unit_tests") {
     "personal_data_manager_unittest.cc",
     "randomized_encoder_unittest.cc",
     "rationalization_util_unittest.cc",
+    "single_field_form_fill_router_unittest.cc",
     "strike_database_integrator_test_strike_database_unittest.cc",
     "strike_database_unittest.cc",
     "test_utils/test_profiles.cc",
