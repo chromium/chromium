@@ -87,18 +87,18 @@ class ExportNotifierTest(LoggingTestCase):
         ]
         expected = {
             'wpt-chrome-dev-stability':
-            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=1',
+            'https://github.com/web-platform-tests/wpt/runs/1',
             'wpt-firefox-nightly-stability':
-            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=2',
+            'https://github.com/web-platform-tests/wpt/runs/2',
             'lint':
-            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=3',
+            'https://github.com/web-platform-tests/wpt/runs/3',
             'infrastructure/ tests':
-            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=4',
+            'https://github.com/web-platform-tests/wpt/runs/4',
         }
 
         self.assertEqual(
             self.notifier.get_relevant_failed_taskcluster_checks(
-                check_runs, 123), expected)
+                check_runs), expected)
 
     def test_get_relevant_failed_taskcluster_checks_empty(self):
         check_runs = [
@@ -116,7 +116,7 @@ class ExportNotifierTest(LoggingTestCase):
 
         self.assertEqual(
             self.notifier.get_relevant_failed_taskcluster_checks(
-                check_runs, 123), {})
+                check_runs), {})
 
     def test_has_latest_taskcluster_status_commented_false(self):
         pr_status_info = PRStatusInfo('bar', 123, 'SHA')
@@ -320,7 +320,7 @@ class ExportNotifierTest(LoggingTestCase):
         ]
         checks_results = {
             'wpt-chrome-dev-stability':
-            'https://github.com/web-platform-tests/wpt/pull/1234/checks?check_run_id=123'
+            'https://github.com/web-platform-tests/wpt/runs/123'
         }
 
         self.notifier.dry_run = False

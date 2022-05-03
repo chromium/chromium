@@ -55,8 +55,7 @@ class ExportNotifier(object):
             if not check_runs:
                 continue
 
-            checks_results = self.get_relevant_failed_taskcluster_checks(
-                check_runs, pr.number)
+            checks_results = self.get_relevant_failed_taskcluster_checks(check_runs)
             if not checks_results:
                 continue
 
@@ -139,13 +138,12 @@ class ExportNotifier(object):
 
         return False
 
-    def get_relevant_failed_taskcluster_checks(self, check_runs, pr_number):
+    def get_relevant_failed_taskcluster_checks(self, check_runs):
         """Filters relevant failed Taskcluster checks from check_runs.
 
         Args:
             check_runs: A JSON array; e.g. "check_runs" in
                 https://developer.github.com/v3/checks/runs/#response-3
-            pr_number: The PR number.
 
         Returns:
             A dictionary where keys are names of the Taskcluster checks and values
@@ -155,8 +153,7 @@ class ExportNotifier(object):
         for check in check_runs:
             if (check['conclusion'] == 'failure') and (
                     check['name'] in RELEVANT_TASKCLUSTER_CHECKS):
-                result_url = '{}pull/{}/checks?check_run_id={}'.format(
-                    WPT_GH_URL, pr_number, check['id'])
+                result_url = '{}runs/{}'.format(WPT_GH_URL, check['id'])
                 checks_results[check['name']] = result_url
 
         return checks_results
