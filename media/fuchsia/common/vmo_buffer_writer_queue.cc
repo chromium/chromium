@@ -13,33 +13,29 @@
 
 namespace media {
 
-struct VmoBufferWriterQueue::PendingBuffer {
-  PendingBuffer(scoped_refptr<DecoderBuffer> buffer) : buffer(buffer) {
-    DCHECK(buffer);
-  }
-  ~PendingBuffer() = default;
+VmoBufferWriterQueue::PendingBuffer::PendingBuffer(
+    scoped_refptr<DecoderBuffer> buffer)
+    : buffer(buffer) {
+  DCHECK(buffer);
+}
 
-  PendingBuffer(PendingBuffer&& other) = default;
-  PendingBuffer& operator=(PendingBuffer&& other) = default;
+VmoBufferWriterQueue::PendingBuffer::~PendingBuffer() = default;
 
-  const uint8_t* data() const { return buffer->data() + buffer_pos; }
-  size_t bytes_left() const { return buffer->data_size() - buffer_pos; }
-  void AdvanceCurrentPos(size_t bytes) {
-    DCHECK_LE(bytes, bytes_left());
-    buffer_pos += bytes;
-  }
+VmoBufferWriterQueue::PendingBuffer::PendingBuffer(PendingBuffer&& other) =
+    default;
 
-  scoped_refptr<DecoderBuffer> buffer;
-  size_t buffer_pos = 0;
+const uint8_t* VmoBufferWriterQueue::PendingBuffer::data() const {
+  return buffer->data() + buffer_pos;
+}
 
-  // Set to true when the consumer has finished processing the buffer and it can
-  // be released.
-  bool is_complete = false;
+size_t VmoBufferWriterQueue::PendingBuffer::bytes_left() const {
+  return buffer->data_size() - buffer_pos;
+}
 
-  // Index of the last buffer in the sysmem buffer collection that was used to
-  // send this input buffer. Should be set only when |bytes_left()==0|.
-  absl::optional<size_t> tail_sysmem_buffer_index;
-};
+void VmoBufferWriterQueue::PendingBuffer::AdvanceCurrentPos(size_t bytes) {
+  DCHECK_LE(bytes, bytes_left());
+  buffer_pos += bytes;
+}
 
 VmoBufferWriterQueue::VmoBufferWriterQueue() {
   DETACH_FROM_THREAD(thread_checker_);
