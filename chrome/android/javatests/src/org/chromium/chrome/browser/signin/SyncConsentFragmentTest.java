@@ -9,6 +9,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -298,7 +299,9 @@ public class SyncConsentFragmentTest {
         Assert.assertEquals(1, startPageHistogram.getDelta());
         // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
-        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        // We check the button is enabled rather than visible, as it may be off-screen on small
+        // devices.
+        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child");
     }
@@ -321,7 +324,9 @@ public class SyncConsentFragmentTest {
         Assert.assertEquals(1, startPageHistogram.getDelta());
         // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
-        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        // We check the button is enabled rather than visible, as it may be off-screen on small
+        // devices.
+        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child_allow_sync_off");
     }
@@ -329,7 +334,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisabledTest(message = "https://crbug.com/1316249")
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFRESyncConsentScreenWithChildAccountLegacy() throws IOException {
         HistogramDelta startPageHistogram =
@@ -345,7 +349,9 @@ public class SyncConsentFragmentTest {
         Assert.assertEquals(1, startPageHistogram.getDelta());
         // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
-        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        // We check the button is enabled rather than visible, as it may be off-screen on small
+        // devices.
+        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child_legacy");
     }
