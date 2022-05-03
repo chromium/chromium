@@ -9,10 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/websocket.h"
 
@@ -40,6 +42,13 @@ class SyncWebSocketImpl : public SyncWebSocket {
                                 const Timeout& timeout) override;
   bool HasNextMessage() override;
 
+  // Set the callback to be executed if there any messages available.
+  // The callback is called in the thread where the socket was created.
+  // Sporadic calls of the callback are permitted.
+  void SetNotificationCallback(base::RepeatingClosure callback) override;
+
+  void SendNotification();
+
  private:
   struct CoreTraits;
   class Core : public WebSocketListener,
@@ -58,6 +67,8 @@ class SyncWebSocketImpl : public SyncWebSocket {
     // Overriden from WebSocketListener:
     void OnMessageReceived(const std::string& message) override;
     void OnClose() override;
+
+    void SetNotificationCallback(base::RepeatingClosure callback);
 
    private:
     friend class base::RefCountedThreadSafe<Core, CoreTraits>;
@@ -100,9 +111,26 @@ class SyncWebSocketImpl : public SyncWebSocket {
     // Protected by |lock_|.
     // Signaled when the socket closes or a message is received.
     base::ConditionVariable on_update_event_;
+
+    // Protected by |lock_|.
+    // Notifies that the queue is not empty.
+    base::RepeatingClosure notify_;
+
+    // Sequence where the instance was created.
+    // The notifications about new data are emitted in this sequence.
+    scoped_refptr<base::SequencedTaskRunner> owning_sequence_;
   };
 
   scoped_refptr<Core> core_;
+
+  // Notifies that the queue is not empty.
+  // Always called in the owning sequence.
+  base::RepeatingClosure notify_;
+
+  // WeakPtrFactory must be the last member to be destroyed first.
+  // Then all the messages dispatched from the IO thread will be ignored
+  // after the instance end of life.
+  base::WeakPtrFactory<SyncWebSocketImpl> weak_factory_{this};
 };
 
 struct SyncWebSocketImpl::CoreTraits {

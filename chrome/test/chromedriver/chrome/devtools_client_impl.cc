@@ -95,6 +95,13 @@ DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
       next_id_(1),
       stack_count_(0) {
   socket_->SetId(id_);
+  // If error happens during proactive event consumption we ignore it
+  // as there is no active user request where the error might be returned.
+  // Unretained 'this' won't cause any problems as we reset the callback in the
+  // .dtor.
+  socket_->SetNotificationCallback(base::BindRepeating(
+      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
+      base::Unretained(this)));
 }
 
 DevToolsClientImpl::DevToolsClientImpl(
@@ -115,6 +122,13 @@ DevToolsClientImpl::DevToolsClientImpl(
       next_id_(1),
       stack_count_(0) {
   socket_->SetId(id_);
+  // If error happens during proactive event consumption we ignore it
+  // as there is no active user request where the error might be returned.
+  // Unretained 'this' won't cause any problems as we reset the callback in the
+  // .dtor.
+  socket_->SetNotificationCallback(base::BindRepeating(
+      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
+      base::Unretained(this)));
 }
 
 DevToolsClientImpl::DevToolsClientImpl(DevToolsClientImpl* parent,
@@ -152,11 +166,24 @@ DevToolsClientImpl::DevToolsClientImpl(
       next_id_(1),
       stack_count_(0) {
   socket_->SetId(id_);
+  // If error happens during proactive event consumption we ignore it
+  // as there is no active user request where the error might be returned.
+  // Unretained 'this' won't cause any problems as we reset the callback in the
+  // .dtor.
+  socket_->SetNotificationCallback(base::BindRepeating(
+      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
+      base::Unretained(this)));
 }
 
 DevToolsClientImpl::~DevToolsClientImpl() {
-  if (parent_ != nullptr)
+  if (parent_ != nullptr) {
     parent_->children_.erase(session_id_);
+  } else {
+    // Resetting the callback is redundant as we assume
+    // that .dtor won't start a nested message loop.
+    // Doing this just in case.
+    socket_->SetNotificationCallback(base::RepeatingClosure());
+  }
 }
 
 void DevToolsClientImpl::SetParserFuncForTesting(
