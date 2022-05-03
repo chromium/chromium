@@ -56,12 +56,12 @@ StarterDelegateAndroid::StarterDelegateAndroid(
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
-          dependencies_->GetCommonDependencies().GetPasswordManagerClient(
+          dependencies_->GetCommonDependencies()->GetPasswordManagerClient(
               web_contents),
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.
-  dependencies_->GetCommonDependencies().GetOrCreateAnnotateDomModelService(
+  dependencies_->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
       web_contents->GetBrowserContext());
 }
 
@@ -250,16 +250,17 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
   return !dependencies_->GetCommonDependencies()
-              .GetSignedInEmail(&GetWebContents())
+              ->GetSignedInEmail(&GetWebContents())
               .empty();
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {
-  return dependencies_->GetPlatformDependencies().IsCustomTab(GetWebContents());
+  return dependencies_->GetPlatformDependencies()->IsCustomTab(
+      GetWebContents());
 }
 
 bool StarterDelegateAndroid::GetIsWebLayer() const {
-  return dependencies_->GetCommonDependencies().IsWebLayer();
+  return dependencies_->GetCommonDependencies()->IsWebLayer();
 }
 
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
@@ -348,11 +349,19 @@ bool StarterDelegateAndroid::IsRegularScriptVisible() const {
 
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateAndroid::CreateFieldTrialUtil() {
-  return dependencies_->GetCommonDependencies().CreateFieldTrialUtil();
+  return dependencies_->GetCommonDependencies()->CreateFieldTrialUtil();
 }
 
 bool StarterDelegateAndroid::IsAttached() {
   return !!java_object_;
+}
+
+const CommonDependencies* StarterDelegateAndroid::GetCommonDependencies() {
+  return dependencies_->GetCommonDependencies();
+}
+
+const PlatformDependencies* StarterDelegateAndroid::GetPlatformDependencies() {
+  return dependencies_->GetPlatformDependencies();
 }
 
 base::WeakPtr<StarterPlatformDelegate> StarterDelegateAndroid::GetWeakPtr() {

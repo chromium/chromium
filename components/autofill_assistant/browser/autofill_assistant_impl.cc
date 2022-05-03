@@ -125,7 +125,6 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
       ServiceRequestSender::AuthMode::API_KEY,
       base::BindOnce(&OnCapabilitiesResponse, std::move(callback)),
       RpcType::GET_CAPABILITIES_BY_HASH_PREFIX);
-  return;
 }
 
 std::unique_ptr<ExternalScriptController>

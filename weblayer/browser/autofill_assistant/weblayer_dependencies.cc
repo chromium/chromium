@@ -5,10 +5,12 @@
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
 #include "base/android/jni_string.h"
+#include "base/android/locale_utils.h"
 #include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/browser/platform_dependencies.h"
+#include "components/version_info/android/channel_getter.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
@@ -38,13 +40,13 @@ WebLayerDependencies::WebLayerDependencies(
     const JavaParamRef<jobject>& jstatic_dependencies)
     : DependenciesAndroid(env, jstatic_dependencies) {}
 
-const CommonDependencies& WebLayerDependencies::GetCommonDependencies() const {
-  return *this;
+const CommonDependencies* WebLayerDependencies::GetCommonDependencies() const {
+  return this;
 }
 
-const PlatformDependencies& WebLayerDependencies::GetPlatformDependencies()
+const PlatformDependencies* WebLayerDependencies::GetPlatformDependencies()
     const {
-  return *this;
+  return this;
 }
 
 std::unique_ptr<::autofill_assistant::AssistantFieldTrialUtil>
@@ -76,6 +78,10 @@ std::string WebLayerDependencies::GetSignedInEmail(
   return email.is_null() ? "" : ConvertJavaStringToUTF8(email);
 }
 
+std::string WebLayerDependencies::GetLocale() const {
+  return base::android::GetDefaultLocaleString();
+}
+
 std::string WebLayerDependencies::GetCountryCode() const {
   return autofill_assistant::dependencies_util::GetCountryCode(
       FeatureListCreator::GetInstance()->variations_service());
@@ -95,6 +101,16 @@ bool WebLayerDependencies::IsCustomTab(
 
 bool WebLayerDependencies::IsWebLayer() const {
   return true;
+}
+
+signin::IdentityManager* WebLayerDependencies::GetIdentityManager(
+    content::BrowserContext* browser_context) const {
+  // TODO(b/222671580): implement.
+  return nullptr;
+}
+
+version_info::Channel WebLayerDependencies::GetChannel() const {
+  return version_info::android::GetChannel();
 }
 
 }  // namespace weblayer

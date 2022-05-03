@@ -55,6 +55,8 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
+  const CommonDependencies* GetCommonDependencies() override;
+  const PlatformDependencies* GetPlatformDependencies() override;
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Intentionally public to give tests direct access.

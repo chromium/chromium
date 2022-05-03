@@ -25,6 +25,8 @@ class CommonDependenciesChrome : public CommonDependencies {
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
 
+  std::string GetLocale() const override;
+
   std::string GetCountryCode() const override;
 
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
@@ -41,6 +43,11 @@ class CommonDependenciesChrome : public CommonDependencies {
       content::BrowserContext* browser_context) const override;
 
   bool IsWebLayer() const override;
+
+  signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* browser_context) const override;
+
+  version_info::Channel GetChannel() const override;
 };
 
 }  // namespace autofill_assistant

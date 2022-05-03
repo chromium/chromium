@@ -16,8 +16,12 @@
 namespace autofill_assistant {
 
 StarterDelegateDesktop::StarterDelegateDesktop(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<StarterDelegateDesktop>(*web_contents) {}
+    content::WebContents* web_contents,
+    std::unique_ptr<CommonDependencies> common_dependencies,
+    std::unique_ptr<PlatformDependencies> platform_dependencies)
+    : content::WebContentsUserData<StarterDelegateDesktop>(*web_contents),
+      common_dependencies_(std::move(common_dependencies)),
+      platform_dependencies_(std::move(platform_dependencies)) {}
 
 StarterDelegateDesktop::~StarterDelegateDesktop() = default;
 
@@ -36,8 +40,7 @@ WebsiteLoginManager* StarterDelegateDesktop::GetWebsiteLoginManager() const {
 }
 
 version_info::Channel StarterDelegateDesktop::GetChannel() const {
-  // TODO(b/201964911): Inject on instantiation.
-  return version_info::Channel::DEV;
+  return common_dependencies_->GetChannel();
 }
 
 bool StarterDelegateDesktop::GetFeatureModuleInstalled() const {
@@ -52,7 +55,6 @@ void StarterDelegateDesktop::InstallFeatureModule(
 }
 
 bool StarterDelegateDesktop::GetIsFirstTimeUser() const {
-  NOTREACHED();
   return false;
 }
 
@@ -101,7 +103,7 @@ bool StarterDelegateDesktop::GetIsLoggedIn() {
 }
 
 bool StarterDelegateDesktop::GetIsCustomTab() const {
-  return false;
+  return platform_dependencies_->IsCustomTab(GetWebContents());
 }
 
 bool StarterDelegateDesktop::GetIsWebLayer() const {
@@ -114,8 +116,7 @@ bool StarterDelegateDesktop::GetIsTabCreatedByGSA() const {
 
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateDesktop::CreateFieldTrialUtil() {
-  // TODO(b/201964911): Create a field trial util.
-  return nullptr;
+  return common_dependencies_->CreateFieldTrialUtil();
 }
 
 void StarterDelegateDesktop::StartScriptDefaultUi(
@@ -137,6 +138,14 @@ bool StarterDelegateDesktop::IsRegularScriptVisible() const {
 
 bool StarterDelegateDesktop::IsAttached() {
   return true;
+}
+
+const CommonDependencies* StarterDelegateDesktop::GetCommonDependencies() {
+  return common_dependencies_.get();
+}
+
+const PlatformDependencies* StarterDelegateDesktop::GetPlatformDependencies() {
+  return platform_dependencies_.get();
 }
 
 base::WeakPtr<StarterPlatformDelegate> StarterDelegateDesktop::GetWeakPtr() {

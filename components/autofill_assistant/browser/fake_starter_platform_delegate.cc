@@ -131,6 +131,15 @@ bool FakeStarterPlatformDelegate::IsAttached() {
   return is_attached_;
 }
 
+const CommonDependencies* FakeStarterPlatformDelegate::GetCommonDependencies() {
+  return nullptr;
+}
+
+const PlatformDependencies*
+FakeStarterPlatformDelegate::GetPlatformDependencies() {
+  return nullptr;
+}
+
 base::WeakPtr<StarterPlatformDelegate>
 FakeStarterPlatformDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

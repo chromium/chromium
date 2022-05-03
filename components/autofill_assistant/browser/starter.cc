@@ -846,6 +846,14 @@ void Starter::DeleteTriggerScriptCoordinator() {
   trigger_script_coordinator_.reset();
 }
 
+const CommonDependencies* Starter::GetCommonDependencies() {
+  return platform_delegate_->GetCommonDependencies();
+}
+
+const PlatformDependencies* Starter::GetPlatformDependencies() {
+  return platform_delegate_->GetPlatformDependencies();
+}
+
 base::WeakPtr<Starter> Starter::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

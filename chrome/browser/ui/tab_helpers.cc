@@ -192,6 +192,8 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
+#include "chrome/browser/autofill_assistant/platform_dependencies_desktop.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_helper.h"
@@ -554,7 +556,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           autofill_assistant::features::kAutofillAssistantDesktop)) {
-    autofill_assistant::CreateForWebContents(web_contents);
+    autofill_assistant::CreateForWebContents(
+        web_contents,
+        std::make_unique<autofill_assistant::CommonDependenciesChrome>(),
+        std::make_unique<autofill_assistant::PlatformDependenciesDesktop>());
   }
 #endif
 

@@ -33,9 +33,9 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
       const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
   // Overrides DependenciesAndroid
-  const ::autofill_assistant::CommonDependencies& GetCommonDependencies()
+  const ::autofill_assistant::CommonDependencies* GetCommonDependencies()
       const override;
-  const ::autofill_assistant::PlatformDependencies& GetPlatformDependencies()
+  const ::autofill_assistant::PlatformDependencies* GetPlatformDependencies()
       const override;
 
   // Overrides CommonDependencies
@@ -44,6 +44,7 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
+  std::string GetLocale() const override;
   std::string GetCountryCode() const override;
   std::string GetSignedInEmail(
       content::WebContents* web_contents) const override;
@@ -51,6 +52,9 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
   GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const override;
   bool IsWebLayer() const override;
+  signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* browser_context) const override;
+  version_info::Channel GetChannel() const override;
 
   // Overrides PlatformDependencies
   bool IsCustomTab(const content::WebContents& web_contents) const override;

@@ -40,8 +40,8 @@ class DependenciesAndroid {
 
   bool IsAccessibilityEnabled() const;
 
-  virtual const CommonDependencies& GetCommonDependencies() const = 0;
-  virtual const PlatformDependencies& GetPlatformDependencies() const = 0;
+  virtual const CommonDependencies* GetCommonDependencies() const = 0;
+  virtual const PlatformDependencies* GetPlatformDependencies() const = 0;
 
   virtual ~DependenciesAndroid();
 

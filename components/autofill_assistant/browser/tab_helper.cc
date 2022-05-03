@@ -10,8 +10,13 @@
 
 namespace autofill_assistant {
 
-void CreateForWebContents(content::WebContents* web_contents) {
-  StarterDelegateDesktop::CreateForWebContents(web_contents);
+void CreateForWebContents(
+    content::WebContents* web_contents,
+    std::unique_ptr<CommonDependencies> common_dependencies,
+    std::unique_ptr<PlatformDependencies> platform_dependencies) {
+  StarterDelegateDesktop::CreateForWebContents(
+      web_contents, std::move(common_dependencies),
+      std::move(platform_dependencies));
   auto starter_delegate =
       StarterDelegateDesktop::FromWebContents(web_contents)->GetWeakPtr();
 

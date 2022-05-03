@@ -160,7 +160,7 @@ bool ClientAndroid::Start(
   const bool enable_tts =
       trigger_context->GetScriptParameters().GetEnableTts().value_or(false);
   dependencies_->GetCommonDependencies()
-      .CreateFieldTrialUtil()
+      ->CreateFieldTrialUtil()
       ->RegisterSyntheticFieldTrial(
           kAutofillAssistantTtsTrialName,
           enable_tts ? kEnabledGroupName : kDisabledGroupName);
@@ -252,7 +252,7 @@ void ClientAndroid::FetchWebsiteActions(
           /* is_direct_action = */ true,
           /* jinitial_url = */ nullptr,
           /* is_custom_tab = */
-          dependencies_->GetPlatformDependencies().IsCustomTab(
+          dependencies_->GetPlatformDependencies()->IsCustomTab(
               *GetWebContents())),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
@@ -365,7 +365,7 @@ bool ClientAndroid::PerformDirectAction(
       /* jinitial_url = */
       nullptr,
       /* is_custom_tab = */
-      dependencies_->GetPlatformDependencies().IsCustomTab(*GetWebContents()));
+      dependencies_->GetPlatformDependencies()->IsCustomTab(*GetWebContents()));
 
   int action_index = FindDirectAction(action_name);
   if (action_index == -1)
@@ -480,7 +480,7 @@ void ClientAndroid::DestroyUI() {
 }
 
 version_info::Channel ClientAndroid::GetChannel() const {
-  return version_info::android::GetChannel();
+  return dependencies_->GetCommonDependencies()->GetChannel();
 }
 
 std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
@@ -491,7 +491,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientAndroid::GetSignedInEmail() const {
-  return dependencies_->GetCommonDependencies().GetSignedInEmail(
+  return dependencies_->GetCommonDependencies()->GetSignedInEmail(
       GetWebContents());
 }
 
@@ -537,13 +537,13 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return dependencies_->GetCommonDependencies().GetPersonalDataManager();
+  return dependencies_->GetCommonDependencies()->GetPersonalDataManager();
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
     auto* password_manager_client =
-        dependencies_->GetCommonDependencies().GetPasswordManagerClient(
+        dependencies_->GetCommonDependencies()->GetPasswordManagerClient(
             GetWebContents());
     if (password_manager_client) {
       website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
@@ -562,11 +562,12 @@ ClientAndroid::GetPasswordChangeSuccessTracker() const {
 }
 
 std::string ClientAndroid::GetLocale() const {
+  // TODO(b/201964911): use dependencies instead.
   return base::android::GetDefaultLocaleString();
 }
 
 std::string ClientAndroid::GetCountryCode() const {
-  return dependencies_->GetCommonDependencies().GetCountryCode();
+  return dependencies_->GetCommonDependencies()->GetCountryCode();
 }
 
 DeviceContext ClientAndroid::GetDeviceContext() const {
@@ -622,7 +623,7 @@ bool ClientAndroid::MustUseBackendData() const {
   // data and must use data from our backend. Similarly the client can not use
   // e.g. Autofill's data editors and must rely on GMS Core provided
   // replacements.
-  return dependencies_->GetCommonDependencies().IsWebLayer();
+  return dependencies_->GetCommonDependencies()->IsWebLayer();
 }
 
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
@@ -699,8 +700,9 @@ void ClientAndroid::CreateController(
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), ukm::UkmRecorder::Get(),
-      dependencies_->GetCommonDependencies().GetOrCreateAnnotateDomModelService(
-          GetWebContents()->GetBrowserContext()));
+      dependencies_->GetCommonDependencies()
+          ->GetOrCreateAnnotateDomModelService(
+              GetWebContents()->GetBrowserContext()));
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));
   ui_controller_->StartListening();

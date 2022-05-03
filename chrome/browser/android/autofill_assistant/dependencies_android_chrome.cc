@@ -26,13 +26,13 @@ DependenciesAndroidChrome::DependenciesAndroidChrome(
     const JavaParamRef<jobject>& jstatic_dependencies)
     : DependenciesAndroid(env, jstatic_dependencies) {}
 
-const CommonDependencies& DependenciesAndroidChrome::GetCommonDependencies()
+const CommonDependencies* DependenciesAndroidChrome::GetCommonDependencies()
     const {
-  return common_dependencies_;
+  return &common_dependencies_;
 }
-const PlatformDependencies& DependenciesAndroidChrome::GetPlatformDependencies()
+const PlatformDependencies* DependenciesAndroidChrome::GetPlatformDependencies()
     const {
-  return platform_dependencies_;
+  return &platform_dependencies_;
 }
 
 }  // namespace autofill_assistant

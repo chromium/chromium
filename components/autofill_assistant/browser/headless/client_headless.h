@@ -11,13 +11,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/headless/headless_ui_controller.h"
+#include "components/autofill_assistant/browser/platform_dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -27,7 +30,8 @@ namespace autofill_assistant {
 // An Autofill Assistant client for headless runs.
 class ClientHeadless : public Client, public AccessTokenFetcher {
  public:
-  explicit ClientHeadless(content::WebContents* web_contents);
+  explicit ClientHeadless(content::WebContents* web_contents,
+                          const CommonDependencies* common_dependencies);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 
@@ -75,10 +79,18 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   void CreateController();
   void DestroyController();
   void SafeDestroyController(Metrics::DropOutReason reason);
+  void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
+                                  signin::AccessTokenInfo access_token_info);
 
   content::WebContents* web_contents_;
   std::unique_ptr<Controller> controller_;
+  const raw_ptr<const CommonDependencies> common_dependencies_;
+  std::unique_ptr<WebsiteLoginManager> website_login_manager_;
   std::unique_ptr<HeadlessUiController> headless_ui_controller_;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+  base::OnceCallback<void(bool, const std::string&)>
+      fetch_access_token_callback_;
 
   base::WeakPtrFactory<ClientHeadless> weak_ptr_factory_{this};
 };

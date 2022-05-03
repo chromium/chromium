@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
@@ -32,6 +33,10 @@ CommonDependenciesChrome::CommonDependenciesChrome() = default;
 std::unique_ptr<AssistantFieldTrialUtil>
 CommonDependenciesChrome::CreateFieldTrialUtil() const {
   return std::make_unique<AssistantFieldTrialUtilChrome>();
+}
+
+std::string CommonDependenciesChrome::GetLocale() const {
+  return g_browser_process->GetApplicationLocale();
 }
 
 std::string CommonDependenciesChrome::GetCountryCode() const {
@@ -71,6 +76,16 @@ CommonDependenciesChrome::GetOrCreateAnnotateDomModelService(
 
 bool CommonDependenciesChrome::IsWebLayer() const {
   return false;
+}
+
+signin::IdentityManager* CommonDependenciesChrome::GetIdentityManager(
+    content::BrowserContext* browser_context) const {
+  return IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+}
+
+version_info::Channel CommonDependenciesChrome::GetChannel() const {
+  return chrome::GetChannel();
 }
 
 }  // namespace autofill_assistant

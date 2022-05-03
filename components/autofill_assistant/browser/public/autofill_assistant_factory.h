@@ -13,6 +13,11 @@ namespace autofill_assistant {
 // Creates an instance of |AutofillAssistant|.
 class AutofillAssistantFactory {
  public:
+  // TODO(b/201964911) The |AutofillAssistant::CreateExternalScriptController|
+  // method ignores the  |channel|, |country_code| and |locale| passed here and
+  // instead fetches them directly. We should remove these values from this
+  // signature and fetch them directly for
+  // |AutofillAssistant::GetCapabilitiesByHashPrefix| as well.
   static std::unique_ptr<AutofillAssistant> CreateForBrowserContext(
       content::BrowserContext* browser_context,
       version_info::Channel channel,

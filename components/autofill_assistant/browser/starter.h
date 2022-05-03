@@ -14,8 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/platform_dependencies.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/starter_heuristic.h"
@@ -80,6 +82,9 @@ class Starter : public content::WebContentsObserver,
   // Records the invalidation of platform-specific depencendies. For example:
   // When the activity is changed on Android.
   void OnDependenciesInvalidated();
+
+  const CommonDependencies* GetCommonDependencies();
+  const PlatformDependencies* GetPlatformDependencies();
 
   base::WeakPtr<Starter> GetWeakPtr();
 

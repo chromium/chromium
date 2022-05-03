@@ -21,6 +21,14 @@ class WebContents;
 class BrowserContext;
 }  // namespace content
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace autofill_assistant {
 
 class AnnotateDomModelService;
@@ -37,12 +45,14 @@ class CommonDependencies {
   virtual std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const = 0;
 
+  virtual std::string GetLocale() const = 0;
+
+  virtual std::string GetCountryCode() const = 0;
+
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
   virtual password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const = 0;
-
-  virtual std::string GetCountryCode() const = 0;
 
   virtual std::string GetSignedInEmail(
       content::WebContents* web_contents) const = 0;
@@ -51,6 +61,11 @@ class CommonDependencies {
       content::BrowserContext* browser_context) const = 0;
 
   virtual bool IsWebLayer() const = 0;
+
+  virtual signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* browser_context) const = 0;
+
+  virtual version_info::Channel GetChannel() const = 0;
 };
 
 }  // namespace autofill_assistant

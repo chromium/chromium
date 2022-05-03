@@ -19,8 +19,8 @@ class DependenciesAndroidChrome : public DependenciesAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
-  const CommonDependencies& GetCommonDependencies() const override;
-  const PlatformDependencies& GetPlatformDependencies() const override;
+  const CommonDependencies* GetCommonDependencies() const override;
+  const PlatformDependencies* GetPlatformDependencies() const override;
 
  private:
   // Default initialized.
