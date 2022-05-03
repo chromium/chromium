@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
+#include <cstring>
+
 #include "base/guid.h"
 #include "base/strings/string_util.h"
 
