@@ -71,8 +71,8 @@ _CUSTOM_ANDROID_DEPS_FILES = [
     'subprojects.txt',
 ]
 
-# Dictionary mapping long path names to shorter ones to avoid paths being over
-# 200 chars. This should match the dictionary in BuildConfigGenerator.groovy.
+# Dictionary mapping long info file names to shorter ones to avoid paths being
+# over 200 chars. This must match the dictionary in BuildConfigGenerator.groovy.
 _REDUCED_ID_LENGTH_MAP = {
     'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
     'com_google_android_accessibility_test_framework',
@@ -364,8 +364,7 @@ def _ReduceNameLength(path_str):
   Returns:
     A String (possibly shortened) of that path.
   """
-    return path_str if path_str not in _REDUCED_ID_LENGTH_MAP else _REDUCED_ID_LENGTH_MAP[
-        path_str]
+    return _REDUCED_ID_LENGTH_MAP.get(path_str, path_str)
 
 
 def GetCipdPackageInfo(cipd_yaml_path):

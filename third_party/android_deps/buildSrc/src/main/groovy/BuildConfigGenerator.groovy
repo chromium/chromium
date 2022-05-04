@@ -65,10 +65,10 @@ class BuildConfigGenerator extends DefaultTask {
         androidx_window_window: EXCLUDE_THIS_LIB,
     ]
 
-    // Some libraries have such long names they'll create a path that exceeds the 200 char path
-    // limit, which is enforce by presubmit checks for Windows.
+    // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
+    // enforced by presubmit checks for Windows. This mapping shortens the name for .info files.
     // Needs to match mapping in fetch_all.py.
-    static final Map<String, String> REDUCED_ID_LENGTH_MAP = [
+    private static final Map<String, String> REDUCED_ID_LENGTH_MAP = [
         'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
             'com_google_android_accessibility_test_framework',
     ]
@@ -142,13 +142,6 @@ class BuildConfigGenerator extends DefaultTask {
     @Input
     @SourceURI
     URI sourceUri
-
-    static void reduceDependencyStrLength(ChromiumDepGraph.DependencyDescription dependency) {
-      String reduced_id = REDUCED_ID_LENGTH_MAP.get(dependency.id)
-      if (reduced_id) {
-          dependency.id = reduced_id
-      }
-    }
 
     static String translateTargetName(String targetName) {
         if (isPlayServicesTarget(targetName)) {
@@ -466,7 +459,6 @@ class BuildConfigGenerator extends DefaultTask {
             return
         }
 
-        reduceDependencyStrLength(dependency)
         String targetName = translateTargetName(dependency.id) + '_java'
         List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
 
@@ -520,7 +512,7 @@ class BuildConfigGenerator extends DefaultTask {
             sb.append("""\
                 android_aar_prebuilt("${targetName}") {
                   aar_path = "${libPath}/${dependency.fileName}"
-                  info_path = "${libPath}/${dependency.id}.info"
+                  info_path = "${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
             """.stripIndent())
         } else if (dependency.extension == 'group') {
             sb.append("""\
@@ -591,6 +583,10 @@ class BuildConfigGenerator extends DefaultTask {
             return dependency.children
         }
         return []
+    }
+
+    private static String reducedDepencencyId(String dependencyId) {
+        return REDUCED_ID_LENGTH_MAP.get(dependencyId) ?: dependencyId
     }
 
     private static String makeGnArray(String[] values) {

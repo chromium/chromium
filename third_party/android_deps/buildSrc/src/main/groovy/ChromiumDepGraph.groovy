@@ -716,10 +716,9 @@ class ChromiumDepGraph {
                 int numA = verA[i].toInteger()
                 int numB = verB[i].toInteger()
                 if (numA == numB) {
-                  continue
+                    continue
                 }
                 return numA < numB
-
             } catch (any) {
                 logger.debug('Using String comparison for a version check.')
                 // This could lead to issues where a version such as 2.11.alpha11
@@ -735,6 +734,7 @@ class ChromiumDepGraph {
 
     @AutoClone
     static class DependencyDescription {
+
         String id
         ResolvedArtifact artifact
         String group, name, version, extension, displayName, description, url
@@ -759,13 +759,17 @@ class ChromiumDepGraph {
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
         Boolean overrideLatest
+
     }
 
     static class LicenseSpec {
+
         String name, url, path
+
     }
 
     static class PropertyOverride {
+
         String description
         String url
         String licenseName, licenseUrl, licensePath
@@ -780,6 +784,7 @@ class ChromiumDepGraph {
         // Set to override the 3pp fetch script returing the latest version and
         // instead forcibly return the version required by gradle.
         Boolean overrideLatest
+
     }
 
 }
