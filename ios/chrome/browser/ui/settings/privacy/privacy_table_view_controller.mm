@@ -432,10 +432,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     return;
   }
 
-  if (preferenceName == prefs::kSafeBrowsingEnabled ||
-      preferenceName == prefs::kSafeBrowsingEnhanced) {
-    _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
-    [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    DCHECK(_safeBrowsingDetailItem);
+    if (preferenceName == prefs::kSafeBrowsingEnabled ||
+        preferenceName == prefs::kSafeBrowsingEnhanced) {
+      _safeBrowsingDetailItem.detailText = [self safeBrowsingDetailText];
+      [self reconfigureCellsForItems:@[ _safeBrowsingDetailItem ]];
+    }
   }
 }
 
