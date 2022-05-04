@@ -1,5 +1,5 @@
 diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
-index 8c5a1da81d14239cb363146cdee7620fc02c318b..cac841747d867bd82ff91fb43e52fe2bf758b864 100644
+index 8c5a1da81d142..cac841747d867 100644
 --- a/third_party/unrar/src/archive.cpp
 +++ b/third_party/unrar/src/archive.cpp
 @@ -336,3 +336,12 @@ int64 Archive::Tell()
@@ -16,7 +16,7 @@ index 8c5a1da81d14239cb363146cdee7620fc02c318b..cac841747d867bd82ff91fb43e52fe2b
 +}
 +#endif
 diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
-index d9518f1dc491a225c61eb82a47285fa0b0ade8cd..08fef7b0e6c0ec066cd0133b5072891e2b43ac94 100644
+index d9518f1dc491a..08fef7b0e6c0e 100644
 --- a/third_party/unrar/src/archive.hpp
 +++ b/third_party/unrar/src/archive.hpp
 @@ -57,6 +57,13 @@ class Archive:public File
@@ -45,7 +45,7 @@ index d9518f1dc491a225c61eb82a47285fa0b0ade8cd..08fef7b0e6c0ec066cd0133b5072891e
      BaseBlock ShortBlock;
      MarkHeader MarkHead;
 diff --git a/third_party/unrar/src/arcread.cpp b/third_party/unrar/src/arcread.cpp
-index d1df6c04108cddcf18af7058046a0468f627f72c..468d387a24721b651fde2745dd6c2434d9a140e0 100644
+index d1df6c04108cd..468d387a24721 100644
 --- a/third_party/unrar/src/arcread.cpp
 +++ b/third_party/unrar/src/arcread.cpp
 @@ -142,7 +142,8 @@ size_t Archive::ReadHeader15()
@@ -67,8 +67,39 @@ index d1df6c04108cddcf18af7058046a0468f627f72c..468d387a24721b651fde2745dd6c2434
      return 0;
  #else
  
+diff --git a/third_party/unrar/src/blake2s.hpp b/third_party/unrar/src/blake2s.hpp
+index f88ef37802c44..d8b30f94d0518 100644
+--- a/third_party/unrar/src/blake2s.hpp
++++ b/third_party/unrar/src/blake2s.hpp
+@@ -5,11 +5,8 @@
+ #define BLAKE2_DIGEST_SIZE 32
+ #define BLAKE2_THREADS_NUMBER 8
+ 
+-enum blake2s_constant
+-{
+-  BLAKE2S_BLOCKBYTES = 64,
+-  BLAKE2S_OUTBYTES   = 32
+-};
++constexpr size_t BLAKE2S_BLOCKBYTES = 64;
++constexpr size_t BLAKE2S_OUTBYTES = 32;
+ 
+ 
+ // Alignment to 64 improves performance of both SSE and non-SSE versions.
+@@ -20,10 +17,10 @@ enum blake2s_constant
+ // 'new' operator.
+ struct blake2s_state
+ {
+-  enum { BLAKE_ALIGNMENT = 64 };
++  static constexpr size_t BLAKE_ALIGNMENT = 64;
+ 
+   // buffer and uint32 h[8], t[2], f[2];
+-  enum { BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES };
++  static constexpr size_t BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES;
+ 
+   byte ubuf[BLAKE_DATA_SIZE + BLAKE_ALIGNMENT];
+ 
 diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
-index cf23bbf4f2afa61f1d17ac854d73a1a1452a4e43..4c86c09e3b4f20c37e75140f755811ec476fd5b0 100644
+index cf23bbf4f2afa..4c86c09e3b4f2 100644
 --- a/third_party/unrar/src/crc.cpp
 +++ b/third_party/unrar/src/crc.cpp
 @@ -15,6 +15,7 @@
@@ -96,7 +127,7 @@ index cf23bbf4f2afa61f1d17ac854d73a1a1452a4e43..4c86c09e3b4f20c37e75140f755811ec
  
    // Align Data to 8 for better performance.
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
-index 18e91973e61b7569b5cbf5f5e7b22e4b90452bac..ddbc751b57f8635f5985d076bed916b13c7c576f 100644
+index 18e91973e61b7..ddbc751b57f86 100644
 --- a/third_party/unrar/src/errhnd.cpp
 +++ b/third_party/unrar/src/errhnd.cpp
 @@ -1,10 +1,13 @@
@@ -131,7 +162,7 @@ index 18e91973e61b7569b5cbf5f5e7b22e4b90452bac..ddbc751b57f8635f5985d076bed916b1
  
  
 diff --git a/third_party/unrar/src/errhnd.hpp b/third_party/unrar/src/errhnd.hpp
-index 06f4f616fd96b620ce717f072c0f34d42dd8f59f..3c5c54c490f7ae9b8b2cc30f2d8e04c15bccc398 100644
+index 06f4f616fd96b..3c5c54c490f7a 100644
 --- a/third_party/unrar/src/errhnd.hpp
 +++ b/third_party/unrar/src/errhnd.hpp
 @@ -23,14 +23,13 @@ enum RAR_EXIT // RAR exit code.
@@ -167,7 +198,7 @@ index 06f4f616fd96b620ce717f072c0f34d42dd8f59f..3c5c54c490f7ae9b8b2cc30f2d8e04c1
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index abcd3c3385c5db501402ab91b79efb7a9eb6c3d7..2c264b107040130d2d4fd8172d4a34e52dee2a24 100644
+index abcd3c3385c5d..2c264b1070401 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
 @@ -524,6 +524,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
@@ -190,7 +221,7 @@ index abcd3c3385c5db501402ab91b79efb7a9eb6c3d7..2c264b107040130d2d4fd8172d4a34e5
 \ No newline at end of file
 +#endif
 diff --git a/third_party/unrar/src/extract.hpp b/third_party/unrar/src/extract.hpp
-index 159759b563f5f056e647b2e2e63f1162cdf118af..9a659591d4f3578061c45bbbdb055d439b44a0a6 100644
+index 159759b563f5f..9a659591d4f35 100644
 --- a/third_party/unrar/src/extract.hpp
 +++ b/third_party/unrar/src/extract.hpp
 @@ -37,8 +37,8 @@ class CmdExtract
@@ -216,7 +247,7 @@ index 159759b563f5f056e647b2e2e63f1162cdf118af..9a659591d4f3578061c45bbbdb055d43
  
  #endif
 diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index 5a8099ec5bd1c8a8cb5b2d1a78d58df655d01948..cd6be338e486f4376ce4df9c34b9ca0553ccd21a 100644
+index 5a8099ec5bd1c..cd6be338e486f 100644
 --- a/third_party/unrar/src/file.cpp
 +++ b/third_party/unrar/src/file.cpp
 @@ -19,6 +19,10 @@ File::File()
@@ -314,7 +345,7 @@ index 5a8099ec5bd1c8a8cb5b2d1a78d58df655d01948..cd6be338e486f4376ce4df9c34b9ca05
 +}
 +#endif  // defined(CHROMIUM_UNRAR)
 diff --git a/third_party/unrar/src/file.hpp b/third_party/unrar/src/file.hpp
-index 1c436d4ef7bc0c9df6b468caf651e9bc2ec1f9da..baf366dfa4a34b2691bca999a4704f66e7ce0a7f 100644
+index 1c436d4ef7bc0..baf366dfa4a34 100644
 --- a/third_party/unrar/src/file.hpp
 +++ b/third_party/unrar/src/file.hpp
 @@ -76,6 +76,10 @@ class File
@@ -343,8 +374,35 @@ index 1c436d4ef7bc0c9df6b468caf651e9bc2ec1f9da..baf366dfa4a34b2691bca999a4704f66
  #ifdef _UNIX
      int GetFD()
      {
+diff --git a/third_party/unrar/src/hash.cpp b/third_party/unrar/src/hash.cpp
+index a4559e05c3cce..106cc6083333e 100644
+--- a/third_party/unrar/src/hash.cpp
++++ b/third_party/unrar/src/hash.cpp
+@@ -26,7 +26,7 @@ void HashValue::Init(HASH_TYPE Type)
+ }
+ 
+ 
+-bool HashValue::operator == (const HashValue &cmp)
++bool HashValue::operator == (const HashValue &cmp) const
+ {
+   if (Type==HASH_NONE || cmp.Type==HASH_NONE)
+     return true;
+diff --git a/third_party/unrar/src/hash.hpp b/third_party/unrar/src/hash.hpp
+index b7d879f66a280..923260064f894 100644
+--- a/third_party/unrar/src/hash.hpp
++++ b/third_party/unrar/src/hash.hpp
+@@ -6,8 +6,7 @@ enum HASH_TYPE {HASH_NONE,HASH_RAR14,HASH_CRC32,HASH_BLAKE2};
+ struct HashValue
+ {
+   void Init(HASH_TYPE Type);
+-  bool operator == (const HashValue &cmp);
+-  bool operator != (const HashValue &cmp) {return !(*this==cmp);}
++  bool operator == (const HashValue &cmp) const;
+ 
+   HASH_TYPE Type;
+   union
 diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
-index 6fadec049fe4cf9865c41c6dce8d6c459b6cd184..d30adf550925f90492a602d2dc1a757465a0bdcf 100644
+index 6fadec049fe4c..d30adf550925f 100644
 --- a/third_party/unrar/src/isnt.cpp
 +++ b/third_party/unrar/src/isnt.cpp
 @@ -1,24 +1,18 @@
@@ -384,7 +442,7 @@ index 6fadec049fe4cf9865c41c6dce8d6c459b6cd184..d30adf550925f90492a602d2dc1a7574
  }
  #endif
 diff --git a/third_party/unrar/src/isnt.hpp b/third_party/unrar/src/isnt.hpp
-index 85790da462902fe88c6bc2ba0364b57e1e343ebb..a02174447e29fd2f248c0f37f748c8df85445d02 100644
+index 85790da462902..a02174447e29f 100644
 --- a/third_party/unrar/src/isnt.hpp
 +++ b/third_party/unrar/src/isnt.hpp
 @@ -1,6 +1,8 @@
@@ -403,7 +461,7 @@ index 85790da462902fe88c6bc2ba0364b57e1e343ebb..a02174447e29fd2f248c0f37f748c8df
 -
  #endif
 diff --git a/third_party/unrar/src/model.cpp b/third_party/unrar/src/model.cpp
-index 83391c5a45107e2c68d3d990946f7f0426e5a542..1ca9f03e9bcc54c1febbe5fb1820a312739b1ed0 100644
+index 83391c5a45107..1ca9f03e9bcc5 100644
 --- a/third_party/unrar/src/model.cpp
 +++ b/third_party/unrar/src/model.cpp
 @@ -43,13 +43,27 @@ void ModelPPM::RestartModelRare()
@@ -435,7 +493,7 @@ index 83391c5a45107e2c68d3d990946f7f0426e5a542..1ca9f03e9bcc54c1febbe5fb1820a312
    {
      MinContext->U.Stats[i].Symbol=i;      
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index b69f34878b3dff1acea25635ce44958f8784b01b..51d547b0f68ba0840bcf37d9ace64a2a424acedf 100644
+index b69f34878b3df..51d547b0f68ba 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
 @@ -32,6 +32,7 @@
@@ -476,7 +534,7 @@ index b69f34878b3dff1acea25635ce44958f8784b01b..51d547b0f68ba0840bcf37d9ace64a2a
    #include <dirent.h>
  #endif // _MSC_VER
 diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
-index 4865b3fd02e25312d4390e34cad87c513adcfbe7..c292b0e002853fa815ec84b4870ec7636531c58c 100644
+index 4865b3fd02e25..c292b0e002853 100644
 --- a/third_party/unrar/src/secpassword.cpp
 +++ b/third_party/unrar/src/secpassword.cpp
 @@ -25,6 +25,7 @@ class CryptLoader
@@ -542,7 +600,7 @@ index 4865b3fd02e25312d4390e34cad87c513adcfbe7..c292b0e002853fa815ec84b4870ec763
          ErrHandler.SysErrMsg();
          ErrHandler.Exit(RARX_FATAL);
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 641f6c892a3f33f271dceac276f1c550af500ed2..48d7bb2fc44e791d9b1fc4fd79e747fc4bbde2c8 100644
+index 641f6c892a3f3..48d7bb2fc44e7 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
 @@ -576,7 +576,6 @@ int64 atoilw(const wchar *s)
@@ -566,7 +624,7 @@ index 641f6c892a3f33f271dceac276f1c550af500ed2..48d7bb2fc44e791d9b1fc4fd79e747fc
  char* SupportDBCS::charnext(const char *s)
  {
 diff --git a/third_party/unrar/src/unicode.hpp b/third_party/unrar/src/unicode.hpp
-index 031ac09ab94b6f5fd5f38d25c0bac5aa93dfab7c..c66cc95a34cc3ac1edcba80b22d61d73864928cf 100644
+index 031ac09ab94b6..c66cc95a34cc3 100644
 --- a/third_party/unrar/src/unicode.hpp
 +++ b/third_party/unrar/src/unicode.hpp
 @@ -33,6 +33,7 @@ class SupportDBCS
@@ -601,7 +659,7 @@ index 031ac09ab94b6f5fd5f38d25c0bac5aa93dfab7c..c66cc95a34cc3ac1edcba80b22d61d73
  #else
  #define charnext(s) ((s)+1)
 diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index 037c35546a894bba79225b1e0f3750807a3284af..7f579ff06ab38cf4a3f268252106e22cba420358 100644
+index 037c35546a894..7f579ff06ab38 100644
 --- a/third_party/unrar/src/unpack.cpp
 +++ b/third_party/unrar/src/unpack.cpp
 @@ -1,3 +1,9 @@
@@ -651,7 +709,7 @@ index 037c35546a894bba79225b1e0f3750807a3284af..7f579ff06ab38cf4a3f268252106e22c
    if (!Fragmented)
    {
 diff --git a/third_party/unrar/src/unpack50frag.cpp b/third_party/unrar/src/unpack50frag.cpp
-index 3c008ff245390a35334c43b71e5fdd283b8815d1..16d5b1c3d5ef368e4888831bf16edd4f1025f655 100644
+index 3c008ff245390..16d5b1c3d5ef3 100644
 --- a/third_party/unrar/src/unpack50frag.cpp
 +++ b/third_party/unrar/src/unpack50frag.cpp
 @@ -46,8 +46,14 @@ void FragmentedWindow::Init(size_t WinSize)

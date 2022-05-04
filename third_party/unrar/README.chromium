@@ -32,5 +32,6 @@ Notable changes from upstream:
 - Fix a bug with NOVOLUME implementation (https://crbug.com/949787). This
   should be temporary, until the fix can be pulled from upstream.
 - More static initializers removed.
+- Changes to support building in -std=c++20 mode.
 
 All these changes are included in one patch file (chromium_changes.v6.0.3.patch)

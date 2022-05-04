@@ -5,11 +5,8 @@
 #define BLAKE2_DIGEST_SIZE 32
 #define BLAKE2_THREADS_NUMBER 8
 
-enum blake2s_constant
-{
-  BLAKE2S_BLOCKBYTES = 64,
-  BLAKE2S_OUTBYTES   = 32
-};
+constexpr size_t BLAKE2S_BLOCKBYTES = 64;
+constexpr size_t BLAKE2S_OUTBYTES = 32;
 
 
 // Alignment to 64 improves performance of both SSE and non-SSE versions.
@@ -20,10 +17,10 @@ enum blake2s_constant
 // 'new' operator.
 struct blake2s_state
 {
-  enum { BLAKE_ALIGNMENT = 64 };
+  static constexpr size_t BLAKE_ALIGNMENT = 64;
 
   // buffer and uint32 h[8], t[2], f[2];
-  enum { BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES };
+  static constexpr size_t BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES;
 
   byte ubuf[BLAKE_DATA_SIZE + BLAKE_ALIGNMENT];
 
