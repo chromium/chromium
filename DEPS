@@ -184,8 +184,8 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
-  # By default, download the fuchsia sdk from the fuchsia GCS bucket.
-  'fuchsia_sdk_bucket': 'fuchsia',
+  # By default, download the fuchsia sdk from the public sdk directory.
+  'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/core/',
 
   # By default, download the fuchsia images from the fuchsia GCS bucket.
   'fuchsia_images_bucket': 'fuchsia',
@@ -293,6 +293,10 @@ vars = {
   # Note this revision should be updated with
   # third_party/boringssl/roll_boringssl.py, not roll-dep.
   'boringssl_revision': '6686352e492b67cb4d57915fc9bca45cdc7cef16',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling Fuchsia sdk
+  # and whatever else without interference from each other.
+  'fuchsia_version': 'version:8.20220504.0.1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling google-toolbox-for-mac
   # and whatever else without interference from each other.
@@ -1251,6 +1255,17 @@ deps = {
       ],
 
       'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/fuchsia-sdk/sdk': {
+      'packages': [
+          {
+              'package': Var('fuchsia_sdk_cipd_prefix') + '${{platform}}',
+              'version': Var('fuchsia_version'),
+          },
+      ],
+      'condition': 'checkout_fuchsia',
       'dep_type': 'cipd',
   },
 
@@ -3778,17 +3793,6 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_mac or checkout_ios',
     'action': ['python3', 'src/build/mac_toolchain.py'],
-  },
-  {
-    # Update the Fuchsia SDK if necessary.
-    'name': 'Download Fuchsia SDK',
-    'pattern': '.',
-    'condition': 'checkout_fuchsia',
-    'action': [
-      'python3',
-      'src/build/fuchsia/update_sdk.py',
-      '--default-bucket={fuchsia_sdk_bucket}',
-    ],
   },
   {
     # Update the prebuilt clang toolchain.
