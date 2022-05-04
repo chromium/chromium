@@ -85,12 +85,12 @@ public class ProfileDataCacheUnitTest {
                 new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
                         fullName, null, null, new AccountCapabilities(new HashMap<>()));
         mProfileDataCache.addObserver(mObserverMock);
-        Assert.assertFalse(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
         Assert.assertNull(mProfileDataCache.getProfileDataOrDefault(ACCOUNT_EMAIL).getFullName());
 
         mIdentityManager.onExtendedAccountInfoUpdated(accountInfo);
 
-        Assert.assertTrue(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
         Assert.assertEquals(
                 fullName, mProfileDataCache.getProfileDataOrDefault(ACCOUNT_EMAIL).getFullName());
     }
@@ -102,12 +102,12 @@ public class ProfileDataCacheUnitTest {
                 new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
                         null, givenName, null, new AccountCapabilities(new HashMap<>()));
         mProfileDataCache.addObserver(mObserverMock);
-        Assert.assertFalse(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
         Assert.assertNull(mProfileDataCache.getProfileDataOrDefault(ACCOUNT_EMAIL).getGivenName());
 
         mIdentityManager.onExtendedAccountInfoUpdated(accountInfo);
 
-        Assert.assertTrue(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
         Assert.assertEquals(
                 givenName, mProfileDataCache.getProfileDataOrDefault(ACCOUNT_EMAIL).getGivenName());
     }
@@ -119,10 +119,10 @@ public class ProfileDataCacheUnitTest {
                 new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
                         null, null, null, new AccountCapabilities(new HashMap<>()));
         mProfileDataCache.addObserver(mObserverMock);
-        Assert.assertFalse(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
 
         mIdentityManager.onExtendedAccountInfoUpdated(accountInfo);
 
-        Assert.assertTrue(mProfileDataCache.hasProfileData(ACCOUNT_EMAIL));
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT_EMAIL));
     }
 }

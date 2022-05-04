@@ -112,7 +112,7 @@ public class AccountManagementFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return mSettingsActivityTestRule.getFragment()
                     .getProfileDataCacheForTesting()
-                    .hasProfileData(CHILD_ACCOUNT_NAME);
+                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
         });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -135,7 +135,7 @@ public class AccountManagementFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return mSettingsActivityTestRule.getFragment()
                     .getProfileDataCacheForTesting()
-                    .hasProfileData(CHILD_ACCOUNT_NAME);
+                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
         });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
