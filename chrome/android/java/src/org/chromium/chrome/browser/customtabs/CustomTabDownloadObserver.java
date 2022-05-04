@@ -53,7 +53,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
                 && navigation.isDownload()) {
             DownloadInterstitialCoordinator coordinator =
-                    DownloadInterstitialCoordinatorFactory.create(tab.getContext(),
+                    DownloadInterstitialCoordinatorFactory.create(tab::getContext,
                             tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }

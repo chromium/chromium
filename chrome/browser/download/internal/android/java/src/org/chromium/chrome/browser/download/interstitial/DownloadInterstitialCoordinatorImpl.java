@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.interstitial;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -25,17 +26,17 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
 
     /**
      * Creates a new instance of the {@link DownloadInterstitialCoordinator} implementation.
-     * @param context The activity context.
+     * @param contextSupplier Supplier which provides the context of the parent tab.
      * @param downloadUrl Url spec used for matching and binding the correct offline item.
      * @param provider An {@link OfflineContentProvider} to observe changes to downloads.
      * @param snackbarManager Snackbar manager for the current activity.
      */
-    public DownloadInterstitialCoordinatorImpl(Context context, String downloadUrl,
-            OfflineContentProvider provider, SnackbarManager snackbarManager) {
-        mView = DownloadInterstitialView.create(context);
+    public DownloadInterstitialCoordinatorImpl(Supplier<Context> contextSupplier,
+            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager) {
+        mView = DownloadInterstitialView.create(contextSupplier.get());
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
-        mMediator = new DownloadInterstitialMediator(context, model, downloadUrl, provider,
+        mMediator = new DownloadInterstitialMediator(contextSupplier, model, downloadUrl, provider,
                 snackbarManager, SharedPreferencesManager.getInstance());
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 model, mView, DownloadInterstitialViewBinder::bind);

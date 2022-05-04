@@ -22,6 +22,7 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.home.list.ShareUtils;
 import org.chromium.chrome.browser.download.home.rename.RenameDialogManager;
@@ -54,7 +55,7 @@ import java.util.List;
 class DownloadInterstitialMediator {
     private static final String TAG = "DownloadInterstitial";
 
-    private final Context mContext;
+    private final Supplier<Context> mContextSupplier;
     private final PropertyModel mModel;
     private final String mDownloadUrl;
     private final OfflineContentProvider mProvider;
@@ -66,7 +67,7 @@ class DownloadInterstitialMediator {
 
     /**
      * Creates a new DownloadInterstitialMediator instance.
-     * @param context The activity context.
+     * @param contextSupplier Supplier which provides the context of the parent tab.
      * @param model A {@link PropertyModel} containing the properties defined in {@link
      *         DownloadInterstitialProperties}.
      * @param provider An {@link OfflineContentProvider} used for observing updates about the
@@ -74,10 +75,10 @@ class DownloadInterstitialMediator {
      * @param snackbarManager A {@link SnackbarManager} used to display snackbars within the
      *         download interstitial view.
      */
-    DownloadInterstitialMediator(Context context, PropertyModel model, String downloadUrl,
-            OfflineContentProvider provider, SnackbarManager snackbarManager,
+    DownloadInterstitialMediator(Supplier<Context> contextSupplier, PropertyModel model,
+            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager,
             SharedPreferencesManager sharedPrefs) {
-        mContext = context;
+        mContextSupplier = contextSupplier;
         mModel = model;
         mDownloadUrl = downloadUrl;
         mProvider = provider;
@@ -114,36 +115,41 @@ class DownloadInterstitialMediator {
         mModel.set(STATE, state);
         switch (state) {
             case State.IN_PROGRESS:
-                mModel.set(TITLE_TEXT, mContext.getString(R.string.download_started));
+                mModel.set(TITLE_TEXT, mContextSupplier.get().getString(R.string.download_started));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, false);
                 mModel.set(SECONDARY_BUTTON_TEXT,
-                        mContext.getString(R.string.download_notification_cancel_button));
+                        mContextSupplier.get().getString(
+                                R.string.download_notification_cancel_button));
                 mModel.set(SECONDARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_CANCEL));
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, true);
                 break;
             case State.SUCCESSFUL:
                 mModel.set(TITLE_TEXT,
-                        mContext.getResources().getQuantityString(
+                        mContextSupplier.get().getResources().getQuantityString(
                                 R.plurals.download_message_multiple_download_complete, 1));
-                mModel.set(PRIMARY_BUTTON_TEXT, mContext.getString(R.string.open_downloaded_label));
+                mModel.set(PRIMARY_BUTTON_TEXT,
+                        mContextSupplier.get().getString(R.string.open_downloaded_label));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_OPEN));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, true);
-                mModel.set(SECONDARY_BUTTON_TEXT, mContext.getString(R.string.delete));
+                mModel.set(
+                        SECONDARY_BUTTON_TEXT, mContextSupplier.get().getString(R.string.delete));
                 mModel.set(SECONDARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_REMOVE));
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, true);
                 mDownloadIsComplete = true;
                 break;
             case State.CANCELLED:
-                mModel.set(TITLE_TEXT, mContext.getString(R.string.menu_download));
-                mModel.set(PRIMARY_BUTTON_TEXT, mContext.getString(R.string.menu_download));
+                mModel.set(TITLE_TEXT, mContextSupplier.get().getString(R.string.menu_download));
+                mModel.set(PRIMARY_BUTTON_TEXT,
+                        mContextSupplier.get().getString(R.string.menu_download));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_RESUME));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, true);
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, false);
                 break;
             case State.PAUSED:
-                mModel.set(TITLE_TEXT, mContext.getString(R.string.menu_download));
+                mModel.set(TITLE_TEXT, mContextSupplier.get().getString(R.string.menu_download));
                 mModel.set(PRIMARY_BUTTON_TEXT,
-                        mContext.getString(R.string.download_notification_resume_button));
+                        mContextSupplier.get().getString(
+                                R.string.download_notification_resume_button));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_RESUME));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, true);
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, false);
@@ -191,9 +197,9 @@ class DownloadInterstitialMediator {
     }
 
     private void showDeletedSnackbar() {
-        Snackbar snackbar = Snackbar.make(
-                mContext.getString(R.string.delete_message, mModel.get(DOWNLOAD_ITEM).title), null,
-                Snackbar.TYPE_ACTION, Snackbar.UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED);
+        Snackbar snackbar = Snackbar.make(mContextSupplier.get().getString(R.string.delete_message,
+                                                  mModel.get(DOWNLOAD_ITEM).title),
+                null, Snackbar.TYPE_ACTION, Snackbar.UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED);
         mSnackbarManager.showSnackbar(snackbar);
     }
 
@@ -214,8 +220,8 @@ class DownloadInterstitialMediator {
 
     private void startShareIntent(Intent intent) {
         try {
-            mContext.startActivity(Intent.createChooser(
-                    intent, mContext.getString(R.string.share_link_chooser_title)));
+            mContextSupplier.get().startActivity(Intent.createChooser(
+                    intent, mContextSupplier.get().getString(R.string.share_link_chooser_title)));
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot find activity for sharing");
         } catch (Exception e) {
@@ -224,10 +230,11 @@ class DownloadInterstitialMediator {
     }
 
     private void startRename(String name, RenameDialogManager.RenameCallback callback) {
-        ModalDialogManager modalDialogManager = new ModalDialogManager(
-                new AppModalPresenter(mContext), ModalDialogManager.ModalDialogType.APP);
+        ModalDialogManager modalDialogManager =
+                new ModalDialogManager(new AppModalPresenter(mContextSupplier.get()),
+                        ModalDialogManager.ModalDialogType.APP);
         RenameDialogManager mRenameDialogManager =
-                new RenameDialogManager(mContext, modalDialogManager);
+                new RenameDialogManager(mContextSupplier.get(), modalDialogManager);
         mRenameDialogManager.startRename(name, callback);
     }
 

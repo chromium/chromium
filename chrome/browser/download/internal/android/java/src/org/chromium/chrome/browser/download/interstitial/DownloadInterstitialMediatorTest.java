@@ -75,8 +75,8 @@ public class DownloadInterstitialMediatorTest {
         mModel.set(DownloadInterstitialProperties.PRIMARY_BUTTON_TEXT, "");
         mModel.set(DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT, CANCEL_BUTTON_TEXT);
         mProvider.addItem(mItem0);
-        mMediator = new DownloadInterstitialMediator(InstrumentationRegistry.getTargetContext(),
-                mModel, mItem0.originalUrl, mProvider, mSnackbarManager, sharedPrefsManager);
+        mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
+                mItem0.originalUrl, mProvider, mSnackbarManager, sharedPrefsManager);
         // Increment progress to trigger onItemUpdated method for OfflineContentProvider observers.
         // This attaches the OfflineItem to the mediator.
         mProvider.incrementProgress(mItem0.id);
@@ -109,8 +109,8 @@ public class DownloadInterstitialMediatorTest {
         // Remove observer so that the mediator can attach its own observer.
         mProvider.setObserver(null);
         mModel.set(DOWNLOAD_ITEM, null);
-        mMediator = new DownloadInterstitialMediator(InstrumentationRegistry.getTargetContext(),
-                mModel, item1.originalUrl, mProvider, mSnackbarManager,
+        mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
+                item1.originalUrl, mProvider, mSnackbarManager,
                 SharedPreferencesManager.getInstance());
         mProvider.incrementProgress(mItem0.id);
         mProvider.addItem(item1);
