@@ -31,6 +31,14 @@ void WidgetFadeAnimator::FadeIn() {
   fade_animation_.Start();
 }
 
+void WidgetFadeAnimator::CancelFadeIn() {
+  if (!IsFadingIn())
+    return;
+
+  fade_animation_.Stop();
+  animation_type_ = FadeType::kNone;
+}
+
 void WidgetFadeAnimator::FadeOut() {
   if (IsFadingOut() || !widget_)
     return;

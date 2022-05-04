@@ -420,6 +420,13 @@ void TabHoverCardController::HideHoverCard() {
     thumbnail_observer_->Observe(nullptr);
     thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
   }
+
+  // Cancel any pending fade-in.
+  if (fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelFadeIn();
+    metrics_->CardFadeCanceled();
+  }
+
   // This needs to be called whether we're doing a fade or a pop out.
   metrics_->CardWillBeHidden();
   slide_animator_->StopAnimation();

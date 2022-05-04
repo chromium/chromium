@@ -183,8 +183,7 @@ void TabHoverCardMetrics::CardFadeComplete() {
 
 void TabHoverCardMetrics::CardFadeCanceled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (throughput_tracker_.has_value())
-    throughput_tracker_->Cancel();
+  throughput_tracker_.reset();
 #endif
 }
 
