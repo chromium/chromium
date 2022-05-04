@@ -10,13 +10,6 @@
 
 namespace user_notes {
 
-// static
-std::unique_ptr<UserNoteManager> UserNoteManager::CreateForTest(
-    content::Page& page,
-    base::SafeRef<UserNoteService> service) {
-  return base::WrapUnique(new UserNoteManager(page, service));
-}
-
 UserNoteManager::UserNoteManager(content::Page& page,
                                  base::SafeRef<UserNoteService> service)
     : PageUserData<UserNoteManager>(page), service_(service) {}

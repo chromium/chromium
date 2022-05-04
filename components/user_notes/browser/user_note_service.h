@@ -75,9 +75,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
     std::unordered_set<UserNoteManager*> managers;
   };
 
-  friend class UserNoteServiceTest;
+  friend class UserNoteBaseTest;
   friend class UserNoteUtilsTest;
-  friend class UserNoteManagerTest;
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also

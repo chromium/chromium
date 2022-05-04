@@ -30,6 +30,8 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "user_note_base_test.cc",
+    "user_note_base_test.h",
     "user_note_manager_unittest.cc",
     "user_note_service_unittest.cc",
     "user_note_utils_unittest.cc",

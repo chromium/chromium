@@ -29,13 +29,6 @@ namespace user_notes {
 // instance of this class to each new |Page|.
 class UserNoteManager : public content::PageUserData<UserNoteManager> {
  public:
-  // Exposes a way to construct this object from unit tests. Do not use in
-  // product code; instead, use UserNoteManager::CreateForPage, inherited from
-  // PageUserData.
-  static std::unique_ptr<UserNoteManager> CreateForTest(
-      content::Page& page,
-      base::SafeRef<UserNoteService> service);
-
   ~UserNoteManager() override;
   UserNoteManager(const UserNoteManager&) = delete;
   UserNoteManager& operator=(const UserNoteManager&) = delete;
@@ -54,12 +47,8 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, Destructor);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, GetNoteInstance);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, GetAllNoteInstances);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, RemoveNote);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteManagerTest, AddNoteInstance);
   friend class content::PageUserData<UserNoteManager>;
+  friend class UserNoteBaseTest;
   friend class UserNoteUtilsTest;
 
   UserNoteManager(content::Page& page, base::SafeRef<UserNoteService> service);
