@@ -224,6 +224,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-reven-chrome",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-fyi-astro",
 )
 
