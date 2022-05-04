@@ -5788,6 +5788,9 @@ void Document::setDomain(const String& raw_domain,
   }
 
   if (GetFrame()) {
+    // This code should never fire for fenced frames because it should be
+    // blocked by permission policy.
+    DCHECK(!GetFrame()->IsInFencedFrameTree());
     UseCounter::Count(*this,
                       dom_window_->GetSecurityOrigin()->Port() == 0
                           ? WebFeature::kDocumentDomainSetWithDefaultPort
@@ -5795,7 +5798,7 @@ void Document::setDomain(const String& raw_domain,
     bool was_cross_origin_to_main_frame =
         GetFrame()->IsCrossOriginToMainFrame();
     bool was_cross_origin_to_parent_frame =
-        GetFrame()->IsCrossOriginToParentFrame();
+        GetFrame()->IsCrossOriginToParentOrOuterDocument();
     dom_window_->GetMutableSecurityOrigin()->SetDomainFromDOM(new_domain);
     bool is_cross_origin_to_main_frame = GetFrame()->IsCrossOriginToMainFrame();
     if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler())
@@ -5818,13 +5821,14 @@ void Document::setDomain(const String& raw_domain,
     }
 
     if (View() && was_cross_origin_to_parent_frame !=
-                      GetFrame()->IsCrossOriginToParentFrame()) {
+                      GetFrame()->IsCrossOriginToParentOrOuterDocument()) {
       View()->CrossOriginToParentFrameChanged();
     }
     // Notify all child frames if their cross-origin-to-parent status changed.
-    // TODO(pdr): This will notify even if |Frame::IsCrossOriginToParentFrame|
-    // is the same. Track whether each child was cross-origin-to-parent before
-    // and after changing the domain, and only notify the changed ones.
+    // TODO(pdr): This will notify even if
+    // |Frame::IsCrossOriginToParentOrOuterDocument| is the same. Track whether
+    // each child was cross-origin-to-parent before and after changing the
+    // domain, and only notify the changed ones.
     for (Frame* child = GetFrame()->Tree().FirstChild(); child;
          child = child->Tree().NextSibling()) {
       auto* child_local_frame = DynamicTo<LocalFrame>(child);

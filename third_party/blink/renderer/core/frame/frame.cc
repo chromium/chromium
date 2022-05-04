@@ -211,8 +211,10 @@ bool Frame::IsCrossOriginToOutermostMainFrame() const {
   return IsCrossOriginToMainFrame() || IsInFencedFrameTree();
 }
 
-bool Frame::IsCrossOriginToParentFrame() const {
+bool Frame::IsCrossOriginToParentOrOuterDocument() const {
   DCHECK(GetSecurityContext());
+  if (IsInFencedFrameTree())
+    return true;
   if (IsMainFrame())
     return false;
   Frame* parent = Tree().Parent();

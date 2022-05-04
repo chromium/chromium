@@ -3210,8 +3210,10 @@ void LocalFrame::WriteIntoTrace(perfetto::TracedValue ctx) const {
   perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
   dict.Add("document", GetDocument());
   dict.Add("is_main_frame", IsMainFrame());
-  dict.Add("is_cross_origin_to_parent", IsCrossOriginToParentFrame());
-  dict.Add("is_cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+  dict.Add("is_outermost_main_frame", IsOutermostMainFrame());
+  dict.Add("is_cross_origin_to_parent", IsCrossOriginToParentOrOuterDocument());
+  dict.Add("is_cross_origin_to_outermost_main_frame",
+           IsCrossOriginToOutermostMainFrame());
 }
 
 }  // namespace blink
