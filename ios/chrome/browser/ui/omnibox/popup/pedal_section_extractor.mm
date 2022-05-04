@@ -17,10 +17,20 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Time interval for pedal debouncing. Pedal retrieval is async, use a timer to
+// avoid pedal flickering (cf. crbug.com/1316404).
+const NSTimeInterval kPedalDebouceTimer = 0.3;
+
+}  // namespace
+
 @interface PedalSectionExtractor ()
 
 @property(nonatomic, strong)
-    NSMutableArray<id<OmniboxPedal, OmniboxIcon>>* extractedPedals;
+    NSArray<id<OmniboxPedal, OmniboxIcon>>* extractedPedals;
+// Timer for pedal debouncing.
+@property(nonatomic, strong) NSTimer* removePedalsTimer;
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* originalResult;
 @property(nonatomic, assign) NSInteger highlightedPedalIndex;
@@ -32,7 +42,6 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _extractedPedals = [[NSMutableArray alloc] init];
     _highlightedPedalIndex = NSNotFound;
   }
   return self;
@@ -43,7 +52,7 @@
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
     preselectedMatchGroupIndex:(NSInteger)groupIndex
                  withAnimation:(BOOL)animation {
-  [self.extractedPedals removeAllObjects];
+  NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
   self.highlightedPedalIndex = NSNotFound;
   self.originalResult = result;
 
@@ -52,35 +61,37 @@
       id<AutocompleteSuggestion> suggestion = group.suggestions[i];
 
       if (suggestion.pedal != nil) {
-        [self.extractedPedals addObject:suggestion.pedal];
+        [extractedPedals addObject:suggestion.pedal];
       }
     }
   }
 
-  if (self.extractedPedals.count == 0) {
-    [self.dataSink updateMatches:self.originalResult
-        preselectedMatchGroupIndex:groupIndex
-                     withAnimation:animation];
+  if (extractedPedals.count == 0 && self.extractedPedals.count > 0) {
+    // If no pedals, display old pedal for a duration of `kPedalDebouceTimer`
+    // with new suggestion. This avoids pedal flickering because the pedal
+    // results are async. (cf. crbug.com/1316404).
+    [self updateMatchesWithPedals:self.extractedPedals
+                  suggestionGroup:result
+                        animation:animation];
+    if (!self.removePedalsTimer) {
+      self.removePedalsTimer =
+          [NSTimer scheduledTimerWithTimeInterval:kPedalDebouceTimer
+                                           target:self
+                                         selector:@selector(removePedals:)
+                                         userInfo:nil
+                                          repeats:NO];
+    }
     return;
+  } else {
+    [self.removePedalsTimer invalidate];
+    self.removePedalsTimer = nil;
   }
 
-  NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
-  for (id<OmniboxPedal, OmniboxIcon> pedal in self.extractedPedals) {
-    [wrappedPedals
-        addObject:[[PedalSuggestionWrapper alloc] initWithPedal:pedal]];
-  }
+  self.extractedPedals = extractedPedals;
 
-  AutocompleteSuggestionGroupImpl* pedalGroup =
-      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
-                                          suggestions:wrappedPedals];
-
-  NSArray* combinedGroups = @[ pedalGroup ];
-  combinedGroups = [combinedGroups arrayByAddingObjectsFromArray:result];
-  const NSInteger suggestionGroupIndexInCombinedGroups = 1;
-
-  [self.dataSink updateMatches:combinedGroups
-      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups
-                   withAnimation:animation];
+  [self updateMatchesWithPedals:extractedPedals
+                suggestionGroup:result
+                      animation:animation];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {
@@ -201,6 +212,51 @@
   }
 
   [self.acceptDelegate omniboxReturnPressed:sender];
+}
+
+#pragma mark - Private methods
+
+// Removes pedals from suggestions. This is used to debouce pedal with a timer
+// to avoid pedal flickering.
+- (void)removePedals:(NSTimer*)timer {
+  [self.dataSink updateMatches:self.originalResult
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
+
+  self.extractedPedals = nil;
+  self.removePedalsTimer = nil;
+}
+
+// Updates matches in `self.dataSink` with pedals from `extractedPedals` and
+// suggestions from `result`.
+- (void)updateMatchesWithPedals:
+            (NSArray<id<OmniboxPedal, OmniboxIcon>>*)extractedPedals
+                suggestionGroup:
+                    (NSArray<id<AutocompleteSuggestionGroup>>*)result
+                      animation:(BOOL)animation {
+  if (extractedPedals.count == 0) {
+    [self.dataSink updateMatches:result
+        preselectedMatchGroupIndex:0
+                     withAnimation:animation];
+    return;
+  }
+
+  NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
+  for (id<OmniboxPedal, OmniboxIcon> pedal in extractedPedals) {
+    [wrappedPedals
+        addObject:[[PedalSuggestionWrapper alloc] initWithPedal:pedal]];
+  }
+
+  AutocompleteSuggestionGroupImpl* pedalGroup =
+      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
+                                          suggestions:wrappedPedals];
+  NSArray* combinedGroups = @[ pedalGroup ];
+  combinedGroups = [combinedGroups arrayByAddingObjectsFromArray:result];
+  const NSInteger suggestionGroupIndexInCombinedGroups = 1;
+
+  [self.dataSink updateMatches:combinedGroups
+      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups
+                   withAnimation:animation];
 }
 
 @end

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
@@ -17,6 +18,14 @@
 #endif
 
 namespace {
+
+// Waits without blocking the runloop.
+void Wait(NSTimeInterval timeout) {
+  NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];
+  while ([[NSDate date] compare:deadline] != NSOrderedDescending) {
+    base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(0.01));
+  }
+}
 
 class PedalSectionExtractorTest : public PlatformTest {
  protected:
@@ -104,9 +113,9 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
   [data_sink_ verify];
 }
 
-// After showing a pedal, the extractor will forget it exists when a fresh
-// result with no pedals comes in.
-TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
+// When a pedal disappears from the result list, the extractor prevents
+// its disappearance for a short time to reduce UI updates.
+TEST_F(PedalSectionExtractorTest, Debounce) {
   id mockSuggestionNoPedal =
       [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
   [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
@@ -121,6 +130,8 @@ TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
       groupWithTitle:@""
          suggestions:@[ mockSuggestionNoPedal, mockSuggestionWithPedal ]];
 
+  // Showing a result with pedals passes a pedal to the sink.
+
   [[data_sink_ expect] updateMatches:[OCMArg any]
           preselectedMatchGroupIndex:1
                        withAnimation:NO];
@@ -134,12 +145,39 @@ TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
           groupWithTitle:@""
              suggestions:@[ mockSuggestionNoPedal ]];
 
+  // Updating with no pedals continues to pass a pedal to the sink.
+
+  [[data_sink_ expect] updateMatches:[OCMArg any]
+          preselectedMatchGroupIndex:1
+                       withAnimation:NO];
+  [extractor_ updateMatches:@[ groupNoPedals ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
+
+  [data_sink_ verify];
+
+  // Expect pedal removal when debounce timer expires
+  [[data_sink_ expect] updateMatches:@[ groupNoPedals ]
+          preselectedMatchGroupIndex:0
+                       withAnimation:NO];
+
+  // Wait for debounce to happen
+  Wait(1);
+  [data_sink_ verify];
+
+  // Now updating from no pedals to no pedals, nothing happens
   [[data_sink_ expect] updateMatches:@[ groupNoPedals ]
           preselectedMatchGroupIndex:0
                        withAnimation:NO];
   [extractor_ updateMatches:@[ groupNoPedals ]
       preselectedMatchGroupIndex:0
                    withAnimation:NO];
+
+  [data_sink_ verify];
+
+  // Since there's no update, nothing happens after the debounce timer expires
+  // again.
+  Wait(1);
   [data_sink_ verify];
 }
 

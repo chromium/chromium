@@ -220,6 +220,7 @@ source_set("unit_tests") {
     ":popup_ui",
     ":popup_ui_protocols",
     "//base",
+    "//base/test:test_support",
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
