@@ -1364,6 +1364,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
     case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
     case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
       DCHECK(!demo_setup_controller_);
+      MaybeTakeTPMOwnership();
       PerformPostEulaActions();
       InitiateOOBEUpdate();
       break;
@@ -1371,6 +1372,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
+      MaybeTakeTPMOwnership();
       PerformPostEulaActions();
       InitiateOOBEUpdate();
       break;
@@ -2498,4 +2500,12 @@ AutoEnrollmentController* WizardController::GetAutoEnrollmentController() {
   return auto_enrollment_controller_.get();
 }
 
+void WizardController::MaybeTakeTPMOwnership() {
+  if (wizard_context_->is_branded_build || switches::IsTpmDynamic())
+    return;
+
+  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
+                                         base::DoNothing());
+}
 }  // namespace ash

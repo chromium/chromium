@@ -459,6 +459,12 @@ class WizardController : public OobeUI::Observer {
   // exist already).
   AutoEnrollmentController* GetAutoEnrollmentController();
 
+  // Requests owning TPM for branded builds with --tpm-is-dynamic switch unset
+  // when OobeConsolidatedConsent feature is enabled. When --tpm-is-dynamic
+  // switch is set, pre-enrollment TPM check relies on the TPM being un-owned
+  // until enrollment. b/187429309
+  void MaybeTakeTPMOwnership();
+
   std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
   WizardContext* wizard_context_;
