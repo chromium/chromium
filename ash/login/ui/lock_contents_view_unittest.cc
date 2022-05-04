@@ -25,7 +25,6 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/login/ui/login_keyboard_test_base.h"
-#include "ash/login/ui/login_pin_input_view.h"
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/login_public_account_user_view.h"
 #include "ash/login/ui/login_test_base.h"
@@ -57,7 +56,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/known_user.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +66,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -1571,11 +1568,7 @@ TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {
 
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
-  auto user = CreateUser(email);
-  user.show_pin_pad_for_password = true;
-  users().push_back(user);
-  DataDispatcher()->SetUserList(users());
-
+  AddUserByEmail(email);
   // When the user gets added, the password textfield is shown by default and
   // automatically gets focused, resulting in the virtual keyboard being shown
   // if enabled.
@@ -1707,11 +1700,7 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
 
   // Add user who can use pin authentication.
   const std::string email = "user@domain.com";
-  auto user = CreateUser(email);
-  user.show_pin_pad_for_password = true;
-  users().push_back(user);
-  DataDispatcher()->SetUserList(users());
-
+  AddUserByEmail(email);
   // When the user gets added, the password textfield is shown by default and
   // automatically gets focused, resulting in the virtual keyboard being shown
   // if enabled.
@@ -2118,10 +2107,6 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
 
   // The password field is shown by default.
   EXPECT_TRUE(password_view->GetVisible());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER),
-            LoginPasswordView::TestApi(password_view)
-                .textfield()
-                ->GetPlaceholderText());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_FALSE(disabled_auth_message->GetVisible());
   // Setting auth disabled will hide the password field and show the message.
@@ -2133,10 +2118,6 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   // Setting auth enabled will hide the message and show the password field.
   DataDispatcher()->EnableAuthForUser(kFirstUserAccountId);
   EXPECT_TRUE(password_view->GetVisible());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER),
-            LoginPasswordView::TestApi(password_view)
-                .textfield()
-                ->GetPlaceholderText());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_FALSE(disabled_auth_message->GetVisible());
 
@@ -2151,17 +2132,10 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   EXPECT_FALSE(password_view->GetVisible());
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_TRUE(disabled_auth_message->GetVisible());
-  // Set auth enabled again. The PIN field is hidden when PIN/password fields
-  // are combined. The placeholder text on the password field is updated with
-  // PIN included.
+  // Set auth enabled again. Both password field and PIN keyboard are shown.
   DataDispatcher()->EnableAuthForUser(kFirstUserAccountId);
   EXPECT_TRUE(password_view->GetVisible());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER),
-      LoginPasswordView::TestApi(password_view)
-          .textfield()
-          ->GetPlaceholderText());
-  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_TRUE(pin_view->GetVisible());
   EXPECT_FALSE(disabled_auth_message->GetVisible());
 }
 
@@ -2621,8 +2595,6 @@ TEST_F(LockContentsViewUnitTest, UsersChangedRetainsExistingState) {
 
   AccountId primary_user =
       test_api.primary_big_view()->GetCurrentUser().basic_user_info.account_id;
-  user_manager::KnownUser(Shell::Get()->local_state())
-      .SetUserPinLength(primary_user, 8);
   DataDispatcher()->SetPinEnabledForUser(primary_user, true);
 
   // This user should be identical to the user we enabled PIN for.
@@ -3263,62 +3235,6 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
   // notifying a successful auth result will hide the password field.
   DataDispatcher()->NotifySmartLockAuthResult(account_id, /*successful=*/true);
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
-}
-
-TEST_F(LockContentsViewUnitTest, VerifyPinPadVisibilityWhenPinEnabled) {
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
-  LockContentsView::TestApi contents_test_api(contents);
-  LoginAuthUserView::TestApi auth_test_api(
-      contents_test_api.primary_big_view()->auth_user());
-  LoginPasswordView* password_view = auth_test_api.password_view();
-  LoginPinView* pin_view = auth_test_api.pin_view();
-  LoginPinInputView* pin_input_view = auth_test_api.pin_input_view();
-  views::Button* pin_password_toggle = auth_test_api.pin_password_toggle();
-
-  // Set a long PIN. Pin pad is hidden when PIN/password fields are combined.
-  user_manager::KnownUser(Shell::Get()->local_state())
-      .SetUserPinLength(kFirstUserAccountId, 20);
-  DataDispatcher()->SetPinEnabledForUser(kFirstUserAccountId, true);
-  EXPECT_TRUE(password_view->GetVisible());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER),
-      LoginPasswordView::TestApi(password_view)
-          .textfield()
-          ->GetPlaceholderText());
-  EXPECT_FALSE(pin_view->GetVisible());
-  EXPECT_FALSE(pin_input_view->GetVisible());
-  EXPECT_FALSE(pin_password_toggle->GetVisible());
-
-  // Set a short PIN. Pin pad is shown with a toggle button to switch between
-  // password/PIN auth.
-  user_manager::KnownUser(Shell::Get()->local_state())
-      .SetUserPinLength(kFirstUserAccountId, 8);
-  DataDispatcher()->SetPinEnabledForUser(kFirstUserAccountId, true);
-  EXPECT_FALSE(password_view->GetVisible());
-  EXPECT_TRUE(pin_view->GetVisible());
-  EXPECT_TRUE(pin_input_view->GetVisible());
-  EXPECT_TRUE(pin_password_toggle->GetVisible());
-
-  // Click the toggle button should switch to the password auth mode.
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(pin_password_toggle).NotifyClick(event);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(password_view->GetVisible());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER),
-            LoginPasswordView::TestApi(password_view)
-                .textfield()
-                ->GetPlaceholderText());
-  EXPECT_FALSE(pin_view->GetVisible());
-  EXPECT_FALSE(pin_input_view->GetVisible());
-  EXPECT_TRUE(pin_password_toggle->GetVisible());
 }
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {

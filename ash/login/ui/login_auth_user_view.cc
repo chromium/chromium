@@ -1117,7 +1117,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
   auto pin_view = std::make_unique<LoginPinView>(
-      LoginPinView::Style::kNumeric, palette,
+      LoginPinView::Style::kAlphanumeric, palette,
       base::BindRepeating(&LoginAuthUserView::OnPinPadInsertDigit,
                           base::Unretained(this)),
       base::BindRepeating(&LoginAuthUserView::OnPinPadBackspace,
@@ -1956,8 +1956,8 @@ bool LoginAuthUserView::ShouldShowPinPad() const {
       return false;
     case InputFieldMode::PASSWORD_ONLY:
     case InputFieldMode::PWD_WITH_TOGGLE:
-    case InputFieldMode::PIN_AND_PASSWORD:
       return auth_metadata_.show_pinpad_for_pw;
+    case InputFieldMode::PIN_AND_PASSWORD:
     case InputFieldMode::PIN_WITH_TOGGLE:
       return true;
   }
