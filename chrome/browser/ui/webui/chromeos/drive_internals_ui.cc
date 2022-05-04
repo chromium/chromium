@@ -105,7 +105,7 @@ std::pair<base::ListValue, base::DictionaryValue> GetGCacheContents(
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   // Use this map to sort the result list by the path.
-  std::map<base::FilePath, std::unique_ptr<base::DictionaryValue>> files;
+  std::map<base::FilePath, base::Value::Dict> files;
 
   const int options =
       (base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
@@ -121,18 +121,17 @@ std::pair<base::ListValue, base::DictionaryValue> GetGCacheContents(
     const bool is_symbolic_link = base::IsLink(info.GetName());
     const base::Time last_modified = info.GetLastModifiedTime();
 
-    auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetStringKey("path", current.value());
+    base::Value::Dict entry;
+    entry.Set("path", current.value());
     // Use double instead of integer for large files.
-    entry->SetDoubleKey("size", size);
-    entry->SetBoolKey("is_directory", is_directory);
-    entry->SetBoolKey("is_symbolic_link", is_symbolic_link);
-    entry->SetStringKey(
-        "last_modified",
-        google_apis::util::FormatTimeAsStringLocaltime(last_modified));
+    entry.Set("size", static_cast<double>(size));
+    entry.Set("is_directory", is_directory);
+    entry.Set("is_symbolic_link", is_symbolic_link);
+    entry.Set("last_modified",
+              google_apis::util::FormatTimeAsStringLocaltime(last_modified));
     // Print lower 9 bits in octal format.
-    entry->SetStringKey(
-        "permission", base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
+    entry.Set("permission",
+              base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
     files[current] = std::move(entry);
 
     total_size += size;
@@ -141,7 +140,7 @@ std::pair<base::ListValue, base::DictionaryValue> GetGCacheContents(
   std::pair<base::ListValue, base::DictionaryValue> result;
   // Convert |files| into response.
   for (auto& it : files)
-    result.first.Append(std::move(it.second));
+    result.first.GetList().Append(std::move(it.second));
   result.second.SetDoubleKey("total_size", total_size);
   return result;
 }
