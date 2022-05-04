@@ -3705,6 +3705,29 @@ static bool LayoutViewCanHaveChildren(Element& element) {
   return false;
 }
 
+// LayoutTable[Row,Section,Cell] all amend their ComputedStyle in response
+// to StyleDidChange. Whenever we recalc the style of an element and find
+// no difference, we still need to do ApplyStyleChanges::kYes to perform the
+// amendment.
+static bool ForceApplyForLegacyLayout(const ComputedStyle& new_style,
+                                      const LayoutObject& layout_object) {
+  // See LayoutTable[Section, Row]::StyleDidChange.
+  if (layout_object.IsLegacyTableRow() ||
+      layout_object.IsLegacyTableSection()) {
+    if (new_style.HasInFlowPosition())
+      return true;
+  }
+  // See LayoutTableCell::StyleDidChange.
+  if (layout_object.IsTableCellLegacy()) {
+    if (layout_object.Parent() &&
+        new_style.GetWritingMode() !=
+            layout_object.Parent()->StyleRef().GetWritingMode()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // This function performs two important tasks:
 //
 //  1. It computes the correct style for the element itself.
@@ -3986,6 +4009,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
       if (layout_style->CompositablePaintAnimationChanged())
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
+    if (ForceApplyForLegacyLayout(*layout_style, *layout_object))
+      apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     layout_object->SetStyle(layout_style.get(), apply_changes);
   }
   return child_change;

@@ -25,8 +25,7 @@ TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
       GetDocument().GetStyleResolver().CreateComputedStyle();
   LayoutObject* obj = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style,
                                                        LegacyLayout::kAuto);
-  obj->SetModifiedStyleOutsideStyleRecalc(nullptr,
-                                          LayoutObject::ApplyStyleChanges::kNo);
+  obj->SetStyle(nullptr, LayoutObject::ApplyStyleChanges::kNo);
   EXPECT_FALSE(obj->Style());
   EXPECT_THAT(obj->DecoratedName().Ascii(),
               MatchesRegex("LayoutN?G?BlockFlow \\(anonymous\\)"));

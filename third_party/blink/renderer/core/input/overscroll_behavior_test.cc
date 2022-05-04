@@ -66,8 +66,8 @@ void OverscrollBehaviorTest::SetInnerOverscrollBehavior(EOverscrollBehavior x,
       ComputedStyle::Clone(*inner->GetComputedStyle());
   modified_style->SetOverscrollBehaviorX(x);
   modified_style->SetOverscrollBehaviorY(y);
-  inner->GetLayoutObject()->SetModifiedStyleOutsideStyleRecalc(
-      std::move(modified_style), LayoutObject::ApplyStyleChanges::kNo);
+  inner->GetLayoutObject()->SetStyle(std::move(modified_style),
+                                     LayoutObject::ApplyStyleChanges::kNo);
 }
 
 void OverscrollBehaviorTest::ScrollBegin(double hint_x, double hint_y) {

@@ -5060,7 +5060,7 @@ Vector<PhysicalRect> LayoutObject::OutlineRects(
   return outline_rects;
 }
 
-void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
+void LayoutObject::SetTextAutoSizedStyle(
     scoped_refptr<const ComputedStyle> style,
     ApplyStyleChanges apply_changes) {
   NOT_DESTROYED();

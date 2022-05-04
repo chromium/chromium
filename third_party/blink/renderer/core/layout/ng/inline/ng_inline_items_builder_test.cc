@@ -489,8 +489,7 @@ static LayoutInline* CreateLayoutInline(
       document->GetStyleResolver().CreateComputedStyle());
   initialize_style(style.get());
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
-  node->SetModifiedStyleOutsideStyleRecalc(
-      std::move(style), LayoutObject::ApplyStyleChanges::kNo);
+  node->SetStyle(std::move(style), LayoutObject::ApplyStyleChanges::kNo);
   node->SetIsInLayoutNGInlineFormattingContext(true);
   return node;
 }

@@ -465,8 +465,7 @@ void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
   scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
   new_style->SetWritingMode(row->StyleRef().GetWritingMode());
   new_style->UpdateFontOrientation();
-  SetModifiedStyleOutsideStyleRecalc(new_style,
-                                     LayoutObject::ApplyStyleChanges::kNo);
+  SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
   SetHorizontalWritingMode(StyleRef().IsHorizontalWritingMode());
   UnmarkOrthogonalWritingModeRoot();
 

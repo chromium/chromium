@@ -1601,8 +1601,8 @@ bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
           ComputedStyle::Clone(layout_object->StyleRef());
       modified_style->SetTextAutosizingMultiplier(multiplier);
       EXPECT_EQ(multiplier, modified_style->TextAutosizingMultiplier());
-      layout_object->SetModifiedStyleOutsideStyleRecalc(
-          std::move(modified_style), LayoutObject::ApplyStyleChanges::kNo);
+      layout_object->SetStyle(std::move(modified_style),
+                              LayoutObject::ApplyStyleChanges::kNo);
       multiplier_set = true;
     }
   }

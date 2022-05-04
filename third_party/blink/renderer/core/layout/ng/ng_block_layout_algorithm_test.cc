@@ -69,8 +69,8 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     DCHECK(element->GetLayoutObject());
     scoped_refptr<ComputedStyle> mutable_style =
         ComputedStyle::Clone(element->GetLayoutObject()->StyleRef());
-    element->GetLayoutObject()->SetModifiedStyleOutsideStyleRecalc(
-        mutable_style, LayoutObject::ApplyStyleChanges::kNo);
+    element->GetLayoutObject()->SetStyle(mutable_style,
+                                         LayoutObject::ApplyStyleChanges::kNo);
     return mutable_style;
   }
 };
