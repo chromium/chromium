@@ -132,18 +132,18 @@ void ProtocolHandlersHandler::OnWebAppInstallManagerDestroyed() {
 
 void ProtocolHandlersHandler::GetHandlersForProtocol(
     const std::string& protocol,
-    base::DictionaryValue* handlers_value) {
+    base::Value::Dict* handlers_value) {
   custom_handlers::ProtocolHandlerRegistry* registry =
       GetProtocolHandlerRegistry();
-  handlers_value->SetStringKey(
+  handlers_value->Set(
       "protocol_display_name",
       custom_handlers::ProtocolHandler::GetProtocolDisplayName(protocol));
-  handlers_value->SetStringKey("protocol", protocol);
+  handlers_value->Set("protocol", protocol);
 
   base::ListValue handlers_list;
   GetHandlersAsListValue(registry, registry->GetHandlersFor(protocol),
                          &handlers_list);
-  handlers_value->SetKey("handlers", std::move(handlers_list));
+  handlers_value->Set("handlers", std::move(handlers_list));
 }
 
 void ProtocolHandlersHandler::GetIgnoredHandlers(base::ListValue* handlers) {
@@ -163,9 +163,8 @@ void ProtocolHandlersHandler::UpdateHandlerList() {
   base::ListValue handlers;
   for (auto protocol = protocols.begin(); protocol != protocols.end();
        protocol++) {
-    std::unique_ptr<base::DictionaryValue> handler_value(
-        new base::DictionaryValue());
-    GetHandlersForProtocol(*protocol, handler_value.get());
+    base::Value::Dict handler_value;
+    GetHandlersForProtocol(*protocol, &handler_value);
     handlers.Append(std::move(handler_value));
   }
 

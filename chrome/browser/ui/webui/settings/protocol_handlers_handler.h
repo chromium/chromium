@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -25,10 +26,6 @@
 // This get triggered whenever a user allows or disallows a specific website or
 // application to handle clicks on a link with a specified protocol (i.e.
 // mailto: -> Gmail).
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace settings {
 
@@ -85,10 +82,10 @@ class ProtocolHandlersHandler
   custom_handlers::ProtocolHandler ParseHandlerFromArgs(
       const base::Value::List& args) const;
 
-  // Returns a JSON object describing the set of protocol handlers for the
+  // Populates a JSON object describing the set of protocol handlers for the
   // given protocol.
   void GetHandlersForProtocol(const std::string& protocol,
-                              base::DictionaryValue* value);
+                              base::Value::Dict* value);
 
   // Returns a JSON list of the ignored protocol handlers.
   void GetIgnoredHandlers(base::ListValue* handlers);

@@ -1464,7 +1464,7 @@ void SiteSettingsHandler::SendZoomLevels() {
   if (!IsJavascriptAllowed())
     return;
 
-  base::ListValue zoom_levels_exceptions;
+  base::Value::List zoom_levels_exceptions;
 
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(profile_);
@@ -1481,7 +1481,7 @@ void SiteSettingsHandler::SendZoomLevels() {
               return a.host == b.host ? a.scheme < b.scheme : a.host < b.host;
             });
   for (const auto& zoom_level : zoom_levels) {
-    std::unique_ptr<base::DictionaryValue> exception(new base::DictionaryValue);
+    base::Value::Dict exception;
     switch (zoom_level.mode) {
       case content::HostZoomMap::ZOOM_CHANGED_FOR_HOST: {
         std::string host = zoom_level.host;
@@ -1489,7 +1489,7 @@ void SiteSettingsHandler::SendZoomLevels() {
           host =
               l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL);
         }
-        exception->SetStringKey(site_settings::kOrigin, host);
+        exception.Set(site_settings::kOrigin, host);
 
         std::string display_name = host;
         std::string origin_for_favicon = host;
@@ -1504,9 +1504,8 @@ void SiteSettingsHandler::SendZoomLevels() {
             display_name = extension->name();
           }
         }
-        exception->SetStringKey(site_settings::kDisplayName, display_name);
-        exception->SetStringKey(site_settings::kOriginForFavicon,
-                                origin_for_favicon);
+        exception.Set(site_settings::kDisplayName, display_name);
+        exception.Set(site_settings::kOriginForFavicon, origin_for_favicon);
         break;
       }
       case content::HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
@@ -1521,21 +1520,22 @@ void SiteSettingsHandler::SendZoomLevels() {
         content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT);
     DCHECK(!setting_string.empty());
 
-    exception->SetStringKey(site_settings::kSetting, setting_string);
+    exception.Set(site_settings::kSetting, setting_string);
 
     // Calculate the zoom percent from the factor. Round up to the nearest whole
     // number.
     int zoom_percent = static_cast<int>(
         blink::PageZoomLevelToZoomFactor(zoom_level.zoom_level) * 100 + 0.5);
-    exception->SetStringKey(kZoom, base::FormatPercent(zoom_percent));
-    exception->SetStringKey(site_settings::kSource,
-                            site_settings::SiteSettingSourceToString(
-                                site_settings::SiteSettingSource::kPreference));
+    exception.Set(kZoom, base::FormatPercent(zoom_percent));
+    exception.Set(site_settings::kSource,
+                  site_settings::SiteSettingSourceToString(
+                      site_settings::SiteSettingSource::kPreference));
     // Append the new entry to the list and map.
     zoom_levels_exceptions.Append(std::move(exception));
   }
 
-  FireWebUIListener("onZoomLevelsChanged", zoom_levels_exceptions);
+  FireWebUIListener("onZoomLevelsChanged",
+                    base::Value(std::move(zoom_levels_exceptions)));
 }
 
 void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {

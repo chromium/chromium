@@ -76,21 +76,20 @@ void StartupPagesHandler::OnJavascriptDisallowed() {
 }
 
 void StartupPagesHandler::OnModelChanged() {
-  base::ListValue startup_pages;
+  base::Value::List startup_pages;
   int page_count = startup_custom_pages_table_model_.RowCount();
   std::vector<GURL> urls = startup_custom_pages_table_model_.GetURLs();
   for (int i = 0; i < page_count; ++i) {
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-    entry->SetStringKey("title",
-                        startup_custom_pages_table_model_.GetText(i, 0));
-    entry->SetStringKey("url", urls[i].spec());
-    entry->SetStringKey("tooltip",
-                        startup_custom_pages_table_model_.GetTooltip(i));
-    entry->SetIntKey("modelIndex", i);
+    base::Value::Dict entry;
+    entry.Set("title", startup_custom_pages_table_model_.GetText(i, 0));
+    entry.Set("url", urls[i].spec());
+    entry.Set("tooltip", startup_custom_pages_table_model_.GetTooltip(i));
+    entry.Set("modelIndex", i);
     startup_pages.Append(std::move(entry));
   }
 
-  FireWebUIListener("update-startup-pages", startup_pages);
+  FireWebUIListener("update-startup-pages",
+                    base::Value(std::move(startup_pages)));
 }
 
 void StartupPagesHandler::OnItemsChanged(int start, int length) {
