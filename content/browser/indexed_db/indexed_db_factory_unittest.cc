@@ -104,11 +104,6 @@ class IndexedDBFactoryTest : public testing::Test {
         EXPECT_TRUE(success);
       }
     }
-// TODO(crbug.com/1218100): Investigate why windows fails this check.
-#if !BUILDFLAG(IS_WIN)
-    if (temp_dir_.IsValid())
-      ASSERT_TRUE(temp_dir_.Delete());
-#endif
     IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
     quota_manager_.reset();
   }
@@ -527,8 +522,7 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 }
 
-// Flaky as reported in: https://crbug.com/1322325
-TEST_F(IndexedDBFactoryTest, DISABLED_InMemoryFactoriesStay) {
+TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
   SetupInMemoryContext();
   ASSERT_TRUE(context()->IsInMemoryContext());
 

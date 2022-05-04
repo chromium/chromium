@@ -25,9 +25,9 @@
 
 // Contains common operations for LevelDBTransactions and/or LevelDBDatabases.
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
+namespace storage {
+struct BucketLocator;
+}  // namespace storage
 
 namespace content {
 class TransactionalLevelDBDatabase;
@@ -41,9 +41,11 @@ extern const base::FilePath::CharType kBlobExtension[];
 extern const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kLevelDBExtension[];
 
-base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key);
-base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key);
-base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key);
+base::FilePath GetBlobStoreFileName(
+    const storage::BucketLocator& bucket_locator);
+base::FilePath GetLevelDBFileName(const storage::BucketLocator& bucket_locator);
+base::FilePath ComputeCorruptionFileName(
+    const storage::BucketLocator& bucket_locator);
 
 // Returns if the given file path is too long for the current operating system's
 // file system.
@@ -57,7 +59,7 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
 std::string CONTENT_EXPORT
 ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
                    const base::FilePath& path_base,
-                   const blink::StorageKey& storage_key);
+                   const storage::BucketLocator& bucket_locator);
 
 // Was able to use LevelDB to read the data w/o error, but the data read was not
 // in the expected format.

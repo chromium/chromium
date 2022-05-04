@@ -711,9 +711,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     INTERNAL_READ_ERROR(SET_UP_METADATA);
     return s;
   }
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  indexed_db::ReportSchemaVersion(db_schema_version,
-                                  bucket_locator_.storage_key);
+  indexed_db::ReportSchemaVersion(db_schema_version, bucket_locator_);
   if (!found) {
     // Initialize new backing store.
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
@@ -793,10 +791,9 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   s = db_->Write(write_batch.get());
   write_batch.reset();
   if (!s.ok()) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     indexed_db::ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_METADATA_SETUP,
-        bucket_locator_.storage_key);
+        bucket_locator_);
     INTERNAL_WRITE_ERROR(SET_UP_METADATA);
     return s;
   }
@@ -804,11 +801,10 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   if (clean_active_journal) {
     s = CleanUpBlobJournal(ActiveBlobJournalKey::Encode());
     if (!s.ok()) {
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
       indexed_db::ReportOpenStatus(
           indexed_db::
               INDEXED_DB_BACKING_STORE_OPEN_FAILED_CLEANUP_JOURNAL_ERROR,
-          bucket_locator_.storage_key);
+          bucket_locator_);
     }
   }
 #if DCHECK_IS_ON()
@@ -1132,11 +1128,11 @@ leveldb::Status IndexedDBBackingStore::GetCompleteMetadata(
 // static
 bool IndexedDBBackingStore::RecordCorruptionInfo(
     const base::FilePath& path_base,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     const std::string& message) {
   auto filesystem = storage::CreateFilesystemProxy();
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(storage_key));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
   if (IsPathTooLong(filesystem.get(), info_path))
     return false;
 

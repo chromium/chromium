@@ -17,7 +17,7 @@
 
 namespace storage {
 struct BucketLocator;
-}
+}  // namespace storage
 
 namespace content {
 class IndexedDBContextImpl;

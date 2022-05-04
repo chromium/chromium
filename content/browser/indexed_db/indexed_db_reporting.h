@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace blink {
-class StorageKey;
-}
+namespace storage {
+struct BucketLocator;
+}  // namespace storage
 
 namespace content {
 namespace indexed_db {
@@ -92,12 +92,13 @@ enum class IndexedDBAction {
 };
 
 void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
-                      const blink::StorageKey& storage_key);
+                      const storage::BucketLocator& bucket_locator);
 
 void ReportInternalError(const char* type,
                          IndexedDBBackingStoreErrorSource location);
 
-void ReportSchemaVersion(int version, const blink::StorageKey& storage_key);
+void ReportSchemaVersion(int version,
+                         const storage::BucketLocator& bucket_locator);
 
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);

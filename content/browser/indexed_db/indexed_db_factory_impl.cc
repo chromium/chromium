@@ -101,7 +101,7 @@ std::tuple<base::FilePath /*leveldb_path*/,
            leveldb::Status>
 CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
                           const base::FilePath& path_base,
-                          const blink::StorageKey& storage_key) {
+                          const storage::BucketLocator& bucket_locator) {
   leveldb::Status status;
   if (filesystem->CreateDirectory(path_base) != base::File::Error::FILE_OK) {
     status =
@@ -109,17 +109,17 @@ CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
     LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
                << "\"";
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
-                     storage_key);
+                     bucket_locator);
     return {base::FilePath(), base::FilePath(), status};
   }
 
   base::FilePath leveldb_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(storage_key));
+      path_base.Append(indexed_db::GetLevelDBFileName(bucket_locator));
   base::FilePath blob_path =
-      path_base.Append(indexed_db::GetBlobStoreFileName(storage_key));
+      path_base.Append(indexed_db::GetBlobStoreFileName(bucket_locator));
   if (indexed_db::IsPathTooLong(filesystem, leveldb_path)) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
-                     storage_key);
+                     bucket_locator);
     status = leveldb::Status::IOError("File path too long");
     return {base::FilePath(), base::FilePath(), status};
   }
@@ -432,10 +432,9 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
     const storage::BucketLocator& bucket_locator,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Make a copy of storage_key as this is likely a reference to a member of a
-  // backing store which this function will be deleting.
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  blink::StorageKey saved_storage_key(bucket_locator.storage_key);
+  // Make a copy of `bucket_locator` as this is likely a reference to a member
+  // of a backing store which this function will be deleting.
+  storage::BucketLocator saved_bucket_locator(bucket_locator);
   DCHECK(context_);
   base::FilePath path_base = context_->data_path();
 
@@ -444,7 +443,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   std::string sanitized_message = base::UTF16ToUTF8(error.message());
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      path_base.AsUTF8Unsafe(), "...");
-  IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_storage_key,
+  IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_bucket_locator,
                                               sanitized_message);
   HandleBackingStoreFailure(bucket_locator);
   // Note: DestroyBackingStore only deletes LevelDB files, leaving all others,
@@ -452,7 +451,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
   const base::FilePath file_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(saved_storage_key));
+      path_base.Append(indexed_db::GetLevelDBFileName(saved_bucket_locator));
   leveldb::Status s =
       class_factory_->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
@@ -661,9 +660,8 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
   if (!is_incognito_and_in_memory) {
     // The database will be on-disk and not in-memory.
     auto filesystem_proxy = storage::CreateFilesystemProxy();
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     std::tie(database_path, blob_path, s) = CreateDatabaseDirectories(
-        filesystem_proxy.get(), data_directory, bucket_locator.storage_key);
+        filesystem_proxy.get(), data_directory, bucket_locator);
     if (!s.ok())
       return {IndexedDBBucketStateHandle(), s, CreateDefaultError(),
               IndexedDBDataLossInfo(), /*was_cold_open=*/true};
@@ -712,13 +710,11 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
       std::string sanitized_message = leveldb_env::GetCorruptionMessage(s);
       base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                          data_directory.AsUTF8Unsafe(), "...");
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
       LOG(ERROR) << "Got corruption for "
                  << bucket_locator.storage_key.GetDebugString() << ", "
                  << sanitized_message;
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
       IndexedDBBackingStore::RecordCorruptionInfo(
-          data_directory, bucket_locator.storage_key, sanitized_message);
+          data_directory, bucket_locator, sanitized_message);
     }
   }
 
@@ -734,12 +730,11 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
   }
 
   if (UNLIKELY(!s.ok())) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     bucket_locator.storage_key);
+                     bucket_locator);
 
     if (disk_full) {
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+      // TODO(crbug.com/1322226): Use bucket variant when available.
       context_->quota_manager_proxy()->NotifyWriteFailed(
           bucket_locator.storage_key);
       return {IndexedDBBucketStateHandle(), s,
@@ -760,9 +755,8 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
       LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
 
   if (UNLIKELY(!s.ok())) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     bucket_locator.storage_key);
+                     bucket_locator);
 
     return {IndexedDBBucketStateHandle(), s, CreateDefaultError(),
             data_loss_info, /*was_cold_open=*/true};
@@ -770,7 +764,7 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
 
   if (!is_incognito_and_in_memory)
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
-                     bucket_locator.storage_key);
+                     bucket_locator);
 
   auto run_tasks_callback = base::BindRepeating(
       &IndexedDBFactoryImpl::MaybeRunTasksForBucket,
@@ -850,17 +844,15 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   if (!is_incognito_and_in_memory) {
     // Check for previous corruption, and if found then try to delete the
     // database.
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     std::string corruption_message = indexed_db::ReadCorruptionInfo(
-        filesystem_proxy.get(), data_directory, bucket_locator.storage_key);
+        filesystem_proxy.get(), data_directory, bucket_locator);
     if (UNLIKELY(!corruption_message.empty())) {
       LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
                     "database.";
       if (is_first_attempt) {
-        // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
         ReportOpenStatus(
             indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_PRIOR_CORRUPTION,
-            bucket_locator.storage_key);
+            bucket_locator);
       }
       data_loss_info.status = blink::mojom::IDBDataLoss::Total;
       data_loss_info.message = base::StrCat(
@@ -926,19 +918,17 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
     LOG(ERROR) << "IndexedDB had an error checking schema, treating it as "
                   "failure to open: "
                << status.ToString();
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     ReportOpenStatus(
         indexed_db::
             INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
-        bucket_locator.storage_key);
+        bucket_locator);
     return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
   } else if (UNLIKELY(!are_schemas_known)) {
     LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
                   "failure to open.";
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
-        bucket_locator.storage_key);
+        bucket_locator);
     return {nullptr, leveldb::Status::Corruption("Unknown IndexedDB schema"),
             std::move(data_loss_info), /*is_disk_full=*/false};
   }
@@ -990,7 +980,7 @@ void IndexedDBFactoryImpl::OnDatabaseError(
     HandleBackingStoreCorruption(bucket_locator, error);
   } else {
     if (status.IsIOError()) {
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+      // TODO(crbug.com/1322226): Use bucket variant when available.
       context_->quota_manager_proxy()->NotifyWriteFailed(
           bucket_locator.storage_key);
     }

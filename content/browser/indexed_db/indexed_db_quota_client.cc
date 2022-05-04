@@ -45,7 +45,6 @@ void IndexedDBQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
   DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
   // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
-  // TODO(crbug.com/1218100): Integrate IndexedDB with StorageBuckets.
   if (!bucket.is_default) {
     std::move(callback).Run(0);
     return;
@@ -63,7 +62,6 @@ void IndexedDBQuotaClient::GetStorageKeysForType(
   std::vector<StorageKey> storage_keys;
   for (const auto& bucket_locator : bucket_locators)
     storage_keys.push_back(bucket_locator.storage_key);
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   std::move(callback).Run(std::move(storage_keys));
 }
 
@@ -75,13 +73,11 @@ void IndexedDBQuotaClient::DeleteBucketData(
   DCHECK(!callback.is_null());
 
   // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
-  // TODO(crbug.com/1218100): Integrate IndexedDB with StorageBuckets.
   if (!bucket.is_default) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_.DeleteForBucket(
       bucket.storage_key,
       base::BindOnce(

@@ -50,7 +50,6 @@ class SequencedTaskRunner;
 namespace blink {
 class IndexedDBKeyRange;
 struct IndexedDBDatabaseMetadata;
-class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -426,7 +425,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       TransactionalLevelDBTransaction* transaction);
 
   static bool RecordCorruptionInfo(const base::FilePath& path_base,
-                                   const blink::StorageKey& storage_key,
+                                   const storage::BucketLocator& bucket_locator,
                                    const std::string& message);
 
   [[nodiscard]] virtual leveldb::Status GetRecord(

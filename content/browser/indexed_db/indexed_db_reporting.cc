@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -18,9 +19,9 @@ namespace indexed_db {
 
 namespace {
 
-std::string StorageKeyToCustomHistogramSuffix(
-    const blink::StorageKey& storage_key) {
-  if (storage_key.origin().host() == "docs.google.com")
+std::string BucketLocatorToCustomHistogramSuffix(
+    const storage::BucketLocator& bucket_locator) {
+  if (bucket_locator.storage_key.origin().host() == "docs.google.com")
     return ".Docs";
   return std::string();
 }
@@ -64,10 +65,11 @@ void ParseAndReportCorruptionDetails(const std::string& histogram_name,
 }  // namespace
 
 void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
-                      const blink::StorageKey& storage_key) {
+                      const storage::BucketLocator& bucket_locator) {
   base::UmaHistogramEnumeration("WebCore.IndexedDB.BackingStore.OpenStatus",
                                 result, INDEXED_DB_BACKING_STORE_OPEN_MAX);
-  const std::string suffix = StorageKeyToCustomHistogramSuffix(storage_key);
+  const std::string suffix =
+      BucketLocatorToCustomHistogramSuffix(bucket_locator);
   // Data from the WebCore.IndexedDB.BackingStore.OpenStatus histogram is used
   // to generate a graph. So as not to alter the meaning of that graph,
   // continue to collect all stats there (above) but also now collect docs stats
@@ -91,10 +93,12 @@ void ReportInternalError(const char* type,
       ->Add(location);
 }
 
-void ReportSchemaVersion(int version, const blink::StorageKey& storage_key) {
+void ReportSchemaVersion(int version,
+                         const storage::BucketLocator& bucket_locator) {
   UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.SchemaVersion", version,
                             kLatestKnownSchemaVersion + 1);
-  const std::string suffix = StorageKeyToCustomHistogramSuffix(storage_key);
+  const std::string suffix =
+      BucketLocatorToCustomHistogramSuffix(bucket_locator);
   if (!suffix.empty()) {
     base::LinearHistogram::FactoryGet(
         base::StrCat({"WebCore.IndexedDB.SchemaVersion", suffix}), 0,

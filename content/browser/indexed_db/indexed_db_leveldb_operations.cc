@@ -15,6 +15,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
@@ -53,10 +54,13 @@ const base::FilePath::CharType kLevelDBExtension[] =
     FILE_PATH_LITERAL(".leveldb");
 
 // static
-base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
+base::FilePath GetBlobStoreFileName(
+    const storage::BucketLocator& bucket_locator) {
   std::string storage_key_id;
-  if (storage_key.IsFirstPartyContext()) {
-    storage_key_id = storage::GetIdentifierFromOrigin(storage_key.origin());
+  // TODO(crbug.com/1315371): Allow custom bucket names.
+  if (bucket_locator.storage_key.IsFirstPartyContext()) {
+    storage_key_id =
+        storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin());
   } else {
     // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
     // to point to a real storage bucket here not a transient one. We only
@@ -73,10 +77,13 @@ base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
 }
 
 // static
-base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key) {
+base::FilePath GetLevelDBFileName(
+    const storage::BucketLocator& bucket_locator) {
   std::string storage_key_id;
-  if (storage_key.IsFirstPartyContext()) {
-    storage_key_id = storage::GetIdentifierFromOrigin(storage_key.origin());
+  // TODO(crbug.com/1315371): Allow custom bucket names.
+  if (bucket_locator.storage_key.IsFirstPartyContext()) {
+    storage_key_id =
+        storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin());
   } else {
     // TODO(crbug.com/1218100): This is a stop-gap to prevent crashes, we need
     // to point to a real storage bucket here not a transient one. We only
@@ -92,8 +99,9 @@ base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key) {
       .AddExtension(kLevelDBExtension);
 }
 
-base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key) {
-  return GetLevelDBFileName(storage_key)
+base::FilePath ComputeCorruptionFileName(
+    const storage::BucketLocator& bucket_locator) {
+  return GetLevelDBFileName(bucket_locator)
       .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
@@ -128,9 +136,9 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
 
 std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
                                const base::FilePath& path_base,
-                               const blink::StorageKey& storage_key) {
+                               const storage::BucketLocator& bucket_locator) {
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(storage_key));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
   std::string message;
   if (IsPathTooLong(filesystem_proxy, info_path))
     return message;

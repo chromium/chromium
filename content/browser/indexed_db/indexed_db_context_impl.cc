@@ -973,17 +973,13 @@ void IndexedDBContextImpl::Shutdown() {
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK(!is_incognito());
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  return data_path_.Append(
-      indexed_db::GetBlobStoreFileName(bucket_locator.storage_key));
+  return data_path_.Append(indexed_db::GetBlobStoreFileName(bucket_locator));
 }
 
 base::FilePath IndexedDBContextImpl::GetLevelDBPath(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK(!is_incognito());
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  return data_path_.Append(
-      indexed_db::GetLevelDBFileName(bucket_locator.storage_key));
+  return data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator));
 }
 
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(
