@@ -6109,22 +6109,6 @@
           ]
         },
       },
-      'win7(32)-updater-tester-dbg': {
-        'mixins': [
-          'win7',
-          'x86-32'
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_win',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ]
-        },
-      },
       'win7(32)-updater-tester-rel': {
         'mixins': [
           'win7',
@@ -6137,22 +6121,6 @@
           'dimension_sets': [
             {
               'integrity': 'high',
-            }
-          ]
-        },
-      },
-      'win7-updater-tester-dbg-uac': {
-        'mixins': [
-          'win7',
-          'x86-64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_win_uac',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chromium.win.uac',
             }
           ]
         },
@@ -6229,14 +6197,6 @@
       'WebRTC Chromium Win10 Tester': {
         'mixins': [
           'chromium-webrtc-rel-win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
-        },
-      },
-      'WebRTC Chromium Win7 Tester': {
-        'mixins': [
-          'chromium-webrtc-rel-7',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
@@ -6328,15 +6288,6 @@
         'mixins': [
           'x86-64',
           'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Win7 Tester': {
-        'mixins': [
-          'x86-64',
-          'win7',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',

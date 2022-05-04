@@ -130,12 +130,6 @@ builder(
 # to swarming bots with appropriate OS using swarming
 # dimensions.
 builder(
-    name = "WebRTC Chromium FYI Win7 Tester",
-    os = os.WINDOWS_DEFAULT,
-    triggered_by = ["WebRTC Chromium FYI Win Builder"],
-)
-
-builder(
     name = "WebRTC Chromium FYI ios-device",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,

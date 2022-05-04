@@ -87,9 +87,3 @@ builder(
     os = os.WINDOWS_ANY,
     triggered_by = ["WebRTC Chromium Win Builder"],
 )
-
-builder(
-    name = "WebRTC Chromium Win7 Tester",
-    os = os.WINDOWS_ANY,
-    triggered_by = ["WebRTC Chromium Win Builder"],
-)

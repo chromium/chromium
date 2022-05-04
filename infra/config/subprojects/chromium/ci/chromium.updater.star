@@ -238,24 +238,6 @@ ci.builder(
 )
 
 ci.thin_tester(
-    name = "win7-updater-tester-dbg-uac",
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|win (64)",
-        short_name = "UAC7",
-    ),
-    triggered_by = ["win-updater-builder-dbg"],
-)
-
-ci.thin_tester(
-    name = "win7(32)-updater-tester-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|win (32)",
-        short_name = "7",
-    ),
-    triggered_by = ["win32-updater-builder-dbg"],
-)
-
-ci.thin_tester(
     name = "win7-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|win (64)",

@@ -365,9 +365,6 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromium-webrtc-rel-7': {
-    'perf_builder_name_alias': 'chromium-webrtc-rel-7',
-  },
   'chromium-webrtc-rel-linux': {
     'perf_builder_name_alias': 'chromium-webrtc-rel-linux',
   },
