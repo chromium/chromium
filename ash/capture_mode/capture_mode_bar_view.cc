@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,7 +71,10 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
       close_button_(AddChildView(std::make_unique<CaptureModeButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
-          kCaptureModeCloseIcon))) {
+          kCaptureModeCloseIcon))),
+      shadow_(this,
+              SystemShadow::GetElevationFromType(
+                  SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
@@ -115,6 +119,8 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
     SetBorder(std::make_unique<views::HighlightBorder>(
         kBorderRadius, views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
+    shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    shadow_.SetRoundedCornerRadius(kBorderRadius);
   }
 }
 
