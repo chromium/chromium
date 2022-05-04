@@ -4269,12 +4269,11 @@ class InitialEmptyDocNavigationControllerBrowserTest
 // on the initial empty document because they have committed the synchronous
 // non-initial about:blank document. Update these tests or remove the
 // synchronous navigation entirely.
-// crbug.com/1311616 Disable test due to flakiness.
 IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
-                       DISABLED_NavigateNewSubframe) {
+                       NavigateNewSubframe) {
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
-  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  GURL no_commit_url(embedded_test_server()->GetURL("/page204.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
 
   FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
@@ -4377,7 +4376,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     SCOPED_TRACE(testing::Message() << " Testing case 4.");
 
     // Create the "child4" subframe with src set to a URL that never commits.
-    CreateSubframe(contents(), "child4", hung_url,
+    CreateSubframe(contents(), "child4", no_commit_url,
                    false /* wait_for_navigation */);
     subframe_index++;
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
