@@ -527,12 +527,9 @@ std::string DemoSetupController::GetDemoSetupStepString(
   NOTREACHED();
 }
 
-DemoSetupController::DemoSetupController() {}
+DemoSetupController::DemoSetupController() = default;
 
-DemoSetupController::~DemoSetupController() {
-  if (device_local_account_policy_store_)
-    device_local_account_policy_store_->RemoveObserver(this);
-}
+DemoSetupController::~DemoSetupController() = default;
 
 void DemoSetupController::Enroll(
     OnSetupSuccess on_setup_success,
@@ -559,13 +556,6 @@ void DemoSetupController::Enroll(
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
       NOTREACHED() << "No valid demo mode config specified";
   }
-}
-
-base::FilePath DemoSetupController::GetPreinstalledDemoResourcesPath(
-    const base::FilePath& relative_path) {
-  if (preinstalled_demo_resources_)
-    return preinstalled_demo_resources_->GetAbsolutePath(relative_path);
-  return base::FilePath();
 }
 
 void DemoSetupController::LoadDemoResourcesCrOSComponent() {
@@ -626,11 +616,6 @@ void DemoSetupController::OnDemoResourcesCrOSComponentLoaded() {
   enrollment_helper_->EnrollUsingAttestation();
 }
 
-void DemoSetupController::OnPreinstalledDemoResourcesLoaded(
-    HasPreinstalledDemoResourcesCallback callback) {
-  std::move(callback).Run(!preinstalled_demo_resources_->path().empty());
-}
-
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
   NOTREACHED();
 }
@@ -671,16 +656,6 @@ void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(
     component_updater::CrOSComponentManager::Error error) {
   component_error_for_tests_ = error;
-}
-
-void DemoSetupController::SetPreinstalledOfflineResourcesPathForTesting(
-    const base::FilePath& path) {
-  preinstalled_offline_resources_path_for_tests_ = path;
-}
-
-void DemoSetupController::SetDeviceLocalAccountPolicyStoreForTest(
-    policy::CloudPolicyStore* store) {
-  device_local_account_policy_store_ = store;
 }
 
 void DemoSetupController::OnDeviceRegistered() {
@@ -728,23 +703,7 @@ void DemoSetupController::Reset() {
 
   // `demo_config_` is not reset here, because it is needed for retrying setup.
   enrollment_helper_.reset();
-  if (device_local_account_policy_store_) {
-    device_local_account_policy_store_->RemoveObserver(this);
-    device_local_account_policy_store_ = nullptr;
-  }
   ClearDemoRequisition();
-}
-
-void DemoSetupController::OnStoreLoaded(policy::CloudPolicyStore* store) {
-  DCHECK_EQ(store, device_local_account_policy_store_);
-  VLOG(1) << "Marking device registered";
-  StartupUtils::MarkDeviceRegistered(
-      base::BindOnce(&DemoSetupController::OnDeviceRegistered,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DemoSetupController::OnStoreError(policy::CloudPolicyStore* store) {
-  DCHECK_EQ(store, device_local_account_policy_store_);
 }
 
 }  //  namespace ash
