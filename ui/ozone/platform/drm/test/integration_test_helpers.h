@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_TEST_INTEGRATION_TEST_HELPERS_H_
 #define UI_OZONE_PLATFORM_DRM_TEST_INTEGRATION_TEST_HELPERS_H_
 
+#include <string>
 #include <utility>
 
 namespace base {
