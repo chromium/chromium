@@ -299,6 +299,20 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   bool holding_pointer_moves() const { return holding_pointer_moves_; }
 
+#if BUILDFLAG(IS_WIN)
+  // Returns whether a host's window is on the current workspace or not,
+  // absl::nullopt if the state is not known.
+  absl::optional<bool> on_current_workspace() const {
+    return on_current_workspace_;
+  };
+
+  // Determining if a host's window is on the current workspace can be very
+  // expensive COM call on Windows, so this caches that information.
+  void set_on_current_workspace(absl::optional<bool> on_current_workspace) {
+    on_current_workspace_ = on_current_workspace;
+  }
+#endif  // BUILDFLAG_(IS_WIN)
+
  protected:
   friend class ScopedKeyboardHook;
   friend class TestScreen;  // TODO(beng): see if we can remove/consolidate.
@@ -436,6 +450,12 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
   Window::OcclusionState occlusion_state_ = Window::OcclusionState::UNKNOWN;
+
+  // This is set if we know whether the window is on the current workspace.
+  // This is useful on Windows, where a COM call is required to determine this,
+  // which can block the UI. The native window occlusion tracking code already
+  // figures this out, so it's cheaper to store the fact here.
+  absl::optional<bool> on_current_workspace_;
   SkRegion occluded_region_;
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;

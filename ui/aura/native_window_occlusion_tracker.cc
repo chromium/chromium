@@ -39,6 +39,7 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
 #if BUILDFLAG(IS_WIN)
   if (host->IsNativeWindowOcclusionEnabled()) {
     host->SetNativeWindowOcclusionState(Window::OcclusionState::UNKNOWN, {});
+    host->set_on_current_workspace(absl::nullopt);
     NativeWindowOcclusionTrackerWin::GetOrCreateInstance()->Disable(
         host->window());
   }

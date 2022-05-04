@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1303,6 +1304,13 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 #elif BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return true;
+  absl::optional<bool> on_current_workspace =
+      native_win->GetHost()->on_current_workspace();
+  base::UmaHistogramBoolean("Windows.OnCurrentWorkspaceCached",
+                            on_current_workspace.has_value());
+  if (on_current_workspace.has_value())
+    return on_current_workspace.value();
+
   Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager;
   if (!SUCCEEDED(::CoCreateInstance(_uuidof(VirtualDesktopManager), nullptr,
                                     CLSCTX_ALL,

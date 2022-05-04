@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
@@ -75,7 +76,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // Tracks the occlusion state of HWNDs registered via Enable().
   struct RootOcclusionState {
     Window::OcclusionState occlusion_state = Window::OcclusionState::UNKNOWN;
-
+    absl::optional<bool> on_current_workspace;
     // If `occlusion_state` is VISIBLE, this gives the occluded region. It may
     // be empty (which indicates the the window is entirely visible). This is
     // relative to the origin of the HWND. In other words, it's in window
