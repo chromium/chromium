@@ -7761,3 +7761,5 @@ crbug.com/1322134 [ Mac11 ] virtual/gpu/fast/canvas/OffscreenCanvasImageRenderin
 
 # Sheriff 2022-05-04
 crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
+
+crbug.com/1320290 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip ]
