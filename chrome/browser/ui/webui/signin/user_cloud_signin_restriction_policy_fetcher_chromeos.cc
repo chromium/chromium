@@ -122,7 +122,8 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchAccessToken() {
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(),
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(),
       {GaiaConstants::kGoogleUserInfoEmail,
-       GaiaConstants::kGoogleUserInfoProfile});
+       GaiaConstants::kGoogleUserInfoProfile,
+       GaiaConstants::kSecureConnectOAuth2Scope});
 }
 
 void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenSuccess(
