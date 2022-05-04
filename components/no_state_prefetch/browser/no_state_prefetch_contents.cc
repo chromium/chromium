@@ -385,7 +385,7 @@ void NoStatePrefetchContents::DidRedirectNavigation(
 void NoStatePrefetchContents::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!render_frame_host->GetParent())
+  if (render_frame_host->IsInPrimaryMainFrame())
     has_finished_loading_ = true;
 }
 
