@@ -255,15 +255,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.BuildFromStreamResult"
-    enum="BlobBuildFromStreamResult" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of constructing a blob using the BlobRegistry.RegisterFromStream
-    API.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.CleanupSuccess" enum="Boolean"
     expires_after="M95">
   <owner>mek@chromium.org</owner>

@@ -137,7 +137,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
 
   void OnError(Result result);
   void OnSuccess();
-  void RecordResult(Result result);
 
   bool ShouldStoreNextBlockOnDisk(uint64_t length_hint);
 
