@@ -46,6 +46,8 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   Vector<LayoutUnit> RowPositions() const final;
   Vector<LayoutUnit> ColumnPositions() const final;
 
+  const NGGridLayoutData* GridLayoutData() const;
+
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
@@ -54,8 +56,6 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   }
 
  private:
-  const NGGridLayoutData* GridLayoutData() const;
-
   Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
       const NGGridLayoutTrackCollection& track_collection,
       wtf_size_t range_index) const;

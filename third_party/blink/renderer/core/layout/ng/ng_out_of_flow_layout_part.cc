@@ -397,33 +397,32 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
   const auto* container_object = container_builder_->GetLayoutObject();
   const auto& node_style = candidate.Node().Style();
 
-  if (container_object->IsLayoutNGGrid()) {
-    // If the out of flow item has the grid container as a containing block,
-    // then we don't need to go through placement.
-    const bool requires_grid_placement =
-        !node_style.GridColumnStart().IsAuto() ||
-        !node_style.GridColumnEnd().IsAuto() ||
-        !node_style.GridRowStart().IsAuto() ||
-        !node_style.GridRowEnd().IsAuto();
+  auto IsPlacedWithinGridArea = [&](const auto* containing_block) {
+    if (!containing_block->IsLayoutNGGrid())
+      return false;
 
-    if (requires_grid_placement) {
-      const auto& container_style = container_builder_->Style();
-      const auto& placement_data =
-          To<LayoutNGGrid>(container_object)->CachedPlacementData();
+    return !node_style.GridColumnStart().IsAuto() ||
+           !node_style.GridColumnEnd().IsAuto() ||
+           !node_style.GridRowStart().IsAuto() ||
+           !node_style.GridRowEnd().IsAuto();
+  };
 
-      GridItemData grid_item(candidate.Node(), container_style,
-                             default_writing_direction_.GetWritingMode());
+  auto GridAreaContainingBlockInfo =
+      [&](const LayoutNGGrid& containing_grid,
+          const NGGridLayoutData& grid_layout_data, const NGBoxStrut& borders,
+          const LogicalSize& size)
+      -> NGOutOfFlowLayoutPart::ContainingBlockInfo {
+    const auto& grid_style = containing_grid.StyleRef();
+    const auto& placement_data = containing_grid.CachedPlacementData();
 
-      return {default_writing_direction_,
-              NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-                  NGGridPlacement(container_style, placement_data),
-                  container_builder_->GridLayoutData(),
-                  container_builder_->Borders(),
-                  {container_builder_->InlineSize(),
-                   container_builder_->FragmentsTotalBlockSize()},
-                  &grid_item)};
-    }
-  }
+    GridItemData grid_item(candidate.Node(), grid_style,
+                           grid_style.GetWritingMode());
+
+    return {grid_style.GetWritingDirection(),
+            NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+                NGGridPlacement(grid_style, placement_data), grid_layout_data,
+                borders, size, &grid_item)};
+  };
 
   if (candidate.inline_container.container) {
     const auto it =
@@ -443,8 +442,11 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
       const LayoutObject* containing_block =
           containing_block_fragment->GetLayoutObject();
       DCHECK(containing_block);
+
+      bool is_placed_within_grid_area =
+          IsPlacedWithinGridArea(containing_block);
       auto it = containing_blocks_map_.find(containing_block);
-      if (it != containing_blocks_map_.end())
+      if (it != containing_blocks_map_.end() && !is_placed_within_grid_area)
         return it->value;
 
       const auto writing_direction =
@@ -454,12 +456,18 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
       size.block_size =
           LayoutBoxUtils::TotalBlockSize(*To<LayoutBox>(containing_block));
 
-      const NGPhysicalBoxFragment* fragment =
-          To<NGPhysicalBoxFragment>(containing_block_fragment);
-
       // TODO(1079031): This should eventually include scrollbar and border.
-      NGBoxStrut border =
-          fragment->Borders().ConvertToLogical(writing_direction);
+      NGBoxStrut border = To<NGPhysicalBoxFragment>(containing_block_fragment)
+                              ->Borders()
+                              .ConvertToLogical(writing_direction);
+
+      if (is_placed_within_grid_area) {
+        return GridAreaContainingBlockInfo(
+            *To<LayoutNGGrid>(containing_block),
+            *To<LayoutNGGrid>(containing_block)->GridLayoutData(), border,
+            size);
+      }
+
       LogicalSize content_size = ShrinkLogicalSize(size, border);
       LogicalOffset container_offset =
           LogicalOffset(border.inline_start, border.block_start);
@@ -474,6 +482,14 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
           .insert(containing_block, containing_block_info)
           .stored_value->value;
     }
+  }
+
+  if (IsPlacedWithinGridArea(container_object)) {
+    return GridAreaContainingBlockInfo(
+        *To<LayoutNGGrid>(container_object),
+        container_builder_->GridLayoutData(), container_builder_->Borders(),
+        {container_builder_->InlineSize(),
+         container_builder_->FragmentsTotalBlockSize()});
   }
 
   return node_style.GetPosition() == EPosition::kAbsolute
