@@ -29,9 +29,9 @@ enum class AnnotationType {
   // The input will be annotated for the visibility of the content.
   kContentVisibility,
 
-  // The input will be annotated with the entity IDs on the page, for example
-  // listing the IDs of all the proper nouns on a page. To map the IDs back to
-  // human-readable strings, use `EntityMetadataProvider`.
+  // The input will be annotated with the entities on the page. If the entities
+  // will be persisted, make sure that only the entity IDs are persisted. To map
+  // the IDs back to human-readable strings, use `EntityMetadataProvider`.
   kPageEntities,
 };
 

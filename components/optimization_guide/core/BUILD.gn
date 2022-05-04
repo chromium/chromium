@@ -187,6 +187,7 @@ static_library("core") {
       "model_validator.h",
       "page_content_annotation_job_executor.cc",
       "page_content_annotation_job_executor.h",
+      "page_entities_model_executor.cc",
       "page_entities_model_executor.h",
       "page_topics_model_executor.cc",
       "page_topics_model_executor.h",

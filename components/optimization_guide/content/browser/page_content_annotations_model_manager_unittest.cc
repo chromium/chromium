@@ -93,7 +93,7 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
       : entries_(entries), entity_metadata_(entity_metadata) {}
   ~FakePageEntitiesModelExecutor() override = default;
 
-  void HumanReadableExecuteModelWithInput(
+  void ExecuteModelWithInput(
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback) override {
     auto it = entries_.find(text);
@@ -108,6 +108,14 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
     std::move(callback).Run(it != entity_metadata_.end()
                                 ? absl::make_optional(it->second)
                                 : absl::nullopt);
+  }
+
+  void AddOnModelUpdatedCallback(base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
+
+  absl::optional<ModelInfo> GetModelInfo() const override {
+    return absl::nullopt;
   }
 
  private:
@@ -701,6 +709,24 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
+  std::vector<ScoredEntityMetadata> input1_entities = {
+      ScoredEntityMetadata(0.5, EntityMetadata("cat", "cat", {})),
+      ScoredEntityMetadata(0.6, EntityMetadata("dog", "dog", {})),
+  };
+  std::vector<ScoredEntityMetadata> input2_entities = {
+      ScoredEntityMetadata(0.7, EntityMetadata("fish", "fish", {})),
+  };
+  SetPageEntitiesModelExecutor(
+      {
+          {"input1", input1_entities},
+          {"input2", input2_entities},
+          {"other input",
+           {
+               ScoredEntityMetadata(0.7, EntityMetadata("other", "other", {})),
+           }},
+      },
+      /*entity_metadata=*/{});
+
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::vector<BatchAnnotationResult> result;
@@ -713,15 +739,15 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
       },
       &run_loop, &result);
 
-  model_manager()->Annotate(std::move(callback), {"input"},
+  model_manager()->Annotate(std::move(callback), {"input1", "input2"},
                             AnnotationType::kPageEntities);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
       "PageEntities",
-      1, 1);
+      2, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageEntities",
-      false, 1);
+      true, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageEntities",
       1);
@@ -731,11 +757,19 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
 
   run_loop.Run();
 
-  ASSERT_EQ(result.size(), 1U);
-  EXPECT_EQ(result[0].input(), "input");
+  ASSERT_EQ(result.size(), 2U);
+
+  EXPECT_EQ(result[0].input(), "input1");
   EXPECT_EQ(result[0].topics(), absl::nullopt);
-  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), absl::make_optional(input1_entities));
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].type(), AnnotationType::kPageEntities);
+
+  EXPECT_EQ(result[1].input(), "input2");
+  EXPECT_EQ(result[1].topics(), absl::nullopt);
+  EXPECT_EQ(result[1].entities(), absl::make_optional(input2_entities));
+  EXPECT_EQ(result[1].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[1].type(), AnnotationType::kPageEntities);
 }
 
 // TODO(crbug.com/1286473): Flaky on Chrome OS.
@@ -1014,6 +1048,27 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   visibility_run_loop.Run();
 
   EXPECT_TRUE(visibility_callback_success);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       NotifyWhenModelAvailable_EntitiesOnly) {
+  SetPageEntitiesModelExecutor(/*entries=*/{}, /*entity_metadata=*/{});
+
+  base::RunLoop run_loop;
+  bool success = false;
+
+  model_manager()->RequestAndNotifyWhenModelAvailable(
+      AnnotationType::kPageEntities,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool* out_success, bool success) {
+            *out_success = success;
+            run_loop->Quit();
+          },
+          &run_loop, &success));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(success);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, NotifyWhenModelAvailable_Both) {

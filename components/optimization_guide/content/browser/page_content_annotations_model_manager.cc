@@ -118,7 +118,8 @@ void PageContentAnnotationsModelManager::ExecuteNextModelOrInvokeCallback(
 }
 
 void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
-    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+    OptimizationGuideModelProvider* optimization_guide_model_provider,
+    base::OnceCallback<void(bool)> callback) {
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PageContentAnnotationsModelManager."
       "PageEntitiesModelRequested",
@@ -140,7 +141,17 @@ void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
   page_entities_model_executor_ =
       std::make_unique<PageEntitiesModelExecutorImpl>(
           optimization_guide_model_provider, background_task_runner);
+
+  page_entities_model_executor_->AddOnModelUpdatedCallback(
+      base::BindOnce(std::move(callback), true));
+#else
+  std::move(callback).Run(false);
 #endif
+}
+
+void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  SetUpPageEntitiesModel(optimization_guide_model_provider, base::DoNothing());
 }
 
 void PageContentAnnotationsModelManager::
@@ -160,7 +171,7 @@ void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
       "PageEntitiesModelExecutionRequested",
       true);
   if (page_entities_model_executor_) {
-    page_entities_model_executor_->HumanReadableExecuteModelWithInput(
+    page_entities_model_executor_->ExecuteModelWithInput(
         text,
         base::BindOnce(&PageContentAnnotationsModelManager::
                            OnPageEntitiesModelExecutionCompleted,
@@ -186,15 +197,8 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
     current_annotations = GetOrCreateCurrentContentModelAnnotations(
         std::move(current_annotations));
 
-    // Determine the entities with the highest weights.
-    std::vector<ScoredEntityMetadata> entity_candidates = std::move(*output);
-    std::sort(entity_candidates.begin(), entity_candidates.end(),
-              [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
-                return a.score > b.score;
-              });
-
     // Add the top entities to the working current annotations.
-    for (const auto& entity : entity_candidates) {
+    for (const auto& entity : *output) {
       if (current_annotations->entities.size() >= kMaxPageEntities) {
         break;
       }
@@ -526,7 +530,16 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     }
   }
 
-  // TODO(crbug/1278828): Add support for page entities.
+  if (type == AnnotationType::kPageEntities) {
+    if (page_entities_model_executor_) {
+      page_entities_model_executor_->AddOnModelUpdatedCallback(
+          base::BindOnce(std::move(callback), true));
+    } else {
+      SetUpPageEntitiesModel(optimization_guide_model_provider_,
+                             std::move(callback));
+    }
+    return;
+  }
 
   std::move(callback).Run(false);
 }
@@ -542,7 +555,9 @@ PageContentAnnotationsModelManager::GetModelInfoForType(
       page_visibility_model_executor_) {
     return page_visibility_model_executor_->GetModelInfo();
   }
-  // TODO(crbug/1278828): Add support for page entities.
+  if (type == AnnotationType::kPageEntities && page_entities_model_executor_) {
+    return page_entities_model_executor_->GetModelInfo();
+  }
   return absl::nullopt;
 }
 
@@ -634,12 +649,16 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     return;
   }
 
-  // TODO(crbug/1278828): Add support for page entities.
   if (job->type() == AnnotationType::kPageEntities) {
-    job->FillWithNullOutputs();
-    job->OnComplete();
-    job.reset();
-    std::move(on_job_complete_callback).Run();
+    if (!page_entities_model_executor_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
+    }
+    page_entities_model_executor_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
     return;
   }
   NOTREACHED();

@@ -84,12 +84,12 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  absl::optional<std::vector<ScoredEntityMetadata>> ExecuteHumanReadableModel(
+  absl::optional<std::vector<ScoredEntityMetadata>> ExecuteModel(
       const std::string& text) {
     absl::optional<std::vector<ScoredEntityMetadata>> entity_metadata;
 
     base::RunLoop run_loop;
-    model_executor_->HumanReadableExecuteModelWithInput(
+    model_executor_->ExecuteModelWithInput(
         text, base::BindOnce(
                   [](base::RunLoop* run_loop,
                      absl::optional<std::vector<ScoredEntityMetadata>>*
@@ -102,14 +102,6 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
                   &run_loop, &entity_metadata));
     run_loop.Run();
 
-    // Sort the result by score to make validating the output easier.
-    if (entity_metadata) {
-      std::sort(
-          entity_metadata->begin(), entity_metadata->end(),
-          [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
-            return a.score > b.score;
-          });
-    }
     return entity_metadata;
   }
 
@@ -132,6 +124,8 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
 
     return entity_metadata;
   }
+
+  PageEntitiesModelExecutor* model_executor() { return model_executor_.get(); }
 
   ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
@@ -166,7 +160,7 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
@@ -184,18 +178,18 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
   proto::FieldTrial garbage;
   garbage.SerializeToString(any.mutable_value());
 
-  proto::PredictionModel model;
-  model.mutable_model()->set_download_url(
-      FilePathToString(GetModelTestDataDir().AppendASCII("model.tflite")));
-  model.mutable_model_info()->set_version(123);
-  *model.mutable_model_info()->mutable_model_metadata() = any;
-  std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
+  std::unique_ptr<ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetModelFilePath(GetModelTestDataDir().AppendASCII("model.tflite"))
+          .SetVersion(123)
+          .SetModelMetadata(any)
+          .Build();
   ASSERT_TRUE(model_info);
   PushModelInfoToObservers(*model_info);
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
@@ -213,18 +207,18 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
   any.set_type_url(metadata.GetTypeName());
   metadata.SerializeToString(any.mutable_value());
 
-  proto::PredictionModel model;
-  model.mutable_model()->set_download_url(
-      FilePathToString(GetModelTestDataDir().AppendASCII("model.tflite")));
-  model.mutable_model_info()->set_version(123);
-  *model.mutable_model_info()->mutable_model_metadata() = any;
-  std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
+  std::unique_ptr<ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetModelFilePath(GetModelTestDataDir().AppendASCII("model.tflite"))
+          .SetVersion(123)
+          .SetModelMetadata(any)
+          .Build();
   ASSERT_TRUE(model_info);
   PushModelInfoToObservers(*model_info);
 
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
-  EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
@@ -234,6 +228,35 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
       EntityAnnotatorCreationStatus::
           kMissingEntitiesModelMetadataSliceSpecification,
       1);
+}
+
+TEST_F(PageEntitiesModelExecutorImplTest, ModelInfoUpdated) {
+  bool callback_run = false;
+  model_executor()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+
+  EXPECT_FALSE(callback_run);
+  EXPECT_FALSE(model_executor()->GetModelInfo());
+
+  std::unique_ptr<ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetModelFilePath(GetModelTestDataDir().AppendASCII("test.tflite"))
+          .SetVersion(1337)
+          .Build();
+  PushModelInfoToObservers(*model_info);
+  EXPECT_TRUE(callback_run);
+
+  ASSERT_TRUE(model_executor()->GetModelInfo());
+  EXPECT_EQ(model_executor()->GetModelInfo()->GetModelFilePath(),
+            model_info->GetModelFilePath());
+  EXPECT_EQ(model_executor()->GetModelInfo()->GetVersion(),
+            model_info->GetVersion());
+
+  bool immediate_callback_run = false;
+  model_executor()->AddOnModelUpdatedCallback(base::BindOnce(
+      [](bool* flag) { *flag = true; }, &immediate_callback_run));
+  // This callback should be run immediately because the model is loaded.
+  EXPECT_TRUE(immediate_callback_run);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
@@ -268,26 +291,25 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
   for (const auto& missing_file_and_status : expected_additional_files) {
     base::HistogramTester histogram_tester;
 
-    proto::PredictionModel model;
-    model.mutable_model()->set_download_url(
-        FilePathToString(dir_path.AppendASCII("model.tflite")));
-    model.mutable_model_info()->set_version(123);
-    *model.mutable_model_info()->mutable_model_metadata() = any;
+    base::flat_set<base::FilePath> additional_files;
     for (const auto& additional_file : expected_additional_files) {
-      if (additional_file.first == missing_file_and_status.first) {
-        // Don't add the file if it's supposed to be missing.
-        continue;
+      if (additional_file.first != missing_file_and_status.first) {
+        additional_files.insert(*StringToFilePath(additional_file.first));
       }
-      model.mutable_model_info()->add_additional_files()->set_file_path(
-          additional_file.first);
     }
-    std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetModelFilePath(GetModelTestDataDir().AppendASCII("model.tflite"))
+            .SetVersion(123)
+            .SetModelMetadata(any)
+            .SetAdditionalFiles(additional_files)
+            .Build();
     ASSERT_TRUE(model_info);
     PushModelInfoToObservers(*model_info);
 
     // We expect that there will be no model to evaluate even for this input
     // that has output in the test model.
-    EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+    EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
@@ -303,8 +325,8 @@ TEST_F(PageEntitiesModelExecutorImplTest, GetMetadataForEntityIdNoModel) {
   EXPECT_EQ(GetMetadataForEntityId("/m/0dl567"), absl::nullopt);
 }
 
-TEST_F(PageEntitiesModelExecutorImplTest, ExecuteHumanReadableModelNoModel) {
-  EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+TEST_F(PageEntitiesModelExecutorImplTest, ExecuteModelNoModel) {
+  EXPECT_EQ(ExecuteModel("Taylor Swift singer"), absl::nullopt);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest,

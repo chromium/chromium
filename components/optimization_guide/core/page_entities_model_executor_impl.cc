@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/page_entities_model_executor_impl.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -152,6 +154,14 @@ void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(
         "ModelThreadExecutionLatency.PageEntities",
         annotate_timer.Elapsed());
   }
+
+  if (scored_md) {
+    // Determine the entities with the highest weights.
+    std::sort(scored_md->begin(), scored_md->end(),
+              [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
+                return a.score > b.score;
+              });
+  }
   reply_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), scored_md));
 }
@@ -226,20 +236,42 @@ PageEntitiesModelExecutorImpl::~PageEntitiesModelExecutorImpl() {
                                       std::move(entity_annotator_holder_));
 }
 
+void PageEntitiesModelExecutorImpl::AddOnModelUpdatedCallback(
+    base::OnceClosure callback) {
+  if (model_info_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // callbacks are not bound locally and are safe to be destroyed at any time.
+  on_model_updated_callbacks_.AddUnsafe(std::move(callback));
+}
+
 void PageEntitiesModelExecutorImpl::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     const ModelInfo& model_info) {
   if (optimization_target != proto::OPTIMIZATION_TARGET_PAGE_ENTITIES)
     return;
 
+  model_info_ = model_info;
+
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &EntityAnnotatorHolder::CreateAndSetEntityAnnotatorOnBackgroundThread,
           entity_annotator_holder_->GetBackgroundWeakPtr(), model_info));
+
+  // Run any observing callbacks after the model file is posted to the
+  // model executor thread so that any model execution requests are posted to
+  // the model executor thread after the model update.
+  on_model_updated_callbacks_.Notify();
 }
 
-void PageEntitiesModelExecutorImpl::HumanReadableExecuteModelWithInput(
+absl::optional<ModelInfo> PageEntitiesModelExecutorImpl::GetModelInfo() const {
+  return model_info_;
+}
+
+void PageEntitiesModelExecutorImpl::ExecuteModelWithInput(
     const std::string& text,
     PageEntitiesMetadataModelExecutedCallback callback) {
   if (text.empty()) {

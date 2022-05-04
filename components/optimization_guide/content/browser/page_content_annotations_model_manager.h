@@ -121,6 +121,11 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // only be run at construction.
   void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider);
 
+  // Same as above but runs |callback(true)| when the model executor has a model
+  // file or |callback(false)| if the model executor is not available.
+  void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider,
+                              base::OnceCallback<void(bool)> callback);
+
   // Requests to execute the page entities model with |text|, populate
   // |current_annotations| with detected entities on success, and proceed to
   // execute any subsequent models.

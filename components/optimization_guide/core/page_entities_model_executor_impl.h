@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_
 
+#include "base/callback_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -108,13 +109,22 @@ class PageEntitiesModelExecutorImpl : public OptimizationTargetModelObserver,
   PageEntitiesModelExecutorImpl& operator=(
       const PageEntitiesModelExecutorImpl&) = delete;
 
+  // TODO(crbug.com/1278828): Remove once src-internal is updated.
+  void HumanReadableExecuteModelWithInput(
+      const std::string& text,
+      PageEntitiesMetadataModelExecutedCallback callback) {
+    ExecuteModelWithInput(text, std::move(callback));
+  }
+
   // PageEntitiesModelExecutor:
   void GetMetadataForEntityId(
       const std::string& entity_id,
       PageEntitiesModelEntityMetadataRetrievedCallback callback) override;
-  void HumanReadableExecuteModelWithInput(
+  void ExecuteModelWithInput(
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback) override;
+  void AddOnModelUpdatedCallback(base::OnceClosure callback) override;
+  absl::optional<ModelInfo> GetModelInfo() const override;
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
@@ -131,6 +141,13 @@ class PageEntitiesModelExecutorImpl : public OptimizationTargetModelObserver,
 
   // The holder used to hold the annotator used to annotate entities.
   std::unique_ptr<EntityAnnotatorHolder> entity_annotator_holder_;
+
+  // The most recent model info given to |OnModelUpdated|.
+  absl::optional<ModelInfo> model_info_;
+
+  // Populated with callbacks if |AddOnModelUpdatedCallback| is called before a
+  // model file is available, then is notified when |OnModelUpdated| is called.
+  base::OnceClosureList on_model_updated_callbacks_;
 
   base::WeakPtrFactory<PageEntitiesModelExecutorImpl> weak_ptr_factory_{this};
 };
