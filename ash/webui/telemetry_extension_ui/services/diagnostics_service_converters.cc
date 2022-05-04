@@ -5,7 +5,6 @@
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
 
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/convert_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
@@ -32,7 +31,7 @@ health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
   return health::mojom::RoutineUpdate::New(
       input->progress_percent,
       GetStringFromMojoHandle(std::move(input->output)),
-      ConvertPtr(std::move(input->routine_update_union)));
+      ConvertDiagnosticsPtr(std::move(input->routine_update_union)));
 }
 
 health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
@@ -40,10 +39,10 @@ health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
       return health::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
-          ConvertPtr(std::move(input->get_interactive_update())));
+          ConvertDiagnosticsPtr(std::move(input->get_interactive_update())));
     case cros_healthd::mojom::RoutineUpdateUnion::Tag::kNoninteractiveUpdate:
       return health::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
-          ConvertPtr(std::move(input->get_noninteractive_update())));
+          ConvertDiagnosticsPtr(std::move(input->get_noninteractive_update())));
   }
 }
 

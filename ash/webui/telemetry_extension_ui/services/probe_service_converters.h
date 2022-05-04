@@ -148,6 +148,12 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   return output;
 }
 
+template <class InputT>
+auto ConvertProbePtr(InputT input) {
+  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
+                            : nullptr;
+}
+
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
     const std::vector<health::mojom::ProbeCategoryEnum>& input);
 

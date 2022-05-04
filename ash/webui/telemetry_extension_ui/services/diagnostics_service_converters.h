@@ -69,6 +69,12 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
     health::mojom::DiskReadRoutineTypeEnum input);
 
+template <class InputT>
+auto ConvertDiagnosticsPtr(InputT input) {
+  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
+                            : nullptr;
+}
+
 }  // namespace converters
 }  // namespace ash
 

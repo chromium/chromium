@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/convert_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -74,7 +73,7 @@ health::mojom::BatteryInfoPtr UncheckedConvertPtr(
       Convert(input->charge_now), Convert(input->current_now),
       std::move(input->technology), std::move(input->status),
       std::move(input->manufacture_date),
-      ConvertPtr(std::move(input->temperature)));
+      ConvertProbePtr(std::move(input->temperature)));
 }
 
 health::mojom::BatteryResultPtr UncheckedConvertPtr(
@@ -82,10 +81,10 @@ health::mojom::BatteryResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::BatteryResult::Tag::kBatteryInfo:
       return health::mojom::BatteryResult::NewBatteryInfo(
-          ConvertPtr(std::move(input->get_battery_info())));
+          ConvertProbePtr(std::move(input->get_battery_info())));
     case cros_healthd::mojom::BatteryResult::Tag::kError:
       return health::mojom::BatteryResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -100,7 +99,7 @@ health::mojom::NonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
       Convert(input->read_time_seconds_since_last_boot),
       Convert(input->write_time_seconds_since_last_boot),
       Convert(input->io_time_seconds_since_last_boot),
-      ConvertPtr(std::move(input->discard_time_seconds_since_last_boot)));
+      ConvertProbePtr(std::move(input->discard_time_seconds_since_last_boot)));
 }
 
 health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
@@ -113,7 +112,7 @@ health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
               std::move(input->get_block_device_info())));
     case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::kError:
       return health::mojom::NonRemovableBlockDeviceResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -130,10 +129,10 @@ health::mojom::CachedVpdResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::SystemResult::Tag::kSystemInfo:
       return health::mojom::CachedVpdResult::NewVpdInfo(
-          ConvertPtr(std::move(input->get_system_info())));
+          ConvertProbePtr(std::move(input->get_system_info())));
     case cros_healthd::mojom::SystemResult::Tag::kError:
       return health::mojom::CachedVpdResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -196,10 +195,10 @@ health::mojom::CpuResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::CpuResult::Tag::kCpuInfo:
       return health::mojom::CpuResult::NewCpuInfo(
-          ConvertPtr(std::move(input->get_cpu_info())));
+          ConvertProbePtr(std::move(input->get_cpu_info())));
     case cros_healthd::mojom::CpuResult::Tag::kError:
       return health::mojom::CpuResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -213,10 +212,10 @@ health::mojom::TimezoneResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::TimezoneResult::Tag::kTimezoneInfo:
       return health::mojom::TimezoneResult::NewTimezoneInfo(
-          ConvertPtr(std::move(input->get_timezone_info())));
+          ConvertProbePtr(std::move(input->get_timezone_info())));
     case cros_healthd::mojom::TimezoneResult::Tag::kError:
       return health::mojom::TimezoneResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -233,10 +232,10 @@ health::mojom::MemoryResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::MemoryResult::Tag::kMemoryInfo:
       return health::mojom::MemoryResult::NewMemoryInfo(
-          ConvertPtr(std::move(input->get_memory_info())));
+          ConvertProbePtr(std::move(input->get_memory_info())));
     case cros_healthd::mojom::MemoryResult::Tag::kError:
       return health::mojom::MemoryResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -256,7 +255,7 @@ health::mojom::BacklightResultPtr UncheckedConvertPtr(
               std::move(input->get_backlight_info())));
     case cros_healthd::mojom::BacklightResult::Tag::kError:
       return health::mojom::BacklightResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -274,7 +273,7 @@ health::mojom::FanResultPtr UncheckedConvertPtr(
               std::move(input->get_fan_info())));
     case cros_healthd::mojom::FanResult::Tag::kError:
       return health::mojom::FanResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -291,10 +290,10 @@ health::mojom::StatefulPartitionResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::StatefulPartitionResult::Tag::kPartitionInfo:
       return health::mojom::StatefulPartitionResult::NewPartitionInfo(
-          ConvertPtr(std::move(input->get_partition_info())));
+          ConvertProbePtr(std::move(input->get_partition_info())));
     case cros_healthd::mojom::StatefulPartitionResult::Tag::kError:
       return health::mojom::StatefulPartitionResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -314,7 +313,7 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
               std::move(input->get_bluetooth_adapter_info())));
     case cros_healthd::mojom::BluetoothResult::Tag::kError:
       return health::mojom::BluetoothResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
@@ -325,7 +324,8 @@ health::mojom::OsInfoPtr UncheckedConvertPtr(
 
 health::mojom::SystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::SystemInfoV2Ptr input) {
-  return health::mojom::SystemInfo::New(ConvertPtr(std::move(input->os_info)));
+  return health::mojom::SystemInfo::New(
+      ConvertProbePtr(std::move(input->os_info)));
 }
 
 health::mojom::SystemResultPtr UncheckedConvertPtr(
@@ -333,27 +333,27 @@ health::mojom::SystemResultPtr UncheckedConvertPtr(
   switch (input->which()) {
     case cros_healthd::mojom::SystemResultV2::Tag::kSystemInfoV2:
       return health::mojom::SystemResult::NewSystemInfo(
-          ConvertPtr(std::move(input->get_system_info_v2())));
+          ConvertProbePtr(std::move(input->get_system_info_v2())));
     case cros_healthd::mojom::SystemResultV2::Tag::kError:
       return health::mojom::SystemResult::NewError(
-          ConvertPtr(std::move(input->get_error())));
+          ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   return health::mojom::TelemetryInfo::New(
-      ConvertPtr(std::move(input->battery_result)),
-      ConvertPtr(std::move(input->block_device_result)),
-      ConvertPtr(std::move(input->system_result)),
-      ConvertPtr(std::move(input->cpu_result)),
-      ConvertPtr(std::move(input->timezone_result)),
-      ConvertPtr(std::move(input->memory_result)),
-      ConvertPtr(std::move(input->backlight_result)),
-      ConvertPtr(std::move(input->fan_result)),
-      ConvertPtr(std::move(input->stateful_partition_result)),
-      ConvertPtr(std::move(input->bluetooth_result)),
-      ConvertPtr(std::move(input->system_result_v2)));
+      ConvertProbePtr(std::move(input->battery_result)),
+      ConvertProbePtr(std::move(input->block_device_result)),
+      ConvertProbePtr(std::move(input->system_result)),
+      ConvertProbePtr(std::move(input->cpu_result)),
+      ConvertProbePtr(std::move(input->timezone_result)),
+      ConvertProbePtr(std::move(input->memory_result)),
+      ConvertProbePtr(std::move(input->backlight_result)),
+      ConvertProbePtr(std::move(input->fan_result)),
+      ConvertProbePtr(std::move(input->stateful_partition_result)),
+      ConvertProbePtr(std::move(input->bluetooth_result)),
+      ConvertProbePtr(std::move(input->system_result_v2)));
 }
 
 }  // namespace unchecked

@@ -11,6 +11,15 @@
 namespace ash {
 namespace converters {
 
+// Tests that |ConvertDiagnosticsPtr| function returns nullptr if input is
+// nullptr. ConvertDiagnosticsPtr is a template, so we can test this function
+// with any valid type.
+TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticsPtrTakesNullPtr) {
+  EXPECT_TRUE(
+      ConvertDiagnosticsPtr(cros_healthd::mojom::InteractiveRoutineUpdatePtr())
+          .is_null());
+}
+
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
   namespace health = ::ash::health::mojom;
