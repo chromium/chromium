@@ -33,6 +33,8 @@ NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";
 NSString* const kTextQuaternaryColor = @"text_quaternary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
+NSString* const kTextfieldFocusedBackgroundColor =
+    @"textfield_focused_background_color";
 NSString* const kTextfieldHighlightBackgroundColor =
     @"textfield_highlight_background_color";
 NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";

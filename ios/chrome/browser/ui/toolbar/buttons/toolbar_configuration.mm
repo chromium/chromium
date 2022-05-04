@@ -31,6 +31,14 @@
   return [UIColor colorNamed:kBackgroundColor];
 }
 
+- (UIColor*)focusedBackgroundColor {
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+}
+
+- (UIColor*)focusedLocationBarBackgroundColor {
+  return [UIColor colorNamed:kTextfieldFocusedBackgroundColor];
+}
+
 - (UIColor*)buttonsTintColor {
   return [UIColor colorNamed:kToolbarButtonColor];
 }

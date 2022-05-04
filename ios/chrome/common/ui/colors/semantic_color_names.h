@@ -40,6 +40,7 @@ extern NSString* const kTextSecondaryColor;
 extern NSString* const kTextTertiaryColor;
 extern NSString* const kTextQuaternaryColor;
 extern NSString* const kTextfieldBackgroundColor;
+extern NSString* const kTextfieldFocusedBackgroundColor;
 extern NSString* const kTextfieldHighlightBackgroundColor;
 extern NSString* const kTextfieldPlaceholderColor;
 // Color used for buttons on a toolbar.
