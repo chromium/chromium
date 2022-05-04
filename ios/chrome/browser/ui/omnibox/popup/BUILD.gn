@@ -236,7 +236,10 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "omnibox_popup_egtest.mm" ]
+  sources = [
+    "omnibox_popup_egtest.mm",
+    "pedals_egtest.mm",
+  ]
   deps = [
     ":popup_accessibility_identifier_constants",
     "//base",
