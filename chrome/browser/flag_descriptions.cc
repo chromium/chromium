@@ -1019,6 +1019,11 @@ const char kEnableSRPIsolatedPrerendersNSPName[] =
 const char kEnableSRPIsolatedPrerendersNSPDescription[] =
     "Enables NoStatePrefetch on Isolated Prerenders.";
 
+const char kExperimentalRgbKeyboardPatternsName[] =
+    "Enable experimental RGB Keyboard patterns support";
+const char kExperimentalRgbKeyboardPatternsDescription[] =
+    "Enable experimental RGB Keyboard patterns support on supported devices.";
+
 const char kDownloadAutoResumptionNativeName[] =
     "Enable download auto-resumption in native";
 const char kDownloadAutoResumptionNativeDescription[] =

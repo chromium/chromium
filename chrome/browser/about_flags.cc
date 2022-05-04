@@ -6240,6 +6240,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
 
+    {"enable-experimental-rgb-keyboard-patterns",
+     flag_descriptions::kExperimentalRgbKeyboardPatternsName,
+     flag_descriptions::kExperimentalRgbKeyboardPatternsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kExperimentalRgbKeyboardPatterns)},
+
     {"enable-hostname-setting", flag_descriptions::kEnableHostnameSettingName,
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableHostnameSetting)},

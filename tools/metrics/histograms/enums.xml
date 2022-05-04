@@ -54657,6 +54657,7 @@ from previous Chrome versions.
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-653505852" label="WebViewEmptyComponentLoaderPolicy:disabled"/>
   <int value="-652144124" label="BorealisBigGl:enabled"/>
+  <int value="-650731862" label="ExperimentalRgbKeyboardPatterns:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
   <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
   <int value="-650213879" label="OmniboxZeroSuggestionsOnNTP:disabled"/>
@@ -55707,6 +55708,7 @@ from previous Chrome versions.
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>
   <int value="73606763" label="XsurfaceMetricsReporting:disabled"/>

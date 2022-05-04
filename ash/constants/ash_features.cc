@@ -635,6 +635,10 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows RGB Keyboard to test new animations/patterns.
+const base::Feature kExperimentalRgbKeyboardPatterns{
+    "ExperimentalRgbKeyboardPatterns", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
@@ -1691,6 +1695,10 @@ bool IsEcheSWADebugModeEnabled() {
 
 bool IsESimPolicyEnabled() {
   return base::FeatureList::IsEnabled(kESimPolicy);
+}
+
+bool IsExperimentalRgbKeyboardPatternsEnabled() {
+  return base::FeatureList::IsEnabled(kExperimentalRgbKeyboardPatterns);
 }
 
 bool IsExtendedOpenVpnSettingsEnabled() {

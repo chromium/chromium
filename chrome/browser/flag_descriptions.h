@@ -668,6 +668,9 @@ extern const char kEnableSRPIsolatedPrerenderProbingDescription[];
 extern const char kEnableSRPIsolatedPrerendersNSPName[];
 extern const char kEnableSRPIsolatedPrerendersNSPDescription[];
 
+extern const char kExperimentalRgbKeyboardPatternsName[];
+extern const char kExperimentalRgbKeyboardPatternsDescription[];
+
 extern const char kReduceHorizontalFlingVelocityName[];
 extern const char kReduceHorizontalFlingVelocityDescription[];
 
