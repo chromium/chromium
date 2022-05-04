@@ -166,6 +166,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
+  GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
   GetWidget()->Show();
 
   base::UmaHistogramEnumeration(kActionHistogramName,
