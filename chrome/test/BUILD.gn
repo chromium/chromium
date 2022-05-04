@@ -9772,6 +9772,7 @@ if (!is_android) {
         "../browser/sync/test/integration/single_client_arc_package_sync_test.cc",
         "../browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
         "../browser/sync/test/integration/single_client_printers_sync_test.cc",
+        "../browser/sync/test/integration/single_client_wifi_configuration_sync_test.cc",
         "../browser/sync/test/integration/single_client_workspace_desk_sync_test.cc",
         "../browser/sync/test/integration/two_client_app_list_sync_test.cc",
         "../browser/sync/test/integration/two_client_arc_package_sync_test.cc",
@@ -9779,6 +9780,9 @@ if (!is_android) {
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
       ]
       deps += [
+        "//chromeos/components/sync_wifi",
+        "//chromeos/components/sync_wifi:test_support",
+        "//chromeos/dbus/shill",
         "//chromeos/printing",
         "//components/desks_storage",
       ]
