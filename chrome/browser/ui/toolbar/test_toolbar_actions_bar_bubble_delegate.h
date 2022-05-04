@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTIONS_BAR_BUBBLE_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "ui/base/ui_base_types.h"
@@ -15,7 +16,8 @@ class TestToolbarActionsBarBubbleDelegate {
  public:
   TestToolbarActionsBarBubbleDelegate(const std::u16string& heading,
                                       const std::u16string& body,
-                                      const std::u16string& action);
+                                      const std::u16string& action = u"",
+                                      const std::u16string& dismiss = u"");
 
   TestToolbarActionsBarBubbleDelegate(
       const TestToolbarActionsBarBubbleDelegate&) = delete;
@@ -29,12 +31,6 @@ class TestToolbarActionsBarBubbleDelegate {
   // it would be deleted once the bubble closes.
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> GetDelegate();
 
-  void set_action_button_text(const std::u16string& action) {
-    action_ = action;
-  }
-  void set_dismiss_button_text(const std::u16string& dismiss) {
-    dismiss_ = dismiss;
-  }
   void set_learn_more_button_text(const std::u16string& learn_more) {
     learn_more_ = learn_more;
 
@@ -45,11 +41,11 @@ class TestToolbarActionsBarBubbleDelegate {
     info_->text = learn_more;
     info_->is_learn_more = true;
   }
-  void set_default_dialog_button(ui::DialogButton default_button) {
-    default_button_ = default_button;
-  }
   void set_item_list_text(const std::u16string& item_list) {
     item_list_ = item_list;
+  }
+  void set_default_dialog_button(ui::DialogButton default_button) {
+    default_button_ = default_button;
   }
   void set_close_on_deactivate(bool close_on_deactivate) {
     close_on_deactivate_ = close_on_deactivate;
@@ -59,6 +55,7 @@ class TestToolbarActionsBarBubbleDelegate {
     info_ = std::move(info);
   }
   void set_action_id(std::string id) { action_id_ = std::move(id); }
+
   const ToolbarActionsBarBubbleDelegate::CloseAction* close_action() const {
     return close_action_.get();
   }

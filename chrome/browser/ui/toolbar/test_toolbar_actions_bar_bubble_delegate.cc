@@ -59,11 +59,13 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
 TestToolbarActionsBarBubbleDelegate::TestToolbarActionsBarBubbleDelegate(
     const std::u16string& heading,
     const std::u16string& body,
-    const std::u16string& action)
+    const std::u16string& action,
+    const std::u16string& dismiss)
     : shown_(false),
       heading_(heading),
       body_(body),
       action_(action),
+      dismiss_(dismiss),
       default_button_(ui::DIALOG_BUTTON_NONE),
       close_on_deactivate_(true) {}
 
