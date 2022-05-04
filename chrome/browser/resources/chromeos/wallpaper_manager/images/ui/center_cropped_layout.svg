@@ -1,3 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <path fill="#5F6368" fill-rule="evenodd" d="M2,11 L14,11 L14,5 L2,5 L2,11 Z M1,12 L15,12 L15,4 L1,4 L1,12 Z M10,3 L12,3 L12,1 L10,1 L10,3 Z M10,15 L12,15 L12,13 L10,13 L10,15 Z M13,15 C14.1,15 15,14.1 15,13 L13,13 L13,15 Z M7,15 L9,15 L9,13 L7,13 L7,15 Z M4,3 L6,3 L6,1 L4,1 L4,3 Z M3,15 L3,13 L1,13 C1,14.1 1.9,15 3,15 L3,15 Z M13,1 L13,3 L15,3 C15,1.9 14.1,1 13,1 L13,1 Z M7,3 L9,3 L9,1 L7,1 L7,3 Z M4,15 L6,15 L6,13 L4,13 L4,15 Z M1,3 L3,3 L3,1 C1.9,1 1,1.9 1,3 L1,3 Z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#5F6368" fill-rule="evenodd" d="M2 11h12V5H2v6Zm-1 1h14V4H1v8Zm9-9h2V1h-2v2Zm0 12h2v-2h-2v2Zm3 0c1.1 0 2-.9 2-2h-2v2Zm-6 0h2v-2H7v2ZM4 3h2V1H4v2ZM3 15v-2H1c0 1.1.9 2 2 2ZM13 1v2h2c0-1.1-.9-2-2-2ZM7 3h2V1H7v2ZM4 15h2v-2H4v2ZM1 3h2V1c-1.1 0-2 .9-2 2Z"/></svg>
