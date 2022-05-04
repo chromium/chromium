@@ -211,8 +211,13 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size zero_state_new_desk_button_size =
           zero_state_new_desk_button->GetPreferredSize();
 
+      // The presenter is shutdown early in the overview destruction process to
+      // prevent calls to the model. Some animations on the desks bar may still
+      // call this function past shutdown start. In this case we just continue
+      // as if the saved desks Ui should be hidden.
       const bool should_show_templates_ui =
           desks_templates_util::IsSavedDesksEnabled() &&
+          !bar_view_->overview_grid()->overview_session()->is_shutting_down() &&
           DesksTemplatesPresenter::Get()->should_show_templates_ui();
       auto* zero_state_desks_templates_button =
           bar_view_->zero_state_desks_templates_button();

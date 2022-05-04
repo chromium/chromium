@@ -36,6 +36,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   // Convenience function to get the presenter instance, which is created and
   // owned by `OverviewSession`.
+  // TODO(crbug.com/1322553): Remove this function as `Get()` is normally used
+  // for singletons, or for objects whose lifetimes are deterministic and live
+  // as long as ash lives.
   static DesksTemplatesPresenter* Get();
 
   bool should_show_templates_ui() { return should_show_templates_ui_; }
