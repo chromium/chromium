@@ -21,10 +21,13 @@ import json
 import os
 import sys
 
-
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 WIN_PY3_TARGETS = ['python3.exe', 'python3.bat']
+
 
 def with_python3():
   if sys.version_info.major >= 3:

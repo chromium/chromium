@@ -23,15 +23,15 @@ import psutil
 
 import test_env
 
+# pylint: disable=useless-object-inheritance
+
 
 class _XvfbProcessError(Exception):
   """Exception raised when Xvfb cannot start."""
-  pass
 
 
 class _WestonProcessError(Exception):
   """Exception raised when Weston cannot start."""
-  pass
 
 
 def kill(proc, name, timeout_in_seconds=10):
@@ -54,7 +54,7 @@ def kill(proc, name, timeout_in_seconds=10):
           file=sys.stderr)
 
 
-def launch_dbus(env):
+def launch_dbus(env): # pylint: disable=inconsistent-return-statements
   """Starts a DBus session.
 
   Works around a bug in GLib where it performs operations which aren't
@@ -136,10 +136,9 @@ def run_executable(
 
   if sys.platform.startswith('linux') and use_xvfb:
     return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr)
-  elif use_weston:
+  if use_weston:
     return _run_with_weston(cmd, env, stdoutfile)
-  else:
-    return test_env.run_executable(cmd, env, stdoutfile)
+  return test_env.run_executable(cmd, env, stdoutfile)
 
 
 def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):

@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+PAR_DIR = os.path.join(SRC_DIR, 'testing')
 OUT_DIR = os.path.join(SRC_DIR, 'out', 'Release')
 BLINK_TOOLS = os.path.join(
     SRC_DIR, 'third_party', 'blink', 'tools')
@@ -46,10 +47,11 @@ if PYPROTO_LIB not in sys.path:
 if WEBVIEW_VARIATIONS_PROTO not in sys.path:
   sys.path.append(WEBVIEW_VARIATIONS_PROTO)
 
+sys.path.append(PAR_DIR)
+
 if 'compile_targets' not in sys.argv:
   import aw_variations_seed_pb2
 
-import common
 import devil_chromium
 import wpt_common
 
@@ -66,6 +68,7 @@ from devil.android.tools import webview_app
 from devil.utils import logging_common
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
+from scripts import common
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
@@ -82,6 +85,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 TEST_CASES = {}
 
+# pylint: disable=super-with-arguments
+
 
 class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
@@ -95,6 +100,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     self.browser_activity_name = (self.options.browser_activity_name or
                                   self.default_browser_activity_name)
     self.log_mon = None
+    self.layout_test_results_subdir = None
     self.test_specific_browser_args = []
     if self.options.webview_provider_apk:
       self.webview_provider_package_name = (

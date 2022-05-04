@@ -8,7 +8,10 @@ import logging
 import os
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
 CATAPULT_DIR = os.path.join(common.SRC_DIR, 'third_party', 'catapult')
@@ -30,6 +33,7 @@ from blinkpy.common.path_finder import PathFinder
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=super-with-arguments
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     """The base class for script adapters that use wptrunner to execute web
     platform tests. This contains any code shared between these scripts, such
@@ -210,6 +214,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     def generate_test_repeat_args(self, repeat_count):
         return ['--repeat=%d' % repeat_count]
 
+    # pylint: disable=unused-argument
     def generate_test_launcher_retry_limit_args(self, retry_limit):
         # TODO(crbug/1306222): wptrunner currently cannot rerun individual
         # failed tests, so this flag is accepted but not used.

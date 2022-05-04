@@ -12,8 +12,12 @@ import logging
 import os
 import sys
 
-import common
 import wpt_common
+
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +58,7 @@ except ImportError:
     _ANDROID_ENABLED = False
 
 
+# pylint: disable=super-with-arguments
 def _make_pass_through_action(dest, map_arg=lambda arg: arg):
     class PassThroughAction(argparse.Action):
         def __init__(self, option_strings, dest, nargs=None, **kwargs):
@@ -174,7 +179,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
   def log_level(self):
     if self.options.verbose >= 2:
       return logging.DEBUG
-    elif self.options.verbose >= 1:
+    if self.options.verbose >= 1:
       return logging.INFO
     return logging.WARNING
 
@@ -431,7 +436,7 @@ class Product:
     def wpt_args(self):
         """list[str]: Arguments to add to a 'wpt run' command."""
         args = []
-        version = self.get_version()
+        version = self.get_version() # pylint: disable=assignment-from-none
         if version:
             args.append('--browser-version=%s' % version)
         webdriver = self.webdriver_binary
@@ -698,12 +703,11 @@ class WebView(ChromeAndroidBase):
             return webview_app.UseWebViewProvider(
                 device,
                 self._options.webview_provider)
-        else:
-            assert self._options.release_channel, 'no webview install method'
-            return _install_webview_from_release(
-                device,
-                self._options.release_channel,
-                self._python_executable)
+        assert self._options.release_channel, 'no webview install method'
+        return _install_webview_from_release(
+            device,
+            self._options.release_channel,
+            self._python_executable)
 
     def _validate_options(self):
         super(WebView, self)._validate_options()

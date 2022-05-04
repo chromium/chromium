@@ -9,7 +9,10 @@ import os
 import platform
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 
 def is_linux():
@@ -88,7 +91,7 @@ def get_device_info(args, failures):
       v['ro.build.fingerprint'] for v in device_info if not v['denylisted']]
 
   def unique_build_details(index):
-    return sorted(list(set([v.split(':')[index] for v in details])))
+    return sorted(list({v.split(':')[index] for v in details}))
 
   parsed_details = {
     'device_names': unique_build_details(0),

@@ -23,7 +23,9 @@ def CommonChecks(input_api, output_api):
       input_api,
       output_api,
       '.',
-      [r'^.+_unittest\.py$']))
+      [r'^.+_unittest\.py$'],
+      run_on_python3=USE_PYTHON3,
+      skip_shebang_check=True))
   output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
       input_api,
       output_api,
@@ -36,21 +38,6 @@ def CommonChecks(input_api, output_api):
   output.extend(input_api.canned_checks.RunPylint(
       input_api,
       output_api,
-      files_to_skip=[r'gmock.*', r'gtest.*',
-          r'buildbot.*', r'merge_scripts.*', r'trigger_scripts.*',
-          r'unexpected_passes_common.*',
-          r'clusterfuzz.*',
-          r'libfuzzer.*']))
-  # Pylint2.7 is run on subdirs whose presubmit checks are migrated to Python3
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api,
-      output_api,
-      files_to_check=[r'buildbot.*\.py$',
-          r'merge_scripts.*\.py$',
-          r'trigger_scripts.*\.py$',
-          r'unexpected_passes_common.*\.py$',
-          r'clusterfuzz.*\.py$',
-          r'libfuzzer.*\.py$'],
       version='2.7'))
 
   return output

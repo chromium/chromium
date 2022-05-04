@@ -48,11 +48,11 @@ import tempfile
 import traceback
 import six
 
-import common
 from collections import OrderedDict
 
 CHROMIUM_SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+    os.path.join(os.path.dirname(__file__),
+                 os.path.pardir, os.path.pardir))
 
 PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
 sys.path.append(PERF_DIR)
@@ -63,19 +63,21 @@ PERF_CORE_DIR = os.path.join(PERF_DIR, 'core')
 sys.path.append(PERF_CORE_DIR)
 import results_merger
 
-# Add src/testing/ into sys.path for importing xvfb and test_env.
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Add src/testing/ into sys.path for importing xvfb, test_env, and common.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import xvfb
 import test_env
+from scripts import common
 
 # Unfortunately we need to copy these variables from ../test_env.py.
 # Importing it and using its get_sandbox_env breaks test runs on Linux
 # (it seems to unset DISPLAY).
 CHROME_SANDBOX_ENV = 'CHROME_DEVEL_SANDBOX'
 CHROME_SANDBOX_PATH = '/opt/chromium/chrome_sandbox'
-SHARD_MAPS_DIRECTORY = os.path.join(
-    os.path.dirname(__file__), '..', '..', 'tools', 'perf', 'core',
-    'shard_maps')
+SHARD_MAPS_DIRECTORY = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
+                 'tools', 'perf', 'core', 'shard_maps'))
 
 # See https://crbug.com/923564.
 # We want to switch over to using histograms for everything, but converting from
@@ -105,6 +107,8 @@ GTEST_CONVERSION_WHITELIST = [
   'wayland_client_perftests',
   'xr.vr.common_perftests',
 ]
+
+# pylint: disable=useless-object-inheritance
 
 
 class OutputFilePaths(object):
@@ -188,8 +192,7 @@ class GtestCommandGenerator(object):
     executable = str(self.executable_name)
     if IsWindows():
       return r'.\%s.exe' % executable
-    else:
-      return './%s' % executable
+    return './%s' % executable
 
   def _get_additional_flags(self):
     return self._additional_flags
@@ -246,7 +249,7 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
           benchmark_name: {
               'expected': 'PASS',
               'actual': 'FAIL' if return_code else 'PASS',
-              'is_unexpected': True if return_code else False,
+              'is_unexpected': bool(return_code),
           },
       },
       'interrupted': False,
@@ -353,9 +356,9 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
   if os.path.exists(output_paths.perf_results):
     if command_generator.executable_name in GTEST_CONVERSION_WHITELIST:
       with path_util.SysPath(path_util.GetTracingDir()):
-        # pylint: disable=no-name-in-module
+        # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
-        # pylint: enable=no-name-in-module
+        # pylint: enable=no-name-in-module,import-outside-toplevel
       gtest_json_converter.ConvertGtestJsonFile(output_paths.perf_results)
   else:
     print('ERROR: gtest perf test %s did not generate perf output' %
