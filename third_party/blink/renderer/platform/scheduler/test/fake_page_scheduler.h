@@ -59,7 +59,6 @@ class FakePageScheduler final : public PageScheduler {
   void SetPageBackForwardCached(bool) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool is_local) override {}
-  void OnLocalMainFrameNetworkAlmostIdle() override {}
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,

@@ -132,7 +132,6 @@ class DummyPageScheduler : public PageScheduler {
   void SetPageBackForwardCached(bool) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool) override {}
-  void OnLocalMainFrameNetworkAlmostIdle() override {}
   void AudioStateChanged(bool is_audio_playing) override {}
   bool IsAudioPlaying() const override { return false; }
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }

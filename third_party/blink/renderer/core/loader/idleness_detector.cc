@@ -158,12 +158,6 @@ void IdlenessDetector::WillProcessTask(base::TimeTicks start_time) {
     }
     FirstMeaningfulPaintDetector::From(*local_frame_->GetDocument())
         .OnNetwork2Quiet();
-    if (local_frame_->IsMainFrame()) {
-      if (Page* page = local_frame_->GetPage()) {
-        if (PageScheduler* scheduler = page->GetPageScheduler())
-          scheduler->OnLocalMainFrameNetworkAlmostIdle();
-      }
-    }
     in_network_2_quiet_period_ = false;
     network_2_quiet_ = base::TimeTicks();
   }

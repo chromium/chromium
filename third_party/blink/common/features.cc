@@ -443,11 +443,6 @@ const base::Feature kStopInBackground {
 #endif
 };
 
-// Freeze scheduler task queues in background on network idle.
-// This feature only works if stop-in-background is enabled.
-const base::Feature kFreezeBackgroundTabOnNetworkIdle{
-    "freeze-background-tab-on-network-idle", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable the Storage Access API. https://crbug.com/989663.
 const base::Feature kStorageAccessAPI{"StorageAccessAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

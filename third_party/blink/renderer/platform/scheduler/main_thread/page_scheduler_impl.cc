@@ -53,14 +53,6 @@ constexpr base::TimeDelta kThrottlingDelayAfterBackgrounding =
 constexpr base::TimeDelta kDefaultDelayForBackgroundTabFreezing =
     base::Minutes(5);
 
-// The amount of time to wait before checking network idleness
-// after the page has been backgrounded. If network is idle,
-// suspend shared timers, and loading etc. This is used only if
-// freeze-background-tab-on-network-idle feature is enabled.
-// This value should be smaller than kDefaultDelayForBackgroundTabFreezing.
-constexpr base::TimeDelta kDefaultDelayForBackgroundAndNetworkIdleTabFreezing =
-    base::Minutes(1);
-
 // Duration of a throttled wake up.
 constexpr base::TimeDelta kThrottledWakeUpDuration = base::Milliseconds(3);
 
@@ -137,17 +129,6 @@ base::TimeDelta GetDelayForBackgroundTabFreezing() {
   return base::Milliseconds(kDelayForBackgroundTabFreezingMillis.Get());
 }
 
-base::TimeDelta GetDelayForBackgroundAndNetworkIdleTabFreezing() {
-  static const base::FeatureParam<int>
-      kDelayForBackgroundAndNetworkIdleTabFreezingMillis{
-          &features::kFreezeBackgroundTabOnNetworkIdle,
-          "DelayForBackgroundAndNetworkIdleTabFreezingMills",
-          static_cast<int>(kDefaultDelayForBackgroundAndNetworkIdleTabFreezing
-                               .InMilliseconds())};
-  return base::Milliseconds(
-      kDelayForBackgroundAndNetworkIdleTabFreezingMillis.Get());
-}
-
 base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
   if (base::FeatureList::IsEnabled(
           features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments)) {
@@ -186,10 +167,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       had_recent_title_or_favicon_update_(false),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
-      freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
-          blink::features::kFreezeBackgroundTabOnNetworkIdle)),
-      delay_for_background_and_network_idle_tab_freezing_(
-          GetDelayForBackgroundAndNetworkIdleTabFreezing()),
       throttle_foreground_timers_(
           base::FeatureList::IsEnabled(features::kThrottleForegroundTimers)),
       foreground_timers_throttled_wake_up_interval_(
@@ -449,9 +426,7 @@ void PageSchedulerImpl::OnAudioSilent() {
   if (ShouldFreezePage()) {
     main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, do_freeze_page_callback_.GetCallback(),
-        freeze_on_network_idle_enabled_
-            ? delay_for_background_and_network_idle_tab_freezing_
-            : delay_for_background_tab_freezing_);
+        delay_for_background_tab_freezing_);
   }
 }
 
@@ -713,9 +688,7 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
   if (ShouldFreezePage()) {
     main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, do_freeze_page_callback_.GetCallback(),
-        freeze_on_network_idle_enabled_
-            ? delay_for_background_and_network_idle_tab_freezing_
-            : delay_for_background_tab_freezing_);
+        delay_for_background_tab_freezing_);
   } else {
     SetPageFrozenImpl(false, NotificationPolicy::kDoNotNotifyFrames);
   }
@@ -854,45 +827,8 @@ bool PageSchedulerImpl::ShouldFreezePage() const {
   return IsBackgrounded();
 }
 
-void PageSchedulerImpl::OnLocalMainFrameNetworkAlmostIdle() {
-  if (!freeze_on_network_idle_enabled_)
-    return;
-
-  if (!ShouldFreezePage())
-    return;
-
-  if (IsFrozen())
-    return;
-
-  // If delay_for_background_and_network_idle_tab_freezing_ passes after
-  // the page is not visible, we should freeze the page.
-  base::TimeDelta passed =
-      main_thread_scheduler_->NowTicks() - page_visibility_changed_time_;
-  if (passed < delay_for_background_and_network_idle_tab_freezing_)
-    return;
-
-  SetPageFrozenImpl(true, NotificationPolicy::kNotifyFrames);
-}
-
 void PageSchedulerImpl::DoFreezePage() {
   DCHECK(ShouldFreezePage());
-
-  if (freeze_on_network_idle_enabled_) {
-    DCHECK(delegate_);
-    base::TimeDelta passed =
-        main_thread_scheduler_->NowTicks() - page_visibility_changed_time_;
-    // The page will be frozen if:
-    // (1) the main frame is remote, or,
-    // (2) the local main frame's network is almost idle, or,
-    // (3) delay_for_background_tab passes after the page is not visible.
-    if (!delegate_->LocalMainFrameNetworkIsAlmostIdle() &&
-        passed < delay_for_background_tab_freezing_) {
-      main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
-          FROM_HERE, do_freeze_page_callback_.GetCallback(),
-          delay_for_background_tab_freezing_ - passed);
-      return;
-    }
-  }
 
   SetPageFrozenImpl(true, NotificationPolicy::kNotifyFrames);
 }

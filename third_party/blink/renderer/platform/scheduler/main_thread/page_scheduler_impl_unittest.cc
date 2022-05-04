@@ -79,18 +79,13 @@ using testing::UnorderedElementsAreArray;
 
 class MockPageSchedulerDelegate : public PageScheduler::Delegate {
  public:
-  MockPageSchedulerDelegate() : idle_(false) {}
-
-  void SetLocalMainFrameNetworkIsAlmostIdle(bool idle) { idle_ = idle; }
-  bool LocalMainFrameNetworkIsAlmostIdle() const override { return idle_; }
+  MockPageSchedulerDelegate() {}
 
  private:
   void ReportIntervention(const WTF::String&) override {}
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   void OnSetPageFrozen(bool is_frozen) override {}
   bool IsOrdinary() const override { return true; }
-
-  bool idle_;
 };
 
 class PageSchedulerImplTest : public testing::Test {
@@ -149,10 +144,6 @@ class PageSchedulerImplTest : public testing::Test {
 
   base::TimeDelta delay_for_background_tab_freezing() const {
     return page_scheduler_->delay_for_background_tab_freezing_;
-  }
-
-  base::TimeDelta delay_for_background_and_network_idle_tab_freezing() const {
-    return page_scheduler_->delay_for_background_and_network_idle_tab_freezing_;
   }
 
   PageScheduler::Delegate* delegate() { return page_scheduler_->delegate_; }
@@ -261,16 +252,6 @@ class PageSchedulerImplTest : public testing::Test {
     // Once the page is unfrozen, the rest of the queues should run.
     test_task_runner_->FastForwardUntilNoTasksRemain();
     EXPECT_EQ(5, counter);
-  }
-
-  bool NetworkIsAlmostIdle() const {
-    return page_scheduler_delegate_->LocalMainFrameNetworkIsAlmostIdle();
-  }
-
-  void NotifyLocalMainFrameNetworkIsAlmostIdle() {
-    EXPECT_FALSE(page_scheduler_delegate_->LocalMainFrameNetworkIsAlmostIdle());
-    page_scheduler_delegate_->SetLocalMainFrameNetworkIsAlmostIdle(true);
-    page_scheduler_->OnLocalMainFrameNetworkAlmostIdle();
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -1474,91 +1455,6 @@ TEST_F(PageSchedulerImplTest, PageFrozenOnlyWhileNotVisible) {
   page_scheduler_->SetPageVisible(true);
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
                                    base::Milliseconds(100));
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-}
-
-class PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest
-    : public PageSchedulerImplTest {
- public:
-  PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest()
-      : PageSchedulerImplTest(
-            {blink::features::kStopInBackground,
-             blink::features::kFreezeBackgroundTabOnNetworkIdle},
-            {}) {}
-};
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenOnlyOnLocalMainFrameNetworkIdle) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  // After network is idle, page should freeze after delay for quick
-  // background tab freezing.
-  NotifyLocalMainFrameNetworkIsAlmostIdle();
-  EXPECT_TRUE(NetworkIsAlmostIdle());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  page_scheduler_->SetPageVisible(false);
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::Milliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenOnlyOnLocalMainFrameNetworkAlmostIdleNoRegress) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  // Page should freeze after delay for background tab freezing.
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::Milliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenWhenNetworkIdleAfterQuickFreezingDelay) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::Milliseconds(100));
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-
-  NotifyLocalMainFrameNetworkIsAlmostIdle();
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageNotFrozenWhenVisibleBeforeNetworkIdle) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::Milliseconds(100));
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-
-  // Page should not freeze after delay for background tab freezing, because
-  // the page is visible.
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(delay_for_background_tab_freezing());
   EXPECT_FALSE(page_scheduler_->IsFrozen());
 }
 

@@ -70,7 +70,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void SetPageBackForwardCached(bool) override;
   bool IsMainFrameLocal() const override;
   void SetIsMainFrameLocal(bool is_local) override;
-  void OnLocalMainFrameNetworkAlmostIdle() override;
   base::TimeTicks GetStoredInBackForwardCacheTimestamp() {
     return stored_in_back_forward_cache_timestamp_;
   }
@@ -361,13 +360,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   CancelableClosureHolder on_audio_silent_closure_;
   CancelableClosureHolder do_freeze_page_callback_;
   const base::TimeDelta delay_for_background_tab_freezing_;
-
-  // Whether a background page can be frozen before
-  // |delay_for_background_tab_freezing_| if network is idle.
-  const bool freeze_on_network_idle_enabled_;
-
-  // Delay after which a background page can be frozen if network is idle.
-  const base::TimeDelta delay_for_background_and_network_idle_tab_freezing_;
 
   // Whether foreground timers should be always throttled.
   const bool throttle_foreground_timers_;

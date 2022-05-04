@@ -54,9 +54,6 @@ class PLATFORM_EXPORT PageScheduler {
   // Whether the main frame of this page is local or not (remote).
   virtual bool IsMainFrameLocal() const = 0;
   virtual void SetIsMainFrameLocal(bool) = 0;
-  // Invoked when the local main frame's network becomes almost idle.
-  // Never invoked if the main frame is remote.
-  virtual void OnLocalMainFrameNetworkAlmostIdle() = 0;
   // Whether the main frame of this page is in BackForwardCache or not.
   virtual bool IsInBackForwardCache() const = 0;
 
