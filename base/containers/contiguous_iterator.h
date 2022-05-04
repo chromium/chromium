@@ -18,7 +18,10 @@ namespace base {
 namespace internal {
 
 template <typename T>
-struct PointsToObject : std::is_object<iter_value_t<T>> {};
+struct PointsToObject : std::true_type {};
+// std::iter_value_t is not defined for `T*` where T is not an object type.
+template <typename T>
+struct PointsToObject<T*> : std::is_object<T> {};
 
 // A pointer is a contiguous iterator.
 // Reference: https://wg21.link/iterator.traits#5
@@ -74,15 +77,16 @@ struct IsCheckedContiguousIter
 
 // Check that the iterator points to an actual object, and is one of the
 // iterator types mentioned above.
+template <typename T, bool B = PointsToObject<T>::value>
+struct IsContiguousIteratorImpl : std::false_type {};
 template <typename T>
-struct IsContiguousIteratorImpl
-    : std::conjunction<PointsToObject<T>,
-                       std::disjunction<IsPointer<T>,
-                                        IsStringIter<T>,
-                                        IsArrayIter<T>,
-                                        IsVectorIter<T>,
-                                        IsValueArrayIter<T>,
-                                        IsCheckedContiguousIter<T>>> {};
+struct IsContiguousIteratorImpl<T, true>
+    : std::disjunction<IsPointer<T>,
+                       IsStringIter<T>,
+                       IsArrayIter<T>,
+                       IsVectorIter<T>,
+                       IsValueArrayIter<T>,
+                       IsCheckedContiguousIter<T>> {};
 
 }  // namespace internal
 

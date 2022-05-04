@@ -113,8 +113,28 @@ constexpr bool is_constant_evaluated() noexcept {
 //
 // Reference: https://wg21.link/readable.traits#2
 template <typename Iter>
-using iter_value_t =
-    typename std::iterator_traits<remove_cvref_t<Iter>>::value_type;
+struct IterValueImpl {
+  using value_type = typename std::iterator_traits<Iter>::value_type;
+};
+
+template <typename T, bool Cond = false>
+struct IterValuePointerImpl {
+  // The `iterator_traits<T*>::value_type` member is not defined if T is not an
+  // object in C++20.
+};
+template <typename T>
+struct IterValuePointerImpl<T*, true> {
+  using value_type = typename std::iterator_traits<T*>::value_type;
+};
+
+template <typename T>
+struct IterValueImpl<T*> {
+  using value_type =
+      typename IterValuePointerImpl<T*, std::is_object_v<T>>::value_type;
+};
+
+template <typename Iter>
+using iter_value_t = typename IterValueImpl<remove_cvref_t<Iter>>::value_type;
 
 // Simplified implementation of C++20's std::iter_reference_t.
 // As opposed to std::iter_reference_t, this implementation does not restrict
