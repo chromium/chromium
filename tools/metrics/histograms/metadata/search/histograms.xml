@@ -390,16 +390,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchBasePageProtocol"
-    enum="ContextualSearchBasePageProtocol" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The protocol of the base page, logged at the time that any Search Term
-    Resolution Response is received.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchContextualCardsIntegration.DataShown"
     enum="Boolean" expires_after="never">
 <!-- expires-never: key metric on usefulness of Touch to Search. -->
@@ -879,16 +869,6 @@ chromium-metrics-reviews@google.com.
     The time from starting a resolving search until the results in the SERP
     start to become viewable. Applies only to prefetched requests. Implemented
     for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchResolvedTermWords"
-    enum="ContextualSearchResolvedTermWords" expires_after="M72">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether the search term was single or multi-word, logged at the time that
-    any Search Term Resolution Response is received.
   </summary>
 </histogram>
 

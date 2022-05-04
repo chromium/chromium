@@ -38,14 +38,11 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.url.GURL;
 
-import java.util.regex.Pattern;
-
 /**
  * Handles business decision policy for the {@code ContextualSearchManager}.
  */
 class ContextualSearchPolicy {
     private static final String TAG = "ContextualSearch";
-    private static final Pattern CONTAINS_WHITESPACE_PATTERN = Pattern.compile("\\s");
     private static final String DOMAIN_GOOGLE = "google";
     private static final String PATH_AMP = "/amp/";
     private static final int REMAINING_NOT_APPLICABLE = -1;
@@ -338,24 +335,6 @@ class ContextualSearchPolicy {
             ContextualSearchUma.logPromoTapsBeforeFirstOpen(count);
         } else {
             ContextualSearchUma.logPromoTapsForNeverOpened(count);
-        }
-    }
-
-    /**
-     * Logs details about the Search Term Resolution.
-     * Should only be called when a search term has been resolved.
-     * @param searchTerm The Resolved Search Term.
-     */
-    void logSearchTermResolutionDetails(String searchTerm) {
-        // Only log for decided users so the data reflect fully-enabled behavior.
-        // Otherwise we'll get skewed data; more HTTP pages than HTTPS (since those don't resolve),
-        // and it's also possible that public pages, e.g. news, have more searches for multi-word
-        // entities like people.
-        if (isContextualSearchFullyEnabled()) {
-            GURL url = mNetworkCommunicator.getBasePageUrl();
-            ContextualSearchUma.logBasePageProtocol(isBasePageHTTP(url));
-            boolean isSingleWord = !CONTAINS_WHITESPACE_PATTERN.matcher(searchTerm.trim()).find();
-            ContextualSearchUma.logSearchTermResolvedWords(isSingleWord);
         }
     }
 

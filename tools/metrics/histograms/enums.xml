@@ -16709,11 +16709,6 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="No overlap not seen from Longpress"/>
 </enum>
 
-<enum name="ContextualSearchBasePageProtocol">
-  <int value="0" label="Is HTTP"/>
-  <int value="1" label="Not HTTP"/>
-</enum>
-
 <enum name="ContextualSearchBlacklistSeen">
   <obsolete>
     Deprecated as of 5/2017. Experiment is finished.
@@ -16931,11 +16926,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Activated, not answered nor seen"/>
   <int value="4" label="Not activated but seen"/>
   <int value="5" label="Not activated nor seen"/>
-</enum>
-
-<enum name="ContextualSearchResolvedTermWords">
-  <int value="0" label="Single Word"/>
-  <int value="1" label="Multi Word"/>
 </enum>
 
 <enum name="ContextualSearchResultsSeen">

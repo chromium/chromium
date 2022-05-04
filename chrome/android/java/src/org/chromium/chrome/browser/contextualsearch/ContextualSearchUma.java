@@ -269,24 +269,6 @@ public class ContextualSearchUma {
         int NUM_ENTRIES = 6;
     }
 
-    // Constants used to log UMA "enum" histograms for HTTP / HTTPS.
-    @IntDef({Protocol.IS_HTTP, Protocol.NOT_HTTP})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Protocol {
-        int IS_HTTP = 0;
-        int NOT_HTTP = 1;
-        int NUM_ENTRIES = 2;
-    }
-
-    // Constants used to log UMA "enum" histograms for single / multi-word.
-    @IntDef({ResolvedGranularity.SINGLE_WORD, ResolvedGranularity.MULTI_WORD})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ResolvedGranularity {
-        int SINGLE_WORD = 0;
-        int MULTI_WORD = 1;
-        int NUM_ENTRIES = 2;
-    }
-
     // Constants used to log UMA "enum" histograms for Quick Answers.
     @IntDef({QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_SEEN,
             QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_NOT_SEEN,
@@ -651,26 +633,6 @@ public class ContextualSearchUma {
     public static void logTapsSinceOpenForDecided(int tapsSinceOpen) {
         RecordHistogram.recordCount1MHistogram(
                 "Search.ContextualSearchTapsSinceOpenDecided", tapsSinceOpen);
-    }
-
-    /**
-     * Logs whether the Search Term was single or multiword.
-     * @param isSingleWord Whether the resolved search term is a single word or not.
-     */
-    public static void logSearchTermResolvedWords(boolean isSingleWord) {
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchResolvedTermWords",
-                isSingleWord ? ResolvedGranularity.SINGLE_WORD : ResolvedGranularity.MULTI_WORD,
-                ResolvedGranularity.NUM_ENTRIES);
-    }
-
-    /**
-     * Logs whether the base page was using the HTTP protocol or not.
-     * @param isHttpBasePage Whether the base page was using the HTTP protocol or not (should
-     *        be false for HTTPS or other URIs).
-     */
-    public static void logBasePageProtocol(boolean isHttpBasePage) {
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchBasePageProtocol",
-                isHttpBasePage ? Protocol.IS_HTTP : Protocol.NOT_HTTP, Protocol.NUM_ENTRIES);
     }
 
     /**

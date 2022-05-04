@@ -908,7 +908,6 @@ public class ContextualSearchManager
             if (mSearchPanel.isContentShowing() || shouldPreload) {
                 loadSearchUrl();
             }
-            mPolicy.logSearchTermResolutionDetails(searchTerm);
         }
     }
 
