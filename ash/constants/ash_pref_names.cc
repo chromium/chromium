@@ -956,6 +956,10 @@ const char kProjectorGalleryOnboardingShowCount[] =
 const char kProjectorViewerOnboardingShowCount[] =
     "ash.projector.viewer_onboarding_show_count";
 
+// A boolean pref that indicates the the skip-transcript dialog has been shown.
+const char kProjectorSkipTranscriptDialogShown[] =
+    "ash.projector.skip_transcript_dialog_shown";
+
 // A boolean pref that indicates the Projector has been enabled by admin
 // policy.
 const char kProjectorAllowByPolicy[] = "ash.projector.allow_by_policy";

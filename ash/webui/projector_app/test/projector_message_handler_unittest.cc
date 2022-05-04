@@ -77,6 +77,8 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
     auto* registry = pref_service_.registry();
     registry->RegisterBooleanPref(ash::prefs::kProjectorCreationFlowEnabled,
                                   false);
+    registry->RegisterBooleanPref(
+        ash::prefs::kProjectorSkipTranscriptDialogShown, false);
     registry->RegisterIntegerPref(
         ash::prefs::kProjectorGalleryOnboardingShowCount, 0);
     registry->RegisterIntegerPref(
@@ -406,6 +408,44 @@ TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {
   list_args.Append(base::Value(kGetUserPrefCallback));
   func_args.ClearList();
   func_args.Append(ash::prefs::kProjectorCreationFlowEnabled);
+  list_args.Append(std::move(func_args));
+
+  web_ui().HandleReceivedMessage("getUserPref", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& get_pref_call_data = FetchCallData(1);
+  EXPECT_EQ(get_pref_call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(get_pref_call_data.arg1()->GetString(), kGetUserPrefCallback);
+  EXPECT_EQ(get_pref_call_data.arg2()->GetBool(), true);
+
+  const base::Value* args = get_pref_call_data.arg3();
+  EXPECT_TRUE(args->is_bool());
+  EXPECT_TRUE(args->GetBool());
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, SkipTranscriptDialogShownPref) {
+  base::ListValue list_args;
+  list_args.Append(base::Value(kSetUserPrefCallback));
+
+  base::ListValue func_args;
+  func_args.Append(
+      base::Value(ash::prefs::kProjectorSkipTranscriptDialogShown));
+  func_args.Append(base::Value(true));
+  list_args.Append(std::move(func_args));
+
+  web_ui().HandleReceivedMessage("setUserPref", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kSetUserPrefCallback);
+  EXPECT_EQ(call_data.arg2()->GetBool(), true);
+
+  // Now let's try to read the user's pref.
+  list_args.ClearList();
+  list_args.Append(base::Value(kGetUserPrefCallback));
+  func_args.ClearList();
+  func_args.Append(ash::prefs::kProjectorSkipTranscriptDialogShown);
   list_args.Append(std::move(func_args));
 
   web_ui().HandleReceivedMessage("getUserPref", &list_args);

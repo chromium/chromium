@@ -438,6 +438,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorViewerOnboardingShowCount[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorSkipTranscriptDialogShown[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorAllowByPolicy[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
