@@ -304,6 +304,72 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-x86-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|x86",
+        short_name = "x86",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    reclient_jobs = rbe_jobs.DEFAULT,
+    # tree_closing will be set to true and sherrif_rotations
+    # will be enabled once we have confirmed that these tests
+    # are passing successfully
+    # crbug.com/1250464
+    tree_closing = False,
+    sheriff_rotations = args.ignore_default(None),
+)
+
+ci.thin_tester(
+    name = "android-webview-10-x86-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|x86",
+        short_name = "10",
+    ),
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    triggered_by = ["ci/android-x86-rel"],
+    # To remove once we've confirmed this works correctly
+    # crbug.com/1250464
+    sheriff_rotations = args.ignore_default(None),
+)
+
+ci.builder(
     name = "Cast Android (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

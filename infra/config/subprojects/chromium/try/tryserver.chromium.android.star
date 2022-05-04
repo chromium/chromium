@@ -350,6 +350,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-webview-10-x86-rel-tests",
+    mirrors = [
+        "ci/android-x86-rel",
+        "ci/android-webview-10-x86-rel-tests",
+    ],
+)
+
+try_.builder(
     name = "android-11-x86-fyi-rel",
 )
 
