@@ -656,11 +656,11 @@ chromium-metrics-reviews@google.com.
     (e.g Image paste), and read into memory as bytes. Record for {ImageType}
   </summary>
   <token key="ImageType">
-    <variant name=".NonPng"
+    <variant name=".NonPngImages"
         summary="image with type other than png, so encoding is needed. The
                  duration includes reading image as bitmap, and conversion
                  into png."/>
-    <variant name=".Png"
+    <variant name=".PngImages"
         summary="image with type as png, so no encoding is needed. The
                  duration includes reading bytes from the file stream."/>
   </token>
