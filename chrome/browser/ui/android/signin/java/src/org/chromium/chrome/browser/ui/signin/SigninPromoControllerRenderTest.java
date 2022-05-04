@@ -31,11 +31,14 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -137,7 +140,10 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testBookmarkSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ProfileDataCache profileDataCache =
                     ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -156,7 +162,32 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testBookmarkSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ProfileDataCache profileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mActivityTestRule.getActivity());
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_bookmarks, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "bookmark_sync_promo_single_button_signed_out_and_no_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
@@ -173,7 +204,30 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_bookmarks, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "bookmark_sync_promo_single_button_signed_out_and_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testBookmarkSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureDisabled()
+            throws Throwable {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
@@ -192,7 +246,31 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testSettingsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testBookmarkSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        SigninTestUtil.signin(coreAccountInfo);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_bookmarks, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(view, "bookmark_sync_promo_single_button_signed_in_and_not_syncing");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testSettingsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ProfileDataCache profileDataCache =
                     ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -211,7 +289,32 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testSettingsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ProfileDataCache profileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mActivityTestRule.getActivity());
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_settings, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.SETTINGS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "settings_sync_promo_single_button_signed_out_and_no_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testSettingsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
@@ -228,7 +331,30 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testSettingsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testSettingsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_settings, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.SETTINGS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "settings_sync_promo_single_button_signed_out_and_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testSettingsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureDisabled()
+            throws Throwable {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
@@ -247,7 +373,31 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testSettingsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        SigninTestUtil.signin(coreAccountInfo);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_settings, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.SETTINGS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(view, "settings_sync_promo_single_button_signed_in_and_not_syncing");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ProfileDataCache profileDataCache =
                     ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -266,7 +416,32 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ProfileDataCache profileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mActivityTestRule.getActivity());
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_recent_tabs, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.RECENT_TABS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "recent_tabs_sync_promo_single_button_signed_out_and_no_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureDisabled()
+            throws Throwable {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
@@ -284,7 +459,30 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testRecentTabsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_recent_tabs, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.RECENT_TABS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "recent_tabs_sync_promo_single_button_signed_out_and_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testRecentTabsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureDisabled()
+            throws Throwable {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
@@ -303,7 +501,31 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPContentSuggestionsSyncPromoViewSignedOutAndNoAccountAvailable()
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void testRecentTabsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        SigninTestUtil.signin(coreAccountInfo);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.personalized_signin_promo_view_recent_tabs, null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.RECENT_TABS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "recent_tabs_sync_promo_single_button_signed_in_and_not_syncing");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureDisabled()
             throws Throwable {
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ProfileDataCache profileDataCache =
@@ -325,7 +547,33 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPContentSuggestionsSyncPromoViewSignedOutAndAccountAvailable()
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedOutAndNoAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ProfileDataCache profileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mActivityTestRule.getActivity());
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(
+                                    R.layout.personalized_signin_promo_view_modern_content_suggestions,
+                                    null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(view,
+                "ntp_content_suggestions_sync_promo_single_button_signed_out_and_no_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureDisabled()
             throws Throwable {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
@@ -346,7 +594,33 @@ public class SigninPromoControllerRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPContentSuggestionsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedOutAndAccountAvailableWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(
+                                    R.layout.personalized_signin_promo_view_modern_content_suggestions,
+                                    null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(view,
+                "ntp_content_suggestions_sync_promo_single_button_signed_out_and_account_available");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureDisabled()
+            throws Throwable {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
@@ -363,5 +637,30 @@ public class SigninPromoControllerRenderTest {
         });
         mRenderTestRule.render(
                 view, "ntp_content_suggestions_sync_promo_view_signed_in_and_not_syncing");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testNTPContentSuggestionsSyncPromoViewSignedInAndNotSyncingWithSingleButtonFeatureEnabled()
+            throws Throwable {
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
+        SigninTestUtil.signin(coreAccountInfo);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            View promoView =
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(
+                                    R.layout.personalized_signin_promo_view_modern_content_suggestions,
+                                    null);
+            setContentViewAndSetUpSyncPromoView(
+                    promoView, SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache);
+            return promoView;
+        });
+        mRenderTestRule.render(
+                view, "ntp_content_suggestions_sync_promo_single_button_signed_in_and_not_syncing");
     }
 }

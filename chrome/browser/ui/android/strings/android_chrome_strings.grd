@@ -2908,6 +2908,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SYNC_PROMO_TURN_ON_SYNC" desc="Button that the user can press if they want to turn on sync with this account.">
         Turn on sync
       </message>
+      <message name="IDS_SYNC_PROMO_CONTINUE" desc="This string is the button of a card that asks the user to turn on sync; the user may be signed in to Chrome, but isn't syncing their Chrome data. We want users to read this card and consider tapping the 'Continue' button and turn on sync. [CHAR_LIMIT=30] instead." meaning="Open the screen where the user can turn on sync">
+        Continue
+      </message>
 
       <message name="IDS_EXTERNAL_APP_RESTRICTED_ACCESS_ERROR" desc="A message shown to the user if Chrome receives a file view request to something Chrome does not have access to view.">
         Chrome does not have access to the requested resource.
