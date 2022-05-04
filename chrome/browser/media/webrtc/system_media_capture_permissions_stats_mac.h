@@ -28,7 +28,7 @@ void SystemVideoCapturePermissionDetermined(SystemPermission permission);
 
 // Adds a sample of the passed in permission to the screen capture metric.
 // Called when the screen capture permission is checked.
-void LogSystemScreenCapturePermission(SystemPermission permission);
+void LogSystemScreenCapturePermission(bool allowed);
 
 // Called when a system permission was requested but was blocked. Information
 // stored is later used when logging stats at startup.

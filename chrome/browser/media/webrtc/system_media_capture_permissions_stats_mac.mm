@@ -171,9 +171,9 @@ void SystemVideoCapturePermissionDetermined(SystemPermission permission) {
   }
 }
 
-void LogSystemScreenCapturePermission(SystemPermission permission) {
-  base::UmaHistogramEnumeration(
-      "Media.Video.Capture.Mac.ScreenCaptureSystemPermission", permission);
+void LogSystemScreenCapturePermission(bool allowed) {
+  base::UmaHistogramBoolean(
+      "Media.Video.Capture.Mac.ScreenCaptureSystemPermission", allowed);
 }
 
 void SystemAudioCapturePermissionBlocked() {

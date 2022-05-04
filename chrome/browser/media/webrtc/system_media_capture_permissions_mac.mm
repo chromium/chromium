@@ -138,7 +138,9 @@ bool IsScreenCaptureAllowed() {
     }
   }
 
-  return ui::IsScreenCaptureAllowed();
+  bool allowed = ui::IsScreenCaptureAllowed();
+  LogSystemScreenCapturePermission(allowed);
+  return allowed;
 }
 
 }  // namespace
@@ -152,11 +154,8 @@ SystemPermission CheckSystemVideoCapturePermission() {
 }
 
 SystemPermission CheckSystemScreenCapturePermission() {
-  SystemPermission permission = IsScreenCaptureAllowed()
-                                    ? SystemPermission::kAllowed
-                                    : SystemPermission::kDenied;
-  LogSystemScreenCapturePermission(permission);
-  return permission;
+  return IsScreenCaptureAllowed() ? SystemPermission::kAllowed
+                                  : SystemPermission::kDenied;
 }
 
 void RequestSystemAudioCapturePermisson(base::OnceClosure callback) {
