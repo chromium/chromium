@@ -787,11 +787,7 @@ def main():
                msvc_arch='x64')
     RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
-      test_targets = ['check-all']
-      if sys.platform == 'darwin' and platform.machine() == 'arm64':
-        # TODO(llvm.org/PR49918): Run check-all on mac/arm too.
-        test_targets = ['check-llvm', 'check-clang']
-      RunCommand(['ninja'] + test_targets, msvc_arch='x64')
+      RunCommand(['ninja', 'check-all'], msvc_arch='x64')
     RunCommand(['ninja', 'install'], msvc_arch='x64')
 
     if sys.platform == 'win32':
