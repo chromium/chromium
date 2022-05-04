@@ -45414,6 +45414,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147467259" label="E_FAIL"/>
   <int value="-2147418113" label="E_UNEXPECTED"/>
   <int value="-2147417848" label="RPC_E_DISCONNECTED"/>
+  <int value="-2147417825" label="RPC_E_TIMEOUT"/>
   <int value="-2147221232" label="CLASS_E_NOAGGREGATION"/>
   <int value="-2147221164" label="REGDB_E_CLASSNOTREG"/>
   <int value="-2147220480"
@@ -45430,12 +45431,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147219425"
       label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL"/>
   <int value="-2147219198" label="GOOPDATEINSTALL_E_INSTALLER_FAILED"/>
+  <int value="-2147217780" label="DRM_E_P256_ECDSA_SIGNING_ERROR"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
+  <int value="-2147172346" label="DRM_E_INVALID_LICENSE"/>
   <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
   <int value="-2147172333" label="DRM_E_LICENSE_NOT_FOUND"/>
   <int value="-2147171352" label="DRM_E_LOGICERR"/>
   <int value="-2147169008" label="DRM_E_TEE_INVALID_KEY_DATA"/>
   <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
+  <int value="-2147169004" label="DRM_E_TEE_CLOCK_NOT_SET"/>
   <int value="-2147168990"
       label="DRM_E_TEE_OUTPUT_PROTECTION_REQUIREMENTS_NOT_MET"/>
   <int value="-2147168256" label="DRM_E_NONCE_STORE_TOKEN_NOT_FOUND"/>
@@ -45447,6 +45451,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="ITF_E_EXTRACT_NO_FULL_NAME_OR_POSTSCRIPT_NAME"/>
   <int value="-2147167996" label="ITF_E_EXTRACT_NO_FAMILY_NAME"/>
   <int value="-2147167231" label="DRM_E_XB_INVALID_OBJECT"/>
+  <int value="-2147167228" label="DRM_E_XB_UNKNOWN_ELEMENT_TYPE"/>
+  <int value="-2147164882" label="DRM_E_* - OEM Specific (8004DD2E)"/>
+  <int value="-2147164862" label="DRM_E_* - OEM Specific (8004DD42)"/>
   <int value="-2147024894" label="ERROR_FILE_NOT_FOUND"/>
   <int value="-2147024893" label="ERROR_PATH_NOT_FOUND"/>
   <int value="-2147024891" label="E_ACCESSDENIED"/>
@@ -45473,6 +45480,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147012851" label="WININET_E_INVALID_CA"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
+  <int value="-2146435043" label="SCARD_E_NO_SERVICE"/>
   <int value="-2140143615" label="MF_INDEX_SIZE_ERR"/>
   <int value="-2140143608" label="MF_NOT_FOUND_ERR"/>
   <int value="-2140143607" label="MF_NOT_SUPPORTED_ERR"/>
@@ -45482,6 +45490,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2140143594" label="MF_QUOTA_EXCEEDED_ERR"/>
   <int value="-2140143535" label="MF_PARSE_ERR"/>
   <int value="-2140127227" label="MF_TYPE_ERR"/>
+  <int value="-2005532292" label="D3DERR_OUTOFVIDEOMEMORY"/>
   <int value="-2005270527" label="DXGI_ERROR_INVALID_CALL"/>
   <int value="-2005270526" label="DXGI_ERROR_NOT_FOUND"/>
   <int value="-2005270525" label="DXGI_ERROR_MORE_DATA"/>
