@@ -59,6 +59,7 @@ void AnsibleManagementService::ConfigureContainer(
     LOG(ERROR) << "Attempting to configure a container which is already being "
                   "configured";
     std::move(callback).Run(false);
+    return;
   }
   if (container_id == ContainerId::GetDefault() &&
       !ShouldConfigureDefaultContainer(profile_)) {
