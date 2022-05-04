@@ -626,8 +626,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             ContextualSearchUma.logTabPromotion(activeRelatedSearches.isShowingRelatedSearchSerp());
             mIsRelatedSearchesInContentSerp = false;
         }
-        destroyInBarRelatedSearchesControl();
-        destroyInContentRelatedSearchesControl();
     }
 
     @Override
