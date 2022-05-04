@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
@@ -42,6 +43,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private boolean mBottomSheetInflated;
     private boolean mActivityViewInflated;
     private final PropertyModel mBottomSheetToolbarModel;
+    private final PropertyModel mToolbarModel;
     private View mActivityContentView;
     private HistoryClustersToolbar mToolbar;
     private SelectionDelegate mSelectionDelegate;
@@ -65,9 +67,13 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mBottomSheetContent = new HistoryClustersBottomSheetContent();
         mBottomSheetToolbarModel =
                 new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS);
+        mToolbarModel = new PropertyModel.Builder(HistoryClustersToolbarProperties.ALL_KEYS)
+                                .with(HistoryClustersToolbarProperties.QUERY_STATE,
+                                        QueryState.forQueryless())
+                                .build();
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
-                mBottomSheetToolbarModel, bottomSheetController, mBottomSheetContent,
+                mBottomSheetToolbarModel, mToolbarModel, bottomSheetController, mBottomSheetContent,
                 historyActivityIntentFactory);
     }
 
@@ -76,8 +82,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     }
 
     public void setQuery(String query) {
-        // TODO(https://crbug.com/1303171): Implement this by adding a property model and binding
-        // logic for HistoryClustersToolbar.
+        mMediator.startSearch(query);
     }
 
     /** Gets the root view for a "full activity" presentation of the user's history clusters. */
@@ -123,6 +128,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mSelectableListLayout.configureWideDisplayStyle();
         mToolbar.setSearchEnabled(true);
 
+        PropertyModelChangeProcessor.create(
+                mToolbarModel, mToolbar, HistoryClustersViewBinder::bindToolbar);
+        PropertyModelChangeProcessor.create(
+                mToolbarModel, mSelectableListLayout, HistoryClustersViewBinder::bindListLayout);
+
         mActivityViewInflated = true;
     }
 
@@ -160,6 +170,10 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.search_menu_id) {
+            mMediator.startSearch("");
+            return true;
+        }
         return false;
     }
 }

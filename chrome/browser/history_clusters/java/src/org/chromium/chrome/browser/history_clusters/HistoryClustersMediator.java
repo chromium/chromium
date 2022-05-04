@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -34,6 +35,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
     private final Resources mResources;
     private final ModelList mModelList;
     private final PropertyModel mBottomSheetToolbarModel;
+    private final PropertyModel mToolbarModel;
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconSize;
@@ -50,6 +52,8 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
      * @param resources Android resources object from which strings, colors etc. should be fetched.
      * @param modelList Model list to which fetched cluster data should be pushed to.
      * @param bottomSheetToolbarModel Model for properties affecting the bottom sheet toolbar.
+     * @param toolbarModel Model for properties affecting the "full page" toolbar shown in the
+     *         history activity.
      * @param bottomSheetController Controller for interacting with the bottom sheet system, e.g. to
      *         request to show our content.
      * @param bottomSheetContent {@link BottomSheetContent} instance that tells the BottomSheet
@@ -58,6 +62,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel bottomSheetToolbarModel,
+            @NonNull PropertyModel toolbarModel,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull BottomSheetContent bottomSheetContent,
             Supplier<Intent> historyActivityIntentFactory) {
@@ -67,6 +72,7 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
         mContext = context;
         mResources = resources;
         mBottomSheetToolbarModel = bottomSheetToolbarModel;
+        mToolbarModel = toolbarModel;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mHistoryActivityIntentFactory = historyActivityIntentFactory;
@@ -96,6 +102,10 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver implements Search
 
     void destroy() {
         mLargeIconBridge.destroy();
+    }
+
+    void startSearch(String query) {
+        mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, QueryState.forQuery(query));
     }
 
     void query(String query) {

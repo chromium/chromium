@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.history_clusters;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -33,6 +35,31 @@ class HistoryClustersViewBinder {
         } else if (key == HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT) {
             TextView textView = view.findViewById(R.id.query);
             textView.setText(model.get(HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT));
+        }
+    }
+
+    public static void bindToolbar(
+            PropertyModel model, HistoryClustersToolbar toolbar, PropertyKey key) {
+        if (key == HistoryClustersToolbarProperties.QUERY_STATE) {
+            QueryState queryState = model.get(HistoryClustersToolbarProperties.QUERY_STATE);
+            if (queryState.isSearching()) {
+                toolbar.showSearchView();
+                toolbar.setSearchText(queryState.getQuery());
+            } else {
+                toolbar.hideSearchView();
+            }
+        }
+    }
+
+    public static void bindListLayout(
+            PropertyModel model, SelectableListLayout listLayout, PropertyKey key) {
+        if (key == HistoryClustersToolbarProperties.QUERY_STATE) {
+            QueryState queryState = model.get(HistoryClustersToolbarProperties.QUERY_STATE);
+            if (queryState.isSearching()) {
+                listLayout.onStartSearch("");
+            } else {
+                listLayout.onEndSearch();
+            }
         }
     }
 }
