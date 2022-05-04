@@ -5,12 +5,14 @@
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
 #include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -18,6 +20,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
+#endif
 
 namespace {
 
@@ -87,22 +93,8 @@ bool DictValueEquals(std::unique_ptr<base::DictionaryValue> value,
   return actual == expected;
 }
 
-}  // namespace
-
-class ManagedConfigurationAPITest : public InProcessBrowserTest,
-                                    public ManagedConfigurationAPI::Observer {
- public:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    origin_ = url::Origin::Create(GURL(kOrigin));
-    api()->AddObserver(this);
-  }
-
-  void TearDownOnMainThread() override {
-    api()->RemoveObserver(this);
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
+class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
+ protected:
   void EnableTestServer(
       const std::map<std::string, ResponseTemplate> templates) {
     embedded_test_server()->RegisterRequestHandler(
@@ -129,19 +121,12 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
                                base::ListValue());
   }
 
-  void WaitForUpdate() {
-    if (!updated_) {
-      loop_update_ = std::make_unique<base::RunLoop>();
-      loop_update_->Run();
-    }
-  }
-
   std::unique_ptr<base::DictionaryValue> GetValues(
       const std::vector<std::string>& keys) {
     updated_ = false;
     api()->GetOriginPolicyConfiguration(
         origin_, keys,
-        base::BindOnce(&ManagedConfigurationAPITest::OnResultObtained,
+        base::BindOnce(&ManagedConfigurationAPITestBase::OnResultObtained,
                        base::Unretained(this)));
 
     // We could receive a failure asynchrounously.
@@ -153,37 +138,66 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
     return std::move(result_);
   }
 
+  Profile* profile() { return browser()->profile(); }
+  const url::Origin& origin() const { return origin_; }
+  ManagedConfigurationAPI* api() {
+    return ManagedConfigurationAPIFactory::GetForProfile(profile());
+  }
+  bool updated() const { return updated_; }
+  void set_updated(bool updated) { updated_ = updated; }
+
+ private:
   void OnResultObtained(std::unique_ptr<base::DictionaryValue> result) {
     updated_ = true;
     result_ = std::move(result);
     loop_get_->Quit();
   }
 
+  const url::Origin origin_ = url::Origin::Create(GURL(kOrigin));
+  bool updated_ = false;
+  std::unique_ptr<base::RunLoop> loop_get_;
+  std::unique_ptr<base::DictionaryValue> result_;
+};
+
+}  // namespace
+
+class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
+                                    public ManagedConfigurationAPI::Observer {
+ public:
+  ManagedConfigurationAPITest() = default;
+
+  ~ManagedConfigurationAPITest() override = default;
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    api()->AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    api()->RemoveObserver(this);
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void WaitForUpdate() {
+    if (!updated()) {
+      loop_update_ = std::make_unique<base::RunLoop>();
+      loop_update_->Run();
+    }
+  }
+
   void OnManagedConfigurationChanged() override {
     if (loop_update_ && loop_update_->running()) {
       loop_update_->Quit();
-      updated_ = false;
+      set_updated(false);
     } else {
-      updated_ = true;
+      set_updated(true);
     }
   }
 
   const url::Origin& GetOrigin() override { return origin(); }
 
-  ManagedConfigurationAPI* api() {
-    return ManagedConfigurationAPIFactory::GetForProfile(profile());
-  }
-
-  Profile* profile() { return browser()->profile(); }
-  const url::Origin& origin() { return origin_; }
-
  private:
-  url::Origin origin_;
-
-  bool updated_ = false;
   std::unique_ptr<base::RunLoop> loop_update_;
-  std::unique_ptr<base::RunLoop> loop_get_;
-  std::unique_ptr<base::DictionaryValue> result_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
@@ -277,3 +291,22 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Test the API behavior in the Guest Session.
+class ManagedConfigurationAPIGuestTest
+    : public ManagedConfigurationAPITestBase {
+ protected:
+  ManagedConfigurationAPIGuestTest() = default;
+  ~ManagedConfigurationAPIGuestTest() override = default;
+
+ private:
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIGuestTest, Disabled) {
+  EXPECT_EQ(api(), nullptr);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

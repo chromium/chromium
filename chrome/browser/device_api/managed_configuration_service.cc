@@ -21,8 +21,10 @@ void ManagedConfigurationServiceImpl::Create(
     return;
   }
 
-  // Do not create ManagedConfigurationService for incognito profiles.
-  if (Profile::FromBrowserContext(host->GetBrowserContext())
+  // Do not create ManagedConfigurationService for incognito or off-the-record
+  // profiles.
+  if (host->GetBrowserContext()->IsOffTheRecord() ||
+      Profile::FromBrowserContext(host->GetBrowserContext())
           ->IsIncognitoProfile()) {
     return;
   }
