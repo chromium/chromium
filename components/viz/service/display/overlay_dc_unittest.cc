@@ -63,11 +63,7 @@ class OverlayOutputSurface : public OutputSurface {
   void BindFramebuffer() override { bind_framebuffer_count_ += 1; }
   void SetDrawRectangle(const gfx::Rect& rect) override {}
   MOCK_METHOD1(SetEnableDCLayers, void(bool));
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override {}
+  void Reshape(const ReshapeParams& params) override {}
   void SwapBuffers(OutputSurfaceFrame frame) override {}
   uint32_t GetFramebufferCopyTextureFormat() override {
     // TestContextProvider has no real framebuffer, just use RGB.

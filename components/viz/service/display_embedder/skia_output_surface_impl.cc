@@ -290,21 +290,17 @@ void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
   std::ignore = root_recorder_->getCanvas();
 }
 
-void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
-                                    float device_scale_factor,
-                                    const gfx::ColorSpace& color_space,
-                                    gfx::BufferFormat format,
-                                    bool use_stencil) {
+void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!size.IsEmpty());
+  DCHECK(!params.size.IsEmpty());
 
   // SetDrawRectangle() will need to be called at the new size.
   has_set_draw_rectangle_for_frame_ = false;
 
   if (use_damage_area_from_skia_output_device_) {
-    damage_of_current_buffer_ = gfx::Rect(size);
+    damage_of_current_buffer_ = gfx::Rect(params.size);
   } else if (frame_buffer_damage_tracker_) {
-    frame_buffer_damage_tracker_->FrameBuffersChanged(size);
+    frame_buffer_damage_tracker_->FrameBuffersChanged(params.size);
   }
 
   if (is_using_raw_draw_ && is_raw_draw_using_msaa_) {
@@ -312,34 +308,34 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
       // On "low-end" devices use 4 samples per pixel to save memory.
       sample_count_ = 4;
     } else {
-      sample_count_ = device_scale_factor >= 2.0f ? 4 : 8;
+      sample_count_ = params.device_scale_factor >= 2.0f ? 4 : 8;
     }
   } else {
     sample_count_ = 1;
   }
 
-  const auto format_index = static_cast<int>(format);
+  const auto format_index = static_cast<int>(params.format);
   const auto& color_type = capabilities_.sk_color_types[format_index];
   DCHECK(color_type != kUnknown_SkColorType)
       << "SkColorType is invalid for buffer format_index: " << format_index;
 
-  auto sk_color_space = color_space.ToSkColorSpace();
+  auto sk_color_space = params.color_space.ToSkColorSpace();
   characterization_ = CreateSkSurfaceCharacterization(
-      size, color_type, /*mipmap=*/false, std::move(sk_color_space),
+      params.size, color_type, /*mipmap=*/false, std::move(sk_color_space),
       /*is_root_render_pass=*/true, /*is_overlay=*/false);
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto task =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
-                     base::Unretained(impl_on_gpu_.get()), characterization_,
-                     color_space, device_scale_factor, GetDisplayTransform());
+  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
+                             base::Unretained(impl_on_gpu_.get()),
+                             characterization_, params.color_space,
+                             params.device_scale_factor, GetDisplayTransform());
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
   FlushGpuTasks(SyncMode::kNoWait);
 
-  size_ = size;
-  format_ = format;
+  size_ = params.size;
+  format_ = params.format;
   RecreateRootRecorder();
 }
 

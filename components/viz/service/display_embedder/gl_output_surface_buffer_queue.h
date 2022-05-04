@@ -51,11 +51,7 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
   // OutputSurface implementation.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override;
+  void Reshape(const ReshapeParams& params) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GLOutputSurfaceBufferQueueTest, HandleSwapNAK);

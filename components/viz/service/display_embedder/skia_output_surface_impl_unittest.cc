@@ -136,8 +136,9 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
 }
 
 TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
-  output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
-                           gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = kSurfaceRect.size();
+  output_surface_->Reshape(reshape_params);
   constexpr gfx::Rect output_rect(0, 0, 10, 10);
 
   bool on_finished_called = false;
@@ -183,9 +184,10 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
 // color space. Verifies draw after color space change is successful.
 TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
   for (auto& color_space : {gfx::ColorSpace(), gfx::ColorSpace::CreateSRGB()}) {
-    output_surface_->Reshape(kSurfaceRect.size(), 1, color_space,
-                             gfx::BufferFormat::RGBX_8888,
-                             /*use_stencil=*/false);
+    OutputSurface::ReshapeParams reshape_params;
+    reshape_params.size = kSurfaceRect.size();
+    reshape_params.color_space = color_space;
+    output_surface_->Reshape(reshape_params);
 
     // Draw something, it's not important what.
     base::RunLoop run_loop;
@@ -203,8 +205,9 @@ TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
 // Tests that the destination color space is preserved across a CopyOutput for
 // ColorSpaces supported by SkColorSpace.
 TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
-  output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
-                           gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = kSurfaceRect.size();
+  output_surface_->Reshape(reshape_params);
 
   constexpr gfx::Rect output_rect(0, 0, 10, 10);
   const gfx::ColorSpace color_space = gfx::ColorSpace(
@@ -243,8 +246,9 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
 // Tests that copying from a source with a color space that can't be converted
 // to a SkColorSpace will fallback to a transform to sRGB.
 TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
-  output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
-                           gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = kSurfaceRect.size();
+  output_surface_->Reshape(reshape_params);
 
   constexpr gfx::Rect output_rect(0, 0, 10, 10);
   const gfx::ColorSpace color_space = gfx::ColorSpace::CreatePiecewiseHDR(

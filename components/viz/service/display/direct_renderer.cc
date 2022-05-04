@@ -369,23 +369,19 @@ void DirectRenderer::DrawFrame(
   bool use_stencil = overdraw_feedback_;
   bool needs_full_frame_redraw = false;
   auto display_transform = output_surface_->GetDisplayTransform();
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = surface_resource_size;
+  reshape_params.device_scale_factor = device_scale_factor;
+  reshape_params.color_space = frame_color_space;
+  reshape_params.format = frame_buffer_format;
+  reshape_params.use_stencil = use_stencil;
   if (next_frame_needs_full_frame_redraw_ ||
-      surface_resource_size != reshape_surface_size_ ||
-      device_scale_factor != reshape_device_scale_factor_ ||
-      frame_color_space != reshape_color_space_ ||
-      frame_buffer_format != reshape_buffer_format_ ||
-      use_stencil != reshape_use_stencil_ ||
+      reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {
     next_frame_needs_full_frame_redraw_ = false;
-    reshape_surface_size_ = surface_resource_size;
-    reshape_device_scale_factor_ = device_scale_factor;
-    reshape_color_space_ = frame_color_space;
-    reshape_buffer_format_ = frame_buffer_format;
-    reshape_use_stencil_ = overdraw_feedback_;
+    reshape_params_ = reshape_params;
     reshape_display_transform_ = display_transform;
-    output_surface_->Reshape(reshape_surface_size_,
-                             reshape_device_scale_factor_, reshape_color_space_,
-                             *reshape_buffer_format_, reshape_use_stencil_);
+    output_surface_->Reshape(reshape_params);
 #if BUILDFLAG(IS_APPLE)
     // For Mac, all render passes will be promoted to CALayer, the redraw full
     // frame is for the main surface only.

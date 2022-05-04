@@ -154,19 +154,14 @@ void GLOutputSurfaceBufferQueue::BindFramebuffer() {
 // implies that screen size changes need to be plumbed differently. In
 // particular, we must create the native window in the size that the hardware
 // reports.
-void GLOutputSurfaceBufferQueue::Reshape(const gfx::Size& size,
-                                         float device_scale_factor,
-                                         const gfx::ColorSpace& color_space,
-                                         gfx::BufferFormat format,
-                                         bool use_stencil) {
-  reshape_size_ = size;
-  use_stencil_ = use_stencil;
-  GLOutputSurface::Reshape(size, device_scale_factor, color_space, format,
-                           use_stencil);
+void GLOutputSurfaceBufferQueue::Reshape(const ReshapeParams& params) {
+  reshape_size_ = params.size;
+  use_stencil_ = params.use_stencil;
+  GLOutputSurface::Reshape(params);
   DCHECK(buffer_queue_);
   const bool may_have_freed_buffers =
-      buffer_queue_->Reshape(size, color_space, format);
-  if (may_have_freed_buffers || (stencil_buffer_ && !use_stencil)) {
+      buffer_queue_->Reshape(params.size, params.color_space, params.format);
+  if (may_have_freed_buffers || (stencil_buffer_ && !params.use_stencil)) {
     auto* gl = context_provider_->ContextGL();
     gl->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
     if (stencil_buffer_) {
@@ -191,7 +186,7 @@ void GLOutputSurfaceBufferQueue::Reshape(const gfx::Size& size,
   }
 
   texture_target_ =
-      gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT, format,
+      gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT, params.format,
                                   context_provider_->ContextCapabilities());
 }
 

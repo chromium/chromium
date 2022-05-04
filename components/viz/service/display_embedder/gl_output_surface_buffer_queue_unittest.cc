@@ -342,9 +342,12 @@ TEST_F(GLOutputSurfaceBufferQueueTest, HandleSwapNAK) {
     EXPECT_CALL(*buffer_queue_, PageFlipComplete(_));
   }
 
-  surface_->Reshape(kBufferSize, /*device_scale_factor=*/1.0,
-                    gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::BGRA_8888,
-                    /*use_stencil=*/true);
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = kBufferSize;
+  reshape_params.color_space = gfx::ColorSpace::CreateSRGB();
+  reshape_params.format = gfx::BufferFormat::BGRA_8888;
+  reshape_params.use_stencil = true;
+  surface_->Reshape(reshape_params);
   surface_->BindFramebuffer();
   OutputSurfaceFrame frame;
   frame.size = kBufferSize;

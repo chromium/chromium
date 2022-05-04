@@ -282,7 +282,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void GenerateMipmap() = 0;
 
   gfx::Size surface_size_for_swap_buffers() const {
-    return reshape_surface_size_;
+    return reshape_params_ ? reshape_params_->size : gfx::Size();
   }
   gfx::Size viewport_size_for_swap_buffers() const {
     return device_viewport_size_;
@@ -350,10 +350,12 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return &current_frame_;
   }
   gfx::BufferFormat reshape_buffer_format() const {
-    DCHECK(reshape_buffer_format_);
-    return reshape_buffer_format_.value();
+    DCHECK(reshape_params_);
+    return reshape_params_->format;
   }
-  gfx::ColorSpace reshape_color_space() const { return reshape_color_space_; }
+  gfx::ColorSpace reshape_color_space() const {
+    return reshape_params_ ? reshape_params_->color_space : gfx::ColorSpace();
+  }
 
   // Sets a DelegatedInkPointRendererSkiaForTest to be used for testing only, in
   // order to save delegated ink metadata values that would otherwise be reset.
@@ -379,20 +381,16 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool current_frame_valid_ = false;
 
   // Time of most recent reshape that ended up with |device_viewport_size_| !=
-  // |reshape_surface_size_|.
+  // |reshape_params->size|.
   base::TimeTicks last_viewport_resize_time_;
 
   bool next_frame_needs_full_frame_redraw_ = false;
 
-  // Cached values given to Reshape(). The |reshape_buffer_format_| is optional
-  // to prevent use of uninitialized values. This may be larger than the
-  // |device_viewport_size_| that users see.
-  gfx::Size reshape_surface_size_;
+  // Cached values given to Reshape(). The `reshape_params_` is optional
+  // to prevent use of uninitialized values. The size in these parameters
+  // may be larger than the `device_viewport_size_` that users see.
+  absl::optional<OutputSurface::ReshapeParams> reshape_params_;
   gfx::Size device_viewport_size_;
-  float reshape_device_scale_factor_ = 0.f;
-  gfx::ColorSpace reshape_color_space_;
-  absl::optional<gfx::BufferFormat> reshape_buffer_format_;
-  bool reshape_use_stencil_ = false;
   gfx::OverlayTransform reshape_display_transform_ =
       gfx::OVERLAY_TRANSFORM_INVALID;
 };

@@ -32,19 +32,16 @@ FakeOutputSurface::FakeOutputSurface(
 
 FakeOutputSurface::~FakeOutputSurface() = default;
 
-void FakeOutputSurface::Reshape(const gfx::Size& size,
-                                float device_scale_factor,
-                                const gfx::ColorSpace& color_space,
-                                gfx::BufferFormat format,
-                                bool use_stencil) {
+void FakeOutputSurface::Reshape(const ReshapeParams& params) {
   if (context_provider()) {
     context_provider()->ContextGL()->ResizeCHROMIUM(
-        size.width(), size.height(), device_scale_factor,
-        color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
+        params.size.width(), params.size.height(), params.device_scale_factor,
+        params.color_space.AsGLColorSpace(),
+        gfx::AlphaBitsForBufferFormat(params.format));
   } else {
-    software_device()->Resize(size, device_scale_factor);
+    software_device()->Resize(params.size, params.device_scale_factor);
   }
-  last_reshape_color_space_ = color_space;
+  last_reshape_color_space_ = params.color_space;
 }
 
 void FakeOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {

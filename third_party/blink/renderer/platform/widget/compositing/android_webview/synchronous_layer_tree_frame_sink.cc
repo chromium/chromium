@@ -111,11 +111,7 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void DiscardBackbuffer() override {}
   void BindFramebuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
-  void Reshape(const gfx::Size& size,
-               float scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override {}
+  void Reshape(const ReshapeParams& params) override {}
   uint32_t GetFramebufferCopyTextureFormat() override { return 0; }
   bool IsDisplayedAsOverlayPlane() const override { return false; }
   unsigned GetOverlayTextureId() const override { return 0; }

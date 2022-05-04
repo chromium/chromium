@@ -25,11 +25,7 @@ class PixelTestOutputSurface : public viz::OutputSurface {
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   void BindFramebuffer() override;
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override;
+  void Reshape(const ReshapeParams& params) override;
   bool HasExternalStencilTest() const override;
   void ApplyExternalStencil() override;
   void SwapBuffers(viz::OutputSurfaceFrame frame) override;

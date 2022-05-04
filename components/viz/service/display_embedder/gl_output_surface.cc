@@ -96,17 +96,14 @@ void GLOutputSurface::SetEnableDCLayers(bool enable) {
   context_provider()->ContextGL()->SetEnableDCLayersCHROMIUM(enable);
 }
 
-void GLOutputSurface::Reshape(const gfx::Size& size,
-                              float device_scale_factor,
-                              const gfx::ColorSpace& color_space,
-                              gfx::BufferFormat format,
-                              bool use_stencil) {
-  size_ = size;
+void GLOutputSurface::Reshape(const ReshapeParams& params) {
+  size_ = params.size;
   has_set_draw_rectangle_since_last_resize_ = false;
   set_draw_rectangle_for_frame_ = false;
   context_provider()->ContextGL()->ResizeCHROMIUM(
-      size.width(), size.height(), device_scale_factor,
-      color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
+      size_.width(), size_.height(), params.device_scale_factor,
+      params.color_space.AsGLColorSpace(),
+      gfx::AlphaBitsForBufferFormat(params.format));
 }
 
 void GLOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {

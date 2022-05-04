@@ -37,12 +37,8 @@ void PixelTestOutputSurface::DiscardBackbuffer() {}
 
 void PixelTestOutputSurface::BindFramebuffer() {}
 
-void PixelTestOutputSurface::Reshape(const gfx::Size& size,
-                                     float device_scale_factor,
-                                     const gfx::ColorSpace& color_space,
-                                     gfx::BufferFormat format,
-                                     bool use_stencil) {
-  software_device()->Resize(size, device_scale_factor);
+void PixelTestOutputSurface::Reshape(const ReshapeParams& params) {
+  software_device()->Resize(params.size, params.device_scale_factor);
 }
 
 bool PixelTestOutputSurface::HasExternalStencilTest() const {

@@ -204,11 +204,25 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Returns the |mailbox| corresponding to the main image's overlay.
   virtual gpu::Mailbox GetOverlayMailbox() const;
 
-  virtual void Reshape(const gfx::Size& size,
-                       float device_scale_factor,
-                       const gfx::ColorSpace& color_space,
-                       gfx::BufferFormat format,
-                       bool use_stencil) = 0;
+  // Reshape the output surface.
+  struct ReshapeParams {
+    gfx::Size size;
+    float device_scale_factor = 1.f;
+    gfx::ColorSpace color_space;
+    gfx::BufferFormat format = gfx::BufferFormat::RGBX_8888;
+    bool use_stencil = false;
+
+    bool operator==(const ReshapeParams& other) const {
+      return size == other.size &&
+             device_scale_factor == other.device_scale_factor &&
+             color_space == other.color_space && format == other.format &&
+             use_stencil == other.use_stencil;
+    }
+    bool operator!=(const ReshapeParams& other) const {
+      return !(*this == other);
+    }
+  };
+  virtual void Reshape(const ReshapeParams& params) = 0;
 
   virtual bool HasExternalStencilTest() const = 0;
   virtual void ApplyExternalStencil() = 0;
