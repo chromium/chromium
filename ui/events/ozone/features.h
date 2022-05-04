@@ -35,6 +35,9 @@ COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnablePalmOnToolTypePalm;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
+extern const base::FeatureParam<std::string> kNeuralPalmModelVersion;
+
+COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
@@ -65,8 +68,10 @@ COMPONENT_EXPORT(EVENTS_OZONE)
 extern const char kOzoneNNPalmTouchCompatibleProperty[];
 
 COMPONENT_EXPORT(EVENTS_OZONE)
-extern const char kOzoneNNPalmRadiusPolynomialProperty[];
+extern const char kOzoneNNPalmModelVersionProperty[];
 
+COMPONENT_EXPORT(EVENTS_OZONE)
+extern const char kOzoneNNPalmRadiusPolynomialProperty[];
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_FEATURES_H_

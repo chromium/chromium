@@ -20,6 +20,7 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
  public:
   OneDeviceTrainNeuralStylusPalmDetectionFilterModel();
   explicit OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const std::string& model_version,
       const std::vector<float>& radius_poly);
 
   OneDeviceTrainNeuralStylusPalmDetectionFilterModel(

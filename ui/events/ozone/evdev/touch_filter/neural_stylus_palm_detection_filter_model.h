@@ -74,6 +74,9 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // If true, uses current active tracking_id count as a feature.
   bool use_active_tracking_id_count = false;
 
+  // The model version (e.g. "alpha" for kohaku, "beta" for redrix) to use.
+  std::string model_version;
+
   // If empty, the radius by the device is left as is.
   // If non empty, the radius reported by device is re-sized in features by the
   // polynomial defined in this vector. E.g. if this vector is {0.5, 1.3,

@@ -36,6 +36,12 @@ std::vector<float> ParseRadiusPolynomial(const std::string& radius_string);
 COMPONENT_EXPORT(EVDEV)
 std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
                                             const std::string param_string);
+
+// Returns the model version to use on the current device. If empty will use
+// alpha model.
+COMPONENT_EXPORT(EVDEV)
+std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
+                                        const std::string param_string);
 }  // namespace internal
 
 }  // namespace ui

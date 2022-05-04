@@ -93,8 +93,10 @@ OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
 
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
     OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+        const std::string& model_version,
         const std::vector<float>& radius_poly)
     : OneDeviceTrainNeuralStylusPalmDetectionFilterModel() {
+  config_.model_version = model_version;
   config_.radius_polynomial_resize = radius_poly;
 }
 

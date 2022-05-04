@@ -44,6 +44,9 @@ const base::Feature kEnableFakeKeyboardHeuristic{
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{
     &kEnableNeuralPalmDetectionFilter, "neural_palm_radius_polynomial", ""};
 
+extern const base::FeatureParam<std::string> kNeuralPalmModelVersion{
+    &kEnableNeuralPalmDetectionFilter, "neural_palm_model_version", ""};
+
 const base::FeatureParam<double> kHeuristicCancelThresholdSeconds{
     &kEnableHeuristicPalmDetectionFilter,
     "heuristic_palm_cancel_threshold_seconds", 0.4};
@@ -61,6 +64,7 @@ const base::Feature kEnableInputEventLogging{"EnableInputEventLogging",
 constexpr char kOzoneNNPalmSwitchName[] = "ozone-nnpalm-properties";
 
 constexpr char kOzoneNNPalmTouchCompatibleProperty[] = "touch-compatible";
+constexpr char kOzoneNNPalmModelVersionProperty[] = "model";
 constexpr char kOzoneNNPalmRadiusPolynomialProperty[] = "radius-polynomial";
 
 }  // namespace ui

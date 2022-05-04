@@ -84,6 +84,28 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   // By default, return the original.
   return param_string;
 }
+
+std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
+                                        const std::string param_string) {
+  if (!param_string.empty()) {
+    return param_string;
+  }
+
+  // look at the command line.
+  absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kOzoneNNPalmSwitchName));
+  if (ozone_switch_value != absl::nullopt && ozone_switch_value->is_dict()) {
+    std::string* switch_string_value =
+        ozone_switch_value->FindStringKey(kOzoneNNPalmModelVersionProperty);
+    if (switch_string_value != nullptr) {
+      return *switch_string_value;
+    }
+  }
+
+  // By default, return the original.
+  return param_string;
+}
 }  // namespace internal
 
 std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
@@ -97,10 +119,12 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
     VLOG(1) << "Will attempt to use radius polynomial: " << polynomial_string;
     std::vector<float> radius_polynomial =
         internal::ParseRadiusPolynomial(polynomial_string);
+    std::string model_version = internal::FetchNeuralPalmModelVersion(
+        devinfo, kNeuralPalmModelVersion.Get());
     // There's only one model right now.
     std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model =
         std::make_unique<OneDeviceTrainNeuralStylusPalmDetectionFilterModel>(
-            radius_polynomial);
+            model_version, radius_polynomial);
     return std::make_unique<NeuralStylusPalmDetectionFilter>(
         devinfo, std::move(model), shared_palm_state);
   }
