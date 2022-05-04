@@ -34,7 +34,7 @@ void WindowEventFilterLacros::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
-  aura::Window* window = static_cast<aura::Window*>(event->target());
+  auto* window = static_cast<aura::Window*>(event->target());
   int component =
       window->delegate()
           ? window->delegate()->GetNonClientComponent(event->location())
@@ -42,11 +42,7 @@ void WindowEventFilterLacros::OnMouseEvent(ui::MouseEvent* event) {
 
   if (event->flags() & ui::EF_IS_DOUBLE_CLICK) {
     if (previous_pressed_component_ == HTCAPTION && component == HTCAPTION) {
-      // TODO(crbug.com/1299310): send toggle event to ash-chrome.
-      if (window->GetProperty(aura::client::kResizeBehaviorKey) &
-          aura::client::kResizeBehaviorCanMaximize) {
-        ToggleMaximizedState();
-      }
+      MaybeToggleMaximizedState(window);
       previous_pressed_component_ = HTNOWHERE;
       event->SetHandled();
     }
@@ -57,17 +53,39 @@ void WindowEventFilterLacros::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void WindowEventFilterLacros::OnGestureEvent(ui::GestureEvent* event) {
-  aura::Window* window = static_cast<aura::Window*>(event->target());
+  auto* window = static_cast<aura::Window*>(event->target());
   int component =
       window->delegate()
           ? window->delegate()->GetNonClientComponent(event->location())
           : HTNOWHERE;
 
+  // Double tap to maximize.
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    int previous_pressed_component = previous_pressed_component_;
+    previous_pressed_component_ = component;
+
+    if (previous_pressed_component_ == HTCAPTION &&
+        previous_pressed_component == HTCAPTION &&
+        event->details().tap_count() == 2) {
+      MaybeToggleMaximizedState(window);
+      previous_pressed_component_ = HTNOWHERE;
+      event->SetHandled();
+    }
+    return;
+  }
+
+  // Interactive window move.
   if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
     MaybeDispatchHostWindowDragMovement(component, event);
 }
 
-void WindowEventFilterLacros::ToggleMaximizedState() {
+void WindowEventFilterLacros::MaybeToggleMaximizedState(aura::Window* window) {
+  if (!(window->GetProperty(aura::client::kResizeBehaviorKey) &
+        aura::client::kResizeBehaviorCanMaximize)) {
+    return;
+  }
+
+  // TODO(crbug.com/1299310): send toggle event to ash-chrome.
   if (desktop_window_tree_host_->IsMaximized())
     desktop_window_tree_host_->Restore();
   else

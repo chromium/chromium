@@ -309,10 +309,9 @@ class DesktopWindowTreeHostPlatformImplTest
                               base::TimeTicks::Now(), flags, flag);
   }
 
-  ui::GestureEvent* GenerateGestureEvent(ui::EventType event_type,
-                                         const gfx::Point& gesture_location) {
-    ui::GestureEventDetails gesture_details(event_type);
-    gesture_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  ui::GestureEvent* GenerateGestureEvent(
+      const gfx::Point& gesture_location,
+      const ui::GestureEventDetails& gesture_details) {
     return new ui::GestureEvent(gesture_location.x(), gesture_location.y(), 0,
                                 base::TimeTicks::Now(), gesture_details);
   }
@@ -398,8 +397,9 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
       // |hittest| value we specified.
 
       if (use_touch_event) {
-        DispatchEvent(GenerateGestureEvent(ui::ET_GESTURE_SCROLL_BEGIN,
-                                           pointer_location_in_px));
+        ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_BEGIN);
+        DispatchEvent(
+            GenerateGestureEvent(pointer_location_in_px, gesture_details));
       } else {
         DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
                                          pointer_location_in_px,
@@ -418,8 +418,9 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
       // Dispatch mouse/touch release event to release a mouse/touch pressed
       // handler and be able to consume future events.
       if (use_touch_event) {
-        DispatchEvent(GenerateGestureEvent(ui::ET_GESTURE_SCROLL_END,
-                                           pointer_location_in_px));
+        ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_END);
+        DispatchEvent(
+            GenerateGestureEvent(pointer_location_in_px, gesture_details));
       } else {
         DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
                                          pointer_location_in_px,
@@ -431,33 +432,43 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MAYBE_HitTest) {
 
 // Tests that the window is maximized in response to a double click event.
 TEST_F(DesktopWindowTreeHostPlatformImplTest, DoubleClickHeaderMaximizes) {
-  gfx::Rect bounds(0, 0, 100, 100);
-  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
-  widget->Show();
+  for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
+    gfx::Rect bounds(0, 0, 100, 100);
+    std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
+    widget->Show();
 
-  aura::Window* window = widget->GetNativeWindow();
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
+    aura::Window* window = widget->GetNativeWindow();
+    window->SetProperty(aura::client::kResizeBehaviorKey,
+                        aura::client::kResizeBehaviorCanMaximize);
 
-  RunPendingMessages();
+    RunPendingMessages();
 
-  host_->ResetCalledMaximize();
+    host_->ResetCalledMaximize();
 
-  auto* frame_view = delegate_->frame_view();
-  // Set the desired hit test result value, which will be returned, when
-  // WindowEventFilter starts to perform hit testing.
-  frame_view->set_hit_test_result(HTCAPTION);
+    auto* frame_view = delegate_->frame_view();
+    // Set the desired hit test result value, which will be returned, when
+    // WindowEventFilter starts to perform hit testing.
+    frame_view->set_hit_test_result(HTCAPTION);
 
-  host_->ResetCalledMaximize();
+    host_->ResetCalledMaximize();
 
-  int flags = ui::EF_LEFT_MOUSE_BUTTON;
-  GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
-  flags |= ui::EF_IS_DOUBLE_CLICK;
-  GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    if (use_touch_event) {
+      ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+      details.set_tap_count(1);
+      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+      details.set_tap_count(2);
+      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+    } else {
+      int flags = ui::EF_LEFT_MOUSE_BUTTON;
+      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+      flags |= ui::EF_IS_DOUBLE_CLICK;
+      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    }
 
-  EXPECT_TRUE(host_->called_maximize());
+    EXPECT_TRUE(host_->called_maximize());
 
-  widget->CloseNow();
+    widget->CloseNow();
+  }
 }
 
 // Tests that the window does not maximize in response to a double click event,
@@ -465,31 +476,44 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, DoubleClickHeaderMaximizes) {
 // second click.
 TEST_F(DesktopWindowTreeHostPlatformImplTest,
        DoubleClickTwoDifferentTargetsDoesntMaximizes) {
-  gfx::Rect bounds(0, 0, 100, 100);
-  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
-  widget->Show();
+  for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
+    gfx::Rect bounds(0, 0, 100, 100);
+    std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
+    widget->Show();
 
-  aura::Window* window = widget->GetNativeWindow();
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
+    aura::Window* window = widget->GetNativeWindow();
+    window->SetProperty(aura::client::kResizeBehaviorKey,
+                        aura::client::kResizeBehaviorCanMaximize);
 
-  RunPendingMessages();
+    RunPendingMessages();
 
-  host_->ResetCalledMaximize();
+    host_->ResetCalledMaximize();
 
-  auto* frame_view = delegate_->frame_view();
+    auto* frame_view = delegate_->frame_view();
 
-  frame_view->set_hit_test_result(HTCLIENT);
-  int flags = ui::EF_LEFT_MOUSE_BUTTON;
-  GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    if (use_touch_event) {
+      frame_view->set_hit_test_result(HTCLIENT);
+      ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+      details.set_tap_count(1);
+      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 
-  frame_view->set_hit_test_result(HTCLIENT);
-  flags |= ui::EF_IS_DOUBLE_CLICK;
-  GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+      frame_view->set_hit_test_result(HTCLIENT);
+      details.set_tap_count(2);
+      DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
+    } else {
+      frame_view->set_hit_test_result(HTCLIENT);
+      int flags = ui::EF_LEFT_MOUSE_BUTTON;
+      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
 
-  EXPECT_FALSE(host_->called_maximize());
+      frame_view->set_hit_test_result(HTCLIENT);
+      flags |= ui::EF_IS_DOUBLE_CLICK;
+      GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
+    }
 
-  widget->CloseNow();
+    EXPECT_FALSE(host_->called_maximize());
+
+    widget->CloseNow();
+  }
 }
 
 // Tests that the window does not maximize in response to a double click event,

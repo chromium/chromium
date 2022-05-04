@@ -9,6 +9,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ui {
 class LocatedEvent;
 class MouseEvent;
@@ -43,7 +47,7 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // Called when the user clicked the maximize button.
   void OnClickedMaximizeButton(ui::MouseEvent* event);
 
-  void ToggleMaximizedState();
+  void MaybeToggleMaximizedState(aura::Window* window);
 
   // Dispatches a message to the window manager to tell it to act as if a border
   // or titlebar drag occurred with left mouse click. In case of X11, a

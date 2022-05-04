@@ -115,11 +115,7 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
       event->SetHandled();
       break;
     case LinuxUI::WindowFrameAction::kToggleMaximize:
-
-      if (content_window->GetProperty(aura::client::kResizeBehaviorKey) &
-          aura::client::kResizeBehaviorCanMaximize) {
-        ToggleMaximizedState();
-      }
+      MaybeToggleMaximizedState(content_window);
       event->SetHandled();
       break;
     case LinuxUI::WindowFrameAction::kMenu:
@@ -165,7 +161,12 @@ void WindowEventFilterLinux::OnClickedMaximizeButton(ui::MouseEvent* event) {
   }
 }
 
-void WindowEventFilterLinux::ToggleMaximizedState() {
+void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {
+  if (!(window->GetProperty(aura::client::kResizeBehaviorKey) &
+        aura::client::kResizeBehaviorCanMaximize)) {
+    return;
+  }
+
   if (desktop_window_tree_host_->IsMaximized())
     desktop_window_tree_host_->Restore();
   else
@@ -214,12 +215,24 @@ void WindowEventFilterLinux::OnGestureEvent(ui::GestureEvent* event) {
           ? window->delegate()->GetNonClientComponent(event->location())
           : HTNOWHERE;
 
+  // Double tap to maximize.
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    int previous_click_component = click_component_;
+    click_component_ = hit_test_code;
+
+    if (click_component_ == HTCAPTION &&
+        click_component_ == previous_click_component &&
+        event->details().tap_count() == 2) {
+      MaybeToggleMaximizedState(window);
+      click_component_ = HTNOWHERE;
+      event->StopPropagation();
+    }
+    return;
+  }
+
   // Interactive window move.
   if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
     MaybeDispatchHostWindowDragMovement(hit_test_code, event);
-
-  // TODO(https://crbug.com/1282318): Add support to other gestures,
-  // including double-tap-to-maximize.
 }
 
 }  // namespace views

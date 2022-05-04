@@ -9,6 +9,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ui {
 class GestureEvent;
 class MouseEvent;
@@ -37,7 +41,7 @@ class VIEWS_EXPORT WindowEventFilterLacros : public ui::EventHandler {
   void OnMouseEvent(ui::MouseEvent* event) override;
 
  private:
-  void ToggleMaximizedState();
+  void MaybeToggleMaximizedState(aura::Window* window);
 
   // Dispatches a message to the window manager to tell it to act as if a border
   // or titlebar drag occurred with left mouse click. In case of X11, a
