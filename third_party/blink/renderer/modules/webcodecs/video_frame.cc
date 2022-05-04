@@ -539,15 +539,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         V8CanvasImageSource::ContentType::kVideoFrame) {
       auto local_handle =
           source->GetAsVideoFrame()->handle()->CloneForInternalUse();
-      if (!local_handle) {
-        // It's possible for another realm (Worker) to destroy our handle if
-        // this frame was transferred via BroadcastChannel to multiple realms.
-        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                          "Source VideoFrame was closed");
-        return nullptr;
-      }
-
-      if (local_handle->sk_image() && !force_opaque &&
+      // Note: It's possible for another realm (Worker) to destroy our handle if
+      // this frame was transferred via BroadcastChannel to multiple realms.
+      if (local_handle && local_handle->sk_image() && !force_opaque &&
           !init->hasVisibleRect() && !init->hasDisplayWidth() &&
           !init->hasDisplayHeight()) {
         sk_image = local_handle->sk_image();
@@ -678,6 +672,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // Above format determination unfortunately uses a bit of internal knowledge
     // from CreateFromSkImage(). Make sure they stay in sync.
     DCHECK(!frame || frame->format() == format);
+
+    // If |sk_image| isn't rendered identically to |frame|, don't pass it along
+    // when creating the blink::VideoFrame below.
+    if (force_opaque || parsed_init.visible_rect != default_visible_rect ||
+        parsed_init.display_size != default_display_size) {
+      sk_image.reset();
+    }
   }
 
   if (!frame) {

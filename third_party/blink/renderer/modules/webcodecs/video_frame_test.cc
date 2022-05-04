@@ -295,8 +295,7 @@ void TestWrappedVideoFrameImageReuse(V8TestingScope& scope,
 
 // Wraps an ImageBitmap in a VideoFrame and checks for SkImage re-use where
 // feasible.
-// TODO(crbug.com/1316089): Re-enable this test when code is fixed.
-TEST_F(VideoFrameTest, DISABLED_ImageReuse_VideoFrameFromImage) {
+TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromImage) {
   V8TestingScope scope;
 
   sk_sp<SkSurface> surface(SkSurface::MakeRaster(
