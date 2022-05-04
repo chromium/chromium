@@ -3,6 +3,10 @@
     border-color: var(--google-blue-600);
   }
 
+  #restartIcon {
+    padding-inline-start: 8px;
+  }
+
   #updateIcon {
     color: var(--cros-icon-color-secondary);
   }
@@ -31,7 +35,7 @@
           on-click="onUpdateButtonClicked_">
           [[updateVersionButtonLabel_]]
         <iron-icon id="restartIcon" icon="shimless-icon:update"
-            class="small-icon">
+            class="small-icon-base">
         </iron-icon>
       </cr-button>
     </div>
