@@ -405,6 +405,8 @@ absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
       return file_manager::io_task::OperationType::kExtract;
     case api::file_manager_private::IO_TASK_TYPE_MOVE:
       return file_manager::io_task::OperationType::kMove;
+    case api::file_manager_private::IO_TASK_TYPE_TRASH:
+      return file_manager::io_task::OperationType::kTrash;
     case api::file_manager_private::IO_TASK_TYPE_ZIP:
       return file_manager::io_task::OperationType::kZip;
     case api::file_manager_private::IO_TASK_TYPE_NONE:

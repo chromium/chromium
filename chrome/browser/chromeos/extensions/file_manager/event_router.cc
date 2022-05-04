@@ -253,6 +253,8 @@ file_manager_private::IOTaskType GetIOTaskType(
       return file_manager_private::IO_TASK_TYPE_EXTRACT;
     case file_manager::io_task::OperationType::kMove:
       return file_manager_private::IO_TASK_TYPE_MOVE;
+    case file_manager::io_task::OperationType::kTrash:
+      return file_manager_private::IO_TASK_TYPE_TRASH;
     case file_manager::io_task::OperationType::kZip:
       return file_manager_private::IO_TASK_TYPE_ZIP;
     default:

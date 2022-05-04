@@ -41,6 +41,7 @@ enum class OperationType {
   kDelete,
   kExtract,
   kMove,
+  kTrash,
   kZip,
 };
 

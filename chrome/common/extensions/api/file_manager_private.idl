@@ -358,6 +358,7 @@ enum IOTaskType {
   delete,
   extract,
   move,
+  trash,
   zip
 };
 

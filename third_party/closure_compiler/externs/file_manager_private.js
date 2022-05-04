@@ -320,6 +320,7 @@ chrome.fileManagerPrivate.IOTaskType = {
   DELETE: 'delete',
   EXTRACT: 'extract',
   MOVE: 'move',
+  TRASH: 'trash',
   ZIP: 'zip',
 };
 
