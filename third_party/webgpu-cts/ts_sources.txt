@@ -291,6 +291,12 @@ src/webgpu/shader/execution/expression/call/builtin/degrees.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/determinant.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/distance.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/dot.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdx.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdxCoarse.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdxFine.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdy.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdyCoarse.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/dpdyFine.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/exp2.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/extractBits.spec.ts
@@ -301,6 +307,9 @@ src/webgpu/shader/execution/expression/call/builtin/floor.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fma.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/frexp.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/fwidth.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/fwidthCoarse.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/fwidthFine.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/insertBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/inversesqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/ldexp.spec.ts
