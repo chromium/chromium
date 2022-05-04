@@ -24,7 +24,10 @@ BackgroundBridge.BrailleBackground = {
         BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.BACK_TRANSLATE, cells);
   },
 
-  /** @param {string} brailleTable The table for this translator to use. */
+  /**
+   * @param {string} brailleTable The table for this translator to use.
+   * @return {!Promise}
+   */
   async refreshBrailleTable(brailleTable) {
     return BridgeHelper.sendMessage(
         BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.REFRESH_BRAILLE_TABLE,
@@ -45,7 +48,7 @@ BackgroundBridge.ChromeVoxBackground = {
 BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).
-   * @return {Promise<Object>} A map of all prefs except the key map from
+   * @return {!Promise<Object>} A map of all prefs except the key map from
    *     localStorage.
    */
   async getPrefs() {
@@ -57,6 +60,7 @@ BackgroundBridge.ChromeVoxPrefs = {
    * Set the value of a pref of logging options.
    * @param {string} key The pref key.
    * @param {boolean} value The new value of the pref.
+   * @return {!Promise}
    */
   async setLoggingPrefs(key, value) {
     return BridgeHelper.sendMessage(
@@ -68,6 +72,7 @@ BackgroundBridge.ChromeVoxPrefs = {
    * Set the value of a pref.
    * @param {string} key The pref key.
    * @param {Object|string|boolean} value The new value of the pref.
+   * @return {!Promise}
    */
   async setPref(key, value) {
     return BridgeHelper.sendMessage(
@@ -81,6 +86,7 @@ BackgroundBridge.ChromeVoxState = {
    * to local storage.
    * @param {number} punctuationEcho The index of the desired punctuation echo
    * level in AbstractTts.PUNCTUATION_ECHOES.
+   * @return {!Promise}
    */
   async updatePunctuationEcho(punctuationEcho) {
     return BridgeHelper.sendMessage(
@@ -113,7 +119,10 @@ BackgroundBridge.EventSourceState = {
 };
 
 BackgroundBridge.LogStore = {
-  /** Clear the log buffer. */
+  /**
+   * Clear the log buffer.
+   * @return {!Promise}
+   */
   async clearLog() {
     return BridgeHelper.sendMessage(
         BridgeTarget.LOG_STORE, BridgeAction.CLEAR_LOG);
@@ -134,13 +143,17 @@ BackgroundBridge.PanelBackground = {
   /**
    * Creates a new ISearch object, ready to search starting from the current
    * ChromeVox focus.
+   * @return {!Promise}
    */
   async createNewISearch() {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH);
   },
 
-  /** Destroy the ISearch object so it can be garbage collected. */
+  /**
+   * Destroy the ISearch object so it can be garbage collected.
+   * @return {!Promise}
+   */
   async destroyISearch() {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH);
@@ -150,6 +163,7 @@ BackgroundBridge.PanelBackground = {
    * @param {string} searchStr
    * @param {constants.Dir} dir
    * @param {boolean=} opt_nextObject
+   * @return {!Promise}
    */
   async incrementalSearch(searchStr, dir, opt_nextObject) {
     return BridgeHelper.sendMessage(
@@ -157,7 +171,10 @@ BackgroundBridge.PanelBackground = {
         {searchStr, dir, opt_nextObject});
   },
 
-  /** Sets the current ChromeVox focus to the current ISearch node. */
+  /**
+   * Sets the current ChromeVox focus to the current ISearch node.
+   * @return {!Promise}
+   */
   async setRangeToISearchNode() {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE);
