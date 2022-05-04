@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.history_clusters;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +21,8 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersItemPropertie
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,14 +33,19 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * Root component for the HistoryClusters UI component, which displays lists of related history
  * visits grouped into clusters.
  */
-public class HistoryClustersCoordinator {
+public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private final HistoryClustersMediator mMediator;
     private final ModelList mModelList;
     private final HistoryClustersBottomSheetContent mBottomSheetContent;
     private SimpleRecyclerViewAdapter mAdapter;
     private final Context mContext;
     private boolean mBottomSheetInflated;
+    private boolean mActivityViewInflated;
     private final PropertyModel mBottomSheetToolbarModel;
+    private View mActivityContentView;
+    private HistoryClustersToolbar mToolbar;
+    private SelectionDelegate mSelectionDelegate;
+    private SelectableListLayout mSelectableListLayout;
 
     /**
      * Construct a new HistoryClustersCoordinator.
@@ -49,7 +58,7 @@ public class HistoryClustersCoordinator {
      *         We can't directly set the class ourselves without creating a circular dependency.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomSheetController bottomSheetController,
             Supplier<Intent> historyActivityIntentFactory) {
         mContext = context;
         mModelList = new ModelList();
@@ -66,12 +75,55 @@ public class HistoryClustersCoordinator {
         mMediator.destroy();
     }
 
+    public void setQuery(String query) {
+        // TODO(https://crbug.com/1303171): Implement this by adding a property model and binding
+        // logic for HistoryClustersToolbar.
+    }
+
+    /** Gets the root view for a "full activity" presentation of the user's history clusters. */
+    public View getActivityContentView() {
+        if (!mActivityViewInflated) {
+            inflateActivityView();
+        }
+
+        return mActivityContentView;
+    }
+
     /** Shows the bottom sheet, populating it with clusters matching the given query. */
     public void showBottomSheet(String query) {
         if (!mBottomSheetInflated) {
             inflateBottomSheet();
         }
         mMediator.showBottomSheet(query);
+    }
+
+    void inflateActivityView() {
+        mAdapter = new SimpleRecyclerViewAdapter(mModelList);
+        mAdapter.registerType(
+                ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
+
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        mActivityContentView =
+                layoutInflater.inflate(R.layout.history_clusters_activity_content, null);
+
+        mSelectableListLayout = mActivityContentView.findViewById(R.id.selectable_list);
+        RecyclerView recyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(
+                recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setItemAnimator(null);
+
+        mSelectionDelegate = new SelectionDelegate<>();
+        mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(
+                R.layout.history_clusters_toolbar, mSelectionDelegate,
+                R.string.history_clusters_journeys_tab_label, R.id.normal_menu_group,
+                R.id.selection_mode_menu_group, this, true);
+        mToolbar.initializeSearchView(
+                mMediator, R.string.history_clusters_search_your_journeys, R.id.search_menu_id);
+        mSelectableListLayout.configureWideDisplayStyle();
+        mToolbar.setSearchEnabled(true);
+
+        mActivityViewInflated = true;
     }
 
     void inflateBottomSheet() {
@@ -104,5 +156,10 @@ public class HistoryClustersCoordinator {
                 (SelectableItemView<ClusterVisit>) LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.history_cluster_visit, parent, false);
         return itemView;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        return false;
     }
 }

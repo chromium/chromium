@@ -10,8 +10,11 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/ic_journeys.xml",
     "java/res/layout/history_cluster_visit.xml",
+    "java/res/layout/history_clusters_activity_content.xml",
     "java/res/layout/history_clusters_bottom_sheet_content.xml",
     "java/res/layout/history_clusters_bottom_sheet_toolbar.xml",
+    "java/res/layout/history_clusters_toolbar.xml",
+    "java/res/menu/history_clusters_menu.xml",
   ]
   deps = [ "//components/browser_ui/widget/android:java_resources" ]
 }
@@ -30,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediator.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersResult.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersToolbar.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersViewBinder.java",
   ]
 

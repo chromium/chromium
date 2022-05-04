@@ -22,12 +22,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class HistoryClustersMediator extends EmptyBottomSheetObserver {
+class HistoryClustersMediator extends EmptyBottomSheetObserver implements SearchDelegate {
     private final HistoryClustersBridge mHistoryClustersBridge;
     private final Context mContext;
     private final Resources mResources;
@@ -78,6 +79,19 @@ class HistoryClustersMediator extends EmptyBottomSheetObserver {
     public void onSheetClosed(@StateChangeReason int reason) {
         mModelList.clear();
         mBottomSheetController.removeObserver(this);
+    }
+
+    // SearchDelegate implementation.
+    @Override
+    public void onSearchTextChanged(String query) {
+        mModelList.clear();
+        query(query);
+    }
+
+    @Override
+    public void onEndSearch() {
+        mModelList.clear();
+        query("");
     }
 
     void destroy() {

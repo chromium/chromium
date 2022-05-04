@@ -54,4 +54,7 @@
   <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items.">
     Show more
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_SEARCH_YOUR_JOURNEYS" desc="A label for the hint text for the search box in Chrome Journeys." formatter_data="android_java">
+    Search your Journeys
+  </message>
 </grit-part>

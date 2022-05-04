@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+  <group android:id="@+id/normal_menu_group" >
+    <item
+        android:id="@+id/search_menu_id"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        android:visible="false"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
+  </group>
+  <group
+      android:id="@+id/selection_mode_menu_group"
+      android:visible="false" >
+  </group>
+</menu>
