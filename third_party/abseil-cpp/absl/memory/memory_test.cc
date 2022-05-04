@@ -548,22 +548,23 @@ struct MinimalMockAllocator {
 TEST(AllocatorTraits, FunctionsMinimal) {
   int trace = 0;
   int hint;
-  TestValue x(&trace);
+  alignas(TestValue) char buffer[sizeof(TestValue)];
+  auto* x = reinterpret_cast<TestValue*>(buffer);
   MinimalMockAllocator mock;
   using Traits = absl::allocator_traits<MinimalMockAllocator>;
-  EXPECT_CALL(mock, allocate(7)).WillRepeatedly(Return(&x));
-  EXPECT_CALL(mock, deallocate(&x, 7));
+  EXPECT_CALL(mock, allocate(7)).WillRepeatedly(Return(x));
+  EXPECT_CALL(mock, deallocate(x, 7));
 
-  EXPECT_EQ(&x, Traits::allocate(mock, 7));
+  EXPECT_EQ(x, Traits::allocate(mock, 7));
   static_cast<void>(Traits::allocate(mock, 7, static_cast<const void*>(&hint)));
-  EXPECT_EQ(&x, Traits::allocate(mock, 7, static_cast<const void*>(&hint)));
-  Traits::deallocate(mock, &x, 7);
+  EXPECT_EQ(x, Traits::allocate(mock, 7, static_cast<const void*>(&hint)));
+  Traits::deallocate(mock, x, 7);
 
+  EXPECT_EQ(0, trace);
+  Traits::construct(mock, x, &trace);
   EXPECT_EQ(1, trace);
-  Traits::construct(mock, &x, &trace);
-  EXPECT_EQ(2, trace);
-  Traits::destroy(mock, &x);
-  EXPECT_EQ(1, trace);
+  Traits::destroy(mock, x);
+  EXPECT_EQ(0, trace);
 
   EXPECT_EQ(std::numeric_limits<size_t>::max() / sizeof(TestValue),
             Traits::max_size(mock));

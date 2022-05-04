@@ -78,9 +78,9 @@ cc_test(
 )
 
 cc_test(
-    name = "function_ref_benchmark",
+    name = "function_type_benchmark",
     srcs = [
-        "function_ref_benchmark.cc",
+        "function_type_benchmark.cc",
     ],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],

@@ -477,7 +477,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // StatusOr<T>::ok()
   //
   // Returns whether or not this `absl::StatusOr<T>` holds a `T` value. This
-  // member function is analagous to `absl::Status::ok()` and should be used
+  // member function is analogous to `absl::Status::ok()` and should be used
   // similarly to check the status of return values.
   //
   // Example:
