@@ -460,6 +460,67 @@ class EnterpriseEnrollmentScreenTester extends ScreenElementApi {
   }
 }
 
+class OfflineLoginScreenTester extends ScreenElementApi {
+  constructor() {
+    super('offline-login');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  /**
+   * Returns if the Offline Login Screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.nextButton.isVisible();
+  }
+
+  /**
+   * Returns the email field name on the Offline Login Screen.
+   * @return {string}
+   */
+  getEmailFieldName() {
+    return loadTimeData.getString('offlineLoginEmail');
+  }
+
+  /**
+   * Returns the password field name on the Offline Login Screen.
+   * @return {string}
+   */
+  getPasswordFieldName() {
+    return loadTimeData.getString('offlineLoginPassword');
+  }
+
+  /**
+   * Returns the next button name on the Offline Login Screen.
+   * @return {string}
+   */
+  getNextButtonName() {
+    return loadTimeData.getString('offlineLoginNextBtn');
+  }
+}
+
+class ErrorScreenTester extends ScreenElementApi {
+  constructor() {
+    super('error-message');
+    this.offlineLink = new PolymerElementApi(this, '#error-offline-login-link');
+  }
+
+  /**
+   * Returns if the Error Screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.offlineLink.isVisible();
+  }
+
+  /**
+   * Click the sign in as an existing user Link.
+   */
+  clickSignInAsExistingUserLink() {
+    return this.offlineLink.click();
+  }
+}
+
 class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -479,6 +540,8 @@ class OobeApiProvider {
       PinSetupScreen: new PinSetupScreenTester(),
       EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreenTester(),
       GuestTosScreen: new GuestTosScreenTester(),
+      ErrorScreen: new ErrorScreenTester(),
+      OfflineLoginScreen: new OfflineLoginScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
