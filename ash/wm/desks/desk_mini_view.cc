@@ -52,6 +52,15 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   return gfx::Rect(origin, screen_rect.size());
 }
 
+// Tells whether `desk` contains an app window itself or if the desk is active
+// and at least one visible on all desk window exists.
+bool ContainsAppWindows(Desk* desk) {
+  if (desk->ContainsAppWindows())
+    return true;
+  return desk->is_active() &&
+         !DesksController::Get()->visible_on_all_desks_windows().empty();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -159,20 +168,28 @@ bool DeskMiniView::IsDeskNameBeingModified() const {
 }
 
 void DeskMiniView::UpdateDeskButtonVisibility() {
+  auto* controller = DesksController::Get();
+
   // Don't show desk buttons when hovered while the dragged window is on
   // the DesksBarView.
   // For switch access, setting desk buttons to visible allows users to
   // navigate to it.
   const bool visible =
-      DesksController::Get()->CanRemoveDesks() &&
-      !owner_bar_->dragged_item_over_bar() && !owner_bar_->IsDraggingDesk() &&
+      controller->CanRemoveDesks() && !owner_bar_->dragged_item_over_bar() &&
+      !owner_bar_->IsDraggingDesk() &&
       (IsMouseHovered() || force_show_desk_buttons_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
 
-  if (features::IsDesksCloseAllEnabled())
+  if (features::IsDesksCloseAllEnabled()) {
+    // Only show the combine desks button if there are app windows in the desk,
+    // or if the desk is active and there are windows that should be visible on
+    // all desks.
+    desk_action_view_->SetCombineDesksButtonVisibility(
+        ContainsAppWindows(desk_));
     desk_action_view_->SetVisible(visible && !is_context_menu_open_);
-  else
+  } else {
     close_desk_button_->SetVisible(visible);
+  }
 }
 
 void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
@@ -235,6 +252,11 @@ void DeskMiniView::OpenContextMenu() {
   // TODO(crbug.com/1308429): Should set highlight overlay to visible and update
   // context menu item label for combining desks here to tell the user where the
   // windows will go.
+
+  // Only show the combine desks context menu option if there are app windows in
+  // the desk, or if the desk is active and there are windows that should be
+  // visible on all desks.
+  context_menu_->SetCombineDesksMenuItemVisibility(ContainsAppWindows(desk_));
 
   // TODO(crbug.com/1308780): Source will need to be different when opening with
   // long press and possibly keyboard.

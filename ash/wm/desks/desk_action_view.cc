@@ -56,6 +56,10 @@ void DeskActionView::UpdateCombineDesksTooltip(
       IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION, new_combine_desks_target_name));
 }
 
+void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
+  combine_desks_button_->SetVisible(visible);
+}
+
 BEGIN_METADATA(DeskActionView, views::BoxLayoutView)
 END_METADATA
 

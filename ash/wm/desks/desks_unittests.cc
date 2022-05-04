@@ -7075,6 +7075,19 @@ class DesksCloseAllTest : public DesksTest {
         /*event_flags=*/0);
   }
 
+  // Opens the context menu for the mini view at `index`.
+  void OpenContextMenuForMiniView(int index) {
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    const DeskPreviewView* desk_preview_view =
+        GetPrimaryRootDesksBarView()->mini_views()[index]->desk_preview();
+    const gfx::Point desk_preview_view_center =
+        desk_preview_view->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(desk_preview_view_center);
+    event_generator->ClickRightButton();
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  }
+
   // DesksTest:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksCloseAll);
@@ -7345,6 +7358,51 @@ TEST_F(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
       EXPECT_FALSE(window.is_valid());
     }
   }
+}
+
+// Checks that the combine desks button and context menu option are not visible
+// when there are no windows on a desk, and that they are visible on desks with
+// windows.
+TEST_F(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
+  // Create a new desk with no windows to have an expanded desks bar view with
+  // mini views.
+  NewDesk();
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // We need to hover over the desk preview to properly check the combine desks
+  // button's visibility.
+  DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
+  CloseButton* combine_desks_button =
+      mini_view->desk_action_view()->combine_desks_button();
+  gfx::Point desk_preview_view_center =
+      mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(desk_preview_view_center);
+  EXPECT_FALSE(combine_desks_button->GetVisible());
+
+  // We need to open the context menu to trigger state change for the combine
+  // desks option in the context menu.
+  OpenContextMenuForMiniView(0);
+  EXPECT_FALSE(DesksTestApi::GetContextMenuModelForDesk(0).IsVisibleAt(
+      DeskActionContextMenu::CommandId::kCombineDesks));
+  event_generator->ClickLeftButton();
+
+  // Add a window and check to see if that makes the context option visible for
+  // the desk's action view.
+  auto window = CreateAppWindow();
+  DesksController::Get()->SendToDeskAtIndex(window.get(), 0);
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
+  combine_desks_button = mini_view->desk_action_view()->combine_desks_button();
+  desk_preview_view_center =
+      mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(desk_preview_view_center);
+  EXPECT_TRUE(combine_desks_button->GetVisible());
+  OpenContextMenuForMiniView(0);
+  EXPECT_TRUE(DesksTestApi::GetContextMenuModelForDesk(0).IsVisibleAt(
+      DeskActionContextMenu::CommandId::kCombineDesks));
 }
 
 // TODO(crbug.com/1308429): Should have tests for opening and closing the

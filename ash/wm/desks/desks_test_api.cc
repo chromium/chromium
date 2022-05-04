@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_restore_util.h"
@@ -97,6 +98,11 @@ views::LabelButton* DesksTestApi::GetCloseAllUndoToastDismissButton() {
   ToastManagerImpl* toast_manager = Shell::Get()->toast_manager();
   return toast_manager->GetCurrentOverlayForTesting()
       ->dismiss_button_for_testing();
+}
+
+// static
+const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(int index) {
+  return GetContextMenuForDesk(index)->context_menu_model_;
 }
 
 // static
