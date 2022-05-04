@@ -71,6 +71,7 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     this.initializeLoginScreen('ThemeSelectionScreen', {
       resetAllowed: true,
     });
+    this.selectedTheme = 'auto';
   }
 
   getOobeUIInitialState() {
