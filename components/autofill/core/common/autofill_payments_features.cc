@@ -169,6 +169,17 @@ const base::Feature kAutofillSaveCardDismissOnNavigation{
 const base::Feature kAutofillSaveCardInfobarEditSupport{
     "AutofillSaveCardInfobarEditSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, Chrome will display experimental UI variants to the user
+// during the upload save card process.
+const base::Feature kAutofillSaveCardUiExperiment{
+    "AutofillSaveCardUiExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This will select one of the options for the save card UI bubble which we
+// want to display to the user. The value will be an integer(number).
+const base::FeatureParam<int> kAutofillSaveCardUiExperimentSelectorInNumber{
+    &kAutofillSaveCardUiExperiment,
+    "autofill_save_card_ui_experiment_selector_in_number", 0};
+
 // When enabled, the entire PAN and the CVC details of the unmasked cached card
 // will be shown in the manual filling view.
 const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView{

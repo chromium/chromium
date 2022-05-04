@@ -53792,6 +53792,7 @@ from previous Chrome versions.
   <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
   <int value="-1222538859" label="TranslateMessageUI:disabled"/>
+  <int value="-1222214250" label="AutofillSaveCardUiExperiment:disabled"/>
   <int value="-1222159993"
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
@@ -55721,6 +55722,7 @@ from previous Chrome versions.
   <int value="79595680" label="OmniboxTabSwitchSuggestions:enabled"/>
   <int value="79729295" label="WebBundles:enabled"/>
   <int value="82303171" label="AccountIdMigration:disabled"/>
+  <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>

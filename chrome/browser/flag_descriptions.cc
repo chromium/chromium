@@ -439,6 +439,12 @@ const char kAutofillSaveAndFillVPADescription[] =
     "it will offer to save it. If saved, it will be offered for filling in "
     "fields which expect a VPA.";
 
+const char kAutofillSaveCardUiExperimentName[] =
+    "Enable different UI variants for the upload credit card save bubble";
+const char kAutofillSaveCardUiExperimentDescription[] =
+    "When enabled, it will trigger slightly different UI variants along with "
+    "notification texts, when the upload credit card save bubble is shown.";
+
 const char kAutofillSuggestVirtualCardsOnIncompleteFormName[] =
     "Autofill suggests virtual cards on incomplete forms";
 const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[] =

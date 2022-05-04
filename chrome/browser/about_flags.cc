@@ -6733,6 +6733,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableVirtualCardName,
      flag_descriptions::kAutofillEnableVirtualCardDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVirtualCard)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-manual-fallback-for-virtual-cards",
      flag_descriptions::kAutofillEnableManualFallbackForVirtualCardsName,
@@ -8514,6 +8515,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBulkTabRestoreAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBulkTabRestore)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"autofill-enable-upstream-save-card-offer-ui-experiment",
+     flag_descriptions::kAutofillSaveCardUiExperimentName,
+     flag_descriptions::kAutofillSaveCardUiExperimentDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillSaveCardUiExperiment)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

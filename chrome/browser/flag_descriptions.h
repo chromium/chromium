@@ -242,6 +242,9 @@ extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 
+extern const char kAutofillSaveCardUiExperimentName[];
+extern const char kAutofillSaveCardUiExperimentDescription[];
+
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormName[];
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[];
 
