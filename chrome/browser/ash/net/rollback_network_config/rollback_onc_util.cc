@@ -83,6 +83,12 @@ std::string GetStringValue(const base::Value& network, const std::string& key) {
   return *value;
 }
 
+bool GetBoolValue(const base::Value& network, const std::string& key) {
+  absl::optional<bool> value = network.FindBoolKey(key);
+  DCHECK(value);
+  return *value;
+}
+
 void ManagedOncCollapseToActive(base::Value* network) {
   DCHECK(network);
   if (!network->is_dict()) {
@@ -226,6 +232,11 @@ std::string OncGetEapInner(const base::Value& network) {
 std::string OncGetEapOuter(const base::Value& network) {
   const base::Value* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kOuter);
+}
+
+bool OncGetEapSaveCredentials(const base::Value& network) {
+  const base::Value* eap = OncGetEap(network);
+  return GetBoolValue(*eap, onc::eap::kSaveCredentials);
 }
 
 std::string OncGetEapPassword(const base::Value& network) {

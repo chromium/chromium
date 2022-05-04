@@ -18,6 +18,10 @@ namespace rollback_network_config {
 // be found.
 std::string GetStringValue(const base::Value& network, const std::string& key);
 
+// Returns the value of the given key. This will crash if bool value can not be
+// found.
+bool GetBoolValue(const base::Value& network, const std::string& key);
+
 // Managed ONC
 
 // Collapses a managed onc dictionary to the values that are marked as active
@@ -67,6 +71,7 @@ bool OncIsEapWithoutClientCertificate(const base::Value& network);
 std::string OncGetEapIdentity(const base::Value& network);
 std::string OncGetEapInner(const base::Value& network);
 std::string OncGetEapOuter(const base::Value& network);
+bool OncGetEapSaveCredentials(const base::Value& network);
 std::string OncGetEapPassword(const base::Value& network);
 std::string OncGetEapClientCertType(const base::Value& network);
 std::string OncGetEapClientCertPKCS11Id(const base::Value& network);

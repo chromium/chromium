@@ -544,6 +544,10 @@ TEST_F(RollbackNetworkConfigTest, PeapWiFiIsPreserved) {
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
 }
 
@@ -568,6 +572,10 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapWiFiIsPreserved) {
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
   EXPECT_EQ(GetStringValue(properties, onc::network_config::kSource),
             onc::network_config::kSourceDevicePolicy);
@@ -626,6 +634,10 @@ TEST_F(RollbackNetworkConfigTest, PeapEthernetIsPreserved) {
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
 }
 
@@ -649,6 +661,10 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
   EXPECT_EQ(GetStringValue(properties, onc::network_config::kSource),
             onc::network_config::kSourceDevicePolicy);
