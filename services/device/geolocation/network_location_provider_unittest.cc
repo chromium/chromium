@@ -208,15 +208,15 @@ class GeolocationNetworkProviderTest : public testing::Test {
   static void CreateReferenceWifiScanDataJson(
       int ap_count,
       int start_index,
-      base::ListValue* wifi_access_point_list) {
+      base::Value::List* wifi_access_point_list) {
     std::vector<std::string> wifi_data;
     for (int i = 0; i < ap_count; ++i) {
-      std::unique_ptr<base::DictionaryValue> ap(new base::DictionaryValue());
-      ap->SetString("macAddress", base::StringPrintf("%02d-34-56-78-54-32", i));
-      ap->SetInteger("signalStrength", start_index + ap_count - i);
-      ap->SetInteger("age", 0);
-      ap->SetInteger("channel", IndexToChannel(i));
-      ap->SetInteger("signalToNoiseRatio", i + 42);
+      base::Value::Dict ap;
+      ap.Set("macAddress", base::StringPrintf("%02d-34-56-78-54-32", i));
+      ap.Set("signalStrength", start_index + ap_count - i);
+      ap.Set("age", 0);
+      ap.Set("channel", IndexToChannel(i));
+      ap.Set("signalToNoiseRatio", i + 42);
       wifi_access_point_list->Append(std::move(ap));
     }
   }
@@ -293,19 +293,16 @@ class GeolocationNetworkProviderTest : public testing::Test {
     ASSERT_TRUE(parsed_json->GetAsDictionary(&request_json));
 
     if (expected_wifi_aps) {
-      base::ListValue expected_wifi_aps_json;
+      base::Value::List expected_wifi_aps_json;
       CreateReferenceWifiScanDataJson(expected_wifi_aps, wifi_start_index,
                                       &expected_wifi_aps_json);
-      EXPECT_EQ(size_t(expected_wifi_aps),
-                expected_wifi_aps_json.GetListDeprecated().size());
+      EXPECT_EQ(size_t(expected_wifi_aps), expected_wifi_aps_json.size());
 
       const base::ListValue* wifi_aps_json;
       ASSERT_TRUE(
           JsonGetList("wifiAccessPoints", *request_json, &wifi_aps_json));
-      for (size_t i = 0; i < expected_wifi_aps_json.GetListDeprecated().size();
-           ++i) {
-        const base::Value& expected_json_value =
-            expected_wifi_aps_json.GetListDeprecated()[i];
+      for (size_t i = 0; i < expected_wifi_aps_json.size(); ++i) {
+        const base::Value& expected_json_value = expected_wifi_aps_json[i];
         ASSERT_TRUE(expected_json_value.is_dict());
         const base::DictionaryValue& expected_json =
             base::Value::AsDictionaryValue(expected_json_value);

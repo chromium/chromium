@@ -245,18 +245,16 @@ void FormUploadData(const WifiData& wifi_data,
 
 void AddString(const std::string& property_name,
                const std::string& value,
-               base::DictionaryValue* dict) {
-  DCHECK(dict);
+               base::Value::Dict& dict) {
   if (!value.empty())
-    dict->SetString(property_name, value);
+    dict.Set(property_name, value);
 }
 
 void AddInteger(const std::string& property_name,
                 int value,
-                base::DictionaryValue* dict) {
-  DCHECK(dict);
+                base::Value::Dict& dict) {
   if (value != std::numeric_limits<int32_t>::min())
-    dict->SetInteger(property_name, value);
+    dict.Set(property_name, value);
 }
 
 void AddWifiData(const WifiData& wifi_data,
@@ -273,22 +271,22 @@ void AddWifiData(const WifiData& wifi_data,
   for (const auto& ap_data : wifi_data.access_point_data)
     access_points_by_signal_strength.insert(&ap_data);
 
-  auto wifi_access_point_list = std::make_unique<base::ListValue>();
+  base::Value::List wifi_access_point_list;
   for (auto* ap_data : access_points_by_signal_strength) {
-    auto wifi_dict = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict wifi_dict;
     auto macAddress = base::UTF16ToUTF8(ap_data->mac_address);
     if (macAddress.empty())
       continue;
-    AddString("macAddress", macAddress, wifi_dict.get());
-    AddInteger("signalStrength", ap_data->radio_signal_strength,
-               wifi_dict.get());
-    AddInteger("age", age_milliseconds, wifi_dict.get());
-    AddInteger("channel", ap_data->channel, wifi_dict.get());
-    AddInteger("signalToNoiseRatio", ap_data->signal_to_noise, wifi_dict.get());
-    wifi_access_point_list->Append(std::move(wifi_dict));
+    AddString("macAddress", macAddress, wifi_dict);
+    AddInteger("signalStrength", ap_data->radio_signal_strength, wifi_dict);
+    AddInteger("age", age_milliseconds, wifi_dict);
+    AddInteger("channel", ap_data->channel, wifi_dict);
+    AddInteger("signalToNoiseRatio", ap_data->signal_to_noise, wifi_dict);
+    wifi_access_point_list.Append(std::move(wifi_dict));
   }
-  if (!wifi_access_point_list->GetListDeprecated().empty())
-    request->Set("wifiAccessPoints", std::move(wifi_access_point_list));
+  if (!wifi_access_point_list.empty())
+    request->GetDict().Set("wifiAccessPoints",
+                           base::Value(std::move(wifi_access_point_list)));
 }
 
 void FormatPositionError(const GURL& server_url,
