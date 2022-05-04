@@ -71,8 +71,7 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
                         const gfx::Image& image) override;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   raw_ptr<content::WebContents> web_contents_;
   // Number of observers attached.

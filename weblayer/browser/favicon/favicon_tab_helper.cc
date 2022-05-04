@@ -104,15 +104,10 @@ void FaviconTabHelper::OnFaviconUpdated(
     delegate.OnFaviconChanged(favicon_);
 }
 
-void FaviconTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
-      navigation_handle->IsSameDocument()) {
+void FaviconTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument() || favicon_.IsEmpty()) {
     return;
   }
-  if (favicon_.IsEmpty())
-    return;
 
   favicon_ = gfx::Image();
   for (FaviconFetcherDelegate& delegate : delegates_)
