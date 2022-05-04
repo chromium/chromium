@@ -124,7 +124,7 @@ bool EulaScreen::MaybeSkip(WizardContext* context) {
     return true;
   }
 
-  if (StartupUtils::IsEulaAccepted()) {
+  if (StartupUtils::IsEulaAccepted() && !context->is_cloud_ready_update_flow) {
     const auto* const demo_setup_controller =
         WizardController::default_controller()->demo_setup_controller();
     exit_callback_.Run(demo_setup_controller
@@ -166,10 +166,15 @@ void EulaScreen::ShowImpl() {
     TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
-  if (WizardController::IsZeroTouchHandsOffOobeFlow())
+  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnUserActionDeprecated(kUserActionAcceptButtonClicked);
-  else if (view_)
+  } else if (view_) {
+    if (context()->is_cloud_ready_update_flow) {
+      view_->HideSecuritySettingsInfo();
+      view_->HideBackButton();
+    }
     view_->Show();
+  }
 }
 
 void EulaScreen::HideImpl() {

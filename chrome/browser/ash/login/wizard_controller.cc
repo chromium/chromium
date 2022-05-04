@@ -546,10 +546,6 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                             weak_factory_.GetWeakPtr())));
 
-    append(std::make_unique<EulaScreen>(
-        oobe_ui->GetView<EulaScreenHandler>(),
-        base::BindRepeating(&WizardController::OnEulaScreenExit,
-                            weak_factory_.GetWeakPtr())));
     if (ash::features::IsOobeQuickStartEnabled()) {
       append(std::make_unique<QuickStartScreen>(
           oobe_ui->GetView<QuickStartScreenHandler>(),
@@ -561,6 +557,10 @@ WizardController::CreateScreens() {
   append(std::make_unique<NetworkScreen>(
       oobe_ui->GetView<NetworkScreenHandler>(),
       base::BindRepeating(&WizardController::OnNetworkScreenExit,
+                          weak_factory_.GetWeakPtr())));
+  append(std::make_unique<EulaScreen>(
+      oobe_ui->GetView<EulaScreenHandler>(),
+      base::BindRepeating(&WizardController::OnEulaScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateScreen>(
       oobe_ui->GetView<UpdateScreenHandler>(), oobe_ui->GetErrorScreen(),
@@ -1432,6 +1432,10 @@ void WizardController::OnEulaAccepted(bool usage_statistics_reporting_enabled) {
       usage_statistics_reporting_enabled,
       base::BindOnce(&WizardController::OnChangedMetricsReportingState,
                      weak_factory_.GetWeakPtr()));
+  if (wizard_context_->is_cloud_ready_update_flow) {
+    AdvanceToScreen(HWDataCollectionView::kScreenId);
+    return;
+  }
   PerformPostEulaActions();
 
   if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {

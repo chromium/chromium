@@ -32,6 +32,7 @@ group("polymer3_elements") {
     ":marketing_opt_in_module",
     ":multidevice_setup_module",
     ":offline_ad_login_module",
+    ":oobe_eula_module",
     ":oobe_reset_module",
     ":os_install_module",
     ":os_trial_module",
@@ -81,6 +82,7 @@ js_type_check("closure_compile_local") {
     ":managed_terms_of_service.m",
     ":marketing_opt_in.m",
     ":offline_ad_login.m",
+    ":oobe_eula.m",
     ":oobe_reset.m",
     ":os_install.m",
     ":os_trial.m",
@@ -407,6 +409,26 @@ js_library("offline_ad_login.m") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":offline_ad_login_module" ]
+}
+
+js_library("oobe_eula.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_eula.m.js" ]
+  deps = [
+    "../../:display_manager.m",
+    "../../components:web_view_helper.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":oobe_eula_module" ]
 }
 
 js_library("oobe_reset.m") {
@@ -801,6 +823,14 @@ polymer_modulizer("multidevice_setup") {
 polymer_modulizer("offline_ad_login") {
   js_file = "offline_ad_login.js"
   html_file = "offline_ad_login.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_eula") {
+  js_file = "oobe_eula.js"
+  html_file = "oobe_eula.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

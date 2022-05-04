@@ -3512,6 +3512,7 @@ if (!is_android) {
         "../browser/ash/login/lock/screen_locker_browsertest.cc",
         "../browser/ash/login/lock/screen_locker_tester.cc",
         "../browser/ash/login/lock/screen_locker_tester.h",
+        "../browser/ash/login/login_after_update_to_flex_browsertest.cc",
         "../browser/ash/login/login_auth_recorder_browsertest.cc",
         "../browser/ash/login/login_browsertest.cc",
         "../browser/ash/login/login_manager_test.cc",

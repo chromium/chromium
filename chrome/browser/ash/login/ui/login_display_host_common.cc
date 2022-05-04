@@ -459,10 +459,11 @@ void LoginDisplayHostCommon::ShowTosForExistingUser() {
 }
 
 void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
-  // TODO(b/196201668): show EULA screen to users if consolidated consent isn't
-  //                    enabled.
-  DCHECK(features::IsOobeConsolidatedConsentEnabled());
-  SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
+  if (features::IsOobeConsolidatedConsentEnabled()) {
+    SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
+  } else {
+    SetScreenAfterManagedTos(EulaView::kScreenId);
+  }
   wizard_context_->is_cloud_ready_update_flow = true;
   StartWizard(TermsOfServiceScreenView::kScreenId);
 }

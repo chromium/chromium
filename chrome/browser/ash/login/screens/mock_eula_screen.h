@@ -38,6 +38,8 @@ class MockEulaView : public EulaView {
   MOCK_METHOD(void, ShowStatsUsageLearnMore, (), (override));
   MOCK_METHOD(void, ShowAdditionalTosDialog, (), (override));
   MOCK_METHOD(void, ShowSecuritySettingsDialog, (), (override));
+  MOCK_METHOD(void, HideSecuritySettingsInfo, (), (override));
+  MOCK_METHOD(void, HideBackButton, (), (override));
 
  private:
   EulaScreen* screen_ = nullptr;
