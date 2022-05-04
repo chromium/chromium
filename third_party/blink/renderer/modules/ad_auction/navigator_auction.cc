@@ -99,9 +99,10 @@ String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
 
 String WarningPermissionsPolicy(const String& feature, const String& api) {
   return String::Format(
-      "In the future, feature %s will not be enabled by default by Permissions "
-      "Policy (thus calling %s will be rejected with NotAllowedError) in cross-"
-      "origin iframes or same-origin iframes nested in cross-origin iframes",
+      "In the future, Permissions Policy feature %s will not be enabled by "
+      "default in cross-origin iframes or same-origin iframes nested in "
+      "cross-origin iframes. Calling %s will be rejected with NotAllowedError "
+      "if it is not explicitly enabled",
       feature.Utf8().c_str(), api.Utf8().c_str());
 }
 
@@ -805,12 +806,16 @@ bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
   return true;
 }
 
-// Modified from LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy.
-// Checks if a feature, which is currently available in all frames, would be
-// blocked by our restricted permissions policy EnableForSelf.
+// Modified from
+// LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy.
+//
+// Checks whether or not a policy-controlled feature would be blocked by our
+// restricted permissions policy EnableForSelf.
+// Under EnableForSelf policy, the features will not be available in
+// cross-origin document unless explicitly enabled.
 // Returns true if the frame is cross-origin relative to the top-level document,
 // or if it is same-origin with the top level, but is embedded in any way
-// through a cross-origin frame. (A->B->A embedding)
+// through a cross-origin frame (A->B->A embedding).
 bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
   const Frame* frame = navigator.DomWindow()->GetFrame();
 
@@ -818,7 +823,7 @@ bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
   // the policy is checked before this method is called.
   DCHECK(!frame->IsInFencedFrameTree());
 
-  // Get the origin of the top-level document
+  // Get the origin of the top-level document.
   const SecurityOrigin* top_origin =
       frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
 

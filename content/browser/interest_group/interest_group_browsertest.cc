@@ -862,10 +862,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   std::string WarningPermissionsPolicy(std::string feature, std::string api) {
     return base::StringPrintf(
-        "In the future, feature %s will not be enabled by default by "
-        "Permissions Policy (thus calling %s will be rejected with "
-        "NotAllowedError) in cross-origin iframes or same-origin iframes nested"
-        " in cross-origin iframes",
+        "In the future, Permissions Policy feature %s will not be enabled by "
+        "default in cross-origin iframes or same-origin iframes nested in "
+        "cross-origin iframes. Calling %s will be rejected with "
+        "NotAllowedError if it is not explicitly enabled",
         feature.c_str(), api.c_str());
   }
 
