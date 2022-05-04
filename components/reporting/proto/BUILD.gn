@@ -24,7 +24,10 @@ proto_library("record_proto") {
 
   sources = [ "synced/record.proto" ]
 
-  deps = [ ":record_constants" ]
+  deps = [
+    ":health_proto",
+    ":record_constants",
+  ]
 }
 
 proto_library("interface_proto") {
@@ -38,6 +41,20 @@ proto_library("interface_proto") {
   proto_deps = [
     ":record_constants",
     ":record_proto",
+    "//components/reporting/util:status_proto",
+  ]
+}
+
+proto_library("health_proto") {
+  proto_in_dir = "//"
+
+  # Generate JS so it can be used by chrome extensions
+  generate_javascript = true
+
+  sources = [ "synced/health.proto" ]
+
+  deps = [
+    ":record_constants",
     "//components/reporting/util:status_proto",
   ]
 }

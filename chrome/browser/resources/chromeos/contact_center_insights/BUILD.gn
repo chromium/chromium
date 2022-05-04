@@ -12,18 +12,22 @@ reporting_proto_js_dir =
 # purposes
 js_library("reporting_protos") {
   extra_deps = [
+    "//components/reporting/proto:health_proto",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status_proto",
   ]
 
   deps = [ "//third_party/protobuf:js_proto" ]
 
   sources = [
     # Include all generated proto files
+    "${reporting_proto_js_dir}/health.js",
     "${reporting_proto_js_dir}/metric_data.js",
     "${reporting_proto_js_dir}/record.js",
     "${reporting_proto_js_dir}/record_constants.js",
+    "${root_out_dir}/jsproto/components/reporting/util/status.js",
   ]
 }
 

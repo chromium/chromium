@@ -32,6 +32,9 @@ source_set("shared_vector") {
 }
 
 proto_library("status_proto") {
+  # Generate JS so it can be used by chrome extensions
+  generate_javascript = true
+
   proto_in_dir = "//"
   sources = [ "status.proto" ]
 }
