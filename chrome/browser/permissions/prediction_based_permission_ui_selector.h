@@ -56,6 +56,8 @@ class PredictionBasedPermissionUiSelector
   absl::optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
       override;
 
+  absl::optional<bool> WasSelectorDecisionHeldback() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            GetPredictionTypeToUse);
@@ -86,6 +88,7 @@ class PredictionBasedPermissionUiSelector
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
   absl::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
+  absl::optional<bool> was_decision_held_back_;
 
   absl::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
 

@@ -765,6 +765,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   current_request_prompt_disposition_.reset();
   prediction_grant_likelihood_.reset();
   current_request_ui_to_use_.reset();
+  was_decision_held_back_.reset();
   selector_decisions_.clear();
   should_dismiss_current_request_ = false;
   did_show_bubble_ = false;
@@ -797,11 +798,8 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
-      prediction_grant_likelihood_,
-      current_request_ui_to_use_
-          ? current_request_ui_to_use_->decision_held_back
-          : absl::nullopt,
-      did_show_bubble_, did_click_manage_, did_click_learn_more_);
+      prediction_grant_likelihood_, was_decision_held_back_, did_show_bubble_,
+      did_click_manage_, did_click_learn_more_);
 
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
@@ -1029,6 +1027,11 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
     if (!prediction_grant_likelihood_.has_value()) {
       prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
                                          ->PredictedGrantLikelihoodForUKM();
+    }
+
+    if (!was_decision_held_back_.has_value()) {
+      was_decision_held_back_ = permission_ui_selectors_[decision_index]
+                                    ->WasSelectorDecisionHeldback();
     }
 
     if (current_decision.quiet_ui_reason.has_value()) {

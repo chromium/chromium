@@ -27,11 +27,8 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
 
 PermissionUiSelector::Decision::Decision(
     absl::optional<QuietUiReason> quiet_ui_reason,
-    absl::optional<WarningReason> warning_reason,
-    absl::optional<bool> decision_held_back)
-    : quiet_ui_reason(quiet_ui_reason),
-      warning_reason(warning_reason),
-      decision_held_back(decision_held_back) {}
+    absl::optional<WarningReason> warning_reason)
+    : quiet_ui_reason(quiet_ui_reason), warning_reason(warning_reason) {}
 PermissionUiSelector::Decision::~Decision() = default;
 
 PermissionUiSelector::Decision::Decision(const Decision&) = default;
@@ -46,6 +43,10 @@ PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
 
 absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
 PermissionUiSelector::PredictedGrantLikelihoodForUKM() {
+  return absl::nullopt;
+}
+
+absl::optional<bool> PermissionUiSelector::WasSelectorDecisionHeldback() {
   return absl::nullopt;
 }
 

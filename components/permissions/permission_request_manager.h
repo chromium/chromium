@@ -384,6 +384,10 @@ class PermissionRequestManager
   absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
 
+  // Status of the decision made by the Web Permission Prediction Service, if
+  // it was held back or not.
+  absl::optional<bool> was_decision_held_back_;
+
   // True when the prompt is being temporary destroyed to be recreated for the
   // correct browser or when the tab is hidden. In those cases, callbacks from
   // the bubble itself should be ignored.
