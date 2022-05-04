@@ -3484,7 +3484,8 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
 
     EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
               test.success ? AuthenticatorStatus::SUCCESS
-                           : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+                           : AuthenticatorStatus::
+                                 REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
   }
 }
 
@@ -3522,7 +3523,8 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               test.success ? AuthenticatorStatus::SUCCESS
-                           : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+                           : AuthenticatorStatus::
+                                 REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
   }
 }
 
@@ -3535,14 +3537,20 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredentialAppid) {
     std::string remote_origin;
     std::string rp_id;
     std::string app_id;
-    bool success;
+    AuthenticatorStatus expected;
   } test_cases[] = {
-      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, true},
-      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
-      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
-      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
-      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
-      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::SUCCESS},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::INVALID_DOMAIN},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
   };
 
   for (const auto& test : test_cases) {
@@ -3560,7 +3568,7 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredentialAppid) {
         url::Origin::Create(GURL(test.remote_origin)), true);
 
     auto result = AuthenticatorMakeCredential(std::move(options));
-    EXPECT_EQ(test.success, result.status == AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(result.status, test.expected);
   }
 }
 
@@ -3573,14 +3581,20 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
     std::string remote_origin;
     std::string rp_id;
     std::string app_id;
-    bool success;
+    AuthenticatorStatus expected;
   } test_cases[] = {
-      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, true},
-      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
-      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
-      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
-      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
-      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::SUCCESS},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::INVALID_DOMAIN},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid,
+       AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED},
   };
 
   for (const auto& test : test_cases) {
@@ -3602,7 +3616,7 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
         options->allow_credentials[0].id, test.rp_id));
 
     auto result = AuthenticatorGetAssertion(std::move(options));
-    EXPECT_EQ(test.success, result.status == AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(result.status, test.expected);
   }
 }
 

@@ -477,6 +477,11 @@ DOMException* AuthenticatorStatusToDOMException(
           DOMExceptionCode::kNotReadableError,
           "Failed to save the credential identifier for the 'payment' "
           "extension.");
+    case AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "This origin is not permitted to use the "
+          "'remoteDesktopClientOverride' extension.");
     case AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS:
       return DOMException::Create(
           /*message=*/dom_exception_details->message,

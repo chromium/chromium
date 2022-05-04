@@ -208,7 +208,8 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
              ->GetWebAuthenticationDelegate()
              ->OriginMayUseRemoteDesktopClientOverride(
                  render_frame_host_->GetBrowserContext(), caller_origin)) {
-      return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+      return blink::mojom::AuthenticatorStatus::
+          REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED;
     }
     relying_party_origin = remote_desktop_client_override->origin;
   }
@@ -245,7 +246,8 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
              ->GetWebAuthenticationDelegate()
              ->OriginMayUseRemoteDesktopClientOverride(
                  render_frame_host_->GetBrowserContext(), caller_origin)) {
-      return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+      return blink::mojom::AuthenticatorStatus::
+          REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED;
     }
     caller_origin = remote_desktop_client_override->origin;
   }
