@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -36,6 +37,7 @@ class SharedMemoryRegionWrapper {
   uint8_t* GetMemory() const;
   base::span<const uint8_t> GetMemoryAsSpan() const;
   size_t GetStride() const;
+  const base::UnguessableToken& GetMappingGuid();
 
  private:
   base::WritableSharedMemoryMapping mapping_;

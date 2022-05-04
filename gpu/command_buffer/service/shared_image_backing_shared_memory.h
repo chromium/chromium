@@ -71,6 +71,11 @@ class SharedImageBackingSharedMemory : public SharedImageBacking {
  private:
   class SharedImageRepresentationSharedMemory;
 
+  void OnMemoryDump(const std::string& dump_name,
+                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::ProcessMemoryDump* pmd,
+                    uint64_t client_tracing_id) override;
+
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
 };

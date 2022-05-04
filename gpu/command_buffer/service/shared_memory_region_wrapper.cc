@@ -124,4 +124,8 @@ size_t SharedMemoryRegionWrapper::GetStride() const {
   return stride_;
 }
 
+const base::UnguessableToken& SharedMemoryRegionWrapper::GetMappingGuid() {
+  return mapping_.guid();
+}
+
 }  // namespace gpu

@@ -7,10 +7,12 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -157,6 +159,21 @@ SharedImageBackingSharedMemory::ProduceMemory(SharedImageManager* manager,
 
   return std::make_unique<SharedImageRepresentationMemorySharedMemory>(
       manager, this, tracker);
+}
+
+void SharedImageBackingSharedMemory::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::ProcessMemoryDump* pmd,
+    uint64_t client_tracing_id) {
+  // Add a |shared_memory_guid| which expresses shared ownership between the
+  // various GPU dumps.
+  auto shared_memory_guid = shared_memory_wrapper_.GetMappingGuid();
+  if (!shared_memory_guid.is_empty()) {
+    auto client_guid = GetSharedImageGUIDForTracing(mailbox());
+    pmd->CreateSharedMemoryOwnershipEdge(client_guid, shared_memory_guid,
+                                         0 /* importance */);
+  }
 }
 
 SharedImageBackingSharedMemory::SharedImageBackingSharedMemory(
