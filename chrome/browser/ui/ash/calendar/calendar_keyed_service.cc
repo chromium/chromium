@@ -96,6 +96,9 @@ void CalendarKeyedService::Shutdown() {
         account_id_,
         /*client=*/nullptr);
   }
+  // Reset `sender_` early to prevent a crash during destruction of
+  // CalendarKeyedService. See https://crbug.com/1319563.
+  sender_.reset();
 }
 
 base::OnceClosure CalendarKeyedService::GetEventList(
