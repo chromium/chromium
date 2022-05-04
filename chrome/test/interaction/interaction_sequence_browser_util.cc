@@ -96,6 +96,19 @@ content::WebContents* GetWebContents(Browser* browser,
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
+// Provides a template function for "does this element exist" queries.
+// Will return on_missing_selector if 'err?.selector' is valid.
+// Will return on_found if el is valid.
+std::string GetExistsQuery(const char* on_missing_selector,
+                           const char* on_found) {
+  return base::StringPrintf(R"((el, err) => {
+        if (err?.selector) return %s;
+        if (err) throw err;
+        return %s;
+      })",
+                            on_missing_selector, on_found);
+}
+
 // Our replacement for content::EvalJs() that uses the same underlying logic as
 // ExecuteScriptAndExtract*(), because EvalJs() is not compatible with Content
 // Security Policy of many internal pages we want to test :(
@@ -273,7 +286,7 @@ class InteractionSequenceBrowserUtil::NewTabWatcher
 class InteractionSequenceBrowserUtil::Poller {
  public:
   Poller(InteractionSequenceBrowserUtil* const owner,
-         const std::string function,
+         const std::string& function,
          const DeepQuery& where,
          absl::optional<base::TimeDelta> timeout,
          base::TimeDelta interval)
@@ -631,9 +644,27 @@ void InteractionSequenceBrowserUtil::SendEventOnStateChange(
   CHECK(configuration.event);
   CHECK(configuration.timeout.has_value() || !configuration.timeout_event)
       << "Cannot specify timeout event without timeout.";
+
+  // Determine the actual query we should use; for kConditionTrue we can use
+  // configuration.test_function directly, but for the other options we need to
+  // modify it.
+  std::string actual_func;
+  switch (configuration.type) {
+    case StateChange::Type::kExists:
+      DCHECK(configuration.test_function.empty());
+      actual_func = GetExistsQuery("false", "true");
+      break;
+    case StateChange::Type::kConditionTrue:
+      actual_func = configuration.test_function;
+      break;
+    case StateChange::Type::kExistsAndConditionTrue:
+      const std::string on_found = "(" + configuration.test_function + ")(el)";
+      actual_func = GetExistsQuery("false", on_found.c_str());
+      break;
+  }
+
   PollerData poller_data{
-      std::make_unique<Poller>(this, configuration.test_function,
-                               configuration.where,
+      std::make_unique<Poller>(this, actual_func, configuration.where,
                                configuration.timeout,
                                configuration.polling_interval),
       configuration.event, configuration.timeout_event};
@@ -644,11 +675,8 @@ void InteractionSequenceBrowserUtil::SendEventOnStateChange(
 
 bool InteractionSequenceBrowserUtil::Exists(const DeepQuery& query,
                                             std::string* not_found) {
-  const std::string full_query = CreateDeepQuery(query, R"((el, err) => {
-        if (err?.selector) return err.selector;
-        if (err) throw err;
-        return '';
-      })");
+  const std::string full_query =
+      CreateDeepQuery(query, GetExistsQuery("err.selector", "''"));
   const std::string result = Evaluate(full_query).GetString();
   if (not_found)
     *not_found = result;

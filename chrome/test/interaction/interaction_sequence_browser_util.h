@@ -70,6 +70,23 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
     StateChange& operator=(StateChange&& other);
     ~StateChange();
 
+    // What type of state change are we watching for?
+    enum class Type {
+      // Triggers when `test_function`, evaluated at `where`, returns true.
+      // If `where` does not exist, an error is generated.
+      kConditionTrue,
+      // Triggers when the element specified by `where` exists in the DOM.
+      // The `test_function` field is ignored.
+      kExists,
+      // Triggers when the element specified by `where` exists in the DOM *and*
+      // `test_function` evaluates to true.
+      kExistsAndConditionTrue
+    };
+
+    // By default we want to check `test_function` and assume the element
+    // exists.
+    Type type = Type::kConditionTrue;
+
     // Function to be evaluated every `polling_interval`. Must be able to
     // execute multiple times successfully. State change is detected when this
     // script returns a "truthy" value.
