@@ -42,9 +42,11 @@ bool HTMLFrameElement::LayoutObjectIsNeeded(const ComputedStyle&) const {
   return ContentFrame();
 }
 
-LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle&,
-                                                   LegacyLayout) {
-  return MakeGarbageCollected<LayoutFrame>(this);
+LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle& style,
+                                                   LegacyLayout legacy) {
+  if (IsA<HTMLFrameSetElement>(parentNode()))
+    return MakeGarbageCollected<LayoutFrame>(this);
+  return LayoutObject::CreateObject(this, style, legacy);
 }
 
 bool HTMLFrameElement::NoResize() const {

@@ -89,7 +89,6 @@ class CORE_EXPORT NGLayoutInputNode {
     return IsFloating() || IsOutOfFlowPositioned();
   }
   bool IsReplaced() const { return box_->IsLayoutReplaced(); }
-  bool IsFrame() const { return box_->IsFrame(); }
   bool IsAbsoluteContainer() const {
     return box_->CanContainAbsolutePositionObjects();
   }
