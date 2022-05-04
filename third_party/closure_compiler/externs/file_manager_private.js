@@ -1387,6 +1387,11 @@ chrome.fileManagerPrivate.openURL = function(URL) {};
 chrome.fileManagerPrivate.openWindow = function(params, callback) {};
 
 /**
+ * Opens the feedback report window.
+ */
+chrome.fileManagerPrivate.sendFeedback = function() {};
+
+/**
  * Starts an I/O task of type |type| on |entries|. Task type specific parameters
  * passed via |params|.
  * @param {!chrome.fileManagerPrivate.IOTaskType} type

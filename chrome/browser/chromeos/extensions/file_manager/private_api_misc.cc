@@ -1349,4 +1349,20 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
   return RespondNow(OneArgument(base::Value(true)));
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivateSendFeedbackFunction::Run() {
+  GURL url;
+  if (GetSenderWebContents()) {
+    url = GetSenderWebContents()->GetVisibleURL();
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  chrome::ShowFeedbackPage(url, profile, chrome::kFeedbackSourceFilesApp,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/std::string(),
+                           /*category_tag=*/"chromeos-files-app",
+                           /*extra_diagnostics=*/std::string());
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

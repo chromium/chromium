@@ -2295,7 +2295,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     }
   }
 
-  if (name == "getActiveTabURL") {
+  if (name == "getLastActiveTabURL") {
     BrowserList* browser_list = BrowserList::GetInstance();
     Browser* browser = browser_list->GetLastActive();
     if (!browser) {
@@ -2304,6 +2304,20 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     content::WebContents* active_web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     *output = active_web_contents->GetVisibleURL().spec();
+    return;
+  }
+
+  if (name == "expectWindowURL") {
+    const std::string* expected_url = value.FindStringKey("expectedUrl");
+    EXPECT_TRUE(expected_url);
+    for (auto* web_contents : GetAllWebContents()) {
+      const std::string& url = web_contents->GetVisibleURL().spec();
+      if (url == *expected_url) {
+        *output = "true";
+        return;
+      }
+    }
+    *output = "false";
     return;
   }
 

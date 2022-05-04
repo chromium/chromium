@@ -592,22 +592,34 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Waits until the browser is opened and shows the expected URL.
-   * @param {string} expectedURL
+   * Waits until the expected URL shows in the last opened browser tab.
+   * @param {string} expectedUrl
    * @return {!Promise} Promise to be fulfilled when the expected URL is shown
    *     in a browser window.
    */
-  async waitForActiveBrowserTabUrl(expectedURL) {
+  async waitForLastOpenedBrowserTabUrl(expectedUrl) {
     const caller = getCaller();
     return repeatUntil(async () => {
-      const command = {name: 'getActiveTabURL'};
-      const activeWindowURL = await sendTestMessage(command);
-      if (activeWindowURL !== expectedURL) {
+      const command = {name: 'getLastActiveTabURL'};
+      const activeBrowserTabURL = await sendTestMessage(command);
+      if (activeBrowserTabURL !== expectedUrl) {
         return pending(
             caller, 'waitForActiveBrowserTabUrl: expected %j actual %j.',
-            expectedURL, activeWindowURL);
+            expectedUrl, activeBrowserTabURL);
       }
     });
+  }
+
+  /**
+   * Returns whether an window exists with the expected URL.
+   * @param {string} expectedUrl
+   * @return {!Promise<boolean>} Promise resolved with true or false depending
+   *     on whether such window exists.
+   */
+  async windowUrlExists(expectedUrl) {
+    const command = {name: 'expectWindowURL', expectedUrl: expectedUrl};
+    const windowExists = await sendTestMessage(command);
+    return windowExists == 'true';
   }
 
   /**

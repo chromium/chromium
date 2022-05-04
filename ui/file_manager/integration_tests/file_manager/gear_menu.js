@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {isSinglePartitionFormat, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN, BASIC_DRIVE_ENTRY_SET, BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN, BASIC_LOCAL_ENTRY_SET, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET} from './test_data.js';
 
 /**
@@ -413,10 +413,11 @@ testcase.newFolderInDownloads = async () => {
 };
 
 /**
- * Tests that Send feedback appears in the gear menu.
+ * Tests that the "Send feedback" button appears in the gear menu and properly
+ * opens the feedback window.
  */
 testcase.showSendFeedbackAction = async () => {
-  const entrySet = [ENTRIES.newlyAdded];
+  const feedbackWindowUrl = 'chrome://feedback/';
 
   // Open Files.App on Downloads.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
@@ -432,12 +433,23 @@ testcase.showSendFeedbackAction = async () => {
   // Wait for the gear menu to appear.
   await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
 
-  // Check #send-feedback is shown and it's enabled.
-  await remoteCall.waitForElement(
+  // Check that there is no feedback window opened.
+  chrome.test.assertFalse(await remoteCall.windowUrlExists(feedbackWindowUrl));
+
+  // Click #send-feedback, which should be shown and enabled.
+  await remoteCall.waitAndClickElement(
       appId,
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#send-feedback\']' +
           ':not([disabled]):not([hidden])');
+
+  // Check that the feedback window is open.
+  const caller = getCaller();
+  return repeatUntil(async () => {
+    if (!await remoteCall.windowUrlExists(feedbackWindowUrl)) {
+      return pending(caller, `Waiting for ${feedbackWindowUrl} to open`);
+    }
+  });
 };
 
 /**

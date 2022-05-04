@@ -1635,6 +1635,9 @@ interface Functions {
   // Creates a new Files app window in the directory provided in `params`.
   static void openWindow(OpenWindowParams params, BooleanCallback callback);
 
+  // Opens the feedback report window.
+  static void sendFeedback();
+
   // Starts an I/O task of type |type| on |entries|. Task type specific
   // parameters are passed via |params|.
   [nocompile]

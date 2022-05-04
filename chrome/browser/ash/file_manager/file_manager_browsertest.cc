@@ -1446,6 +1446,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders"),
         TestCase("newFolderInDownloads"),
         TestCase("showSendFeedbackAction"),
+        TestCase("showSendFeedbackAction").FilesSwa(),
         TestCase("enableDisableStorageSettingsLink"),
         TestCase("showAvailableStorageMyFiles"),
         // Disabled until Drive quota can be properly displayed.

@@ -1649,27 +1649,11 @@ CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
 })();
 
 /**
- * Opens the send feedback window with pre-populated content.
+ * Opens the send feedback window.
  */
 CommandHandler.COMMANDS_['send-feedback'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    const message = {
-      categoryTag: 'chromeos-files-app',
-      requestFeedback: true,
-      feedbackInfo: {
-        description: '',
-      },
-    };
-
-    const kFeedbackExtensionId = 'gfdkimpbcpahaombhbimeihdjnejgicl';
-    // On ChromiumOS the feedback extension is not installed, so we just log
-    // that filing feedback has failed.
-    chrome.runtime.sendMessage(kFeedbackExtensionId, message, (response) => {
-      if (chrome.runtime.lastError) {
-        console.log(
-            'Failed to send feedback: ' + chrome.runtime.lastError.message);
-      }
-    });
+    chrome.fileManagerPrivate.sendFeedback();
   }
 })();
 

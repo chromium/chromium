@@ -32543,6 +32543,8 @@ Called by update_extension_histograms.py.-->
   <int value="1648" label="LOGIN_REQUESTEXTERNALLOGOUT"/>
   <int value="1649" label="LOGIN_NOTIFYEXTERNALLOGOUTDONE"/>
   <int value="1650" label="PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED"/>
+  <int value="1651" label="ENTERPRISEREPORTINGPRIVATE_ENQUEUERECORD"/>
+  <int value="1652" label="FILEMANAGERPRIVATE_SENDFEEDBACK"/>
 </enum>
 
 <enum name="ExtensionIconState">

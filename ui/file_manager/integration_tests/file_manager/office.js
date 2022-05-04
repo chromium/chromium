@@ -149,7 +149,7 @@ testcase.openOfficeWordFile = async () => {
 
   // Check that the Word file's alternate URL has been opened in a browser
   // window.
-  await remoteCall.waitForActiveBrowserTabUrl(
+  await remoteCall.waitForLastOpenedBrowserTabUrl(
       ENTRIES.smallDocxHosted.alternateUrl);
 
   // Assert that a UMA sample has been reported for executing Web Drive Office

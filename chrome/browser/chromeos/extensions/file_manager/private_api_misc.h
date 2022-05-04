@@ -606,6 +606,19 @@ class FileManagerPrivateOpenWindowFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.sendFeedback method.
+class FileManagerPrivateSendFeedbackFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.sendFeedback",
+                             FILEMANAGERPRIVATE_SENDFEEDBACK)
+
+ protected:
+  ~FileManagerPrivateSendFeedbackFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MISC_H_
