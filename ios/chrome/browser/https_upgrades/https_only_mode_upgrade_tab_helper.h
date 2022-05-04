@@ -13,6 +13,8 @@
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 // This tab helper handles HTTP main frame navigation upgrades to HTTPS.
 // When it encounters an eligible HTTP navigation, it cancels the navigation,
 // starts a new navigation to the HTTPS version of the URL and observes the
@@ -25,10 +27,8 @@ class HttpsOnlyModeUpgradeTabHelper
       public web::WebStatePolicyDecider,
       public web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper> {
  public:
-  ~HttpsOnlyModeUpgradeTabHelper() override;
-  HttpsOnlyModeUpgradeTabHelper(const HttpsOnlyModeUpgradeTabHelper&) = delete;
-  HttpsOnlyModeUpgradeTabHelper& operator=(
-      const HttpsOnlyModeUpgradeTabHelper&) = delete;
+  // Creates TabHelper. |web_state| and |model| must not be null.
+  static void CreateForWebState(web::WebState* web_state, PrefService* prefs);
 
   // Returns the upgraded HTTPS URL for the give HTTP URL.
   // In tests, we can't use a real HTTPS server to serve good HTTPS, so this
@@ -37,6 +37,11 @@ class HttpsOnlyModeUpgradeTabHelper
   static GURL GetUpgradedHttpsUrl(const GURL& http_url,
                                   int https_port_for_testing,
                                   bool use_fake_https_for_testing);
+
+  ~HttpsOnlyModeUpgradeTabHelper() override;
+  HttpsOnlyModeUpgradeTabHelper(const HttpsOnlyModeUpgradeTabHelper&) = delete;
+  HttpsOnlyModeUpgradeTabHelper& operator=(
+      const HttpsOnlyModeUpgradeTabHelper&) = delete;
 
   // Sets the port used by the embedded https server. This is used to determine
   // the correct port while upgrading URLs to https if the original URL has a
@@ -52,7 +57,8 @@ class HttpsOnlyModeUpgradeTabHelper
   void SetFallbackDelayForTesting(base::TimeDelta delay);
 
  private:
-  explicit HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state);
+  explicit HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
+                                         PrefService* prefs);
   friend class web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper>;
 
   // Returns true if url is a fake HTTPS URL used in tests. Tests use a fake
@@ -111,6 +117,8 @@ class HttpsOnlyModeUpgradeTabHelper
 
   base::TimeDelta fallback_delay_ = base::Seconds(3);
   base::OneShotTimer timer_;
+
+  PrefService* prefs_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

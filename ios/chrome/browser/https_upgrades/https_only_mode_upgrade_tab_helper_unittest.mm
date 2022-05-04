@@ -6,6 +6,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/pref_names.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -21,10 +25,16 @@
 class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
-    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(&web_state_);
+    TestChromeBrowserState::Builder builder;
+    browser_state_ = builder.Build();
+
+    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
+        &web_state_, browser_state_->GetPrefs());
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
     HttpsOnlyModeAllowlist::CreateForWebState(&web_state_);
     allowlist_ = HttpsOnlyModeAllowlist::FromWebState(&web_state_);
+
+    browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the
@@ -60,6 +70,8 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
 
  private:
   HttpsOnlyModeAllowlist* allowlist_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that ShouldAllowResponse properly upgrades navigations and

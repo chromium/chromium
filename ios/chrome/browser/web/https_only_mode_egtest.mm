@@ -14,6 +14,7 @@
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -177,6 +178,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
   [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:kVeryLongTimeout];
+
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
 }
 
 - (void)tearDown {
@@ -267,6 +270,27 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 }
 
 #pragma mark - Tests
+
+// Disable the feature and navigate to an HTTP URL directly. Since the feature
+// is disabled, this should load the HTTP URL even though the upgraded HTTPS
+// version serves good SSL.
+- (void)testUpgrade_FeatureDisabled_NoUpgrade {
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
+
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Shouldn't record event histogram");
+}
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL.
 // This should end up loading the HTTPS version of the URL.

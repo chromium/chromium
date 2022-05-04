@@ -8,7 +8,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_allowlist.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
@@ -106,9 +108,24 @@ bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
   return allow_list->IsHttpAllowedForHost(url.host());
 }
 
+// static
+void HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web::WebState* web_state,
+                                                      PrefService* prefs) {
+  DCHECK(web_state);
+  DCHECK(prefs);
+  if (!FromWebState(web_state)) {
+    web_state->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new HttpsOnlyModeUpgradeTabHelper(web_state, prefs)));
+  }
+}
+
 HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
-    web::WebState* web_state)
-    : web::WebStatePolicyDecider(web_state), was_upgraded_(false) {
+    web::WebState* web_state,
+    PrefService* prefs)
+    : web::WebStatePolicyDecider(web_state),
+      was_upgraded_(false),
+      prefs_(prefs) {
   web_state->AddObserver(this);
 }
 
@@ -288,6 +305,12 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   DCHECK(item_pending);
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (!item_pending->IsUpgradedToHttps()) {
+    if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+      // Feature is disabled, don't upgrade.
+      std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return;
+    }
     DCHECK(!stopped_loading_to_upgrade_);
     // Copy navigation parameters, then cancel the current navigation.
     http_url_ = url;
