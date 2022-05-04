@@ -148,6 +148,21 @@ TEST_F(SyncerProtoUtilTest, VerifyDisabledByAdmin) {
   EXPECT_EQ(STOP_SYNC_FOR_DISABLED_ACCOUNT, sync_protocol_error.action);
 }
 
+TEST_F(SyncerProtoUtilTest, VerifyUpgradeClient) {
+  ASSERT_TRUE(context()->birthday().empty());
+  sync_pb::ClientToServerResponse response;
+  response.set_error_code(sync_pb::SyncEnums::SUCCESS);
+  response.mutable_error()->set_error_type(sync_pb::SyncEnums::THROTTLED);
+  response.mutable_error()->set_action(sync_pb::SyncEnums::UPGRADE_CLIENT);
+  response.mutable_error()->set_error_description(
+      "Legacy client needs to be upgraded.");
+
+  SyncProtocolError sync_protocol_error =
+      CallGetProtocolErrorFromResponse(response, context());
+  EXPECT_EQ(THROTTLED, sync_protocol_error.error_type);
+  EXPECT_EQ(UPGRADE_CLIENT, sync_protocol_error.action);
+}
+
 TEST_F(SyncerProtoUtilTest, VerifyEncryptionObsolete) {
   sync_pb::ClientToServerResponse response;
   response.set_error_code(sync_pb::SyncEnums::ENCRYPTION_OBSOLETE);

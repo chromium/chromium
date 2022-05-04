@@ -280,6 +280,9 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
   if (IsSyncDisabledByAdmin(response)) {
     sync_protocol_error.error_type = DISABLED_BY_ADMIN;
     sync_protocol_error.action = STOP_SYNC_FOR_DISABLED_ACCOUNT;
+  } else if (response.has_error()) {
+    // If the server provides explicit error information, just honor it.
+    sync_protocol_error = ConvertErrorPBToSyncProtocolError(response.error());
   } else if (!ProcessResponseBirthday(response, context)) {
     // If sync isn't disabled, first check for a birthday mismatch error.
     if (response.error_code() == sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE) {
@@ -290,9 +293,6 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
       sync_protocol_error.error_type = NOT_MY_BIRTHDAY;
       sync_protocol_error.action = DISABLE_SYNC_ON_CLIENT;
     }
-  } else if (response.has_error()) {
-    // This is a new server. Just get the error from the protocol.
-    sync_protocol_error = ConvertErrorPBToSyncProtocolError(response.error());
   } else {
     // Legacy server implementation. Compute the error based on |error_code|.
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());

@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
   ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
+IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   const BookmarkNode* node1 = AddFolder(0, 0, "title1");
@@ -168,6 +168,34 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
   // Now make one more change so we will do another sync.
   const BookmarkNode* node2 = AddFolder(0, 0, "title2");
   SetTitle(0, node2, "new_title2");
+
+  // Wait until an actionable error is encountered.
+  EXPECT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
+
+  // UPGRADE_CLIENT gets mapped to an unrecoverable error, so Sync will *not*
+  // start up again in transport-only mode (which would clear the cached error).
+  EXPECT_EQ(syncer::SyncService::TransportState::DISABLED,
+            GetSyncService(0)->GetTransportState());
+
+  syncer::SyncStatus status;
+  GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
+  EXPECT_EQ(status.sync_protocol_error.error_type, syncer::THROTTLED);
+  EXPECT_EQ(status.sync_protocol_error.action, syncer::UPGRADE_CLIENT);
+  EXPECT_EQ(status.sync_protocol_error.error_description, description);
+}
+
+IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringInitialSync) {
+  std::string description = "Not My Fault";
+  std::string url = "www.google.com";
+  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::THROTTLED,
+                                          description, url,
+                                          sync_pb::SyncEnums::UPGRADE_CLIENT);
+
+  ASSERT_TRUE(SetupClients());
+
+  // Signing in should start sync-the-transport, which should fail with an
+  // error.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
   // Wait until an actionable error is encountered.
   EXPECT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
