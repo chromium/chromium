@@ -8,6 +8,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -110,6 +111,14 @@ void WaitForSettingDoneButton() {
             (testTogglePasswordLeakCheckForSignedOutUser)]) {
     config.features_enabled.push_back(
         password_manager::features::kLeakDetectionUnauthenticated);
+  }
+
+  if ([self isRunningTest:@selector(testToggleSafeBrowsing)] ||
+      [self isRunningTest:@selector
+            (testTogglePasswordLeakCheckForSignedInUser)] ||
+      [self isRunningTest:@selector
+            (testTogglePasswordLeakCheckForSignedOutUser)]) {
+    config.features_disabled.push_back(safe_browsing::kEnhancedProtection);
   }
 
   return config;

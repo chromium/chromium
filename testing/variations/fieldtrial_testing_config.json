@@ -3292,6 +3292,21 @@
             ]
         }
     ],
+    "EnhancedSafeBrowsing": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingEnhancedProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EstablishGpuChannelAsync": [
         {
             "platforms": [
