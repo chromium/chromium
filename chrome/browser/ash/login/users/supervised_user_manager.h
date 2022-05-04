@@ -22,10 +22,11 @@ extern const char kSalt[];
 extern const char kRequirePasswordUpdate[];
 extern const char kHasIncompleteKey[];
 
-
 // Base class for SupervisedUserManagerImpl - provides a mechanism for getting
 // and setting specific values for supervised users, as well as additional
 // lookup methods that make sense only for supervised users.
+// TODO(b/231321563): Check this entire class is not used anymore for
+// deprecated supervised users and remove it with all dependencies.
 class SupervisedUserManager {
  public:
   // Registers user manager preferences.

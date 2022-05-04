@@ -13,7 +13,7 @@ namespace ash {
 class ChromeUserManagerImpl;
 class CrosSettings;
 
-// TODO(crbug.com/1155729): Check this entire class is not used anymore for
+// TODO(b/231321563): Check this entire class is not used anymore for
 // deprecated supervised users and remove it with all dependencies.
 // Implementation of the UserManager.
 class SupervisedUserManagerImpl : public SupervisedUserManager {
