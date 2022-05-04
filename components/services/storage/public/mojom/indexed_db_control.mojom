@@ -49,21 +49,26 @@ interface IndexedDBObserver {
 // out-of-process.
 interface IndexedDBControl {
   // Binds an IDBFactory to the given `storage_key`.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   BindIndexedDB(blink.mojom.StorageKey storage_key,
                 pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Retrieves some basic usage information about the IndexedDB state. The
   // returned array has one StorageUsageInfo per `storage_key` in the
   // partition that has IndexedDB usage data.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   GetUsage() => (array<StorageUsageInfo> info);
 
   // Deletes all indexed db files for the given `storage_key`.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   DeleteForBucket(blink.mojom.StorageKey storage_key) => (bool success);
 
   // Forcibly closes all connections to all databases within the `storage_key`.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   ForceClose(blink.mojom.StorageKey storage_key, ForceCloseReason reason) => ();
 
   // Returns the current number of connections.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   GetConnectionCount(blink.mojom.StorageKey storage_key) =>
     (uint64 connection_count);
 
@@ -71,12 +76,14 @@ interface IndexedDBControl {
   // data for a particular `storage_key`.  This creates a zip file at
   // `zip_path` using the temporary directory `temp_path` which needs to be
   // cleaned up after the user downloads the file.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   DownloadBucketData(blink.mojom.StorageKey storage_key) => (
       bool success,
       mojo_base.mojom.FilePath temp_path,
       mojo_base.mojom.FilePath zip_path);
 
   // Called by chrome://indexeddb-internals to populate its page details.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   GetAllBucketsDetails() => (bool incognito, mojo_base.mojom.ListValue details);
 
   // Disables the exit-time deletion of session-only data, so that internal
@@ -88,6 +95,7 @@ interface IndexedDBControl {
 
   // Applies changes to data retention policy which are relevant at shutdown.
   // See StoragePolicyUpdate.
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
 
   // Binds the testing interface for extra functionality only available in

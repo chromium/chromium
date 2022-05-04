@@ -79,7 +79,7 @@ void IndexedDBQuotaClient::DeleteBucketData(
   }
 
   indexed_db_context_.DeleteForBucket(
-      bucket.storage_key,
+      bucket,
       base::BindOnce(
           [](DeleteBucketDataCallback callback, bool success) {
             blink::mojom::QuotaStatusCode status =

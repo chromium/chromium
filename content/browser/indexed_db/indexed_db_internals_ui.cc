@@ -181,6 +181,7 @@ void IndexedDBInternalsHandler::DownloadBucketData(
 
   AllowJavascript();
   DCHECK(control);
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   control->ForceClose(
       storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
@@ -190,6 +191,7 @@ void IndexedDBInternalsHandler::DownloadBucketData(
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
+            // TODO(crbug.com/1315371): Allow custom bucket names.
             control->GetConnectionCount(
                 storage_key,
                 base::BindOnce(
@@ -201,6 +203,7 @@ void IndexedDBInternalsHandler::DownloadBucketData(
                       if (!handler)
                         return;
 
+                      // TODO(crbug.com/1315371): Allow custom bucket names.
                       control->DownloadBucketData(
                           storage_key,
                           base::BindOnce(
@@ -225,6 +228,7 @@ void IndexedDBInternalsHandler::ForceCloseBucket(
     return;
 
   AllowJavascript();
+  // TODO(crbug.com/1315371): Allow custom bucket names.
   control->ForceClose(
       storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
@@ -234,6 +238,7 @@ void IndexedDBInternalsHandler::ForceCloseBucket(
              const std::string& callback_id) {
             if (!handler)
               return;
+            // TODO(crbug.com/1315371): Allow custom bucket names.
             control->GetConnectionCount(
                 storage_key,
                 base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,

@@ -423,9 +423,10 @@ void IndexedDBFactoryImpl::HandleBackingStoreFailure(
   // nullptr after ContextDestroyed() called, and in some unit tests.
   if (!context_)
     return;
-  context_->ForceCloseSync(
+  context_->ForceClose(
       bucket_locator,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE);
+      storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
+      base::DoNothing());
 }
 
 void IndexedDBFactoryImpl::HandleBackingStoreCorruption(

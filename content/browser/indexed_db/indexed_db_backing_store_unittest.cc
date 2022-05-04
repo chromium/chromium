@@ -404,9 +404,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
                 [&](base::WaitableEvent*) { loop.Quit(); }),
             base::SequencedTaskRunnerHandle::Get());
 
-        idb_context_->ForceCloseSync(
+        idb_context_->ForceClose(
             bucket_locator,
-            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
+            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+            base::DoNothing());
         loop.Run();
         // There is a possible race in `leveldb_close_event` where the signaling
         // thread is still in the WaitableEvent::Signal() method. To ensure that

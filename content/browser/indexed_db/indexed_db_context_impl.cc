@@ -251,6 +251,14 @@ void IndexedDBContextImpl::DeleteForBucket(const blink::StorageKey& storage_key,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void IndexedDBContextImpl::DeleteForBucket(
+    const storage::BucketLocator& bucket_locator,
+    DeleteForBucketCallback callback) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  storage_key_to_bucket_locator_[bucket_locator.storage_key] = bucket_locator;
+  DeleteForBucketImpl(std::move(callback), bucket_locator);
+}
+
 void IndexedDBContextImpl::DeleteForBucketImpl(
     DeleteForBucketCallback callback,
     const absl::optional<storage::BucketLocator>& bucket_locator) {
@@ -258,8 +266,9 @@ void IndexedDBContextImpl::DeleteForBucketImpl(
     std::move(callback).Run(true);
     return;
   }
-  ForceCloseSync(*bucket_locator,
-                 storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
+  ForceClose(*bucket_locator,
+             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+             base::DoNothing());
   // InitializeFromFilesIfNeeded might not have finished, so we need to check
   // if there's a file in the directory and not exit early if so.
   const auto& storage_key_to_file_path =
@@ -305,6 +314,15 @@ void IndexedDBContextImpl::ForceClose(const blink::StorageKey& storage_key,
                      weak_factory_.GetWeakPtr(), reason, std::move(closure)));
 }
 
+void IndexedDBContextImpl::ForceClose(
+    const storage::BucketLocator& bucket_locator,
+    storage::mojom::ForceCloseReason reason,
+    base::OnceClosure closure) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  storage_key_to_bucket_locator_[bucket_locator.storage_key] = bucket_locator;
+  ForceCloseImpl(reason, std::move(closure), bucket_locator);
+}
+
 void IndexedDBContextImpl::ForceCloseImpl(
     const storage::mojom::ForceCloseReason reason,
     base::OnceClosure closure,
@@ -339,6 +357,14 @@ void IndexedDBContextImpl::GetConnectionCount(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void IndexedDBContextImpl::GetConnectionCount(
+    const storage::BucketLocator& bucket_locator,
+    GetConnectionCountCallback callback) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  storage_key_to_bucket_locator_[bucket_locator.storage_key] = bucket_locator;
+  GetConnectionCountImpl(std::move(callback), bucket_locator);
+}
+
 void IndexedDBContextImpl::GetConnectionCountImpl(
     GetConnectionCountCallback callback,
     const absl::optional<storage::BucketLocator>& bucket_locator) {
@@ -349,6 +375,15 @@ void IndexedDBContextImpl::GetConnectionCountImpl(
   std::move(callback).Run(count);
 }
 
+size_t IndexedDBContextImpl::GetConnectionCountSync(
+    const storage::BucketLocator& bucket_locator) {
+  size_t count = 0;
+  if (HasBucket(bucket_locator) && indexeddb_factory_.get()) {
+    count = indexeddb_factory_->GetConnectionCount(bucket_locator);
+  }
+  return count;
+}
+
 void IndexedDBContextImpl::DownloadBucketData(
     const blink::StorageKey& storage_key,
     DownloadBucketDataCallback callback) {
@@ -356,6 +391,14 @@ void IndexedDBContextImpl::DownloadBucketData(
       storage_key,
       base::BindOnce(&IndexedDBContextImpl::DownloadBucketDataImpl,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void IndexedDBContextImpl::DownloadBucketData(
+    const storage::BucketLocator& bucket_locator,
+    DownloadBucketDataCallback callback) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  storage_key_to_bucket_locator_[bucket_locator.storage_key] = bucket_locator;
+  return DownloadBucketDataImpl(std::move(callback), bucket_locator);
 }
 
 void IndexedDBContextImpl::DownloadBucketDataImpl(
@@ -369,8 +412,9 @@ void IndexedDBContextImpl::DownloadBucketDataImpl(
     return;
   }
 
-  ForceCloseSync(*bucket_locator,
-                 storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE);
+  ForceClose(*bucket_locator,
+             storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+             base::DoNothing());
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
@@ -605,9 +649,10 @@ void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
     std::move(callback).Run(true);
     return;
   }
-  ForceCloseSync(
+  ForceClose(
       bucket_locator,
-      storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
+      storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE,
+      base::DoNothing());
   std::move(callback).Run(false);
 }
 
@@ -750,13 +795,6 @@ void IndexedDBContextImpl::GetDatabaseKeysForTesting(
   std::move(callback).Run(SchemaVersionKey::Encode(), DataVersionKey::Encode());
 }
 
-void IndexedDBContextImpl::ForceCloseSync(
-    const storage::BucketLocator& bucket_locator,
-    storage::mojom::ForceCloseReason reason) {
-  storage_key_to_bucket_locator_[bucket_locator.storage_key] = bucket_locator;
-  ForceCloseImpl(reason, base::DoNothing(), bucket_locator);
-}
-
 IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (!indexeddb_factory_.get()) {
@@ -818,17 +856,6 @@ base::Time IndexedDBContextImpl::GetBucketLastModified(
   if (!info.has_value())
     return base::Time();
   return info->last_modified;
-}
-
-size_t IndexedDBContextImpl::GetConnectionCountSync(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (!HasBucket(bucket_locator))
-    return 0;
-
-  if (!indexeddb_factory_.get())
-    return 0;
-  return indexeddb_factory_->GetConnectionCount(bucket_locator);
 }
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(

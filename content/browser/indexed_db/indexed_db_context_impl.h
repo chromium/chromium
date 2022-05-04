@@ -86,22 +86,26 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
-      // TODO(crbug.com/1315371): Allow custom bucket names.
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
   void DeleteForBucket(const blink::StorageKey& storage_key,
-                       // TODO(crbug.com/1315371): Allow custom bucket names.
                        DeleteForBucketCallback callback) override;
+  void DeleteForBucket(const storage::BucketLocator& bucket_locator,
+                       DeleteForBucketCallback callback);
   void ForceClose(const blink::StorageKey& storage_key,
-                  // TODO(crbug.com/1315371): Allow custom bucket names.
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
+  void ForceClose(const storage::BucketLocator& bucket_locator,
+                  storage::mojom::ForceCloseReason reason,
+                  base::OnceClosure callback);
   void GetConnectionCount(const blink::StorageKey& storage_key,
-                          // TODO(crbug.com/1315371): Allow custom bucket names.
                           GetConnectionCountCallback callback) override;
+  void GetConnectionCount(const storage::BucketLocator& bucket_locator,
+                          GetConnectionCountCallback callback);
   void DownloadBucketData(const blink::StorageKey& storage_key,
-                          // TODO(crbug.com/1315371): Allow custom bucket names.
                           DownloadBucketDataCallback callback) override;
+  void DownloadBucketData(const storage::BucketLocator& bucket_locator,
+                          DownloadBucketDataCallback callback);
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
@@ -149,10 +153,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetDatabaseKeysForTestingCallback callback) override;
   void ForceInitializeFromFilesForTesting(
       ForceInitializeFromFilesForTestingCallback callback) override;
-
-  // TODO(enne): fix internal indexeddb callers to use ForceClose async instead.
-  void ForceCloseSync(const storage::BucketLocator& bucket_locator,
-                      storage::mojom::ForceCloseReason reason);
 
   IndexedDBFactoryImpl* GetIDBFactory();
 

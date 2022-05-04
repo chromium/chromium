@@ -92,9 +92,10 @@ class IndexedDBFactoryTest : public testing::Test {
       // around, delete all of the databases on disk.
       auto open_factory_buckets = factory->GetOpenBuckets();
       for (const auto& bucket_locator : open_factory_buckets) {
-        context_->ForceCloseSync(
+        context_->ForceClose(
             bucket_locator,
-            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
+            storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+            base::DoNothing());
       }
       // All leveldb databases are closed, and they can be deleted.
       for (auto bucket_locator : context_->GetAllBuckets()) {
