@@ -67,6 +67,22 @@ public class BackPressManager {
     }
 
     /**
+     * Remove a registered handler. The methods of handler will not be called any more.
+     * @param type {@link Type} to be removed.
+     */
+    public void removeHandler(@Type int type) {
+        mHandlers[type] = null;
+    }
+
+    /**
+     * @param type The {@link Type} which needs to check.
+     * @return True if a handler of this type has been registered.
+     */
+    public boolean has(@Type int type) {
+        return mHandlers[type] != null;
+    }
+
+    /**
      * @return A {@link OnBackPressedCallback} which should be added to
      * {@link androidx.activity.OnBackPressedDispatcher}.
      */

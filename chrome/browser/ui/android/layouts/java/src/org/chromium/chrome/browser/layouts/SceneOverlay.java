@@ -8,6 +8,7 @@ import android.graphics.RectF;
 
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * An interface which positions the actual tabs and adds additional UI to the them.
  */
-public interface SceneOverlay {
+public interface SceneOverlay extends BackPressHandler {
     /**
      * Updates and gets a {@link SceneOverlayLayer} that represents an scene overlay.
      *

@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -78,9 +79,17 @@ public class SceneOverlayTest {
 
         // Use different class names so the overlays can be uniquely identified.
         SceneOverlay overlay1 = Mockito.mock(SceneOverlay.class);
+        when(overlay1.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         SceneOverlay overlay2 = Mockito.mock(TopToolbarOverlayCoordinator.class);
+        when(overlay2.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         SceneOverlay overlay3 = Mockito.mock(ScrollingBottomViewSceneLayer.class);
+        when(overlay3.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         SceneOverlay overlay4 = Mockito.mock(ContextualSearchPanel.class);
+        when(overlay4.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
 
         HashMap<Class, Integer> orderMap = new HashMap<>();
         orderMap.put(overlay1.getClass(), 0);
@@ -113,8 +122,14 @@ public class SceneOverlayTest {
         assertEquals("The overlay list should be empty.", 0, overlays.size());
 
         SceneOverlay overlay1 = Mockito.mock(SceneOverlay.class);
+        when(overlay1.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         SceneOverlay overlay2 = Mockito.mock(SceneOverlay.class);
+        when(overlay2.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
         SceneOverlay overlay3 = Mockito.mock(SceneOverlay.class);
+        when(overlay3.getHandleBackPressChangedSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
 
         HashMap<Class, Integer> orderMap = new HashMap<>();
         orderMap.put(overlay1.getClass(), 0);

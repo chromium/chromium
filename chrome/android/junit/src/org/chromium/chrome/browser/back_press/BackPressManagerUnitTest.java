@@ -134,9 +134,11 @@ public class BackPressManagerUnitTest {
 
         manager.removeHandler(h2);
         Assert.assertEquals("One handler should be removed", 1, getHandlerCount(manager));
+        Assert.assertFalse("One handler should be removed", manager.has(2));
 
         manager.removeHandler(h1);
         Assert.assertEquals("All handlers should have been removed", 0, getHandlerCount(manager));
+        Assert.assertFalse("All handlers should have been removed", manager.has(1));
     }
 
     @Test

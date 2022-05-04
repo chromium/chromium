@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
@@ -83,7 +84,8 @@ import java.util.Map;
  * A class that is responsible for managing an active {@link Layout} to show to the screen.  This
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
-public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider {
+public class LayoutManagerImpl
+        implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider, BackPressHandler {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -168,6 +170,10 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     /** The supplier of {@link ThemeColorProvider} for top UI. */
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
+
+    /** The supplier of whether this is going to intercept back press gesture. */
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
@@ -1089,6 +1095,33 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     @Override
+    public void handleBackPress() {
+        for (SceneOverlay sceneOverlay : mSceneOverlays) {
+            Boolean enabled = sceneOverlay.getHandleBackPressChangedSupplier().get();
+            if (enabled != null && enabled) {
+                sceneOverlay.handleBackPress();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mHandleBackPressChangedSupplier;
+    }
+
+    private void onBackPressStateChanged() {
+        for (SceneOverlay sceneOverlay : mSceneOverlays) {
+            Boolean enabled = sceneOverlay.getHandleBackPressChangedSupplier().get();
+            if (enabled != null && enabled) {
+                mHandleBackPressChangedSupplier.set(true);
+                return;
+            }
+        }
+        mHandleBackPressChangedSupplier.set(false);
+    }
+
+    @Override
     public void addSceneOverlay(SceneOverlay overlay) {
         if (mSceneOverlays.contains(overlay)) throw new RuntimeException("Overlay already added!");
 
@@ -1104,6 +1137,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         }
 
         mSceneOverlays.add(index, overlay);
+        overlay.getHandleBackPressChangedSupplier().addObserver((v) -> onBackPressStateChanged());
     }
 
     @VisibleForTesting

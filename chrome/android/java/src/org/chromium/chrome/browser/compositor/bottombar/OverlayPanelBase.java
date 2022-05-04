@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -292,6 +294,13 @@ abstract class OverlayPanelBase {
     }
 
     /**
+     * @return Supplier of whether the Panel is showing.
+     */
+    public ObservableSupplier<Boolean> isShowingSupplier() {
+        return mIsShowingSupplier;
+    }
+
+    /**
      * @return Whether the Overlay Panel is opened. That is, whether the current height is greater
      * than the peeking height.
      */
@@ -357,6 +366,8 @@ abstract class OverlayPanelBase {
     private float mOffsetY;
     private float mHeight;
     private boolean mIsMaximized;
+    private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * @return The horizontal offset of the Overlay Panel in DPs.
@@ -629,6 +640,7 @@ abstract class OverlayPanelBase {
 
         if (state == PanelState.CLOSED) {
             mHeight = 0;
+            mIsShowingSupplier.set(isShowing());
             onClosed(reason);
         }
 
@@ -862,6 +874,7 @@ abstract class OverlayPanelBase {
         mOffsetX = calculateOverlayPanelX();
         mOffsetY = calculateOverlayPanelY();
         mIsMaximized = height == getPanelHeightFromState(PanelState.MAXIMIZED);
+        mIsShowingSupplier.set(isShowing());
     }
 
     /**
@@ -1129,6 +1142,7 @@ abstract class OverlayPanelBase {
     @VisibleForTesting
     public void setHeightForTesting(float height) {
         mHeight = height;
+        mIsShowingSupplier.set(isShowing());
     }
 
     /**
