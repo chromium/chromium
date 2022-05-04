@@ -37,7 +37,6 @@ class StatusController {
   void clear_updated_types();
 
   // Various conflict counters.
-  int num_encryption_conflicts() const;
   int num_hierarchy_conflicts() const;
   int num_server_conflicts() const;
 
@@ -62,7 +61,6 @@ class StatusController {
   void increment_num_tombstone_updates_downloaded_by(int value);
 
   // Update application and conflict resolution counters.
-  void increment_num_encryption_conflicts_by(int value);
   void increment_num_hierarchy_conflicts_by(int value);
   void increment_num_server_conflicts();
 

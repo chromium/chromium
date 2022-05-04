@@ -37,9 +37,6 @@ struct SyncStatus {
 
   SyncProtocolError sync_protocol_error;
 
-  // Number of encryption conflicts counted during most recent sync cycle.
-  int encryption_conflicts = 0;
-
   // Number of hierarchy conflicts counted during most recent sync cycle.
   int hierarchy_conflicts = 0;
 

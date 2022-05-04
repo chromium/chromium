@@ -629,7 +629,6 @@ std::string SyncServiceImplHarness::GetClientInfoString(
        << (snap.model_neutral_state().num_successful_commits == 0 &&
            snap.model_neutral_state().commit_result.value() ==
                syncer::SyncerError::SYNCER_OK)
-       << ", encryption conflicts: " << snap.num_encryption_conflicts()
        << ", hierarchy conflicts: " << snap.num_hierarchy_conflicts()
        << ", server conflicts: " << snap.num_server_conflicts()
        << ", num_updates_downloaded : "

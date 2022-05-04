@@ -36,8 +36,7 @@ TEST_F(StatusControllerTest, TotalNumConflictingItems) {
 
   status.increment_num_server_conflicts();
   status.increment_num_hierarchy_conflicts_by(3);
-  status.increment_num_encryption_conflicts_by(2);
-  EXPECT_EQ(6, status.TotalNumConflictingItems());
+  EXPECT_EQ(4, status.TotalNumConflictingItems());
 }
 
 }  // namespace syncer

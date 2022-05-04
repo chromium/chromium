@@ -29,7 +29,6 @@ std::u16string FormatTimeDelta(base::TimeDelta delta) {
 
 SyncCycleSnapshot::SyncCycleSnapshot()
     : is_silenced_(false),
-      num_encryption_conflicts_(0),
       num_hierarchy_conflicts_(0),
       num_server_conflicts_(0),
       notifications_enabled_(false),
@@ -45,7 +44,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
     const ModelNeutralState& model_neutral_state,
     const ProgressMarkerMap& download_progress_markers,
     bool is_silenced,
-    int num_encryption_conflicts,
     int num_hierarchy_conflicts,
     int num_server_conflicts,
     bool notifications_enabled,
@@ -62,7 +60,6 @@ SyncCycleSnapshot::SyncCycleSnapshot(
       model_neutral_state_(model_neutral_state),
       download_progress_markers_(download_progress_markers),
       is_silenced_(is_silenced),
-      num_encryption_conflicts_(num_encryption_conflicts),
       num_hierarchy_conflicts_(num_hierarchy_conflicts),
       num_server_conflicts_(num_server_conflicts),
       notifications_enabled_(notifications_enabled),
@@ -99,7 +96,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                     ProgressMarkerMapToValue(download_progress_markers_)));
   value->SetBoolKey("isSilenced", is_silenced_);
   // We don't care too much if we lose precision here, also.
-  value->SetIntKey("numEncryptionConflicts", num_encryption_conflicts_);
   value->SetIntKey("numHierarchyConflicts", num_hierarchy_conflicts_);
   value->SetIntKey("numServerConflicts", num_server_conflicts_);
   value->SetIntKey("numEntries", num_entries_);
@@ -139,10 +135,6 @@ const ProgressMarkerMap& SyncCycleSnapshot::download_progress_markers() const {
 
 bool SyncCycleSnapshot::is_silenced() const {
   return is_silenced_;
-}
-
-int SyncCycleSnapshot::num_encryption_conflicts() const {
-  return num_encryption_conflicts_;
 }
 
 int SyncCycleSnapshot::num_hierarchy_conflicts() const {

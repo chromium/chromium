@@ -2420,12 +2420,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
       kValidPassphrase));
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(1)).Wait());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
-  ASSERT_EQ(0, GetClient(1)->GetLastCycleSnapshot().num_encryption_conflicts());
 
   // Ensure everything is syncing normally by appending a final bookmark.
   ASSERT_NE(nullptr, AddURL(1, 5, IndexedURLTitle(5), GURL(IndexedURL(5))));
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
-  ASSERT_EQ(0, GetClient(1)->GetLastCycleSnapshot().num_encryption_conflicts());
   EXPECT_THAT(GetBookmarkBarNode(0)->children(),
               Contains(IsUrlBookmarkWithTitleAndUrl(IndexedURLTitle(5),
                                                     GURL(IndexedURL(5)))));

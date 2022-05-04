@@ -48,7 +48,6 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
       context_->birthday(), context_->bag_of_chips(),
       status_controller_->model_neutral_state(), download_progress_markers,
       delegate_->IsAnyThrottleOrBackoff(),
-      status_controller_->num_encryption_conflicts(),
       status_controller_->num_hierarchy_conflicts(),
       status_controller_->num_server_conflicts(),
       context_->notifications_enabled(), num_entries,
