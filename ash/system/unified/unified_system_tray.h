@@ -15,6 +15,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -55,16 +56,30 @@ class UnifiedMessageCenterBubble;
 // UnifiedSystemTrayBubble is the actual menu bubble shown above the system tray
 // after the user clicks on it. The UnifiedSystemTrayBubble is created and owned
 // by this class.
-class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
-                                     public ShelfConfig::Observer,
-                                     public ShellObserver {
+class ASH_EXPORT UnifiedSystemTray
+    : public TrayBackgroundView,
+      public ShelfConfig::Observer,
+      public ShellObserver,
+      public UnifiedSystemTrayController::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Gets called when showing calendar view.
+    virtual void OnOpeningCalendarView() {}
+
+    // Gets called when leaving from the calendar view.
+    virtual void OnLeavingCalendarView() {}
+  };
+
   explicit UnifiedSystemTray(Shelf* shelf);
 
   UnifiedSystemTray(const UnifiedSystemTray&) = delete;
   UnifiedSystemTray& operator=(const UnifiedSystemTray&) = delete;
 
   ~UnifiedSystemTray() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Adds a padding on top of the vertical clock if there are other visible
   // icons in the tray, removes it if the clock is the only visible icon.
@@ -160,6 +175,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void MaybeRecordFirstInteraction(FirstInteractionType type);
 
   // TrayBackgroundView:
+  bool PerformAction(const ui::Event& event) override;
   void ShowBubble() override;
   void CloseBubble() override;
   std::u16string GetAccessibleNameForBubble() override;
@@ -181,6 +197,10 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
+
+  // UnifiedSystemTrayController::Observer:
+  void OnOpeningCalendarView() override;
+  void OnTransitioningFromCalendarToMainView() override;
 
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
@@ -229,6 +249,10 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // Add observed tray item views.
   void AddObservedTrayItem(TrayItemView* tray_item);
 
+  // Destroys the `bubble_` and the `message_center_bubble_`, also handles
+  // removing bubble related observers.
+  void DestroyBubbles();
+
   const std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
@@ -271,6 +295,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   base::OneShotTimer timer_;
 
   bool first_interaction_recorded_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };

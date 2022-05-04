@@ -47,6 +47,15 @@ class ASH_EXPORT UnifiedSystemTrayController
       public UnifiedVolumeSliderController::Delegate,
       public UnifiedMediaControlsController::Delegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Gets called when `ShowCalendarView`, right as animations starts.
+    virtual void OnOpeningCalendarView() {}
+
+    // Gets called when leaving from the calendar view to main view.
+    virtual void OnTransitioningFromCalendarToMainView() {}
+  };
+
   explicit UnifiedSystemTrayController(
       scoped_refptr<UnifiedSystemTrayModel> model,
       UnifiedSystemTrayBubble* bubble = nullptr,
@@ -57,6 +66,9 @@ class ASH_EXPORT UnifiedSystemTrayController
       delete;
 
   ~UnifiedSystemTrayController() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Registers pref to preserve tray expanded state between reboots.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -285,6 +297,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   bool showing_audio_detailed_view_ = false;
 
   bool showing_calendar_view_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

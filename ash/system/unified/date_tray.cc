@@ -27,6 +27,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       /*cross_axis_margin=*/0);
+  scoped_unified_system_tray_observer_.Observe(unified_system_tray_);
 }
 
 DateTray::~DateTray() = default;
@@ -34,16 +35,13 @@ DateTray::~DateTray() = default;
 bool DateTray::PerformAction(const ui::Event& event) {
   // Lets the `unified_system_tray_` decide whether to show the bubble or not,
   // since it's the owner of the bubble view.
-  if (unified_system_tray_->IsBubbleShown()) {
+  if (is_active()) {
     unified_system_tray_->CloseBubble();
   } else {
     unified_system_tray_->OnDateTrayActionPerformed(event);
   }
 
-  // Returns false to not set this tray to active. Because this tray is not the
-  // owner of the bubble. The bubble is owned by the `UnifiedSystemTray`, which
-  // shows active/non-active status based on if the bubble is shown or closed.
-  return false;
+  return true;
 }
 
 std::u16string DateTray::GetAccessibleNameForBubble() {
@@ -72,6 +70,14 @@ void DateTray::UpdateLayout() {
 
 void DateTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
+}
+
+void DateTray::OnOpeningCalendarView() {
+  SetIsActive(true);
+}
+
+void DateTray::OnLeavingCalendarView() {
+  SetIsActive(false);
 }
 
 BEGIN_METADATA(DateTray, ActionableView)

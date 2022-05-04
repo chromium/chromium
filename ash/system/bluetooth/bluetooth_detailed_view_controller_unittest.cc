@@ -112,7 +112,9 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
     bluetooth_detailed_view_controller_ =
         std::make_unique<BluetoothDetailedViewController>(
-            GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test());
+            GetPrimaryUnifiedSystemTray()
+                ->bubble()
+                ->unified_system_tray_controller());
 
     BluetoothDetailedView::Factory::SetFactoryForTesting(
         &bluetooth_detailed_view_factory_);

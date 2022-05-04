@@ -239,8 +239,17 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 
-  message_center_bubble_.reset();
-  bubble_.reset();
+  DestroyBubbles();
+}
+
+void UnifiedSystemTray::AddObserver(Observer* observer) {
+  if (observer)
+    observers_.AddObserver(observer);
+}
+
+void UnifiedSystemTray::RemoveObserver(Observer* observer) {
+  if (observer)
+    observers_.RemoveObserver(observer);
 }
 
 bool UnifiedSystemTray::MoreThanOneVisibleTrayItem() const {
@@ -444,8 +453,21 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
       0);
 }
 
+void UnifiedSystemTray::OnOpeningCalendarView() {
+  SetIsActive(false);
+  for (auto& observer : observers_)
+    observer.OnOpeningCalendarView();
+}
+
+void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
+  SetIsActive(true);
+  for (auto& observer : observers_)
+    observer.OnLeavingCalendarView();
+}
+
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
-  ShowBubble();
+  if (!bubble_)
+    ShowBubble();
   bubble_->ShowCalendarView(calendar_metrics::CalendarViewShowSource::kTimeView,
                             calendar_metrics::GetEventType(event));
 }
@@ -469,6 +491,19 @@ void UnifiedSystemTray::SetTrayEnabled(bool enabled) {
 void UnifiedSystemTray::SetTargetNotification(
     const std::string& notification_id) {
   model_->SetTargetNotification(notification_id);
+}
+
+bool UnifiedSystemTray::PerformAction(const ui::Event& event) {
+  if (!GetBubbleWidget()) {
+    ShowBubble();
+  } else if (IsShowingCalendarView()) {
+    bubble_->unified_system_tray_controller()->TransitionToMainView(
+        /*restore_focus=*/true);
+  } else {
+    CloseBubble();
+  }
+
+  return true;
 }
 
 void UnifiedSystemTray::ShowBubble() {
@@ -569,6 +604,7 @@ void UnifiedSystemTray::ShowBubbleInternal() {
   presentation_time_recorder->RequestNext();
 
   bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
+  bubble_->unified_system_tray_controller()->AddObserver(this);
 
   message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
   message_center_bubble_->ShowBubble();
@@ -587,8 +623,12 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
-  message_center_bubble_.reset();
-  bubble_.reset();
+  if (IsShowingCalendarView()) {
+    for (auto& observer : observers_)
+      observer.OnLeavingCalendarView();
+  }
+
+  DestroyBubbles();
   SetIsActive(false);
 }
 
@@ -624,6 +664,13 @@ void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {
 
 void UnifiedSystemTray::AddObservedTrayItem(TrayItemView* tray_item) {
   tray_items_observations_.AddObservation(tray_item);
+}
+
+void UnifiedSystemTray::DestroyBubbles() {
+  message_center_bubble_.reset();
+  if (bubble_)
+    bubble_->unified_system_tray_controller()->RemoveObserver(this);
+  bubble_.reset();
 }
 
 }  // namespace ash

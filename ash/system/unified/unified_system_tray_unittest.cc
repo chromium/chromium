@@ -319,7 +319,7 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_CollapseQuickSettings) {
   EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
 
   auto* quick_settings_controller =
-      GetUnifiedSystemTrayBubble()->controller_for_test();
+      GetUnifiedSystemTrayBubble()->unified_system_tray_controller();
   quick_settings_controller->EnsureExpanded();
 
   auto did_focus = tray->FocusMessageCenter(false);

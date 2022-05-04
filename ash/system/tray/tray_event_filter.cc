@@ -126,10 +126,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
               ->GetStatusAreaWidget();
       UnifiedSystemTray* tray = status_area->unified_system_tray();
 
-      // If the calendar view is showing, see the `DateTray` and the
-      // `UnifiedSystemTray` together as one button when clicking outside of the
-      // tray.
-      if (tray->IsShowingCalendarView())
+      // See the `DateTray` and the `UnifiedSystemTray` together as one button
+      // when clicking outside of the tray.
+      if (features::IsCalendarViewEnabled())
         bounds.Union(status_area->date_tray()->GetBoundsInScreen());
 
       TrayBubbleBase* system_tray_bubble = tray->bubble();

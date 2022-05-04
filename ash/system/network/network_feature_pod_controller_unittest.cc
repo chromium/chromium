@@ -265,7 +265,9 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
   }
 
   UnifiedSystemTrayController* tray_controller() {
-    return GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test();
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->unified_system_tray_controller();
   }
 
   UnifiedSystemTrayView* tray_view() {

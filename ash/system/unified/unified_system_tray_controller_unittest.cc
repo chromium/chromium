@@ -214,7 +214,7 @@ TEST_F(UnifiedSystemTrayControllerTest, SystemTrayCollapsePref) {
   InitializeView();
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   UnifiedSystemTrayController* controller =
-      GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test();
+      GetPrimaryUnifiedSystemTray()->bubble()->unified_system_tray_controller();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 

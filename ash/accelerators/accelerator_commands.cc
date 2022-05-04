@@ -214,15 +214,20 @@ void ToggleCalendar() {
   UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
                                 ->GetStatusAreaWidget()
                                 ->unified_system_tray();
-  if (tray->IsBubbleShown()) {
+  // If currently showing the calendar view, close it.
+  if (tray->IsShowingCalendarView()) {
     tray->CloseBubble();
-  } else {
-    tray->ShowBubble();
-    tray->ActivateBubble();
-    tray->bubble()->ShowCalendarView(
-        calendar_metrics::CalendarViewShowSource::kAccelerator,
-        calendar_metrics::CalendarEventSource::kKeyboard);
+    return;
   }
+
+  // If currently not showing the calendar view, show the bubble if needed then
+  // show the calendar view.
+  if (!tray->IsBubbleShown())
+    tray->ShowBubble();
+  tray->ActivateBubble();
+  tray->bubble()->ShowCalendarView(
+      calendar_metrics::CalendarViewShowSource::kAccelerator,
+      calendar_metrics::CalendarEventSource::kKeyboard);
 }
 
 void ToggleFullscreen() {

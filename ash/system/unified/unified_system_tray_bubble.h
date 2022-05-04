@@ -148,7 +148,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   UnifiedSystemTrayView* unified_view() { return unified_view_; }
 
-  UnifiedSystemTrayController* controller_for_test() {
+  UnifiedSystemTrayController* unified_system_tray_controller() {
     return controller_.get();
   }
 

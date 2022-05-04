@@ -92,7 +92,7 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()
         ->bubble()
-        ->controller_for_test();
+        ->unified_system_tray_controller();
   }
 
   MockMediaNotificationProvider* provider() { return provider_.get(); }

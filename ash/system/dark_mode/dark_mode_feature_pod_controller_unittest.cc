@@ -33,7 +33,7 @@ TEST_F(DarkModeFeaturePodControllerTest, ToggleDarkMode) {
   std::unique_ptr<DarkModeFeaturePodController>
       dark_mode_feature_pod_controller =
           std::make_unique<DarkModeFeaturePodController>(
-              system_tray->bubble()->controller_for_test());
+              system_tray->bubble()->unified_system_tray_controller());
 
   std::unique_ptr<FeaturePodButton> button(
       dark_mode_feature_pod_controller->CreateButton());

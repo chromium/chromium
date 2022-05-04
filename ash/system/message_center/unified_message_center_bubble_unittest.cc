@@ -108,7 +108,9 @@ class UnifiedMessageCenterBubbleTest
   }
 
   bool IsQuickSettingsCollapsed() {
-    return !GetSystemTrayBubble()->controller_for_test()->IsExpanded();
+    return !GetSystemTrayBubble()
+                ->unified_system_tray_controller()
+                ->IsExpanded();
   }
 
   // Helper functions for focus cycle testing.
@@ -130,19 +132,20 @@ class UnifiedMessageCenterBubbleTest
   void DoEsc() { PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE); }
 
   void ToggleExpanded() {
-    GetSystemTrayBubble()->controller_for_test()->ToggleExpanded();
+    GetSystemTrayBubble()->unified_system_tray_controller()->ToggleExpanded();
   }
 
   void WaitForAnimation() {
     // Some animations do not complete without checking is_animating();
     do {
       base::RunLoop().RunUntilIdle();
-    } while (GetSystemTrayBubble() &&
-             GetSystemTrayBubble()->controller_for_test() &&
-             GetSystemTrayBubble()->controller_for_test()->animation_ &&
-             GetSystemTrayBubble()
-                 ->controller_for_test()
-                 ->animation_->is_animating());
+    } while (
+        GetSystemTrayBubble() &&
+        GetSystemTrayBubble()->unified_system_tray_controller() &&
+        GetSystemTrayBubble()->unified_system_tray_controller()->animation_ &&
+        GetSystemTrayBubble()
+            ->unified_system_tray_controller()
+            ->animation_->is_animating());
   }
 
   views::View* GetFirstMessageCenterFocusable() {
