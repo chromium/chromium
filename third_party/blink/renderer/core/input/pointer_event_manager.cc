@@ -658,6 +658,11 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
         mojom::blink::UserActivationNotificationType::kInteraction);
   }
 
+  if (event.GetType() == WebInputEvent::Type::kPointerDown) {
+    touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
+        event, pointer_event_target);
+  }
+
   WebInputEventResult result = DispatchTouchPointerEvent(
       event, coalesced_events, predicted_events, pointer_event_target);
 

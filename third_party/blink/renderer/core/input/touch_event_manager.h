@@ -48,6 +48,14 @@ class CORE_EXPORT TouchEventManager final
   // Returns whether there is any touch on the screen.
   bool IsAnyTouchActive() const;
 
+  // Keeps track of attributes of the touch point in the
+  // |touch_points_attributes_| map and computes the effective touch-action
+  // value, after possibly performing a hit-test if the original hit test result
+  // was not inside capturing frame |touch_sequence_document_| for touch events.
+  void UpdateTouchAttributeMapsForPointerDown(
+      const WebPointerEvent&,
+      const event_handling_util::PointerEventTarget&);
+
  private:
   // Class represending one touch point event with its coalesced events and
   // related attributes.
@@ -74,14 +82,6 @@ class CORE_EXPORT TouchEventManager final
   WebCoalescedInputEvent GenerateWebCoalescedInputEvent();
   Touch* CreateDomTouch(const TouchPointAttributes*, bool* known_target);
   void AllTouchesReleasedCleanup();
-
-  // Keeps track of attributes of the touch point in the
-  // |touch_points_attributes_| map and does the hit-testing if the original hit
-  // test result was not inside capturing frame |touch_sequence_document_| for
-  // touch events.
-  void UpdateTouchAttributeMapsForPointerDown(
-      const WebPointerEvent&,
-      const event_handling_util::PointerEventTarget&);
 
   // This is triggered either by VSync signal to send one touch event per frame
   // accumulating all move events or by discrete events pointerdown/up/cancel.
@@ -135,6 +135,9 @@ class CORE_EXPORT TouchEventManager final
   // action which is sent to the browser after handling each dispatched
   // 'touchstart' is the intersection of all the previously calculated effective
   // touch action values during the sequence.
+  //
+  // TODO(https://crbug.com/844493): This seems incomplete code, should be
+  // removed.
   absl::optional<TouchAction> delayed_effective_touch_action_;
 };
 
