@@ -310,24 +310,29 @@ void FakeUserDataAuthClient::StartAuthSession(
   bool is_kiosk = base::EndsWith(user_id, "kiosk-apps.device-local.localhost");
 
   ::user_data_auth::StartAuthSessionReply reply;
-  reply.set_auth_session_id(auth_session_id);
-  bool user_exists = UserExists(request.account_id());
-  reply.set_user_exists(user_exists);
-  if (user_exists) {
-    if (is_kiosk) {
-      // see kCryptohomePublicMountLabel
-      std::string kiosk_label = "publicmount";
-      cryptohome::KeyData kiosk_key;
-      kiosk_key.set_label(kiosk_label);
-      kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-      (*reply.mutable_key_label_data())[kiosk_label] = std::move(kiosk_key);
-    } else {
-      // see kCryptohomeGaiaKeyLabel
-      std::string gaia_label = "gaia";
-      cryptohome::KeyData gaia_key;
-      gaia_key.set_label(gaia_label);
-      gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-      (*reply.mutable_key_label_data())[gaia_label] = std::move(gaia_key);
+  if (cryptohome_error_ !=
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(cryptohome_error_);
+  } else {
+    reply.set_auth_session_id(auth_session_id);
+    bool user_exists = UserExists(request.account_id());
+    reply.set_user_exists(user_exists);
+    if (user_exists) {
+      if (is_kiosk) {
+        // see kCryptohomePublicMountLabel
+        std::string kiosk_label = "publicmount";
+        cryptohome::KeyData kiosk_key;
+        kiosk_key.set_label(kiosk_label);
+        kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+        (*reply.mutable_key_label_data())[kiosk_label] = std::move(kiosk_key);
+      } else {
+        // see kCryptohomeGaiaKeyLabel
+        std::string gaia_label = "gaia";
+        cryptohome::KeyData gaia_key;
+        gaia_key.set_label(gaia_label);
+        gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+        (*reply.mutable_key_label_data())[gaia_label] = std::move(gaia_key);
+      }
     }
   }
   ReturnProtobufMethodCallback(reply, std::move(callback));
@@ -395,6 +400,7 @@ void FakeUserDataAuthClient::PrepareGuestVault(
     const ::user_data_auth::PrepareGuestVaultRequest& request,
     PrepareGuestVaultCallback callback) {
   ::user_data_auth::PrepareGuestVaultReply reply;
+  prepare_guest_request_count_++;
 
   cryptohome::AccountIdentifier account;
   account.set_account_id(kGuestUserName);

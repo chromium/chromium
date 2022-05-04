@@ -6,6 +6,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -63,6 +64,19 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
     }
   }
 
+  void CheckCryptohomeMountAssertions() {
+    if (base::FeatureList::IsEnabled(
+            ash::features::kUseAuthsessionAuthentication)) {
+      ASSERT_EQ(
+          FakeUserDataAuthClient::Get()->get_prepare_guest_request_count(), 1);
+    } else {
+      ASSERT_EQ(FakeUserDataAuthClient::Get()->get_mount_request_count(), 1);
+      EXPECT_TRUE(FakeUserDataAuthClient::Get()
+                      ->get_last_mount_request()
+                      .guest_mount());
+    }
+  }
+
  protected:
   LoginManagerMixin login_manager_{&mixin_host_, {}};
 };
@@ -98,9 +112,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_Login) {
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
-  ASSERT_EQ(FakeUserDataAuthClient::Get()->get_mount_request_count(), 1);
-  EXPECT_TRUE(
-      FakeUserDataAuthClient::Get()->get_last_mount_request().guest_mount());
+  CheckCryptohomeMountAssertions();
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
@@ -128,10 +140,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {
   // Not strictly necessary, but useful to potentially catch bugs stemming from
   // asynchronous jobs.
   base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(FakeUserDataAuthClient::Get()->get_mount_request_count(), 1);
-  EXPECT_TRUE(
-      FakeUserDataAuthClient::Get()->get_last_mount_request().guest_mount());
+  CheckCryptohomeMountAssertions();
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, MultipleClicks) {
