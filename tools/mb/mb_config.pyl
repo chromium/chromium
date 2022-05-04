@@ -172,7 +172,7 @@
       'chromeos-kevin-rel (reclient shadow)': 'chromeos_kevin_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
-      'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
+      'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
@@ -2033,12 +2033,12 @@
       'chromeos_arm-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
-    'chromeos_arm-generic_lacros_rel': [
-      'chromeos_arm-generic-crostoolchain', 'lacros', 'release',
-    ],
-
     'chromeos_arm-generic_lacros_rel_dchecks': [
       'chromeos_arm-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
+    ],
+
+    'chromeos_arm-generic_lacros_rel_reclient': [
+      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'release',
     ],
 
     'chromeos_arm-generic_reclient': [
@@ -3637,6 +3637,10 @@
 
     'chromeos_arm-generic-crostoolchain': {
       'mixins': ['chromeos_device', 'arm-generic-crostoolchain',]
+    },
+
+    'chromeos_arm-generic-crostoolchain_reclient': {
+      'mixins': ['chromeos_device_reclient', 'arm-generic-crostoolchain',]
     },
 
     'chromeos_codecs': {

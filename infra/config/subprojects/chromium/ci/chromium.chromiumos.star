@@ -582,6 +582,9 @@ ci.builder(
     tree_closing = False,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
