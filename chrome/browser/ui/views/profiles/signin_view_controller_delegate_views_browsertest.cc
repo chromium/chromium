@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 #define MAYBE_ResizeBeforeDisplay ResizeBeforeDisplay
 #endif
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
-                       ResizeBeforeDisplay) {
+                       MAYBE_ResizeBeforeDisplay) {
   const int kDialogHeight = 255;
   SigninViewControllerDelegateViews* delegate =
       CreateDelegate(/*show_immediately=*/false);
