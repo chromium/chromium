@@ -399,12 +399,9 @@ export class FileManagerUI {
     this.element.addEventListener('drop', e => {
       e.preventDefault();
     });
-    if (util.runningInBrowser()) {
-      this.element.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    }
+    this.element.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
 
     /**
      * True while FilesApp is in the process of a drag and drop. Set to true on
