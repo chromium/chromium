@@ -13667,7 +13667,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
-    enum="AssistantActionPerformed" expires_after="2022-06-12">
+    enum="AssistantActionPerformed" expires_after="2022-10-23">
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13688,7 +13688,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantIntent.TranslateExtrasAttached"
-    enum="BooleanSuccess" expires_after="2022-06-12">
+    enum="BooleanSuccess" expires_after="2022-10-23">
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13699,7 +13699,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
-    enum="AudioPermissionState" expires_after="2022-06-12">
+    enum="AudioPermissionState" expires_after="2022-10-23">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13716,10 +13716,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    enum="VoiceInteractionEventSource" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a dismissed voice search, such as omnibox or NTP.
     This is recorded after the dismissed intent returns to Chrome.
@@ -13727,10 +13726,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventTarget"
-    enum="VoiceIntentTarget" expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    enum="VoiceIntentTarget" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a dismissed voice search, such as the system
     transcription dialog or Assistant. This is recorded after the dismissed
@@ -13740,9 +13738,8 @@ regressions. -->
 
 <histogram name="VoiceInteraction.FailureEventSource"
     enum="VoiceInteractionEventSource" expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a failed voice search, such as omnibox or NTP. This
     is recorded after any intent failure, which could occur before an intent is
@@ -13753,9 +13750,8 @@ regressions. -->
 
 <histogram name="VoiceInteraction.FailureEventTarget" enum="VoiceIntentTarget"
     expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a failed voice search, such as the system
     transcription dialog or Assistant. This is recorded after any intent
@@ -13765,10 +13761,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    enum="VoiceInteractionEventSource" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a successful voice search, such as omnibox or NTP.
     This is recorded immediately after the successful intent returns to Chrome.
@@ -13776,10 +13771,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventTarget" enum="VoiceIntentTarget"
-    expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a successful voice search, such as the system
     transcription dialog or Assistant. This is recorded immediately after the
@@ -13798,8 +13792,8 @@ regressions. -->
 
 <histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
     expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
     receiving the transcribed voice query. This is recorded after an Assistant
@@ -13808,9 +13802,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android.Target.{Target}"
-    units="ms" expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
+    units="ms" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
     receiving the transcribed voice query. This is recorded after an Assistant
@@ -13822,9 +13816,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
-    expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
+    expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
     receiving the intent response for {Action} actions. This is recorded after
@@ -13844,10 +13838,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    enum="VoiceInteractionEventSource" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a voice search start event, such as omnibox or NTP.
     This is recorded immediately before the voice transcription intent is sent.
@@ -13855,10 +13848,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventTarget" enum="VoiceIntentTarget"
-    expires_after="2022-10-16">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a voice search start event, such as the system
     transcription dialog or Assistant. This is recorded immediately before the
@@ -13867,9 +13859,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultSource"
-    enum="VoiceInteractionEventSource" expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
+    enum="VoiceInteractionEventSource" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of an incoming result that doesn't align with an
     outgoing request from Chrome. This is recorded when the extraneous intent
@@ -13878,9 +13870,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultTarget"
-    enum="VoiceIntentTarget" expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
+    enum="VoiceIntentTarget" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of an intent result that doesn't align with an outgoing
     request from Chrome. This is recorded when the extraneous intent response is
@@ -13898,9 +13890,8 @@ regressions. -->
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
     expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the confidence value of a successful voice search as a
     percentage. This is recorded when the voice intent returns successfully.
@@ -13908,10 +13899,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue.{Target}"
-    units="%" expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    units="%" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the confidence value of a successful voice search as a
     percentage, limited to intents sent to {Target}. This is recorded when the
@@ -13922,9 +13912,8 @@ regressions. -->
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
     expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records whether the voice search produced results. This is recorded
     when the voice intent returns successfully.
@@ -13932,10 +13921,9 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult.{Target}"
-    enum="BooleanSuccess" expires_after="2022-06-12">
-  <owner>wylieb@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-10-23">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records whether the voice search produced results, limited to
     intents sent to {Target}. This is recorded when the voice intent returns
