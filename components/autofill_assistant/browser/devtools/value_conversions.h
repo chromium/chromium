@@ -64,7 +64,7 @@ std::unique_ptr<base::Value> ToValueImpl(const std::vector<T>& vector,
                                          const std::vector<T>*) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
   for (const auto& it : vector)
-    result->Append(ToValue(it));
+    result->GetList().Append(base::Value::FromUniquePtrValue(ToValue(it)));
   return std::move(result);
 }
 
