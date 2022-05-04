@@ -290,10 +290,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         args.writeInt(1); // This indicates that the following options are present.
 
         if (mSupportLevel == WebAuthenticationDelegate.Support.BROWSER) {
-            Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                    options, Uri.parse(callerOriginString), clientDataHash, args);
+            Fido2Api.appendBrowserGetAssertionOptionsToParcel(options,
+                    Uri.parse(callerOriginString), clientDataHash, /*tunnelId=*/null, args);
         } else {
-            Fido2Api.appendGetAssertionOptionsToParcel(options, args);
+            Fido2Api.appendGetAssertionOptionsToParcel(options, /*tunnelId=*/null, args);
         }
 
         Task<PendingIntent> task = call.run(

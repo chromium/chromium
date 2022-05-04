@@ -155,7 +155,7 @@ class CableAuthenticator {
     }
 
     @CalledByNative
-    public void getAssertion(byte[] serializedParams) {
+    public void getAssertion(byte[] serializedParams, byte[] tunnelId) {
         PublicKeyCredentialRequestOptions params =
                 PublicKeyCredentialRequestOptions.deserialize(ByteBuffer.wrap(serializedParams));
 
@@ -164,8 +164,8 @@ class CableAuthenticator {
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                params, Uri.parse("https://" + params.relyingPartyId), params.challenge, args);
+        Fido2Api.appendBrowserGetAssertionOptionsToParcel(params,
+                Uri.parse("https://" + params.relyingPartyId), params.challenge, tunnelId, args);
 
         Task<PendingIntent> task = call.run(
                 Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);

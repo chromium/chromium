@@ -308,12 +308,12 @@ public final class Fido2Api {
      */
     public static void appendBrowserGetAssertionOptionsToParcel(
             PublicKeyCredentialRequestOptions options, Uri origin, byte[] clientDataHash,
-            Parcel parcel) {
+            byte[] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: PublicKeyCredentialRequestOptions
         int z = writeHeader(2, parcel);
-        appendGetAssertionOptionsToParcel(options, parcel);
+        appendGetAssertionOptionsToParcel(options, tunnelId, parcel);
         writeLength(z, parcel);
 
         // 3: origin
@@ -338,7 +338,7 @@ public final class Fido2Api {
      * @param parcel the {@link Parcel} to append the output to.
      */
     public static void appendGetAssertionOptionsToParcel(
-            PublicKeyCredentialRequestOptions options, Parcel parcel) {
+            PublicKeyCredentialRequestOptions options, byte[] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: challenge
@@ -372,14 +372,14 @@ public final class Fido2Api {
 
         // 9: extensions
         z = writeHeader(9, parcel);
-        appendGetAssertionExtensionsToParcel(options, parcel);
+        appendGetAssertionExtensionsToParcel(options, tunnelId, parcel);
         writeLength(z, parcel);
 
         writeLength(a, parcel);
     }
 
     private static void appendGetAssertionExtensionsToParcel(
-            PublicKeyCredentialRequestOptions options, Parcel parcel) {
+            PublicKeyCredentialRequestOptions options, byte[] tunnelId, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: appId
@@ -399,6 +399,16 @@ public final class Fido2Api {
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
             parcel.writeInt(1);
+            writeLength(d, parcel);
+            writeLength(c, parcel);
+            writeLength(b, parcel);
+        }
+
+        if (tunnelId != null) {
+            final int b = writeHeader(9, parcel);
+            final int c = writeHeader(OBJECT_MAGIC, parcel);
+            final int d = writeHeader(1, parcel);
+            parcel.writeString(Base64.encodeToString(tunnelId, Base64.NO_WRAP));
             writeLength(d, parcel);
             writeLength(c, parcel);
             writeLength(b, parcel);
