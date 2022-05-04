@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -113,7 +114,8 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_PolicyDisabled) {
 }
 
 // Timing out on ASan LSan: http://crbug.com/1306035.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+// Timing out on debug bot: http://crbug.com/1322461
+#if (defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || !defined(NDEBUG)
 #define MAYBE_MaybeShow_WillNotExpire DISABLED_MaybeShow_WillNotExpire
 #else
 #define MAYBE_MaybeShow_WillNotExpire MaybeShow_WillNotExpire
@@ -160,7 +162,8 @@ TEST_F(InSessionPasswordChangeManagerTest, MaybeShow_WillEventuallyExpire) {
 }
 
 // Timing out on ASan LSan: http://crbug.com/1306035.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+// Timing out on debug bot: http://crbug.com/1322461
+#if (defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || !defined(NDEBUG)
 #define MAYBE_MaybeShow_DeleteExpirationTime \
   DISABLED_MaybeShow_DeleteExpirationTime
 #else
@@ -181,7 +184,8 @@ TEST_F(InSessionPasswordChangeManagerTest,
 }
 
 // Timing out on ASan LSan: http://crbug.com/1306035.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+// Timing out on debug bot: http://crbug.com/1322461
+#if (defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || !defined(NDEBUG)
 #define MAYBE_MaybeShow_PasswordChanged DISABLED_MaybeShow_PasswordChanged
 #else
 #define MAYBE_MaybeShow_PasswordChanged MaybeShow_PasswordChanged
