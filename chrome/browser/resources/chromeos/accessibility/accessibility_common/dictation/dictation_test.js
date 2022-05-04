@@ -55,13 +55,13 @@ SYNC_TEST_F('DictationE2ETest', 'StopsOnImeBlur', async function() {
   this.blurInputContext();
   assertFalse(this.getSpeechRecognitionActive());
   assertFalse(this.getDictationActive());
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
 SYNC_TEST_F('DictationE2ETest', 'CommitsFinalResults', async function() {
   this.toggleDictationOn();
   this.sendInterimSpeechResult('kittens');
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
   assertTrue(this.getDictationActive());
 
   this.mockInputIme.clearLastParameters();
@@ -77,7 +77,7 @@ SYNC_TEST_F('DictationE2ETest', 'CommitsFinalResults', async function() {
   this.mockInputIme.clearLastParameters();
   this.toggleDictationOff();
   assertFalse(this.getDictationActive());
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
 SYNC_TEST_F(
@@ -97,7 +97,7 @@ SYNC_TEST_F(
       this.sendInterimSpeechResult('ducks dig');
       this.blurInputContext();
       assertFalse(this.getDictationActive());
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
     });
 
 SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
@@ -113,7 +113,7 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
   callback();
   this.clearSetTimeoutData();
   assertFalse(this.getDictationActive());
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
 SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
@@ -128,7 +128,7 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
   callback();
   this.clearSetTimeoutData();
   assertFalse(this.getDictationActive());
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
 SYNC_TEST_F(
@@ -167,7 +167,7 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
   callback();
   this.clearSetTimeoutData();
   assertFalse(this.getDictationActive());
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
 SYNC_TEST_F(
@@ -184,7 +184,7 @@ SYNC_TEST_F(
           this.mockInputIme.clearLastParameters();
         } else {
           // On final result, nothing is committed; instead, an action is taken.
-          assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+          assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
         }
 
         // Try to type the command e.g. "type delete".
@@ -216,5 +216,5 @@ SYNC_TEST_F(
       });
       this.toggleDictationOff();
       // No text should be committed.
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
     });
