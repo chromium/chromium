@@ -368,20 +368,13 @@ void ProfileMenuView::OnSignoutButtonClicked() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::OnSigninButtonClicked() {
   RecordClick(ActionableItem::kSigninButton);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  signin_ui_util::ShowSigninPromptAndMaybeEnableSync(
-      browser(), browser()->profile(), /*enable_sync=*/true,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-      signin_metrics::PromoAction::
-          PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
-#else
   if (!perform_menu_actions())
     return;
   Hide();
-  browser()->signin_view_controller()->ShowSignin(
-      profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN,
+
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
+      browser(), AccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
-#endif
 }
 
 void ProfileMenuView::OnOtherProfileSelected(

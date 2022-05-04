@@ -218,18 +218,6 @@ void ShowReauthForPrimaryAccountWithAuthError(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShowSigninPromptAndMaybeEnableSync(
-    Browser* browser,
-    Profile* profile,
-    bool enable_sync,
-    signin_metrics::AccessPoint access_point,
-    signin_metrics::PromoAction promo_action) {
-  GetSigninUiDelegate()->ShowSigninUI(browser, profile, enable_sync,
-                                      access_point, promo_action);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {

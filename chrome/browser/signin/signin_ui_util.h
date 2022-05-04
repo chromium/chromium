@@ -54,22 +54,6 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Displays sign-in UI to the user and shows the Sync confirmation if the user
-// successfully adds an account and `enable_sync` is true.
-// This will display the Chrome account picker first, if the system has
-// available accounts. If the user chooses to add a new account or no existing
-// accounts are available, this function will display OS's add account flow.
-// `browser` might be null. In that case, this function will try to re-use an
-// existing or open a new browser window for a `profile` if needed.
-void ShowSigninPromptAndMaybeEnableSync(
-    Browser* browser,
-    Profile* profile,
-    bool enable_sync,
-    signin_metrics::AccessPoint access_point,
-    signin_metrics::PromoAction promo_action);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.

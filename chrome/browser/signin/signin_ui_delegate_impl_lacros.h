@@ -13,11 +13,15 @@ namespace signin_ui_util {
 class SigninUiDelegateImplLacros : public SigninUiDelegate {
  public:
   // SigninUiDelegate:
+  // Displays the Chrome account picker first, if the system has available
+  // accounts. If the user chooses to add a new account or no existing accounts
+  // are available, this function will display OS's add account flow.
   void ShowSigninUI(Browser* browser,
                     Profile* profile,
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,
                     signin_metrics::PromoAction promo_action) override;
+  // Displays OS's reauth dialog.
   void ShowReauthUI(Browser* browser,
                     Profile* profile,
                     const std::string& email,

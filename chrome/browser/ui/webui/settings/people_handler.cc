@@ -43,6 +43,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -362,23 +363,11 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     SigninErrorController* error_controller =
         SigninErrorControllerFactory::GetForProfile(browser->profile());
     DCHECK(error_controller->HasError());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(browser,
                                                              access_point);
-#else
-    browser->window()->ShowAvatarBubbleFromAvatarButton(
-        BrowserWindow::AVATAR_BUBBLE_MODE_REAUTH, access_point, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    signin_ui_util::ShowSigninPromptAndMaybeEnableSync(
-        browser, browser->profile(), /*enable_sync=*/true, access_point,
-        signin_metrics::PromoAction::
-            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
-#else
-    browser->window()->ShowAvatarBubbleFromAvatarButton(
-        BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN, access_point, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    signin_ui_util::EnableSyncFromSingleAccountPromo(browser, CoreAccountInfo(),
+                                                     access_point);
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

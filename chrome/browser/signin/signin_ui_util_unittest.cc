@@ -807,18 +807,6 @@ TEST_F(MirrorSigninUiUtilTest,
   ShowExtensionSigninPrompt(profile(), /*enable_sync=*/true, kMainEmail);
 }
 
-TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptAndMaybeEnableSync) {
-  auto access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
-  auto promo_action = signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-
-  for (bool enable_sync : {true, false}) {
-    ExpectAddAccount(enable_sync, access_point, promo_action);
-    ShowSigninPromptAndMaybeEnableSync(browser(), profile(), enable_sync,
-                                       access_point, promo_action);
-  }
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // This test does not use the SigninUiUtilTest test fixture, because it
