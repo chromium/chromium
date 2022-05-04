@@ -51,8 +51,7 @@ void IndexedDBQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
     return;
   }
 
-  std::move(callback).Run(
-      indexed_db_context_.GetBucketDiskUsage(bucket.storage_key));
+  std::move(callback).Run(indexed_db_context_.GetBucketDiskUsage(bucket));
 }
 
 void IndexedDBQuotaClient::GetStorageKeysForType(
@@ -60,7 +59,11 @@ void IndexedDBQuotaClient::GetStorageKeysForType(
     GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  std::vector<StorageKey> storage_keys = indexed_db_context_.GetAllBuckets();
+  const auto& bucket_locators = indexed_db_context_.GetAllBuckets();
+  std::vector<StorageKey> storage_keys;
+  for (const auto& bucket_locator : bucket_locators)
+    storage_keys.push_back(bucket_locator.storage_key);
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   std::move(callback).Run(std::move(storage_keys));
 }
 
@@ -78,6 +81,7 @@ void IndexedDBQuotaClient::DeleteBucketData(
     return;
   }
 
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_.DeleteForBucket(
       bucket.storage_key,
       base::BindOnce(

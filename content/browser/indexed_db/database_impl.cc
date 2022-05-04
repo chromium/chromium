@@ -52,9 +52,7 @@ DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection_);
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  indexed_db_context_->ConnectionOpened(bucket_locator_.storage_key,
-                                        connection_.get());
+  indexed_db_context_->ConnectionOpened(bucket_locator_, connection_.get());
 }
 
 DatabaseImpl::~DatabaseImpl() {
@@ -64,13 +62,10 @@ DatabaseImpl::~DatabaseImpl() {
     status = connection_->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
   }
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  indexed_db_context_->ConnectionClosed(bucket_locator_.storage_key,
-                                        connection_.get());
+  indexed_db_context_->ConnectionClosed(bucket_locator_, connection_.get());
   if (!status.ok()) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator_.storage_key, status, "Error during rollbacks.");
+        bucket_locator_, status, "Error during rollbacks.");
   }
 }
 
@@ -152,9 +147,8 @@ void DatabaseImpl::Close() {
       IndexedDBConnection::CloseErrorHandling::kReturnOnFirstError);
 
   if (!status.ok()) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
-        bucket_locator_.storage_key, status, "Error during rollbacks.");
+        bucket_locator_, status, "Error during rollbacks.");
   }
 }
 

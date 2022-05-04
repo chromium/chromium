@@ -81,7 +81,9 @@ std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
 class IndexedDBTest : public testing::Test {
  public:
   const blink::StorageKey kNormalStorageKey;
+  mutable storage::BucketLocator kNormalBucketLocator;
   const blink::StorageKey kSessionOnlyStorageKey;
+  mutable storage::BucketLocator kSessionOnlyBucketLocator;
 
   IndexedDBTest()
       : kNormalStorageKey(
@@ -100,10 +102,17 @@ class IndexedDBTest : public testing::Test {
             /*file_system_access_context=*/mojo::NullRemote(),
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get())) {
+    kNormalBucketLocator = storage::BucketLocator();
+    kNormalBucketLocator.storage_key = kNormalStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kNormalBucketLocator);
+    kSessionOnlyBucketLocator = storage::BucketLocator();
+    kSessionOnlyBucketLocator.storage_key = kSessionOnlyStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kSessionOnlyBucketLocator);
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
-    bool should_purge_on_shutdown = true;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        kSessionOnlyStorageKey.origin(), should_purge_on_shutdown));
+        kSessionOnlyStorageKey.origin(), /*should_purge_on_shutdown=*/true));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
 
@@ -128,14 +137,14 @@ class IndexedDBTest : public testing::Test {
       auto open_factory_buckets = factory->GetOpenBuckets();
       for (const auto& bucket_locator : open_factory_buckets) {
         context_->ForceCloseSync(
-            bucket_locator.storage_key,
+            bucket_locator,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto storage_key : context_->GetAllBuckets()) {
+      for (auto bucket_locator : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForBucket(storage_key, &success);
+        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
@@ -144,11 +153,12 @@ class IndexedDBTest : public testing::Test {
       ASSERT_TRUE(temp_dir_.Delete());
   }
 
-  base::FilePath GetFilePathForTesting(const blink::StorageKey& storage_key) {
+  base::FilePath GetFilePathForTesting(
+      const storage::BucketLocator& bucket_locator) {
     base::FilePath path;
     base::RunLoop run_loop;
     context()->GetFilePathForTesting(
-        storage_key,
+        bucket_locator,
         base::BindLambdaForTesting([&](const base::FilePath& async_path) {
           path = async_path;
           run_loop.Quit();
@@ -170,8 +180,8 @@ TEST_F(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::FilePath normal_path;
   base::FilePath session_only_path;
 
-  normal_path = GetFilePathForTesting(kNormalStorageKey);
-  session_only_path = GetFilePathForTesting(kSessionOnlyStorageKey);
+  normal_path = GetFilePathForTesting(kNormalBucketLocator);
+  session_only_path = GetFilePathForTesting(kSessionOnlyBucketLocator);
   ASSERT_TRUE(base::CreateDirectory(normal_path));
   ASSERT_TRUE(base::CreateDirectory(session_only_path));
   base::RunLoop().RunUntilIdle();
@@ -191,8 +201,8 @@ TEST_F(IndexedDBTest, SetForceKeepSessionState) {
   // Save session state. This should bypass the destruction-time deletion.
   context()->SetForceKeepSessionState();
 
-  normal_path = GetFilePathForTesting(kNormalStorageKey);
-  session_only_path = GetFilePathForTesting(kSessionOnlyStorageKey);
+  normal_path = GetFilePathForTesting(kNormalBucketLocator);
+  session_only_path = GetFilePathForTesting(kSessionOnlyBucketLocator);
   ASSERT_TRUE(base::CreateDirectory(normal_path));
   ASSERT_TRUE(base::CreateDirectory(session_only_path));
   base::RunLoop().RunUntilIdle();
@@ -224,8 +234,7 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);
-    idb_context_->ConnectionOpened(bucket_locator_.storage_key,
-                                   connection_.get());
+    idb_context_->ConnectionOpened(bucket_locator_, connection_.get());
   }
 
   IndexedDBConnection* connection() { return connection_.get(); }
@@ -253,7 +262,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
       base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
   auto closed_callbacks =
       base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
-  base::FilePath test_path = GetFilePathForTesting(kTestStorageKey);
+  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
 
   const int64_t host_transaction_id = 0;
   const int64_t version = 0;
@@ -283,7 +292,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
   RunPostedTasks();
 
   context()->ForceCloseSync(
-      kTestStorageKey,
+      bucket_locator,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
   EXPECT_TRUE(open_db_callbacks->forced_close_called());
   EXPECT_FALSE(closed_db_callbacks->forced_close_called());
@@ -301,8 +310,11 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
 TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = kTestStorageKey;
+  context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(bucket_locator);
 
-  base::FilePath test_path = GetFilePathForTesting(kTestStorageKey);
+  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
   ASSERT_TRUE(base::CreateDirectory(test_path));
 
   auto lock = LockForTesting(test_path);
@@ -348,13 +360,13 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
   ASSERT_TRUE(callbacks->connection());
 
   // ConnectionOpened() is usually called by the dispatcher.
-  context()->ConnectionOpened(kTestStorageKey, callbacks->connection());
+  context()->ConnectionOpened(bucket_locator, callbacks->connection());
 
   EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
 
   // Simulate the write failure.
   leveldb::Status status = leveldb::Status::IOError("Simulated failure");
-  factory->HandleBackingStoreFailure(kTestStorageKey);
+  factory->HandleBackingStoreFailure(bucket_locator);
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
   EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));

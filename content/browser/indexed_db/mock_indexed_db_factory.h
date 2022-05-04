@@ -70,16 +70,16 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   }
 
   MOCK_METHOD1(HandleBackingStoreFailure,
-               void(const blink::StorageKey& storage_key));
+               void(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD2(HandleBackingStoreCorruption,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     const IndexedDBDatabaseError& error));
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
   std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
-      const blink::StorageKey& storage_key) const override;
+      const storage::BucketLocator& bucket_locator) const override;
   MOCK_METHOD2(ForceClose,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade,
                void(const storage::BucketLocator& bucket_locator));
@@ -88,16 +88,17 @@ class MockIndexedDBFactory : public IndexedDBFactory {
       V2SchemaCorruptionStatus(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD0(ContextDestroyed, void());
 
-  MOCK_METHOD1(BlobFilesCleaned, void(const blink::StorageKey& storage_key));
+  MOCK_METHOD1(BlobFilesCleaned,
+               void(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetConnectionCount,
-                     size_t(const blink::StorageKey& storage_key));
+                     size_t(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetInMemoryDBSize,
-                     int64_t(const blink::StorageKey& storage_key));
+                     int64_t(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetLastModified,
-                     base::Time(const blink::StorageKey& storage_key));
+                     base::Time(const storage::BucketLocator& bucket_locator));
 
   MOCK_METHOD2(ReportOutstandingBlobs,
                void(const storage::BucketLocator& bucket_locator,
@@ -106,7 +107,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   MOCK_METHOD1(NotifyIndexedDBListChanged,
                void(const blink::StorageKey& storage_key));
   MOCK_METHOD3(NotifyIndexedDBContentChanged,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     const std::u16string& database_name,
                     const std::u16string& object_store_name));
 };

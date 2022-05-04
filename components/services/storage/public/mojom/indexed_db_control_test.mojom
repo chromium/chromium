@@ -8,7 +8,6 @@ import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 enum V2SchemaCorruptionStatus {
   CORRUPTION_UNKNOWN,
@@ -45,8 +44,8 @@ interface IndexedDBControlTest {
   // Gets the root data path for storage.
   GetBaseDataPathForTesting() => (mojo_base.mojom.FilePath path);
 
-  // Gets the file name of the local storage file for the given `storage_key`.
-  GetFilePathForTesting(blink.mojom.StorageKey storage_key) =>
+  // Gets the name of the local storage file for the given `bucket_locator`.
+  GetFilePathForTesting(storage.mojom.BucketLocator bucket_locator) =>
       (mojo_base.mojom.FilePath path);
 
   // Forgets the storage keys and sizes read from disk.
@@ -64,11 +63,11 @@ interface IndexedDBControlTest {
   WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,
                              string key, string value) => ();
 
-  // Returns the number of blobs for a given `storage_key`.
-  GetBlobCountForTesting(blink.mojom.StorageKey storage_key) =>
+  // Returns the number of blobs for a given `bucket_locator`.
+  GetBlobCountForTesting(storage.mojom.BucketLocator bucket_locator) =>
     (int64 num_blobs);
 
-  // Returns the next blob id for a given `storage_key`.
+  // Returns the next blob id for a given `bucket_locator`.
   GetNextBlobNumberForTesting(storage.mojom.BucketLocator bucket_locator,
                               int64 database_id) => (int64 next_blob_number);
 
@@ -77,8 +76,9 @@ interface IndexedDBControlTest {
                            int64 database_id, int64 blob_number) =>
       (mojo_base.mojom.FilePath path);
 
-  // Compacts the backing store for a given `storage_key`.
-  CompactBackingStoreForTesting(blink.mojom.StorageKey storage_key) => ();
+  // Compacts the backing store for a given `bucket_locator`.
+  CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
+      ();
 
   // Overrides IndexedDB with a mock class factory that can inject failures
   // at specific points.  For now, because this is static, there can only
@@ -93,4 +93,7 @@ interface IndexedDBControlTest {
   // Return keys used in WriteToIndexedDBForTesting.
   GetDatabaseKeysForTesting() =>
       (string schema_version_key, string data_version_key);
+
+  // Forces disk files to be re-read and added to active set if changed.
+  ForceInitializeFromFilesForTesting() => ();
 };

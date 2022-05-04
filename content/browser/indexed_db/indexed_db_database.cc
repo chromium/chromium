@@ -1206,9 +1206,8 @@ Status IndexedDBDatabase::PutOperation(
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      bucket_locator().storage_key, metadata_.name,
+      bucket_locator(), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
   return s;
 }
@@ -1578,9 +1577,8 @@ Status IndexedDBDatabase::DeleteRangeOperation(
   if (!s.ok())
     return s;
   callbacks->OnSuccess();
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      bucket_locator().storage_key, metadata_.name,
+      bucket_locator(), metadata_.name,
       metadata_.object_stores[object_store_id].name);
   return s;
 }
@@ -1625,9 +1623,8 @@ Status IndexedDBDatabase::ClearOperation(
     return s;
   callbacks->OnSuccess();
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      bucket_locator().storage_key, metadata_.name,
+      bucket_locator(), metadata_.name,
       metadata_.object_stores[object_store_id].name);
   return s;
 }

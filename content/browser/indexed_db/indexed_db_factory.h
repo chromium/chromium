@@ -63,19 +63,19 @@ class CONTENT_EXPORT IndexedDBFactory {
       const storage::BucketLocator& bucket_locator) = 0;
 
   virtual void HandleBackingStoreFailure(
-      const blink::StorageKey& storage_key) = 0;
+      const storage::BucketLocator& bucket_locator) = 0;
   virtual void HandleBackingStoreCorruption(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const IndexedDBDatabaseError& error) = 0;
 
   virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
-      const blink::StorageKey& storage_key) const = 0;
+      const storage::BucketLocator& bucket_locator) const = 0;
 
   // Close all connections to all databases within the storage key. If
   // `delete_in_memory_store` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
-  virtual void ForceClose(const blink::StorageKey& storage_key,
+  virtual void ForceClose(const storage::BucketLocator& bucket_locator,
                           bool delete_in_memory_store = false) = 0;
 
   virtual void ForceSchemaDowngrade(
@@ -92,19 +92,20 @@ class CONTENT_EXPORT IndexedDBFactory {
       bool blobs_outstanding) = 0;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
-  virtual void BlobFilesCleaned(const blink::StorageKey& storage_key) = 0;
+  virtual void BlobFilesCleaned(
+      const storage::BucketLocator& bucket_locator) = 0;
 
   virtual size_t GetConnectionCount(
-      const blink::StorageKey& storage_key) const = 0;
+      const storage::BucketLocator& bucket_locator) const = 0;
 
   virtual int64_t GetInMemoryDBSize(
-      const blink::StorageKey& storage_key) const = 0;
+      const storage::BucketLocator& bucket_locator) const = 0;
 
   virtual base::Time GetLastModified(
-      const blink::StorageKey& storage_key) const = 0;
+      const storage::BucketLocator& bucket_locator) const = 0;
 
   virtual void NotifyIndexedDBContentChanged(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const std::u16string& database_name,
       const std::u16string& object_store_name) = 0;
 

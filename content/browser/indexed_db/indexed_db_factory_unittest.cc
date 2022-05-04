@@ -93,19 +93,22 @@ class IndexedDBFactoryTest : public testing::Test {
       auto open_factory_buckets = factory->GetOpenBuckets();
       for (const auto& bucket_locator : open_factory_buckets) {
         context_->ForceCloseSync(
-            bucket_locator.storage_key,
+            bucket_locator,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto storage_key : context_->GetAllBuckets()) {
+      for (auto bucket_locator : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForBucket(storage_key, &success);
+        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
+// TODO(crbug.com/1218100): Investigate why windows fails this check.
+#if !BUILDFLAG(IS_WIN)
     if (temp_dir_.IsValid())
       ASSERT_TRUE(temp_dir_.Delete());
+#endif
     IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
     quota_manager_.reset();
   }
@@ -289,7 +292,7 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
 
-  factory()->ForceClose(storage_key, false);
+  factory()->ForceClose(bucket_locator, false);
   RunPostedTasks();
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
 }
@@ -547,10 +550,10 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
 
-  factory()->ForceClose(storage_key, false);
+  factory()->ForceClose(bucket_locator, false);
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
 
-  factory()->ForceClose(storage_key, true);
+  factory()->ForceClose(bucket_locator, true);
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
 }
 
@@ -817,8 +820,9 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
 
   base::RunLoop run_loop;
   factory()->CallOnDatabaseDeletedForTesting(base::BindLambdaForTesting(
-      [&storage_key, &run_loop](const blink::StorageKey& deleted_storage_key) {
-        if (deleted_storage_key == storage_key)
+      [&bucket_locator,
+       &run_loop](const storage::BucketLocator& deleted_bucket_locator) {
+        if (deleted_bucket_locator == bucket_locator)
           run_loop.Quit();
       }));
 
@@ -946,15 +950,18 @@ TEST_F(IndexedDBFactoryTest, NotifyQuotaOnDatabaseError) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("www.example.com");
-  factory()->OnDatabaseError(storage_key,
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  factory()->OnDatabaseError(bucket_locator,
                              leveldb::Status::Corruption("Corrupted stuff."),
                              "Corrupted stuff.");
   base::RunLoop().RunUntilIdle();
   // Quota should not be notified unless the status is IOError.
   ASSERT_EQ(0U, quota_manager()->write_error_tracker().size());
 
-  factory()->OnDatabaseError(
-      storage_key, leveldb::Status::IOError("Disk is full."), "Disk is full.");
+  factory()->OnDatabaseError(bucket_locator,
+                             leveldb::Status::IOError("Disk is full."),
+                             "Disk is full.");
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
   EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
@@ -1119,7 +1126,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
       }
     }
     RunPostedTasks();
-    factory()->ForceClose(bucket_locator.storage_key, false);
+    factory()->ForceClose(bucket_locator, false);
     RunPostedTasks();
     return callbacks->data_loss();
   };

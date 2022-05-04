@@ -23,6 +23,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -130,8 +131,7 @@ class IndexedDBQuotaClientTest : public testing::Test {
     {
       base::test::TestFuture<base::FilePath> future;
       idb_context()->GetFilePathForTesting(
-          blink::StorageKey(storage_key),
-          future.GetCallback<const base::FilePath&>());
+          bucket, future.GetCallback<const base::FilePath&>());
       file_path_storage_key = future.Take();
     }
     if (!base::CreateDirectory(file_path_storage_key)) {
@@ -145,6 +145,13 @@ class IndexedDBQuotaClientTest : public testing::Test {
     {
       base::RunLoop run_loop;
       idb_context()->ResetCachesForTesting(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
+    // Ensure files are read from disk.
+    {
+      base::RunLoop run_loop;
+      idb_context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
       run_loop.Run();
     }
   }

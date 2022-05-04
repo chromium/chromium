@@ -5108,8 +5108,12 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
+    auto bucket_locator = storage::BucketLocator();
+    bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+    bucket_locator.storage_key =
+        blink::StorageKey(url::Origin::Create(ext_url));
     idb_control_test->GetFilePathForTesting(
-        blink::StorageKey(url::Origin::Create(ext_url)),
+        bucket_locator,
         base::BindLambdaForTesting([&](const base::FilePath& path) {
           idb_path = path;
           EXPECT_TRUE(base::CreateDirectory(idb_path));
@@ -5289,8 +5293,12 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
+    auto bucket_locator = storage::BucketLocator();
+    bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+    bucket_locator.storage_key =
+        blink::StorageKey(url::Origin::Create(origin1));
     idb_control_test->GetFilePathForTesting(
-        blink::StorageKey(url::Origin::Create(origin1)),
+        bucket_locator,
         base::BindLambdaForTesting([&](const base::FilePath& path) {
           idb_path = path;
           EXPECT_TRUE(base::CreateDirectory(idb_path));

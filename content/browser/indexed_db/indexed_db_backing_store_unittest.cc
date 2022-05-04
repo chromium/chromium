@@ -405,7 +405,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::SequencedTaskRunnerHandle::Get());
 
         idb_context_->ForceCloseSync(
-            bucket_locator.storage_key,
+            bucket_locator,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
         loop.Run();
         // There is a possible race in `leveldb_close_event` where the signaling
@@ -416,10 +416,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
         EXPECT_TRUE(leveldb_close_event.IsSignaled());
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto bucket : idb_context_->GetAllBuckets()) {
+      for (auto bucket_locator : idb_context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(idb_context_.get());
-        waiter.DeleteForBucket(bucket, &success);
+        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }

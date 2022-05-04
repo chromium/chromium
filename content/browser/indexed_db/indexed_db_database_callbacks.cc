@@ -79,9 +79,8 @@ void IndexedDBDatabaseCallbacks::OnComplete(
   if (complete_)
     return;
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->TransactionComplete(
-      transaction.database()->bucket_locator().storage_key);
+      transaction.database()->bucket_locator());
   if (callbacks_)
     callbacks_->Complete(transaction.id());
 }

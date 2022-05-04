@@ -85,17 +85,18 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       base::OnceCallback<void(leveldb::Status)> callback,
       const storage::BucketLocator& bucket_locator) override;
 
-  void HandleBackingStoreFailure(const blink::StorageKey& storage_key) override;
+  void HandleBackingStoreFailure(
+      const storage::BucketLocator& bucket_locator) override;
   void HandleBackingStoreCorruption(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const IndexedDBDatabaseError& error) override;
 
   std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
-      const blink::StorageKey& storage_key) const override;
+      const storage::BucketLocator& bucket_locator) const override;
 
   // TODO(dmurph): This eventually needs to be async, to support scopes
   // multithreading.
-  void ForceClose(const blink::StorageKey& storage_key,
+  void ForceClose(const storage::BucketLocator& bucket_locator,
                   bool delete_in_memory_store) override;
 
   void ForceSchemaDowngrade(
@@ -111,21 +112,21 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
                               bool blobs_outstanding) override;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
-  void BlobFilesCleaned(const blink::StorageKey& storage_key) override;
+  void BlobFilesCleaned(const storage::BucketLocator& bucket_locator) override;
 
   size_t GetConnectionCount(
-      const blink::StorageKey& storage_key) const override;
+      const storage::BucketLocator& bucket_locator) const override;
 
   void NotifyIndexedDBContentChanged(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const std::u16string& database_name,
       const std::u16string& object_store_name) override;
 
   int64_t GetInMemoryDBSize(
-      const blink::StorageKey& storage_key) const override;
+      const storage::BucketLocator& bucket_locator) const override;
 
   base::Time GetLastModified(
-      const blink::StorageKey& storage_key) const override;
+      const storage::BucketLocator& bucket_locator) const override;
 
   std::vector<storage::BucketLocator> GetOpenBuckets() const;
 
@@ -144,12 +145,12 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
                          const base::FilePath& data_directory,
                          bool create_if_missing);
 
-  void OnDatabaseError(const blink::StorageKey& storage_key,
+  void OnDatabaseError(const storage::BucketLocator& bucket_locator,
                        leveldb::Status s,
                        const char* message);
 
   using OnDatabaseDeletedCallback = base::RepeatingCallback<void(
-      const blink::StorageKey& deleted_storage_key)>;
+      const storage::BucketLocator& deleted_bucket_locator)>;
   void CallOnDatabaseDeletedForTesting(OnDatabaseDeletedCallback callback);
 
  protected:
@@ -212,7 +213,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   void RemoveBucketState(const storage::BucketLocator& bucket_locator);
 
   // Called when the database has been deleted on disk.
-  void OnDatabaseDeleted(const blink::StorageKey& storage_key);
+  void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
   void MaybeRunTasksForBucket(const storage::BucketLocator& bucket_locator);
   void RunTasksForBucket(base::WeakPtr<IndexedDBBucketState> bucket_state);
@@ -238,11 +239,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   base::flat_map<storage::BucketLocator, std::unique_ptr<IndexedDBBucketState>>
       factories_per_bucket_;
-  // TODO(crbug.com/1218100): We need to map the StorageKey in BucketLocator to
-  // the (for now) only matching BucketLocator. This is done because calls from
-  // IndexedDBContextImpl don't yet have the BucketLocator in all cases.
-  base::flat_map<blink::StorageKey, storage::BucketLocator>
-      storage_key_to_bucket_locator_;
 
   std::set<storage::BucketLocator> backends_opened_since_startup_;
 
