@@ -160,7 +160,8 @@ public interface FeedActionsHandler {
 
     /** Actions that could occur for an info card. */
     @IntDef({InfoCardAction.INFO_CARD_TRACK_VIEW_STARTED, InfoCardAction.INFO_CARD_VIEWED,
-            InfoCardAction.INFO_CARD_CLICKED, InfoCardAction.INFO_CARD_DISMISSED_EXPLIICITLY})
+            InfoCardAction.INFO_CARD_CLICKED, InfoCardAction.INFO_CARD_DISMISSED_EXPLIICITLY,
+            InfoCardAction.TRACK_VIEW_WITH_STATE_RESET})
     @Retention(RetentionPolicy.SOURCE)
     public @interface InfoCardAction {
         // The info card is being tracked for its full visibility.
@@ -171,6 +172,8 @@ public interface FeedActionsHandler {
         int INFO_CARD_CLICKED = 2;
         // The user dismisses the info card explicitly by tapping the close button.
         int INFO_CARD_DISMISSED_EXPLIICITLY = 3;
+        // The info card's state should be reset.
+        int TRACK_VIEW_WITH_STATE_RESET = 4;
     }
 
     /**
