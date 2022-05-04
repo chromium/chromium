@@ -81,7 +81,9 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
   DataDecoder decoder;
   absl::optional<base::Value> result;
   decoder.ParseJson(
-      "[ 42 ]",
+      // The magic 122.416294033786585 number comes from
+      // https://github.com/serde-rs/json/issues/707
+      "[ 122.416294033786585 ]",
       base::BindLambdaForTesting(
           [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
             result = std::move(value_or_error.value);
@@ -89,6 +91,11 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
           }));
   run_loop.Run();
   EXPECT_TRUE(result);
+  ASSERT_TRUE(result->is_list());
+  base::Value::List& list = result->GetList();
+  ASSERT_EQ(1u, list.size());
+  EXPECT_TRUE(list[0].is_double());
+  EXPECT_EQ(122.416294033786585, list[0].GetDouble());
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
