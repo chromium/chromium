@@ -459,13 +459,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (!element)
     return kDefaultBehavior;
 
-  // A click handler might be placed on an otherwise ignored non-empty block
-  // element, e.g. a div. We shouldn't ignore such elements because if an AT
-  // sees the |ax::mojom::blink::DefaultActionVerb::kClickAncestor|, it will
-  // look for the clickable ancestor and it expects to find one.
-  if (IsClickable())
-    return kIncludeObject;
-
   if (IsA<SVGElement>(node)) {
     // The symbol element is used to define graphical templates which can be
     // instantiated by a use element but which are not rendered directly. We
@@ -505,6 +498,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
 
   if (IsLink())
+    return kIncludeObject;
+
+  // A click handler might be placed on an otherwise ignored non-empty block
+  // element, e.g. a div. We shouldn't ignore such elements because if an AT
+  // sees the |ax::mojom::blink::DefaultActionVerb::kClickAncestor|, it will
+  // look for the clickable ancestor and it expects to find one.
+  if (IsClickable())
     return kIncludeObject;
 
   if (IsHeading())
