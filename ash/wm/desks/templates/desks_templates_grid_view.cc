@@ -16,8 +16,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -246,8 +246,8 @@ void DesksTemplatesGridView::SortTemplateGridItems(
   // grid, and sort the rest of the templates after it.
   std::sort(
       grid_items_.begin(), grid_items_.end(),
-      [&collator, last_saved_template_uuid](const DesksTemplatesItemView* a,
-                                            const DesksTemplatesItemView* b) {
+      [&collator, last_saved_template_uuid](const SavedDeskItemView* a,
+                                            const SavedDeskItemView* b) {
         if (last_saved_template_uuid.is_valid() &&
             a->uuid() == last_saved_template_uuid) {
           return true;
@@ -279,19 +279,19 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
     const std::vector<const DeskTemplate*>& entries,
     bool initializing_grid_view,
     const base::GUID& last_saved_template_uuid) {
-  std::vector<DesksTemplatesItemView*> new_grid_items;
+  std::vector<SavedDeskItemView*> new_grid_items;
 
   for (const DeskTemplate* entry : entries) {
     auto iter = std::find_if(grid_items_.begin(), grid_items_.end(),
-                             [entry](DesksTemplatesItemView* grid_item) {
+                             [entry](SavedDeskItemView* grid_item) {
                                return entry->uuid() == grid_item->uuid();
                              });
 
     if (iter != grid_items_.end()) {
       (*iter)->UpdateTemplate(*entry);
     } else if (grid_items_.size() < kMaxTemplateCount) {
-      DesksTemplatesItemView* grid_item =
-          AddChildView(std::make_unique<DesksTemplatesItemView>(entry));
+      SavedDeskItemView* grid_item =
+          AddChildView(std::make_unique<SavedDeskItemView>(entry));
       grid_items_.push_back(grid_item);
       if (!initializing_grid_view)
         new_grid_items.push_back(grid_item);
@@ -319,14 +319,14 @@ void DesksTemplatesGridView::DeleteTemplates(
   for (const std::string& uuid : uuids) {
     auto iter =
         std::find_if(grid_items_.begin(), grid_items_.end(),
-                     [uuid](DesksTemplatesItemView* grid_item) {
+                     [uuid](SavedDeskItemView* grid_item) {
                        return uuid == grid_item->uuid().AsLowercaseString();
                      });
 
     if (iter == grid_items_.end())
       continue;
 
-    DesksTemplatesItemView* grid_item = *iter;
+    SavedDeskItemView* grid_item = *iter;
     highlight_controller->OnViewDestroyingOrDisabling(grid_item);
     highlight_controller->OnViewDestroyingOrDisabling(grid_item->name_view());
 
@@ -360,7 +360,7 @@ bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
     return false;
 
   for (auto* grid_item : grid_items_) {
-    if (grid_item->IsTemplateNameBeingModified())
+    if (grid_item->IsNameBeingModified())
       return true;
   }
   return false;
@@ -422,13 +422,13 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
   widget_window_ = nullptr;
 }
 
-DesksTemplatesItemView* DesksTemplatesGridView::GetItemForUUID(
+SavedDeskItemView* DesksTemplatesGridView::GetItemForUUID(
     const base::GUID& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 
   auto it = std::find_if(grid_items_.begin(), grid_items_.end(),
-                         [&uuid](DesksTemplatesItemView* item_view) {
+                         [&uuid](SavedDeskItemView* item_view) {
                            return uuid == item_view->desk_template()->uuid();
                          });
   return it == grid_items_.end() ? nullptr : *it;
@@ -461,7 +461,7 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
       const gfx::Point screen_location =
           event->target() ? event->target()->GetScreenLocation(*event)
                           : event->root_location();
-      for (DesksTemplatesItemView* grid_item : grid_items_)
+      for (SavedDeskItemView* grid_item : grid_items_)
         grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
       break;
     }
@@ -530,10 +530,10 @@ gfx::Rect DesksTemplatesGridView::CalculateFeedbackButtonPosition() const {
 }
 
 void DesksTemplatesGridView::AnimateGridItems(
-    const std::vector<DesksTemplatesItemView*>& new_grid_items) {
+    const std::vector<SavedDeskItemView*>& new_grid_items) {
   const std::vector<gfx::Rect> positions = CalculateGridItemPositions();
   for (size_t i = 0; i < grid_items_.size(); i++) {
-    DesksTemplatesItemView* grid_item = grid_items_[i];
+    SavedDeskItemView* grid_item = grid_items_[i];
     const gfx::Rect target_bounds = positions[i];
     if (bounds_animator_.GetTargetBounds(grid_item) == target_bounds)
       continue;
@@ -572,7 +572,7 @@ void DesksTemplatesGridView::AnimateGridItems(
 
 void DesksTemplatesGridView::OnFeedbackButtonPressed() {
   std::string extra_diagnostics;
-  for (DesksTemplatesItemView* grid_item : grid_items_)
+  for (SavedDeskItemView* grid_item : grid_items_)
     extra_diagnostics += (grid_item->desk_template()->ToString() + "\n");
 
   // Note that this will activate the dialog which will exit overview and delete

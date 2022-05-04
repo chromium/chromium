@@ -9,8 +9,8 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -94,16 +94,16 @@ void DesksTemplatesGridViewTestApi::WaitForItemMoveAnimationDone() {
   BoundsAnimatorWaiter(grid_view_->bounds_animator_).Wait();
 }
 
-DesksTemplatesItemViewTestApi::DesksTemplatesItemViewTestApi(
-    const DesksTemplatesItemView* item_view)
+SavedDeskItemViewTestApi::SavedDeskItemViewTestApi(
+    const SavedDeskItemView* item_view)
     : item_view_(item_view) {
   DCHECK(item_view_);
 }
 
-DesksTemplatesItemViewTestApi::~DesksTemplatesItemViewTestApi() = default;
+SavedDeskItemViewTestApi::~SavedDeskItemViewTestApi() = default;
 
-std::vector<DesksTemplatesIconView*>
-DesksTemplatesItemViewTestApi::GetIconViews() const {
+std::vector<DesksTemplatesIconView*> SavedDeskItemViewTestApi::GetIconViews()
+    const {
   std::vector<DesksTemplatesIconView*> casted_icon_views;
   for (auto* icon_view : item_view_->icon_container_view_->children()) {
     casted_icon_views.push_back(
@@ -120,7 +120,7 @@ DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
 
 DesksTemplatesIconViewTestApi::~DesksTemplatesIconViewTestApi() = default;
 
-DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
+SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -132,9 +132,9 @@ DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
   DCHECK(templates_grid_view);
 
-  std::vector<DesksTemplatesItemView*> grid_items =
+  std::vector<SavedDeskItemView*> grid_items =
       templates_grid_view->grid_items();
-  DesksTemplatesItemView* item_view = grid_items.at(grid_item_index);
+  SavedDeskItemView* item_view = grid_items.at(grid_item_index);
   DCHECK(item_view);
   return item_view;
 }
@@ -178,7 +178,7 @@ views::Button* GetTemplateItemButton(int index) {
 views::Button* GetTemplateItemDeleteButton(int index) {
   auto* item = GetItemViewFromTemplatesGrid(index);
   return item ? static_cast<views::Button*>(const_cast<CloseButton*>(
-                    DesksTemplatesItemViewTestApi(item).delete_button()))
+                    SavedDeskItemViewTestApi(item).delete_button()))
               : nullptr;
 }
 

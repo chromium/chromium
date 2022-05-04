@@ -11,8 +11,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/bind.h"
@@ -274,7 +274,7 @@ void DesksTemplatesDialogController::OnWidgetDestroying(views::Widget* widget) {
     if (templates_grid_widget) {
       auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
           templates_grid_widget->GetContentsView());
-      for (DesksTemplatesItemView* template_item :
+      for (SavedDeskItemView* template_item :
            templates_grid_view->grid_items()) {
         // Update the button visibility when a dialog is closed.
         template_item->UpdateHoverButtonsVisibility(

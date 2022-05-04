@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ITEM_VIEW_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
@@ -61,17 +61,17 @@ class ViewShadow;
 //
 // The whole view is also a button which does the same thing as `launch_button_`
 // when clicked.
-class ASH_EXPORT DesksTemplatesItemView : public views::Button,
-                                          public OverviewHighlightableView,
-                                          public views::ViewTargeterDelegate,
-                                          public views::TextfieldController {
+class ASH_EXPORT SavedDeskItemView : public views::Button,
+                                     public OverviewHighlightableView,
+                                     public views::ViewTargeterDelegate,
+                                     public views::TextfieldController {
  public:
-  METADATA_HEADER(DesksTemplatesItemView);
+  METADATA_HEADER(SavedDeskItemView);
 
-  explicit DesksTemplatesItemView(const DeskTemplate* desk_template);
-  DesksTemplatesItemView(const DesksTemplatesItemView&) = delete;
-  DesksTemplatesItemView& operator=(const DesksTemplatesItemView&) = delete;
-  ~DesksTemplatesItemView() override;
+  explicit SavedDeskItemView(const DeskTemplate* desk_template);
+  SavedDeskItemView(const SavedDeskItemView&) = delete;
+  SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;
+  ~SavedDeskItemView() override;
 
   DeskTemplate* desk_template() const { return desk_template_.get(); }
   SavedDeskNameView* name_view() const { return name_view_; }
@@ -82,18 +82,18 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void UpdateHoverButtonsVisibility(const gfx::Point& screen_location,
                                     bool is_touch);
 
-  // Returns true if the template's name is being modified (i.e. the
+  // Returns true if the saved desk's name is being modified (i.e. the
   // `SavedDeskNameView` has the focus).
-  bool IsTemplateNameBeingModified() const;
+  bool IsNameBeingModified() const;
 
-  // To prevent duplications when creating template from the same desk, check if
-  // there's a existing template shares the same name as current active desk, if
+  // To prevent duplications when saving a desk multiple times, check if there's
+  // an existing saved desk that shares the same name as current active desk, if
   // so, remove auto added number.
   void MaybeRemoveNameNumber();
   // Show replace dialog when found a name duplication.
-  void MaybeShowReplaceDialog(DesksTemplatesItemView* template_to_replace);
-  // Rename current template with new name, delete old template with same name
-  // by uuid. Used for callback functions for Replace Dialog.
+  void MaybeShowReplaceDialog(SavedDeskItemView* saved_desk_to_replace);
+  // Rename current saved desk with new name, delete old saved desk with same
+  // name by uuid. Used for callback functions for Replace Dialog.
   void ReplaceTemplate(const std::string& uuid);
   void RevertTemplateName();
 
@@ -123,11 +123,11 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
  private:
-  friend class DesksTemplatesItemViewTestApi;
+  friend class SavedDeskItemViewTestApi;
 
-  // Return the duplicated template item if there is a name duplication in saved
-  // templates.
-  DesksTemplatesItemView* FindOtherTemplateWithName(
+  // Return the duplicated saved desk item if there is a name duplication in
+  // saved desks.
+  SavedDeskItemView* FindOtherTemplateWithName(
       const std::u16string& name) const;
 
   void OnDeleteTemplate();
@@ -155,7 +155,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 
-  // A copy of the associated desk template.
+  // A copy of the associated saved desk.
   std::unique_ptr<DeskTemplate> desk_template_;
 
   // Owned by the views hierarchy.
@@ -191,14 +191,14 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   base::ScopedObservation<views::View, views::ViewObserver>
       name_view_observation_{this};
 
-  base::WeakPtrFactory<DesksTemplatesItemView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SavedDeskItemView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesItemView, views::Button)
+BEGIN_VIEW_BUILDER(/* no export */, SavedDeskItemView, views::Button)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/* no export */, ash::DesksTemplatesItemView)
+DEFINE_VIEW_BUILDER(/* no export */, ash::SavedDeskItemView)
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ITEM_VIEW_H_

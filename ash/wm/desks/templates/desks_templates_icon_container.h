@@ -77,8 +77,6 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
   void Layout() override;
 
  private:
-  friend class DesksTemplatesItemViewTestApi;
-
   // Given a sorted vector of pairs of icon identifier and icon info, create
   // views for them.
   void CreateIconViewsFromIconIdentifiers(

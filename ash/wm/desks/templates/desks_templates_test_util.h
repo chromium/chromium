@@ -11,7 +11,7 @@
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -61,16 +61,14 @@ class DesksTemplatesGridViewTestApi {
   DesksTemplatesGridView* grid_view_;
 };
 
-// Wrapper for `DesksTemplatesItemView` that exposes internal state to test
+// Wrapper for `SavedDeskItemView` that exposes internal state to test
 // functions.
-class DesksTemplatesItemViewTestApi {
+class SavedDeskItemViewTestApi {
  public:
-  explicit DesksTemplatesItemViewTestApi(
-      const DesksTemplatesItemView* item_view);
-  DesksTemplatesItemViewTestApi(const DesksTemplatesItemViewTestApi&) = delete;
-  DesksTemplatesItemViewTestApi& operator=(
-      const DesksTemplatesItemViewTestApi&) = delete;
-  ~DesksTemplatesItemViewTestApi();
+  explicit SavedDeskItemViewTestApi(const SavedDeskItemView* item_view);
+  SavedDeskItemViewTestApi(const SavedDeskItemViewTestApi&) = delete;
+  SavedDeskItemViewTestApi& operator=(const SavedDeskItemViewTestApi&) = delete;
+  ~SavedDeskItemViewTestApi();
 
   const views::Label* time_view() const { return item_view_->time_view_; }
 
@@ -91,7 +89,7 @@ class DesksTemplatesItemViewTestApi {
   std::vector<DesksTemplatesIconView*> GetIconViews() const;
 
  private:
-  const DesksTemplatesItemView* item_view_;
+  const SavedDeskItemView* item_view_;
 };
 
 // Wrapper for `DesksTemplatesIconView` that exposes internal state to test
@@ -121,9 +119,9 @@ class DesksTemplatesIconViewTestApi {
   const DesksTemplatesIconView* desks_templates_icon_view_;
 };
 
-// Return the `grid_item_index`th `DesksTemplatesItemView` from the first
+// Return the `grid_item_index`th `SavedDeskItemView` from the first
 // `OverviewGrid`'s `DesksTemplatesGridView` in `GetOverviewGridList()`.
-DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index);
+SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index);
 
 // These buttons are the ones on the primary root window.
 views::Button* GetZeroStateDesksTemplatesButton();

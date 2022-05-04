@@ -25,7 +25,7 @@ namespace ash {
 class RoundedImageView;
 
 // A class for loading and displaying the icon of apps/urls used in a
-// DesksTemplatesItemView. Depending on the `count_` and `icon_identifier_`,
+// SavedDeskItemView. Depending on the `count_` and `icon_identifier_`,
 // this View may have only an icon, only a count label, or both.
 class DesksTemplatesIconView : public views::View {
  public:

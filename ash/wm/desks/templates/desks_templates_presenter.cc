@@ -17,8 +17,8 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -222,8 +222,7 @@ void DesksTemplatesPresenter::OnGetAllEntries(
       grid_view->PopulateGridUI(entries,
                                 overview_grid->GetGridEffectiveBounds(),
                                 /*last_saved_template_uuid=*/item_to_focus);
-      DesksTemplatesItemView* item_view =
-          grid_view->GetItemForUUID(item_to_focus);
+      SavedDeskItemView* item_view = grid_view->GetItemForUUID(item_to_focus);
       if (!item_view)
         continue;
 
@@ -346,7 +345,7 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
                                                  root_window);
       auto* grid_view =
           static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-      DesksTemplatesItemView* item_view =
+      SavedDeskItemView* item_view =
           grid_view->GetItemForUUID(desk_template->uuid());
       if (item_view) {
         item_view->MaybeRemoveNameNumber();

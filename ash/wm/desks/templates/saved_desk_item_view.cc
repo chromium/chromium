@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/saved_desk_item_view.h"
 
 #include <string>
 
@@ -55,14 +55,14 @@
 namespace ash {
 namespace {
 
-// The padding values of the DesksTemplatesItemView.
+// The padding values of the SavedDeskItemView.
 constexpr int kHorizontalPaddingDp = 24;
 constexpr int kVerticalPaddingDp = 16;
 
-// The preferred size of the whole DesksTemplatesItemView.
+// The preferred size of the whole SavedDeskItemView.
 constexpr gfx::Size kPreferredSize(220, 120);
 
-// The corner radius for the DesksTemplatesItemView.
+// The corner radius for the SavedDeskItemView.
 constexpr int kCornerRadius = 16;
 
 // The margin for the delete button.
@@ -115,12 +115,10 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 }  // namespace
 
-DesksTemplatesItemView::DesksTemplatesItemView(
-    const DeskTemplate* desk_template)
+SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
     : desk_template_(desk_template->Clone()) {
-  auto launch_template_callback =
-      base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
-                          weak_ptr_factory_.GetWeakPtr());
+  auto launch_template_callback = base::BindRepeating(
+      &SavedDeskItemView::OnGridItemPressed, weak_ptr_factory_.GetWeakPtr());
 
   const std::u16string template_name = desk_template_->template_name();
   DCHECK(!template_name.empty());
@@ -128,7 +126,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   const bool is_admin_managed =
       desk_template_->source() == DeskTemplateSource::kPolicy;
 
-  views::Builder<DesksTemplatesItemView>(this)
+  views::Builder<SavedDeskItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(template_name)
@@ -208,7 +206,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   layer()->SetFillsBoundsOpaquely(false);
 
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
+      base::BindRepeating(&SavedDeskItemView::OnGridItemPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON),
       PillButton::Type::kIconless, /*icon=*/nullptr));
@@ -217,7 +215,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   if (!is_admin_managed) {
     delete_button_ =
         hover_container_->AddChildView(std::make_unique<CloseButton>(
-            base::BindRepeating(&DesksTemplatesItemView::OnDeleteButtonPressed,
+            base::BindRepeating(&SavedDeskItemView::OnDeleteButtonPressed,
                                 weak_ptr_factory_.GetWeakPtr()),
             CloseButton::Type::kMedium));
     delete_button_->SetVectorIcon(kDeleteIcon);
@@ -252,17 +250,17 @@ DesksTemplatesItemView::DesksTemplatesItemView(
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return static_cast<DesksTemplatesItemView*>(view)->IsViewHighlighted();
+    return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
   });
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
-DesksTemplatesItemView::~DesksTemplatesItemView() {
+SavedDeskItemView::~SavedDeskItemView() {
   name_view_observation_.Reset();
 }
 
-void DesksTemplatesItemView::UpdateHoverButtonsVisibility(
+void SavedDeskItemView::UpdateHoverButtonsVisibility(
     const gfx::Point& screen_location,
     bool is_touch) {
   gfx::Point location_in_view = screen_location;
@@ -279,11 +277,11 @@ void DesksTemplatesItemView::UpdateHoverButtonsVisibility(
   icon_container_view_->SetVisible(!visible);
 }
 
-bool DesksTemplatesItemView::IsTemplateNameBeingModified() const {
+bool SavedDeskItemView::IsNameBeingModified() const {
   return name_view_->HasFocus();
 }
 
-void DesksTemplatesItemView::MaybeRemoveNameNumber() {
+void SavedDeskItemView::MaybeRemoveNameNumber() {
   // When there are existing matched Desk name and Template name (ie.
   // "Desk 1"), creating a new template from "Desk 1" will get auto generated
   // template name from backend as "Desk 1 (1)", to prevent template
@@ -298,7 +296,7 @@ void DesksTemplatesItemView::MaybeRemoveNameNumber() {
   }
 }
 
-void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid) {
+void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
   // get template name collisions.
   DesksTemplatesPresenter::Get()->DeleteEntry(uuid);
@@ -306,7 +304,7 @@ void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid) {
   RecordReplaceTemplateHistogram();
 }
 
-void DesksTemplatesItemView::RevertTemplateName() {
+void SavedDeskItemView::RevertTemplateName() {
   views::FocusManager* focus_manager = GetFocusManager();
   focus_manager->SetFocusedView(name_view_);
   const auto temporary_name = name_view_->temporary_name();
@@ -317,8 +315,7 @@ void DesksTemplatesItemView::RevertTemplateName() {
   name_view_->OnContentsChanged();
 }
 
-void DesksTemplatesItemView::UpdateTemplate(
-    const DeskTemplate& updated_template) {
+void SavedDeskItemView::UpdateTemplate(const DeskTemplate& updated_template) {
   desk_template_ = updated_template.Clone();
 
   hover_container_->SetVisible(false);
@@ -335,7 +332,7 @@ void DesksTemplatesItemView::UpdateTemplate(
   name_view_->OnContentsChanged();
 }
 
-void DesksTemplatesItemView::Layout() {
+void SavedDeskItemView::Layout() {
   const int previous_name_view_width = name_view_->width();
 
   views::View::Layout();
@@ -363,7 +360,7 @@ void DesksTemplatesItemView::Layout() {
                 launch_button_preferred_size));
 }
 
-void DesksTemplatesItemView::OnThemeChanged() {
+void SavedDeskItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   GetBackground()->SetNativeControlColor(color_provider->GetBaseLayerColor(
@@ -377,7 +374,7 @@ void DesksTemplatesItemView::OnThemeChanged() {
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
-void DesksTemplatesItemView::OnViewFocused(views::View* observed_view) {
+void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   // `this` is a button which observes itself. Here we only care about focus on
   // `name_view_`.
   if (observed_view == this)
@@ -407,7 +404,7 @@ void DesksTemplatesItemView::OnViewFocused(views::View* observed_view) {
     name_view_->SelectAll(false);
 }
 
-void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
+void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
   // `this` is a button which observes itself. Here we only care about blur on
   // `name_view_`.
   if (observed_view == this)
@@ -470,7 +467,7 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   if (template_to_replace) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&DesksTemplatesItemView::MaybeShowReplaceDialog,
+        base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
                        weak_ptr_factory_.GetWeakPtr(), template_to_replace));
     return;
   }
@@ -478,22 +475,21 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   UpdateTemplateName();
 }
 
-void DesksTemplatesItemView::MaybeShowReplaceDialog(
-    DesksTemplatesItemView* template_to_replace) {
+void SavedDeskItemView::MaybeShowReplaceDialog(
+    SavedDeskItemView* template_to_replace) {
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DesksTemplatesDialogController::Get()->ShowReplaceDialog(
       root_window, name_view_->GetText(),
       base::BindOnce(
-          &DesksTemplatesItemView::ReplaceTemplate,
-          weak_ptr_factory_.GetWeakPtr(),
+          &SavedDeskItemView::ReplaceTemplate, weak_ptr_factory_.GetWeakPtr(),
           template_to_replace->desk_template_->uuid().AsLowercaseString()),
-      base::BindOnce(&DesksTemplatesItemView::RevertTemplateName,
+      base::BindOnce(&SavedDeskItemView::RevertTemplateName,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
+views::Button::KeyClickAction SavedDeskItemView::GetKeyClickActionForEvent(
     const ui::KeyEvent& event) {
   // Prevents any key events from activating a button click while the template
   // name is being modified.
@@ -503,7 +499,7 @@ views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
   return Button::GetKeyClickActionForEvent(event);
 }
 
-void DesksTemplatesItemView::UpdateTemplateName() {
+void SavedDeskItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
@@ -512,9 +508,8 @@ void DesksTemplatesItemView::UpdateTemplateName() {
       desk_template_->Clone());
 }
 
-void DesksTemplatesItemView::ContentsChanged(
-    views::Textfield* sender,
-    const std::u16string& new_contents) {
+void SavedDeskItemView::ContentsChanged(views::Textfield* sender,
+                                        const std::u16string& new_contents) {
   DCHECK_EQ(sender, name_view_);
 
   // To avoid potential security and memory issues, we don't allow template
@@ -537,8 +532,8 @@ void DesksTemplatesItemView::ContentsChanged(
   }
 }
 
-bool DesksTemplatesItemView::HandleKeyEvent(views::Textfield* sender,
-                                            const ui::KeyEvent& key_event) {
+bool SavedDeskItemView::HandleKeyEvent(views::Textfield* sender,
+                                       const ui::KeyEvent& key_event) {
   DCHECK_EQ(sender, name_view_);
   DCHECK(is_template_name_being_modified_);
 
@@ -564,9 +559,8 @@ bool DesksTemplatesItemView::HandleKeyEvent(views::Textfield* sender,
   return true;
 }
 
-bool DesksTemplatesItemView::HandleMouseEvent(
-    views::Textfield* sender,
-    const ui::MouseEvent& mouse_event) {
+bool SavedDeskItemView::HandleMouseEvent(views::Textfield* sender,
+                                         const ui::MouseEvent& mouse_event) {
   DCHECK_EQ(sender, name_view_);
 
   switch (mouse_event.type()) {
@@ -599,8 +593,8 @@ bool DesksTemplatesItemView::HandleMouseEvent(
   return false;
 }
 
-views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
-                                                   const gfx::Rect& rect) {
+views::View* SavedDeskItemView::TargetForRect(views::View* root,
+                                              const gfx::Rect& rect) {
   gfx::RectF name_view_bounds(name_view_->GetMirroredBounds());
   views::View::ConvertRectToTarget(name_view_->parent(), this,
                                    &name_view_bounds);
@@ -618,14 +612,14 @@ views::View* DesksTemplatesItemView::TargetForRect(views::View* root,
   return views::ViewTargeterDelegate::TargetForRect(root, rect);
 }
 
-DesksTemplatesItemView* DesksTemplatesItemView::FindOtherTemplateWithName(
+SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
     const std::u16string& name) const {
   const auto templates_grid_view_items =
       static_cast<const DesksTemplatesGridView*>(parent())->grid_items();
 
   auto iter = std::find_if(
       templates_grid_view_items.begin(), templates_grid_view_items.end(),
-      [this, name](const DesksTemplatesItemView* d) {
+      [this, name](const SavedDeskItemView* d) {
         // Name duplication is allowed if one of the templates is an admin
         // template.
         return (d != this && d->desk_template()->template_name() == name &&
@@ -634,26 +628,26 @@ DesksTemplatesItemView* DesksTemplatesItemView::FindOtherTemplateWithName(
   return iter == templates_grid_view_items.end() ? nullptr : *iter;
 }
 
-void DesksTemplatesItemView::OnDeleteTemplate() {
+void SavedDeskItemView::OnDeleteTemplate() {
   DesksTemplatesPresenter::Get()->DeleteEntry(
       desk_template_->uuid().AsLowercaseString());
 }
 
-void DesksTemplatesItemView::OnDeleteButtonPressed() {
+void SavedDeskItemView::OnDeleteButtonPressed() {
   // Show the dialog to confirm the deletion.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
   dialog_controller->ShowDeleteDialog(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       name_view_->GetAccessibleName(),
-      base::BindOnce(&DesksTemplatesItemView::OnDeleteTemplate,
+      base::BindOnce(&SavedDeskItemView::OnDeleteTemplate,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DesksTemplatesItemView::OnGridItemPressed(const ui::Event& event) {
+void SavedDeskItemView::OnGridItemPressed(const ui::Event& event) {
   MaybeLaunchTemplate(event.IsShiftDown());
 }
 
-void DesksTemplatesItemView::MaybeLaunchTemplate(bool should_delay) {
+void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
   if (is_template_name_being_modified_) {
     SavedDeskNameView::CommitChanges(GetWidget());
     return;
@@ -673,8 +667,7 @@ void DesksTemplatesItemView::MaybeLaunchTemplate(bool should_delay) {
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 
-void DesksTemplatesItemView::OnTemplateNameChanged(
-    const std::u16string& new_name) {
+void SavedDeskItemView::OnTemplateNameChanged(const std::u16string& new_name) {
   if (is_template_name_being_modified_)
     return;
 
@@ -689,29 +682,29 @@ void DesksTemplatesItemView::OnTemplateNameChanged(
   name_view_->OnContentsChanged();
 }
 
-views::View* DesksTemplatesItemView::GetView() {
+views::View* SavedDeskItemView::GetView() {
   return this;
 }
 
-void DesksTemplatesItemView::MaybeActivateHighlightedView() {
+void SavedDeskItemView::MaybeActivateHighlightedView() {
   MaybeLaunchTemplate(/*should_delay=*/false);
 }
 
-void DesksTemplatesItemView::MaybeCloseHighlightedView() {
+void SavedDeskItemView::MaybeCloseHighlightedView() {
   OnDeleteButtonPressed();
 }
 
-void DesksTemplatesItemView::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}
 
-void DesksTemplatesItemView::OnViewHighlighted() {
+void SavedDeskItemView::OnViewHighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void DesksTemplatesItemView::OnViewUnhighlighted() {
+void SavedDeskItemView::OnViewUnhighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(DesksTemplatesItemView, views::Button)
+BEGIN_METADATA(SavedDeskItemView, views::Button)
 END_METADATA
 
 }  // namespace ash
