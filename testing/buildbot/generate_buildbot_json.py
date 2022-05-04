@@ -1601,7 +1601,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'win7-blink-rel-dummy',
         'win10.20h2-blink-rel-dummy',
         'win11-blink-rel-dummy',
-        'WebKit Linux layout_ng_disabled Builder',
     ]
 
   def get_internal_waterfalls(self):

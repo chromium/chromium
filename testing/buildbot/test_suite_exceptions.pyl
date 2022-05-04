@@ -369,14 +369,6 @@
           'shards': 20,
         },
       },
-      'WebKit Linux layout_ng_disabled Builder': {
-        'args': [
-          '--flag-specific=disable-layout-ng',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'Win10 Tests x64': {
         'args': [
           '--target',

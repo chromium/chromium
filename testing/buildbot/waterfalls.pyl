@@ -2930,21 +2930,6 @@
           'gtest_tests': 'vr_platform_specific_chromium_gtests',
         },
       },
-      'WebKit Linux layout_ng_disabled Builder': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'additional_compile_targets': [
-          'blink_tests',
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'gtest_tests': 'layout_ng_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'Win 10 Fast Ring': {
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
