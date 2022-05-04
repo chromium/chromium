@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
 
@@ -119,7 +120,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
     CUSTOM_HDR,
     // An HDR transfer function that is piecewise sRGB, and piecewise linear.
     PIECEWISE_HDR,
-    kMaxValue = PIECEWISE_HDR,
+    // An HDR transfer function that is linear, with the value 1 at 80 nits.
+    // This transfer function is not SDR-referred, and therefore can only be
+    // used (e.g, by ToSkColorSpace or GetTransferFunction) when an SDR white
+    // level is specified.
+    SCRGB_LINEAR_80_NITS,
+    kMaxValue = SCRGB_LINEAR_80_NITS,
   };
 
   enum class MatrixID : uint8_t {
@@ -206,6 +212,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
   }
   // Allows specifying a custom SDR white level.  Only used on Windows.
   static ColorSpace CreateSCRGBLinear(float sdr_white_level);
+  // scRGB uses the same primaries as sRGB but has a linear transfer function
+  // for all real values, and an SDR white level of 80 nits.
+  static constexpr ColorSpace CreateSCRGBLinear80Nits() {
+    return ColorSpace(PrimaryID::BT709, TransferID::SCRGB_LINEAR_80_NITS,
+                      MatrixID::RGB, RangeID::FULL);
+  }
 
   // HDR10 uses BT.2020 primaries with SMPTE ST 2084 PQ transfer function.
   static constexpr ColorSpace CreateHDR10() {
@@ -313,8 +325,10 @@ class COLOR_SPACE_EXPORT ColorSpace {
   ColorSpace GetWithSDRWhiteLevel(float sdr_white_level) const;
 
   // This will return nullptr for non-RGB spaces, spaces with non-FULL
-  // range, and unspecified spaces.
-  sk_sp<SkColorSpace> ToSkColorSpace() const;
+  // range, unspecified spaces, and spaces that require but are not provided
+  // and SDR white level.
+  sk_sp<SkColorSpace> ToSkColorSpace(
+      absl::optional<float> sdr_white_level = absl::nullopt) const;
 
   // Return a GLcolorSpace value that is valid for the lifetime of |this|. This
   // function is used to serialize ColorSpace objects across the GPU command
@@ -332,8 +346,16 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   void GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const;
   SkM44 GetPrimaryMatrix() const;
-  bool GetTransferFunction(skcms_TransferFunction* fn) const;
-  bool GetInverseTransferFunction(skcms_TransferFunction* fn) const;
+
+  // Retrieve the parametric transfer function for this color space. Returns
+  // false if none is available, or if `sdr_white_level` is required but
+  // not specified.
+  bool GetTransferFunction(
+      skcms_TransferFunction* fn,
+      absl::optional<float> sdr_white_level = absl::nullopt) const;
+  bool GetInverseTransferFunction(
+      skcms_TransferFunction* fn,
+      absl::optional<float> sdr_white_level = absl::nullopt) const;
 
   // Returns the SDR white level specified for the PQ or HLG transfer functions.
   // If no value was specified, then use kDefaultSDRWhiteLevel. If the transfer

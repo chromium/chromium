@@ -373,7 +373,8 @@ bool ColorSpace::IsHDR() const {
          transfer_ == TransferID::LINEAR_HDR ||
          transfer_ == TransferID::SRGB_HDR ||
          transfer_ == TransferID::CUSTOM_HDR ||
-         transfer_ == TransferID::PIECEWISE_HDR;
+         transfer_ == TransferID::PIECEWISE_HDR ||
+         transfer_ == TransferID::SCRGB_LINEAR_80_NITS;
 }
 
 bool ColorSpace::IsPQOrHLG() const {
@@ -385,6 +386,7 @@ bool ColorSpace::FullRangeEncodedValues() const {
          transfer_ == TransferID::SRGB_HDR ||
          transfer_ == TransferID::CUSTOM_HDR ||
          transfer_ == TransferID::PIECEWISE_HDR ||
+         transfer_ == TransferID::SCRGB_LINEAR_80_NITS ||
          transfer_ == TransferID::BT1361_ECG ||
          transfer_ == TransferID::IEC61966_2_4;
 }
@@ -562,6 +564,9 @@ std::string ColorSpace::ToString() const {
          << transfer_params_[1] << " at 1";
       break;
     }
+    case TransferID::SCRGB_LINEAR_80_NITS:
+      ss << "scRGB linear (80 nit white)";
+      break;
   }
   ss << ", matrix:";
   switch (matrix_) {
@@ -636,6 +641,7 @@ bool ColorSpace::IsSuitableForBlending() const {
       return false;
     case TransferID::HLG:
     case TransferID::LINEAR_HDR:
+    case TransferID::SCRGB_LINEAR_80_NITS:
       // If the color space is nearly-linear, then it is not suitable for
       // blending -- blending 0 and 1 evenly will get a result of sRGB 0.735
       // (instead of 0.5).
@@ -671,6 +677,11 @@ ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
   ColorSpace result = *this;
   if (transfer_ == TransferID::PQ || transfer_ == TransferID::HLG) {
     result.transfer_params_[0] = sdr_white_level;
+  } else if (transfer_ == TransferID::SCRGB_LINEAR_80_NITS) {
+    skcms_TransferFunction fn = {0};
+    GetTransferFunction(&fn, sdr_white_level);
+    result.transfer_ = TransferID::CUSTOM_HDR;
+    result.SetCustomTransferFunction(fn, false);
   } else if (transfer_ == TransferID::LINEAR_HDR) {
     result.transfer_ = TransferID::CUSTOM_HDR;
     skcms_TransferFunction fn = {0};
@@ -681,7 +692,8 @@ ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
   return result;
 }
 
-sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
+sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
+    absl::optional<float> sdr_white_level) const {
   // Handle only valid, full-range RGB spaces.
   if (!IsValid() || matrix_ != MatrixID::RGB || range_ != RangeID::FULL)
     return nullptr;
@@ -703,13 +715,15 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
       transfer_fn = SkNamedTransferFn::kLinear;
       break;
     case TransferID::HLG:
-      transfer_fn = GetHLGSkTransferFunction(transfer_params_[0]);
+      transfer_fn = GetHLGSkTransferFunction(
+          sdr_white_level.value_or(transfer_params_[0]));
       break;
     case TransferID::PQ:
-      transfer_fn = GetPQSkTransferFunction(transfer_params_[0]);
+      transfer_fn = GetPQSkTransferFunction(
+          sdr_white_level.value_or(transfer_params_[0]));
       break;
     default:
-      if (!GetTransferFunction(&transfer_fn)) {
+      if (!GetTransferFunction(&transfer_fn, sdr_white_level)) {
         DLOG(ERROR) << "Failed to get transfer function for SkColorSpace";
         return nullptr;
       }
@@ -1049,6 +1063,7 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
     case ColorSpace::TransferID::CUSTOM:
     case ColorSpace::TransferID::CUSTOM_HDR:
     case ColorSpace::TransferID::PIECEWISE_HDR:
+    case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
     case ColorSpace::TransferID::INVALID:
       break;
   }
@@ -1056,23 +1071,44 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
   return false;
 }
 
-bool ColorSpace::GetTransferFunction(skcms_TransferFunction* fn) const {
-  if (transfer_ == TransferID::CUSTOM || transfer_ == TransferID::CUSTOM_HDR) {
-    fn->a = transfer_params_[0];
-    fn->b = transfer_params_[1];
-    fn->c = transfer_params_[2];
-    fn->d = transfer_params_[3];
-    fn->e = transfer_params_[4];
-    fn->f = transfer_params_[5];
-    fn->g = transfer_params_[6];
-    return true;
-  } else {
-    return GetTransferFunction(transfer_, fn);
+bool ColorSpace::GetTransferFunction(
+    skcms_TransferFunction* fn,
+    absl::optional<float> sdr_white_level) const {
+  switch (transfer_) {
+    case TransferID::CUSTOM:
+    case TransferID::CUSTOM_HDR:
+      fn->a = transfer_params_[0];
+      fn->b = transfer_params_[1];
+      fn->c = transfer_params_[2];
+      fn->d = transfer_params_[3];
+      fn->e = transfer_params_[4];
+      fn->f = transfer_params_[5];
+      fn->g = transfer_params_[6];
+      return true;
+    case TransferID::SCRGB_LINEAR_80_NITS:
+      if (sdr_white_level) {
+        fn->a = 80.f / *sdr_white_level;
+        fn->b = 0;
+        fn->c = 0;
+        fn->d = 0;
+        fn->e = 0;
+        fn->f = 0;
+        fn->g = 1;
+        return true;
+      } else {
+        // Using SCRGB_LINEAR_80_NITS without specifying an SDR white level is
+        // guaranteed to produce incorrect results.
+        return false;
+      }
+    default:
+      return GetTransferFunction(transfer_, fn);
   }
 }
 
-bool ColorSpace::GetInverseTransferFunction(skcms_TransferFunction* fn) const {
-  if (!GetTransferFunction(fn))
+bool ColorSpace::GetInverseTransferFunction(
+    skcms_TransferFunction* fn,
+    absl::optional<float> sdr_white_level) const {
+  if (!GetTransferFunction(fn, sdr_white_level))
     return false;
   *fn = SkTransferFnInverse(*fn);
   return true;

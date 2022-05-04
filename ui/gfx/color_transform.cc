@@ -1166,7 +1166,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     }
     default: {
       skcms_TransferFunction src_to_linear_fn;
-      if (src.GetTransferFunction(&src_to_linear_fn)) {
+      if (src.GetTransferFunction(&src_to_linear_fn,
+                                  options.sdr_max_luminance_nits)) {
         steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
             src_to_linear_fn, src.HasExtendedSkTransferFn()));
       } else {
@@ -1243,7 +1244,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     }
     default: {
       skcms_TransferFunction dst_from_linear_fn;
-      if (dst.GetInverseTransferFunction(&dst_from_linear_fn)) {
+      if (dst.GetInverseTransferFunction(&dst_from_linear_fn,
+                                         options.sdr_max_luminance_nits)) {
         steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
             dst_from_linear_fn, dst.HasExtendedSkTransferFn()));
       } else {

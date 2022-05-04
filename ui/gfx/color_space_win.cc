@@ -106,6 +106,7 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
       break;
     case gfx::ColorSpace::TransferID::LINEAR:
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
+    case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       format.VideoTransferFunction = DXVA2_VideoTransFunc_10;
       break;
     case gfx::ColorSpace::TransferID::SRGB:
@@ -167,7 +168,9 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
         if (color_space.GetTransferID() ==
                 gfx::ColorSpace::TransferID::LINEAR ||
             color_space.GetTransferID() ==
-                gfx::ColorSpace::TransferID::LINEAR_HDR) {
+                gfx::ColorSpace::TransferID::LINEAR_HDR ||
+            color_space.GetTransferID() ==
+                gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS) {
           return DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
         } else if (color_space.GetTransferID() ==
                    gfx::ColorSpace::TransferID::CUSTOM_HDR) {

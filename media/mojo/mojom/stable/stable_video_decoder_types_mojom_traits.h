@@ -173,6 +173,8 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return media::stable::mojom::ColorSpaceTransferID::kCustomHDR;
       case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
         return media::stable::mojom::ColorSpaceTransferID::kPiecewiseHDR;
+      case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
+        return media::stable::mojom::ColorSpaceTransferID::kScrgbLinear80Nits;
     }
 
     NOTREACHED();
@@ -258,6 +260,9 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kPiecewiseHDR:
         *output = gfx::ColorSpace::TransferID::PIECEWISE_HDR;
+        return true;
+      case media::stable::mojom::ColorSpaceTransferID::kScrgbLinear80Nits:
+        *output = gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS;
         return true;
     }
 

@@ -51,7 +51,8 @@ enum ColorSpaceTransferID {
   LINEAR_HDR,
   CUSTOM,
   CUSTOM_HDR,
-  PIECEWISE_HDR
+  PIECEWISE_HDR,
+  SCRGB_LINEAR_80_NITS
 };
 
 enum ColorSpaceMatrixID {

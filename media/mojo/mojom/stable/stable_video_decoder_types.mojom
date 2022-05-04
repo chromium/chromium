@@ -290,6 +290,7 @@ enum ColorSpaceTransferID {
   kCustom,
   kCustomHDR,
   kPiecewiseHDR,
+  [MinVersion=1] kScrgbLinear80Nits,
 };
 
 // Maps to |gfx.mojom.ColorSpaceMatrixID|.
