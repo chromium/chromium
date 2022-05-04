@@ -70,6 +70,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/overlays/infobar_banner:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/ui/sync/utils:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/ui/util:features",

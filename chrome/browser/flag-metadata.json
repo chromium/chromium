@@ -1324,6 +1324,12 @@
     "expiry_milestone": 110
   },
   {
+    "name": "display-sync-errors-refactor",
+    "owners": [ "pakzhygitov", "bling-flags@google.com" ],
+    // This is a temp flag and should be removed within this milestone.
+    "expiry_milestone": 104
+  },
+  {
     "name": "dm-token-deletion",
     "owners": [ "igorruvinov", "zmin" ],
     "expiry_milestone": 115

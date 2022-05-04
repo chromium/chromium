@@ -80,6 +80,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/sync/utils/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -893,6 +894,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"https-only-mode", flag_descriptions::kHttpsOnlyModeName,
      flag_descriptions::kHttpsOnlyModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsOnlyMode)},
+    {"display-sync-errors-refactor",
+     flag_descriptions::kDisplaySyncErrorsRefactorName,
+     flag_descriptions::kDisplaySyncErrorsRefactorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisplaySyncErrorsRefactor)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

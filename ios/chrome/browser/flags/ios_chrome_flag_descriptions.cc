@@ -166,6 +166,12 @@ const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
 
+const char kDisplaySyncErrorsRefactorName[] =
+    "Enable Display Sync Errors refactored code";
+const char kDisplaySyncErrorsRefactorDescription[] =
+    "When enabled, displaying sync errors logic is provided by a Browser Agent "
+    "not BVC.";
+
 const char kDownloadCalendarName[] = "Download Calendar";
 const char kDownloadCalendarDescription[] =
     "Allows user to download & save Calendar";
