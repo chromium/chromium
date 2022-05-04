@@ -155,7 +155,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)removeObserver:(id<AppStateObserver>)observer;
 
 // Adds a new agent. Agents are owned by the app state.
-// This automatically sets the app state on the |agent|.
+// This automatically sets the app state on the `agent`.
 - (void)addAgent:(id<AppStateAgent>)agent;
 // Removes an agent.
 - (void)removeAgent:(id<AppStateAgent>)agent;

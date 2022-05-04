@@ -18,8 +18,8 @@
 
 using MainApplicationDelegateTest = PlatformTest;
 
-// Tests that the application does not crash if |applicationWillTerminate:| is
-// called before a previous call to |application:didFinishLaunchingWithOptions:|
+// Tests that the application does not crash if `applicationWillTerminate:` is
+// called before a previous call to `application:didFinishLaunchingWithOptions:`
 // set up the ChromeBrowserProvider. This can happen if the app is force-quit
 // while the splash screen is still visible.
 TEST_F(MainApplicationDelegateTest, TerminateCalledWithNoBrowserProvider) {

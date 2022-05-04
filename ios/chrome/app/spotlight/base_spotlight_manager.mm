@@ -44,8 +44,8 @@ const CGFloat kFallbackIconSize = 180;
 // Radius of the rounded corner of the fallback icon.
 const CGFloat kFallbackRoundedCorner = 8;
 
-// Create an image with a rounded square with color |backgroundColor| and
-// |string| centered in color |textColor|.
+// Create an image with a rounded square with color `backgroundColor` and
+// `string` centered in color `textColor`.
 UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                             UIColor* backgroundColor,
                                             UIColor* textColor) {
@@ -97,7 +97,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 // Compute a hash consisting of the first 8 bytes of the MD5 hash of a string
-// containing |URL| and |title|.
+// containing `URL` and `title`.
 - (int64_t)hashForURL:(const GURL&)URL title:(NSString*)title;
 
 // Returns an array of Keywords for Spotlight search.

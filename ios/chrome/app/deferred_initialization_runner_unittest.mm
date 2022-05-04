@@ -162,7 +162,7 @@ TEST_F(DeferredInitializationRunnerTest, TestSecondBlockInvalidatesFirst) {
   [runner enqueueBlockNamed:@"multiple" block:runBlock];
   [runner enqueueBlockNamed:@"multiple" block:runBlock];
 
-  // Test: |runBlock| was executed only once.
+  // Test: `runBlock` was executed only once.
   EXPECT_EQ(1U, [runner numberOfBlocksRemaining]);
   [runner runBlockIfNecessary:@"multiple"];
   EXPECT_EQ(0U, [runner numberOfBlocksRemaining]);

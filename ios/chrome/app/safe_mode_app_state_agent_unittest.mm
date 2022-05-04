@@ -50,8 +50,8 @@ typedef BOOL (^DecisionBlock)(id self);
     didTransitionFromInitStage:(InitStage)previousInitStage;
 @end
 
-// Iterate through the init stages from |startInitStage| up to
-// |initStageDestination|.
+// Iterate through the init stages from `startInitStage` up to
+// `initStageDestination`.
 void IterateToStage(InitStage startInitStage,
                     InitStage initStageDestination,
                     SafeModeAppAgent* agent,

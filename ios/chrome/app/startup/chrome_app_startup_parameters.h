@@ -50,7 +50,7 @@ enum MobileSessionCallerApp {
     NS_DESIGNATED_INITIALIZER;
 
 // Returns a ChromeAppStartupParameters instance containing the URL to
-// open (|externalURL|). In case the URL is conforming to the x-callback-url
+// open (`externalURL`). In case the URL is conforming to the x-callback-url
 // specification, additional information are stored in the returned value.
 //
 // The forms of the URLs we expect are:
@@ -81,7 +81,7 @@ enum MobileSessionCallerApp {
 // - x-<protocol>://x-callback-url/<action>?url=<url/goes/here>
 //   This forms is compliant with x-callback-url (x-callback-url.com).
 //   Currently the only action supported for external application is "open" and
-//   the only required parameter is |url| containing the url to open inclusive
+//   the only required parameter is `url` containing the url to open inclusive
 //   of protocol.
 //   For application members of the Chrome Application Group,
 //   "app-group-command" command can be used. In that case, the paramaters are

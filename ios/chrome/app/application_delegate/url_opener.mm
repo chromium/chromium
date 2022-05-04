@@ -82,8 +82,8 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
       GURL URL;
       GURL virtualURL;
       if ([params completeURL].SchemeIsFile()) {
-        // External URL will be loaded by WebState, which expects |completeURL|.
-        // Omnibox however suppose to display |externalURL|, which is used as
+        // External URL will be loaded by WebState, which expects `completeURL`.
+        // Omnibox however suppose to display `externalURL`, which is used as
         // virtual URL.
         URL = [params completeURL];
         virtualURL = [params externalURL];
@@ -131,7 +131,7 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
     // This method is always called when the SceneState transitions to
     // SceneActivationLevelForegroundActive, and before the handling of
     // startupInformation is done.
-    // Pass |NO| as active to avoid double processing.
+    // Pass `NO` as active to avoid double processing.
     [URLOpener openURL:options
             applicationActive:NO
                     tabOpener:tabOpener

@@ -26,7 +26,7 @@ class PrefService;
 // tab or setup startupParameters to open it later. If a new tab must be
 // opened immediately (e.g. if a Siri Shortcut was triggered by the user while
 // Chrome was already in the foreground), it will be done with the provided
-// |browserState|. Returns wether it could continue userActivity.
+// `browserState`. Returns wether it could continue userActivity.
 + (BOOL)continueUserActivity:(NSUserActivity*)userActivity
          applicationIsActive:(BOOL)applicationIsActive
                    tabOpener:(id<TabOpening>)tabOpener
@@ -36,7 +36,7 @@ class PrefService;
                    initStage:(InitStage)initStage;
 
 // Handles the 3D touch application static items. If the First Run UI is active,
-// |completionHandler| will be called with NO.
+// `completionHandler` will be called with NO.
 + (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
                            tabOpener:(id<TabOpening>)tabOpener

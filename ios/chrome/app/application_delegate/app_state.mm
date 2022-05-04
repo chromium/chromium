@@ -68,7 +68,7 @@
 #endif
 
 namespace {
-// Helper method to post |closure| on the UI thread.
+// Helper method to post `closure` on the UI thread.
 void PostTaskOnUIThread(base::OnceClosure closure) {
   web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
 }
@@ -114,7 +114,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // safe mode.
 // Depending on the background tasks history, the state of the application is
 // INITIALIZATION_STAGE_BACKGROUND so this
-// step cannot be included in the |startUpBrowserToStage:| method.
+// step cannot be included in the `startUpBrowserToStage:` method.
 - (void)initializeUIPreSafeMode;
 
 // Complete the browser initialization for a regular startup.
@@ -251,12 +251,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   crash_keys::SetCurrentlyInBackground(true);
 
   if (self.initStage < InitStageBrowserObjectsForUI) {
-    // The clean-up done in |-applicationDidEnterBackground:| is only valid for
+    // The clean-up done in `-applicationDidEnterBackground:` is only valid for
     // the case when the application is started in foreground, so there is
-    // nothing to clean up as the application was not initialized for foreground.
+    // nothing to clean up as the application was not initialized for
+    // foreground.
     //
     // From the stack trace of the crash bug http://crbug.com/437307 , it
-    // seems that |-applicationDidEnterBackground:| may be called when the app
+    // seems that `-applicationDidEnterBackground:` may be called when the app
     // is started in background and before the initialization for background
     // stage is done. Note that the crash bug could not be reproduced though.
     return;
@@ -321,7 +322,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // already the case. This is especially needed for scene startup.
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // Start the initialization in the case it wasn't already done before
-    // foregrounding the app. |initStage| will be greater than InitStageStart if
+    // foregrounding the app. `initStage` will be greater than InitStageStart if
     // the initialization was already started.
     if (self.initStage == InitStageStart) {
       [self queueTransitionToFirstInitStage];
@@ -476,7 +477,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self queueTransitionToFirstInitStage];
 
   // Won't yet initialize the UI at this point when scene startup is supported
-  // in which case |stateBackground| is true.
+  // in which case `stateBackground` is true.
   if (!stateBackground) {
     [self initializeUIPreSafeMode];
   }
@@ -630,7 +631,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // The startup failure count *must* be synchronized now, since the crashes it
   // is trying to count are during startup.
-  // -[PreviousSessionInfo beginRecordingCurrentSession] calls |synchronize| on
+  // -[PreviousSessionInfo beginRecordingCurrentSession] calls `synchronize` on
   // the user defaults, so leverage that to prevent calling it twice.
 
   // Start recording info about this session.

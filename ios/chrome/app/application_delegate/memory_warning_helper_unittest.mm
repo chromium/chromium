@@ -26,9 +26,9 @@ class MemoryWarningHelperTest : public PlatformTest {
 
  protected:
   MemoryWarningHelperTest() {
-    // Set up |memory_pressure_listener_| to invoke |OnMemoryPressure| which
+    // Set up `memory_pressure_listener_` to invoke `OnMemoryPressure` which
     // will store the memory pressure level sent to the callback in
-    // |memory_pressure_level_| so that tests can verify the level is correct.
+    // `memory_pressure_level_` so that tests can verify the level is correct.
     memory_pressure_listener_.reset(new base::MemoryPressureListener(
         FROM_HERE,
         base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
@@ -48,7 +48,7 @@ class MemoryWarningHelperTest : public PlatformTest {
     return memory_helper_;
   }
 
-  // Callback for |memory_pressure_listener_|.
+  // Callback for `memory_pressure_listener_`.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
     memory_pressure_level_ = memory_pressure_level;

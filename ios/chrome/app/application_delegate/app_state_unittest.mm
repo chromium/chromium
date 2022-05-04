@@ -73,7 +73,7 @@
 @end
 
 @interface TestAppState : AppState
-// Override |connectedScenes| with a lazily instantiated mutable array.
+// Override `connectedScenes` with a lazily instantiated mutable array.
 @property(nonatomic, strong, readwrite)
     NSMutableArray<SceneState*>* connectedScenes;
 @end
@@ -148,7 +148,7 @@ typedef void (^HandleStartupParam)(
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
-// Sets init stage expected transition calls from |start| to |end|.
+// Sets init stage expected transition calls from `start` to `end`.
 void SetInitStageTransitionExpectations(id mock,
                                         AppState* app_state,
                                         InitStage start,

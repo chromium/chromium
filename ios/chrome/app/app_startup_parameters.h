@@ -35,11 +35,11 @@ class GURL;
 @property(nonatomic, readonly, assign) const GURL& externalURL;
 
 // Original URL that should be opened. May or may not be the same as
-// |externalURL|.
+// `externalURL`.
 @property(nonatomic, readonly, assign) const GURL& completeURL;
 
 // The list of URLs to open. First URL in the vector is the same
-// as |externalURL|.
+// as `externalURL`.
 @property(nonatomic, readonly, assign) const std::vector<GURL>& URLs;
 
 // The URL query string parameters in the case that the app was launched as a

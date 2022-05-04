@@ -29,12 +29,12 @@
 // The init method for the UIWindowSceneDelegate format.
 - (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context;
 
-// The init method for the |UIApplicationDelegate
-// application:didFinishLaunchingWithOptions:| format.
+// The init method for the `UIApplicationDelegate
+// application:didFinishLaunchingWithOptions:` format.
 - (instancetype)initWithLaunchOptions:(NSDictionary*)options;
 
-// Converts to the |UIApplicationDelegate
-// application:didFinishLaunchingWithOptions:|.
+// Converts to the `UIApplicationDelegate
+// application:didFinishLaunchingWithOptions:`.
 - (NSDictionary*)toLaunchOptions;
 
 @end

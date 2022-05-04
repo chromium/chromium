@@ -192,12 +192,12 @@ constexpr CGFloat kTimeout = 30;
 
 - (BOOL)shouldShowEnterpriseLoadScreen {
   self.policyConnector = GetApplicationContext()->GetBrowserPolicyConnector();
-  // |policyConnector| is nullptr if policy is not enabled.
+  // `policyConnector` is nullptr if policy is not enabled.
   if (!self.policyConnector) {
     return NO;
   }
 
-  // |machineLevelUserCloudPolicyManager| is nullptr if the DM token needed
+  // `machineLevelUserCloudPolicyManager` is nullptr if the DM token needed
   // for fetch is explicitly invalid or if enrollment tokens and DM token are
   // empty.
   policy::MachineLevelUserCloudPolicyManager*

@@ -114,7 +114,7 @@
     [self handleFirstRunStage];
   }
   // Important: do not add code after this block because its purpose is to
-  // clear |self| when not needed anymore.
+  // clear `self` when not needed anymore.
   if (previousInitStage == InitStageFirstRun) {
     // Nothing left to do; clean up.
     [self.appState removeAgent:self];

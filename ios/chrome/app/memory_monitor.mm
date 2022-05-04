@@ -24,7 +24,7 @@
 #endif
 
 namespace {
-// Delay between each invocations of |UpdateMemoryValues|.
+// Delay between each invocations of `UpdateMemoryValues`.
 const int64_t kMemoryMonitorDelayInSeconds = 30;
 
 // Checks the values of free RAM and free disk space and updates breakpad with
@@ -56,8 +56,8 @@ void UpdateMemoryValues() {
   });
 }
 
-// Invokes |UpdateMemoryValues| and schedules itself to be called after
-// |kMemoryMonitorDelayInSeconds|.
+// Invokes `UpdateMemoryValues` and schedules itself to be called after
+// `kMemoryMonitorDelayInSeconds`.
 void AsynchronousFreeMemoryMonitor() {
   UpdateMemoryValues();
   base::ThreadPool::PostDelayedTask(

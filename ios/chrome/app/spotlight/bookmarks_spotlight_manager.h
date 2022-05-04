@@ -47,7 +47,7 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 - (void)getParentKeywordsForNode:(const bookmarks::BookmarkNode*)node
                          inArray:(NSMutableArray*)keywords;
 
-// Adds keywords to |item|.
+// Adds keywords to `item`.
 - (void)addKeywords:(NSArray*)keywords toSearchableItem:(CSSearchableItem*)item;
 
 // Called before the instance is deallocated. This method should be overridden

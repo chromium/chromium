@@ -35,7 +35,7 @@ extern const char kSpotlightLastIndexingDateKey[];
 // The current version of the Spotlight index format.
 // Change this value if there are change int the information indexed in
 // Spotlight. This will force reindexation on next startup.
-// Value is stored in |kSpotlightLastIndexingVersionKey|.
+// Value is stored in `kSpotlightLastIndexingVersionKey`.
 extern const int kCurrentSpotlightIndexVersion;
 
 // NSUserDefault key of entry containing Chrome version of the latest bookmarks
@@ -60,14 +60,14 @@ bool IsSpotlightAvailable();
 
 // Clears the current Spotlight index of the device. Method is static to allow
 // clearing the index without instantiating SpotlightManager.
-// This method must not be called if |isSpotlightAvailable| returns NO.
+// This method must not be called if `isSpotlightAvailable` returns NO.
 // This method is asynchronous and can fail. Completion is called with a
 // parameter indicating if the deletion was a success.
 void ClearSpotlightIndexWithCompletion(BlockWithError completion);
 
-// Finds the Spoglight itemID and calls |completion| with the corresponding URL.
-// Calls |completion| with nil if none was found.
-// |completion| is called on the Spotlight Thread.
+// Finds the Spoglight itemID and calls `completion` with the corresponding URL.
+// Calls `completion` with nil if none was found.
+// `completion` is called on the Spotlight Thread.
 void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion)
     API_AVAILABLE(ios(10.0));
 

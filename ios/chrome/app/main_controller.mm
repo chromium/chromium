@@ -495,7 +495,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       _browserStateManager->GetLastUsedBrowserState();
 
   // The CrashRestoreHelper must clean up the old browser state information.
-  // |self.restoreHelper| must be kept alive until the BVC receives the
+  // `self.restoreHelper` must be kept alive until the BVC receives the
   // browser state.
   BOOL needRestoration = NO;
   if (isPostCrashLaunch) {
@@ -643,7 +643,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       break;
     case InitStageBrowserObjectsForUI:
       // When adding a new initialization flow, consider setting
-      // |_appState.userInteracted| at the appropriate time.
+      // `_appState.userInteracted` at the appropriate time.
       DCHECK(_appState.userInteracted);
       [self startUpBrowserForegroundInitialization];
       [appState queueTransitionToNextInitStage];
@@ -946,7 +946,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
-// Schedule a call to |saveFieldTrialValuesForExtensions| for deferred
+// Schedule a call to `saveFieldTrialValuesForExtensions` for deferred
 // execution.
 - (void)scheduleSaveFieldTrialValuesForExtensions {
   [[DeferredInitializationRunner sharedInstance]
@@ -997,7 +997,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                      forKey:app_group::kChromeExtensionFieldTrialPreference];
 }
 
-// Schedules a call to |logIfEnterpriseManagedDevice| for deferred
+// Schedules a call to `logIfEnterpriseManagedDevice` for deferred
 // execution.
 - (void)scheduleEnterpriseManagedDeviceCheck {
   [[DeferredInitializationRunner sharedInstance]
@@ -1109,7 +1109,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)expireFirstUserActionRecorder {
   // Clear out any scheduled calls to this method. For example, the app may have
-  // been backgrounded before the |kFirstUserActionTimeout| expired.
+  // been backgrounded before the `kFirstUserActionTimeout` expired.
   [NSObject
       cancelPreviousPerformRequestsWithTarget:self
                                      selector:@selector(
@@ -1221,7 +1221,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   disableWebUsageDuringRemoval = NO;
 
   for (SceneState* sceneState in self.appState.connectedScenes) {
-    // Assumes all scenes share |browserState|.
+    // Assumes all scenes share `browserState`.
     id<BrowserInterfaceProvider> sceneInterface = sceneState.interfaceProvider;
     if (disableWebUsageDuringRemoval) {
       // Disables browsing and purges web views.
@@ -1247,7 +1247,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     // Must be called only on the main thread.
     DCHECK([NSThread isMainThread]);
     for (SceneState* sceneState in self.appState.connectedScenes) {
-      // Assumes all scenes share |browserState|.
+      // Assumes all scenes share `browserState`.
       id<BrowserInterfaceProvider> sceneInterface =
           sceneState.interfaceProvider;
 
@@ -1268,7 +1268,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       sceneInterface.incognitoInterface.userInteractionEnabled = YES;
       [sceneInterface.currentInterface setPrimary:YES];
     }
-    // |completionBlock is run once, not once per scene.
+    // `completionBlock` is run once, not once per scene.
     if (completionBlock)
       completionBlock();
   };

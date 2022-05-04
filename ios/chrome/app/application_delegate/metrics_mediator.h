@@ -44,7 +44,7 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // Starts or stops the metrics service and crash report recording and/or
 // uploading, based on the current user preferences. Must be
 // called both on initialization and after user triggered preference change.
-// |isUserTriggered| is used to distinguish between those cases.
+// `isUserTriggered` is used to distinguish between those cases.
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered;
 // Logs the duration of the cold start startup. Does nothing if there isn't a
 // cold start.

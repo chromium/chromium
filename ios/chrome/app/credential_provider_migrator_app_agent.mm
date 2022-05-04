@@ -19,7 +19,7 @@
 
 @interface CredentialProviderAppAgent ()
 
-// |migrator| is in charge of migrating the password when Chrome comes to
+// `migrator` is in charge of migrating the password when Chrome comes to
 // foreground.
 @property(nonatomic, strong) CredentialProviderMigrator* migrator;
 

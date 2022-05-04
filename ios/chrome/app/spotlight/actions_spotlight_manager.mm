@@ -53,7 +53,7 @@ enum {
   // Recorded when a user pressed the QR scanner spotlight action.
   SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
   // NOTE: Add new spotlight actions in sources only immediately above this
-  // line. Also, make sure the enum list for histogram |SpotlightActions| in
+  // line. Also, make sure the enum list for histogram `SpotlightActions` in
   // histograms.xml is updated with any change in here.
   SPOTLIGHT_ACTION_COUNT
 };
@@ -99,7 +99,7 @@ BOOL SetStartupParametersForSpotlightAction(
 
 @interface ActionsSpotlightManager ()
 
-// Creates a new Spotlight entry with title |title| for the given |action|.
+// Creates a new Spotlight entry with title `title` for the given `action`.
 - (CSSearchableItem*)itemForAction:(NSString*)action title:(NSString*)title;
 
 // Clears and re-inserts all Spotlight actions.

@@ -136,7 +136,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
-  // If |self.didFinishLaunching| is NO, that indicates that the app was
+  // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running
   // shutdown, since the app was never fully started.
   if (!self.didFinishLaunching)
@@ -234,7 +234,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)lastSceneDidEnterBackground:(NSNotification*)notification {
-  // Reset |startupHadExternalIntent| for all Scenes in case external intents
+  // Reset `startupHadExternalIntent` for all Scenes in case external intents
   // were triggered while the application was in the foreground.
   for (SceneState* scene in self.appState.connectedScenes) {
     if (scene.startupHadExternalIntent) {

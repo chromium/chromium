@@ -17,7 +17,7 @@
 #endif
 
 id MockMXMetadata() {
-  // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
+  // TODO(crbug.com/1140474): See related bug for why `bundleVersion` comes from
   // mainBundle instead of from version_info::GetVersionNumber(). Remove once
   // iOS 14.2 reaches mass adoption.
   NSString* bundleVersion =

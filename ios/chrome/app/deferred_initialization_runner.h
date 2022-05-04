@@ -21,17 +21,17 @@ extern NSString* const kPrefObserverInit;
 // Returns singleton instance.
 + (DeferredInitializationRunner*)sharedInstance;
 
-// Stores |block| under |name| to a queue of blocks to run. All blocks are run
+// Stores `block` under `name` to a queue of blocks to run. All blocks are run
 // sequentially with a small delay before the first block and between each
-// successive block. If a block is already registered under |name|, it is
-// replaced with |block| unless it has already been run.
+// successive block. If a block is already registered under `name`, it is
+// replaced with `block` unless it has already been run.
 - (void)enqueueBlockNamed:(NSString*)name block:(ProceduralBlock)block;
 
-// Looks up a previously scheduled block of |name|. If block has not been
+// Looks up a previously scheduled block of `name`. If block has not been
 // run yet, run it synchronously now.
 - (void)runBlockIfNecessary:(NSString*)name;
 
-// Cancels a previously scheduled block of |name|. This is a no-op if the
+// Cancels a previously scheduled block of `name`. This is a no-op if the
 // block has already been executed.
 - (void)cancelBlockNamed:(NSString*)name;
 
@@ -47,7 +47,7 @@ extern NSString* const kPrefObserverInit;
 @property(nonatomic, assign) NSTimeInterval delayBetweenBlocks;
 
 // Time interval before running the first block. To override default value of
-// 3s, set this property before the first call to |-enqueueBlockNamed:block:|.
+// 3s, set this property before the first call to `-enqueueBlockNamed:block:`.
 @property(nonatomic, assign) NSTimeInterval delayBeforeFirstBlock;
 
 @end

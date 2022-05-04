@@ -101,7 +101,7 @@ const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 // The current version of the Spotlight index format.
 // Change this value if there are change int the information indexed in
 // Spotlight. This will force reindexation on next startup.
-// Value is stored in |kSpotlightLastIndexingVersionKey|.
+// Value is stored in `kSpotlightLastIndexingVersionKey`.
 const int kCurrentSpotlightIndexVersion = 3;
 
 Domain SpotlightDomainFromString(NSString* domain) {

@@ -20,9 +20,9 @@ struct UrlLoadParams;
 // Protocol for object that can open new tabs during application launch.
 @protocol TabOpening<NSObject>
 
-// Dismisses any modal view, excluding the omnibox if |dismissOmnibox| is NO,
-// then opens either a normal or incognito tab with |url|. After opening |url|,
-// run completion |handler| if it is not nil. After Tab is opened the virtual
+// Dismisses any modal view, excluding the omnibox if `dismissOmnibox` is NO,
+// then opens either a normal or incognito tab with `url`. After opening `url`,
+// run completion `handler` if it is not nil. After Tab is opened the virtual
 // URL is set to the pending navigation item.
 - (void)dismissModalsAndOpenSelectedTabInMode:
             (ApplicationModeForTabOpening)targetMode
@@ -31,9 +31,9 @@ struct UrlLoadParams;
                                dismissOmnibox:(BOOL)dismissOmnibox
                                    completion:(ProceduralBlock)completion;
 
-// Dismisses any modal view, excluding the omnibox if |dismissOmnibox| is NO,
-// then opens the list of URLs in |URLs| in either normal or incognito.
-// After opening the array of URLs, run completion |handler| if it not nil.
+// Dismisses any modal view, excluding the omnibox if `dismissOmnibox` is NO,
+// then opens the list of URLs in `URLs` in either normal or incognito.
+// After opening the array of URLs, run completion `handler` if it not nil.
 - (void)dismissModalsAndOpenMultipleTabsInMode:
             (ApplicationModeForTabOpening)targetMode
                                           URLs:(const std::vector<GURL>&)URLs
@@ -51,12 +51,12 @@ struct UrlLoadParams;
 
 // Returns a block that can be executed on the new tab to trigger one of the
 // commands. This block can be passed to
-// |dismissModalsAndOpenSelectedTabInMode:withURL:transition:completion:|.
+// `dismissModalsAndOpenSelectedTabInMode:withURL:transition:completion:`.
 // This block must only be executed if new tab opened on NTP.
 - (ProceduralBlock)completionBlockForTriggeringAction:
     (NTPTabOpeningPostOpeningAction)action;
 
-// Whether the |URL| is already opened, in regular mode.
+// Whether the `URL` is already opened, in regular mode.
 - (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL;
 
 @end

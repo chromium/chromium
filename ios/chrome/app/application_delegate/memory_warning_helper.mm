@@ -43,7 +43,7 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
 
   ++_foregroundMemoryWarningCount;
   // Register that we might die because of memory. If we are still alive in
-  // |kOutOfMemoryResetTimeInterval| seconds, reset the flag.
+  // `kOutOfMemoryResetTimeInterval` seconds, reset the flag.
   [[PreviousSessionInfo sharedInstance] setMemoryWarningFlag];
   _outOfMemoryResetTime =
       CFAbsoluteTimeGetCurrent() + kOutOfMemoryResetTimeInterval;

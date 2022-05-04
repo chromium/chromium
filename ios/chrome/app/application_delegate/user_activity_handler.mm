@@ -224,7 +224,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     std::vector<GURL> URLs;
 
     if ([intent.url isKindOfClass:[NSURL class]]) {
-      // Old intent version where |url| is of type NSURL rather than an array.
+      // Old intent version where `url` is of type NSURL rather than an array.
       GURL webpageGURL(
           net::GURLWithNSURL(base::mac::ObjCCastStrict<NSURL>(intent.url)));
       if (!webpageGURL.is_valid())
@@ -357,8 +357,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   BOOL dismissOmnibox = [[connectionInformation startupParameters]
                             postOpeningAction] != FOCUS_OMNIBOX;
 
-  // Using a weak reference to |connectionInformation| to solve a memory leak
-  // issue. |tabOpener| and |connectionInformation| are the same object in
+  // Using a weak reference to `connectionInformation` to solve a memory leak
+  // issue. `tabOpener` and `connectionInformation` are the same object in
   // some cases (SceneController). This retains the object while the block
   // exists. Then this block is passed around and in some cases it ends up
   // stored in BrowserViewController. This results in a memory leak that looks
@@ -514,7 +514,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
     // The app is already active so the applicationDidBecomeActive: method
     // will never be called. Open the requested URL after all modal UIs have
-    // been dismissed. |_startupParameters| must be retained until all deferred
+    // been dismissed. `_startupParameters` must be retained until all deferred
     // modal UIs are dismissed and tab opened with requested URL.
     ApplicationModeForTabOpening targetMode =
         [[connectionInformation startupParameters] applicationMode];
@@ -522,8 +522,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     GURL virtualURL;
     GURL completeURL = connectionInformation.startupParameters.completeURL;
     if (completeURL.SchemeIsFile()) {
-      // External URL will be loaded by WebState, which expects |completeURL|.
-      // Omnibox however suppose to display |externalURL|, which is used as
+      // External URL will be loaded by WebState, which expects `completeURL`.
+      // Omnibox however suppose to display `externalURL`, which is used as
       // virtual URL.
       URL = completeURL;
       virtualURL = externalURL;

@@ -138,7 +138,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
     @"com.google.SomeOtherProduct", @"com.apple.mobilesafari",
     @"com.othercompany.otherproduct"
   ];
-  // See documentation for |annotation| property in
+  // See documentation for `annotation` property in
   // UIDocumentInteractionstartupInformation Class Reference.  The following
   // values are mostly to detect garbage-in situations and ensure that the app
   // won't crash or garbage out.

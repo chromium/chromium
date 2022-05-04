@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, SizeClassIdiom) {
   SIZE_CLASS_COUNT = UNSPECIFIED,
 };
 
-// Returns the SizeClassIdiom corresponding with |size_class|.
+// Returns the SizeClassIdiom corresponding with `size_class`.
 SizeClassIdiom GetSizeClassIdiom(UIUserInterfaceSizeClass size_class) {
   switch (size_class) {
     case UIUserInterfaceSizeClassCompact:
@@ -52,7 +52,7 @@ SizeClassIdiom GetSizeClassIdiom(UIUserInterfaceSizeClass size_class) {
   }
 }
 
-// Sets the line height for |label| via attributed text.
+// Sets the line height for `label` via attributed text.
 void SetLabelLineHeight(UILabel* label, CGFloat line_height) {
   NSMutableAttributedString* updated_text = [label.attributedText mutableCopy];
   if (updated_text.length == 0)
@@ -421,7 +421,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)layoutImageView {
-  // The image is centered and laid out below |titleLabel| as specified by
+  // The image is centered and laid out below `titleLabel` as specified by
   // kImageTopPadding.
   CGSize imageViewSize = self.imageView.bounds.size;
   CGFloat imageViewTopPadding = kImageTopPadding[[self heightSizeClassIdiom]];
@@ -432,7 +432,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)layoutTOSTextView {
-  // The TOSTextView is centered and laid out below |imageView| as specified by
+  // The TOSTextView is centered and laid out below `imageView` as specified by
   // kTOSTextViewTopPadding.
   CGSize containerSize = self.containerView.bounds.size;
   containerSize.height = CGFLOAT_MAX;
@@ -448,7 +448,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
 - (void)layoutOptInLabel {
   // The opt in label is laid out to the right (or left in RTL) of the check box
-  // button and below |TOSLabel| as specified by kOptInLabelPadding.
+  // button and below `TOSLabel` as specified by kOptInLabelPadding.
   CGSize checkBoxSize =
       [self.checkBoxButton imageForState:self.checkBoxButton.state].size;
   CGFloat checkBoxPadding = kCheckBoxPadding[[self widthSizeClassIdiom]];
@@ -468,10 +468,10 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)layoutCheckBoxButton {
-  // The checkBoxButton is laid out to the left of |optInLabel|.  The view
+  // The checkBoxButton is laid out to the left of `optInLabel`.  The view
   // itself is sized so that it covers the label, and the image insets are
   // chosen such that the check box image is centered vertically with
-  // |optInLabel|.
+  // `optInLabel`.
   CGSize checkBoxSize =
       [self.checkBoxButton imageForState:self.checkBoxButton.state].size;
   CGFloat checkBoxPadding = kCheckBoxPadding[[self widthSizeClassIdiom]];
@@ -496,8 +496,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
 - (void)layoutManagedLabel {
   // The managed label is laid out to the right (or left in RTL) of the
-  // enterprise icon and below |optInLabel| as specified by
-  // kManagedLabelPadding. It is aligned horizontally with |optInLabel|.
+  // enterprise icon and below `optInLabel` as specified by
+  // kManagedLabelPadding. It is aligned horizontally with `optInLabel`.
   CGSize checkBoxSize =
       [self.checkBoxButton imageForState:self.checkBoxButton.state].size;
   CGFloat checkBoxPadding = kCheckBoxPadding[[self widthSizeClassIdiom]];
@@ -520,8 +520,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
 - (void)layoutEnterpriseIcon {
   // The enterprise icon is laid out to the left of and is centered vertically
-  // with |managedLabel|, and is aligned horizontally with the checkbox image
-  // inside |checkBoxButton|.
+  // with `managedLabel`, and is aligned horizontally with the checkbox image
+  // inside `checkBoxButton`.
   CGSize enterpriseIconSize = self.enterpriseIcon.bounds.size;
   CGFloat enterpriseIconOriginX =
       CGRectGetMidX(self.checkBoxButton.imageView.frame) -
@@ -536,11 +536,11 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
 - (void)layoutContainerView {
   // The container view is resized according to the final layout of its lowest
-  // subview, which is |managedLabel| if the browser is managed and
-  // |checkBoxButton| if not. The resized view is then centered horizontally and
+  // subview, which is `managedLabel` if the browser is managed and
+  // `checkBoxButton` if not. The resized view is then centered horizontally and
   // vertically. If necessary, it is shifted up to allow either
-  // |kmanagedLabelPadding| or |kOptInLabelPadding| (depending if the browser is
-  // managed) between |optInLabel| and |OKButton|.
+  // `kmanagedLabelPadding` or `kOptInLabelPadding` (depending if the browser is
+  // managed) between `optInLabel` and `OKButton`.
   CGSize containerViewSize = self.containerView.bounds.size;
   containerViewSize.height = [self isBrowserManaged]
                                  ? CGRectGetMaxY(self.managedLabel.frame)

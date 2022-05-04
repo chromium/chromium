@@ -265,7 +265,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
     // (10ms) they are reported using a representative value of the bucket.
     // DCHECK on the size of the bucket to detect if the resolution decrease.
 
-    // Time based MXHistogram report their values using |UnitDuration| which has
+    // Time based MXHistogram report their values using `UnitDuration` which has
     // seconds as base unit. Hence, start and end are given in seconds.
     double start =
         [bucket.bucketStart
@@ -334,7 +334,7 @@ void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
 }
 
 - (void)processPayload:(MXMetricPayload*)payload {
-  // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
+  // TODO(crbug.com/1140474): See related bug for why `bundleVersion` comes from
   // mainBundle instead of from version_info::GetVersionNumber(). Remove once
   // iOS 14.2 reaches mass adoption.
   NSString* bundleVersion =
