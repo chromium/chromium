@@ -5829,6 +5829,7 @@ test("unit_tests") {
       "../common/chrome_constants_win_unittest.cc",
       "../common/conflicts/module_watcher_win_unittest.cc",
       "../common/conflicts/remote_module_watcher_win_unittest.cc",
+      "../common/win/delay_load_failure_hook_unittest.cc",
     ]
 
     data += [ "$root_out_dir/chrome.exe" ]

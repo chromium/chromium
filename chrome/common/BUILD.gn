@@ -99,9 +99,16 @@ source_set("ini_parser") {
   deps = [ "//base" ]
 }
 
+group("common") {
+  public_deps = [ ":common_lib" ]
+  if (is_win) {
+    public_deps += [ ":delay_load_support" ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
-static_library("common") {
+static_library("common_lib") {
   sources = [
     "all_messages.h",
     "child_process_host_flags.h",
@@ -677,6 +684,20 @@ if (is_mac) {
       ":constants",
       "//base",
     ]
+  }
+}
+
+if (is_win) {
+  # delay load support must be a source_set to ensure that it has external
+  # linkage and will correctly emplace over the correct symbols in
+  # delayimp.lib at link time.
+  source_set("delay_load_support") {
+    sources = [
+      "win/delay_load_failure_hook.cc",
+      "win/delay_load_failure_hook.h",
+    ]
+
+    deps = [ "//base" ]
   }
 }
 

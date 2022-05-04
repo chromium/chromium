@@ -14,7 +14,6 @@ static_library("child") {
 
   if (is_win) {
     sources += [
-      "delay_load_failure_hook.cc",
       "v8_crashpad_support_win.cc",
       "v8_crashpad_support_win.h",
     ]

@@ -8,8 +8,8 @@ import("//chrome/process_version_rc_template.gni")
 
 message_compiler("eventlog_messages") {
   visibility = [
-    "//chrome/common",
     ":eventlog_provider",
+    "//chrome/common:common_lib",
   ]
 
   sources = [ "eventlog_messages.mc" ]

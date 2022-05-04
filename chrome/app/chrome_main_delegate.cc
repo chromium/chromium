@@ -93,6 +93,7 @@
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
 #include "chrome/common/protobuf_init.h"
+#include "chrome/common/win/delay_load_failure_hook.h"
 #include "chrome/install_static/install_util.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
 #include "sandbox/win/src/sandbox.h"
@@ -528,6 +529,11 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
+
+  // For now, do not enable delay load failure hooks for browser process except
+  // in tests, where failures really shouldn't happen.
+  if (!is_running_tests)
+    chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
 
   // Chrome disallows cookies by default. All code paths that want to use

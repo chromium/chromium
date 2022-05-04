@@ -7,6 +7,7 @@
 // windows.h must be included before shellapi.h
 #include <windows.h>
 
+#include <delayimp.h>
 #include <shellapi.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -680,6 +681,10 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
 
 void ChromeBrowserMainPartsWin::PostBrowserStart() {
   ChromeBrowserMainParts::PostBrowserStart();
+
+  // Verify that the delay load helper hooks are in place. This cannot be tested
+  // from unit tests, so rely on this failing here.
+  DCHECK(__pfnDliFailureHook2);
 
   InitializeChromeElf();
 
