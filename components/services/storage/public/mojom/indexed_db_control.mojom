@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
@@ -25,15 +26,17 @@ enum ForceCloseReason {
   // enums.xml.
 };
 
-// Communicates with IndexedDB clients about changes in IndexedDB.
+// Communicates with IndexedDB clients about changes in IndexedDB. These clients
+// should live in the browser process as the notifications are dispatched by the
+// storage service without filtering by frame.
 interface IndexedDBObserver {
   // This function is called when the size of the usage for a particular
-  // `storage_key` changes (both in memory and on disk).
-  OnIndexedDBListChanged(blink.mojom.StorageKey storage_key);
+  // `bucket_locator` changes (both in memory and on disk).
+  OnIndexedDBListChanged(storage.mojom.BucketLocator bucket_locator);
 
   // This function is called when the content of a particular object store
-  // for a particular `storage_key` has been modified.
-  OnIndexedDBContentChanged(blink.mojom.StorageKey storage_key,
+  // for a particular `bucket_locator` has been modified.
+  OnIndexedDBContentChanged(storage.mojom.BucketLocator bucket_locator,
                             mojo_base.mojom.String16 database_name,
                             mojo_base.mojom.String16 object_store_name);
 };

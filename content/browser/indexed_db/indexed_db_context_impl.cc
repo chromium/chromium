@@ -910,8 +910,7 @@ void IndexedDBContextImpl::BlobFilesCleaned(
 void IndexedDBContextImpl::NotifyIndexedDBListChanged(
     const storage::BucketLocator& bucket_locator) {
   for (auto& observer : observers_) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-    observer->OnIndexedDBListChanged(bucket_locator.storage_key);
+    observer->OnIndexedDBListChanged(bucket_locator);
   }
 }
 
@@ -920,9 +919,8 @@ void IndexedDBContextImpl::NotifyIndexedDBContentChanged(
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   for (auto& observer : observers_) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-    observer->OnIndexedDBContentChanged(bucket_locator.storage_key,
-                                        database_name, object_store_name);
+    observer->OnIndexedDBContentChanged(bucket_locator, database_name,
+                                        object_store_name);
   }
 }
 

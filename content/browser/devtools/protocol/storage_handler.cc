@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -210,32 +211,37 @@ class StorageHandler::IndexedDBObserver
     storage_keys_.erase(storage_key);
   }
 
-  void OnIndexedDBListChanged(const blink::StorageKey& storage_key) override {
+  void OnIndexedDBListChanged(
+      const storage::BucketLocator& bucket_locator) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!owner_)
       return;
-    auto found = storage_keys_.find(storage_key);
+    // TODO(crbug.com/1315371): Allow custom bucket names.
+    auto found = storage_keys_.find(bucket_locator.storage_key);
     if (found == storage_keys_.end())
       return;
     // TODO(https://crbug.com/1199077): Pass storage key instead once
     // Chrome DevTools Protocol (CDP) supports it.
-    owner_->NotifyIndexedDBListChanged(storage_key.origin().Serialize());
+    owner_->NotifyIndexedDBListChanged(
+        bucket_locator.storage_key.origin().Serialize());
   }
 
   void OnIndexedDBContentChanged(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const std::u16string& database_name,
       const std::u16string& object_store_name) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!owner_)
       return;
-    auto found = storage_keys_.find(storage_key);
+    // TODO(crbug.com/1315371): Allow custom bucket names.
+    auto found = storage_keys_.find(bucket_locator.storage_key);
     if (found == storage_keys_.end())
       return;
     // TODO(https://crbug.com/1199077): Pass storage key instead once
     // Chrome DevTools Protocol (CDP) supports it.
-    owner_->NotifyIndexedDBContentChanged(storage_key.origin().Serialize(),
-                                          database_name, object_store_name);
+    owner_->NotifyIndexedDBContentChanged(
+        bucket_locator.storage_key.origin().Serialize(), database_name,
+        object_store_name);
   }
 
  private:
