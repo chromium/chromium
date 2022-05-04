@@ -5,8 +5,9 @@ set noparent
 
 file://third_party/OWNERS
 
-# Only for adding / removing directories that are conceptually the same as
-# existing ones (which would have already gone through third_party review).
-# E.g. robolectric is partiationed into multiple directories, but they are all
-# conceptually the same dependency.
+# The following OWNERS are only for adding / removing / renaming directories
+# that are conceptually the same as existing ones (which would have already gone
+# through third_party review). E.g. robolectric is partiationed into multiple
+# directories, but they are all conceptually the same dependency.
 agrieve@chromium.org
+wnwen@chromium.org
