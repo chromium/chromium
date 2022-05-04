@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -105,6 +106,9 @@ const CGFloat kBackgroundAlpha = 0.3;
 // Color for the regular tab count label and icons.
 const CGFloat kSelectedColor = 0x3C4043;
 
+// The size of the symbol image.
+NSInteger kSymbolTabGridPageControlPointSize = 24;
+
 // Returns the point that's at the center of |rect|.
 CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
@@ -128,6 +132,13 @@ UIImageView* ImageViewForImageNamed(NSString* imageName) {
       initWithImage:
           [[UIImage imageNamed:imageName]
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+}
+
+// Returns an UIImageView for the given symbolName.
+UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
+  return [[UIImageView alloc]
+      initWithImage:CustomSymbolTemplateWithPointSize(
+                        symbolName, kSymbolTabGridPageControlPointSize)];
 }
 
 }  // namespace
@@ -477,17 +488,28 @@ UIImageView* ImageViewForImageNamed(NSString* imageName) {
   UIImageView* iconNotSelected;
   switch (tab) {
     case TabGridPageRegularTabs: {
-      iconSelected = ImageViewForImageNamed(kImagePageControlRegularSelected);
-      iconNotSelected =
-          ImageViewForImageNamed(kImagePageControlRegularNotSelected);
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kSquareNumberSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kSquareNumberSymbol);
+      } else {
+        iconSelected = ImageViewForImageNamed(kImagePageControlRegularSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlRegularNotSelected);
+      }
       self.regularSelectedIcon = iconSelected;
       self.regularNotSelectedIcon = iconNotSelected;
       break;
     }
     case TabGridPageIncognitoTabs: {
-      iconSelected = ImageViewForImageNamed(kImagePageControlIncognitoSelected);
-      iconNotSelected =
-          ImageViewForImageNamed(kImagePageControlIncognitoNotSelected);
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kIncognitoSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kIncognitoSymbol);
+      } else {
+        iconSelected =
+            ImageViewForImageNamed(kImagePageControlIncognitoSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlIncognitoNotSelected);
+      }
       self.incognitoSelectedIcon = iconSelected;
       self.incognitoNotSelectedIcon = iconNotSelected;
       break;

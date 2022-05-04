@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_top_toolbar.h"
 
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
@@ -22,6 +23,9 @@ namespace {
 const int kIconButtonAdditionalSpace = 20;
 const int kSelectionModeButtonSize = 17;
 const int kSearchBarTrailingSpace = 24;
+
+// The size of top toolbar search symbol image.
+NSInteger kSymbolSearchImagePointSize = 22;
 }
 
 @interface TabGridTopToolbar () <UIToolbarDelegate>
@@ -405,10 +409,21 @@ const int kSearchBarTrailingSpace = 24;
                                    forState:UIControlStateDisabled];
 
   if (IsTabsSearchEnabled()) {
-    _searchButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                             target:nil
-                             action:nil];
+    if (UseSymbols()) {
+      UIImage* searchImage = DefaultSymbolWithPointSize(
+          kSearchSymbol, kSymbolSearchImagePointSize);
+      _searchButton =
+          [[UIBarButtonItem alloc] initWithImage:searchImage
+                                           style:UIBarButtonItemStylePlain
+                                          target:nil
+                                          action:nil];
+    } else {
+      _searchButton = [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                               target:nil
+                               action:nil];
+    }
+
     _searchButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _searchButton.accessibilityIdentifier = kTabGridSearchButtonIdentifier;
 
