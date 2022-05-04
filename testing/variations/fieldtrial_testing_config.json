@@ -7627,29 +7627,6 @@
             ]
         }
     ],
-    "UpdateClientHintsGREASERollout": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "updated_algorithm": "true"
-                    },
-                    "enable_features": [
-                        "GreaseUACH"
-                    ]
-                }
-            ]
-        }
-    ],
     "UpdateHistoryEntryPointsInIncognito": [
         {
             "platforms": [
