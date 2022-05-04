@@ -38,12 +38,12 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UITextField* textField,
                                    UIFont* font);
 
-enum CaptureViewOption {
+typedef enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
   kAfterScreenUpdate,    // Require a synchronization with CA process which can
                          // have side effects.
   kClientSideRendering,  // Triggers a client side compositing, very slow.
-};
+} CaptureViewOption;
 
 // Captures and returns an autoreleased rendering of the |view|.
 // The |view| is assumed to be opaque and the returned image does
@@ -73,6 +73,8 @@ UIImage* CaptureView(UIView* view, CGFloat scale);
 // Converts input image and returns a grey scaled version.
 UIImage* GreyImage(UIImage* image);
 
+// C does not support default arguments.
+#ifdef __cplusplus
 // Returns an UIColor with |rgb| and |alpha|. The caller should pass the RGB
 // value in hexadecimal as this is the typical way they are provided by UX.
 // For example a call to |UIColorFromRGB(0xFF7D40, 1.0)| returns an orange
@@ -83,11 +85,18 @@ inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
                           blue:((CGFloat)(rgb & 0x0000FF)) / 255.0
                          alpha:alpha];
 }
+#endif  // __cplusplus
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
 // Returns the image from the shared resource bundle with the image id
 // |imageID|. If |reversable| is YES and RTL layout is in use, the image
 // will be flipped for RTL.
 UIImage* NativeReversableImage(int imageID, BOOL reversable);
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 // Convenience version of NativeReversableImage for images that are never
 // reversable; equivalent to NativeReversableImage(imageID, NO).
@@ -123,6 +132,8 @@ bool IsPortrait(UIWindow* window);
 // Returns true if the window is in landscape orientation.
 bool IsLandscape(UIWindow* window);
 
+// C does not support function overloading.
+#ifdef __cplusplus
 // Whether the |environment| has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 
@@ -155,6 +166,7 @@ bool IsSplitToolbarMode(id<UITraitEnvironment> environment);
 // Returns whether the |traitCollection|'s toolbar is split between top and
 // bottom toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(UITraitCollection* traitCollection);
+#endif  // __cplusplus
 
 // Returns the current first responder for keyWindow.
 UIResponder* GetFirstResponder();

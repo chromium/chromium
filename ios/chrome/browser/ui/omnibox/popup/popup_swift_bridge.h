@@ -15,8 +15,10 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/swift_bridge.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/chrome/grit/ios_theme_resources.h"
 #include "ui/base/l10n/l10n_util_mac_bridge.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_POPUP_SWIFT_BRIDGE_H_

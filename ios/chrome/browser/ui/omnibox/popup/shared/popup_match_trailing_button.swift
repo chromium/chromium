@@ -14,9 +14,32 @@ struct PopupMatchTrailingButton: View {
   let match: PopupMatch
   let action: () -> Void
 
+  @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
+
+  @ViewBuilder
+  var image: some View {
+    switch uiVariation {
+    case .one:
+      // Treatment one uses legacy icons.
+      if match.isTabMatch {
+        let uiImage = UIImage(named: "omnibox_popup_tab_match")
+        Image(uiImage: uiImage!)
+          .renderingMode(.template)
+          .flipsForRightToLeftLayoutDirection(true)
+      } else {
+        let uiImage = NativeReversableImage(IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND, true)
+        Image(uiImage: uiImage!)
+          .renderingMode(.template)
+      }
+    case .two:
+      Image(systemName: match.isTabMatch ? "arrow.right.circle" : "arrow.up.backward")
+        .flipsForRightToLeftLayoutDirection(true)
+    }
+  }
+
   var body: some View {
     Button(action: action) {
-      Image(systemName: match.isTabMatch ? "arrow.right.circle" : "arrow.up.backward")
+      image
         .font(.system(size: Dimensions.trailingButtonSize, weight: .medium))
         .aspectRatio(contentMode: .fit)
         .frame(

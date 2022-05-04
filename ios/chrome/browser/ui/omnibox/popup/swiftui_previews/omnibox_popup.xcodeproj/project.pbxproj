@@ -18,6 +18,9 @@
 		59CD2EFC27F5F58900D75B26 /* external_defines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD2EFB27F5F58900D75B26 /* external_defines.swift */; };
 		59CE0D1E280473F900302248 /* omnibox_text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CE0D1D280473F900302248 /* omnibox_text.swift */; };
 		8701451C27D24A8800C2D66F /* pressed_preference_key_button_style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */; };
+		87338E4B28217A55009434D1 /* popup_ui_configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87338E4A28217A55009434D1 /* popup_ui_configuration.swift */; };
+		87338E52282184C2009434D1 /* toolbar_configuration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87338E51282184C2009434D1 /* toolbar_configuration.mm */; };
+		87338E5528218540009434D1 /* ntp_home_constant.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87338E5328218540009434D1 /* ntp_home_constant.mm */; };
 		8749952427E22B8B005EF2ED /* self_sizing_list.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8749952327E22B8B005EF2ED /* self_sizing_list.swift */; };
 		8755A09A280F077C00B84C50 /* popup_ui_variation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8755A099280F077C00B84C50 /* popup_ui_variation.swift */; };
 		876011EB27D287A6004EB60B /* popup_match_trailing_button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876011EA27D287A6004EB60B /* popup_match_trailing_button.swift */; };
@@ -107,6 +110,12 @@
 		59CD2EFB27F5F58900D75B26 /* external_defines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = external_defines.swift; sourceTree = "<group>"; };
 		59CE0D1D280473F900302248 /* omnibox_text.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = omnibox_text.swift; path = ../../shared/omnibox_text.swift; sourceTree = "<group>"; };
 		8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = pressed_preference_key_button_style.swift; path = ../../shared/pressed_preference_key_button_style.swift; sourceTree = "<group>"; };
+		87338E48282178B6009434D1 /* toolbar_configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = toolbar_configuration.h; path = ../../../../toolbar/buttons/toolbar_configuration.h; sourceTree = "<group>"; };
+		87338E4928217914009434D1 /* toolbar_style.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = toolbar_style.h; path = ../../../../toolbar/buttons/toolbar_style.h; sourceTree = "<group>"; };
+		87338E4A28217A55009434D1 /* popup_ui_configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_ui_configuration.swift; path = ../../shared/popup_ui_configuration.swift; sourceTree = "<group>"; };
+		87338E51282184C2009434D1 /* toolbar_configuration.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = toolbar_configuration.mm; path = ../../../../toolbar/buttons/toolbar_configuration.mm; sourceTree = "<group>"; };
+		87338E5328218540009434D1 /* ntp_home_constant.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ntp_home_constant.mm; path = ../../../../content_suggestions/ntp_home_constant.mm; sourceTree = "<group>"; };
+		87338E5428218540009434D1 /* ntp_home_constant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ntp_home_constant.h; path = ../../../../content_suggestions/ntp_home_constant.h; sourceTree = "<group>"; };
 		8749952327E22B8B005EF2ED /* self_sizing_list.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = self_sizing_list.swift; path = ../../shared/self_sizing_list.swift; sourceTree = "<group>"; };
 		8755A099280F077C00B84C50 /* popup_ui_variation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_ui_variation.swift; path = ../../shared/popup_ui_variation.swift; sourceTree = "<group>"; };
 		876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = omnibox_suggestion_commands.h; path = ../../../../commands/omnibox_suggestion_commands.h; sourceTree = "<group>"; };
@@ -182,8 +191,11 @@
 				87EC610B2805F05E00F70AC2 /* popup_ui_variation.swift */,
 				93DA936027EA4C7F007C704F /* omnibox_pedal.h */,
 				876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */,
+				87338E51282184C2009434D1 /* toolbar_configuration.mm */,
 				593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */,
 				593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */,
+				87338E48282178B6009434D1 /* toolbar_configuration.h */,
+				87338E4928217914009434D1 /* toolbar_style.h */,
 				593C4C1227C5638000FBE617 /* omnibox_icon.h */,
 				93BCA08627E2A53C00CE8602 /* blurred_background.swift */,
 				93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */,
@@ -200,6 +212,9 @@
 				59C4A9BD27BFF04F0080C045 /* popup_match.swift */,
 				59C4A9BE27BFF04F0080C045 /* popup_model.swift */,
 				59C4A9BC27BFF04F0080C045 /* popup_view.swift */,
+				87338E5428218540009434D1 /* ntp_home_constant.h */,
+				87338E5328218540009434D1 /* ntp_home_constant.mm */,
+				87338E4A28217A55009434D1 /* popup_ui_configuration.swift */,
 				8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */,
 				8749952327E22B8B005EF2ED /* self_sizing_list.swift */,
 				879F659A27CD299E005B650F /* README.md */,
@@ -482,6 +497,9 @@
 				8701451C27D24A8800C2D66F /* pressed_preference_key_button_style.swift in Sources */,
 				59C4A9C027BFF04F0080C045 /* popup_match_row_view.swift in Sources */,
 				879F659D27CD2BDC005B650F /* popup_match_row_action_button.swift in Sources */,
+				87338E4B28217A55009434D1 /* popup_ui_configuration.swift in Sources */,
+				87338E52282184C2009434D1 /* toolbar_configuration.mm in Sources */,
+				87338E5528218540009434D1 /* ntp_home_constant.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -791,6 +809,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = ../../../../../../..;
 				INFOPLIST_FILE = omnibox_popup/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -825,6 +844,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = ../../../../../../..;
 				INFOPLIST_FILE = omnibox_popup/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
