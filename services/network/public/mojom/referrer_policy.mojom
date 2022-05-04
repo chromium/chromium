@@ -4,10 +4,10 @@
 
 module network.mojom;
 
-[Stable]
+[Stable, Extensible]
 enum ReferrerPolicy {
   kAlways,
-  kDefault,
+  [Default] kDefault,
   kNoReferrerWhenDowngrade,
   kNever,
   kOrigin,

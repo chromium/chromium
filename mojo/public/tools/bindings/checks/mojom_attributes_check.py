@@ -89,7 +89,6 @@ _STABLE_ONLY_ALLOWLISTED_ENUMS = {
     'crosapi.mojom.RequestTextSelectionActionsStatus',
     'crosapi.mojom.RequestUrlHandlerListStatus',
     'crosapi.mojom.TriState',
-    'network.mojom.ReferrerPolicy',
 }
 
 
