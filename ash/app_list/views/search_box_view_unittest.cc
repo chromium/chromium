@@ -353,7 +353,7 @@ TEST_P(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kGoogleBlackIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
+      kGoogleBlackIcon, view()->GetSearchBoxIconSize(), kDefaultSearchboxColor);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -365,9 +365,9 @@ TEST_P(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
 TEST_P(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  const gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon, kSearchBoxIconSize,
-                            kDefaultSearchboxColor);
+  const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      vector_icons::kGoogleColorIcon, view()->GetSearchBoxIconSize(),
+      kDefaultSearchboxColor);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -380,7 +380,8 @@ TEST_P(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   SetSearchEngineIsGoogle(false);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
+      kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
+      kDefaultSearchboxColor);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -393,7 +394,8 @@ TEST_P(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   SetSearchEngineIsGoogle(false);
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
+      kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
+      kDefaultSearchboxColor);
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 

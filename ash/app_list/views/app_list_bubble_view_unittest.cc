@@ -219,7 +219,7 @@ TEST_F(AppListBubbleViewTest, Layout) {
   auto* search_icon = search_box_view->search_icon();
   gfx::Rect search_icon_bounds =
       search_icon->ConvertRectToWidget(search_icon->GetLocalBounds());
-  EXPECT_EQ("17,17 24x24", search_icon_bounds.ToString());
+  EXPECT_EQ("17,19 20x20", search_icon_bounds.ToString());
 
   // Check height of search box view.
   EXPECT_EQ(56, search_box_view->height());

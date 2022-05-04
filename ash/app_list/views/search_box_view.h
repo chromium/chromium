@@ -156,6 +156,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Whether the search box has a non-empty, non-whitespace query.
   bool HasValidQuery();
 
+  // Calculates the correct sizing for search box icons and buttons.
+  int GetSearchBoxIconSize();
+  int GetSearchBoxButtonSize();
+
  private:
   class FocusRingLayer;
 

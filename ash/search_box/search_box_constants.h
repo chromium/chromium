@@ -37,10 +37,16 @@ constexpr int kExpandedSearchBoxCornerRadiusForProductivityLauncher = 28;
 constexpr int kSearchBoxPreferredHeight = 48;
 
 // The size of the icon in the search box.
-constexpr int kSearchBoxIconSize = 24;
+constexpr int kClassicSearchBoxIconSize = 24;
 
 // The size of the image button in the search box.
-constexpr int kSearchBoxButtonSizeDip = 40;
+constexpr int kClassicSearchBoxButtonSizeDip = 40;
+
+// The size of the icon in the search box.
+constexpr int kBubbleLauncherSearchBoxIconSize = 20;
+
+// The size of the image button in the search box.
+constexpr int kBubbleLauncherSearchBoxButtonSizeDip = 36;
 
 // Color of placeholder text in zero query state.
 constexpr SkColor kZeroQuerySearchboxColor =

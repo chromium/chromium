@@ -298,7 +298,7 @@ void SearchBoxView::UpdateSearchIcon() {
   const gfx::VectorIcon& icon =
       search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(
-      gfx::CreateVectorIcon(icon, kSearchBoxIconSize,
+      gfx::CreateVectorIcon(icon, GetSearchBoxIconSize(),
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
                                 SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
 }
@@ -353,7 +353,7 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
       gfx::Point icon_origin;
       views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
       PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
-                    /*height=*/kSearchBoxIconSize);
+                    /*height=*/GetSearchBoxIconSize());
     }
   }
 }
@@ -400,7 +400,7 @@ void SearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, kSearchBoxIconSize,
+      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
                                 gfx::kGoogleGrey700)));
   close->SetVisible(false);
@@ -557,9 +557,11 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
                                  int target_state_height) {
   // Horizontal margins are selected to match search box icon's vertical
   // margins.
-  const int horizontal_spacing = (target_state_height - kSearchBoxIconSize) / 2;
+  const int horizontal_spacing =
+      (target_state_height - GetSearchBoxIconSize()) / 2;
   const int horizontal_right_padding =
-      horizontal_spacing - (kSearchBoxButtonSizeDip - kSearchBoxIconSize) / 2;
+      horizontal_spacing -
+      (GetSearchBoxButtonSize() - GetSearchBoxIconSize()) / 2;
   box_layout()->set_inside_border_insets(
       gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
@@ -686,6 +688,18 @@ void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
 
 bool SearchBoxView::HasValidQuery() {
   return !IsTrimmedQueryEmpty(current_query_);
+}
+
+int SearchBoxView::GetSearchBoxIconSize() {
+  if (features::IsProductivityLauncherEnabled())
+    return kBubbleLauncherSearchBoxIconSize;
+  return kClassicSearchBoxIconSize;
+}
+
+int SearchBoxView::GetSearchBoxButtonSize() {
+  if (features::IsProductivityLauncherEnabled())
+    return kBubbleLauncherSearchBoxButtonSizeDip;
+  return kClassicSearchBoxButtonSizeDip;
 }
 
 void SearchBoxView::UpdateTextColor() {
@@ -1087,7 +1101,7 @@ void SearchBoxView::SetupAssistantButton() {
   views::ImageButton* assistant = assistant_button();
   assistant->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(chromeos::kAssistantIcon, kSearchBoxIconSize,
+      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
                                 gfx::kGoogleGrey700)));
   std::u16string assistant_button_label(
