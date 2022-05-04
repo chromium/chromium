@@ -25,6 +25,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -288,6 +289,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
+    @DisabledTest(message = "https://crbug.com/1322581")
     public void testRequestDesktopSiteMenuItem() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
@@ -322,6 +324,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @DisableFeatures(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "https://crbug.com/1322581")
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
