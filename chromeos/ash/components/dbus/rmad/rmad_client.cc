@@ -154,6 +154,12 @@ void RmadClientImpl::CheckIfRmaIsRequired() {
 }
 
 void RmadClientImpl::OnCheckIfRmaIsRequired(dbus::Response* response) {
+  // TODO(b/230924565): Remove LOG statement after feature release.
+  VLOG(1) << "RmadClientImpl::OnCheckIfRmaIsRequired rma_executable_exists_: "
+          << rma_executable_exists_.value_or(false)
+          << " rma_state_file_exists_: "
+          << rma_state_file_exists_.value_or(false);
+
   if (!response) {
     LOG(ERROR) << "Error calling rmad function for OnCheckIfRmaIsRequired";
     return;
@@ -167,6 +173,9 @@ void RmadClientImpl::OnCheckIfRmaIsRequired(dbus::Response* response) {
   DCHECK(!reader.HasMoreData());
 
   if (!is_rma_required_) {
+    // TODO(b/230924565): Remove LOG statement after feature release.
+    VLOG(1) << "RmadClientImpl::OnCheckIfRmaIsRequired RMA is not required";
+
     // If RMA isn't required, callback is no longer needed.
     session_manager_callback_.Reset();
     return;
