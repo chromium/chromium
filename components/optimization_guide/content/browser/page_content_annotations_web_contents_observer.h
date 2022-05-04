@@ -74,7 +74,7 @@ class PageContentAnnotationsWebContentsObserver
   raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<const TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;

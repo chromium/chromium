@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
@@ -25,10 +26,17 @@ namespace {
 // Returns search metadata if |url| is a valid Search URL according to
 // |template_url_service|.
 absl::optional<SearchMetadata> ExtractSearchMetadata(
-    const TemplateURLService* template_url_service,
+    TemplateURLService* template_url_service,
     const GURL& url) {
   if (!template_url_service)
     return absl::nullopt;
+
+  if (!template_url_service->loaded()) {
+    if (switches::ShouldLogPageContentAnnotationsInput()) {
+      LOG(ERROR) << "Template URL Service not loaded";
+    }
+    return absl::nullopt;
+  }
 
   const TemplateURL* template_url =
       template_url_service->GetTemplateURLForHost(url.host());
@@ -40,16 +48,27 @@ absl::optional<SearchMetadata> ExtractSearchMetadata(
                              template_url->ExtractSearchTermsFromURL(
                                  url, search_terms_data, &search_terms) &&
                              !search_terms.empty();
-  if (!is_valid_search_url)
+  if (!is_valid_search_url) {
+    if (switches::ShouldLogPageContentAnnotationsInput()) {
+      LOG(ERROR) << "Url " << url << " is not a valid search URL";
+    }
     return absl::nullopt;
+  }
 
   const std::u16string& normalized_search_query =
       base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
   TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
   const TemplateURLRef& search_url_ref = template_url->url_ref();
-  if (!search_url_ref.SupportsReplacement(search_terms_data))
+  if (!search_url_ref.SupportsReplacement(search_terms_data)) {
+    if (switches::ShouldLogPageContentAnnotationsInput()) {
+      LOG(ERROR) << "Url " << url << " does not support replacement";
+    }
     return absl::nullopt;
+  }
 
+  if (switches::ShouldLogPageContentAnnotationsInput()) {
+    LOG(ERROR) << "Url " << url << " is a valid search URL";
+  }
   return SearchMetadata{
       GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
                                              search_terms_data)),
@@ -170,6 +189,11 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   if (is_google_search_url ||
       optimization_guide::features::
           ShouldPersistSearchMetadataForNonGoogleSearches()) {
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentAnnotations."
+        "TemplateURLServiceLoadedAtNavigationFinish",
+        template_url_service_ && template_url_service_->loaded());
+
     absl::optional<SearchMetadata> search_metadata = ExtractSearchMetadata(
         template_url_service_, navigation_handle->GetURL());
     if (search_metadata) {

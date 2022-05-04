@@ -646,6 +646,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotations.TemplateURLServiceLoadedAtNavigationFinish"
+    enum="BooleanLoaded" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the TemplateURLService was available and loaded at
+    navigation finish. Recorded once per page load.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotated"
     enum="BooleanAnnotated" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
