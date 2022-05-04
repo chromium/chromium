@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
 
+#include "base/trace_event/base_tracing.h"
 #include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
@@ -24,6 +25,8 @@ void StreamingSearchPrefetchRequest::StartPrefetchRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::OnceCallback<void(bool)> report_error_callback) {
+  TRACE_EVENT0("loading",
+               "StreamingSearchPrefetchRequest::StartPrefetchRequestInternal");
   profile_ = profile;
   network_traffic_annotation_ =
       std::make_unique<net::NetworkTrafficAnnotationTag>(

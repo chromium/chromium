@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -152,6 +153,7 @@ BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch() {
 }
 
 bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
+  TRACE_EVENT0("loading", "BaseSearchPrefetchRequest::StartPrefetchRequest");
   net::NetworkTrafficAnnotationTag network_traffic_annotation =
       NetworkAnnotationForPrefetch();
 
@@ -238,26 +240,38 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       &prefetch_url_search_terms);
 
   bool should_defer = false;
-  for (auto& throttle : throttles) {
-    CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
-    throttle->set_delegate(&cancel_or_pause_delegate);
-    throttle->WillStartRequest(resource_request.get(), &should_defer);
-    // Make sure throttles are deleted before |cancel_or_pause_delegate| in case
-    // they call into the delegate in the destructor.
-    throttle.reset();
+  {
+    TRACE_EVENT0(
+        "loading",
+        "BaseSearchPrefetchRequest::StartPrefetchRequest.ExecuteThrottles");
+    for (auto& throttle : throttles) {
+      CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
+      throttle->set_delegate(&cancel_or_pause_delegate);
 
-    std::u16string new_url_search_terms;
+      {
+        TRACE_EVENT0(
+            "loading",
+            "BaseSearchPrefetchRequest::StartPrefetchRequest.WillStartRequest");
+        throttle->WillStartRequest(resource_request.get(), &should_defer);
+      }
 
-    // Check that search terms still match. Google URLs can be changed by
-    // by safe search (and other features as well) Make sure the URL still has
-    // the same search terms for the DSE.
-    default_search->ExtractSearchTermsFromURL(
-        resource_request->url, template_url_service->search_terms_data(),
-        &new_url_search_terms);
+      // Make sure throttles are deleted before |cancel_or_pause_delegate| in
+      // case they call into the delegate in the destructor.
+      throttle.reset();
 
-    if (should_defer || new_url_search_terms != prefetch_url_search_terms ||
-        cancel_or_pause_delegate.cancelled_or_paused()) {
-      return false;
+      std::u16string new_url_search_terms;
+
+      // Check that search terms still match. Google URLs can be changed by
+      // by safe search (and other features as well) Make sure the URL still has
+      // the same search terms for the DSE.
+      default_search->ExtractSearchTermsFromURL(
+          resource_request->url, template_url_service->search_terms_data(),
+          &new_url_search_terms);
+
+      if (should_defer || new_url_search_terms != prefetch_url_search_terms ||
+          cancel_or_pause_delegate.cancelled_or_paused()) {
+        return false;
+      }
     }
   }
 
