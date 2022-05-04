@@ -308,6 +308,8 @@ mixed_component("base") {
     "export_template.h",
     "feature_list.cc",
     "feature_list.h",
+    "features.cc",
+    "features.h",
     "file_descriptor_store.cc",
     "file_descriptor_store.h",
     "file_version_info.h",
@@ -3972,7 +3974,10 @@ if (is_android) {
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
-    sources = [ "android/base_features.cc" ]
+    sources = [
+      "android/base_features.cc",
+      "features.cc",
+    ]
     template = "android/java/src/org/chromium/base/BaseFeatures.java.tmpl"
   }
 

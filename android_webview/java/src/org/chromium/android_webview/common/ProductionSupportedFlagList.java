@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.common;
 
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.cc.base.CcSwitches;
@@ -316,6 +317,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.DECODE_SCRIPT_SOURCE_OFF_THREAD,
                     "If enabled, script source text will be decoded and hashed off the main"
                             + "thread."),
+            Flag.baseFeature(BaseFeatures.OPTIMIZE_DATA_URLS,
+                    "Optimizes parsing and loading of data: URLs."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

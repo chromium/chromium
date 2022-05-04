@@ -30,6 +30,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/metrics/field_trial_params.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -215,12 +216,24 @@ bool IsWebSocketAllowedInWorker(const WorkerFetchContext& fetch_context,
   return settings && settings->GetAllowRunningOfInsecureContent();
 }
 
+bool IsUrlPotentiallyTrustworthy(const KURL& url) {
+  // This saves a copy of the url, which can be expensive for large data URLs.
+  // TODO(crbug.com/1322100): Remove this logic once
+  // network::IsUrlPotentiallyTrustworthy() doesn't copy the URL.
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+      url.ProtocolIsData()) {
+    DCHECK(network::IsUrlPotentiallyTrustworthy(url));
+    return true;
+  }
+  return network::IsUrlPotentiallyTrustworthy(url);
+}
+
 }  // namespace
 
 static bool IsInsecureUrl(const KURL& url) {
   // |url| is mixed content if it is not a potentially trustworthy URL.
   // See https://w3c.github.io/webappsec-mixed-content/#should-block-response
-  return !network::IsUrlPotentiallyTrustworthy(url);
+  return !IsUrlPotentiallyTrustworthy(url);
 }
 
 static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
@@ -238,7 +251,7 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
           source->GetDocument(),
           WebFeature::kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
-  } else if (!network::IsUrlPotentiallyTrustworthy(url) &&
+  } else if (!IsUrlPotentiallyTrustworthy(url) &&
              base::Contains(url::GetSecureSchemes(),
                             origin->Protocol().Ascii())) {
     UseCounter::Count(
@@ -898,7 +911,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
 
   KURL url = resource_request.Url();
 
-  if (!url.ProtocolIs("http") || network::IsUrlPotentiallyTrustworthy(url))
+  if (!url.ProtocolIs("http") || IsUrlPotentiallyTrustworthy(url))
     return;
 
   if (frame_type == mojom::RequestContextFrameType::kNone ||

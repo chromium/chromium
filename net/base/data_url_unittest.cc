@@ -105,6 +105,14 @@ TEST(DataURLTest, Parse) {
       {"data:;base64,aGVsbG8gd29ybGQ", true, "text/plain", "US-ASCII",
        "hello world"},
 
+      // Not sufficiently padded with whitespace.
+      {"data:;base64,aGV sbG8g d29ybGQ", true, "text/plain", "US-ASCII",
+       "hello world"},
+
+      // Not sufficiently padded with escaped whitespace.
+      {"data:;base64,aGV%20sbG8g%20d29ybGQ", true, "text/plain", "US-ASCII",
+       "hello world"},
+
       // Bad encoding (truncated).
       {"data:;base64,aGVsbG8gd29yb", false, "", "", ""},
 

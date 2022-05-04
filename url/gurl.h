@@ -278,6 +278,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // It is an error to get the content of an invalid URL: the result will be an
   // empty string.
   std::string GetContent() const;
+  base::StringPiece GetContentPiece() const;
 
   // Returns true if the hostname is an IP address. Note: this function isn't
   // as cheap as a simple getter because it re-parses the hostname to verify.

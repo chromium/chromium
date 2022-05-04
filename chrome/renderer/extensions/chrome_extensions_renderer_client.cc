@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/features.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
@@ -228,7 +229,6 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {
   std::string extension_id;
-  GURL request_url(url);
   if (initiator_origin &&
       initiator_origin->scheme() == extensions::kExtensionScheme) {
     extension_id = initiator_origin->host();
@@ -251,6 +251,12 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     }
   }
 
+  // The rest of this method is only concerned with extensions URLs.
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+      !url.ProtocolIs(extensions::kExtensionScheme)) {
+    return;
+  }
+
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       !resource_request_policy_->CanRequestResource(
           GURL(url), frame, transition_type,
@@ -259,6 +265,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   // TODO(https://crbug.com/588766): Remove metrics after bug is fixed.
+  GURL request_url(url);
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {

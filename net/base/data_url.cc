@@ -10,6 +10,8 @@
 
 #include "base/base64.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -20,6 +22,20 @@
 #include "url/gurl.h"
 
 namespace net {
+namespace {
+
+// A data URL is ready for decode if it:
+//   - Doesn't need any extra padding.
+//   - Does not have any escaped characters.
+//   - Does not have any whitespace.
+bool IsDataURLReadyForDecode(base::StringPiece body) {
+  return (body.length() % 4) == 0 && base::ranges::find_if(body, [](char c) {
+                                       return c == '%' ||
+                                              base::IsAsciiWhitespace(c);
+                                     }) == std::end(body);
+}
+
+}  // namespace
 
 bool DataURL::Parse(const GURL& url,
                     std::string* mime_type,
@@ -32,12 +48,20 @@ bool DataURL::Parse(const GURL& url,
   DCHECK(charset->empty());
   DCHECK(!data || data->empty());
 
-  std::string content = url.GetContent();
+  base::StringPiece content;
+  std::string content_string;
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls)) {
+    // Avoid copying the URL content which can be expensive for large URLs.
+    content = url.GetContentPiece();
+  } else {
+    content_string = url.GetContent();
+    content = content_string;
+  }
 
-  std::string::const_iterator begin = content.begin();
-  std::string::const_iterator end = content.end();
+  base::StringPiece::const_iterator begin = content.begin();
+  base::StringPiece::const_iterator end = content.end();
 
-  std::string::const_iterator comma = std::find(begin, end, ',');
+  base::StringPiece::const_iterator comma = std::find(begin, end, ',');
 
   if (comma == end)
     return false;
@@ -110,24 +134,31 @@ bool DataURL::Parse(const GURL& url,
     // of the data, and should be stripped. Otherwise, the escaped whitespace
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
-      std::string unescaped_body = base::UnescapeBinaryURLComponent(raw_body);
+      // If the data URL is well formed, we can decode it immediately.
+      if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+          IsDataURLReadyForDecode(raw_body)) {
+        if (!base::Base64Decode(raw_body, data))
+          return false;
+      } else {
+        std::string unescaped_body = base::UnescapeBinaryURLComponent(raw_body);
 
-      // Strip spaces, which aren't allowed in Base64 encoding.
-      base::EraseIf(unescaped_body, base::IsAsciiWhitespace<char>);
+        // Strip spaces, which aren't allowed in Base64 encoding.
+        base::EraseIf(unescaped_body, base::IsAsciiWhitespace<char>);
 
-      size_t length = unescaped_body.length();
-      size_t padding_needed = 4 - (length % 4);
-      // If the input wasn't padded, then we pad it as necessary until we have a
-      // length that is a multiple of 4 as required by our decoder. We don't
-      // correct if the input was incorrectly padded. If |padding_needed| == 3,
-      // then the input isn't well formed and decoding will fail with or without
-      // padding.
-      if ((padding_needed == 1 || padding_needed == 2) &&
-          unescaped_body[length - 1] != '=') {
-        unescaped_body.resize(length + padding_needed, '=');
+        size_t length = unescaped_body.length();
+        size_t padding_needed = 4 - (length % 4);
+        // If the input wasn't padded, then we pad it as necessary until we have
+        // a length that is a multiple of 4 as required by our decoder. We don't
+        // correct if the input was incorrectly padded. If |padding_needed| ==
+        // 3, then the input isn't well formed and decoding will fail with or
+        // without padding.
+        if ((padding_needed == 1 || padding_needed == 2) &&
+            unescaped_body[length - 1] != '=') {
+          unescaped_body.resize(length + padding_needed, '=');
+        }
+        if (!base::Base64Decode(unescaped_body, data))
+          return false;
       }
-      if (!base::Base64Decode(unescaped_body, data))
-        return false;
     } else {
       // Strip whitespace for non-text MIME types.
       std::string temp;

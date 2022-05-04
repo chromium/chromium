@@ -35,6 +35,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -1012,8 +1013,17 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
       TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)), "url",
       resource_request.Url());
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE(
-      "Blink.Fetch.RequestResourceTime");
+  base::ScopedClosureRunner timer(base::BindOnce(
+      [](base::TimeTicks start, bool is_data) {
+        base::TimeDelta elapsed = base::TimeTicks::Now() - start;
+        base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
+                                            elapsed);
+        if (is_data) {
+          base::UmaHistogramMicrosecondsTimes(
+              "Blink.Fetch.RequestResourceTime2.Data", elapsed);
+        }
+      },
+      base::TimeTicks::Now(), params.Url().ProtocolIsData()));
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
                "url", params.Url().ElidedString().Utf8());
 

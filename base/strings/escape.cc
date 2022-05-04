@@ -7,6 +7,8 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -539,6 +541,16 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
   DCHECK(rules != UnescapeRule::NONE);
   DCHECK(!(rules &
            ~(UnescapeRule::NORMAL | UnescapeRule::REPLACE_PLUS_WITH_SPACE)));
+
+  // If there are no '%' characters in the string, there will be nothing to
+  // unescape, so we can take the fast path.
+  if (base::FeatureList::IsEnabled(features::kOptimizeDataUrls) &&
+      escaped_text.find('%') == StringPiece::npos) {
+    std::string unescaped_text(escaped_text);
+    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
+      std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
+    return unescaped_text;
+  }
 
   std::string unescaped_text;
 

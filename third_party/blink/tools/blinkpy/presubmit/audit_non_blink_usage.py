@@ -272,6 +272,7 @@ _CONFIG = [
             'base::Feature.*',
             'base::FEATURE_.+',
             "base::GetFieldTrial.*",
+            'base::features::.+',
             'features::.+',
 
             # PartitionAlloc

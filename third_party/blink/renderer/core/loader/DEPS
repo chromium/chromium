@@ -18,6 +18,7 @@ specific_include_rules = {
 }
 include_rules = [
   "+base/containers/flat_map.h",
+  "+base/features.h",
   "+base/no_destructor.h",
   "+services/network/public/cpp/client_hints.h",
 ]

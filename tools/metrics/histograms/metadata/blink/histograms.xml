@@ -885,18 +885,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Fetch.RequestResourceTime" units="microseconds"
-    expires_after="M82">
+<histogram name="Blink.Fetch.RequestResourceTime2{Scheme}" units="microseconds"
+    expires_after="2022-11-02">
   <owner>csharrison@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
   <summary>
-    The total microseconds spent in ResourceFetcher::requestResource.
+    The total microseconds spent in ResourceFetcher::requestResource for
+    {Scheme}.
 
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
+  <token key="Scheme">
+    <variant name="" summary="all URLs"/>
+    <variant name=".Data" summary="data URLs"/>
+  </token>
 </histogram>
 
 <histogram name="Blink.FetchQueuedPreloadsTime.{FrameType}.{IsInitial}"

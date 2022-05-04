@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
@@ -855,6 +856,15 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
+
+  // The rest of this method is not concerned with data URLs but makes a copy of
+  // the URL which can be expensive for large data URLs.
+  // TODO(crbug.com/1321924): Clean up this method to avoid copies once this
+  // optimization has been measured in the field and launches.
+  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
+      request.Url().ProtocolIs(url::kDataScheme)) {
+    return;
+  }
 
   // Only check XHR POST requests for add-to-cart.
   // Other add-to-cart matches like navigation is handled in
