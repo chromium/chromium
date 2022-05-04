@@ -27,16 +27,20 @@
 namespace remoting {
 
 namespace {
+
 using base::test::TestFuture;
+using DialogStyle = It2MeConfirmationDialog::DialogStyle;
 constexpr char kTestingRemoteEmail[] = "remote@gmail.com";
+
 }  // namespace
 
-class It2MeConfirmationDialogChromeOSTest : public testing::Test {
+class It2MeConfirmationDialogChromeOSTest
+    : public testing::TestWithParam<DialogStyle> {
  public:
   void SetUp() override {
+    dialog = CreateDialog(GetParam());
     message_center::MessageCenter::Initialize(
         std::make_unique<message_center::FakeLockScreenController>());
-    dialog = CreateEnterpriseDialog();
   }
 
   void TearDown() override {
@@ -46,12 +50,6 @@ class It2MeConfirmationDialogChromeOSTest : public testing::Test {
 
   message_center::MessageCenter& message_center() const {
     return *message_center::MessageCenter::Get();
-  }
-
-  std::unique_ptr<It2MeConfirmationDialog> CreateEnterpriseDialog() {
-    It2MeConfirmationDialogFactory enterprise_factory{
-        It2MeConfirmationDialog::DialogStyle::kEnterprise};
-    return enterprise_factory.Create();
   }
 
   int GetVisibleNotificationsCount() {
@@ -97,8 +95,8 @@ class It2MeConfirmationDialogChromeOSTest : public testing::Test {
   }
 
   std::u16string FormatMessage(const std::string& remote_user_email,
-                               It2MeConfirmationDialog::DialogStyle style) {
-    int message_id = (style == It2MeConfirmationDialog::DialogStyle::kEnterprise
+                               DialogStyle style) {
+    int message_id = (style == DialogStyle::kEnterprise
                           ? IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED
                           : IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME);
 
@@ -117,10 +115,15 @@ class It2MeConfirmationDialogChromeOSTest : public testing::Test {
   std::unique_ptr<It2MeConfirmationDialog> dialog;
 
  private:
+  std::unique_ptr<It2MeConfirmationDialog> CreateDialog(
+      DialogStyle dialog_style) {
+    It2MeConfirmationDialogFactory dialog_factory{dialog_style};
+    return dialog_factory.Create();
+  }
   base::test::SingleThreadTaskEnvironment environment_;
 };
 
-TEST_F(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
+TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
   dialog->Show(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
@@ -128,11 +131,10 @@ TEST_F(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
   ASSERT_GT(notification->message().size(), 0llu);
   EXPECT_EQ(message_center().NotificationCount(), 1llu);
   EXPECT_EQ(notification->message(),
-            FormatMessage(kTestingRemoteEmail,
-                          It2MeConfirmationDialog::DialogStyle::kEnterprise));
+            FormatMessage(kTestingRemoteEmail, GetParam()));
 }
 
-TEST_F(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
+TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
   dialog->Show(kTestingRemoteEmail, DoNothingCallback());
 
   const message_center::Notification* notification = GetFirstNotification();
@@ -141,7 +143,7 @@ TEST_F(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
             message_center::NotificationPriority::SYSTEM_PRIORITY);
 }
 
-TEST_F(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeShownInDoNotDisturbMode) {
   dialog->Show(kTestingRemoteEmail, DoNothingCallback());
 
@@ -154,7 +156,7 @@ TEST_F(It2MeConfirmationDialogChromeOSTest,
             message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 
-TEST_F(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldHaveConfirmAndCancelButton) {
   dialog->Show(kTestingRemoteEmail, DoNothingCallback());
 
@@ -170,7 +172,7 @@ TEST_F(It2MeConfirmationDialogChromeOSTest,
             0);  // Confirm button
 }
 
-TEST_F(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeRemovedAndReturnCancelAfterUserCancels) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
   dialog->Show(kTestingRemoteEmail, result_future.GetCallback());
@@ -181,7 +183,7 @@ TEST_F(It2MeConfirmationDialogChromeOSTest,
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::CANCEL);
 }
 
-TEST_F(It2MeConfirmationDialogChromeOSTest,
+TEST_P(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldBeRemovedAndReturnOkAfterUserConfirms) {
   TestFuture<It2MeConfirmationDialog::Result> result_future;
   dialog->Show(kTestingRemoteEmail, result_future.GetCallback());
@@ -191,5 +193,13 @@ TEST_F(It2MeConfirmationDialogChromeOSTest,
   EXPECT_EQ(GetVisibleNotificationsCount(), 0);
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
 }
+
+INSTANTIATE_TEST_CASE_P(EnterpriseDialog,
+                        It2MeConfirmationDialogChromeOSTest,
+                        testing::Values(DialogStyle::kEnterprise));
+
+INSTANTIATE_TEST_CASE_P(ConsumerDialog,
+                        It2MeConfirmationDialogChromeOSTest,
+                        testing::Values(DialogStyle::kConsumer));
 
 }  // namespace remoting
