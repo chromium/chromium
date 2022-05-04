@@ -30,12 +30,6 @@ struct StructWithToString {
   std::string ToString() const { return ""; }
 };
 
-// is_non_const_reference<Type>
-static_assert(!is_non_const_reference<int>::value, "IsNonConstReference");
-static_assert(!is_non_const_reference<const int&>::value,
-              "IsNonConstReference");
-static_assert(is_non_const_reference<int&>::value, "IsNonConstReference");
-
 // A few standard types that definitely support printing.
 static_assert(internal::SupportsOstreamOperator<int>::value,
               "ints should be printable");
