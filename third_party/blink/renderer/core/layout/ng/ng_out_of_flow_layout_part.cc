@@ -489,7 +489,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         *To<LayoutNGGrid>(container_object),
         container_builder_->GridLayoutData(), container_builder_->Borders(),
         {container_builder_->InlineSize(),
-         container_builder_->FragmentsTotalBlockSize()});
+         container_builder_->FragmentBlockSize()});
   }
 
   return node_style.GetPosition() == EPosition::kAbsolute
