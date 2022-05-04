@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_
 
+#include "base/callback.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -21,7 +22,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
-      AccountSelectionView::Delegate* delegate,
       const std::string& rp_etld_plus_one,
       const std::string& idp_etld_plus_one,
       base::span<const content::IdentityRequestAccount> accounts,
@@ -29,7 +29,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
       const content::ClientIdData& client_data,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TabStripModel* tab_strip_model);
+      TabStripModel* tab_strip_model,
+      base::OnceCallback<void(const content::IdentityRequestAccount&)>
+          on_account_selected_callback);
   ~AccountSelectionBubbleView() override;
 
  private:
@@ -94,8 +96,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // privacy policy and terms of service urls when the user clicks on the links.
   const raw_ptr<TabStripModel> tab_strip_model_;
 
-  // The delegate to which the account selection is sent.
-  raw_ptr<AccountSelectionView::Delegate> delegate_ = nullptr;
+  base::OnceCallback<void(const content::IdentityRequestAccount&)>
+      on_account_selected_callback_;
 
   // The privacy policy and terms of service URLs
   const content::ClientIdData client_data_;

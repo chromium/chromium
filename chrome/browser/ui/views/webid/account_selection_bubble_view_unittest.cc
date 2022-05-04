@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -39,6 +40,9 @@ constexpr char kIdpETLDPlusOne[] = "idp-example.com";
 const std::u16string kTitleSignIn =
     u"Sign in to rp-example.com with idp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
+
+void MockAccountSelectedCallback(
+    const content::IdentityRequestAccount& selected_account) {}
 
 }  // namespace
 
@@ -95,10 +99,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     anchor_widget_ = std::make_unique<views::Widget>();
     anchor_widget_->Init(std::move(params));
     anchor_widget_->Show();
+
     dialog_ = new AccountSelectionBubbleView(
-        delegate_.get(), kRpETLDPlusOne, kIdpETLDPlusOne, accounts,
-        idp_metadata, client_data, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(), nullptr);
+        kRpETLDPlusOne, kIdpETLDPlusOne, accounts, idp_metadata, client_data,
+        anchor_widget_->GetContentsView(), shared_url_loader_factory(), nullptr,
+        base::BindOnce(&MockAccountSelectedCallback));
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 

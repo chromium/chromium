@@ -85,7 +85,6 @@ class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
-    AccountSelectionView::Delegate* delegate,
     const std::string& rp_etld_plus_one,
     const std::string& idp_etld_plus_one,
     base::span<const content::IdentityRequestAccount> accounts,
@@ -93,14 +92,16 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const content::ClientIdData& client_data,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TabStripModel* tab_strip_model)
+    TabStripModel* tab_strip_model,
+    base::OnceCallback<void(const content::IdentityRequestAccount&)>
+        on_account_selected_callback)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::Arrow::TOP_RIGHT),
       idp_etld_plus_one_(base::UTF8ToUTF16(idp_etld_plus_one)),
       brand_text_color_(idp_metadata.brand_text_color),
       brand_background_color_(idp_metadata.brand_background_color),
       tab_strip_model_(tab_strip_model),
-      delegate_(delegate),
+      on_account_selected_callback_(std::move(on_account_selected_callback)),
       client_data_(client_data) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), url_loader_factory);
@@ -313,7 +314,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
 void AccountSelectionBubbleView::OnAccountSelected(
     const content::IdentityRequestAccount& account) {
   ShowVerifySheet(account);
-  delegate_->OnAccountSelected(account);
+  std::move(on_account_selected_callback_).Run(account);
 }
 
 void AccountSelectionBubbleView::ShowVerifySheet(

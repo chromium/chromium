@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include "base/bind.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,8 +37,7 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
       content::WebContentsObserver(delegate->GetWebContents()) {}
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
-  if (bubble_widget_)
-    bubble_widget_->Close();
+  Close();
 
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
@@ -60,15 +60,19 @@ void FedCmAccountSelectionView::Show(
   views::View* anchor_view = browser_view->top_container();
   TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
   tab_strip_model->AddObserver(this);
-  bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(
-                       new AccountSelectionBubbleView(
-                           delegate_, rp_etld_plus_one, idp_etld_plus_one,
-                           accounts, idp_metadata, client_data, anchor_view,
-                           SystemNetworkContextManager::GetInstance()
-                               ->GetSharedURLLoaderFactory(),
-                           tab_strip_model))
-                       ->GetWeakPtr();
+  bubble_widget_ =
+      views::BubbleDialogDelegateView::CreateBubble(
+          new AccountSelectionBubbleView(
+              rp_etld_plus_one, idp_etld_plus_one, accounts, idp_metadata,
+              client_data, anchor_view,
+              SystemNetworkContextManager::GetInstance()
+                  ->GetSharedURLLoaderFactory(),
+              tab_strip_model,
+              base::BindOnce(&FedCmAccountSelectionView::OnAccountSelected,
+                             base::Unretained(this))))
+          ->GetWeakPtr();
   bubble_widget_->Show();
+  bubble_widget_->AddObserver(this);
 }
 
 void FedCmAccountSelectionView::OnVisibilityChanged(
@@ -85,10 +89,7 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
 
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {
   // Close the bubble when the user navigates within the same tab.
-  if (bubble_widget_) {
-    bubble_widget_->Close();
-    bubble_widget_ = nullptr;
-  }
+  Close();
 }
 
 void FedCmAccountSelectionView::OnTabStripModelChanged(
@@ -103,7 +104,37 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
   // possible to move the bubble with the tab, even to a different browser
   // window.
   if (index == TabStripModel::kNoTab && bubble_widget_) {
-    bubble_widget_->Close();
-    bubble_widget_ = nullptr;
+    Close();
   }
+}
+
+void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
+  bool should_embargo = (bubble_widget_->closed_reason() ==
+                         views::Widget::ClosedReason::kCloseButtonClicked);
+  OnDismiss(should_embargo);
+}
+
+void FedCmAccountSelectionView::OnAccountSelected(
+    const content::IdentityRequestAccount& account) {
+  was_account_selected_ = true;
+  delegate_->OnAccountSelected(account);
+}
+
+void FedCmAccountSelectionView::Close() {
+  if (!bubble_widget_)
+    return;
+
+  bubble_widget_->Close();
+  OnDismiss(/*should_embargo=*/false);
+}
+
+void FedCmAccountSelectionView::OnDismiss(bool should_embargo) {
+  if (!bubble_widget_)
+    return;
+
+  bubble_widget_->RemoveObserver(this);
+  bubble_widget_.reset();
+
+  if (!was_account_selected_)
+    delegate_->OnDismiss(should_embargo);
 }
