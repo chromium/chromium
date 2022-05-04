@@ -226,6 +226,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationGLTextureVideo
 
     base::ScopedFD sync_fd = CreateEglFenceAndExportFd();
     scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
   }
 
@@ -294,6 +295,7 @@ class SharedImageVideoImageReader::
 
     base::ScopedFD sync_fd = CreateEglFenceAndExportFd();
     scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
   }
 
@@ -542,14 +544,6 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
   }
 
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
-    // Note that we dont need to hold onto DrDc lock here. If we add DrDc lock
-    // here then there could be a situation where
-    // FrameInfoHelper::GetFrameInfo() can hold DrDc lock from gpu main thread
-    // while waiting for the buffer to be available and EndReadAccess could
-    // wait on the same lock here from drdc thread, resulting in buffer not
-    // being released and hence deadlock.
-    // crbug.com/1262990 for more details.
-
     if (gl_image_) {
       DCHECK(release_fence.is_null());
       if (scoped_hardware_buffer_) {
@@ -561,6 +555,8 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
       scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd),
                                             true);
     }
+
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_.reset();
   }
 
