@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -274,5 +275,32 @@ TEST_P(ParameterizedInsertListCommandTest, NonCanonicalVisiblePosition) {
           : "<ul><li><textarea></textarea><svg></svg>^<select></select></li>"
             "<li><input>|</li></ul>",
       GetSelectionTextFromBody());
+}
+
+// Refer https://crbug.com/1316041
+TEST_F(InsertListCommandTest, TimeAndMeterInRoot) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+
+  Element* root = document.documentElement();
+  Element* time = document.CreateRawElement(html_names::kTimeTag);
+  Element* meter = document.CreateRawElement(html_names::kMeterTag);
+  time->appendChild(meter);
+  root->insertBefore(time, root->firstChild());
+
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(time, 0))
+                               .Extend(Position::LastPositionInNode(*time))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      document, InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("<ul><li>|<time></time></li></ul><head></head><body></body>",
+            SelectionSample::GetSelectionText(
+                *root, Selection().GetSelectionInDOMTree()));
 }
 }

@@ -210,9 +210,10 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
     int index_for_end_of_selection = IndexForVisiblePosition(
         visible_end_of_selection, scope_for_end_of_selection);
 
-    if (StartOfParagraph(visible_start_of_selection,
-                         kCanSkipOverEditingBoundary)
-            .DeepEquivalent() != start_of_last_paragraph) {
+    if (!StartOfParagraph(visible_start_of_selection,
+                          kCanSkipOverEditingBoundary)
+             .DeepEquivalent()
+             .IsEquivalent(start_of_last_paragraph)) {
       force_list_creation =
           !SelectionHasListOfType(selection.Start(), selection.End(), list_tag);
 
