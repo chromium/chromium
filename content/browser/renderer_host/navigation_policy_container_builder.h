@@ -178,11 +178,11 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // due to another navigation committing in the meantime.
   void ResetForCrossDocumentRestart();
 
- private:
   // Whether either of `ComputePolicies()` or `ComputePoliciesForError()` has
   // been called yet.
   bool HasComputedPolicies() const;
 
+ private:
   // Sets `delivered_policies_.is_web_secure_context` to its final value.
   //
   // Helper for `ComputePolicies()`.

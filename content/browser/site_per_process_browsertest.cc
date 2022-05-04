@@ -488,6 +488,17 @@ class SitePerProcessIsolatedSandboxedIframeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class SitePerProcessNotIsolatedSandboxedIframeTest
+    : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessNotIsolatedSandboxedIframeTest() {
+    feature_list_.InitAndDisableFeature(features::kIsolateSandboxedIframes);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // SitePerProcessIgnoreCertErrorsBrowserTest
 
 void SitePerProcessIgnoreCertErrorsBrowserTest::SetUpOnMainThread() {
@@ -2331,6 +2342,61 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessAutoplayBrowserTest,
   EXPECT_TRUE(NavigateFrameToURL(root->child_at(0), bar_url));
   EXPECT_FALSE(AutoplayAllowed(shell(), false));
   EXPECT_FALSE(AutoplayAllowed(shell(), false));
+}
+
+// The following test should not crash. In this test the
+// kIsolateSandboxedIframes flag is forced off, so we don't need to verify
+// the process isolation details, as is done in
+// SitePerProcessIsolatedSandboxedIframeTest.SrcdocCspSandboxIsIsolated below.
+// https://crbug.com/1319430
+IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
+                       SrcdocSandboxFlagsCheck) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame, with csp sandbox.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.csp = 'sandbox'; "
+                     "frame.srcdoc = 'foo'; "
+                     "document.body.appendChild(frame);"));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+}
+
+// Test that a srcdoc iframe that receives its sandbox flags from the CSP
+// attribute also gets process isolation. This test starts the same as
+// SitePerProcessNotIsolatedSandboxedIframeTest.SrcdocSandboxFlagsCheck, but in
+// this test the kIsolateSandboxedIframes flag is on, so we also verify that
+// the process isolation has indeed occurred.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       SrcdocCspSandboxIsIsolated) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame, with csp sandbox.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.csp = 'sandbox'; "
+                     "frame.srcdoc = 'foo'; "
+                     "document.body.appendChild(frame);"));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->current_frame_host()->active_sandbox_flags());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .is_sandboxed());
 }
 
 // A test to verify that an iframe with a fully-restrictive sandbox is rendered
@@ -13401,6 +13467,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessNotIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIgnoreCertErrorsBrowserTest,

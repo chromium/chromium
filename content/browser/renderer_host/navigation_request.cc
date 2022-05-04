@@ -3129,28 +3129,29 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   auto web_exposed_isolation_info = ComputeWebExposedIsolationInfo();
 
   // Determine if the request is for a sandboxed frame or not. If
-  // ComputeSandboxFlagsToCommit() has run `sandbox_flags_to_commit_` will be
-  // valid, but even if it hasn't, we can speculatively take
-  // `commit_params_->frame_policy.sandbox_flags` if we haven't received the
-  // response yet and don't have the final `sandbox_flags_to_commit_`, and
-  // if the state of the kOrigin flag changes, we'll detect the change and
-  // recompute the target SiteInstance elsewhere.
+  // PolicyContainer::ComputePoliciesToCommit() has run
+  // `policy_container_builder_` will be valid, but even if it hasn't, we can
+  // speculatively take `commit_params_->frame_policy.sandbox_flags` if we
+  // haven't received the response yet and don't have the final
+  // `policy_container_builder_`, and if the state of the kOrigin flag changes,
+  // we'll detect the change and recompute the target SiteInstance elsewhere.
   // Note: We don't try to process-isolate about:blank URLs since that would
   // prevent the parent frame from interacting with them, and they would be
   // stuck as empty content.
   bool is_origin_restricted_sandbox = false;
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() &&
       !GetURL().IsAboutBlank()) {
-    if (state_ >= WILL_PROCESS_RESPONSE) {
+    if (policy_container_builder_->HasComputedPolicies()) {
       is_origin_restricted_sandbox =
           (policy_container_builder_->FinalPolicies().sandbox_flags &
            network::mojom::WebSandboxFlags::kOrigin) ==
           network::mojom::WebSandboxFlags::kOrigin;
     } else {
-      // Note: We'll end up here for srcdoc iframes, as they don't go through
-      // OnResponseStarted. That means ComputeSandboxFlagsToCommit() may not
-      // have been called yet, but we should be able to reliably get kOrigin
-      // information from `commit_params_->frame_policy.sandbox_flags`.
+      // Note: We'll end up here if this function is called before
+      // ComputePoliciesToCommit(), such as when computing a speculative
+      // RenderFrameHost's SiteInstance before receiving a response. In that
+      // event we use the sandbox flags in commit_params_ as a current "best
+      // estimate".
       is_origin_restricted_sandbox =
           (commit_params_->frame_policy.sandbox_flags &
            network::mojom::WebSandboxFlags::kOrigin) ==
@@ -7303,16 +7304,6 @@ void NavigationRequest::ComputePoliciesToCommit() {
 
   commit_params_->sandbox_flags =
       policy_container_builder_->FinalPolicies().sandbox_flags;
-
-  // For about: urls this function should not change the kOrigin flag. We rely
-  // on this when deciding on process isolation for sandboxed frames with these
-  // URLs, see NavigationRequest::GetUrlInfo().
-  if (GetURL().IsAboutBlank() || GetURL().IsAboutSrcdoc()) {
-    CHECK_EQ(commit_params_->frame_policy.sandbox_flags &
-                 network::mojom::WebSandboxFlags::kOrigin,
-             policy_container_builder_->FinalPolicies().sandbox_flags &
-                 network::mojom::WebSandboxFlags::kOrigin);
-  }
 }
 
 void NavigationRequest::ComputePoliciesToCommitForError() {
