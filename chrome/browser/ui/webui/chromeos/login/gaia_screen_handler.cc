@@ -1169,15 +1169,9 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
     }
   }
 
-  if (gaia_silent_load_ && !populated_account_id_.is_valid()) {
-    dns_cleared_ = true;
-    cookies_cleared_ = true;
-    ShowGaiaScreenIfReady();
-  } else {
-    StartClearingDnsCache();
-    StartClearingCookies(base::BindOnce(
-        &GaiaScreenHandler::ShowGaiaScreenIfReady, weak_factory_.GetWeakPtr()));
-  }
+  StartClearingDnsCache();
+  StartClearingCookies(base::BindOnce(&GaiaScreenHandler::ShowGaiaScreenIfReady,
+                                      weak_factory_.GetWeakPtr()));
 }
 
 void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
@@ -1285,13 +1279,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   }
 
   std::string active_network_path = network_state_informer_->network_path();
-  if (gaia_silent_load_ &&
-      (network_state_informer_->state() != NetworkStateInformer::ONLINE ||
-       gaia_silent_load_network_ != active_network_path)) {
-    // Network has changed. Force Gaia reload.
-    gaia_silent_load_ = false;
-  }
-
   if (!untrusted_authority_certs_cache_) {
     // Make additional untrusted authority certificates available for client
     // certificate discovery in case a SAML flow is used which requires a client
@@ -1307,13 +1294,8 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
                     chromeos::onc::CertificateScope::Default()));
   }
 
-  LoadAuthExtension(!gaia_silent_load_ /* force */);
+  LoadAuthExtension(/* force=*/true);
 
-  if (gaia_silent_load_) {
-    // The variable is assigned to false because silently loaded Gaia page was
-    // used.
-    gaia_silent_load_ = false;
-  }
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
   // TODO(crbug.com/1105387): Part of initial screen logic.

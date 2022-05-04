@@ -346,12 +346,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // clean-up finish, and the handler is initialized (i.e. the web UI is ready).
   bool show_when_ready_ = false;
 
-  // Has Gaia page silent load been started for the current sign-in attempt?
-  bool gaia_silent_load_ = false;
-
-  // The active network at the moment when Gaia page was preloaded.
-  std::string gaia_silent_load_network_;
-
   // This flag is set when user authenticated using the Chrome Credentials
   // Passing API (the login could happen via SAML or, with the current
   // server-side implementation, via Gaia).
