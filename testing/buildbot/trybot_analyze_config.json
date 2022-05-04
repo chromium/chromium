@@ -19,6 +19,7 @@
       "build/vs_toolchain.py",
       "DEPS",
       "infra/scripts/.*",
+      "infra/orchestrator/BUILD.gn",
       "testing/buildbot/gn_isolate_map.pyl",
       "testing/merge_scripts/.*",
       "testing/scripts/.*",
