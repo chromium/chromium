@@ -35,46 +35,6 @@ namespace {
 // Time to backoff syncing after receiving a throttled response.
 constexpr base::TimeDelta kSyncDelayAfterThrottled = base::Hours(2);
 
-void LogResponseProfilingData(const ClientToServerResponse& response) {
-  if (response.has_profiling_data()) {
-    stringstream response_trace;
-    response_trace << "Server response trace:";
-
-    if (response.profiling_data().has_user_lookup_time()) {
-      response_trace << " user lookup: "
-                     << response.profiling_data().user_lookup_time() << "ms";
-    }
-
-    if (response.profiling_data().has_meta_data_write_time()) {
-      response_trace << " meta write: "
-                     << response.profiling_data().meta_data_write_time()
-                     << "ms";
-    }
-
-    if (response.profiling_data().has_meta_data_read_time()) {
-      response_trace << " meta read: "
-                     << response.profiling_data().meta_data_read_time() << "ms";
-    }
-
-    if (response.profiling_data().has_file_data_write_time()) {
-      response_trace << " file write: "
-                     << response.profiling_data().file_data_write_time()
-                     << "ms";
-    }
-
-    if (response.profiling_data().has_file_data_read_time()) {
-      response_trace << " file read: "
-                     << response.profiling_data().file_data_read_time() << "ms";
-    }
-
-    if (response.profiling_data().has_total_request_time()) {
-      response_trace << " total time: "
-                     << response.profiling_data().total_request_time() << "ms";
-    }
-    DVLOG(1) << response_trace.str();
-  }
-}
-
 SyncerError ServerConnectionErrorAsSyncerError(
     const HttpResponse::ServerConnectionCode server_status,
     int net_error_code,
@@ -535,7 +495,6 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
                    << "recent version.";
       return SyncerError(SyncerError::SERVER_RETURN_UNKNOWN_ERROR);
     case SYNC_SUCCESS:
-      LogResponseProfilingData(*response);
       return SyncerError(SyncerError::SYNCER_OK);
     case THROTTLED:
       if (sync_protocol_error.error_data_types.Empty()) {

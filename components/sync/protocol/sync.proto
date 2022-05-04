@@ -25,17 +25,6 @@ import "components/sync/protocol/sync_entity.proto";
 import "components/sync/protocol/sync_enums.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
 
-// Used for inspecting how long we spent performing operations in different
-// backends. All times must be in millis.
-message ProfilingData {
-  optional int64 meta_data_write_time = 1;
-  optional int64 file_data_write_time = 2;
-  optional int64 user_lookup_time = 3;
-  optional int64 meta_data_read_time = 4;
-  optional int64 file_data_read_time = 5;
-  optional int64 total_request_time = 6;
-}
-
 // This message contains diagnostic information used to correlate
 // commit-related traffic with extensions-related mutations to the
 // data models in chromium.  It plays no functional role in
@@ -413,7 +402,8 @@ message ClientToServerResponse {
   optional string store_birthday = 6;
 
   optional ClientCommand client_command = 7;
-  optional ProfilingData profiling_data = 8;
+  reserved 8;
+  reserved "profiling_data";
   reserved 9;
   reserved 10;
   reserved "stream_metadata";
