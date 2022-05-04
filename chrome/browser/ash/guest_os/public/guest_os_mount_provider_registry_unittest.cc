@@ -7,20 +7,13 @@
 #include <algorithm>
 #include <vector>
 
+#include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace guest_os {
 
 using Id = GuestOsMountProviderRegistry::Id;
-
-class MockProvider : public GuestOsMountProvider {
-  std::string DisplayName() override { return "Ptery"; }
-  Profile* profile() override { return nullptr; }
-  crostini::ContainerId ContainerId() override {
-    return crostini::ContainerId::GetDefault();
-  }
-};
 
 class MockObserver : public GuestOsMountProviderRegistry::Observer {
   using Id = GuestOsMountProviderRegistry::Id;
@@ -42,9 +35,9 @@ class GuestOsMountProviderRegistryTest : public testing::Test {};
 
 // Test that we can register, list and get providers
 TEST_F(GuestOsMountProviderRegistryTest, TestGetting) {
-  auto provider1 = std::make_unique<MockProvider>();
+  auto provider1 = std::make_unique<MockMountProvider>();
   auto* p1 = provider1.get();
-  auto provider2 = std::make_unique<MockProvider>();
+  auto provider2 = std::make_unique<MockMountProvider>();
   auto* p2 = provider2.get();
   GuestOsMountProviderRegistry registry;
   auto id1 = registry.Register(std::move(provider1));
@@ -65,8 +58,8 @@ TEST_F(GuestOsMountProviderRegistryTest, TestGetNullPtrIfMissing) {
 
 // Test register/unregister and observing/unobserving
 TEST_F(GuestOsMountProviderRegistryTest, TestObservation) {
-  auto provider1 = std::make_unique<MockProvider>();
-  auto provider2 = std::make_unique<MockProvider>();
+  auto provider1 = std::make_unique<MockMountProvider>();
+  auto provider2 = std::make_unique<MockMountProvider>();
   GuestOsMountProviderRegistry registry;
   MockObserver obs;
   registry.AddObserver(&obs);

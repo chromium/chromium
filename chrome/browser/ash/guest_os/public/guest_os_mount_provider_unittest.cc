@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -48,22 +49,6 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
 
 namespace guest_os {
 
-// TODO(crbug/1293229): This is MockProvider2 because we already have a
-// MockProvider and ODR will ruin our day if we have the same name. Should move
-// this into a separate file and have both test suites use the same object,
-// since both just need a placeholder.
-class MockProvider2 : public GuestOsMountProvider {
- public:
-  explicit MockProvider2(Profile* profile, crostini::ContainerId container_id)
-      : profile_(profile), container_id_(container_id) {}
-  std::string DisplayName() override { return "Ptery"; }
-  Profile* profile() override { return profile_; }
-  Profile* profile_;
-  crostini::ContainerId ContainerId() override { return container_id_; }
-  // TODO(crbug/1293229): Make ContainerId generic and in guest_os namespace.
-  crostini::ContainerId container_id_;
-};
-
 class GuestOsMountProviderTest : public testing::Test {
  public:
   GuestOsMountProviderTest() {
@@ -71,7 +56,8 @@ class GuestOsMountProviderTest : public testing::Test {
     // DiskMountManager::InitializeForTesting takes ownership and works with
     // a raw pointer, hence the new with no matching delete.
     disk_manager_ = new ash::disks::MockDiskMountManager;
-    provider_ = std::make_unique<MockProvider2>(profile_.get(), kContainerId);
+    provider_ =
+        std::make_unique<MockMountProvider>(profile_.get(), kContainerId);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildVolumeManager));
 
@@ -132,7 +118,7 @@ class GuestOsMountProviderTest : public testing::Test {
   ash::disks::MockDiskMountManager* disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
   file_manager::VolumeManager* volume_manager_;
-  std::unique_ptr<MockProvider2> provider_;
+  std::unique_ptr<MockMountProvider> provider_;
 };
 
 TEST_F(GuestOsMountProviderTest, MountDiskMountsDisk) {
