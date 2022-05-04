@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -36,6 +38,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private static final String TAG = "PageInfo";
 
     private final PageInfoMainController mMainController;
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
@@ -46,8 +49,10 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     }
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents) {
         mMainController = mainController;
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mRowView = rowView;
         mDelegate = delegate;
         mWebContents = webContents;
@@ -86,9 +91,17 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     private void openUrl(String url, @PageInfoAction int action) {
         mMainController.recordAction(action);
-        new TabDelegate(/*incognito=*/false)
-                .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
-                        TabUtils.fromWebContents(mWebContents));
+        if (mEphemeralTabCoordinatorSupplier != null
+                && mEphemeralTabCoordinatorSupplier.get() != null) {
+            String title = mRowView.getContext().getString(R.string.page_info_more_about_this_page);
+            mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(
+                    new GURL(url), title, /*isIncognito=*/false);
+            mMainController.dismiss();
+        } else {
+            new TabDelegate(/*incognito=*/false)
+                    .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
+                            TabUtils.fromWebContents(mWebContents));
+        }
     }
 
     @Override

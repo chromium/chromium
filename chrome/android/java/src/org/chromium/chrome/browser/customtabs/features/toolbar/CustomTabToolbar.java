@@ -49,6 +49,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CloseButtonPosition;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -222,13 +223,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param locationBarModel {@link LocationBarModel} to be used for accessing LocationBar
      *         state.
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
+     * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
+     * @param ephemeralTabCoordinatorSupplier Supplier of {@link EphemeralTabCoordinator}.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
     public LocationBar createLocationBar(LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier) {
         mLocationBarModel = locationBarModel;
-        mLocationBar.init(locationBarModel, modalDialogManagerSupplier, actionModeCallback);
+        mLocationBar.init(locationBarModel, modalDialogManagerSupplier,
+                ephemeralTabCoordinatorSupplier, actionModeCallback);
         return mLocationBar;
     }
 
@@ -619,6 +624,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private int mState = STATE_DOMAIN_ONLY;
 
         private LocationBarDataProvider mLocationBarDataProvider;
+        private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
         private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
 
@@ -691,8 +697,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public void init(LocationBarDataProvider locationBarDataProvider,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
                 ActionMode.Callback actionModeCallback) {
             mLocationBarDataProvider = locationBarDataProvider;
+            mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
             mLocationBarDataProvider.addObserver(this);
             mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar, /*windowDelegate=*/null,
@@ -755,7 +763,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // For now we don't show "store info" row for custom tab.
                 new ChromePageInfo(mModalDialogManagerSupplier,
                         TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
-                        OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
+                        OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null,
+                        mEphemeralTabCoordinatorSupplier)
                         .show(currentTab, ChromePageInfoHighlight.noHighlight());
             });
         }

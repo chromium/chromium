@@ -70,7 +70,7 @@ public class PreviewTabTest {
                     ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting());
             mEphemeralTabCoordinator =
-                    tabbedRootUiCoordinator.getEphemeralTabCoordinatorForTesting();
+                    tabbedRootUiCoordinator.getEphemeralTabCoordinatorSupplier().get();
         });
         mSheetTestSupport = new BottomSheetTestSupport(mActivityTestRule.getActivity()
                                                                .getRootUiCoordinatorForTesting()

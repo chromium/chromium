@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
@@ -269,6 +270,7 @@ public class RootUiCoordinator
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final OneshotSupplierImpl<HistoryClustersCoordinator>
             mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -308,6 +310,7 @@ public class RootUiCoordinator
      * @param statusBarColorProvider Provides the status bar color.
      * @param intentRequestTracker Tracks intent requests.
      * @param tabReparentingControllerSupplier Supplier of the {@link TabReparentingController}.
+     * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
@@ -343,6 +346,7 @@ public class RootUiCoordinator
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
+            @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeUiWithIncognitoColors) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
@@ -430,6 +434,7 @@ public class RootUiCoordinator
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
                 mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
                 mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -999,7 +1004,8 @@ public class RootUiCoordinator
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
-                    mOmniboxPedalDelegate, mInitializeUiWithIncognitoColors);
+                    mOmniboxPedalDelegate, mEphemeralTabCoordinatorSupplier,
+                    mInitializeUiWithIncognitoColors);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -1215,6 +1221,13 @@ public class RootUiCoordinator
     /** @return The {@link BottomSheetController} for this activity. */
     public ManagedBottomSheetController getBottomSheetController() {
         return mBottomSheetController;
+    }
+
+    /**
+     * @return Supplies the {@link EphemeralTabCoordinator}
+     */
+    public Supplier<EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
+        return mEphemeralTabCoordinatorSupplier;
     }
 
     /**

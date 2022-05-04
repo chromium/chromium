@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
@@ -356,8 +355,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
-    private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier =
-            new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
@@ -1665,7 +1662,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::getSnackbarManager, getActivityType(), this::shouldShowOverviewPageOnStart,
                 this::isWarmOnResume,
                 /* appMenuDelegate= */ this,
-                /* statusBarColorProvider= */ this, mEphemeralTabCoordinatorSupplier,
+                /* statusBarColorProvider= */ this, new ObservableSupplierImpl<>(),
                 getIntentRequestTracker(), getControlContainerHeightResource(),
                 mInsetObserverViewSupplier, this::backShouldCloseTab,
                 getTabReparentingControllerSupplier(),
@@ -1894,7 +1891,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mTabDelegateFactory == null) {
             mTabDelegateFactory = new TabbedModeTabDelegateFactory(this,
                     getAppBrowserControlsVisibilityDelegate(), getShareDelegateSupplier(),
-                    mEphemeralTabCoordinatorSupplier,
+                    mRootUiCoordinator.getEphemeralTabCoordinatorSupplier(),
                     ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
                     mRootUiCoordinator.getBottomSheetController(),
                     /* ChromeActivityNativeDelegate */ this, /* isCustomTab= */ false,

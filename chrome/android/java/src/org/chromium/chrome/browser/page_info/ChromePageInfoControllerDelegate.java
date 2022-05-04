@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
@@ -73,18 +74,20 @@ import java.util.Date;
  */
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
     private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
     private final ChromePageInfoHighlight mPageInfoHighlight;
+    private final OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
     private String mOfflinePageCreationDate;
-    private OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
 
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromePageInfoHighlight pageInfoHighlight) {
         super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
@@ -95,6 +98,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mContext = context;
         mWebContents = webContents;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
         mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
         mPageInfoHighlight = pageInfoHighlight;
@@ -254,8 +258,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                     new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
             rowWrapper.addView(aboutThisSiteRow);
-            controllers.add(new PageInfoAboutThisSiteController(
-                    mainController, aboutThisSiteRow, this, mWebContents));
+            controllers.add(new PageInfoAboutThisSiteController(mainController,
+                    mEphemeralTabCoordinatorSupplier, aboutThisSiteRow, this, mWebContents));
         }
         if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
             final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);

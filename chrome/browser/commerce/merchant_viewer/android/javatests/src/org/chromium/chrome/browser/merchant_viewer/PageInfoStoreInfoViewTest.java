@@ -126,7 +126,8 @@ public class PageInfoStoreInfoViewTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR, () -> mMockStoreInfoActionHandler)
+                    PageInfoController.OpenedFromSource.TOOLBAR,
+                    () -> mMockStoreInfoActionHandler, null)
                     .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));

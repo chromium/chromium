@@ -525,7 +525,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
                 this::isWarmOnResume, /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
-                mTabReparentingControllerSupplier, false);
+                mTabReparentingControllerSupplier,
+                /*ephemeralTabCoordinatorSupplier=*/new ObservableSupplierImpl<>(),
+                false);
         // clang-format on
     }
 
@@ -2560,9 +2562,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.info_menu_id) {
-            ChromePageInfo pageInfo = new ChromePageInfo(getModalDialogManagerSupplier(), null,
-                    OpenedFromSource.MENU,
-                    () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get());
+            ChromePageInfo pageInfo =
+                    new ChromePageInfo(getModalDialogManagerSupplier(), null, OpenedFromSource.MENU,
+                            mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier()::get,
+                            mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
             pageInfo.show(currentTab, ChromePageInfoHighlight.noHighlight());
             return true;
         }

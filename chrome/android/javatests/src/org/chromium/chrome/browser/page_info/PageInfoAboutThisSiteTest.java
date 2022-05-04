@@ -134,7 +134,7 @@ public class PageInfoAboutThisSiteTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR, null)
+                    PageInfoController.OpenedFromSource.TOOLBAR, null, null)
                     .show(tab, ChromePageInfoHighlight.noHighlight());
         });
         onViewWaiting(allOf(withId(org.chromium.chrome.R.id.page_info_url_wrapper), isDisplayed()));

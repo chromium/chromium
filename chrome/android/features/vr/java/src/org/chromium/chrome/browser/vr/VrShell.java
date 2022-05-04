@@ -603,7 +603,7 @@ public class VrShell extends GvrLayout
         Tab tab = mCurrentTabSupplier.get();
         if (tab == null) return;
         new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
-                /*storeInfoActionHandlerSupplier=*/null)
+                /*storeInfoActionHandlerSupplier=*/null, /*ephemeralTabCoordinatorSupplier=*/null)
                 .show(tab, ChromePageInfoHighlight.noHighlight());
     }
 

@@ -454,6 +454,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         return mWebContentsDelegateAndroid;
     }
 
+    public EphemeralTabCoordinator getEphemeralTabCoordinator() {
+        return mEphemeralTabCoordinator.get();
+    }
+
     /**
      * Gets the scope URL if the {@link BrowserServicesIntentDataProvider} is for a WebAPK. Returns
      * null otherwise.

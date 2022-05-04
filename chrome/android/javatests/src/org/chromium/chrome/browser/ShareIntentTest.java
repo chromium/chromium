@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -160,7 +161,8 @@ public class ShareIntentTest {
                     mockActivity::isWarmOnResume,
                     /* appMenuDelegate= */ mockActivity,
                     /* statusBarColorProvider= */ mockActivity,
-                    mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(), false);
+                    mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(),
+                    new ObservableSupplierImpl<>(), false);
 
             ShareHelper.setLastShareComponentName(
                     null, new ComponentName("test.package", "test.activity"));
