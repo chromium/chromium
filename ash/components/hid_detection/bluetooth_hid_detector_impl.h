@@ -21,7 +21,8 @@ class BluetoothHidDetectorImpl
     : public BluetoothHidDetector,
       public chromeos::bluetooth_config::mojom::SystemPropertiesObserver,
       public chromeos::bluetooth_config::mojom::BluetoothDiscoveryDelegate,
-      public chromeos::bluetooth_config::mojom::DevicePairingDelegate {
+      public chromeos::bluetooth_config::mojom::DevicePairingDelegate,
+      public chromeos::bluetooth_config::mojom::KeyEnteredHandler {
  public:
   BluetoothHidDetectorImpl();
   ~BluetoothHidDetectorImpl() override;
@@ -71,7 +72,7 @@ class BluetoothHidDetectorImpl
           chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
           discovered_devices) override;
 
-  // mojom::DevicePairingDelegate:
+  // chromeos::bluetooth_config::mojom::DevicePairingDelegate
   void RequestPinCode(RequestPinCodeCallback callback) override;
   void RequestPasskey(RequestPasskeyCallback callback) override;
   void DisplayPinCode(const std::string& pin_code,
@@ -85,6 +86,9 @@ class BluetoothHidDetectorImpl
   void ConfirmPasskey(const std::string& passkey,
                       ConfirmPasskeyCallback callback) override;
   void AuthorizePairing(AuthorizePairingCallback callback) override;
+
+  // chromeos::bluetooth_config::mojom::KeyEnteredHandler
+  void HandleKeyEntered(uint8_t num_keys_entered) override;
 
   bool IsHidTypeMissing(BluetoothHidDetector::BluetoothHidType hid_type);
   bool ShouldAttemptToPairWithDevice(
@@ -102,6 +106,13 @@ class BluetoothHidDetectorImpl
   // Resets properties related to discovery, pairing handlers and queueing.
   void ResetDiscoveryState();
 
+  // Informs |delegate_| "DisplayPasskey" or "DisplayPinCode" pairing
+  // authorization is required.
+  void RequirePairingCode(
+      const std::string& code,
+      mojo::PendingReceiver<
+          chromeos::bluetooth_config::mojom::KeyEnteredHandler> handler);
+
   // Map that contains the ids of the devices in |queue_|.
   base::flat_set<std::string> queued_device_ids_;
 
@@ -115,6 +126,10 @@ class BluetoothHidDetectorImpl
   absl::optional<
       chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
       current_pairing_device_;
+
+  // If defined, indicates that the current pairing requires an authorization
+  // code that should be displayed to the user for them to enter into the HID.
+  absl::optional<BluetoothHidPairingState> current_pairing_state_;
 
   Delegate* delegate_ = nullptr;
   InputDevicesStatus input_devices_status_;
@@ -130,6 +145,8 @@ class BluetoothHidDetectorImpl
       device_pairing_handler_remote_;
   mojo::Receiver<chromeos::bluetooth_config::mojom::DevicePairingDelegate>
       device_pairing_delegate_receiver_{this};
+  mojo::Receiver<chromeos::bluetooth_config::mojom::KeyEnteredHandler>
+      key_entered_handler_receiver_{this};
 
   base::WeakPtrFactory<BluetoothHidDetectorImpl> weak_ptr_factory_{this};
 };

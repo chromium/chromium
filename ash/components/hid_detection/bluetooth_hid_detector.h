@@ -12,6 +12,21 @@
 namespace ash {
 namespace hid_detection {
 
+// TODO(gordonseto): Move this to HidDetectionManager when that class is
+// created.
+struct BluetoothHidPairingState {
+  BluetoothHidPairingState(const std::string& code, uint8_t num_keys_entered);
+  BluetoothHidPairingState(BluetoothHidPairingState&& other);
+  BluetoothHidPairingState& operator=(BluetoothHidPairingState&& other);
+  ~BluetoothHidPairingState();
+
+  // The code required to be entered for the HID to pair.
+  std::string code;
+
+  // The number of keys of the code which have been entered.
+  uint8_t num_keys_entered;
+};
+
 // Manages searching for unpaired Bluetooth human interactive devices and
 // automatically attempting to pairing with them if their device type is not
 // currently paired with.
@@ -42,8 +57,9 @@ class BluetoothHidDetector {
 
   // Struct representing the current status of BluetoothHidDetector.
   struct BluetoothHidDetectionStatus {
-    explicit BluetoothHidDetectionStatus(
-        absl::optional<BluetoothHidMetadata> current_pairing_device);
+    BluetoothHidDetectionStatus(
+        absl::optional<BluetoothHidMetadata> current_pairing_device,
+        absl::optional<BluetoothHidPairingState> pairing_state);
     BluetoothHidDetectionStatus(BluetoothHidDetectionStatus&& other);
     BluetoothHidDetectionStatus& operator=(BluetoothHidDetectionStatus&& other);
     ~BluetoothHidDetectionStatus();
@@ -51,7 +67,9 @@ class BluetoothHidDetector {
     // The metadata of the device currently being paired with.
     absl::optional<BluetoothHidMetadata> current_pairing_device;
 
-    // TODO(crbug.com/1299099): Add |pairing_state|.
+    // Set if the current pairing requires a code that should be displayed to
+    // the user to enter.
+    absl::optional<BluetoothHidPairingState> pairing_state;
   };
 
   class Delegate {

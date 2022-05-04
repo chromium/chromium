@@ -18,6 +18,10 @@
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+namespace hid_detection {
+namespace {
+
 using ash::hid_detection::BluetoothHidDetector;
 using chromeos::bluetooth_config::FakeDevicePairingHandler;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
@@ -26,11 +30,11 @@ using chromeos::bluetooth_config::mojom::BluetoothSystemState;
 using chromeos::bluetooth_config::mojom::DeviceType;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+using BluetoothHidMetadata = BluetoothHidDetector::BluetoothHidMetadata;
+using BluetoothHidType = BluetoothHidDetector::BluetoothHidType;
+using InputDevicesStatus = BluetoothHidDetector::InputDevicesStatus;
 
-namespace ash {
-namespace hid_detection {
-namespace {
-
+const char kTestPinCode[] = "123456";
 const uint32_t kTestPasskey = 123456;
 
 class FakeBluetoothHidDetectorDelegate : public BluetoothHidDetector::Delegate {
@@ -91,15 +95,9 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetInputDevicesStatus(
-      BluetoothHidDetector::InputDevicesStatus input_devices_status) {
+  void SetInputDevicesStatus(InputDevicesStatus input_devices_status) {
     bluetooth_hid_detector()->SetInputDevicesStatus(input_devices_status);
     base::RunLoop().RunUntilIdle();
-  }
-
-  const BluetoothHidDetector::BluetoothHidDetectionStatus
-  GetBluetoothHidDetectionStatus() {
-    return bluetooth_hid_detector()->GetBluetoothHidDetectionStatus();
   }
 
   // Simulates Bluetooth being toggled by a UI surface. This sets the state of
@@ -155,7 +153,10 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void RemoveUnpairedDevice(const std::string& device_id) {
+  void MockPairDeviceFinished(
+      const std::string& device_id,
+      FakeDevicePairingHandler* device_pairing_handler,
+      absl::optional<device::ConnectionFailureReason> failure_reason) {
     unpaired_devices_.erase(
         std::remove_if(unpaired_devices_.begin(), unpaired_devices_.end(),
                        [device_id](BluetoothDevicePropertiesPtr const& device) {
@@ -165,12 +166,40 @@ class BluetoothHidDetectorImplTest : public testing::Test {
 
     UpdateDiscoveredDevicesProviderDevices();
     base::RunLoop().RunUntilIdle();
+
+    device_pairing_handler->SimulatePairDeviceFinished(failure_reason);
+    EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   }
 
   std::vector<FakeDevicePairingHandler*> GetDevicePairingHandlers() {
     return scoped_bluetooth_config_test_helper_
         .fake_discovery_session_manager()
         ->device_pairing_handlers();
+  }
+
+  void AssertBluetoothHidDetectionStatus(
+      absl::optional<BluetoothHidDetector::BluetoothHidMetadata>
+          current_pairing_device,
+      absl::optional<BluetoothHidPairingState> pairing_state) {
+    EXPECT_EQ(
+        current_pairing_device.has_value(),
+        GetBluetoothHidDetectionStatus().current_pairing_device.has_value());
+    if (current_pairing_device.has_value()) {
+      EXPECT_EQ(current_pairing_device->name,
+                GetBluetoothHidDetectionStatus().current_pairing_device->name);
+      EXPECT_EQ(current_pairing_device->type,
+                GetBluetoothHidDetectionStatus().current_pairing_device->type);
+    }
+
+    EXPECT_EQ(pairing_state.has_value(),
+              GetBluetoothHidDetectionStatus().pairing_state.has_value());
+    if (pairing_state.has_value()) {
+      EXPECT_EQ(pairing_state->code,
+                GetBluetoothHidDetectionStatus().pairing_state->code);
+      EXPECT_EQ(
+          pairing_state->num_keys_entered,
+          GetBluetoothHidDetectionStatus().pairing_state->num_keys_entered);
+    }
   }
 
  private:
@@ -181,6 +210,11 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     }
     scoped_bluetooth_config_test_helper_.fake_discovered_devices_provider()
         ->SetDiscoveredDevices(std::move(unpaired_devices));
+  }
+
+  const BluetoothHidDetector::BluetoothHidDetectionStatus
+  GetBluetoothHidDetectionStatus() {
+    return bluetooth_hid_detector()->GetBluetoothHidDetectionStatus();
   }
 
   BluetoothHidDetectorImpl* bluetooth_hid_detector() {
@@ -343,10 +377,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_TypeNotHid) {
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, AddDevices_TypeNotMissing) {
@@ -365,10 +398,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_TypeNotMissing) {
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest,
@@ -379,50 +411,48 @@ TEST_F(BluetoothHidDetectorImplTest,
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(0u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   std::string device_id1;
   AddUnpairedDevice(&device_id1, DeviceType::kTablet);
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id1| being paired. BluetoothHidDetectorImpl should not inform
   // the delegate or move to the next device in queue until the input devices
   // status has been updated.
-  RemoveUnpairedDevice(device_id1);
-  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
-  EXPECT_TRUE(
-      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  MockPairDeviceFinished(device_id1, GetDevicePairingHandlers()[0],
+                         /*failure_reason=*/absl::nullopt);
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id1| being registered as connected. The next device in the
   // queue should now be processed.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = true});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = true});
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   std::string device_id2;
   AddUnpairedDevice(&device_id2, DeviceType::kKeyboard);
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, AddDevices_BatchAfterStartingDetection) {
@@ -432,17 +462,18 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_BatchAfterStartingDetection) {
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(0u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   std::string device_id1;
   AddUnpairedDevice(&device_id1, DeviceType::kMouse);
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   std::string device_id2;
   AddUnpairedDevice(&device_id2, DeviceType::kKeyboardMouseCombo);
@@ -451,28 +482,23 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_BatchAfterStartingDetection) {
   // Mock |device_id1| being paired. BluetoothHidDetectorImpl should not inform
   // the delegate or move to the next device in queue until the input devices
   // status has been updated.
-  RemoveUnpairedDevice(device_id1);
-  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
-  EXPECT_TRUE(
-      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  MockPairDeviceFinished(device_id1, GetDevicePairingHandlers()[0],
+                         /*failure_reason=*/absl::nullopt);
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id1| being registered as connected. |device_id2| should be
   // attempted to be paired with.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = true});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = true});
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboardPointerCombo,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kKeyboardPointerCombo),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest,
@@ -493,46 +519,39 @@ TEST_F(BluetoothHidDetectorImplTest,
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id1| being paired. BluetoothHidDetectorImpl should not inform
   // the delegate or move to the next device in queue until the input devices
   // status has been updated.
-  RemoveUnpairedDevice(device_id1);
-  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
-      /*failure_reason=*/absl::nullopt);
-  EXPECT_TRUE(
-      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  MockPairDeviceFinished(device_id1, GetDevicePairingHandlers()[0],
+                         /*failure_reason=*/absl::nullopt);
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id1| being registered as connected. |device_id3| should be
   // attempted to be paired with.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = true});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = true});
   EXPECT_EQ(device_id3,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id3,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id3, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock |device_id3| pairing failing. BluetoothHidDetectorImpl should move to
   // the next device in the queue immediately.
-  RemoveUnpairedDevice(device_id3);
-  GetDevicePairingHandlers()[0]->SimulatePairDeviceFinished(
-      device::ConnectionFailureReason::kFailed);
-  EXPECT_TRUE(
-      GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
+  MockPairDeviceFinished(device_id3, GetDevicePairingHandlers()[0],
+                         device::ConnectionFailureReason::kFailed);
   EXPECT_EQ(4u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, DisconnectDevice) {
@@ -542,13 +561,17 @@ TEST_F(BluetoothHidDetectorImplTest, DisconnectDevice) {
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(0u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   // Set both devices to connected.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = false});
   EXPECT_EQ(0u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   // Add a discovered device. Nothing should happen.
   std::string device_id1;
@@ -556,11 +579,13 @@ TEST_F(BluetoothHidDetectorImplTest, DisconnectDevice) {
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(0u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   // Mock the pointer no longer being connected.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = true, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = false});
 
   // Add another device to trigger OnDiscoveredDevicesListChanged().
   std::string device_id2;
@@ -568,10 +593,9 @@ TEST_F(BluetoothHidDetectorImplTest, DisconnectDevice) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, ConnectDeviceTypeDuringPairing) {
@@ -588,44 +612,40 @@ TEST_F(BluetoothHidDetectorImplTest, ConnectDeviceTypeDuringPairing) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock a keyboard being connected. Nothing should happen.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = true, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = false});
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock keyboard being disconnected. Nothing should happen.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = true, .keyboard_is_missing = true});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = true});
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock a pointer being connected. This should cancel pairing with
   // |device_id1|.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = true});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = true});
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest,
@@ -643,31 +663,31 @@ TEST_F(BluetoothHidDetectorImplTest,
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboardPointerCombo,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboardPointerCombo),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock a keyboard being connected. This should not cancel pairing with
   // |device_id1|.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = true, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = false});
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboardPointerCombo,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboardPointerCombo),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock a pointer also being connected. This should cancel pairing with
   // |device_id1|.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = false, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = false,
+                                           .keyboard_is_missing = false});
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, AdapterDisablesDuringPairing) {
@@ -684,16 +704,26 @@ TEST_F(BluetoothHidDetectorImplTest, AdapterDisablesDuringPairing) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPasskey" authorization required.
+  GetDevicePairingHandlers()[0]->SimulateDisplayPasskey(kTestPasskey);
   EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
 
   // Mock the adapter disabling.
   SetAdapterState(BluetoothSystemState::kDisabled);
   EXPECT_FALSE(IsDiscoverySessionActive());
-  EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   // Mock the adapter re-enabling Bluetooth. This should cause
   // BluetoothHidDetector to start discovery again. The first device should be
@@ -703,6 +733,19 @@ TEST_F(BluetoothHidDetectorImplTest, AdapterDisablesDuringPairing) {
   EXPECT_EQ(2u, GetDevicePairingHandlers().size());
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[1]->current_pairing_device_id());
+  EXPECT_EQ(4u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPincode" authorization required.
+  GetDevicePairingHandlers()[1]->SimulateDisplayPinCode(kTestPinCode);
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[1]->current_pairing_device_id());
+  EXPECT_EQ(5u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
 }
 
 TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
@@ -719,16 +762,26 @@ TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate1->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPincode" authorization required.
+  GetDevicePairingHandlers()[0]->SimulateDisplayPinCode(kTestPinCode);
   EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(2u, delegate1->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
 
   // Stop detection.
   StopBluetoothHidDetection();
   EXPECT_FALSE(IsDiscoverySessionActive());
-  EXPECT_EQ(2u, delegate1->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  EXPECT_EQ(3u, delegate1->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 
   // Start detection again. The first device should be attempted to be paired
   // with again.
@@ -738,10 +791,18 @@ TEST_F(BluetoothHidDetectorImplTest, DetectionStopsStartsDuringPairing) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[1]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate2->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPasskey" authorization required.
+  GetDevicePairingHandlers()[1]->SimulateDisplayPasskey(kTestPasskey);
   EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+            GetDevicePairingHandlers()[1]->current_pairing_device_id());
+  EXPECT_EQ(2u, delegate2->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
 }
 
 TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
@@ -761,10 +822,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
   EXPECT_EQ(device_id1,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id1,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Simulate "RequestPinCode" authorization required. This should cancel the
   // pairing. |device_id2| should be attempted to be paired with.
@@ -772,10 +832,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(3u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id2,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kPointer,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
 
   // Simulate "RequestPasskey" authorization required. This should cancel the
   // pairing. |device_id3| should be attempted to be paired with.
@@ -783,10 +842,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
   EXPECT_EQ(device_id3,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(5u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id3,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboardPointerCombo,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id3, BluetoothHidType::kKeyboardPointerCombo),
+      /*pairing_state=*/absl::nullopt);
 
   // Simulate "ConfirmPasskey" authorization required. This should cancel the
   // pairing.
@@ -795,7 +853,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevices_UnsupportedAuthorizations) {
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(6u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, AddDevice_AuthorizePairingAuth) {
@@ -809,10 +869,9 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevice_AuthorizePairingAuth) {
   EXPECT_EQ(device_id,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
   EXPECT_FALSE(GetDevicePairingHandlers()[0]->last_confirm());
 
   // Simulate "AuthorizePairing" authorization required. The pairing should be
@@ -824,18 +883,114 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevice_AuthorizePairingAuth) {
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_EQ(device_id,
-            GetBluetoothHidDetectionStatus().current_pairing_device->name);
-  EXPECT_EQ(BluetoothHidDetector::BluetoothHidType::kKeyboard,
-            GetBluetoothHidDetectionStatus().current_pairing_device->type);
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
 
   // Mock the device being registered as connected.
-  SetInputDevicesStatus(BluetoothHidDetector::InputDevicesStatus{
-      .pointer_is_missing = true, .keyboard_is_missing = false});
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = false});
   EXPECT_TRUE(
       GetDevicePairingHandlers()[0]->current_pairing_device_id().empty());
   EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
-  EXPECT_FALSE(GetBluetoothHidDetectionStatus().current_pairing_device);
+  AssertBluetoothHidDetectionStatus(
+      /*current_pairing_device=*/absl::nullopt,
+      /*pairing_state=*/absl::nullopt);
+}
+
+TEST_F(BluetoothHidDetectorImplTest, AddDevice_DisplayCodeAuths) {
+  std::string device_id1;
+  AddUnpairedDevice(&device_id1, DeviceType::kKeyboard);
+
+  std::string device_id2;
+  AddUnpairedDevice(&device_id2, DeviceType::kMouse);
+
+  // Begin HID detection. |device_id1| should be attempted to be paired with.
+  FakeBluetoothHidDetectorDelegate* delegate = StartBluetoothHidDetection();
+  EXPECT_TRUE(IsDiscoverySessionActive());
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(1u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboard),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPinCode" authorization required.
+  GetDevicePairingHandlers()[0]->SimulateDisplayPinCode(kTestPinCode);
+  EXPECT_EQ(device_id1,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboard),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
+
+  // Simulate keys being entered consecutively. The delegate should be informed
+  // each time.
+  for (uint32_t num_keys_entered = 1;
+       num_keys_entered <= std::strlen(kTestPinCode); num_keys_entered++) {
+    GetDevicePairingHandlers()[0]->SimulateKeysEntered(num_keys_entered);
+    EXPECT_EQ(device_id1,
+              GetDevicePairingHandlers()[0]->current_pairing_device_id());
+    EXPECT_EQ(2u + num_keys_entered,
+              delegate->num_bluetooth_hid_status_changed_calls());
+    AssertBluetoothHidDetectionStatus(
+        BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboard),
+        BluetoothHidPairingState(kTestPinCode, num_keys_entered));
+  }
+  EXPECT_EQ(8u, delegate->num_bluetooth_hid_status_changed_calls());
+
+  // Mock |device_id1| being paired. BluetoothHidDetectorImpl should not inform
+  // the delegate or move to the next device in queue until the input devices
+  // status has been updated.
+  MockPairDeviceFinished(device_id1, GetDevicePairingHandlers()[0],
+                         /*failure_reason=*/absl::nullopt);
+  EXPECT_EQ(8u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id1, BluetoothHidType::kKeyboard),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/6u));
+
+  // Mock |device_id1| being registered as connected. |device_id2| should be
+  // attempted to be paired with.
+  SetInputDevicesStatus(InputDevicesStatus{.pointer_is_missing = true,
+                                           .keyboard_is_missing = false});
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(10u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kPointer),
+      /*pairing_state=*/absl::nullopt);
+
+  // Simulate "DisplayPasskey" authorization required.
+  GetDevicePairingHandlers()[0]->SimulateDisplayPasskey(kTestPasskey);
+  EXPECT_EQ(device_id2,
+            GetDevicePairingHandlers()[0]->current_pairing_device_id());
+  EXPECT_EQ(11u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(
+      BluetoothHidMetadata(device_id2, BluetoothHidType::kPointer),
+      BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
+
+  // Simulate keys being entered consecutively. The delegate should be informed
+  // each time.
+  for (uint32_t num_keys_entered = 1; num_keys_entered <= 6u;
+       num_keys_entered++) {
+    GetDevicePairingHandlers()[0]->SimulateKeysEntered(num_keys_entered);
+    EXPECT_EQ(device_id2,
+              GetDevicePairingHandlers()[0]->current_pairing_device_id());
+    EXPECT_EQ(11u + num_keys_entered,
+              delegate->num_bluetooth_hid_status_changed_calls());
+    AssertBluetoothHidDetectionStatus(
+        BluetoothHidMetadata(device_id2, BluetoothHidType::kPointer),
+        BluetoothHidPairingState(kTestPinCode, num_keys_entered));
+  }
+  EXPECT_EQ(17u, delegate->num_bluetooth_hid_status_changed_calls());
+
+  // Mock |device_id2| pairing failing.
+  MockPairDeviceFinished(device_id2, GetDevicePairingHandlers()[0],
+                         device::ConnectionFailureReason::kAuthFailed);
+  EXPECT_EQ(18u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothHidDetectionStatus(/*current_pairing_device=*/absl::nullopt,
+                                    /*pairing_state=*/absl::nullopt);
 }
 
 }  // namespace hid_detection

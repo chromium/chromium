@@ -120,13 +120,26 @@ const BluetoothHidDetector::BluetoothHidDetectionStatus
 BluetoothHidDetectorImpl::GetBluetoothHidDetectionStatus() {
   if (!current_pairing_device_.has_value()) {
     return BluetoothHidDetectionStatus(
-        /*current_pairing_device*/ absl::nullopt);
+        /*current_pairing_device*/ absl::nullopt,
+        /*pairing_state=*/absl::nullopt);
   }
 
-  // TODO(crbug.com/1299099): Add |pairing_state|.
-  return BluetoothHidDetectionStatus{BluetoothHidMetadata{
-      base::UTF16ToUTF8(current_pairing_device_.value()->public_name),
-      GetBluetoothHidType(current_pairing_device_.value()).value()}};
+  absl::optional<BluetoothHidPairingState> pairing_state;
+  if (current_pairing_state_.has_value()) {
+    pairing_state = BluetoothHidPairingState{
+        current_pairing_state_.value().code,
+        current_pairing_state_.value().num_keys_entered};
+  }
+
+  absl::optional<BluetoothHidType> hid_type =
+      GetBluetoothHidType(current_pairing_device_.value());
+  DCHECK(hid_type) << " |current_pairing_device_| has an invalid HID type";
+
+  return BluetoothHidDetectionStatus{
+      BluetoothHidMetadata{
+          base::UTF16ToUTF8(current_pairing_device_.value()->public_name),
+          hid_type.value()},
+      std::move(pairing_state)};
 }
 
 void BluetoothHidDetectorImpl::OnPropertiesUpdated(
@@ -238,13 +251,23 @@ void BluetoothHidDetectorImpl::RequestPasskey(RequestPasskeyCallback callback) {
 void BluetoothHidDetectorImpl::DisplayPinCode(
     const std::string& pin_code,
     mojo::PendingReceiver<KeyEnteredHandler> handler) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "DisplayPinCode() called with no |current_pairing_device_|";
+  HID_LOG(EVENT) << "DisplayPinCode auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", pin code: " << pin_code;
+  RequirePairingCode(pin_code, std::move(handler));
 }
 
 void BluetoothHidDetectorImpl::DisplayPasskey(
     const std::string& passkey,
     mojo::PendingReceiver<KeyEnteredHandler> handler) {
-  // TODO(crbug/1299099): Implement.
+  DCHECK(current_pairing_device_)
+      << "DisplayPasskey() called with no |current_pairing_device_|";
+  HID_LOG(EVENT) << "DisplayPasskey auth required for "
+                 << current_pairing_device_.value()->id
+                 << ", passkey: " << passkey;
+  RequirePairingCode(passkey, std::move(handler));
 }
 
 void BluetoothHidDetectorImpl::ConfirmPasskey(const std::string& passkey,
@@ -267,6 +290,18 @@ void BluetoothHidDetectorImpl::AuthorizePairing(
                  << current_pairing_device_.value()->id
                  << ", automatically authorizing";
   std::move(callback).Run(/*confirmed=*/true);
+}
+
+void BluetoothHidDetectorImpl::HandleKeyEntered(uint8_t num_keys_entered) {
+  DCHECK(current_pairing_device_)
+      << "HandleKeyEntered() called with no |current_pairing_device_|";
+  DCHECK(current_pairing_state_)
+      << "HandleKeyEntered() called with no |current_pairing_state_|";
+
+  HID_LOG(EVENT) << "HandleKeyEntered called with " << num_keys_entered
+                 << " keys entered";
+  current_pairing_state_->num_keys_entered = num_keys_entered;
+  delegate_->OnBluetoothHidStatusChanged();
 }
 
 bool BluetoothHidDetectorImpl::IsHidTypeMissing(
@@ -359,7 +394,9 @@ void BluetoothHidDetectorImpl::ClearCurrentPairingState() {
 
   queued_device_ids_.erase(current_pairing_device_.value()->id);
   current_pairing_device_.reset();
+  current_pairing_state_.reset();
   device_pairing_delegate_receiver_.reset();
+  key_entered_handler_receiver_.reset();
   delegate_->OnBluetoothHidStatusChanged();
   ProcessQueue();
 }
@@ -369,14 +406,30 @@ void BluetoothHidDetectorImpl::ResetDiscoveryState() {
   bluetooth_discovery_delegate_receiver_.reset();
   device_pairing_handler_remote_.reset();
   device_pairing_delegate_receiver_.reset();
+  key_entered_handler_receiver_.reset();
 
   // Reset queue-related properties.
   current_pairing_device_.reset();
+  current_pairing_state_.reset();
   queue_ = std::make_unique<base::queue<
       chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
   queued_device_ids_.clear();
 
   // Inform |delegate_| that no device is currently pairing.
+  delegate_->OnBluetoothHidStatusChanged();
+}
+
+void BluetoothHidDetectorImpl::RequirePairingCode(
+    const std::string& code,
+    mojo::PendingReceiver<chromeos::bluetooth_config::mojom::KeyEnteredHandler>
+        handler) {
+  DCHECK(!current_pairing_state_) << "RequirePairingCode() called "
+                                  << "with |current_pairing_state_| already "
+                                  << "initialized";
+  DCHECK(!key_entered_handler_receiver_.is_bound());
+  key_entered_handler_receiver_.Bind(std::move(handler));
+  current_pairing_state_ =
+      BluetoothHidPairingState{code, /*num_keys_entered=*/0u};
   delegate_->OnBluetoothHidStatusChanged();
 }
 

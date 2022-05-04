@@ -8,6 +8,25 @@
 namespace ash {
 namespace hid_detection {
 
+BluetoothHidPairingState::BluetoothHidPairingState(const std::string& code,
+                                                   uint8_t num_keys_entered)
+    : code(code), num_keys_entered(num_keys_entered) {}
+
+BluetoothHidPairingState::BluetoothHidPairingState(
+    BluetoothHidPairingState&& other) {
+  code = std::move(other.code);
+  num_keys_entered = other.num_keys_entered;
+}
+
+BluetoothHidPairingState& BluetoothHidPairingState::operator=(
+    BluetoothHidPairingState&& other) {
+  code = std::move(other.code);
+  num_keys_entered = other.num_keys_entered;
+  return *this;
+}
+
+BluetoothHidPairingState::~BluetoothHidPairingState() = default;
+
 BluetoothHidDetector::BluetoothHidMetadata::BluetoothHidMetadata(
     std::string name,
     BluetoothHidType type)
@@ -31,18 +50,22 @@ BluetoothHidDetector::BluetoothHidMetadata::~BluetoothHidMetadata() = default;
 
 BluetoothHidDetector::BluetoothHidDetectionStatus::BluetoothHidDetectionStatus(
     absl::optional<BluetoothHidDetector::BluetoothHidMetadata>
-        current_pairing_device)
-    : current_pairing_device(std::move(current_pairing_device)) {}
+        current_pairing_device,
+    absl::optional<BluetoothHidPairingState> pairing_state)
+    : current_pairing_device(std::move(current_pairing_device)),
+      pairing_state(std::move(pairing_state)) {}
 
 BluetoothHidDetector::BluetoothHidDetectionStatus::BluetoothHidDetectionStatus(
     BluetoothHidDetectionStatus&& other) {
   current_pairing_device = std::move(other.current_pairing_device);
+  pairing_state = std::move(other.pairing_state);
 }
 
 BluetoothHidDetector::BluetoothHidDetectionStatus&
 BluetoothHidDetector::BluetoothHidDetectionStatus::operator=(
     BluetoothHidDetectionStatus&& other) {
   current_pairing_device = std::move(other.current_pairing_device);
+  pairing_state = std::move(other.pairing_state);
   return *this;
 }
 
