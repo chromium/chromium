@@ -810,12 +810,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   AccessibilityEventsMenuListExpand
 #endif
 
-// TODO(crbug.com/1230894): locks up with popup open, only on Mac
+// TODO(crbug.com/1230894): locks up with popup open, only on Mac. Default
+// action on selected HTML:option doesn't work, so no events are fired, and
+// the test times out.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsMenuListNext \
   DISABLED_AccessibilityEventsMenuListNext
+#define MAYBE_AccessibilityEventsMenuWithOptgroupListNext \
+  DISABLED_AccessibilityEventsMenuWithOptgroupListNext
 #else
 #define MAYBE_AccessibilityEventsMenuListNext AccessibilityEventsMenuListNext
+#define MAYBE_AccessibilityEventsMenuWithOptgroupListNext \
+  AccessibilityEventsMenuWithOptgroupListNext
 #endif
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
@@ -834,7 +840,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuWithOptgroupListNext) {
+                       MAYBE_AccessibilityEventsMenuWithOptgroupListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-with-optgroup-next.html"));
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
