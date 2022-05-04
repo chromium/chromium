@@ -1477,12 +1477,12 @@ void GpuDataManagerImplPrivate::ProcessCrashed() {
 std::unique_ptr<base::ListValue> GpuDataManagerImplPrivate::GetLogMessages()
     const {
   auto value = std::make_unique<base::ListValue>();
-  for (size_t ii = 0; ii < log_messages_.size(); ++ii) {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetInteger("level", log_messages_[ii].level);
-    dict->SetString("header", log_messages_[ii].header);
-    dict->SetString("message", log_messages_[ii].message);
-    value->Append(std::move(dict));
+  for (const auto& log_message : log_messages_) {
+    base::Value::Dict dict;
+    dict.Set("level", log_message.level);
+    dict.Set("header", log_message.header);
+    dict.Set("message", log_message.message);
+    value->GetList().Append(std::move(dict));
   }
   return value;
 }
