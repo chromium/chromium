@@ -26,16 +26,20 @@ namespace password_manager {
 class PasswordChangeSuccessTracker : public KeyedService {
  public:
   // Timeout length between the start and end events of a password change flow.
-  static constexpr base::TimeDelta kFlowTimeout = base::Minutes(15);
+  // Since the flows include password reset for which reset emails may be
+  // delayed, a somewhat lengthy timeout is chosen.
+  static constexpr base::TimeDelta kFlowTimeout = base::Minutes(60);
 
   // Timeout length between the start of a manual change flow and its type
   // refinement. The expectation is that this should be near instant and
   // the timeout is just a safe-keeping measure.
-  static constexpr base::TimeDelta kFlowTypeRefinement = base::Seconds(30);
+  static constexpr base::TimeDelta kFlowTypeRefinementTimeout =
+      base::Seconds(30);
 
   // Start and end events for automated (i.e. Autofill Assistant-driven) and
   // manual flows (i.e. Chrome opens a CCT and a user updates a password on
   // their own).
+  // These values are persisted to prefs; do not reorder or renumber entries!
   enum class StartEvent {
     // An automated password change flow.
     kAutomatedFlow = 0,
@@ -58,9 +62,12 @@ class PasswordChangeSuccessTracker : public KeyedService {
     // A manual password reset flow. This StartEvent can currently only be
     // triggered during an automated password change flow for which login fails
     // and the user chooses to request a password reset.
-    kManualResetLinkFlow = 5
+    kManualResetLinkFlow = 5,
+
+    kMaxValue = kManualResetLinkFlow
   };
 
+  // These values are persisted to prefs; do not reorder or renumber entries!
   enum class EndEvent {
     // Automated password change flow completed with a generated password.
     kAutomatedFlowGeneratedPasswordChosen = 0,
@@ -82,9 +89,12 @@ class PasswordChangeSuccessTracker : public KeyedService {
 
     // The password change flow timed out.
     kTimeout = 5,
+
+    kMaxValue = kTimeout
   };
 
   // The place in Chrome where the password change flow originated.
+  // These values are persisted to prefs; do not reorder or renumber entries!
   enum class EntryPoint {
     // Started after performing a password check in settings / the password
     // manager.
@@ -93,6 +103,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
     // Started after receiving a warning after logging into a website with
     // a leaked credential.
     kLeakWarningDialog = 1,
+
+    kMaxValue = kLeakWarningDialog
   };
 
   // Called when a change flow starts and its |StartEvent| is fully known (

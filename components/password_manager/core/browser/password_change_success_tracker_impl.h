@@ -7,46 +7,129 @@
 
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "url/gurl.h"
 
 class PrefService;
 
 namespace password_manager {
 
+// Observer-like interface for metric recordering by
+// |PasswordChangeSuccessTrackerImpl|. This allows easier testing and
+// separately adding support for UMA and UKM recording.
+class PasswordChangeMetricsRecorder {
+ public:
+  virtual ~PasswordChangeMetricsRecorder() = default;
+
+  virtual void OnFlowRecorded(
+      const std::string& etld1,
+      PasswordChangeSuccessTracker::StartEvent start_event,
+      PasswordChangeSuccessTracker::EndEvent end_event,
+      PasswordChangeSuccessTracker::EntryPoint entry_point,
+      base::TimeDelta duration) = 0;
+};
+
+// Implementation of the |PasswordChangeSuccessTracker| interface.
 class PasswordChangeSuccessTrackerImpl
     : public password_manager::PasswordChangeSuccessTracker {
  public:
   // Current record version for flows that are persisted in preferences.
   static constexpr int kTrackerVersion = 1;
 
+  // Describes a manually started flow for which no information on the exact
+  // |StartEvent| has been received yet.
+  struct IncompleteFlow {
+    IncompleteFlow(const std::string& etld1,
+                   const std::string& username,
+                   EntryPoint entry_point);
+    // The url is stored as a string, since that is what |base::Value| supports.
+    std::string etld1;
+    std::string username;
+    EntryPoint entry_point;
+    base::Time start_time;
+  };
+
+  // Provides helper functions for obtaining the flow properties such as |url|
+  // or |username| from the underlying |Value::Dict| object. Requires
+  // the raw pointer passed to the constructor to outlive the |FlowView|.
+  class FlowView {
+   public:
+    explicit FlowView(const base::Value::Dict* value);
+
+    std::string GetEtld1() const;
+    std::string GetUsername() const;
+    StartEvent GetStartEvent() const;
+    EntryPoint GetEntryPoint() const;
+    base::Time GetStartTime() const;
+
+   private:
+    // Reference to the underlying |Value::Dict|, which must outlive the
+    // |FlowView|.
+    const raw_ptr<const base::Value::Dict> value_;
+  };
+
   explicit PasswordChangeSuccessTrackerImpl(PrefService* pref_service);
 
   ~PasswordChangeSuccessTrackerImpl() override;
 
+  // PasswordChangeSuccessTracker:
   void OnChangePasswordFlowStarted(const GURL& url,
                                    const std::string& username,
                                    StartEvent event_type,
                                    EntryPoint entry_point) override;
-
   void OnManualChangePasswordFlowStarted(const GURL& url,
                                          const std::string& username,
                                          EntryPoint entry_point) override;
-
   void OnChangePasswordFlowModified(const GURL& url,
                                     StartEvent new_event_type) override;
-
   void OnChangePasswordFlowModified(const GURL& url,
                                     const std::string& username,
                                     StartEvent new_event_type) override;
-
   void OnChangePasswordFlowCompleted(const GURL& url,
                                      const std::string& username,
                                      EndEvent event_type) override;
 
+  // Add a |PasswordChangeMetricsRecorder| to listen for |OnFlowRecorded()|
+  // events. The caller passes ownership to the |PasswordChangeSuccessTracker|.
+  void AddMetricsRecorder(
+      std::unique_ptr<PasswordChangeMetricsRecorder> recorder);
+
+  // Convert the |url| to eTLD+1 serialized as a string. Exposed as a static
+  // method for easier testing.
+  static std::string ExtractEtld1(const GURL& url);
+
  private:
-  // Pointer to the preference service used for persisting events.
+  // Remove incomplete flows that have been around for longer than
+  // |kFlowTypeRefinementTimeout|.
+  void RemoveIncompleteFlowsWithTimeout();
+
+  // Remove and record flows that have not been completed within |kFlowTimeout|.
+  void RemoveFlowsWithTimeout(base::Value::List& flows);
+
+  // Record a completed or timed out flow.
+  void RecordMetrics(const std::string& etld1,
+                     StartEvent start_event,
+                     EndEvent end_event,
+                     EntryPoint entry_point,
+                     base::TimeDelta duration);
+
+  // Pointer to the |PrefService| used for persisting events.
   raw_ptr<PrefService> pref_service_;
+
+  // Manually changed flows for which the |StartEvent| is not yet known,
+  // which are waiting for a |OnChangePasswordFlowModified()| call.
+  // These are not persisted across restarts and therefore only kept in
+  // memory. The events are in increasing order by their creation time.
+  base::circular_deque<IncompleteFlow> incomplete_manual_flows_;
+
+  // A list of |PasswordChangeMetricsRecorders| that process
+  // |OnFlowRecorded()| events. For simplicity, they are owned by the
+  // |PasswordChangeSuccessTracker|.
+  std::vector<std::unique_ptr<PasswordChangeMetricsRecorder>>
+      metrics_recorders_;
 };
 
 }  // namespace password_manager
