@@ -213,6 +213,9 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record upgrade attempt");
+
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
@@ -240,6 +243,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record fail event");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -267,6 +272,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record fail event");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 #pragma mark - Tests
@@ -290,6 +297,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Shouldn't record event histogram");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL.
@@ -356,6 +365,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 
   // Going back should go to chrome://version.
   [ChromeEarlGrey goBack];
@@ -383,6 +394,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 
   // Reload. Since the URL is now allowlisted, this should immediately load
   // HTTP without trying to upgrade.
@@ -393,6 +406,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Unexpected histogram event recorded.");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 // Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses
@@ -420,6 +435,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 
   // Reload. Since the URL is now allowlisted, this should immediately load
   // HTTP without trying to upgrade.
@@ -430,6 +447,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Unexpected histogram event recorded.");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
@@ -563,6 +582,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
 
   // Go to a new page.
   [ChromeEarlGrey loadURL:GURL("chrome://version")];

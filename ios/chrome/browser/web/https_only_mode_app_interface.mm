@@ -41,4 +41,10 @@
           base::Milliseconds(fallbackDelayInMilliseconds));
 }
 
++ (BOOL)isTimerRunning {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  return HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
+      ->IsTimerRunningForTesting();
+}
+
 @end

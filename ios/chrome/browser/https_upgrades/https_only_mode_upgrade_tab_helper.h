@@ -55,6 +55,8 @@ class HttpsOnlyModeUpgradeTabHelper
   void UseFakeHTTPSForTesting(bool use_fake_https_for_testing);
   // Sets the fallback delay for tests.
   void SetFallbackDelayForTesting(base::TimeDelta delay);
+  // Returns true if the upgrade timer is running.
+  bool IsTimerRunningForTesting() const;
 
  private:
   explicit HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
