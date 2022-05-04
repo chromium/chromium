@@ -36,6 +36,7 @@ GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSyncPromoAddAccount;
     default:
@@ -62,6 +63,7 @@ GetAccountReauthSourceFromAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSyncPromoReauth;
     default:
