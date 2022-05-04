@@ -23,6 +23,7 @@ export class PanelBackground {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
     PanelBackground.instance = new PanelBackground();
+    PanelBackground.stateObserver_ = new PanelStateObserver();
 
     BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH,
@@ -230,3 +231,14 @@ export class PanelBackground {
 
 /** @type {PanelBackground} */
 PanelBackground.instance;
+
+/** @private {PanelStateObserver} */
+PanelBackground.stateObserver_;
+
+/** @implements {ChromeVoxStateObserver} */
+class PanelStateObserver {
+  /** @override */
+  onCurrentRangeChanged(range, opt_fromEditing) {
+    PanelBridge.onCurrentRangeChanged();
+  }
+}

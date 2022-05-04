@@ -20,6 +20,7 @@ BridgeTarget = {
   EVENT_SOURCE_STATE: 'EventSourceState',
   LOG_STORE: 'LogStore',
   PANEL_BACKGROUND: 'PanelBackground',
+  PANEL: 'Panel',
 };
 
 /**
@@ -37,6 +38,7 @@ BridgeAction = {
   GET_PREFS: 'getPrefs',
   INCREMENTAL_SEARCH: 'incrementalSearch',
   ON_COMMAND: 'onCommand',
+  ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
   REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',

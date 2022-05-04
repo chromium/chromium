@@ -1180,9 +1180,6 @@ export class Panel extends PanelInterface {
       Panel.onCloseTutorial();
       chrome.tabs.create({url});
     });
-
-    Panel.observer_ = new Panel.PanelStateObserver();
-    chromeVoxState.addObserver(Panel.observer_);
   }
 
   /**
@@ -1238,27 +1235,15 @@ export class Panel extends PanelInterface {
     }
     Panel.searchMenu.activateItem(0);
   }
-}
 
-/**
- * An observer that reacts to ChromeVox range changes.
- * @implements {ChromeVoxStateObserver}
- */
-Panel.PanelStateObserver = class {
-  constructor() {}
-
-  /**
-   * @param {cursors.Range} range The new range.
-   * @param {boolean=} opt_fromEditing
-   */
-  onCurrentRangeChanged(range, opt_fromEditing) {
+  static onCurrentRangeChanged() {
     if (Panel.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
       if (Panel.tutorial && Panel.tutorial.restartNudges) {
         Panel.tutorial.restartNudges();
       }
     }
   }
-};
+}
 
 Panel.ACTION_TO_MSG_ID = {
   decrement: 'action_decrement_description',
@@ -1270,15 +1255,8 @@ Panel.ACTION_TO_MSG_ID = {
 };
 
 
-/**
- * @private {string}
- */
+/** @private {string} */
 Panel.lastMenu_ = '';
-
-/**
- * @private {ChromeVoxStateObserver}
- */
-Panel.observer_ = null;
 
 window.addEventListener('load', function() {
   Panel.init();
@@ -1313,3 +1291,7 @@ window.addEventListener('hashchange', function() {
 function $(id) {
   return document.getElementById(id);
 }
+
+BridgeHelper.registerHandler(
+    BridgeTarget.PANEL, BridgeAction.ON_CURRENT_RANGE_CHANGED,
+    () => Panel.onCurrentRangeChanged());
