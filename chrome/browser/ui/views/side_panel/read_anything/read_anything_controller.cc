@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -47,16 +48,37 @@ ContentNodePtr GetFromAXNode(ui::AXNode* ax_node) {
 
 ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)
-    : model_(model), browser_(browser) {}
+    : model_(model), browser_(browser) {
+  DCHECK(browser_);
+  if (browser_->tab_strip_model())
+    browser_->tab_strip_model()->AddObserver(this);
+}
+
+ReadAnythingController::~ReadAnythingController() {
+  DCHECK(browser_);
+  if (browser_->tab_strip_model())
+    browser_->tab_strip_model()->RemoveObserver(this);
+}
 
 void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
   model_->SetSelectedFontIndex(new_choice);
 }
 
-void ReadAnythingController::OnUIShown() {
-  if (!browser_)
-    return;
+void ReadAnythingController::OnUIReady() {
+  DistillAXTree();
+}
 
+void ReadAnythingController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed())
+    return;
+  DistillAXTree();
+}
+
+void ReadAnythingController::DistillAXTree() {
+  DCHECK(browser_);
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
@@ -97,5 +119,3 @@ void ReadAnythingController::OnAXTreeDistilled(
   // Update the content in the model.
   model_->SetContent(std::move(content_nodes));
 }
-
-ReadAnythingController::~ReadAnythingController() = default;

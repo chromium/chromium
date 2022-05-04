@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
@@ -32,19 +33,30 @@ class Browser;
 //  as the browser.
 //
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
-                               public ReadAnythingPageHandler::Delegate {
+                               public ReadAnythingPageHandler::Delegate,
+                               public TabStripModelObserver {
  public:
-  explicit ReadAnythingController(ReadAnythingModel* model, Browser* browser);
+  ReadAnythingController(ReadAnythingModel* model, Browser* browser);
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
-  virtual ~ReadAnythingController();
+  ~ReadAnythingController() override;
 
  private:
   // ReadAnythingToolbarView::Delegate:
   void OnFontChoiceChanged(int new_choice) override;
 
   // ReadAnythingPageHandler::Delegate:
-  void OnUIShown() override;
+  void OnUIReady() override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // Requests a distilled AXTree for the main frame of the currently active
+  // web contents.
+  void DistillAXTree();
 
   // Callback method which receives an AXTree snapshot and a list of AXNodes
   // which correspond to nodes in the tree that contain main content.
@@ -52,8 +64,11 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
                          const std::vector<ui::AXNodeID>& content_node_ids);
 
   const raw_ptr<ReadAnythingModel> model_;
-  Browser* browser_;
   std::vector<ReadAnythingModel::Observer*> observers_;
+
+  // ReadAnythingController is owned by ReadAnythingCoordinator which is a
+  // browser user data, so this pointer is always valid.
+  Browser* browser_;
 
   base::WeakPtrFactory<ReadAnythingController> weak_pointer_factory_{this};
 };

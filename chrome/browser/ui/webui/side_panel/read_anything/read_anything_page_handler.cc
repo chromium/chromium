@@ -41,8 +41,8 @@ ReadAnythingPageHandler::~ReadAnythingPageHandler() {
   }
 }
 
-void ReadAnythingPageHandler::ShowUI() {
-  delegate_->OnUIShown();
+void ReadAnythingPageHandler::OnUIReady() {
+  delegate_->OnUIReady();
 }
 
 void ReadAnythingPageHandler::OnContentUpdated(

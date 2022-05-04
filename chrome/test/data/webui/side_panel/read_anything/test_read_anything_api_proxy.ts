@@ -13,7 +13,7 @@ export class TestReadAnythingApiProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'showUI',
+      'onUIReady',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -29,7 +29,7 @@ export class TestReadAnythingApiProxy extends TestBrowserProxy implements
     return this.callbackRouterRemote;
   }
 
-  showUI() {
-    this.methodCalled('showUI');
+  onUIReady() {
+    this.methodCalled('onUIReady');
   }
 }

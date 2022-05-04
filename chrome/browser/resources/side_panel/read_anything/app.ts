@@ -65,7 +65,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       callbackRouter.onFontNameChange.addListener(
           (newFontName: string) => this.updateFontName_(newFontName))
     ];
-    this.apiProxy_.showUI();
+    this.apiProxy_.onUIReady();
   }
 
   override disconnectedCallback() {

@@ -34,7 +34,7 @@ class ReadAnythingPageHandler : public PageHandler,
  public:
   class Delegate {
    public:
-    virtual void OnUIShown() = 0;
+    virtual void OnUIReady() = 0;
   };
 
   explicit ReadAnythingPageHandler(mojo::PendingRemote<Page> page,
@@ -44,7 +44,7 @@ class ReadAnythingPageHandler : public PageHandler,
   ~ReadAnythingPageHandler() override;
 
   // PageHandler:
-  void ShowUI() override;
+  void OnUIReady() override;
 
   // ReadAnythingModel::Observer:
   void OnFontNameUpdated(const std::string& new_font_name) override;
@@ -52,6 +52,8 @@ class ReadAnythingPageHandler : public PageHandler,
       const std::vector<ContentNodePtr>& content_nodes) override;
 
  private:
+  // ReadAnythingPageHandler::Delegate is owned by ReadAnythingCoordinator which
+  // is a browser user data, so |delegate_| has the same lifetime as |browser_|.
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
   Browser* browser_;

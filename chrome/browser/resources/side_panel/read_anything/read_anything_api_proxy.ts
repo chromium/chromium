@@ -8,7 +8,7 @@ let instance: ReadAnythingApiProxy|null = null;
 
 export interface ReadAnythingApiProxy {
   getCallbackRouter(): PageCallbackRouter;
-  showUI(): void;
+  onUIReady(): void;
 }
 
 export class ReadAnythingApiProxyImpl implements ReadAnythingApiProxy {
@@ -28,8 +28,8 @@ export class ReadAnythingApiProxyImpl implements ReadAnythingApiProxy {
     return this.callbackRouter;
   }
 
-  showUI() {
-    this.handler.showUI();
+  onUIReady() {
+    this.handler.onUIReady();
   }
 
   static getInstance(): ReadAnythingApiProxy {
