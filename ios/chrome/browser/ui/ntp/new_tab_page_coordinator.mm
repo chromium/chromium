@@ -360,6 +360,12 @@ namespace {
   self.headerSynchronizer = nil;
   self.headerController = nil;
   self.incognitoViewController = nil;
+  // Remove before nil to ensure View Hierarchy doesn't hold last strong
+  // reference.
+  [self.containedViewController willMoveToParentViewController:nil];
+  [self.containedViewController.view removeFromSuperview];
+  [self.containedViewController removeFromParentViewController];
+  self.containedViewController = nil;
   self.ntpViewController = nil;
   self.feedHeaderViewController = nil;
   self.alertCoordinator = nil;
@@ -376,11 +382,6 @@ namespace {
   self.discoverFeedWrapperViewController = nil;
   self.discoverFeedViewController = nil;
   self.feedMetricsRecorder = nil;
-
-  [self.containedViewController willMoveToParentViewController:nil];
-  [self.containedViewController.view removeFromSuperview];
-  [self.containedViewController removeFromParentViewController];
-
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     // Unfocus omnibox, to prevent it from lingering when it should be dismissed
     // (for example, when navigating away or when changing feed visibility).
