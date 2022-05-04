@@ -8,14 +8,14 @@
 ##
 ## Top level settings
 ##
-version_id: 11
+version_id: 12
 
 ##
 ## Share Targets
 ##
 
 targets {
-  nickname: "reddit"
+  nickname: "Reddit"
   url: "http://reddit.com/submit?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAA"
@@ -888,7 +888,7 @@ locale_mapping {
   locale_keys: "CA"
   targets: "Facebook"
   targets: "Twitter"
-  targets: "reddit"
+  targets: "Reddit"
   targets: "LinkedIn"
   targets: "Pinterest"
 }
@@ -953,7 +953,7 @@ locale_mapping {
   targets: "Facebook"
   targets: "LinkedIn"
   targets: "Pinterest"
-  targets: "reddit"
+  targets: "Reddit"
   targets: "Twitter"
   targets: "VK"
   targets: "WhatsApp"
