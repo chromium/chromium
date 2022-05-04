@@ -68,15 +68,26 @@ void HWDataCollectionScreen::OnViewDestroyed(HWDataCollectionView* view) {
 }
 
 bool HWDataCollectionScreen::MaybeSkip(WizardContext* context) {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (!switches::IsRevenBranding() || !context->is_branded_build) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+  bool is_owner = false;
   // Taking device ownership can take some time, so we can't rely on it here.
-  // Check that the user is first and not managed instead.
-  const bool is_owner =
-      (user_manager::UserManager::Get()->GetUsers().size() == 1);
-  const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
-  if (!switches::IsRevenBranding() || is_enterprise_managed || !is_owner ||
-      !context->is_branded_build) {
+  // However it can be already checked during ConsolidateConsentScreen.
+  if (context->is_owner_flow.has_value()) {
+    is_owner = context->is_owner_flow.value();
+  } else {
+    // If no, check that the device is not managed and user is either already
+    // marked as an owner in user_manager or is the first on the device.
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+    auto* user_manager = user_manager::UserManager::Get();
+    is_owner = !connector->IsDeviceEnterpriseManaged() &&
+               (user_manager->IsCurrentUserOwner() ||
+                user_manager->GetUsers().size() == 1);
+  }
+  if (!is_owner) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

@@ -53,6 +53,9 @@ class SigninUI {
   virtual void StartManagementTransition() = 0;
   // Show additional terms of service on login.
   virtual void ShowTosForExistingUser() = 0;
+  // After users update from CloudReady to a new OS version show them new
+  // license agreement and data collection consent.
+  virtual void ShowNewTermsForFlexUsers() = 0;
 
   virtual void StartEncryptionMigration(
       const UserContext& user_context,

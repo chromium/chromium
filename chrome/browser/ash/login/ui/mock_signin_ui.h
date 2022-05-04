@@ -24,6 +24,7 @@ class MockSigninUI : public SigninUI {
   MOCK_METHOD(void, ResumeUserOnboarding, (OobeScreenId), (override));
   MOCK_METHOD(void, StartManagementTransition, (), (override));
   MOCK_METHOD(void, ShowTosForExistingUser, (), (override));
+  MOCK_METHOD(void, ShowNewTermsForFlexUsers, (), (override));
   MOCK_METHOD(void,
               StartEncryptionMigration,
               (const UserContext&,

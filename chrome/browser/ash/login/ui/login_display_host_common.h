@@ -77,6 +77,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void ResumeUserOnboarding(OobeScreenId screen_id) final;
   void StartManagementTransition() final;
   void ShowTosForExistingUser() final;
+  void ShowNewTermsForFlexUsers() final;
   void StartEncryptionMigration(
       const UserContext& user_context,
       EncryptionMigrationMode migration_mode,

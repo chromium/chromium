@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -450,6 +451,15 @@ void LoginDisplayHostCommon::StartManagementTransition() {
 void LoginDisplayHostCommon::ShowTosForExistingUser() {
   SetScreenAfterManagedTos(ash::OOBE_SCREEN_UNKNOWN);
   StartUserOnboarding();
+}
+
+void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
+  // TODO(b/196201668): show EULA screen to users if consolidated consent isn't
+  //                    enabled.
+  DCHECK(features::IsOobeConsolidatedConsentEnabled());
+  SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
+  wizard_context_->is_cloud_ready_update_flow = true;
+  StartWizard(TermsOfServiceScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
