@@ -4751,6 +4751,10 @@ crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-scale-drawImage-shadow.h
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-strokeRect-alpha-shadow.html [ Skip ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/image-object-in-canvas.html [ Skip ]
 
+# We cannot yet launch Canvas2D staying GPU on readback
+crbug.com/1288118 fast/canvas/bug382588.html [ Skip ]
+crbug.com/1288118 fast/canvas/canvas-gpu-consistency.html [ Skip ]
+
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
 
