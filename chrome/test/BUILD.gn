@@ -9543,6 +9543,8 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/sync_datatype_helper.h",
     "../browser/sync/test/integration/sync_disabled_checker.cc",
     "../browser/sync/test/integration/sync_disabled_checker.h",
+    "../browser/sync/test/integration/sync_engine_stopped_checker.cc",
+    "../browser/sync/test/integration/sync_engine_stopped_checker.h",
     "../browser/sync/test/integration/sync_service_impl_harness.cc",
     "../browser/sync/test/integration/sync_service_impl_harness.h",
     "../browser/sync/test/integration/sync_signin_delegate.cc",

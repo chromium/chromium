@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
+#include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -50,18 +51,6 @@ syncer::ModelTypeSet GetThrottledDataTypes(
   loop.Run();
   return throttled_types;
 }
-
-class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit SyncEngineStoppedChecker(SyncServiceImpl* service)
-      : SingleClientStatusChangeChecker(service) {}
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync to stop";
-    return !service()->IsEngineInitialized();
-  }
-};
 
 class TypeDisabledChecker : public SingleClientStatusChangeChecker {
  public:
@@ -270,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
   const BookmarkNode* node2 = AddFolder(0, 0, "title2");
   SetTitle(0, node2, "new_title2");
 
-  ASSERT_TRUE(SyncEngineStoppedChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(syncer::SyncEngineStoppedChecker(GetSyncService(0)).Wait());
 
   // Make server return SUCCESS so that sync can initialize.
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);

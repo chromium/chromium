@@ -509,6 +509,72 @@ TEST_F(WifiConfigurationBridgeTest, MergeSyncData) {
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 1);
 }
 
+TEST_F(WifiConfigurationBridgeTest, ApplyStopSyncChangesAndMergeSyncData) {
+  InitializeSyncStore();
+
+  // Mimic initial sync with single sync network.
+  auto metadata_change_list1 =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  syncer::EntityChangeList entity_data1;
+
+  WifiConfigurationSpecifics meow_sync =
+      GenerateTestWifiSpecifics(meow_network_id(), kSyncPsk, /*timestamp=*/100);
+  entity_data1.push_back(
+      syncer::EntityChange::CreateAdd(meow_network_id().SerializeToString(),
+                                      GenerateWifiEntityData(meow_sync)));
+  bridge()->MergeSyncData(std::move(metadata_change_list1),
+                          std::move(entity_data1));
+  base::RunLoop().RunUntilIdle();
+
+  // Verify sync network was added to local stack.
+  const std::vector<sync_pb::WifiConfigurationSpecifics>&
+      updated_local_networks = synced_network_updater()->add_or_update_calls();
+  EXPECT_EQ(1u, updated_local_networks.size());
+  EXPECT_TRUE(VectorContainsProto(updated_local_networks, meow_sync));
+
+  // Mimic sync being stopped with request to clear metadata.
+  bridge()->ApplyStopSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>());
+
+  // Add local network while sync is not running.
+  WifiConfigurationSpecifics woof_local =
+      GenerateTestWifiSpecifics(woof_network_id(), kLocalPsk, /*timestamp=*/1);
+  local_network_collector()->AddNetwork(woof_local);
+
+  // Add sync network while sync is not running.
+  auto metadata_change_list2 =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  auto entity_data2 = syncer::EntityChangeList();
+  WifiConfigurationSpecifics honk_sync =
+      GenerateTestWifiSpecifics(honk_network_id(), kSyncPsk, /*timestamp=*/100);
+  entity_data2.push_back(
+      syncer::EntityChange::CreateAdd(meow_network_id().SerializeToString(),
+                                      GenerateWifiEntityData(meow_sync)));
+  entity_data2.push_back(
+      syncer::EntityChange::CreateAdd(honk_network_id().SerializeToString(),
+                                      GenerateWifiEntityData(honk_sync)));
+
+  // Mimic sync restart and trigger initial sync.
+  std::string storage_key;
+  EXPECT_CALL(*processor(), Put(_, _, _))
+      .WillOnce(testing::SaveArg<0>(&storage_key));
+
+  bridge()->MergeSyncData(std::move(metadata_change_list2),
+                          std::move(entity_data2));
+  base::RunLoop().RunUntilIdle();
+
+  // Verify local network was added to sync.
+  EXPECT_EQ(storage_key, woof_network_id().SerializeToString());
+
+  // Verify local state.
+  std::vector<sync_pb::WifiConfigurationSpecifics> sync_networks =
+      GetAllSyncedData();
+  EXPECT_EQ(3u, sync_networks.size());
+  EXPECT_TRUE(VectorContainsProto(sync_networks, meow_sync));
+  EXPECT_TRUE(VectorContainsProto(sync_networks, woof_local));
+  EXPECT_TRUE(VectorContainsProto(sync_networks, honk_sync));
+}
+
 TEST_F(WifiConfigurationBridgeTest, LocalConfigured) {
   InitializeSyncStore();
 

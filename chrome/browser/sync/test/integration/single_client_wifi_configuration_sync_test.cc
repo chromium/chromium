@@ -7,7 +7,10 @@
 #include <vector>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
@@ -179,6 +182,46 @@ IN_PROC_BROWSER_TEST_F(SingleClientWifiConfigurationSyncTest,
 
   EXPECT_TRUE(
       LocalWifiConfigurationChecker(remote_cros_network_config(), kTestSsid)
+          .Wait());
+}
+
+// Regression test for crbug.com/1318390: the client should clear metadata when
+// sync requires it and perform initial sync again (was crashing before the
+// fix).
+IN_PROC_BROWSER_TEST_F(SingleClientWifiConfigurationSyncTest,
+                       ShouldHandleClientDataObsolete) {
+  const std::string kTestSsid1 = "test_wifi";
+  InjectKeystoreEncryptedServerWifiConfiguration(
+      GetFakeServer(),
+      /*unencrypted_specifics=*/chromeos::sync_wifi::GenerateTestWifiSpecifics(
+          chromeos::sync_wifi::GeneratePskNetworkId(kTestSsid1)));
+
+  ASSERT_TRUE(SetupSync());
+  SetupShill();
+  ASSERT_TRUE(
+      LocalWifiConfigurationChecker(remote_cros_network_config(), kTestSsid1)
+          .Wait());
+
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
+
+  // Trigger sync by making one more change.
+  const std::string kTestSsid2 = "test_wifi2";
+  InjectKeystoreEncryptedServerWifiConfiguration(
+      GetFakeServer(),
+      /*unencrypted_specifics=*/chromeos::sync_wifi::GenerateTestWifiSpecifics(
+          chromeos::sync_wifi::GeneratePskNetworkId(kTestSsid2)));
+  ASSERT_TRUE(syncer::SyncEngineStoppedChecker(GetSyncService(0)).Wait());
+
+  // Make server return SUCCESS so that sync can initialize.
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  // Ensure client has both networks.
+  EXPECT_TRUE(
+      LocalWifiConfigurationChecker(remote_cros_network_config(), kTestSsid1)
+          .Wait());
+  EXPECT_TRUE(
+      LocalWifiConfigurationChecker(remote_cros_network_config(), kTestSsid2)
           .Wait());
 }
 

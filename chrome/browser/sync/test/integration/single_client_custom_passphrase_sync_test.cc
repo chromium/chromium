@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
+#include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -47,6 +48,7 @@ using syncer::PassphraseType;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::ProtoPassphraseInt32ToEnum;
 using syncer::ScryptPassphraseKeyParamsForTesting;
+using syncer::SyncEngineStoppedChecker;
 using syncer::SyncService;
 using testing::ElementsAre;
 using testing::SizeIs;
@@ -82,18 +84,6 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
  private:
   const raw_ptr<FakeServer> fake_server_;
   std::set<std::string> committed_names_;
-};
-
-class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit SyncEngineStoppedChecker(syncer::SyncServiceImpl* service)
-      : SingleClientStatusChangeChecker(service) {}
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync to stop";
-    return !service()->IsEngineInitialized();
-  }
 };
 
 // These tests use a gray-box testing approach to verify that the data committed
