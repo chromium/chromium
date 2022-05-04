@@ -41,4 +41,5 @@ BridgeAction = {
   SET_PREF: 'setPref',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
   UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
+  WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
 };

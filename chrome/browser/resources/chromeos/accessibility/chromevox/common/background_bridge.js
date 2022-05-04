@@ -161,5 +161,13 @@ BackgroundBridge.PanelBackground = {
   async setRangeToISearchNode() {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE);
-  }
+  },
+
+  /**
+   * Listens for focus events, and returns once the target is not the panel.
+   */
+  async waitForPanelCollapse() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND, BridgeAction.WAIT_FOR_PANEL_COLLAPSE);
+  },
 };

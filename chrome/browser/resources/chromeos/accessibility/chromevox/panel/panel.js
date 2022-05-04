@@ -1047,46 +1047,23 @@ export class Panel extends PanelInterface {
   }
 
   /** @override */
-  closeMenusAndRestoreFocus() {
-    const bkgnd = chrome.extension.getBackgroundPage();
-    bkgnd.chrome.automation.getDesktop(function(desktop) {
-      // Watch for a blur on the panel.
-      const pendingCallback = Panel.pendingCallback_;
-      Panel.pendingCallback_ = null;
-      const onFocus = function(evt) {
-        if (evt.target.docUrl === location.href) {
-          return;
-        }
+  async closeMenusAndRestoreFocus() {
+    const pendingCallback = Panel.pendingCallback_;
+    Panel.pendingCallback_ = null;
 
-        desktop.removeEventListener(
-            chrome.automation.EventType.FOCUS, onFocus, true);
+    // Make sure all menus are cleared to avoid bogus output when we re-open.
+    Panel.clearMenus();
 
-        // Clears focus on the page by focusing the root explicitly. This makes
-        // sure we don't get future focus events as a result of giving this
-        // entire page focus and that would have interfered with with our
-        // desired range.
-        if (evt.target.root) {
-          evt.target.root.focus();
-        }
+    // Make sure we're not in full-screen mode.
+    Panel.setMode(PanelMode.COLLAPSED);
 
-        setTimeout(function() {
-          if (pendingCallback) {
-            pendingCallback();
-          }
-        }, 0);
-      };
+    Panel.activeMenu_ = null;
 
-      desktop.addEventListener(
-          chrome.automation.EventType.FOCUS, onFocus, true);
+    await BackgroundBridge.PanelBackground.waitForPanelCollapse();
 
-      // Make sure all menus are cleared to avoid bogus output when we re-open.
-      Panel.clearMenus();
-
-      // Make sure we're not in full-screen mode.
-      Panel.setMode(PanelMode.COLLAPSED);
-
-      Panel.activeMenu_ = null;
-    });
+    if (pendingCallback) {
+      pendingCallback();
+    }
   }
 
   /** Open the tutorial. */
