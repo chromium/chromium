@@ -326,6 +326,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.CustomOSSync" enum="SyncModelTypes"
+    expires_after="2022-10-16">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    For users who have *not* selected the &quot;Sync Everything&quot; option,
+    this records all the OS data types they have selected to sync. Samples are
+    taken every time the Sync data types are (re)configured, which typically
+    happens during startup and when the user changes any Sync settings.
+  </summary>
+</histogram>
+
 <histogram name="Sync.CustomSync3" enum="SyncModelTypes"
     expires_after="2022-10-16">
   <owner>treib@chromium.org</owner>
@@ -337,9 +350,8 @@ chromium-metrics-reviews@google.com.
     taken every time the Sync data types are (re)configured, which typically
     happens during startup and when the user changes any Sync settings.
 
-    NOTE: this may stop showing OS datatypes like WIFI_CONFIGURATIONS once the
-    SplitSettingsSync feature is enabled. New metrics will be added for those
-    (crbug.com/1105956).
+    NOTE: this doesn't include OS datatypes once the SplitSettingsSync feature
+    is enabled. Use Sync.CustomOSSync for those.
   </summary>
 </histogram>
 
