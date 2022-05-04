@@ -70,15 +70,7 @@ class CastRuntimeService
   // CastRuntimeAudioChannelEndpointManager implementation:
   const std::string& GetAudioChannelEndpoint() override;
 
-  media::VideoPlaneController* video_plane_controller() {
-    return video_plane_controller_;
-  }
-
  private:
-  // Provides access to video plane controls API including geometry and screen
-  // resolution parameters.
-  media::VideoPlaneController* video_plane_controller_;
-
   RuntimeApplicationDispatcher app_dispatcher_;
 };
 

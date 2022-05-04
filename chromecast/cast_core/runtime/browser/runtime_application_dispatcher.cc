@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -22,7 +24,7 @@
 namespace chromecast {
 namespace {
 
-base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
+constexpr base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 
 }  // namespace
 
@@ -39,7 +41,6 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
       application_watcher_(application_watcher),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
-  DCHECK(video_plane_controller_);
 
   heartbeat_timer_.SetTaskRunner(task_runner_);
 }
@@ -54,6 +55,9 @@ bool RuntimeApplicationDispatcher::Start(
     const std::string& runtime_service_endpoint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!grpc_server_);
+
+  LOG(INFO) << "Starting runtime service: runtime_id=" << runtime_id
+            << ", endpoint=" << runtime_service_endpoint;
 
   grpc_server_.emplace();
   grpc_server_
@@ -98,8 +102,7 @@ bool RuntimeApplicationDispatcher::Start(
                   weak_factory_.GetWeakPtr())));
   grpc_server_->Start(runtime_service_endpoint);
 
-  LOG(INFO) << "Runtime service started: runtime_id=" << runtime_id
-            << ", endpoint=" << runtime_service_endpoint;
+  LOG(INFO) << "Runtime service started";
   return true;
 }
 
@@ -143,6 +146,7 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
 
   const std::string& app_id = request.application_config().app_id();
   if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
+    DCHECK(video_plane_controller_);
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
         request.cast_session_id(), request.application_config(), web_service_,

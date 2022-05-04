@@ -22,14 +22,11 @@ CastRuntimeService::CastRuntimeService(
     NetworkContextGetter network_context_getter,
     media::VideoPlaneController* video_plane_controller,
     RuntimeApplicationWatcher* application_watcher)
-    : video_plane_controller_(video_plane_controller),
-      app_dispatcher_(web_service,
+    : app_dispatcher_(web_service,
                       this,
                       std::move(network_context_getter),
-                      video_plane_controller_,
-                      application_watcher) {
-  DCHECK(video_plane_controller_);
-}
+                      video_plane_controller,
+                      application_watcher) {}
 
 CastRuntimeService::~CastRuntimeService() = default;
 

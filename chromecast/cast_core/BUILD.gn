@@ -5,20 +5,28 @@
 import("//chromecast/chromecast.gni")
 
 # When built for use with Cast Core, enble_cast_media_runtime must be true.
+cast_source_set("core_runtime_lib_simple") {
+  data_deps = [ "//chromecast:cast_shell_pak" ]
+
+  deps = [
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser",
+    "//chromecast/cast_core/grpc:grpc_factory_linux",
+    "//chromecast/cast_core/runtime/browser:browser_simple",
+    "//chromecast/cast_core/runtime/renderer",
+  ]
+}
+
+# When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_executable("core_runtime_simple") {
   sources = [ "cast_runtime_main.cc" ]
 
   deps = [
-    "//chromecast:cast_shell_pak",
+    ":core_runtime_lib_simple",
     "//chromecast:chromecast_locales_pak",
     "//chromecast/app",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser:browser",
     "//chromecast/browser:prefs_simple",
     "//chromecast/browser:simple_main_parts",
-    "//chromecast/cast_core/grpc:grpc_factory_linux",
-    "//chromecast/cast_core/runtime/browser:browser_simple",
-    "//chromecast/cast_core/runtime/renderer",
     "//chromecast/utility:simple_client",
     "//content/public/app",
   ]
