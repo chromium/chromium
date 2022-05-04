@@ -37,6 +37,10 @@ class FileManagerUI : public ui::MojoWebDialogUI,
 
   const FileManagerUIDelegate* delegate() { return delegate_.get(); }
 
+  // Get the number of open File Manager windows.
+  // Should be called on UI thread.
+  static int GetNumInstances();
+
  private:
   content::WebUIDataSource* CreateTrustedAppDataSource();
 
@@ -49,6 +53,8 @@ class FileManagerUI : public ui::MojoWebDialogUI,
 
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
+
+  static inline int num_instances_ = 0;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

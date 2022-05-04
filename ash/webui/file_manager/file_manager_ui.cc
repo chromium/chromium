@@ -9,7 +9,9 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -25,6 +27,7 @@ namespace file_manager {
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
     : MojoWebDialogUI(web_ui), delegate_(std::move(delegate)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   auto* trusted_source = CreateTrustedAppDataSource();
   content::WebUIDataSource::Add(browser_context, trusted_source);
@@ -32,7 +35,9 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
-  LOG(WARNING) << "Starting FileManagerUI";
+  ++num_instances_;
+  DCHECK_GT(num_instances_, 0);
+  LOG(WARNING) << "Starting FileManagerUI. Open windows: " << num_instances_;
 }
 
 content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
@@ -79,7 +84,19 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   return source;
 }
 
-FileManagerUI::~FileManagerUI() = default;
+int FileManagerUI::GetNumInstances() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return num_instances_;
+}
+
+FileManagerUI::~FileManagerUI() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DCHECK_GT(num_instances_, 0);
+  --num_instances_;
+
+  LOG(WARNING) << "Stopping FileManagerUI. Open windows: " << num_instances_;
+}
 
 void FileManagerUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {

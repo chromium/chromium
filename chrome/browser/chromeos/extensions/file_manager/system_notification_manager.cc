@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
@@ -124,8 +125,7 @@ SystemNotificationManager::SystemNotificationManager(Profile* profile)
 SystemNotificationManager::~SystemNotificationManager() = default;
 
 bool SystemNotificationManager::DoFilesSwaWindowsExist() {
-  return FindSystemWebAppBrowser(profile_, web_app::SystemAppType::FILE_MANAGER,
-                                 Browser::TYPE_APP) != nullptr;
+  return ash::file_manager::FileManagerUI::GetNumInstances() != 0;
 }
 
 std::unique_ptr<message_center::Notification>
