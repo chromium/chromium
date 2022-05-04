@@ -261,10 +261,17 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
 
   if (is_hidden()) {
     // Screen not shown yet: skipping it.
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
+    if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
+      if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+        exit_callback_.Run(Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+      else
+        exit_callback_.Run(Result::CONNECTED_DEMO);
     } else {
-      exit_callback_.Run(Result::NOT_APPLICABLE);
+      if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+        exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
+      } else {
+        exit_callback_.Run(Result::NOT_APPLICABLE);
+      }
     }
   } else {
     // Screen already shown: automatically continuing.
