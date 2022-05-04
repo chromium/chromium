@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "media/base/media_export.h"
 
@@ -20,6 +21,17 @@ namespace internal {
 template <typename T>
 struct MediaSerializer {
   static inline base::Value Serialize(T value) { return base::Value(value); }
+};
+
+// a special serializer for strings, because base::Value checks
+// IsStringUTF8AllowingNoncharacters.
+template <>
+struct MediaSerializer<std::string> {
+  static inline base::Value Serialize(const std::string& string) {
+    if (base::IsStringUTF8AllowingNoncharacters(string))
+      return base::Value(string);
+    return base::Value("");
+  }
 };
 
 }  // namespace internal
