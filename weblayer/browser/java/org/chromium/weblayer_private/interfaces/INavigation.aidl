@@ -58,4 +58,6 @@ interface INavigation {
   // @since 97
   void disableIntentProcessing() = 23;
 
+  // @since 103
+  boolean wasFetchedFromCache() = 24;
 }
