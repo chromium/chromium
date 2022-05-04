@@ -23,8 +23,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                 },
             ],
         }
-        self.assertTrue(
-            self.instance._BuilderRunsTestOfInterest(test_map, None))
+        self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
 
         # Re-add once WebGPU tests are supported.
         # test_map = {
@@ -35,7 +34,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
         #     ],
         # }
         # self.assertTrue(
-        #     self.instance._BuilderRunsTestOfInterest(test_map, None))
+        #     self.instance._BuilderRunsTestOfInterest(test_map))
 
     def testNoMatch(self):
         test_map = {
@@ -45,8 +44,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                 },
             ],
         }
-        self.assertFalse(
-            self.instance._BuilderRunsTestOfInterest(test_map, None))
+        self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
 
 class GetFakeCiBuildersUnittest(unittest.TestCase):

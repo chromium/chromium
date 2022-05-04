@@ -14,7 +14,7 @@ from unexpected_passes_common import data_types
 
 class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
   def setUp(self):
-    self.instance = gpu_builders.GpuBuilders(False)
+    self.instance = gpu_builders.GpuBuilders('webgl_conformance', False)
 
   def testMatch(self):
     """Tests that a match can be successfully found."""
@@ -28,8 +28,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
             },
         ],
     }
-    self.assertTrue(
-        self.instance._BuilderRunsTestOfInterest(test_map, 'webgl_conformance'))
+    self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchIsolate(self):
     """Tests that a match is not found if the isolate name is not valid."""
@@ -43,8 +42,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
             },
         ],
     }
-    self.assertFalse(
-        self.instance._BuilderRunsTestOfInterest(test_map, 'webgl_conformance'))
+    self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testNoMatchSuite(self):
     """Tests that a match is not found if the suite name is not valid."""
@@ -58,8 +56,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
             },
         ],
     }
-    self.assertFalse(
-        self.instance._BuilderRunsTestOfInterest(test_map, 'webgl_conformance'))
+    self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
   def testAndroidSuffixes(self):
     """Tests that Android-specific isolates are added."""
@@ -73,17 +70,16 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
 class GetFakeCiBuildersUnittest(unittest.TestCase):
   def testStringsConvertedToBuilderEntries(self):
     """Tests that the easier-to-read strings get converted to BuilderEntry."""
-    instance = gpu_builders.GpuBuilders(False)
+    instance = gpu_builders.GpuBuilders('webgl_conformance', False)
     fake_builders = instance.GetFakeCiBuilders()
-    ci_builder = data_types.BuilderEntry(
-        'Optional Linux Release (Intel HD 630)', constants.BuilderTypes.CI,
-        False)
+    ci_builder = data_types.BuilderEntry('Optional Android Release (Pixel 4)',
+                                         constants.BuilderTypes.CI, False)
     expected_try = set([
-        data_types.BuilderEntry('linux_optional_gpu_tests_rel',
+        data_types.BuilderEntry('android_optional_gpu_tests_rel',
                                 constants.BuilderTypes.TRY, False)
     ])
     self.assertEqual(fake_builders[ci_builder], expected_try)
-    ci_builder = data_types.BuilderEntry('Optional Linux Release (NVIDIA)',
+    ci_builder = data_types.BuilderEntry('Optional Android Release (Nexus 5X)',
                                          constants.BuilderTypes.CI, False)
     self.assertEqual(fake_builders[ci_builder], expected_try)
 
@@ -91,7 +87,7 @@ class GetFakeCiBuildersUnittest(unittest.TestCase):
 class GetNonChromiumBuildersUnittest(unittest.TestCase):
   def testStringsConvertedToBuilderEntries(self):
     """Tests that the easier-to-read strings get converted to BuilderEntry."""
-    instance = gpu_builders.GpuBuilders(False)
+    instance = gpu_builders.GpuBuilders('webgl_conformance', False)
     builder = data_types.BuilderEntry('Win V8 FYI Release (NVIDIA)',
                                       constants.BuilderTypes.CI, False)
     self.assertIn(builder, instance.GetNonChromiumBuilders())

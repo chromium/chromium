@@ -137,16 +137,19 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
 
   def testNoLargeQueryMode(self):
     """Tests that the expected clause is returned in normal mode."""
-    test_filter = self._querier._GetQueryGeneratorForBuilder(
-        data_types.BuilderEntry('builder', 'builder_type', False))
-    self.assertEqual(len(test_filter.GetClauses()), 1)
+    query_generator = self._querier._GetQueryGeneratorForBuilder(
+        data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
+    self.assertEqual(len(query_generator.GetClauses()), 1)
     self.assertEqual(
-        test_filter.GetClauses()[0], """\
+        query_generator.GetClauses()[0], """\
         AND REGEXP_CONTAINS(
           test_id,
           r"gpu_tests\\.pixel_integration_test\\.")""")
-    self.assertIsInstance(test_filter, gpu_queries.GpuFixedQueryGenerator)
+    self.assertIsInstance(query_generator, gpu_queries.GpuFixedQueryGenerator)
     self._query_mock.assert_not_called()
+    # Make sure that there aren't any issues with getting the queries.
+    q = query_generator.GetQueries()
+    self.assertEqual(len(q), 1)
 
   def testLargeQueryModeNoTests(self):
     """Tests that a special value is returned if no tests are found."""
@@ -154,9 +157,9 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput',
                            return_value=[]) as query_mock:
-      test_filter = querier._GetQueryGeneratorForBuilder(
+      query_generator = querier._GetQueryGeneratorForBuilder(
           data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      self.assertIsNone(test_filter)
+      self.assertIsNone(query_generator)
       query_mock.assert_called_once()
 
   def testLargeQueryModeFoundTests(self):
@@ -169,11 +172,14 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       }, {
           'test_id': 'bar_test'
       }]
-      test_filter = querier._GetQueryGeneratorForBuilder(
+      query_generator = querier._GetQueryGeneratorForBuilder(
           data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
-      self.assertEqual(test_filter.GetClauses(),
+      self.assertEqual(query_generator.GetClauses(),
                        ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
-      self.assertIsInstance(test_filter, gpu_queries.GpuSplitQueryGenerator)
+      self.assertIsInstance(query_generator, gpu_queries.GpuSplitQueryGenerator)
+      # Make sure that there aren't any issues with getting the queries.
+      q = query_generator.GetQueries()
+      self.assertEqual(len(q), 1)
 
 
 class GetActiveBuilderQueryUnittest(unittest.TestCase):

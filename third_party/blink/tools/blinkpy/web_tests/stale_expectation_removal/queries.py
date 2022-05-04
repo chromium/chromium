@@ -53,7 +53,8 @@ FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
-  OR "Timeout" IN UNNEST(typ_expectations)"""
+  OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)"""
 
 # This query gets us all results for tests from CI that have had results with a
 # Failure, Timeout, or Crash expectation in the past |@num_builds| builds on
@@ -147,6 +148,7 @@ WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)
 """
 
 ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
@@ -213,7 +215,7 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         builder_type = builder.builder_type
         # Look for all tests.
         if not self._large_query_mode:
-            return WebTestFixedQueryGenerator(builder_type, '')
+            return WebTestFixedQueryGenerator(builder, '')
 
         query = TEST_FILTER_QUERY_TEMPLATE.format(
             builder_project=builder.project, builder_type=builder.builder_type)
@@ -231,8 +233,7 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         # splitting.
         target_num_ids = (queries_module.TARGET_RESULTS_PER_QUERY /
                           self._num_samples)
-        return WebTestSplitQueryGenerator(builder_type, test_ids,
-                                          target_num_ids)
+        return WebTestSplitQueryGenerator(builder, test_ids, target_num_ids)
 
     def _StripPrefixFromTestId(self, test_id):
         # Web test IDs provided by ResultDB are the test name known by the test

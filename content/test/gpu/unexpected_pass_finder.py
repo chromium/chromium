@@ -122,14 +122,15 @@ def ParseArgs():
 def main():
   args = ParseArgs()
 
-  builders_instance = gpu_builders.GpuBuilders(args.include_internal_builders)
+  builders_instance = gpu_builders.GpuBuilders(
+      SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite),
+      args.include_internal_builders)
   builders.RegisterInstance(builders_instance)
   expectations_instance = gpu_expectations.GpuExpectations()
 
   test_expectation_map = expectations_instance.CreateTestExpectationMap(
       args.expectation_file, args.tests, args.expectation_grace_period)
-  ci_builders = builders_instance.GetCiBuilders(
-      SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite))
+  ci_builders = builders_instance.GetCiBuilders()
 
   querier = gpu_queries.GpuBigQueryQuerier(args.suite, args.project,
                                            args.num_samples,

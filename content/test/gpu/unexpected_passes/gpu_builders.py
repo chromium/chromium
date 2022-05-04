@@ -11,18 +11,18 @@ from chrome_telemetry_build import android_browser_types as abt
 
 
 class GpuBuilders(builders.Builders):
-  def __init__(self, include_internal_builders):
-    super().__init__(include_internal_builders)
+  def __init__(self, suite, include_internal_builders):
+    super().__init__(suite, include_internal_builders)
     self._isolate_names = None
     self._fake_ci_builders = None
     self._non_chromium_builders = None
 
-  def _BuilderRunsTestOfInterest(self, test_map, suite):
+  def _BuilderRunsTestOfInterest(self, test_map):
     tests = test_map.get('isolated_scripts', [])
     for t in tests:
       if t.get('isolate_name') not in self.GetIsolateNames():
         continue
-      if suite in t.get('args', []):
+      if self._suite in t.get('args', []):
         return True
     return False
 
@@ -54,10 +54,6 @@ class GpuBuilders(builders.Builders):
           'linux-angle-rel': [
               'ANGLE GPU Linux Release (Intel HD 630)',
               'ANGLE GPU Linux Release (NVIDIA)',
-          ],
-          'linux_optional_gpu_tests_rel': [
-              'Optional Linux Release (Intel HD 630)',
-              'Optional Linux Release (NVIDIA)',
           ],
           'mac_optional_gpu_tests_rel': [
               'Optional Mac Release (Intel)',

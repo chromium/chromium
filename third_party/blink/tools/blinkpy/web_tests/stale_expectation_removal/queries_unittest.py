@@ -91,12 +91,17 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
         """Tests that the expected clause is returned in normal mode."""
         querier = wt_uu.CreateGenericWebTestQuerier()
         query_generator = querier._GetQueryGeneratorForBuilder(
-            common_data_types.BuilderEntry('builder', 'builder_type', False))
+            common_data_types.BuilderEntry('builder',
+                                           common_constants.BuilderTypes.CI,
+                                           False))
         self.assertEqual(len(query_generator.GetClauses()), 1)
         self.assertEqual(query_generator.GetClauses()[0], '')
         self.assertIsInstance(query_generator,
                               queries.WebTestFixedQueryGenerator)
         self._query_mock.assert_not_called()
+        # Make sure that there aren't any issues with getting the queries.
+        q = query_generator.GetQueries()
+        self.assertEqual(len(q), 1)
 
     def testLargeQueryModeNoTests(self):
         """Tests that a special value is returned if no tests are found."""
@@ -128,6 +133,9 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
                          ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
         self.assertIsInstance(query_generator,
                               queries.WebTestSplitQueryGenerator)
+        # Make sure that there aren't any issues with getting the queries.
+        q = query_generator.GetQueries()
+        self.assertEqual(len(q), 1)
 
 
 @unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
@@ -294,6 +302,7 @@ WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)
 """
         self.assertEqual(
             queries.CI_BQ_QUERY_TEMPLATE.format(builder_project='chromium',
@@ -356,6 +365,7 @@ WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)
 """
         self.assertEqual(
             queries.CI_BQ_QUERY_TEMPLATE.format(builder_project='chrome',
@@ -433,6 +443,7 @@ WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)
 """
         self.assertEqual(
             queries.TRY_BQ_QUERY_TEMPLATE.format(builder_project='chromium',
@@ -510,6 +521,7 @@ WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
+  OR "Slow" IN UNNEST(typ_expectations)
 """
         self.assertEqual(
             queries.TRY_BQ_QUERY_TEMPLATE.format(builder_project='chrome',
