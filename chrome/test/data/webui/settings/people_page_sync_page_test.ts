@@ -72,6 +72,7 @@ suite('SyncSettingsTests', function() {
     // enabled.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     syncPage.set('syncStatus', {
+      signedIn: true,
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -540,6 +541,24 @@ suite('SyncSettingsTests', function() {
     const router = Router.getInstance();
     assertEquals(
         (router.getRoutes() as SyncRoutes).PEOPLE, router.getCurrentRoute());
+  });
+
+  test('EnterExistingPassphraseDoesNotExistIfSignedOut', async function() {
+    syncPage.syncStatus = {
+      signedIn: false,
+      disabled: false,
+      hasError: true,
+      statusAction: StatusAction.ENTER_PASSPHRASE,
+    };
+
+    const prefs = getSyncAllPrefs();
+    prefs.encryptAllData = true;
+    prefs.passphraseRequired = true;
+    webUIListenerCallback('sync-prefs-changed', prefs);
+    flush();
+
+    assertFalse(!!syncPage.shadowRoot!.querySelector<CrInputElement>(
+        '#existingPassphraseInput'));
   });
 
   test('SyncAdvancedRow', function() {

@@ -93,8 +93,7 @@
     </template>
 </if>
 
-    <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
-        syncPrefs.passphraseRequired)]]"
+    <template is="dom-if" if="[[showExistingPassphraseBelowAccount_]]"
         on-dom-change="focusPassphraseInput_">
       <div id="existingPassphrase" class="list-frame">
         <div id="existingPassphraseTitle" class="list-item">

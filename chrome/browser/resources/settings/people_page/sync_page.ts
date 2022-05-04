@@ -160,6 +160,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         value: '',
       },
 
+      /*
+       * Whether enter existing passphrase UI should be shown.
+       */
+      showExistingPassphraseBelowAccount_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowExistingPassphraseBelowAccount_(' +
+            'syncStatus.signedIn, syncPrefs.passphraseRequired)',
+      },
+
       signedIn_: {
         type: Boolean,
         value: true,
@@ -664,8 +674,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     // </if>
   }
 
-  private shouldShowExistingPassphraseBelowAccount_(): boolean {
-    return this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
+  private computeShowExistingPassphraseBelowAccount_(): boolean {
+    return this.syncStatus !== undefined && !!this.syncStatus.signedIn &&
+        this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
   }
 
   private onSyncAdvancedClick_() {

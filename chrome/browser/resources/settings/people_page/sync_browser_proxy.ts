@@ -19,6 +19,8 @@ export type StoredAccount = {
  * TODO(crbug.com/1107771): childUser and supervisedUser are only consumed
  * together and the latter implies the former, so it should be enough to have
  * only one of them here. The linked bug has other clean-up suggestions.
+ * TODO(crbug.com/1107771): signedIn actually means having primary account with
+ * sync consent. Rename to make this clear.
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */
 export type SyncStatus = {
