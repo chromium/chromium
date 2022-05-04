@@ -24,23 +24,23 @@ base::Value ReadJson(const base::StringPiece& json) {
 
 std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a) {
   auto list = std::make_unique<base::ListValue>();
-  list->Append(std::move(a));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
   return list;
 }
 std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a,
                                       std::unique_ptr<base::Value> b) {
   auto list = std::make_unique<base::ListValue>();
-  list->Append(std::move(a));
-  list->Append(std::move(b));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(b)));
   return list;
 }
 std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a,
                                       std::unique_ptr<base::Value> b,
                                       std::unique_ptr<base::Value> c) {
   auto list = std::make_unique<base::ListValue>();
-  list->Append(std::move(a));
-  list->Append(std::move(b));
-  list->Append(std::move(c));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(b)));
+  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(c)));
   return list;
 }
 

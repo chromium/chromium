@@ -17,12 +17,12 @@ namespace simple_api = test::api::simple_api;
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> CreateTestTypeValue() {
-  auto value = std::make_unique<base::DictionaryValue>();
-  value->SetDouble("number", 1.1);
-  value->SetInteger("integer", 4);
-  value->SetString("string", "bling");
-  value->SetBoolean("boolean", true);
+base::DictionaryValue CreateTestTypeValue() {
+  base::DictionaryValue value;
+  value.SetDouble("number", 1.1);
+  value.SetInteger("integer", 4);
+  value.SetString("string", "bling");
+  value.SetBoolean("boolean", true);
   return value;
 }
 
@@ -30,8 +30,7 @@ std::unique_ptr<base::DictionaryValue> CreateTestTypeValue() {
 
 TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
   base::DictionaryValue crossref_orig;
-  crossref_orig.SetKey("testType",
-                       base::Value::FromUniquePtrValue(CreateTestTypeValue()));
+  crossref_orig.SetKey("testType", CreateTestTypeValue());
   crossref_orig.SetString("testEnumRequired", "one");
   crossref_orig.SetString("testEnumOptional", "two");
 
@@ -61,14 +60,13 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
           params_value->GetListDeprecated()));
   EXPECT_TRUE(params.get());
   EXPECT_TRUE(params->test_type.get());
-  EXPECT_EQ(*CreateTestTypeValue(), *params->test_type->ToValue());
+  EXPECT_EQ(CreateTestTypeValue(), *params->test_type->ToValue());
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
   auto params_value = std::make_unique<base::ListValue>();
-  std::unique_ptr<base::DictionaryValue> test_type_value =
-      CreateTestTypeValue();
-  test_type_value->RemoveKey("number");
+  base::DictionaryValue test_type_value = CreateTestTypeValue();
+  test_type_value.RemoveKey("number");
   params_value->Append(std::move(test_type_value));
   std::unique_ptr<crossref::TestTypeOptionalParam::Params> params(
       crossref::TestTypeOptionalParam::Params::Create(
@@ -77,65 +75,63 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
-  std::unique_ptr<base::DictionaryValue> value = CreateTestTypeValue();
+  base::DictionaryValue value = CreateTestTypeValue();
   auto test_type = std::make_unique<simple_api::TestType>();
-  EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
+  EXPECT_TRUE(simple_api::TestType::Populate(value, test_type.get()));
 
   std::vector<base::Value> results =
       crossref::GetTestType::Results::Create(*test_type);
   ASSERT_EQ(1u, results.size());
-  EXPECT_EQ(*value, results[0]);
+  EXPECT_EQ(value, results[0]);
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param_object_value = std::make_unique<base::DictionaryValue>();
-    param_object_value->SetKey(
-        "testType", base::Value::FromUniquePtrValue(CreateTestTypeValue()));
-    param_object_value->SetBoolean("boolean", true);
-    params_value->Append(std::move(param_object_value));
+    base::Value params_value(base::Value::Type::LIST);
+    base::Value::Dict param_object_value;
+    param_object_value.Set("testType", CreateTestTypeValue());
+    param_object_value.Set("boolean", true);
+    params_value.GetList().Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
         crossref::TestTypeInObject::Params::Create(
-            params_value->GetListDeprecated()));
+            params_value.GetListDeprecated()));
     EXPECT_TRUE(params.get());
     EXPECT_TRUE(params->param_object.test_type.get());
     EXPECT_TRUE(params->param_object.boolean);
-    EXPECT_EQ(*CreateTestTypeValue(),
+    EXPECT_EQ(CreateTestTypeValue(),
               *params->param_object.test_type->ToValue());
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param_object_value = std::make_unique<base::DictionaryValue>();
-    param_object_value->SetBoolean("boolean", true);
-    params_value->Append(std::move(param_object_value));
+    base::Value params_value(base::Value::Type::LIST);
+    base::Value::Dict param_object_value;
+    param_object_value.Set("boolean", true);
+    params_value.GetList().Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
         crossref::TestTypeInObject::Params::Create(
-            params_value->GetListDeprecated()));
+            params_value.GetListDeprecated()));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->param_object.test_type.get());
     EXPECT_TRUE(params->param_object.boolean);
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param_object_value = std::make_unique<base::DictionaryValue>();
-    param_object_value->SetString("testType", "invalid");
-    param_object_value->SetBoolean("boolean", true);
-    params_value->Append(std::move(param_object_value));
+    base::Value params_value(base::Value::Type::LIST);
+    base::Value::Dict param_object_value;
+    param_object_value.Set("testType", "invalid");
+    param_object_value.Set("boolean", true);
+    params_value.GetList().Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
         crossref::TestTypeInObject::Params::Create(
-            params_value->GetListDeprecated()));
+            params_value.GetListDeprecated()));
     EXPECT_FALSE(params.get());
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    auto param_object_value = std::make_unique<base::DictionaryValue>();
-    param_object_value->SetKey(
-        "testType", base::Value::FromUniquePtrValue(CreateTestTypeValue()));
-    params_value->Append(std::move(param_object_value));
+    base::Value params_value(base::Value::Type::LIST);
+    base::Value::Dict param_object_value;
+    param_object_value.Set("testType", CreateTestTypeValue());
+    params_value.GetList().Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
         crossref::TestTypeInObject::Params::Create(
-            params_value->GetListDeprecated()));
+            params_value.GetListDeprecated()));
     EXPECT_FALSE(params.get());
   }
 }
