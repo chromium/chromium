@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/screen_infos.h"

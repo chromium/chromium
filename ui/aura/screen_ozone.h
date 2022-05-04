@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
 

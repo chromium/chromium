@@ -20,6 +20,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_handle.h"
 
