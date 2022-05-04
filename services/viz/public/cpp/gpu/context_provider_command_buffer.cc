@@ -66,7 +66,8 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     bool support_grcontext,
     const gpu::SharedMemoryLimits& memory_limits,
     const gpu::ContextCreationAttribs& attributes,
-    command_buffer_metrics::ContextType type)
+    command_buffer_metrics::ContextType type,
+    base::SharedMemoryMapper* buffer_mapper)
     : stream_id_(stream_id),
       stream_priority_(stream_priority),
       surface_handle_(surface_handle),
@@ -79,7 +80,8 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       context_type_(type),
       channel_(std::move(channel)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      impl_(nullptr) {
+      impl_(nullptr),
+      buffer_mapper_(buffer_mapper) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(channel_);
   context_thread_checker_.DetachFromThread();
@@ -141,7 +143,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
-      channel_, gpu_memory_buffer_manager_, stream_id_, task_runner);
+      channel_, gpu_memory_buffer_manager_, stream_id_, task_runner,
+      buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
       surface_handle_, /*shared_command_buffer=*/nullptr, stream_priority_,
       attributes_, active_url_);

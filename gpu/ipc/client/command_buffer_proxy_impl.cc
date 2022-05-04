@@ -47,7 +47,8 @@ CommandBufferProxyImpl::CommandBufferProxyImpl(
     scoped_refptr<GpuChannelHost> channel,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     int32_t stream_id,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    base::SharedMemoryMapper* transfer_buffer_mapper)
     : channel_(std::move(channel)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       channel_id_(channel_->channel_id()),
@@ -55,7 +56,8 @@ CommandBufferProxyImpl::CommandBufferProxyImpl(
       stream_id_(stream_id),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel_id_, route_id_)),
-      callback_thread_(std::move(task_runner)) {
+      callback_thread_(std::move(task_runner)),
+      transfer_buffer_mapper_(transfer_buffer_mapper) {
   DCHECK(route_id_);
 }
 
@@ -356,7 +358,7 @@ scoped_refptr<gpu::Buffer> CommandBufferProxyImpl::CreateTransferBuffer(
   base::UnsafeSharedMemoryRegion shared_memory_region;
   base::WritableSharedMemoryMapping shared_memory_mapping;
   std::tie(shared_memory_region, shared_memory_mapping) =
-      AllocateAndMapSharedMemory(size);
+      AllocateAndMapSharedMemory(size, transfer_buffer_mapper_);
   if (!shared_memory_mapping.IsValid()) {
     if (last_state_.error == gpu::error::kNoError &&
         option != TransferBufferAllocationOption::kReturnNullOnOOM)
@@ -649,7 +651,9 @@ void CommandBufferProxyImpl::ReturnFrontBuffer(const gpu::Mailbox& mailbox,
 }
 
 std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
-CommandBufferProxyImpl::AllocateAndMapSharedMemory(size_t size) {
+CommandBufferProxyImpl::AllocateAndMapSharedMemory(
+    size_t size,
+    base::SharedMemoryMapper* mapper) {
   base::UnsafeSharedMemoryRegion region =
       base::UnsafeSharedMemoryRegion::Create(size);
   if (!region.IsValid()) {
@@ -657,7 +661,7 @@ CommandBufferProxyImpl::AllocateAndMapSharedMemory(size_t size) {
     return {};
   }
 
-  base::WritableSharedMemoryMapping mapping = region.Map();
+  base::WritableSharedMemoryMapping mapping = region.Map(mapper);
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "AllocateAndMapSharedMemory: Map failed";
     return {};

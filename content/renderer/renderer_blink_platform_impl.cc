@@ -59,6 +59,7 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "content/renderer/worker/worker_thread_registry.h"
 #include "device/gamepad/public/cpp/gamepads.h"
+#include "gin/array_buffer.h"  // TODO(crbug.com/1321521) remove import once resolved.
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -907,6 +908,17 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
   constexpr bool support_locking = false;
   constexpr bool support_grcontext = true;
 
+  // WebGPU GPUBuffers, which are backed by shared memory transfer buffers, may
+  // be accessed as ArrayBuffers from JavaScript. As such, the underlying
+  // buffers need to be mapped using the ArrayBuffer shared memory mapper. As
+  // there is currently no way of specifying a custom mapper per buffer, we
+  // have to map all buffers created by this provider using the custom mapper.
+  // TODO(crbug.com/1321521) instead of mapping all buffers created by this
+  // provider with the array buffer mapper, only map those that will actually
+  // be used as ArrayBuffers and remove this per-provider mapper again.
+  base::SharedMemoryMapper* buffer_mapper =
+      gin::GetSharedMemoryMapperForArrayBuffers();
+
   scoped_refptr<viz::ContextProviderCommandBuffer> provider(
       new viz::ContextProviderCommandBuffer(
           std::move(gpu_channel_host),
@@ -915,7 +927,7 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
           gpu::kNullSurfaceHandle, GURL(top_document_web_url),
           automatic_flushes, support_locking, support_grcontext,
           gpu::SharedMemoryLimits::ForWebGPUContext(), attributes,
-          viz::command_buffer_metrics::ContextType::WEBGPU));
+          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       std::move(provider));
 #endif

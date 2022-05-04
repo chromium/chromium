@@ -84,7 +84,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       scoped_refptr<GpuChannelHost> channel,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::SharedMemoryMapper* transfer_buffer_mapper = nullptr);
 
   CommandBufferProxyImpl(const CommandBufferProxyImpl&) = delete;
   CommandBufferProxyImpl& operator=(const CommandBufferProxyImpl&) = delete;
@@ -189,7 +190,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void OrderingBarrierHelper(int32_t put_offset);
 
   std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
-  AllocateAndMapSharedMemory(size_t size);
+  AllocateAndMapSharedMemory(size_t size,
+                             base::SharedMemoryMapper* mapper = nullptr);
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message) override;
@@ -305,6 +307,13 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
+
+  // Optional shared memory mapper to use when creating transfer buffers.
+  // TODO(1321521) remove this member and instead let callers of
+  // CreateTransferBuffer specify the mapper to use so that only the buffers
+  // used for WebGPU ArrayBuffers use a non-default mapper.
+  base::SharedMemoryMapper* transfer_buffer_mapper_;
+
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};
 };
 

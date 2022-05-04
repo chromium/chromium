@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,7 +80,8 @@ class ContextProviderCommandBuffer
       bool support_grcontext,
       const gpu::SharedMemoryLimits& memory_limits,
       const gpu::ContextCreationAttribs& attributes,
-      command_buffer_metrics::ContextType type);
+      command_buffer_metrics::ContextType type,
+      base::SharedMemoryMapper* buffer_mapper = nullptr);
 
   gpu::CommandBufferProxyImpl* GetCommandBufferProxy();
   // Gives the GL internal format that should be used for calling CopyTexImage2D
@@ -177,6 +179,12 @@ class ContextProviderCommandBuffer
   std::unique_ptr<ContextCacheController> cache_controller_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
+
+  // Shared memory mapper used by command buffer proxies created from this
+  // provider when creating shared memory mappings.
+  // TODO(crbug.com/1321521) remove this member again once users of the command
+  // buffer proxy can specify the mapper for each mapping individually.
+  base::SharedMemoryMapper* buffer_mapper_ = nullptr;
 };
 
 }  // namespace viz
