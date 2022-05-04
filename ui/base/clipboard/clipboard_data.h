@@ -55,9 +55,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // Bitmask of ClipboardInternalFormat types.
   int format() const { return format_; }
 
-  // Returns the total size of the data in clipboard, or absl::nullopt if it
-  // can't be determined.
-  absl::optional<size_t> size() const;
+  // Returns the size of the data in clipboard of `format`, total size of the
+  // clipboard data if `format` is empty, and absl::nullopt if it can't be
+  // determined.
+  absl::optional<size_t> size(
+      const absl::optional<ClipboardInternalFormat>& format) const;
 
   const std::string& text() const { return text_; }
   void set_text(const std::string& text) {
