@@ -1131,7 +1131,7 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 // from the apps grid. This feature was previously named "AppListBubble".
 // https://crbug.com/1204551
 const base::Feature kProductivityLauncher{"ProductivityLauncher",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
