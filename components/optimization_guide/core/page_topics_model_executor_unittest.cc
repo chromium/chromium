@@ -566,6 +566,48 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, InputNotInOverride) {
       "OptimizationGuide.PageTopicsOverrideList.UsedOverride", false, 1);
 }
 
+// Regression test for crbug.com/1321808.
+TEST_F(PageTopicsModelExecutorOverrideListTest, KeepsOrdering) {
+  base::HistogramTester histogram_tester;
+
+  proto::PageTopicsOverrideList override_list;
+  proto::PageTopicsOverrideEntry* entry = override_list.add_entries();
+  entry->set_domain("in list");
+  entry->mutable_topics()->add_topic_ids(1337);
+
+  std::string enc_pb;
+  ASSERT_TRUE(override_list.SerializeToString(&enc_pb));
+
+  base::FilePath add_file =
+      WriteToTempFile("override_list.pb.gz", Compress(enc_pb));
+  SendModelWithAdditionalFilesToExecutor({add_file});
+
+  base::RunLoop run_loop;
+  model_executor()->ExecuteJob(
+      run_loop.QuitClosure(),
+      std::make_unique<PageContentAnnotationJob>(
+          base::BindOnce([](const std::vector<BatchAnnotationResult>& results) {
+            ASSERT_EQ(results.size(), 2U);
+
+            EXPECT_EQ(results[0].input(), "not in list");
+            EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
+            EXPECT_FALSE(results[0].topics());
+
+            EXPECT_EQ(results[1].input(), "in list");
+            EXPECT_EQ(results[1].type(), AnnotationType::kPageTopics);
+            EXPECT_TRUE(results[1].topics());
+          }),
+          std::vector<std::string>{"not in list", "in list"},
+          AnnotationType::kPageTopics));
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.FileLoadResult",
+      /*OverrideListFileLoadResult::kSuccess=*/1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+}
+
 TEST_F(PageTopicsModelExecutorOverrideListTest, ModelUnloadsOverrideList) {
   base::HistogramTester histogram_tester;
 
