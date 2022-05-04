@@ -1,12 +1,4 @@
 <style include="history-clusters-shared-style">
-  :host(:not([is-top-menu])) {
-    opacity: 0; /* Hides the element while keeping it in tab order. */
-  }
-
-  :host(:not([is-top-menu]):-webkit-any(:focus-within, :hover)) {
-    opacity: 1;
-  }
-
   :host(:not([is-top-menu])) #openAllButton,
   :host(:not([is-top-menu])) #removeAllButton {
     display: none;

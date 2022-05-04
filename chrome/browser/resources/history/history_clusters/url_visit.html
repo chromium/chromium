@@ -10,6 +10,19 @@
     background-color: var(--cr-hover-background-color);
   }
 
+  :host(:not([is-top-visit])) .timestamp-and-menu {
+    opacity: 0; /* Hides the element while keeping it in tab order. */
+    position: absolute; /* Surrender its layout space to other elements. */
+  }
+
+  :host(:hover) .timestamp-and-menu,
+  /* This selector seems overly verbose, but we need it to be more specific than
+     the 0 opacity rule. */
+  :host(:not([is-top-visit])) .timestamp-and-menu:focus-within {
+    opacity: 1;
+    position: static;
+  }
+
   #header {
     align-items: center;
     display: flex;
@@ -31,14 +44,15 @@
     text-decoration: none;
   }
 
-  #start-justified {
+  #link-container {
     align-items: center;
     display: flex;
     min-width: 0;
     outline: none;
+    padding-inline-end: var(--cluster-padding-horizontal);
   }
 
-  :host-context(.focus-outline-visible) #start-justified:focus {
+  :host-context(.focus-outline-visible) #link-container:focus {
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
@@ -100,7 +114,7 @@
 </style>
 <div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
     on-keydown="onKeydown_">
-  <a id="start-justified" href="[[visit.normalizedUrl.url]]">
+  <a id="link-container" href="[[visit.normalizedUrl.url]]">
     <page-favicon is-top-visit-favicon="[[isTopVisit]]"
         url="[[visit.normalizedUrl]]">
     </page-favicon>
