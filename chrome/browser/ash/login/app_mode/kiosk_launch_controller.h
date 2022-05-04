@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -110,6 +111,8 @@ class KioskLaunchController
   void RemoveKioskProfileLoadFailedObserver(
       KioskProfileLoadFailedObserver* observer);
 
+  bool HandleAccelerator(LoginAcceleratorAction action);
+
  private:
   friend class KioskLaunchControllerTest;
 
@@ -131,11 +134,12 @@ class KioskLaunchController
 
   KioskLaunchController();
 
+  void OnCancelAppLaunch();
+  void OnNetworkConfigRequested();
+
   // AppLaunchSplashScreenView::Delegate:
   void OnConfigureNetwork() override;
-  void OnCancelAppLaunch() override;
   void OnDeletingSplashScreenView() override;
-  void OnNetworkConfigRequested() override;
   void OnNetworkConfigFinished() override;
   void OnNetworkStateChanged(bool online) override;
   KioskAppManagerBase::App GetAppData() override;

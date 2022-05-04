@@ -138,6 +138,8 @@ class KioskLaunchControllerTest
         ->OnNetworkStateChanged(online);
   }
 
+  void OnNetworkConfigRequested() { controller()->OnNetworkConfigRequested(); }
+
   Profile* profile() { return browser()->profile(); }
 
   FakeAppLaunchSplashScreenHandler* view() { return view_.get(); }
@@ -226,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   // User presses the hotkey.
-  view_controls()->OnNetworkConfigRequested();
+  OnNetworkConfigRequested();
   ExpectState(AppState::kCreatingProfile, NetworkUIState::kNeedToShow);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
@@ -275,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
 
   // User presses the hotkey, current installation is canceled.
   EXPECT_CALL(*launcher(), RestartLauncher()).Times(1);
-  view_controls()->OnNetworkConfigRequested();
+  OnNetworkConfigRequested();
   // Launcher restart causes network to be requested again.
   launch_controls()->InitializeNetwork();
   ExpectState(AppState::kInitNetwork, NetworkUIState::kShowing);

@@ -12,7 +12,7 @@
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
 
-// #import {RESET_AVAILABLE_SCREEN_GROUP, SCREEN_APP_LAUNCH_SPLASH, SCREEN_GAIA_SIGNIN, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, ACCELERATOR_APP_LAUNCH_BAILOUT, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+// #import {RESET_AVAILABLE_SCREEN_GROUP, SCREEN_APP_LAUNCH_SPLASH, SCREEN_GAIA_SIGNIN, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
 // #import {MultiTapDetector} from './multi_tap_detector.m.js';
 // #import {keyboard} from './keyboard_utils.m.js'
 // #import {DisplayManagerScreenAttributes} from './components/display_manager_types.m.js'
@@ -278,14 +278,6 @@ cr.define('cr.ui.login', function() {
             attributes.resetAllowed ||
             RESET_AVAILABLE_SCREEN_GROUP.indexOf(currentStepId) != -1) {
           chrome.send('toggleResetScreen');
-        }
-      } else if (name == ACCELERATOR_APP_LAUNCH_BAILOUT) {
-        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH) {
-          chrome.send('cancelAppLaunch');
-        }
-      } else if (name == ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG) {
-        if (currentStepId == SCREEN_APP_LAUNCH_SPLASH) {
-          chrome.send('networkConfigRequest');
         }
       }
     }

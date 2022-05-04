@@ -25,12 +25,6 @@ class AppLaunchSplashScreenView {
     // Invoked when the configure network control is clicked.
     virtual void OnConfigureNetwork() {}
 
-    // Invoked when the app launch bailout shortcut key is pressed.
-    virtual void OnCancelAppLaunch() {}
-
-    // Invoked when the network config shortcut key is pressed.
-    virtual void OnNetworkConfigRequested() {}
-
     // Invoked when the network config did prepare network and is closed.
     virtual void OnNetworkConfigFinished() {}
 
@@ -133,9 +127,7 @@ class AppLaunchSplashScreenHandler
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(AppLaunchState state);
   void HandleConfigureNetwork();
-  void HandleCancelAppLaunch();
   void HandleContinueAppLaunch();
-  void HandleNetworkConfigRequested();
   void DoToggleNetworkConfig(bool visible);
 
   Delegate* delegate_ = nullptr;

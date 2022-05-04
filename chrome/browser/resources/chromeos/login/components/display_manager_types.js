@@ -99,9 +99,6 @@ DisplayManagerScreenAttributes.resetAllowed;
 /* #export */ const ACCELERATOR_CANCEL = 'cancel';
 /* #export */ const ACCELERATOR_VERSION = 'version';
 /* #export */ const ACCELERATOR_RESET = 'reset';
-/* #export */ const ACCELERATOR_APP_LAUNCH_BAILOUT = 'app_launch_bailout';
-/* #export */ const ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
-    'app_launch_network_config';
 
 /* #export */ const USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';
 

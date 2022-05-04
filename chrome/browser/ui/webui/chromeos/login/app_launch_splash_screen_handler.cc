@@ -105,12 +105,8 @@ void AppLaunchSplashScreenHandler::Show() {
 void AppLaunchSplashScreenHandler::RegisterMessages() {
   AddCallback("configureNetwork",
               &AppLaunchSplashScreenHandler::HandleConfigureNetwork);
-  AddCallback("cancelAppLaunch",
-              &AppLaunchSplashScreenHandler::HandleCancelAppLaunch);
   AddCallback("continueAppLaunch",
               &AppLaunchSplashScreenHandler::HandleContinueAppLaunch);
-  AddCallback("networkConfigRequest",
-              &AppLaunchSplashScreenHandler::HandleNetworkConfigRequested);
 }
 
 void AppLaunchSplashScreenHandler::Hide() {
@@ -279,19 +275,6 @@ void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {
     delegate_->OnConfigureNetwork();
   else
     LOG(WARNING) << "No delegate set to handle network configuration.";
-}
-
-void AppLaunchSplashScreenHandler::HandleCancelAppLaunch() {
-  if (delegate_)
-    delegate_->OnCancelAppLaunch();
-  else
-    LOG(WARNING) << "No delegate set to handle cancel app launch";
-}
-
-void AppLaunchSplashScreenHandler::HandleNetworkConfigRequested() {
-  if (!delegate_)
-    return;
-  delegate_->OnNetworkConfigRequested();
 }
 
 void AppLaunchSplashScreenHandler::HandleContinueAppLaunch() {

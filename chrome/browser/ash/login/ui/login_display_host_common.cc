@@ -406,6 +406,11 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
+  if (kiosk_launch_controller_ &&
+      kiosk_launch_controller_->HandleAccelerator(action)) {
+    return true;
+  }
+
   // This path should only handle screen-specific acceletators, so we do not
   // need to create WebUI here.
   if (IsWizardControllerCreated() &&

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -255,6 +256,20 @@ void KioskLaunchController::AddKioskProfileLoadFailedObserver(
 void KioskLaunchController::RemoveKioskProfileLoadFailedObserver(
     KioskProfileLoadFailedObserver* observer) {
   profile_load_failed_observers_.RemoveObserver(observer);
+}
+
+bool KioskLaunchController::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kAppLaunchBailout) {
+    OnCancelAppLaunch();
+    return true;
+  }
+
+  if (action == LoginAcceleratorAction::kAppLaunchNetworkConfig) {
+    OnNetworkConfigRequested();
+    return true;
+  }
+
+  return false;
 }
 
 void KioskLaunchController::OnProfileLoaded(Profile* profile) {
