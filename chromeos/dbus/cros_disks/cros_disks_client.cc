@@ -122,7 +122,7 @@ MountError CrosDisksMountErrorToChromeMountError(
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD:
       return MOUNT_ERROR_NEED_PASSWORD;
     default:
-      NOTREACHED() << "Unrecognised mount error code " << mount_error;
+      LOG(ERROR) << "Unrecognised mount error code " << mount_error;
       return MOUNT_ERROR_UNKNOWN;
   }
 }
