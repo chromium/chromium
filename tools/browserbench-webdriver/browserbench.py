@@ -11,8 +11,9 @@ import time
 
 
 class BrowserBench(object):
-  def __init__(self, name):
+  def __init__(self, name, version):
     self._name = name
+    self._version = version
     self._output = None
     self._githash = None
     self._browser = None
@@ -41,16 +42,50 @@ class BrowserBench(object):
     else:
       return None
 
-  def _ProduceOutput(self, measurements):
+  def _ConvertMeasurementsToSkiaFormat(self, measurements):
+    '''
+    Processes the results from RunAndExtractMeasurements() into the format used
+    by skia, which is:
+    An array of dictionaries. Each dictionary contains a single result.
+    Expected values in the dictionary are:
+      'key': a dictionary that contains the following entries:
+        'sub-test': the sub test. For the final score, this is not present.
+        'value': the type of measurement: 'score', 'max'...
+      'measurement': the measured value.
+    '''
+    all_results = []
+    for suite, results in measurements.items():
+      for result in results if isinstance(results, list) else [results]:
+        converted_result = {
+            'key': {
+                'value': result['value']
+            },
+            'measurement': result['measurement']
+        }
+        if suite != 'score':
+          converted_result['key']['sub-test'] = suite
+          converted_result['key']['type'] = 'sub-test'
+        else:
+          converted_result['key']['type'] = 'rollup'
+        all_results.append(converted_result)
+    return all_results
+
+  def _ProduceOutput(self, measurements, extra_key_values):
+    '''
+    extra_key_values is a dictionary of arbitrary key/value pairs added to the
+    results.
+    '''
     data = {
         'version': 1,
         'git_hash': self._githash,
         'key': {
             'test': self._name,
+            'version': self._version,
             'browser': self._browser,
         },
-        'measurements': measurements
+        'results': self._ConvertMeasurementsToSkiaFormat(measurements)
     }
+    data['key'].update(extra_key_values)
     print(json.dumps(data, sort_keys=True, indent=2, separators=(',', ': ')))
     if self._output:
       with open(self._output, 'w') as file:
@@ -86,6 +121,9 @@ class BrowserBench(object):
                       '--output',
                       dest='output',
                       help='Path to the output json file.')
+    parser.add_option('--extra-keys',
+                      dest='extra_key_value_pairs',
+                      help='Comma separated key/value pairs added to output.')
     parser.add_option(
         '--chrome-path',
         dest='chrome_path',
@@ -99,6 +137,13 @@ class BrowserBench(object):
     self._output = optargs.output
     self._browser = optargs.browser
 
+    extra_key_values = {}
+    if optargs.extra_key_value_pairs:
+      pairs = optargs.extra_key_value_pairs.split(',')
+      assert len(pairs) % 2 == 0
+      for i in range(0, len(pairs), 2):
+        extra_key_values[pairs[i]] = pairs[i + 1]
+
     self.UpdateParseArgs(optargs)
 
     driver = BrowserBench._CreateDriver(optargs)
@@ -108,7 +153,7 @@ class BrowserBench(object):
     driver.set_window_size(900, 780)
 
     measurements = self.RunAndExtractMeasurements(driver, optargs)
-    self._ProduceOutput(measurements)
+    self._ProduceOutput(measurements, extra_key_values)
 
   def AddExtraParserOptions(self, parser):
     pass

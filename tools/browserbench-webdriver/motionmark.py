@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class MotionMark(browserbench.BrowserBench):
   def __init__(self):
-    super(MotionMark, self).__init__('motionmark1.2')
+    super(MotionMark, self).__init__('motionmark', '1.2')
 
   def AddExtraParserOptions(self, parser):
     parser.add_option('-s',

@@ -57,7 +57,7 @@ def _GetResults(driver, optargs):
 
 class JetStream(browserbench.BrowserBench):
   def __init__(self):
-    super(JetStream, self).__init__('JetStream')
+    super(JetStream, self).__init__('JetStream', '2')
 
   def AddExtraParserOptions(self, parser):
     parser.add_option(

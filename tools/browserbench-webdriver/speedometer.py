@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class Speedometer(browserbench.BrowserBench):
   def __init__(self):
-    super(Speedometer, self).__init__('speedometer2.0')
+    super(Speedometer, self).__init__('speedometer', '2.0')
 
   def AddExtraParserOptions(self, parser):
     pass
