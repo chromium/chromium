@@ -60,11 +60,11 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
   sorted_families.insert("Serif");
 
   for (const auto& family : sorted_families) {
-    std::unique_ptr<base::ListValue> font_item(new base::ListValue());
-    font_item->Append(family);
-    font_item->Append(family);  // localized name.
+    base::Value::List font_item;
+    font_item.Append(family);
+    font_item.Append(family);  // localized name.
     // TODO(yusukes): Support localized family names.
-    font_list->Append(std::move(font_item));
+    font_list->GetList().Append(std::move(font_item));
   }
 
   return font_list;

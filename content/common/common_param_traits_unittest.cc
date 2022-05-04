@@ -88,9 +88,9 @@ TEST(IPCMessageTest, Bitmap) {
 
 TEST(IPCMessageTest, ListValue) {
   base::ListValue input;
-  input.Append(42.42);
-  input.Append("forty");
-  input.Append(std::make_unique<base::Value>());
+  input.GetList().Append(42.42);
+  input.GetList().Append("forty");
+  input.GetList().Append(base::Value());
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::WriteParam(&msg, input);
