@@ -50,6 +50,7 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // languages once the infra issue is fixed.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
+          // Handwriting Recognition.
           {{kHandwritingFeatureId, "da"}, "handwriting-da"},
           {{kHandwritingFeatureId, "de"}, "handwriting-de"},
           {{kHandwritingFeatureId, "es"}, "handwriting-es"},
@@ -60,6 +61,9 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kHandwritingFeatureId, "nl"}, "handwriting-nl"},
           {{kHandwritingFeatureId, "pt"}, "handwriting-pt"},
           {{kHandwritingFeatureId, "sv"}, "handwriting-sv"},
+
+          // Text-To-Speech.
+          {{kTtsFeatureId, "es-us"}, "tts-es-us"},
       });
 
   return *all_dlc_ids;
