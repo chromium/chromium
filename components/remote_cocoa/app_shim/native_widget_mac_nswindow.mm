@@ -83,6 +83,7 @@
   remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
   BOOL _willUpdateRestorableState;
   BOOL _isEnforcingNeverMadeVisible;
+  BOOL _preventKeyWindow;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
@@ -161,6 +162,28 @@
   _touchBarDelegate = delegate;
 }
 
+- (void)orderFrontKeepWindowKeyState {
+  if ([self isOnActiveSpace]) {
+    [self orderWindow:NSWindowAbove relativeTo:0];
+    return;
+  }
+  // The OS will activate the window if it causes a space switch.
+  // Temporarily prevent the window from becoming the key window until after
+  // the space change completes.
+  _preventKeyWindow = ![self isKeyWindow];
+  NSNotificationCenter* notificationCenter =
+      [[NSWorkspace sharedWorkspace] notificationCenter];
+  __block id observer = [notificationCenter
+      addObserverForName:NSWorkspaceActiveSpaceDidChangeNotification
+                  object:[NSWorkspace sharedWorkspace]
+                   queue:[NSOperationQueue mainQueue]
+              usingBlock:^(NSNotification* notification) {
+                _preventKeyWindow = NO;
+                [notificationCenter removeObserver:observer];
+              }];
+  [self orderWindow:NSWindowAbove relativeTo:0];
+}
+
 // Private methods.
 
 - (ViewsNSWindowDelegate*)viewsNSWindowDelegate {
@@ -216,6 +239,8 @@
 // Note these can be called via -[NSWindow close] while the widget is being torn
 // down, so check for a delegate.
 - (BOOL)canBecomeKeyWindow {
+  if (_preventKeyWindow)
+    return NO;
   bool canBecomeKey = NO;
   if (_bridge)
     _bridge->host()->GetCanWindowBecomeKey(&canBecomeKey);

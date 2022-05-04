@@ -786,17 +786,20 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
     [window_ makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];
-  } else if (!parent_ && ![window_ isMiniaturized]) {
-    if ([[NSApp mainWindow] screen] == [window_ screen]) {
-      // When the new window is on the same display as the main window, order
-      // the window relative to the main window. Avoid making it the front
-      // window (with e.g. orderFront:), which can cause a space switch.
+  } else if (new_state == WindowVisibilityState::kShowInactive && !parent_ &&
+             ![window_ isMiniaturized]) {
+    if ([[NSApp mainWindow] screen] == [window_ screen] ||
+        ![[NSApp mainWindow] isKeyWindow]) {
+      // When the new window is on the same display as the main window or the
+      // main window is inactive, order the window relative to the main window.
+      // Avoid making it the front window (with e.g. orderFront:), which can
+      // cause a space switch.
       [window_ orderWindow:NSWindowBelow
                 relativeTo:NSApp.mainWindow.windowNumber];
     } else {
-      // When opening a window on another screen, put the window at the front.
-      // When relativeTo: is 0, it won't trigger a space switch.
-      [window_ orderWindow:NSWindowAbove relativeTo:0];
+      // When opening an inactive window on another screen, put the window at
+      // the front and trigger a space switch.
+      [window_ orderFrontKeepWindowKeyState];
     }
   }
 

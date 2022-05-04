@@ -214,6 +214,9 @@ struct NavigateParams {
     // Show and activate the browser window after navigating.
     SHOW_WINDOW,
     // Show the browser window after navigating but do not activate.
+    // Note: This may cause a space / virtual desktop switch if the window is
+    // being shown on a display which is currently showing a fullscreen app.
+    // (crbug.com/1315749).
     SHOW_WINDOW_INACTIVE
   };
   // Default is NO_ACTION (don't show or activate the window).
