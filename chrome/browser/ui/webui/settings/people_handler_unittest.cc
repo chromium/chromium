@@ -122,19 +122,19 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
 // Checks whether the passed |dictionary| contains a |key| with the given
 // |expected_value|. This will fail if the key isn't present, even if
 // |expected_value| is false.
-void ExpectHasBoolKey(const base::Value::DictStorage& dictionary,
+void ExpectHasBoolKey(const base::Value::Dict& dictionary,
                       const std::string& key,
                       bool expected_value) {
   ASSERT_TRUE(dictionary.contains(key)) << "No value found for " << key;
-  ASSERT_TRUE(dictionary.at(key).is_bool()) << key << " has wrong type";
-  EXPECT_EQ(expected_value, dictionary.at(key).GetBool())
+  ASSERT_TRUE(dictionary.FindBool(key).has_value()) << key << " has wrong type";
+  EXPECT_EQ(expected_value, *dictionary.FindBool(key))
       << "Mismatch found for " << key;
 }
 
 // Checks to make sure that the values stored in |dictionary| match the values
 // expected by the showSyncSetupPage() JS function for a given set of data
 // types.
-void CheckConfigDataTypeArguments(const base::Value::DictStorage& dictionary,
+void CheckConfigDataTypeArguments(const base::Value::Dict& dictionary,
                                   SyncAllDataConfig config,
                                   syncer::UserSelectableTypeSet types) {
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", config == SYNC_ALL_DATA);
@@ -326,32 +326,24 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
   // Must be called at most once per test to check if a sync-prefs-changed
   // event happened. Returns the single fired value.
-  base::Value::DictStorage ExpectSyncPrefsChanged() {
+  base::Value::Dict ExpectSyncPrefsChanged() {
     std::vector<const base::Value*> args =
         GetAllFiredValuesForEventName("sync-prefs-changed");
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    // base::Value has no GetDict(), so copy then TakeDictDeprecated().
-    // Alternatively, this could return iterators over the key-value pairs, via
-    // GetDictItems(). But looking up a key over key-value pairs is more
-    // unpleasant than using contains() and the [] operator on the map.
-    return args[0]->Clone().TakeDictDeprecated();
+    return args[0]->GetDict().Clone();
   }
 
   // Must be called at most once per test to check if a sync-status-changed
   // event happened. Returns the single fired value.
-  base::Value::DictStorage ExpectSyncStatusChanged() {
+  base::Value::Dict ExpectSyncStatusChanged() {
     std::vector<const base::Value*> args =
         GetAllFiredValuesForEventName("sync-status-changed");
     EXPECT_EQ(1U, args.size());
     EXPECT_NE(args[0], nullptr);
     EXPECT_TRUE(args[0]->is_dict());
-    // base::Value has no GetDict(), so copy then TakeDictDeprecated().
-    // Alternatively, this could return iterators over the key-value pairs, via
-    // GetDictItems(). But looking up a key over key-value pairs is more
-    // unpleasant than using contains() and the [] operator on the map.
-    return args[0]->Clone().TakeDictDeprecated();
+    return args[0]->GetDict().Clone();
   }
 
   void NotifySyncStateChanged() {
@@ -476,7 +468,7 @@ TEST_F(PeopleHandlerTest,
   // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
   EXPECT_EQ(3U, web_ui_.call_data().size());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);
   ExpectHasBoolKey(dictionary, "customPassphraseAllowed", true);
   ExpectHasBoolKey(dictionary, "encryptAllData", false);
@@ -884,7 +876,7 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncEverything) {
   // This should display the sync setup dialog (not login).
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);
   ExpectHasBoolKey(dictionary, "appsRegistered", true);
   ExpectHasBoolKey(dictionary, "autofillRegistered", true);
@@ -917,7 +909,7 @@ TEST_F(PeopleHandlerTest, ShowSetupManuallySyncAll) {
   // This should display the sync setup dialog (not login).
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, GetAllTypes());
 }
 
@@ -946,7 +938,7 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncForAllTypesIndividually) {
     LoginUIServiceFactory::GetForProfile(profile())->LoginUIClosed(
         handler_.get());
 
-    base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+    base::Value::Dict dictionary = ExpectSyncPrefsChanged();
     CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, types);
     Mock::VerifyAndClearExpectations(mock_sync_service_);
     // Clean up so we can loop back to display the dialog again.
@@ -971,12 +963,12 @@ TEST_F(PeopleHandlerTest, ShowSetupOldGaiaPassphraseRequired) {
 
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", true);
   ASSERT_TRUE(dictionary.contains("explicitPassphraseTime"));
-  ASSERT_TRUE(dictionary.at("explicitPassphraseTime").is_string());
+  ASSERT_TRUE(dictionary.FindString("explicitPassphraseTime"));
   EXPECT_EQ(base::UTF16ToUTF8(base::TimeFormatShortDate(passphrase_time)),
-            dictionary.at("explicitPassphraseTime").GetString());
+            *dictionary.FindString("explicitPassphraseTime"));
 }
 
 TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
@@ -996,12 +988,12 @@ TEST_F(PeopleHandlerTest, ShowSetupCustomPassphraseRequired) {
 
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", true);
   ASSERT_TRUE(dictionary.contains("explicitPassphraseTime"));
-  ASSERT_TRUE(dictionary.at("explicitPassphraseTime").is_string());
+  ASSERT_TRUE(dictionary.FindString("explicitPassphraseTime"));
   EXPECT_EQ(base::UTF16ToUTF8(base::TimeFormatShortDate(passphrase_time)),
-            dictionary.at("explicitPassphraseTime").GetString());
+            *dictionary.FindString("explicitPassphraseTime"));
 }
 
 TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
@@ -1018,7 +1010,7 @@ TEST_F(PeopleHandlerTest, ShowSetupTrustedVaultKeysRequired) {
   // This should display the sync setup dialog (not login).
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "passphraseRequired", false);
   ExpectHasBoolKey(dictionary, "trustedVaultKeysRequired", true);
   EXPECT_FALSE(dictionary.contains("explicitPassphraseTime"));
@@ -1041,7 +1033,7 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAll) {
   // This should display the sync setup dialog (not login).
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "encryptAllData", true);
 }
 
@@ -1062,7 +1054,7 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAllDisallowed) {
   // This should display the sync setup dialog (not login).
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  base::Value::DictStorage dictionary = ExpectSyncPrefsChanged();
+  base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "encryptAllData", false);
   ExpectHasBoolKey(dictionary, "customPassphraseAllowed", false);
 }
@@ -1285,7 +1277,7 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   base::Value accounts = handler.GetStoredAccountsList();
 
   ASSERT_TRUE(accounts.is_list());
-  base::Value::ConstListView accounts_list = accounts.GetListDeprecated();
+  const base::Value::List& accounts_list = accounts.GetList();
 
   ASSERT_EQ(2u, accounts_list.size());
   ASSERT_TRUE(accounts_list[0].FindKey("email"));
@@ -1447,7 +1439,7 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
 
   PeopleHandler handler(profile.get());
   base::Value accounts = handler.GetStoredAccountsList();
-  EXPECT_TRUE(accounts.GetListDeprecated().empty());
+  EXPECT_TRUE(accounts.GetList().empty());
 }
 
 TEST_F(PeopleHandlerTest, TurnOffSync) {
@@ -1459,7 +1451,7 @@ TEST_F(PeopleHandlerTest, TurnOffSync) {
   CreatePeopleHandler();
   handler_->HandleTurnOffSync(base::Value::List());
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  base::Value::DictStorage status = ExpectSyncStatusChanged();
+  base::Value::Dict status = ExpectSyncStatusChanged();
   ExpectHasBoolKey(status, "signedIn", false);
 }
 
@@ -1471,7 +1463,7 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
 
   CreatePeopleHandler();
   base::Value accounts = handler_->GetStoredAccountsList();
-  base::Value::ListView accounts_list = accounts.GetListDeprecated();
+  const base::Value::List& accounts_list = accounts.GetList();
   ASSERT_EQ(1u, accounts_list.size());
   EXPECT_EQ("user@gmail.com", accounts_list[0].FindKey("email")->GetString());
 }
