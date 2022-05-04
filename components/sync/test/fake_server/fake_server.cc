@@ -269,20 +269,17 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       commit_error_type_ != sync_pb::SyncEnums::SUCCESS &&
       ShouldSendTriggeredError()) {
     response->set_error_code(commit_error_type_);
-    response->set_store_birthday(loopback_server_->GetStoreBirthday());
     return net::HTTP_OK;
   }
 
   if (error_type_ != sync_pb::SyncEnums::SUCCESS &&
       ShouldSendTriggeredError()) {
     response->set_error_code(error_type_);
-    response->set_store_birthday(loopback_server_->GetStoreBirthday());
     return net::HTTP_OK;
   }
 
   if (triggered_actionable_error_.get() && ShouldSendTriggeredError()) {
     *response->mutable_error() = *triggered_actionable_error_;
-    response->set_store_birthday(loopback_server_->GetStoreBirthday());
     return net::HTTP_OK;
   }
 
@@ -515,8 +512,15 @@ bool FakeServer::ModifyBookmarkEntity(
 
 void FakeServer::ClearServerData() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  loopback_server_->ClearServerData();
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    loopback_server_->ClearServerData();
+  }
+
+  // Notify observers so invalidations are mimic-ed.
+  OnCommit(/*committer_invalidator_client_id=*/std::string(),
+           /*committed_model_types=*/{syncer::NIGORI});
 }
 
 void FakeServer::SetHttpError(net::HttpStatusCode http_status_code) {

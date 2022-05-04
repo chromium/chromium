@@ -304,7 +304,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void clearServerData() {
         mFakeServerHelper.clearServerData();
-        SyncTestUtil.triggerSync();
         CriteriaHelper.pollUiThread(() -> {
             return !SyncService.get().isSyncRequested();
         }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);

@@ -1455,10 +1455,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   GetSecurityDomainsServer()->ResetData();
   GetFakeServer()->ClearServerData();
 
-  // Make change to trigger sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, /*title=*/"title",
-                           GURL("http://www.google.com"));
-
   // Wait until sync gets disabled to ensure client is aware of reset.
   ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
 

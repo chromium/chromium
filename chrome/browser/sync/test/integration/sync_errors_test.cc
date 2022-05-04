@@ -144,15 +144,11 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  // Add an item, wait for sync, and trigger a birthday error on the server.
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  // Clearing the server data resets the server birthday and triggers a NIGORI
+  // invalidation. This triggers a sync cycle and a GetUpdates request that runs
+  // into NOT_MY_BIRTHDAY.
   GetFakeServer()->ClearServerData();
 
-  // Now make one more change so we will do another sync.
-  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
-  SetTitle(0, node2, "new_title2");
   ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
 }
 
@@ -165,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
 
   std::string description = "Not My Fault";
   std::string url = "www.google.com";
-  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::TRANSIENT_ERROR,
+  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::THROTTLED,
                                           description, url,
                                           sync_pb::SyncEnums::UPGRADE_CLIENT);
 
@@ -174,15 +170,18 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
   SetTitle(0, node2, "new_title2");
 
   // Wait until an actionable error is encountered.
-  ASSERT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
 
   // UPGRADE_CLIENT gets mapped to an unrecoverable error, so Sync will *not*
   // start up again in transport-only mode (which would clear the cached error).
+  EXPECT_EQ(syncer::SyncService::TransportState::DISABLED,
+            GetSyncService(0)->GetTransportState());
+
   syncer::SyncStatus status;
   GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
-  ASSERT_EQ(status.sync_protocol_error.error_type, syncer::TRANSIENT_ERROR);
-  ASSERT_EQ(status.sync_protocol_error.action, syncer::UPGRADE_CLIENT);
-  ASSERT_EQ(status.sync_protocol_error.error_description, description);
+  EXPECT_EQ(status.sync_protocol_error.error_type, syncer::THROTTLED);
+  EXPECT_EQ(status.sync_protocol_error.action, syncer::UPGRADE_CLIENT);
+  EXPECT_EQ(status.sync_protocol_error.error_description, description);
 }
 
 // This test verifies that sync keeps retrying if it encounters error during
@@ -218,35 +217,6 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
   ASSERT_TRUE(
       GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kAutofill));
 #endif
-}
-
-IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorUsingActionableErrorTest) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-
-  // Clear the server data so that the birthday gets incremented, and also send
-  // an appropriate error.
-  GetFakeServer()->ClearServerData();
-  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::NOT_MY_BIRTHDAY,
-                                          "Not My Fault", "www.google.com",
-                                          sync_pb::SyncEnums::UNKNOWN_ACTION);
-
-  // Now make one more change so we will do another sync.
-  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
-  SetTitle(0, node2, "new_title2");
-
-  SyncDisabledChecker sync_disabled(GetSyncService(0));
-  sync_disabled.Wait();
-
-  // On receiving the error, the SyncService will immediately start up again
-  // in transport mode, which resets the status. So check the status that the
-  // checker recorded at the time Sync was off.
-  syncer::SyncStatus status = sync_disabled.status_on_sync_disabled();
-  EXPECT_EQ(status.sync_protocol_error.error_type, syncer::NOT_MY_BIRTHDAY);
-  EXPECT_EQ(status.sync_protocol_error.action, syncer::DISABLE_SYNC_ON_CLIENT);
 }
 
 // Tests that on receiving CLIENT_DATA_OBSOLETE sync engine gets restarted and
