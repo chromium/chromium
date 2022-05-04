@@ -28,6 +28,10 @@
 
   @container (min-width: 400px) { #c11::first-line { color: green } }
   @container (min-width: 400px) { #c12::first-line { color: green } }
+
+  #c13::first-line { color: red }
+  @container (min-width: 400px) { #c13::first-line { color: green } }
+  @container (min-width: 400px) { #c14::first-line { color: green } }
 </style>
 <div id="c1" class="container" style="width:100px"></div>
 <div id="c2" class="container" style="width:200px"></div>
@@ -57,6 +61,8 @@
 <div id="c12" class="container" style="width:300px">
   <div class="container" style="width:300px">PASS if text is green.</div>
 </div>
+<div id="c13" class="container" style="width:300px">PASS if text is green.</div>
+<div id="c14" class="container" style="width:300px">PASS if text is green.</div>
 <script>
   document.body.offsetTop;
   c2.style.width = "100px";
@@ -65,4 +71,6 @@
   c8.style.width = "400px";
   c10.style.width = "300px";
   c12.style.width = "400px";
+  c13.style.width = "400px";
+  c14.style.width = "400px";
 </script>
