@@ -101,6 +101,10 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   // be delivered to the sinks instead of the content of |audio_bus|.
   void OnData(const media::AudioBus& audio_bus, base::TimeTicks reference_time);
 
+  MediaStreamTrackPlatform::StreamType Type() const override {
+    return MediaStreamTrackPlatform::StreamType::kAudio;
+  };
+
  private:
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.

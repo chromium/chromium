@@ -86,6 +86,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   bool is_local_track() const { return is_local_track_; }
 
+  enum class StreamType { kAudio, kVideo };
+  virtual StreamType Type() const = 0;
+
  private:
   const bool is_local_track_;
 };

@@ -183,6 +183,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
     is_screencast_ = is_screencast;
   }
 
+  MediaStreamTrackPlatform::StreamType Type() const override {
+    return MediaStreamTrackPlatform::StreamType::kVideo;
+  };
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, StartTrack);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, RemoteTrackStop);

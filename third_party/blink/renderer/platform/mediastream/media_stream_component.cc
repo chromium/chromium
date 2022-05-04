@@ -44,6 +44,23 @@ namespace {
 
 static int g_unique_media_stream_component_id = 0;
 
+void CheckSourceAndTrackSameType(
+    const MediaStreamSource* source,
+    const MediaStreamTrackPlatform* platform_track) {
+  // Ensure the source and platform_track have the same types.
+  switch (source->GetType()) {
+    case MediaStreamSource::kTypeAudio:
+      CHECK(platform_track->Type() ==
+            MediaStreamTrackPlatform::StreamType::kAudio);
+      return;
+    case MediaStreamSource::kTypeVideo:
+      CHECK(platform_track->Type() ==
+            MediaStreamTrackPlatform::StreamType::kVideo);
+      return;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
@@ -66,6 +83,12 @@ MediaStreamComponent::MediaStreamComponent(
     MediaStreamSource* source,
     std::unique_ptr<MediaStreamTrackPlatform> platform_track)
     : MediaStreamComponent(id, source) {
+  // TODO(https://crbug.com/1302689): Change to a DCHECK(platform_track) once
+  // all callers provide a platform_track here, rather than using
+  // SetPlatformTrack().
+  if (platform_track) {
+    CheckSourceAndTrackSameType(source, platform_track.get());
+  }
   platform_track_ = std::move(platform_track);
 }
 
@@ -73,6 +96,12 @@ MediaStreamComponent::MediaStreamComponent(
     MediaStreamSource* source,
     std::unique_ptr<MediaStreamTrackPlatform> platform_track)
     : MediaStreamComponent(source) {
+  // TODO(https://crbug.com/1302689): Change to a DCHECK(platform_track) once
+  // all callers provide a platform_track here, rather than using
+  // SetPlatformTrack().
+  if (platform_track) {
+    CheckSourceAndTrackSameType(source, platform_track.get());
+  }
   platform_track_ = std::move(platform_track);
 }
 
