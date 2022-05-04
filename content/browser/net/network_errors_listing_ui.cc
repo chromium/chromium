@@ -47,10 +47,10 @@ std::unique_ptr<base::ListValue> GetNetworkErrorData() {
     // Exclude the aborted and pending codes as these don't return a page.
     if (error_code != net::Error::ERR_IO_PENDING &&
         error_code != net::Error::ERR_ABORTED) {
-      std::unique_ptr<base::DictionaryValue> error(new base::DictionaryValue());
-      error->SetInteger(kErrorIdField, error_code);
-      error->SetString(kErrorCodeField, itr.key());
-      error_list->Append(std::move(error));
+      base::Value::Dict error;
+      error.Set(kErrorIdField, error_code);
+      error.Set(kErrorCodeField, itr.key());
+      error_list->GetList().Append(std::move(error));
     }
   }
   return error_list;
