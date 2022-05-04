@@ -401,17 +401,21 @@ class FirstPartySetsHandlerImplEnabledTest
       : FirstPartySetsHandlerImplTest(true) {}
 };
 
-TEST_F(FirstPartySetsHandlerImplEnabledTest, PersistedSetsNotReady) {
-  // Empty `user_data_dir` will fail loading persisted sets.
+TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyPersistedSetsDir) {
+  // Empty `user_data_dir` will fail to load persisted sets, but that will not
+  // prevent `on_sets_ready` from being invoked.
+  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{},
       /*flag_value=*/"https://example.test,https://member1.test",
-      base::BindLambdaForTesting(
-          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            FAIL();  // Should not be called.
-          }));
+      future.GetCallback());
 
-  env().RunUntilIdle();
+  EXPECT_THAT(future.Get(),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest, PublicFirstPartySetsNotReady) {

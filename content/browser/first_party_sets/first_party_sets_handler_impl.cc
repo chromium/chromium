@@ -168,6 +168,9 @@ void FirstPartySetsHandlerImpl::SetPersistedSets(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (user_data_dir.empty()) {
     VLOG(1) << "Empty path. Failed loading serialized First-Party Sets file.";
+    // We have to continue, in case the embedder has enabled FPS but has not
+    // provided a directory to store persisted sets.
+    OnReadPersistedSetsFile("");
     return;
   }
   persisted_sets_path_ = user_data_dir.Append(kPersistedFirstPartySetsFileName);
@@ -186,7 +189,6 @@ void FirstPartySetsHandlerImpl::SetPersistedSets(
 void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
     const std::string& raw_persisted_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!persisted_sets_path_.empty());
   raw_persisted_sets_ = raw_persisted_sets;
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets2",
@@ -246,11 +248,13 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
   if (!on_sets_ready_.is_null() && IsEnabledAndReady())
     std::move(on_sets_ready_).Run(sets_.value());
 
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &MaybeWriteSetsToDisk, persisted_sets_path_,
-          FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
+  if (!persisted_sets_path_.empty()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            &MaybeWriteSetsToDisk, persisted_sets_path_,
+            FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
+  }
 }
 
 bool FirstPartySetsHandlerImpl::IsEnabledAndReady() const {
