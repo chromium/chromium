@@ -423,8 +423,10 @@ enum NvmeSelfTestTypeEnum {
 };
 
 // Enumeration of the possible DiskRead routine's command type
-[Stable]
+[Stable, Extensible]
 enum DiskReadRoutineTypeEnum {
-  kLinearRead,
-  kRandomRead,
+  kLinearRead = 0,
+  kRandomRead = 1,
+  // Sending this to the underlying cros_healthd will result in an error.
+  [Default] kUnknown = 2,
 };

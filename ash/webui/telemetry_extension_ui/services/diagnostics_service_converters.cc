@@ -229,6 +229,9 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
       return cros_healthd::mojom::DiskReadRoutineTypeEnum::kLinearRead;
     case health::mojom::DiskReadRoutineTypeEnum::kRandomRead:
       return cros_healthd::mojom::DiskReadRoutineTypeEnum::kRandomRead;
+    case health::mojom::DiskReadRoutineTypeEnum::kUnknown:
+      // Fall-through to not-supported case.
+      break;
   }
   NOTREACHED();
   return static_cast<cros_healthd::mojom::DiskReadRoutineTypeEnum>(

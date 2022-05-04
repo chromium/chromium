@@ -80,7 +80,6 @@ _UNION_FIELD_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
 
 # TODO(https://crbug.com/1193875) empty this set and remove the allowlist.
 _STABLE_ONLY_ALLOWLISTED_ENUMS = {
-    'ash.health.mojom.DiskReadRoutineTypeEnum',
     'ash.ime.mojom.CommitTextCursorBehavior',
     'ash.ime.mojom.KeyEventResult',
     'ash.ime.mojom.KeyEventType',
