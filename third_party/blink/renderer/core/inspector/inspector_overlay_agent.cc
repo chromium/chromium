@@ -1339,7 +1339,8 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
 
   v8::Local<v8::Value> v8_method;
   if (!GetV8Property(context, context->Global(), "dispatch")
-           .ToLocal(&v8_method)) {
+           .ToLocal(&v8_method) ||
+      v8_method->IsUndefined()) {
     return;
   }
 
