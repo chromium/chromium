@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -58,6 +60,10 @@ class Waiter : public BrowserListObserver {
 // which allows us to test app menu with either windows or tabs (shift click).
 class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
  protected:
+  AppShortcutShelfItemControllerBrowserTest() {
+    features_.InitWithFeatures({ash::features::kTerminalSSH}, {});
+  }
+
   void SetUpOnMainThread() override {
     controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
@@ -92,6 +98,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
 
   web_app::AppId app_id_;
   ash::ShelfID app_shelf_id_;
+  base::test::ScopedFeatureList features_;
 };
 
 // Test interacting with the app menu without shift key down: the app menu has
@@ -146,25 +153,25 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
 
   EXPECT_EQ(0u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Launch an app window.
+  // Launch an app window. Terminal includes pinned home tab, and Linux tab.
   Browser* app_browser0 = LaunchApp();
-  EXPECT_EQ(1u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Launch a new app window.
   Browser* app_browser1 = LaunchApp();
-  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(4u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Open a new app tab in an existing app browser. There are 3 tab items.
+  // Open a new app tab in an existing app browser.
   chrome::NewTab(app_browser1);
-  EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(5u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
-  // Clicking the second item in the menu should activate the first tab in the
+  // Clicking the third item in the menu should activate the first tab in the
   // second window.
   app_browser1->tab_strip_model()->ActivateTabAt(1);
   app_browser1->window()->Minimize();
   GetAppMenuItems(ui::EF_SHIFT_DOWN);
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
-                                         /*command_id=*/1, ui::EF_NONE,
+                                         /*command_id=*/2, ui::EF_NONE,
                                          display::kInvalidDisplayId);
   EXPECT_TRUE(app_browser1->window()->IsActive());
   EXPECT_TRUE(app_browser1->tab_strip_model()->active_index() == 0);
@@ -177,9 +184,9 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                                          display::kInvalidDisplayId);
 
   // Shift-clicking on a item should close it.
-  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/0, ui::EF_SHIFT_DOWN,
                                          display::kInvalidDisplayId);
-  EXPECT_EQ(1u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
+  EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 }

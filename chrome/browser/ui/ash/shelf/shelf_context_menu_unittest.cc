@@ -628,33 +628,6 @@ TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenuOptionsNumber) {
   }
 }
 
-// Checks some properties for crostini's terminal app's context menu,
-// specifically that every menu item has an icon.
-TEST_F(ShelfContextMenuTest, CrostiniTerminalApp) {
-  const std::string app_id = crostini::kCrostiniTerminalSystemAppId;
-  crostini::CrostiniManager::GetForProfile(profile())->AddRunningVmForTesting(
-      crostini::kCrostiniDefaultVmName);
-
-  PinAppWithIDToShelf(app_id);
-  const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));
-  ASSERT_TRUE(item);
-
-  ash::ShelfItemDelegate* item_delegate =
-      model()->GetShelfItemDelegate(ash::ShelfID(app_id));
-  ASSERT_TRUE(item_delegate);
-  int64_t primary_id = GetPrimaryDisplay().id();
-  std::unique_ptr<ui::MenuModel> menu =
-      GetContextMenu(item_delegate, primary_id);
-
-  // Check that every menu item has an icon
-  for (int i = 0; i < menu->GetItemCount(); ++i)
-    EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
-
-  // When crostini is running, the terminal should have an option to kill the
-  // vm.
-  EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::SHUTDOWN_GUEST_OS));
-}
-
 // Checks the context menu for a "normal" crostini app (i.e. a registered one).
 // Particularly, we ensure that the density changing option exists.
 // TODO(crbug.com/1177126) Re-enable test

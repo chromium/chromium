@@ -929,8 +929,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
             result += "Platform_App";
           } else if (app == arc_support_host_->id()) {
             result += "Play Store";
-          } else if (app == crostini::kCrostiniTerminalSystemAppId) {
-            result += "Terminal";
           } else if (app == arc::kSettingsAppId) {
             result += "Android Settings";
           } else {
@@ -5100,32 +5098,6 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(web_app_id, profile()));
-}
-
-TEST_P(ChromeShelfControllerTest, CrostiniTerminalPinUnpin) {
-  InitShelfController();
-
-  // Load pinned Terminal from prefs without Crostini UI being allowed
-  syncer::SyncChangeList sync_list;
-  InsertAddPinChange(&sync_list, 1, crostini::kCrostiniTerminalSystemAppId);
-  SendPinChanges(sync_list, true);
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-
-  // Reload after allowing Crostini UI
-  crostini::CrostiniTestHelper test_helper(profile());
-  test_helper.ReInitializeAppServiceIntegration();
-  // TODO(crubug.com/918739): Fix pins are not refreshed on enabling Crostini.
-  // As a workaround add any app that triggers pin update.
-  AddExtension(extension1_.get());
-  EXPECT_EQ("Chrome, Terminal", GetPinnedAppStatus());
-
-  // Unpin the Terminal
-  shelf_controller_->UnpinAppWithID(crostini::kCrostiniTerminalSystemAppId);
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-
-  // Pin Terminal again.
-  PinAppWithIDToShelf(crostini::kCrostiniTerminalSystemAppId);
-  EXPECT_EQ("Chrome, Terminal", GetPinnedAppStatus());
 }
 
 // Tests behavior for ensuring some component apps can be marked unpinnable.

@@ -69,8 +69,8 @@ class CrostiniTestHelper {
   // Returns an ApplicationList with a single desktop file.
   static vm_tools::apps::ApplicationList BasicAppList(
       const std::string& desktop_file_id,
-      const std::string& vm_name,
-      const std::string& container_name);
+      const std::string& vm_name = kCrostiniDefaultVmName,
+      const std::string& container_name = kCrostiniDefaultContainerName);
 
  private:
   void UpdateRegistry();

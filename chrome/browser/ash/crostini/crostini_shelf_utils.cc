@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
@@ -223,8 +225,10 @@ bool IsCrostiniShelfAppId(const Profile* profile,
   if (IsUnmatchedCrostiniShelfAppId(shelf_app_id)) {
     return true;
   }
-  if (shelf_app_id == kCrostiniTerminalSystemAppId)
+  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH) &&
+      shelf_app_id == kCrostiniTerminalSystemAppId) {
     return true;
+  }
   // TODO(timloh): We need to handle desktop files that have been removed.
   // For example, running windows with a no-longer-valid app id will try to
   // use the ExtensionContextMenuModel.

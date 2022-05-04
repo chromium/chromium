@@ -2246,8 +2246,10 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
 
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            true);
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kCrostiniAdditionalEnterpriseReporting);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kCrostiniAdditionalEnterpriseReporting,
+       ash::features::kTerminalSSH},
+      {});
 
   const std::string desktop_file_id = "vim";
   const std::string package_id =
@@ -2275,7 +2277,7 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
   GetStatus();
   EXPECT_TRUE(got_session_status_);
 
-  EXPECT_EQ(2, session_status_.crostini_status().installed_apps_size());
+  EXPECT_EQ(1, session_status_.crostini_status().installed_apps_size());
   EXPECT_EQ(desktop_file_id,
             session_status_.crostini_status().installed_apps()[0].app_name());
   EXPECT_EQ(em::CROSTINI_APP_TYPE_INTERACTIVE,
@@ -2293,19 +2295,6 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
   EXPECT_EQ(
       "2:8.0.0197-4+deb9u1",
       session_status_.crostini_status().installed_apps()[0].package_version());
-  EXPECT_EQ("Terminal",
-            session_status_.crostini_status().installed_apps()[1].app_name());
-  EXPECT_EQ(em::CROSTINI_APP_TYPE_TERMINAL,
-            session_status_.crostini_status().installed_apps()[1].app_type());
-  EXPECT_EQ(
-      std::string(),
-      session_status_.crostini_status().installed_apps()[1].package_name());
-  EXPECT_EQ(
-      std::string(),
-      session_status_.crostini_status().installed_apps()[1].package_version());
-  EXPECT_EQ(0, session_status_.crostini_status()
-                   .installed_apps()[1]
-                   .last_launch_time_window_start_timestamp());
 
   // In tests, GetUserDMToken returns the e-mail for easy verification.
   EXPECT_EQ(account_id.GetUserEmail(), session_status_.user_dm_token());

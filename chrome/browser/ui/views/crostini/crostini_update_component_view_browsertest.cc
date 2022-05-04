@@ -10,7 +10,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -28,6 +31,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+constexpr char kDesktopFile[] = "desktop_file";
+
 class Waiter : public BrowserListObserver {
  public:
   static void WaitForNewBrowser() {
@@ -51,13 +57,22 @@ class Waiter : public BrowserListObserver {
 
 class CrostiniUpdateComponentViewBrowserTest
     : public CrostiniDialogBrowserTest {
- public:
+ protected:
   CrostiniUpdateComponentViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/) {
     // TODO(crbug/953544) DLC makes this entire feature redundant, so once we're
     // committed to it delete all of this.
     scoped_feature_list_.InitAndDisableFeature(
         chromeos::features::kCrostiniUseDlc);
+  }
+
+  void SetUpOnMainThread() override {
+    vm_tools::apps::ApplicationList app_list =
+        crostini::CrostiniTestHelper::BasicAppList(kDesktopFile);
+    auto* registry_service =
+        guest_os::GuestOsRegistryServiceFactory::GetForProfile(
+            browser()->profile());
+    registry_service->UpdateApplicationList(app_list);
   }
 
   // DialogBrowserTest:
@@ -134,18 +149,14 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
   ExpectNoView();
 
   UnregisterTermina();
-  crostini::LaunchCrostiniApp(browser()->profile(),
-                              crostini::kCrostiniTerminalSystemAppId, 0);
+  crostini::LaunchCrostiniApp(
+      browser()->profile(),
+      crostini::CrostiniTestHelper::GenerateAppId(kDesktopFile), 0);
   ExpectNoView();
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
                        LaunchAppOffline_UpgradeNeeded) {
-  // Ensure Terminal System App is installed.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-
   base::HistogramTester histogram_tester;
   SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
   crostini::CrostiniManager::GetForProfile(browser()->profile())
@@ -154,16 +165,9 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
   ExpectNoView();
 
   UnregisterTermina();
-  crostini::LaunchCrostiniApp(browser()->profile(),
-                              crostini::kCrostiniTerminalSystemAppId, 0);
-  Waiter::WaitForNewBrowser();
-
-  // For Terminal System App, we must wait for browser to load.
-  Browser* terminal_browser = web_app::FindSystemWebAppBrowser(
-      browser()->profile(), web_app::SystemAppType::TERMINAL);
-  CHECK_NE(nullptr, terminal_browser);
-  WaitForLoadFinished(terminal_browser->tab_strip_model()->GetWebContentsAt(0));
-
+  crostini::LaunchCrostiniApp(
+      browser()->profile(),
+      crostini::CrostiniTestHelper::GenerateAppId(kDesktopFile), 0);
   ExpectView();
 
   ActiveView()->AcceptDialog();
