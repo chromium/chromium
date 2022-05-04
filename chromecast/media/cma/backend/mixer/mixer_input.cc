@@ -262,7 +262,10 @@ int MixerInput::FillBuffer(int num_frames,
     mixer_rendering_delay_ = rendering_delay;
     // resampler_->BufferedFrames() gives incorrect values in the read callback,
     // so track the number of buffered frames ourselves.
-    resampler_buffered_frames_ = resampler_->BufferedFrames();
+    // Based on testing, the buffered frames reported by SincResampler does not
+    // include the delay incurred by the filter kernel, so add it explicitly.
+    resampler_buffered_frames_ =
+        resampler_->BufferedFrames() + ::media::SincResampler::kKernelSize / 2;
     filled_for_resampler_ = 0;
     tried_to_fill_resampler_ = false;
     resampler_->Resample(num_frames, dest);
