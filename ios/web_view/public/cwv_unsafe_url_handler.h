@@ -13,8 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Threat types.
 typedef NS_ENUM(NSInteger, CWVUnsafeURLThreatType) {
+  // Unknown threat type.
+  CWVUnsafeURLThreatTypeUnknown = 0,
   // Potential billing that may not be obvious to the user.
-  CWVUnsafeURLThreatTypeBilling = 0,
+  CWVUnsafeURLThreatTypeBilling,
   // The URL hosts malware.
   CWVUnsafeURLThreatTypeMalware,
   // The URL hosts unwanted programs.
@@ -39,6 +41,8 @@ CWV_EXPORT
 
 // The threat type of the unsafe URL.
 @property(nonatomic, readonly) CWVUnsafeURLThreatType threatType;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Display an interstitial page with |HTML|.
 // This will be a no-op after the first call.

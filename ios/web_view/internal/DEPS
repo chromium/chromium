@@ -27,6 +27,8 @@ include_rules = [
   "+components/prefs",
   "+components/proxy_config",
   "+components/safe_browsing/core/common",
+  "+components/safe_browsing/ios",
+  "+components/security_interstitials/core",
   "+components/security_state/ios",
   "+components/signin/core/browser",
   "+components/signin/ios",
