@@ -399,10 +399,6 @@ Polymer({
 
   /** @private */
   getCurrentScreen_() {
-    if (!this.combinedSetupSupported && !this.showCameraRoll) {
-      return PhoneHubPermissionsSetupFlowScreens.NOT_APPLICABLE;
-    }
-
     if (this.flowState_ === SetupFlowStatus.INTRO) {
       return PhoneHubPermissionsSetupFlowScreens.INTRO;
     }
