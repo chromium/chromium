@@ -83,6 +83,12 @@
 
     </org.chromium.components.browser_ui.widget.DualControlLayout>
 
+    <FrameLayout
+        android:id="@+id/custom_button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"

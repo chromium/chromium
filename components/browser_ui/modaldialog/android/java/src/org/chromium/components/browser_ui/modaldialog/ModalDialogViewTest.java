@@ -27,7 +27,10 @@ import android.text.style.ForegroundColorSpan;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
@@ -71,6 +74,8 @@ public class ModalDialogViewTest {
     private TextView mCustomTextView1;
     private TextView mCustomTextView2;
     private PropertyModel.Builder mModelBuilder;
+    private RelativeLayout mCustomButtonBar1;
+    private RelativeLayout mCustomButtonBar2;
 
     @BeforeClass
     public static void setupSuite() {
@@ -99,6 +104,20 @@ public class ModalDialogViewTest {
             mCustomTextView1.setId(R.id.test_view_one);
             mCustomTextView2 = new TextView(sActivity);
             mCustomTextView2.setId(R.id.test_view_two);
+
+            mCustomButtonBar1 = new RelativeLayout(sActivity);
+            mCustomButtonBar1.setId(R.id.test_button_bar_one);
+            mCustomButtonBar2 = new RelativeLayout(sActivity);
+            mCustomButtonBar2.setId(R.id.test_button_bar_two);
+            Button button1 = new Button(sActivity);
+            button1.setText(R.string.ok);
+            Button button2 = new Button(sActivity);
+            button2.setText(R.string.cancel);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+            mCustomButtonBar1.addView(button1, params);
+            mCustomButtonBar2.addView(button2, params);
         });
     }
 
@@ -117,6 +136,8 @@ public class ModalDialogViewTest {
         onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.positive_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));
         onView(withId(R.id.negative_button)).check(matches(allOf(not(isDisplayed()), isEnabled())));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(not(isDisplayed()), isEnabled())));
     }
 
     @Test
@@ -279,6 +300,41 @@ public class ModalDialogViewTest {
         onView(withId(R.id.custom))
                 .check(matches(allOf(not(isDisplayed()), not(withChild(withId(R.id.test_view_one))),
                         not(withChild(withId(R.id.test_view_two))))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testCustomButtonBarView() {
+        // Verify custom button bar view set from builder is displayed.
+        PropertyModel model = createModel(
+                mModelBuilder.with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar1)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
+                                R.string.cancel));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(isDisplayed(), withChild(withId(R.id.test_button_bar_one)))));
+
+        // There are no positive and negative buttons when the custom button bar is present.
+        onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.positive_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.negative_button)).check(matches(not(isDisplayed())));
+
+        // Change custom button bar view.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar2));
+        onView(withId(R.id.custom_button_bar))
+                .check(matches(allOf(isDisplayed(), withChild(withId(R.id.test_button_bar_two)))));
+
+        // Set custom button bar view to null.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, null));
+        onView(withId(R.id.custom_button_bar)).check(matches(not(isDisplayed())));
+
+        // The positive and negative buttons are back since the custom button bar is not there.
+        onView(withId(R.id.button_bar)).check(matches(isDisplayed()));
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.negative_button)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -14,7 +14,10 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -68,6 +71,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     private ScrollView mCustomScrollView;
     private TextView mCustomTextView1;
     private TextView mCustomTextView2;
+    private RelativeLayout mCustomButtonBar;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -108,6 +112,15 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
             mCustomTextView1.setId(R.id.test_view_one);
             mCustomTextView2 = new TextView(activity);
             mCustomTextView2.setId(R.id.test_view_two);
+
+            mCustomButtonBar = new RelativeLayout(activity);
+            mCustomButtonBar.setId(R.id.test_button_bar_one);
+            Button button = new Button(activity);
+            button.setText(R.string.ok);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+            mCustomButtonBar.addView(button, params);
         });
     }
 
@@ -218,6 +231,17 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomScrollView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "custom_view");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_CustomButtonBarView() throws IOException {
+        setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        createModel(
+                mModelBuilder.with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mCustomButtonBar)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
+        mRenderTestRule.render(mModalDialogView, "custom_button_bar_view");
     }
 
     @Test

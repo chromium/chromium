@@ -6,4 +6,6 @@
     <!-- Test view ids -->
     <item type="id" name="test_view_one" />
     <item type="id" name="test_view_two" />
+    <item type="id" name="test_button_bar_one" />
+    <item type="id" name="test_button_bar_two" />
 </resources>
