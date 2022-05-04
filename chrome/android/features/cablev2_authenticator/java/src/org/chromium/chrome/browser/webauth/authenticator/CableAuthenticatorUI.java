@@ -298,8 +298,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     break;
 
                 case ENABLE_BLUETOOTH:
-                    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                    if (adapter.isEnabled()) {
+                    if (BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser() != null) {
                         mState = State.BLUETOOTH_ENABLED;
                         break;
                     }
