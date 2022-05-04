@@ -143,6 +143,11 @@ class AccountBuilder {
     return *this;
   }
 
+  AccountBuilder& SetIsManaged(const bool& value) {
+    account_.SetBoolKey("isManaged", value);
+    return *this;
+  }
+
   AccountBuilder& SetPic(const std::string& value) {
     account_.SetStringKey("pic", value);
     return *this;
@@ -307,16 +312,19 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       std::string organization = kFamilyLink;
       // Replace space with the non-breaking space.
       base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
-      device_account.SetOrganization(organization);
+      device_account.SetOrganization(organization).SetIsManaged(true);
     } else if (user->IsActiveDirectoryUser()) {
-      device_account.SetOrganization(
-          chrome::enterprise_util::GetDomainFromEmail(user->GetDisplayEmail()));
+      device_account
+          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
+              user->GetDisplayEmail()))
+          .SetIsManaged(true);
     } else if (profile_->GetProfilePolicyConnector()->IsManaged()) {
-      device_account.SetOrganization(
-          chrome::enterprise_util::GetDomainFromEmail(
+      device_account
+          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
               identity_manager_
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                  .email));
+                  .email))
+          .SetIsManaged(true);
     }
 
     // Device account must show up at the top.
@@ -359,6 +367,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         .SetFullName(maybe_account_info.full_name)
         .SetEmail(stored_account.raw_email)
         .SetUnmigrated(!is_child_user && account_token_pair.second)
+        .SetIsManaged(maybe_account_info.IsManaged())
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info.account_id));

@@ -397,7 +397,8 @@ Polymer({
    */
   onRemoveAccountTap_() {
     this.$$('cr-action-menu').close();
-    if (loadTimeData.getBoolean('lacrosEnabled')) {
+    if (loadTimeData.getBoolean('lacrosEnabled') &&
+        this.actionMenuAccount_.isManaged) {
       this.$.removeConfirmationDialog.showModal();
     } else {
       this.browserProxy_.removeAccount(

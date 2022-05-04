@@ -14,6 +14,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  *   isDeviceAccount: boolean,
  *   isSignedIn: boolean,
  *   unmigrated: boolean,
+ *   isManaged: boolean,
  *   fullName: string,
  *   email: string,
  *   pic: string,
