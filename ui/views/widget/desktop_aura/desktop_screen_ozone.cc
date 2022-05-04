@@ -27,7 +27,7 @@ gfx::NativeWindow DesktopScreenOzone::GetNativeWindowFromAcceleratedWidget(
 
 #if !BUILDFLAG(IS_LINUX)
 std::unique_ptr<display::Screen> CreateDesktopScreen() {
-  auto screen = std::make_unique<aura::ScreenOzone>();
+  auto screen = std::make_unique<DesktopScreenOzone>();
   screen->Initialize();
   return screen;
 }
