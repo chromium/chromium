@@ -149,19 +149,12 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
                           weak_ptr_factory_.GetWeakPtr(), account),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)));
+  button->SetCornerRadius(kButtonRadius);
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  if (brand_background_color_) {
-    button->SetBackground(views::CreateRoundedRectBackground(
-        *brand_background_color_, kButtonRadius));
-  }
-  if (brand_text_color_) {
-    button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
-                         *brand_text_color_);
-    button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
-                         *brand_text_color_);
-    button->SetTextColor(views::Button::ButtonState::STATE_PRESSED,
-                         *brand_text_color_);
-  }
+  if (brand_background_color_)
+    button->SetBgColorOverride(*brand_background_color_);
+  if (brand_text_color_)
+    button->SetEnabledTextColors(brand_text_color_);
   button->SetProminent(true);
   row->AddChildView(std::move(button));
 
