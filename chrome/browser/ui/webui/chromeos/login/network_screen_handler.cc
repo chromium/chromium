@@ -77,10 +77,6 @@ void NetworkScreenHandler::ClearErrors() {
   CallJS("login.NetworkScreen.setError", std::string());
 }
 
-void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
-  CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);
-}
-
 void NetworkScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("networkSectionTitle", IDS_NETWORK_SELECTION_TITLE);
@@ -88,8 +84,6 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   builder->Add("proxySettingsListItemName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
-  builder->Add("offlineDemoSetupListItemName",
-               IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
   ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }

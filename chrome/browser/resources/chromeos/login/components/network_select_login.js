@@ -24,15 +24,6 @@ let networkCustomItemCustomData;
   static get properties() {
     return {
       /**
-         Whether network selection is shown as a part of offline demo mode setup
-         flow.
-       */
-      isOfflineDemoModeSetup: {
-        type: Boolean,
-        observer: 'onIsOfflineDemoModeSetupChanged_',
-      },
-
-      /**
        * True when connected to a network.
        * @private
        */
@@ -72,7 +63,6 @@ let networkCustomItemCustomData;
   constructor() {
     super();
     // Properties
-    this.isOfflineDemoModeSetup = false;
     this.isNetworkConnected = false;
     this.configureConnected = false;
     this.enableWifiScans = true;
@@ -126,17 +116,6 @@ let networkCustomItemCustomData;
    */
   getNetworkCustomItems_() {
     const items = [];
-    if (this.isOfflineDemoModeSetup) {
-      items.push({
-        customItemType: NetworkList.CustomItemType.OOBE,
-        customItemName: 'offlineDemoSetupListItemName',
-        polymerIcon: 'oobe-network-20:offline-demo-setup',
-        showBeforeNetworksList: true,
-        customData: {
-          onTap: () => this.onOfflineDemoSetupClicked_(),
-        },
-      });
-    }
     if (this.isNetworkConnected) {
       items.push({
         customItemType: NetworkList.CustomItemType.OOBE,
@@ -176,14 +155,6 @@ let networkCustomItemCustomData;
    */
   openAddWiFiNetworkDialog_() {
     chrome.send('launchAddWiFiNetworkDialog');
-  }
-
-  /**
-   * Offline demo setup button handler.
-   * @private
-   */
-  onOfflineDemoSetupClicked_() {
-    chrome.send('login.NetworkScreen.userActed', ['offline-demo-setup']);
   }
 
   /**
@@ -248,11 +219,6 @@ let networkCustomItemCustomData;
     }
     const configuration = Oobe.getInstance().getOobeConfiguration();
     if (!configuration) {
-      return;
-    }
-    if (configuration.networkOfflineDemo && this.isOfflineDemoModeSetup) {
-      window.setTimeout(() => this.onOfflineDemoSetupClicked_(), 0);
-      this.configuration_applied_ = true;
       return;
     }
     const defaultNetwork = this.$.networkSelect.getDefaultNetwork();
@@ -363,15 +329,6 @@ let networkCustomItemCustomData;
   onNetworkListCustomItemSelected_(event) {
     const itemState = event.detail;
     itemState.customData.onTap();
-  }
-
-  /**
-   * Updates custom items when property that indicates if dialog is shown as a
-   * part of offline demo mode setup changes.
-   * @private
-   */
-  onIsOfflineDemoModeSetupChanged_() {
-    this.$.networkSelect.customItems = this.getNetworkCustomItems_();
   }
 }
 

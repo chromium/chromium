@@ -50,16 +50,6 @@ class NetworkScreen extends NetworkScreenBase {
       },
 
       /**
-       * Whether offline demo mode is enabled. If it is enabled offline setup
-       * option will be shown in UI.
-       * @type {boolean}
-       */
-      offlineDemoModeEnabled: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Network error message.
        * @type {string}
        * @private
@@ -94,11 +84,11 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   static get observers() {
-    return ['onDemoModeSetupChanged_(isDemoModeSetup, offlineDemoModeEnabled)'];
+    return [];
   }
 
   get EXTERNAL_API() {
-    return ['setOfflineDemoModeEnabled', 'setError'];
+    return ['setError'];
   }
 
   /** Called when dialog is shown. */
@@ -148,14 +138,6 @@ class NetworkScreen extends NetworkScreenBase {
    */
   setError(message) {
     this.errorMessage_ = message;
-  }
-
-  /**
-   * Enables or disables the offline Demo Mode option.
-   * @param {boolean} enabled
-   */
-  setOfflineDemoModeEnabled(enabled) {
-    this.offlineDemoModeEnabled = enabled;
   }
 
   /**
@@ -214,16 +196,6 @@ class NetworkScreen extends NetworkScreenBase {
    */
   onBackClicked_() {
     chrome.send('login.NetworkScreen.userActed', ['back']);
-  }
-
-  /**
-   * Updates custom elements on network list when demo mode setup properties
-   * changed.
-   * @private
-   */
-  onDemoModeSetupChanged_() {
-    this.$.networkSelectLogin.isOfflineDemoModeSetup =
-        this.isDemoModeSetup && this.offlineDemoModeEnabled;
   }
 
   /**

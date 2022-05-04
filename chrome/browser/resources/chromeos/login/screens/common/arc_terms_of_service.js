@@ -207,7 +207,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     this.termsOfServiceHostName_ = 'https://play.google.com';
 
     this.termsError = false;
-    this.usingOfflineTerms_ = false;
+    this.usingOfflineTermsForTesting_ = false;
     this.tosContent_ = '';
     this.reloadsLeftForTesting_ = undefined;
   }
@@ -372,7 +372,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
    * @param {string} targetUrl to show in overlay webview.
    */
   showUrlOverlay(targetUrl) {
-    if (this.usingOfflineTerms_) {
+    if (this.usingOfflineTermsForTesting_) {
       const TERMS_URL = 'chrome://terms/arc/privacy_policy';
       WebViewHelper.loadUrlContentToWebView(
           this.$.arcTosOverlayWebview, TERMS_URL,
@@ -459,7 +459,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
 
     if (this.language_ && this.language_ == language && this.countryCode_ &&
         this.countryCode_ == countryCode && this.uiStep != ArcTosState.ERROR &&
-        !this.usingOfflineTerms_ && this.tosContent_) {
+        !this.usingOfflineTermsForTesting_ && this.tosContent_) {
       this.enableButtons_(true);
       return;
     }
@@ -507,7 +507,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
    */
   setTosForTesting(terms) {
     this.tosContent_ = terms;
-    this.usingOfflineTerms_ = true;
+    this.usingOfflineTermsForTesting_ = true;
     this.setTermsViewContentLoadedState_();
   }
 
@@ -580,7 +580,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       --this.reloadsLeftForTesting_;
     }
     this.termsError = false;
-    this.usingOfflineTerms_ = false;
+    this.usingOfflineTermsForTesting_ = false;
     var termsView = this.$.arcTosView;
     termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
     this.setUIStep(ArcTosState.LOADING);
@@ -622,9 +622,10 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     }
 
     var termsView = this.$.arcTosView;
-    if (this.usingOfflineTerms_) {
-      // Process offline ToS. Scripts added to web view by addContentScripts()
-      // are not executed when using data url.
+
+    if (this.usingOfflineTermsForTesting_) {
+      // Process offline ToS for testing. Scripts added to web view by
+      // addContentScripts() are not executed when using data url.
       this.tosContent_ = termsView.src;
       var setParameters =
           `document.body.classList.add('large-view', 'offline-terms');`;
@@ -678,8 +679,7 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
    */
   onTermsViewErrorOccurred(details) {
     // If in demo mode fallback to offline Terms of Service copy.
-    if (this.isDemoModeSetup_()) {
-      this.usingOfflineTerms_ = true;
+    if (this.isDemoModeSetup_() && this.usingOfflineTermsForTesting_) {
       const TERMS_URL = 'chrome://terms/arc/terms';
       var webView = this.$.arcTosView;
       WebViewHelper.loadUrlContentToWebView(

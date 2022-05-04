@@ -40,9 +40,6 @@ class NetworkScreenView {
 
   // Hides error messages showing no error state.
   virtual void ClearErrors() = 0;
-
-  // Enables or disables offline Demo Mode during Demo Mode network selection.
-  virtual void SetOfflineDemoModeEnabled(bool enabled) = 0;
 };
 
 // WebUI implementation of NetworkScreenView. It is used to interact with
@@ -67,7 +64,6 @@ class NetworkScreenHandler : public NetworkScreenView,
   void Unbind() override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
-  void SetOfflineDemoModeEnabled(bool enabled) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

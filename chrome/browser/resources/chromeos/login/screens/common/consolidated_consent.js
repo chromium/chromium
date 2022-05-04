@@ -126,12 +126,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     // Text displayed in the Arc Terms of Service webview.
     this.arcTosContent_ = '';
 
-    /**
-     * If online ARC ToS failed to load in the demo mode, the offline version
-     * is loaded and `isArcTosUsingOfflineTerms_` is set to true.
-     */
-    this.isArcTosUsingOfflineTerms_ = false;
-
     // Flag that ensures that OOBE configuration is applied only once.
     this.configuration_applied_ = false;
 
@@ -337,12 +331,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     const webview = this.$.arcTosWebview;
 
     var loadFailureCallback = () => {
-      if (this.isDemo_) {
-        this.isArcTosUsingOfflineTerms_ = true;
-        WebViewHelper.loadUrlContentToWebView(
-            webview, ARC_TERMS_URL, WebViewHelper.ContentType.HTML);
-        return;
-      }
       this.setUIStep(ConsolidatedConsentScreenState.ERROR);
     };
 
@@ -421,29 +409,15 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   onArcTosContentLoad_() {
     const webview = this.$.arcTosWebview;
-
-    if (this.isArcTosUsingOfflineTerms_) {
-      // Process offline ToS. Scripts added to web view by addContentScripts()
-      // are not executed when using data url.
-      var setParameters =
-          `document.body.classList.add('large-view', 'offline-terms');`;
-      webview.executeScript({code: setParameters});
-      webview.insertCSS({file: 'playstore.css'});
-
-      // Load the offline terms for privacy policy
-      WebViewHelper.loadUrlContentToWebView(
-          webview, PRIVACY_POLICY_URL, WebViewHelper.ContentType.PDF);
-    } else {
-      webview.executeScript({code: 'getPrivacyPolicyLink();'}, (results) => {
-        if (results && results.length == 1 && typeof results[0] == 'string') {
-          this.loadPrivacyPolicyWebview_(results[0]);
-        } else {
-          var defaultLink = 'https://www.google.com/intl/' +
-              this.getCurrentLanguage_() + '/policies/privacy/';
-          this.loadPrivacyPolicyWebview_(defaultLink);
-        }
-      });
-    }
+    webview.executeScript({code: 'getPrivacyPolicyLink();'}, (results) => {
+      if (results && results.length == 1 && typeof results[0] == 'string') {
+        this.loadPrivacyPolicyWebview_(results[0]);
+      } else {
+        var defaultLink = 'https://www.google.com/intl/' +
+            this.getCurrentLanguage_() + '/policies/privacy/';
+        this.loadPrivacyPolicyWebview_(defaultLink);
+      }
+    });
 
     // In demo mode, consents are not recorded, so no need to store the ToS
     // Content.

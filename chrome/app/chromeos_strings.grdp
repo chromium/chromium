@@ -525,9 +525,6 @@
   <message name="IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens 'Add New WiFi Network' dialog">
     Add other WiFi network
   </message>
-  <message name="IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME" desc="OOBE network screen list entry that starts offline demo mode setup">
-    Offline demo mode
-  </message>
   <message name="IDS_AUTOSTART_WARNING_TITLE" desc="Title of the kiosk autostart screen">
     Auto-launch permission requested
   </message>
