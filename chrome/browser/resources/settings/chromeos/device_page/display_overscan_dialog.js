@@ -16,46 +16,32 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_icons.js';
 import '../../settings_shared_css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getDisplayApi} from './device_page_browser_proxy.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
 
-/** @polymer */
-class SettingsDisplayOverscanDialogElement extends PolymerElement {
-  static get is() {
-    return 'settings-display-overscan-dialog';
-  }
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'settings-display-overscan-dialog',
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /** Id of the display for which overscan is being applied (or empty). */
+    displayId: {
+      type: String,
+      notify: true,
+      observer: 'displayIdChanged_',
+    },
 
-  static get properties() {
-    return {
-      /** Id of the display for which overscan is being applied (or empty). */
-      displayId: {
-        type: String,
-        notify: true,
-        observer: 'displayIdChanged_',
-      },
+    /** Set to true once changes are saved to avoid a reset/cancel on close. */
+    committed_: Boolean,
+  },
 
-      /**
-         Set to true once changes are saved to avoid a reset/cancel on close.
-       */
-      committed_: Boolean,
-    };
-  }
-
-  constructor() {
-    super();
-
-    /**
-     * Keyboard event handler for overscan adjustments.
-     * @type {?function(!Event)}
-     * @private
-     */
-    this.keyHandler_ = null;
-  }
+  /**
+   * Keyboard event handler for overscan adjustments.
+   * @type {?function(!Event)}
+   * @private
+   */
+  keyHandler_: null,
 
   open() {
     this.keyHandler_ = this.handleKeyEvent_.bind(this);
@@ -65,8 +51,8 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     this.committed_ = false;
     this.$.dialog.showModal();
     // Don't focus 'reset' by default. 'Tab' will focus 'OK'.
-    this.shadowRoot.querySelector('#reset').blur();
-  }
+    this.$$('#reset').blur();
+  },
 
   close() {
     window.removeEventListener('keydown', this.keyHandler_);
@@ -76,7 +62,7 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
-  }
+  },
 
   /** @private */
   displayIdChanged_(newValue, oldValue) {
@@ -89,19 +75,19 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     }
     this.committed_ = false;
     getDisplayApi().overscanCalibrationStart(newValue);
-  }
+  },
 
   /** @private */
   onResetTap_() {
     getDisplayApi().overscanCalibrationReset(this.displayId);
-  }
+  },
 
   /** @private */
   onSaveTap_() {
     getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
-  }
+  },
 
   /**
    * @param {!Event} event
@@ -145,7 +131,7 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
         return;
     }
     event.preventDefault();
-  }
+  },
 
   /**
    * @param {number} x
@@ -160,7 +146,7 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
       bottom: y ? -y : 0,
     };
     getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
-  }
+  },
 
   /**
    * @param {number} x
@@ -176,8 +162,4 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     };
     getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
-}
-
-customElements.define(
-    SettingsDisplayOverscanDialogElement.is,
-    SettingsDisplayOverscanDialogElement);
+});

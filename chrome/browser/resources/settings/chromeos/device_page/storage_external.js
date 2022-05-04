@@ -13,71 +13,57 @@ import './storage_external_entry.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage} from './device_page_browser_proxy.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsStorageExternalElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'settings-storage-external',
 
-/** @polymer */
-class SettingsStorageExternalElement extends
-    SettingsStorageExternalElementBase {
-  static get is() {
-    return 'settings-storage-external';
-  }
+  behaviors: [
+    I18nBehavior,
+    WebUIListenerBehavior,
+  ],
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /**
+     * List of the plugged-in external storages.
+     * @private {Array<!ExternalStorage>}
+     */
+    externalStorages_: {
+      type: Array,
+      value() {
+        return [];
+      }
+    },
 
-  static get properties() {
-    return {
-      /**
-       * List of the plugged-in external storages.
-       * @private {Array<!ExternalStorage>}
-       */
-      externalStorages_: {
-        type: Array,
-        value() {
-          return [];
-        }
+    /** @private {!chrome.settingsPrivate.PrefObject} */
+    externalStorageVisiblePref_: {
+      type: Object,
+      value() {
+        return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
       },
+    },
+  },
 
-      /** @private {!chrome.settingsPrivate.PrefObject} */
-      externalStorageVisiblePref_: {
-        type: Object,
-        value() {
-          return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
-        },
-      },
-    };
-  }
+  /** @private {?DevicePageBrowserProxy} */
+  browserProxy_: null,
 
   /** @override */
-  constructor() {
-    super();
-
-    /** @private {?DevicePageBrowserProxy} */
+  created() {
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  }
+  },
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     this.browserProxy_.setExternalStoragesUpdatedCallback(
         this.handleExternalStoragesUpdated_.bind(this));
     this.browserProxy_.updateExternalStorages();
-  }
+  },
 
   /**
    * @param {Array<!ExternalStorage>} storages
@@ -85,7 +71,7 @@ class SettingsStorageExternalElement extends
    */
   handleExternalStoragesUpdated_(storages) {
     this.externalStorages_ = storages;
-  }
+  },
 
   /**
    * @param {Array<!ExternalStorage>} externalStorages
@@ -97,8 +83,5 @@ class SettingsStorageExternalElement extends
         !externalStorages || externalStorages.length === 0 ?
             'storageExternalStorageEmptyListHeader' :
             'storageExternalStorageListHeader');
-  }
-}
-
-customElements.define(
-    SettingsStorageExternalElement.is, SettingsStorageExternalElement);
+  },
+});

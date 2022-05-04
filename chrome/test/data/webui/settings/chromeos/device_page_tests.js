@@ -470,7 +470,7 @@ suite('SettingsDevicePage', function() {
 
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
-    DevicePageBrowserProxyImpl.setInstance(new TestDevicePageBrowserProxy());
+    DevicePageBrowserProxyImpl.instance_ = new TestDevicePageBrowserProxy();
 
     // settings-animated-pages expects a parent with data-page set.
     const basicPage = document.createElement('div');
@@ -484,11 +484,10 @@ suite('SettingsDevicePage', function() {
 
   /** @return {!Promise<!HTMLElement>} */
   function showAndGetDeviceSubpage(subpage, expectedRoute) {
-    const row =
-        assert(devicePage.shadowRoot.querySelector(`#main #${subpage}Row`));
+    const row = assert(devicePage.$$(`#main #${subpage}Row`));
     row.click();
     assertEquals(expectedRoute, Router.getInstance().getCurrentRoute());
-    const page = devicePage.shadowRoot.querySelector('settings-' + subpage);
+    const page = devicePage.$$('settings-' + subpage);
     assert(page);
     return Promise.resolve(page);
   }
@@ -621,7 +620,7 @@ suite('SettingsDevicePage', function() {
    */
   function expectReverseScrollValue(pointersPage, expected) {
     const reverseScrollToggle =
-        pointersPage.shadowRoot.querySelector('#enableReverseScrollingToggle');
+        pointersPage.$$('#enableReverseScrollingToggle');
     assertEquals(expected, reverseScrollToggle.checked);
     assertEquals(
         expected, devicePage.prefs.settings.touchpad.natural_scroll.value);
@@ -659,25 +658,18 @@ suite('SettingsDevicePage', function() {
   }
 
   test(assert(TestNames.DevicePage), function() {
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
+    assertTrue(isVisible(devicePage.$$('#pointersRow')));
+    assertTrue(isVisible(devicePage.$$('#keyboardRow')));
+    assertTrue(isVisible(devicePage.$$('#displayRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
-    flush();
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
+    assertTrue(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-pointing-stick-changed', false);
-    flush();
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
+    assertTrue(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-touchpad-changed', false);
-    flush();
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
+    assertFalse(isVisible(devicePage.$$('#pointersRow')));
     webUIListenerCallback('has-mouse-changed', true);
-    flush();
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+    assertTrue(isVisible(devicePage.$$('#pointersRow')));
   });
 
   suite(assert(TestNames.Pointers), function() {
@@ -692,90 +684,63 @@ suite('SettingsDevicePage', function() {
 
     test('subpage responds to pointer attach/detach', function() {
       assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
-      assertTrue(
-          isVisible(pointersPage.shadowRoot.querySelector('#pointingStick')));
-      assertTrue(isVisible(
-          pointersPage.shadowRoot.querySelector('#pointingStick h2')));
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
-      assertTrue(
-          isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
+      assertTrue(isVisible(pointersPage.$$('#mouse')));
+      assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+      assertTrue(isVisible(pointersPage.$$('#pointingStick')));
+      assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
+      assertTrue(isVisible(pointersPage.$$('#touchpad')));
+      assertTrue(isVisible(pointersPage.$$('#touchpad h2')));
 
       webUIListenerCallback('has-touchpad-changed', false);
       assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
-      assertTrue(
-          isVisible(pointersPage.shadowRoot.querySelector('#pointingStick')));
-      assertTrue(isVisible(
-          pointersPage.shadowRoot.querySelector('#pointingStick h2')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
+      assertTrue(isVisible(pointersPage.$$('#mouse')));
+      assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+      assertTrue(isVisible(pointersPage.$$('#pointingStick')));
+      assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
+      assertFalse(isVisible(pointersPage.$$('#touchpad')));
+      assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
       webUIListenerCallback('has-pointing-stick-changed', false);
       assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#pointingStick')));
-      assertFalse(isVisible(
-          pointersPage.shadowRoot.querySelector('#pointingStick h2')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
+      assertTrue(isVisible(pointersPage.$$('#mouse')));
+      assertFalse(isVisible(pointersPage.$$('#mouse h2')));
+      assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+      assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
+      assertFalse(isVisible(pointersPage.$$('#touchpad')));
+      assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
       webUIListenerCallback('has-mouse-changed', false);
       assertEquals(routes.DEVICE, Router.getInstance().getCurrentRoute());
-      assertFalse(
-          isVisible(devicePage.shadowRoot.querySelector('#main #pointersRow')));
+      assertFalse(isVisible(devicePage.$$('#main #pointersRow')));
 
       webUIListenerCallback('has-touchpad-changed', true);
-      assertTrue(
-          isVisible(devicePage.shadowRoot.querySelector('#main #pointersRow')));
+      assertTrue(isVisible(devicePage.$$('#main #pointersRow')));
 
       return showAndGetDeviceSubpage('pointers', routes.POINTERS)
           .then(function(page) {
-            assertFalse(
-                isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
-            assertFalse(
-                isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
-            assertFalse(isVisible(
-                pointersPage.shadowRoot.querySelector('#pointingStick')));
-            assertFalse(isVisible(
-                pointersPage.shadowRoot.querySelector('#pointingStick h2')));
-            assertTrue(
-                isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
-            assertFalse(isVisible(
-                pointersPage.shadowRoot.querySelector('#touchpad h2')));
+            assertFalse(isVisible(pointersPage.$$('#mouse')));
+            assertFalse(isVisible(pointersPage.$$('#mouse h2')));
+            assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+            assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
+            assertTrue(isVisible(pointersPage.$$('#touchpad')));
+            assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
             webUIListenerCallback('has-mouse-changed', true);
             assertEquals(
                 routes.POINTERS, Router.getInstance().getCurrentRoute());
-            assertTrue(
-                isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
-            assertTrue(
-                isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
-            assertFalse(isVisible(
-                pointersPage.shadowRoot.querySelector('#pointingStick')));
-            assertFalse(isVisible(
-                pointersPage.shadowRoot.querySelector('#pointingStick h2')));
-            assertTrue(
-                isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
-            assertTrue(isVisible(
-                pointersPage.shadowRoot.querySelector('#touchpad h2')));
+            assertTrue(isVisible(pointersPage.$$('#mouse')));
+            assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+            assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+            assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
+            assertTrue(isVisible(pointersPage.$$('#touchpad')));
+            assertTrue(isVisible(pointersPage.$$('#touchpad h2')));
           });
     });
 
     test('mouse', function() {
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
+      assertTrue(isVisible(pointersPage.$$('#mouse')));
 
-      const slider = assert(
-          pointersPage.shadowRoot.querySelector('#mouse settings-slider'));
+      const slider = assert(pointersPage.$$('#mouse settings-slider'));
       assertEquals(4, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
@@ -786,17 +751,12 @@ suite('SettingsDevicePage', function() {
     });
 
     test('touchpad', function() {
-      assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#touchpad')));
+      assertTrue(isVisible(pointersPage.$$('#touchpad')));
 
-      assertTrue(
-          pointersPage.shadowRoot.querySelector('#touchpad #enableTapToClick')
-              .checked);
-      assertFalse(
-          pointersPage.shadowRoot.querySelector('#touchpad #enableTapDragging')
-              .checked);
+      assertTrue(pointersPage.$$('#touchpad #enableTapToClick').checked);
+      assertFalse(pointersPage.$$('#touchpad #enableTapDragging').checked);
 
-      const slider = assert(
-          pointersPage.shadowRoot.querySelector('#touchpad settings-slider'));
+      const slider = assert(pointersPage.$$('#touchpad settings-slider'));
       assertEquals(3, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
@@ -808,12 +768,9 @@ suite('SettingsDevicePage', function() {
     });
 
     test('haptic touchpad', function() {
-      assertTrue(
-          pointersPage.shadowRoot.querySelector('#touchpadHapticFeedbackToggle')
-              .checked);
+      assertTrue(pointersPage.$$('#touchpadHapticFeedbackToggle').checked);
 
-      const slider = assert(pointersPage.shadowRoot.querySelector(
-          '#touchpadHapticClickSensitivity'));
+      const slider = assert(pointersPage.$$('#touchpadHapticClickSensitivity'));
       assertEquals(3, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
@@ -831,7 +788,7 @@ suite('SettingsDevicePage', function() {
 
       // Tapping the link shouldn't enable the radio button.
       const reverseScrollLabel =
-          pointersPage.shadowRoot.querySelector('#enableReverseScrollingLabel');
+          pointersPage.$$('#enableReverseScrollingLabel');
       const a = reverseScrollLabel.$.container.querySelector('a');
       assertTrue(!!a);
       // Prevent actually opening a link, which would block test.
@@ -840,16 +797,15 @@ suite('SettingsDevicePage', function() {
       expectReverseScrollValue(pointersPage, false);
 
       // Check specifically clicking toggle changes pref.
-      const reverseScrollToggle = pointersPage.shadowRoot.querySelector(
-          '#enableReverseScrollingToggle');
+      const reverseScrollToggle =
+          pointersPage.$$('#enableReverseScrollingToggle');
       reverseScrollToggle.click();
       expectReverseScrollValue(pointersPage, true);
       devicePage.set('prefs.settings.touchpad.natural_scroll.value', false);
       expectReverseScrollValue(pointersPage, false);
 
       // Check specifically clicking the row changes pref.
-      const reverseScrollSettings =
-          pointersPage.shadowRoot.querySelector('#reverseScrollRow');
+      const reverseScrollSettings = pointersPage.$$('#reverseScrollRow');
       reverseScrollSettings.click();
       expectReverseScrollValue(pointersPage, true);
       devicePage.set('prefs.settings.touchpad.natural_scroll.value', false);
@@ -857,8 +813,7 @@ suite('SettingsDevicePage', function() {
     });
 
     test('pointing stick acceleration toggle', function() {
-      const toggle = assert(
-          pointersPage.shadowRoot.querySelector('#pointingStickAcceleration'));
+      const toggle = assert(pointersPage.$$('#pointingStickAcceleration'));
       assertEquals(true, toggle.pref.value);
       toggle.click();
       assertEquals(
@@ -870,8 +825,7 @@ suite('SettingsDevicePage', function() {
     });
 
     test('pointing stick speed slider', function() {
-      const slider = assert(pointersPage.shadowRoot.querySelector(
-          '#pointingStick settings-slider'));
+      const slider = assert(pointersPage.$$('#pointingStick settings-slider'));
       assertEquals(4, slider.pref.value);
       MockInteractions.pressAndReleaseKeyOn(
           slider.shadowRoot.querySelector('cr-slider'), 37, [], 'ArrowLeft');
@@ -885,8 +839,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to pointing stick primary button setting', async () => {
       return checkDeepLink(
           routes.POINTERS, '437',
-          pointersPage.shadowRoot
-              .querySelector('#pointingStickSwapButtonDropdown')
+          pointersPage.$$('#pointingStickSwapButtonDropdown')
               .shadowRoot.querySelector('select'),
           'Pointing stick primary button dropdown');
     });
@@ -894,7 +847,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to pointing stick acceleration setting', async () => {
       return checkDeepLink(
           routes.POINTERS, '436',
-          pointersPage.shadowRoot.querySelector('#pointingStickAcceleration')
+          pointersPage.$$('#pointingStickAcceleration')
               .shadowRoot.querySelector('cr-toggle'),
           'Pointing stick acceleration slider');
     });
@@ -902,7 +855,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to pointing stick speed setting', async () => {
       return checkDeepLink(
           routes.POINTERS, '435',
-          pointersPage.shadowRoot.querySelector('#pointingStickSpeedSlider')
+          pointersPage.$$('#pointingStickSpeedSlider')
               .shadowRoot.querySelector('cr-slider'),
           'Pointing stick speed slider');
     });
@@ -910,7 +863,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to touchpad speed', async () => {
       return checkDeepLink(
           routes.POINTERS, '405',
-          pointersPage.shadowRoot.querySelector('#touchpadSensitivity')
+          pointersPage.$$('#touchpadSensitivity')
               .shadowRoot.querySelector('cr-slider'),
           'Touchpad speed slider');
     });
@@ -928,7 +881,7 @@ suite('SettingsDevicePage', function() {
 
     test('keyboard', async () => {
       // Initially, the optional keys are hidden.
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
+      assertFalse(!!keyboardPage.$$('#capsLockKey'));
 
       // Pretend no internal keyboard is available.
       const keyboardParams = {
@@ -940,87 +893,75 @@ suite('SettingsDevicePage', function() {
       };
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertFalse(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertFalse(!!keyboardPage.$$('#launcherKey'));
+      assertFalse(!!keyboardPage.$$('#capsLockKey'));
+      assertFalse(!!keyboardPage.$$('#externalMetaKey'));
+      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
+      assertFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Pretend a Caps Lock key is now available.
       keyboardParams['showCapsLock'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertFalse(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertFalse(!!keyboardPage.$$('#launcherKey'));
+      assertTrue(!!keyboardPage.$$('#capsLockKey'));
+      assertFalse(!!keyboardPage.$$('#externalMetaKey'));
+      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
+      assertFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add a non-Apple external keyboard.
       keyboardParams['showExternalMetaKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertFalse(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertFalse(!!keyboardPage.$$('#launcherKey'));
+      assertTrue(!!keyboardPage.$$('#capsLockKey'));
+      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
+      assertFalse(!!keyboardPage.$$('#externalCommandKey'));
+      assertFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add an Apple keyboard.
       keyboardParams['showAppleCommandKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertTrue(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertFalse(!!keyboardPage.$$('#launcherKey'));
+      assertTrue(!!keyboardPage.$$('#capsLockKey'));
+      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
+      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
+      assertFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Add an internal keyboard.
       keyboardParams['hasLauncherKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertTrue(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertFalse(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertTrue(!!keyboardPage.$$('#launcherKey'));
+      assertTrue(!!keyboardPage.$$('#capsLockKey'));
+      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
+      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
+      assertFalse(!!keyboardPage.$$('#assistantKey'));
 
       // Pretend an Assistant key is now available.
       keyboardParams['hasAssistantKey'] = true;
       webUIListenerCallback('show-keys-changed', keyboardParams);
       flush();
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#launcherKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#capsLockKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#externalMetaKey'));
-      assertTrue(
-          !!keyboardPage.shadowRoot.querySelector('#externalCommandKey'));
-      assertTrue(!!keyboardPage.shadowRoot.querySelector('#assistantKey'));
+      assertTrue(!!keyboardPage.$$('#launcherKey'));
+      assertTrue(!!keyboardPage.$$('#capsLockKey'));
+      assertTrue(!!keyboardPage.$$('#externalMetaKey'));
+      assertTrue(!!keyboardPage.$$('#externalCommandKey'));
+      assertTrue(!!keyboardPage.$$('#assistantKey'));
 
-      const collapse = keyboardPage.shadowRoot.querySelector('iron-collapse');
+      const collapse = keyboardPage.$$('iron-collapse');
       assertTrue(!!collapse);
       assertTrue(collapse.opened);
 
-      assertEquals(
-          500,
-          keyboardPage.shadowRoot.querySelector('#delaySlider').pref.value);
-      assertEquals(
-          500,
-          keyboardPage.shadowRoot.querySelector('#repeatRateSlider')
-              .pref.value);
+      assertEquals(500, keyboardPage.$$('#delaySlider').pref.value);
+      assertEquals(500, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       // Test interaction with the settings-slider's underlying cr-slider.
       MockInteractions.pressAndReleaseKeyOn(
-          keyboardPage.shadowRoot.querySelector('#delaySlider')
-              .shadowRoot.querySelector('cr-slider'),
+          keyboardPage.$$('#delaySlider').shadowRoot.querySelector('cr-slider'),
           37 /* left */, [], 'ArrowLeft');
       MockInteractions.pressAndReleaseKeyOn(
-          keyboardPage.shadowRoot.querySelector('#repeatRateSlider')
+          keyboardPage.$$('#repeatRateSlider')
               .shadowRoot.querySelector('cr-slider'),
           39, [], 'ArrowRight');
       await flushTasks();
@@ -1030,34 +971,24 @@ suite('SettingsDevicePage', function() {
       // Test sliders change when prefs change.
       set('xkb_auto_repeat_delay_r2', 1500);
       await flushTasks();
-      assertEquals(
-          1500,
-          keyboardPage.shadowRoot.querySelector('#delaySlider').pref.value);
+      assertEquals(1500, keyboardPage.$$('#delaySlider').pref.value);
       set('xkb_auto_repeat_interval_r2', 2000);
       await flushTasks();
-      assertEquals(
-          2000,
-          keyboardPage.shadowRoot.querySelector('#repeatRateSlider')
-              .pref.value);
+      assertEquals(2000, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       // Test sliders round to nearest value when prefs change.
       set('xkb_auto_repeat_delay_r2', 600);
       await flushTasks();
-      assertEquals(
-          500,
-          keyboardPage.shadowRoot.querySelector('#delaySlider').pref.value);
+      assertEquals(500, keyboardPage.$$('#delaySlider').pref.value);
       set('xkb_auto_repeat_interval_r2', 45);
       await flushTasks();
-      assertEquals(
-          50,
-          keyboardPage.shadowRoot.querySelector('#repeatRateSlider')
-              .pref.value);
+      assertEquals(50, keyboardPage.$$('#repeatRateSlider').pref.value);
 
       set('xkb_auto_repeat_enabled_r2', false);
       assertFalse(collapse.opened);
 
       // Test keyboard shortcut viewer button.
-      keyboardPage.shadowRoot.querySelector('#keyboardShortcutViewer').click();
+      keyboardPage.$$('#keyboardShortcutViewer').click();
       assertEquals(
           1,
           DevicePageBrowserProxyImpl.getInstance()
@@ -1067,7 +998,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to keyboard shortcuts', async () => {
       return checkDeepLink(
           routes.KEYBOARD, '413',
-          keyboardPage.shadowRoot.querySelector('#keyboardShortcutViewer')
+          keyboardPage.$$('#keyboardShortcutViewer')
               .shadowRoot.querySelector('cr-icon-button'),
           'Keyboard shortcuts button');
     });
@@ -1134,9 +1065,7 @@ suite('SettingsDevicePage', function() {
                 false, displayPage.displays[0]));
 
             // Verify that the arrangement section is not shown.
-            assertEquals(
-                null,
-                displayPage.shadowRoot.querySelector('#arrangement-section'));
+            assertEquals(null, displayPage.$$('#arrangement-section'));
 
             // Add a second display.
             addDisplay(2);
@@ -1201,16 +1130,13 @@ suite('SettingsDevicePage', function() {
                 false, displayPage.displays[1]));
 
             // Verify that the arrangement section is shown.
-            assertTrue(
-                !!displayPage.shadowRoot.querySelector('#arrangement-section'));
+            assertTrue(!!displayPage.$$('#arrangement-section'));
 
             // Select the second display and make it primary. Also change the
             // orientation of the second display.
-            const displayLayout =
-                displayPage.shadowRoot.querySelector('#displayLayout');
+            const displayLayout = displayPage.$$('#displayLayout');
             assertTrue(!!displayLayout);
-            const displayDiv =
-                displayLayout.shadowRoot.querySelector('#_fakeDisplayId2');
+            const displayDiv = displayLayout.$$('#_fakeDisplayId2');
             assertTrue(!!displayDiv);
             displayDiv.click();
             assertEquals(
@@ -1262,8 +1188,7 @@ suite('SettingsDevicePage', function() {
             assertTrue(displayPage.isMirrored_(displayPage.displays));
 
             // Verify that the arrangement section is shown while mirroring.
-            assertTrue(
-                !!displayPage.shadowRoot.querySelector('#arrangement-section'));
+            assertTrue(!!displayPage.$$('#arrangement-section'));
 
             // Ensure that the zoom value remains unchanged while draggging.
             function pointerEvent(eventType, ratio) {
@@ -1319,8 +1244,7 @@ suite('SettingsDevicePage', function() {
       assertTrue(displayPage.shouldShowArrangementSection_());
 
       const deepLinkElement =
-          displayPage.shadowRoot.querySelector('#displayMirrorCheckbox')
-              .$$('#checkbox');
+          displayPage.$$('#displayMirrorCheckbox').$$('#checkbox');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -1345,8 +1269,7 @@ suite('SettingsDevicePage', function() {
               assertEquals(2, displayPage.displays.length);
               assertTrue(displayPage.shouldShowArrangementSection_());
 
-              assertTrue(!!displayPage.shadowRoot.querySelector(
-                  '#arrangement-section'));
+              assertTrue(!!displayPage.$$('#arrangement-section'));
 
               assertTrue(displayPage.showMirror_(false, displayPage.displays));
               assertFalse(displayPage.isMirrored_(displayPage.displays));
@@ -1357,10 +1280,8 @@ suite('SettingsDevicePage', function() {
             });
           })
           .then(() => {
-            const displayLayout =
-                displayPage.shadowRoot.querySelector('#displayLayout');
-            const display =
-                displayLayout.shadowRoot.querySelector('#_fakeDisplayId2');
+            const displayLayout = displayPage.$$('#displayLayout');
+            const display = displayLayout.$$('#_fakeDisplayId2');
             const layout =
                 displayLayout.displayLayoutMap_.get('fakeDisplayId2');
 
@@ -1404,10 +1325,8 @@ suite('SettingsDevicePage', function() {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(1, displayPage.displays.length);
 
-    const temperature =
-        displayPage.shadowRoot.querySelector('#nightLightTemperatureDiv');
-    const schedule =
-        displayPage.shadowRoot.querySelector('#nightLightScheduleTypeDropDown');
+    const temperature = displayPage.$$('#nightLightTemperatureDiv');
+    const schedule = displayPage.$$('#nightLightScheduleTypeDropDown');
 
     // Night Light is off, so temperature is hidden. Schedule is always shown.
     assertTrue(temperature.hidden);
@@ -1460,20 +1379,16 @@ suite('SettingsDevicePage', function() {
         return showAndGetDeviceSubpage('power', routes.POWER)
             .then(function(page) {
               powerPage = page;
-              powerSourceRow =
-                  assert(powerPage.shadowRoot.querySelector('#powerSourceRow'));
-              powerSourceSelect =
-                  assert(powerPage.shadowRoot.querySelector('#powerSource'));
+              powerSourceRow = assert(powerPage.$$('#powerSourceRow'));
+              powerSourceSelect = assert(powerPage.$$('#powerSource'));
               assertEquals(
                   1,
                   DevicePageBrowserProxyImpl.getInstance()
                       .updatePowerStatusCalled_);
 
-              lidClosedToggle = assert(
-                  powerPage.shadowRoot.querySelector('#lidClosedToggle'));
+              lidClosedToggle = assert(powerPage.$$('#lidClosedToggle'));
               adaptiveChargingToggle =
-                  assert(powerPage.shadowRoot.querySelector(
-                      '#adaptiveChargingToggle'));
+                  assert(powerPage.$$('#adaptiveChargingToggle'));
 
               assertEquals(
                   1,
@@ -1512,13 +1427,10 @@ suite('SettingsDevicePage', function() {
         assertTrue(powerSourceRow.hidden);
         // Idle settings while on battery and while charging should not be
         // visible if the battery is not present.
-        assertEquals(
-            null, powerPage.shadowRoot.querySelector('#batteryIdleSettingBox'));
-        assertEquals(
-            null, powerPage.shadowRoot.querySelector('#acIdleSettingBox'));
+        assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
+        assertEquals(null, powerPage.$$('#acIdleSettingBox'));
 
-        const acIdleSelect = assert(
-            powerPage.shadowRoot.querySelector('#noBatteryAcIdleSelect'));
+        const acIdleSelect = assert(powerPage.$$('#noBatteryAcIdleSelect'));
         // Expect the "When idle" dropdown options to appear instead.
         assert(acIdleSelect);
 
@@ -1614,8 +1526,7 @@ suite('SettingsDevicePage', function() {
         setPowerSources([], '', false);
         flush();
 
-        acIdleSelect =
-            assert(powerPage.shadowRoot.querySelector('#acIdleSelect'));
+        acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
         selectValue(acIdleSelect, IdleBehavior.DISPLAY_ON);
         assertEquals(
             IdleBehavior.DISPLAY_ON,
@@ -1639,8 +1550,8 @@ suite('SettingsDevicePage', function() {
                  powerPage.async(resolve);
                })
             .then(function() {
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               selectValue(batteryIdleSelect, IdleBehavior.DISPLAY_ON);
               assertEquals(
                   IdleBehavior.DISPLAY_ON,
@@ -1727,13 +1638,12 @@ suite('SettingsDevicePage', function() {
               });
             })
             .then(function() {
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
               assertFalse(batteryIdleSelect.disabled);
-              const acIdleSelect =
-                  assert(powerPage.shadowRoot.querySelector('#acIdleSelect'));
+              const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
               assertFalse(acIdleSelect.disabled);
@@ -1768,13 +1678,12 @@ suite('SettingsDevicePage', function() {
               });
             })
             .then(function() {
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
               assertFalse(batteryIdleSelect.disabled);
-              const acIdleSelect =
-                  assert(powerPage.shadowRoot.querySelector('#acIdleSelect'));
+              const acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
               assertFalse(acIdleSelect.disabled);
@@ -1823,19 +1732,15 @@ suite('SettingsDevicePage', function() {
               });
             })
             .then(function() {
-              acIdleSelect =
-                  assert(powerPage.shadowRoot.querySelector('#acIdleSelect'));
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.DISPLAY_ON.toString(), acIdleSelect.value);
               assertEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), batteryIdleSelect.value);
               assertFalse(acIdleSelect.disabled);
-              assertEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#acIdleManagedIndicator'));
+              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
               assertEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
@@ -1861,22 +1766,16 @@ suite('SettingsDevicePage', function() {
               });
             })
             .then(function() {
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), acIdleSelect.value);
               assertEquals(
                   IdleBehavior.DISPLAY_ON.toString(), batteryIdleSelect.value);
               assertFalse(acIdleSelect.disabled);
               assertFalse(batteryIdleSelect.disabled);
-              assertEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#acIdleManagedIndicator'));
-              assertEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#batteryIdleManagedIndicator'));
+              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
+              assertEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
               assertEquals(
                   loadTimeData.getString('powerLidSleepLabel'),
                   lidClosedToggle.label);
@@ -1911,24 +1810,18 @@ suite('SettingsDevicePage', function() {
                  powerPage.async(resolve);
                })
             .then(function() {
-              acIdleSelect =
-                  assert(powerPage.shadowRoot.querySelector('#acIdleSelect'));
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), acIdleSelect.value);
               assertEquals(
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
               assertTrue(acIdleSelect.disabled);
               assertTrue(batteryIdleSelect.disabled);
+              expectNotEquals(null, powerPage.$$('#acIdleManagedIndicator'));
               expectNotEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#acIdleManagedIndicator'));
-              expectNotEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#batteryIdleManagedIndicator'));
+                  null, powerPage.$$('#batteryIdleManagedIndicator'));
               assertEquals(
                   loadTimeData.getString('powerLidShutDownLabel'),
                   lidClosedToggle.label);
@@ -1948,22 +1841,16 @@ suite('SettingsDevicePage', function() {
               });
             })
             .then(function() {
-              const batteryIdleSelect = assert(
-                  powerPage.shadowRoot.querySelector('#batteryIdleSelect'));
+              const batteryIdleSelect =
+                  assert(powerPage.$$('#batteryIdleSelect'));
               assertEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), acIdleSelect.value);
               assertEquals(
                   IdleBehavior.DISPLAY_OFF.toString(), batteryIdleSelect.value);
               assertTrue(acIdleSelect.disabled);
               assertTrue(batteryIdleSelect.disabled);
-              assertEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#acIdleManagedIndicator'));
-              assertEquals(
-                  null,
-                  powerPage.shadowRoot.querySelector(
-                      '#batteryIdleManagedIndicator'));
+              assertEquals(null, powerPage.$$('#acIdleManagedIndicator'));
+              assertEquals(null, powerPage.$$('#batteryIdleManagedIndicator'));
               assertEquals(
                   loadTimeData.getString('powerLidSignOutLabel'),
                   lidClosedToggle.label);
@@ -1974,9 +1861,7 @@ suite('SettingsDevicePage', function() {
 
       test('hide lid behavior when lid not present', function() {
         return new Promise(function(resolve) {
-                 assertFalse(
-                     powerPage.shadowRoot.querySelector('#lidClosedToggle')
-                         .hidden);
+                 assertFalse(powerPage.$$('#lidClosedToggle').hidden);
                  sendPowerManagementSettings(
                      [
                        IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
@@ -1994,8 +1879,7 @@ suite('SettingsDevicePage', function() {
                  powerPage.async(resolve);
                })
             .then(function() {
-              assertTrue(powerPage.shadowRoot.querySelector('#lidClosedToggle')
-                             .hidden);
+              assertTrue(powerPage.$$('#lidClosedToggle').hidden);
             });
       });
 
@@ -2017,10 +1901,7 @@ suite('SettingsDevicePage', function() {
                      powerPage.async(resolve);
                    })
                 .then(function() {
-                  assertEquals(
-                      null,
-                      powerPage.shadowRoot.querySelector(
-                          '#batteryIdleSettingBox'));
+                  assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
                 });
           });
 
@@ -2062,9 +1943,9 @@ suite('SettingsDevicePage', function() {
           .then(function(page) {
             stylusPage = page;
             browserProxy = DevicePageBrowserProxyImpl.getInstance();
-            appSelector = assert(page.shadowRoot.querySelector('#selectApp'));
-            noAppsDiv = assert(page.shadowRoot.querySelector('#no-apps'));
-            waitingDiv = assert(page.shadowRoot.querySelector('#waiting'));
+            appSelector = assert(page.$$('#selectApp'));
+            noAppsDiv = assert(page.$$('#no-apps'));
+            waitingDiv = assert(page.$$('#waiting'));
             LockScreenSupport = NoteAppLockScreenSupport;
 
             assertEquals(1, browserProxy.requestNoteTakingApps_);
@@ -2084,31 +1965,27 @@ suite('SettingsDevicePage', function() {
 
     /**  @return {?Element} */
     function noteTakingAppLockScreenSettings() {
-      return stylusPage.shadowRoot.querySelector(
-          '#note-taking-app-lock-screen-settings');
+      return stylusPage.$$('#note-taking-app-lock-screen-settings');
     }
 
     /** @return {?Element} */
     function enableAppOnLockScreenToggle() {
-      return stylusPage.shadowRoot.querySelector(
-          '#enable-app-on-lock-screen-toggle');
+      return stylusPage.$$('#enable-app-on-lock-screen-toggle');
     }
 
     /** @return {?Element} */
     function enableAppOnLockScreenPolicyIndicator() {
-      return stylusPage.shadowRoot.querySelector(
-          '#enable-app-on-lock-screen-policy-indicator');
+      return stylusPage.$$('#enable-app-on-lock-screen-policy-indicator');
     }
 
     /** @return {?Element} */
     function enableAppOnLockScreenToggleLabel() {
-      return stylusPage.shadowRoot.querySelector('#lock-screen-toggle-label');
+      return stylusPage.$$('#lock-screen-toggle-label');
     }
 
     /** @return {?Element} */
     function keepLastNoteOnLockScreenToggle() {
-      return stylusPage.shadowRoot.querySelector(
-          '#keep-last-note-on-lock-screen-toggle');
+      return stylusPage.$$('#keep-last-note-on-lock-screen-toggle');
     }
 
     test('stylus tools prefs', function() {
@@ -2119,26 +1996,19 @@ suite('SettingsDevicePage', function() {
 
       // Since both prefs are initially false, the launch palette on eject pref
       // toggle is disabled.
-      assertTrue(isVisible(
-          stylusPage.shadowRoot.querySelector('#enableStylusToolsToggle')));
-      assertTrue(isVisible(stylusPage.shadowRoot.querySelector(
-          '#launchPaletteOnEjectEventToggle')));
-      assertTrue(stylusPage.shadowRoot
-                     .querySelector('#launchPaletteOnEjectEventToggle')
-                     .disabled);
+      assertTrue(isVisible(stylusPage.$$('#enableStylusToolsToggle')));
+      assertTrue(isVisible(stylusPage.$$('#launchPaletteOnEjectEventToggle')));
+      assertTrue(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
       assertFalse(devicePage.prefs.settings.enable_stylus_tools.value);
       assertFalse(
           devicePage.prefs.settings.launch_palette_on_eject_event.value);
 
       // Tapping the enable stylus tools pref causes the launch palette on
       // eject pref toggle to not be disabled anymore.
-      stylusPage.shadowRoot.querySelector('#enableStylusToolsToggle').click();
+      stylusPage.$$('#enableStylusToolsToggle').click();
       assertTrue(devicePage.prefs.settings.enable_stylus_tools.value);
-      assertFalse(stylusPage.shadowRoot
-                      .querySelector('#launchPaletteOnEjectEventToggle')
-                      .disabled);
-      stylusPage.shadowRoot.querySelector('#launchPaletteOnEjectEventToggle')
-          .click();
+      assertFalse(stylusPage.$$('#launchPaletteOnEjectEventToggle').disabled);
+      stylusPage.$$('#launchPaletteOnEjectEventToggle').click();
       assertTrue(devicePage.prefs.settings.launch_palette_on_eject_event.value);
     });
 
@@ -2213,8 +2083,7 @@ suite('SettingsDevicePage', function() {
       browserProxy.setAndroidAppsReceived(true);
 
       return checkDeepLink(
-          routes.STYLUS, '417',
-          stylusPage.shadowRoot.querySelector('#selectApp'),
+          routes.STYLUS, '417', stylusPage.$$('#selectApp'),
           'Note-taking apps dropdown');
     });
 
@@ -2619,7 +2488,7 @@ suite('SettingsDevicePage', function() {
      * @return {string}
      */
     function getStorageItemLabelFromId(id) {
-      const rowItem = storagePage.shadowRoot.querySelector('#' + id).shadowRoot;
+      const rowItem = storagePage.$$('#' + id).shadowRoot;
       return rowItem.querySelector('#label').innerText;
     }
 
@@ -2628,7 +2497,7 @@ suite('SettingsDevicePage', function() {
      * @return {string}
      */
     function getStorageItemSubLabelFromId(id) {
-      const rowItem = storagePage.shadowRoot.querySelector('#' + id).shadowRoot;
+      const rowItem = storagePage.$$('#' + id).shadowRoot;
       return rowItem.querySelector('#subLabel').innerText;
     }
 
@@ -2650,13 +2519,10 @@ suite('SettingsDevicePage', function() {
       sendStorageSizeStat('9.1 GB', '0.9 GB', 0.91, StorageSpaceState.LOW);
       assertEquals('91%', storagePage.$.inUseLabelArea.style.width);
       assertEquals('9%', storagePage.$.availableLabelArea.style.width);
-      assertTrue(
-          isVisible(storagePage.shadowRoot.querySelector('#lowMessage')));
-      assertFalse(isVisible(
-          storagePage.shadowRoot.querySelector('#criticallyLowMessage')));
-      assertTrue(!!storagePage.shadowRoot.querySelector('#bar.space-low'));
-      assertFalse(
-          !!storagePage.shadowRoot.querySelector('#bar.space-critically-low'));
+      assertTrue(isVisible(storagePage.$$('#lowMessage')));
+      assertFalse(isVisible(storagePage.$$('#criticallyLowMessage')));
+      assertTrue(!!storagePage.$$('#bar.space-low'));
+      assertFalse(!!storagePage.$$('#bar.space-critically-low'));
       assertEquals(
           '9.1 GB',
           storagePage.$.inUseLabelArea.querySelector('.storage-size')
@@ -2671,13 +2537,10 @@ suite('SettingsDevicePage', function() {
           '9.7 GB', '0.3 GB', 0.97, StorageSpaceState.CRITICALLY_LOW);
       assertEquals('97%', storagePage.$.inUseLabelArea.style.width);
       assertEquals('3%', storagePage.$.availableLabelArea.style.width);
-      assertFalse(
-          isVisible(storagePage.shadowRoot.querySelector('#lowMessage')));
-      assertTrue(isVisible(
-          storagePage.shadowRoot.querySelector('#criticallyLowMessage')));
-      assertFalse(!!storagePage.shadowRoot.querySelector('#bar.space-low'));
-      assertTrue(
-          !!storagePage.shadowRoot.querySelector('#bar.space-critically-low'));
+      assertFalse(isVisible(storagePage.$$('#lowMessage')));
+      assertTrue(isVisible(storagePage.$$('#criticallyLowMessage')));
+      assertFalse(!!storagePage.$$('#bar.space-low'));
+      assertTrue(!!storagePage.$$('#bar.space-critically-low'));
       assertEquals(
           '9.7 GB',
           storagePage.$.inUseLabelArea.querySelector('.storage-size')
@@ -2691,13 +2554,10 @@ suite('SettingsDevicePage', function() {
       sendStorageSizeStat('2.5 GB', '7.5 GB', 0.25, StorageSpaceState.NORMAL);
       assertEquals('25%', storagePage.$.inUseLabelArea.style.width);
       assertEquals('75%', storagePage.$.availableLabelArea.style.width);
-      assertFalse(
-          isVisible(storagePage.shadowRoot.querySelector('#lowMessage')));
-      assertFalse(isVisible(
-          storagePage.shadowRoot.querySelector('#criticallyLowMessage')));
-      assertFalse(!!storagePage.shadowRoot.querySelector('#bar.space-low'));
-      assertFalse(
-          !!storagePage.shadowRoot.querySelector('#bar.space-critically-low'));
+      assertFalse(isVisible(storagePage.$$('#lowMessage')));
+      assertFalse(isVisible(storagePage.$$('#criticallyLowMessage')));
+      assertFalse(!!storagePage.$$('#bar.space-low'));
+      assertFalse(!!storagePage.$$('#bar.space-critically-low'));
       assertEquals(
           '2.5 GB',
           storagePage.$.inUseLabelArea.querySelector('.storage-size')
@@ -2709,27 +2569,19 @@ suite('SettingsDevicePage', function() {
     });
 
     test('system size', async function() {
+      assertEquals('System', storagePage.$$('#systemSizeLabel').innerText);
       assertEquals(
-          'System',
-          storagePage.shadowRoot.querySelector('#systemSizeLabel').innerText);
-      assertEquals(
-          'Calculating…',
-          storagePage.shadowRoot.querySelector('#systemSizeSubLabel')
-              .innerText);
+          'Calculating…', storagePage.$$('#systemSizeSubLabel').innerText);
 
       // Send system size callback.
       webUIListenerCallback('storage-system-size-changed', '8.4 GB');
       flush();
-      assertEquals(
-          '8.4 GB',
-          storagePage.shadowRoot.querySelector('#systemSizeSubLabel')
-              .innerText);
+      assertEquals('8.4 GB', storagePage.$$('#systemSizeSubLabel').innerText);
 
       // In guest mode, the system row should be hidden.
       storagePage.isGuest_ = true;
       flush();
-      assertFalse(
-          isVisible(storagePage.shadowRoot.querySelector('#systemSize')));
+      assertFalse(isVisible(storagePage.$$('#systemSize')));
     });
 
     test('apps extensions size', async function() {
@@ -2746,8 +2598,7 @@ suite('SettingsDevicePage', function() {
     test('other users size', async function() {
       // The other users row is visible by default, displaying
       // "calculating...".
-      assertTrue(
-          isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+      assertTrue(isVisible(storagePage.$$('#otherUsersSize')));
       assertEquals('Other users', getStorageItemLabelFromId('otherUsersSize'));
       assertEquals(
           'Calculating…', getStorageItemSubLabelFromId('otherUsersSize'));
@@ -2755,15 +2606,13 @@ suite('SettingsDevicePage', function() {
       // Simulate absence of other users.
       webUIListenerCallback('storage-other-users-size-changed', '0 B', true);
       flush();
-      assertFalse(
-          isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+      assertFalse(isVisible(storagePage.$$('#otherUsersSize')));
 
       // Send other users callback with a size that is not null.
       webUIListenerCallback(
           'storage-other-users-size-changed', '322 MB', false);
       flush();
-      assertTrue(
-          isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+      assertTrue(isVisible(storagePage.$$('#otherUsersSize')));
       assertEquals('322 MB', getStorageItemSubLabelFromId('otherUsersSize'));
 
       // If the user is in Guest mode, the row is not visible.
@@ -2771,8 +2620,7 @@ suite('SettingsDevicePage', function() {
       webUIListenerCallback(
           'storage-other-users-size-changed', '322 MB', false);
       flush();
-      assertFalse(
-          isVisible(storagePage.shadowRoot.querySelector('#otherUsersSize')));
+      assertFalse(isVisible(storagePage.$$('#otherUsersSize')));
     });
   });
 });

@@ -8,17 +8,6 @@
  * more displays and allows them to be arranged.
  */
 
-import '//resources/polymer/v3_0/paper-styles/shadow.js';
-import '../../settings_shared_css.js';
-
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
-import {DragBehavior, DragBehaviorInterface, DragPosition} from './drag_behavior.js';
-import {LayoutBehavior, LayoutBehaviorInterface} from './layout_behavior.js';
-
 /**
  * Container for DisplayUnitInfo.  Mostly here to make the DisplaySelectEvent
  * typedef more readable.
@@ -32,91 +21,86 @@ let InfoItem;
  */
 let DisplaySelectEvent;
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import '//resources/polymer/v3_0/paper-styles/shadow.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {DragBehavior, DragPosition} from './drag_behavior.js';
+import {LayoutBehavior} from './layout_behavior.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from './device_page_browser_proxy.js';
+import '../../settings_shared_css.js';
+
+
 /** @type {number} */ const MIN_VISUAL_SCALE = .01;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DragBehaviorInterface}
- * @implements {LayoutBehaviorInterface}
- */
-const DisplayLayoutElementBase = mixinBehaviors(
-    [IronResizableBehavior, DragBehavior, LayoutBehavior], PolymerElement);
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'display-layout',
 
-/** @polymer */
-class DisplayLayoutElement extends DisplayLayoutElementBase {
-  static get is() {
-    return 'display-layout';
-  }
+  behaviors: [
+    IronResizableBehavior,
+    DragBehavior,
+    LayoutBehavior,
+  ],
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /**
+     * Array of displays.
+     * @type {!Array<!chrome.system.display.DisplayUnitInfo>}
+     */
+    displays: Array,
 
-  static get properties() {
-    return {
-      /**
-       * Array of displays.
-       * @type {!Array<!chrome.system.display.DisplayUnitInfo>}
-       */
-      displays: Array,
-
-      /** @type {!chrome.system.display.DisplayUnitInfo|undefined} */
-      selectedDisplay: Object,
-
-      /**
-       * The ratio of the display area div (in px) to DisplayUnitInfo.bounds.
-       * @type {number}
-       */
-      visualScale: {
-        type: Number,
-        value: 1,
-      },
-
-      /**
-       * Ids for mirroring destination displays.
-       * @type {!Array<string>|undefined}
-       * @private
-       */
-      mirroringDestinationIds_: Array,
-    };
-  }
-
-  /** @override */
-  constructor() {
-    super();
-
-    /** @private {!{left: number, top: number}} */
-    this.visualOffset_ = {left: 0, top: 0};
+    /** @type {!chrome.system.display.DisplayUnitInfo|undefined} */
+    selectedDisplay: Object,
 
     /**
-     * Stores the previous coordinates of a display once dragging starts. Used
-     * to calculate the delta during each step of the drag. Null when there is
-     * no drag in progress.
-     * @private {?{x: number, y: number}}
+     * The ratio of the display area div (in px) to DisplayUnitInfo.bounds.
+     * @type {number}
      */
-    this.lastDragCoordinates_ = null;
+    visualScale: {
+      type: Number,
+      value: 1,
+    },
 
-    /** @private {?DevicePageBrowserProxy} */
-    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
+    /**
+     * Ids for mirroring destination displays.
+     * @type {!Array<string>|undefined}
+     * @private
+     */
+    mirroringDestinationIds_: Array,
+  },
 
-    /** @private {boolean} */
-    this.allowDisplayAlignmentApi_ =
-        loadTimeData.getBoolean('allowDisplayAlignmentApi');
+  /** @private {!{left: number, top: number}} */
+  visualOffset_: {left: 0, top: 0},
 
-    /** @private {string} */
-    this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
+  /**
+   * Stores the previous coordinates of a display once dragging starts. Used to
+   * calculate the delta during each step of the drag. Null when there is no
+   * drag in progress.
+   * @private {?{x: number, y: number}}
+   */
+  lastDragCoordinates_: null,
 
-    /** @private {boolean} */
-    this.hasDragStarted_ = false;
-  }
+  /** @private {?DevicePageBrowserProxy} */
+  browserProxy_: null,
+
+  /** @private {boolean} */
+  allowDisplayAlignmentApi_:
+      loadTimeData.getBoolean('allowDisplayAlignmentApi'),
+
+  /** @private {string} */
+  invalidDisplayId_: loadTimeData.getString('invalidDisplayId'),
 
   /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  created() {
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
+  },
 
+  /** @override */
+  detached() {
     this.initializeDrag(false);
-  }
+  },
 
   /**
    * Called explicitly when |this.displays| and their associated |this.layouts|
@@ -146,7 +130,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     this.initializeDrag(
         !this.mirroring, this.$.displayArea,
         (id, amount) => this.onDrag_(id, amount));
-  }
+  },
 
   /**
    * Calculates the visual offset and scale for the display area
@@ -209,7 +193,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     this.visualScale = Math.max(MIN_VISUAL_SCALE, scale);
 
     return true;
-  }
+  },
 
   /**
    * @param {string} id
@@ -239,7 +223,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
         Math.round(this.visualOffset_.top + (bounds.top * this.visualScale));
     return 'height: ' + height + 'px; width: ' + width + 'px;' +
         ' left: ' + left + 'px; top: ' + top + 'px';
-  }
+  },
 
   /**
    * @param {number} mirroringDestinationIndex
@@ -258,7 +242,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     return this.getDivStyle_(
         displays[0].id, displays[0].bounds, visualScale,
         (mirroringDestinationDisplayNum - mirroringDestinationIndex) * -4);
-  }
+  },
 
   /**
    * @param {!chrome.system.display.DisplayUnitInfo} display
@@ -268,7 +252,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
    */
   isSelected_(display, selectedDisplay) {
     return display.id === selectedDisplay.id;
-  }
+  },
 
   focusSelectedDisplay_() {
     if (!this.selectedDisplay) {
@@ -280,31 +264,27 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     if (selected) {
       selected.focus();
     }
-  }
+  },
 
   /**
    * @param {!DisplaySelectEvent} e
    * @private
    */
   onSelectDisplayTap_(e) {
-    const selectDisplayEvent = new CustomEvent(
-        'select-display', {composed: true, detail: e.model.item.id});
-    this.dispatchEvent(selectDisplayEvent);
+    this.fire('select-display', e.model.item.id);
     // Force active in case the selected display was clicked.
     // TODO(dpapad): Ask @stevenjb, why are we setting 'active' on a div?
     e.target.active = true;
-  }
+  },
 
   /**
    * @param {!DisplaySelectEvent} e
    * @private
    */
   onFocus_(e) {
-    const selectDisplayEvent = new CustomEvent(
-        'select-display', {composed: true, detail: e.model.item.id});
-    this.dispatchEvent(selectDisplayEvent);
+    this.fire('select-display', e.model.item.id);
     this.focusSelectedDisplay_();
-  }
+  },
 
   /**
    * @param {string} id
@@ -324,9 +304,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
       this.browserProxy_.highlightDisplay(id);
       // Make sure the dragged display is also selected.
       if (id !== this.selectedDisplay.id) {
-        const selectDisplayEvent =
-            new CustomEvent('select-display', {composed: true, detail: id});
-        this.dispatchEvent(selectDisplayEvent);
+        this.fire('select-display', id);
       }
 
       const calculatedBounds = this.getCalculatedDisplayBounds(id);
@@ -367,11 +345,10 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
         this.visualOffset_.left + Math.round(newBounds.left * this.visualScale);
     const top =
         this.visualOffset_.top + Math.round(newBounds.top * this.visualScale);
-    const div = this.shadowRoot.querySelector('#_' + id);
+    const div = this.$$('#_' + id);
     div.style.left = '' + left + 'px';
     div.style.top = '' + top + 'px';
     this.focusSelectedDisplay_();
-  }
-}
+  },
 
-customElements.define(DisplayLayoutElement.is, DisplayLayoutElement);
+});

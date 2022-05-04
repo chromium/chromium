@@ -38,6 +38,7 @@ const ModifierKey = {
   ASSISTANT_KEY: 7,
 };
 
+
 Polymer({
   _template: html`{__html_template__}`,
   is: 'settings-keyboard',

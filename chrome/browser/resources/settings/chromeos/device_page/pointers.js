@@ -16,171 +16,158 @@ import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route} from '../../router.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsPointersElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
 
-/** @polymer */
-class SettingsPointersElement extends SettingsPointersElementBase {
-  static get is() {
-    return 'settings-pointers';
-  }
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'settings-pointers',
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  behaviors: [
+    DeepLinkingBehavior,
+    PrefsBehavior,
+    RouteObserverBehavior,
+  ],
 
-  static get properties() {
-    return {
-      prefs: {
-        type: Object,
-        notify: true,
+  properties: {
+    prefs: {
+      type: Object,
+      notify: true,
+    },
+
+    hasMouse: Boolean,
+
+    hasPointingStick: Boolean,
+
+    hasTouchpad: Boolean,
+
+    hasHapticTouchpad: Boolean,
+
+    swapPrimaryOptions: {
+      readOnly: true,
+      type: Array,
+      value() {
+        return [
+          {
+            value: false,
+            name: loadTimeData.getString('primaryMouseButtonLeft')
+          },
+          {
+            value: true,
+            name: loadTimeData.getString('primaryMouseButtonRight')
+          },
+        ];
       },
+    },
 
-      hasMouse: Boolean,
+    showHeadings_: {
+      type: Boolean,
+      computed: 'computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad)',
+    },
 
-      hasPointingStick: Boolean,
+    subsectionClass_: {
+      type: String,
+      computed: 'computeSubsectionClass_(hasMouse, hasPointingStick, ' +
+          'hasTouchpad)',
+    },
 
-      hasTouchpad: Boolean,
+    /**
+     * TODO(michaelpg): settings-slider should optionally take a min and max so
+     * we don't have to generate a simple range of natural numbers ourselves.
+     * These values match the TouchpadSensitivity enum in enums.xml.
+     * @type {!Array<number>}
+     * @private
+     */
+    sensitivityValues_: {
+      type: Array,
+      value: [1, 2, 3, 4, 5],
+      readOnly: true,
+    },
 
-      hasHapticTouchpad: Boolean,
-
-      swapPrimaryOptions: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {
-              value: false,
-              name: loadTimeData.getString('primaryMouseButtonLeft')
-            },
-            {
-              value: true,
-              name: loadTimeData.getString('primaryMouseButtonRight')
-            },
-          ];
-        },
+    /**
+     * The click sensitivity values from prefs are [1,3,5] but ChromeVox needs
+     * to announce them as [1,2,3].
+     * @type {!Array<SliderTick>}
+     * @private
+     */
+    hapticClickSensitivityValues_: {
+      type: Array,
+      value() {
+        return [
+          {value: 1, ariaValue: 1},
+          {value: 3, ariaValue: 2},
+          {value: 5, ariaValue: 3},
+        ];
       },
+      readOnly: true,
+    },
 
-      showHeadings_: {
-        type: Boolean,
-        computed:
-            'computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad)',
+    /**
+     * TODO(khorimoto): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowScrollSettings_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowScrollSettings');
       },
+    },
 
-      subsectionClass_: {
-        type: String,
-        computed: 'computeSubsectionClass_(hasMouse, hasPointingStick, ' +
-            'hasTouchpad)',
+    /**
+     * TODO(gavinwill): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowTouchpadHapticFeedback_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowTouchpadHapticFeedback');
       },
+    },
 
-      /**
-       * TODO(michaelpg): settings-slider should optionally take a min and max
-       * so we don't have to generate a simple range of natural numbers
-       * ourselves. These values match the TouchpadSensitivity enum in
-       * enums.xml.
-       * @type {!Array<number>}
-       * @private
-       */
-      sensitivityValues_: {
-        type: Array,
-        value: [1, 2, 3, 4, 5],
-        readOnly: true,
+    /**
+     * TODO(gavinwill): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowTouchpadHapticClickSettings_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowTouchpadHapticClickSettings');
       },
+    },
 
-      /**
-       * The click sensitivity values from prefs are [1,3,5] but ChromeVox needs
-       * to announce them as [1,2,3].
-       * @type {!Array<SliderTick>}
-       * @private
-       */
-      hapticClickSensitivityValues_: {
-        type: Array,
-        value() {
-          return [
-            {value: 1, ariaValue: 1},
-            {value: 3, ariaValue: 2},
-            {value: 5, ariaValue: 3},
-          ];
-        },
-        readOnly: true,
-      },
-
-      /**
-       * TODO(khorimoto): Remove this conditional once the feature is launched.
-       * @private
-       */
-      allowScrollSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowScrollSettings');
-        },
-      },
-
-      /**
-       * TODO(gavinwill): Remove this conditional once the feature is launched.
-       * @private
-       */
-      allowTouchpadHapticFeedback_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowTouchpadHapticFeedback');
-        },
-      },
-
-      /**
-       * TODO(gavinwill): Remove this conditional once the feature is launched.
-       * @private
-       */
-      allowTouchpadHapticClickSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowTouchpadHapticClickSettings');
-        },
-      },
-
-      /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set([
-          chromeos.settings.mojom.Setting.kTouchpadTapToClick,
-          chromeos.settings.mojom.Setting.kTouchpadTapDragging,
-          chromeos.settings.mojom.Setting.kTouchpadReverseScrolling,
-          chromeos.settings.mojom.Setting.kTouchpadAcceleration,
-          chromeos.settings.mojom.Setting.kTouchpadScrollAcceleration,
-          chromeos.settings.mojom.Setting.kTouchpadSpeed,
-          chromeos.settings.mojom.Setting.kTouchpadHapticFeedback,
-          chromeos.settings.mojom.Setting.kTouchpadHapticClickSensitivity,
-          chromeos.settings.mojom.Setting.kPointingStickAcceleration,
-          chromeos.settings.mojom.Setting.kPointingStickSpeed,
-          chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,
-          chromeos.settings.mojom.Setting.kMouseSwapPrimaryButtons,
-          chromeos.settings.mojom.Setting.kMouseReverseScrolling,
-          chromeos.settings.mojom.Setting.kMouseAcceleration,
-          chromeos.settings.mojom.Setting.kMouseScrollAcceleration,
-          chromeos.settings.mojom.Setting.kMouseSpeed,
-        ]),
-      },
-    };
-  }
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kTouchpadTapToClick,
+        chromeos.settings.mojom.Setting.kTouchpadTapDragging,
+        chromeos.settings.mojom.Setting.kTouchpadReverseScrolling,
+        chromeos.settings.mojom.Setting.kTouchpadAcceleration,
+        chromeos.settings.mojom.Setting.kTouchpadScrollAcceleration,
+        chromeos.settings.mojom.Setting.kTouchpadSpeed,
+        chromeos.settings.mojom.Setting.kTouchpadHapticFeedback,
+        chromeos.settings.mojom.Setting.kTouchpadHapticClickSensitivity,
+        chromeos.settings.mojom.Setting.kPointingStickAcceleration,
+        chromeos.settings.mojom.Setting.kPointingStickSpeed,
+        chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,
+        chromeos.settings.mojom.Setting.kMouseSwapPrimaryButtons,
+        chromeos.settings.mojom.Setting.kMouseReverseScrolling,
+        chromeos.settings.mojom.Setting.kMouseAcceleration,
+        chromeos.settings.mojom.Setting.kMouseScrollAcceleration,
+        chromeos.settings.mojom.Setting.kMouseSpeed,
+      ]),
+    },
+  },
 
   /**
    * Headings should only be visible if more than one subsection is present.
@@ -195,7 +182,7 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     // Count the number of true values in sectionVisibilities.
     const numVisibleSections = sectionVisibilities.filter(x => x).length;
     return numVisibleSections > 1;
-  }
+  },
 
   /**
    * Mouse, pointing stick, and touchpad sections are only subsections if more
@@ -210,11 +197,11 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     const subsections =
         this.computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad);
     return subsections ? 'subsection' : '';
-  }
+  },
 
   /**
    * @param {!Route} route
-   * @param {!Route=} oldRoute
+   * @param {Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -223,13 +210,13 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     }
 
     this.attemptDeepLink();
-  }
+  },
 
   /**
    * @param {!Event} event
    * @private
    */
-  onLearnMoreLinkClicked_(event) {
+  onLearnMoreLinkClicked_: function(event) {
     if (!Array.isArray(event.path) || !event.path.length) {
       return;
     }
@@ -238,28 +225,26 @@ class SettingsPointersElement extends SettingsPointersElementBase {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }
-  }
+  },
 
   /** @private */
-  onMouseReverseScrollRowClicked_() {
+  onMouseReverseScrollRowClicked_: function() {
     this.setPrefValue(
         'settings.mouse.reverse_scroll',
         !this.getPref('settings.mouse.reverse_scroll').value);
-  }
+  },
 
   /** @private */
-  onTouchpadReverseScrollRowClicked_() {
+  onTouchpadReverseScrollRowClicked_: function() {
     this.setPrefValue(
         'settings.touchpad.natural_scroll',
         !this.getPref('settings.touchpad.natural_scroll').value);
-  }
+  },
 
   /** @private */
-  onTouchpadHapticFeedbackRowClicked_() {
+  onTouchpadHapticFeedbackRowClicked_: function() {
     this.setPrefValue(
         'settings.touchpad.haptic_feedback',
         !this.getPref('settings.touchpad.haptic_feedback').value);
-  }
-}
-
-customElements.define(SettingsPointersElement.is, SettingsPointersElement);
+  },
+});

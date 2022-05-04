@@ -11,58 +11,41 @@
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const StorageExternalEntryElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement);
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'storage-external-entry',
 
-/** @polymer */
-class StorageExternalEntryElement extends StorageExternalEntryElementBase {
-  static get is() {
-    return 'storage-external-entry';
-  }
+  behaviors: [WebUIListenerBehavior, PrefsBehavior],
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /**
+     * FileSystem UUID of an external storage.
+     */
+    uuid: String,
 
-  static get properties() {
-    return {
-      /**
-       * FileSystem UUID of an external storage.
-       */
-      uuid: String,
+    /**
+     * Label of an external storage.
+     */
+    label: String,
 
-      /**
-       * Label of an external storage.
-       */
-      label: String,
-
-      /** @private {chrome.settingsPrivate.PrefObject} */
-      visiblePref_: {
-        type: Object,
-        value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
-        },
+    /** @private {chrome.settingsPrivate.PrefObject} */
+    visiblePref_: {
+      type: Object,
+      value() {
+        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
       },
+    },
+  },
 
-    };
-  }
-
-  static get observers() {
-    return [
-      'updateVisible_(prefs.arc.visible_external_storages.*)',
-    ];
-  }
+  observers: [
+    'updateVisible_(prefs.arc.visible_external_storages.*)',
+  ],
 
   /**
    * Handler for when the toggle button for this entry is clicked by a user.
@@ -78,7 +61,7 @@ class StorageExternalEntryElement extends StorageExternalEntryElementBase {
     }
     chrome.metricsPrivate.recordBoolean(
         'Arc.ExternalStorage.SetVisible', visible);
-  }
+  },
 
   /**
    * Updates |visiblePref_| by reading the preference and check if it contains
@@ -95,8 +78,5 @@ class StorageExternalEntryElement extends StorageExternalEntryElementBase {
       value: visible,
     };
     this.visiblePref_ = pref;
-  }
-}
-
-customElements.define(
-    StorageExternalEntryElement.is, StorageExternalEntryElement);
+  },
+});
