@@ -631,9 +631,9 @@ const base::Feature kExoLockNotification{"ExoLockNotification",
 const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable pointer lock for Crostini windows.
+// Enable or disable pointer lock for Crostini and Borealis windows.
 const base::Feature kExoPointerLock{"ExoPointerLock",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows RGB Keyboard to test new animations/patterns.
 const base::Feature kExperimentalRgbKeyboardPatterns{
