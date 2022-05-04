@@ -24,8 +24,11 @@ import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
 import org.chromium.components.autofill_assistant.AssistantTabObscuringUtil;
 import org.chromium.components.autofill_assistant.AssistantTabUtil;
+import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -38,12 +41,15 @@ import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
  * Provides default implementations of {@link AssistantStaticDependencies} for WebLayer.
  */
 @JNINamespace("weblayer")
-public class WebLayerAssistantStaticDependencies implements AssistantStaticDependencies {
+public class WebLayerAssistantStaticDependencies
+        implements AssistantStaticDependencies, SimpleFactoryKeyHandle {
     private final WebContents mWebContents;
 
     WebLayerAssistantStaticDependencies(WebContents webContents) {
         mWebContents = webContents;
     }
+
+    // AssistantStaticDependencies implementation:
 
     @Override
     public long createNative() {
@@ -105,14 +111,15 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
 
     @Override
     public ImageFetcher createImageFetcher() {
-        // TODO(b/222671580): Implement
-        return null;
+        return ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, this);
     }
 
     @Override
     public LargeIconBridge createIconBridge() {
-        // TODO(b/222671580): Implement
-        return null;
+        BrowserContextHandle browserContext = getBrowserContext();
+        if (browserContext == null) return null;
+
+        return new LargeIconBridge(getBrowserContext());
     }
 
     @Nullable
@@ -141,10 +148,24 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
         return null;
     }
 
+    // SimpleFactoryKeyHandle implementation:
+
+    @Override
+    public long getNativeSimpleFactoryKeyPointer() {
+        BrowserContextHandle browserContext = getBrowserContext();
+        if (browserContext == null) return 0;
+        long nativeBrowserContextPointer = browserContext.getNativeBrowserContextPointer();
+        if (nativeBrowserContextPointer == 0) return 0;
+        return WebLayerAssistantStaticDependenciesJni.get().getSimpleFactoryKey(
+                nativeBrowserContextPointer);
+    }
+
     @NativeMethods
     interface Natives {
         long init(AssistantStaticDependencies staticDependencies);
 
         ProfileImpl getJavaProfile(WebContents webContents);
+
+        long getSimpleFactoryKey(long browserContext);
     }
 }

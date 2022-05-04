@@ -10,8 +10,10 @@
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/browser/platform_dependencies.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "components/version_info/android/channel_getter.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
+#include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
 #include "weblayer/browser/profile_impl.h"
@@ -47,6 +49,19 @@ JNI_WebLayerAssistantStaticDependencies_GetJavaProfile(
   return ScopedJavaLocalRef<jobject>(
       ProfileImpl::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetJavaProfile());
+}
+
+static jlong JNI_WebLayerAssistantStaticDependencies_GetSimpleFactoryKey(
+    JNIEnv* env,
+    jlong browser_context_ptr) {
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_ptr);
+  if (!browser_context) {
+    return 0;
+  }
+  SimpleFactoryKey* key =
+      static_cast<BrowserContextImpl*>(browser_context)->simple_factory_key();
+  return reinterpret_cast<intptr_t>(key);
 }
 
 WebLayerDependencies::WebLayerDependencies(
