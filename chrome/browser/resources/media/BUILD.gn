@@ -10,10 +10,14 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "preprocessed"
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/media:mojo_bindings_js" ]
+  deps = [
+    "//chrome/browser/media:mojo_bindings_js",
+    "//services/media_session/public/mojom:mojom_js",
+  ]
   sources = [
     "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/media/media_engagement_score_details.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/media_session/public/mojom/media_session.mojom-webui.js",
   ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
@@ -29,22 +33,19 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$target_gen_dir/$preprocess_folder"
 }
 
-# Exclude these files from ts_library()'s output manifest, since they are
-# manually registered in dev_ui_browser_resources.grd.
-non_manifest_files = [
-  "media_history.ts",
-  "media_data_table.ts",
-  "media_engagement.ts",
-  "media_engagement_score_details.mojom-webui.js",
-  "media_history_store.mojom-webui.js",
-]
-
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = target_gen_dir
   tsconfig_base = "tsconfig_base.json"
-  in_files = non_manifest_files + [ "webrtc_logs.ts" ]
-  manifest_excludes = non_manifest_files
+  in_files = [
+    "media_history.ts",
+    "media_data_table.ts",
+    "media_engagement.ts",
+    "media_engagement_score_details.mojom-webui.js",
+    "media_history_store.mojom-webui.js",
+    "media_session.mojom-webui.js",
+    "webrtc_logs.ts",
+  ]
 
   deps = [
     "//ui/webui/resources:library",
@@ -57,9 +58,11 @@ ts_library("build_ts") {
 }
 
 generate_grd("build_grd") {
-  grd_prefix = "webrtc_logs"
-  out_grd = "$target_gen_dir/webrtc_logs_resources.grd"
+  grd_prefix = "media"
+  out_grd = "$target_gen_dir/resources.grd"
   input_files = [
+    "media_engagement.html",
+    "media_history.html",
     "webrtc_logs.css",
     "webrtc_logs.html",
   ]
@@ -68,17 +71,17 @@ generate_grd("build_grd") {
   deps = [ ":build_ts" ]
 }
 
-grit("webrtc_logs_resources") {
-  source = "$target_gen_dir/webrtc_logs_resources.grd"
+grit("resources") {
+  source = "$target_gen_dir/resources.grd"
   deps = [ ":build_grd" ]
   enable_input_discovery_for_gn_analyze = false
   defines = chrome_grit_defines
   use_brotli = true
   outputs = [
-    "grit/webrtc_logs_resources.h",
-    "grit/webrtc_logs_resources_map.cc",
-    "grit/webrtc_logs_resources_map.h",
-    "webrtc_logs_resources.pak",
+    "grit/media_resources.h",
+    "grit/media_resources_map.cc",
+    "grit/media_resources_map.h",
+    "media_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
 }

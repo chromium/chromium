@@ -364,8 +364,8 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2360],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/media/webrtc_logs_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/media/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
     "includes": [2380],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/net_internals/resources.grd": {

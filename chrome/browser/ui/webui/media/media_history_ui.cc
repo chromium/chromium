@@ -12,7 +12,7 @@
 #include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/media_resources.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -30,13 +30,13 @@ MediaHistoryUI::MediaHistoryUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
-  source->AddResourcePath("media_data_table.js", IDR_MEDIA_DATA_TABLE_JS);
-  source->AddResourcePath("media_history.js", IDR_MEDIA_HISTORY_JS);
+  source->AddResourcePath("media_data_table.js", IDR_MEDIA_MEDIA_DATA_TABLE_JS);
+  source->AddResourcePath("media_history.js", IDR_MEDIA_MEDIA_HISTORY_JS);
   source->AddResourcePath("media_session.mojom-webui.js",
-                          IDR_MEDIA_SESSION_MOJOM_WEBUI_JS);
+                          IDR_MEDIA_MEDIA_SESSION_MOJOM_WEBUI_JS);
   source->AddResourcePath("media_history_store.mojom-webui.js",
-                          IDR_MEDIA_HISTORY_STORE_MOJOM_WEBUI_JS);
-  source->SetDefaultResource(IDR_MEDIA_HISTORY_HTML);
+                          IDR_MEDIA_MEDIA_HISTORY_STORE_MOJOM_WEBUI_JS);
+  source->SetDefaultResource(IDR_MEDIA_MEDIA_HISTORY_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());
 }
 

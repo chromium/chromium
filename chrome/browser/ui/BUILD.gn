@@ -411,7 +411,7 @@ static_library("ui") {
     "//chrome/browser/resources/browsing_topics:resources",
     "//chrome/browser/resources/internals:resources",
     "//chrome/browser/resources/invalidations:resources",
-    "//chrome/browser/resources/media:webrtc_logs_resources",
+    "//chrome/browser/resources/media:resources",
     "//chrome/browser/resources/net_internals:resources",
     "//chrome/browser/resources/omnibox:resources",
     "//chrome/browser/resources/usb_internals:resources",
