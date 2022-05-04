@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTestService.ScriptsReturnMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -244,14 +243,15 @@ public class JsFlowIntegrationTest {
     private ActionProto toJsFlowAction(List<ActionProto> actions) {
         assert (!actions.isEmpty());
         StringBuilder jsFlow = new StringBuilder();
-        for (int i = 0; i < actions.size(); i++) {
-            jsFlow.append("[client_status, value] = await runNativeAction(")
-                    .append(actions.get(i).getActionInfoCase().getNumber())
+        for (ActionProto action : actions) {
+            jsFlow.append("[clientStatus, value] = await runNativeAction(")
+                    .append(action.getActionInfoCase().getNumber())
                     .append(", '")
-                    .append(Base64.encodeToString(getActionBytes(actions.get(i)), Base64.NO_WRAP))
-                    .append("');\nif (client_status != 2) { return {status:client_status}; }\n");
+                    .append(Base64.encodeToString(getActionBytes(action), Base64.NO_WRAP))
+                    .append("');\n")
+                    .append("if (clientStatus != 2) return {status: clientStatus};\n");
         }
-        jsFlow.append("return {status:client_status};");
+        jsFlow.append("return {status: 2};");
         return ActionProto.newBuilder()
                 .setJsFlow(JsFlowProto.newBuilder().setJsFlow(jsFlow.toString()))
                 .build();
@@ -278,8 +278,8 @@ public class JsFlowIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
         runScript(script);
 
-        waitUntilViewMatchesCondition(withText("After JS flow"), isCompletelyDisplayed());
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_one"));
+        waitUntilViewMatchesCondition(withText("After JS flow"), isCompletelyDisplayed());
     }
 
     @Test
@@ -317,7 +317,6 @@ public class JsFlowIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1307549")
     public void stopFlowFromJs() throws Exception {
         ArrayList<ActionProto> nestedActions = new ArrayList<>();
         nestedActions.add(ActionProto.newBuilder()
@@ -346,12 +345,11 @@ public class JsFlowIntegrationTest {
         waitUntilViewMatchesCondition(withText("Stop"), isCompletelyDisplayed());
         onView(withText("Stop")).perform(click());
         waitUntilViewAssertionTrue(
-                withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_POLLING_INTERVAL);
+                withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1307549")
     public void runInterruptDuringFlow() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         ArrayList<ActionProto> nestedActions = new ArrayList<>();

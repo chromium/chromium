@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -38,8 +39,11 @@ bool IsAllowedRemoteType(runtime::RemoteObjectType type) {
     case runtime::RemoteObjectType::NUMBER:
     case runtime::RemoteObjectType::BOOLEAN:
       return true;
-    default:
+    default: {
+      DVLOG(1) << "Flow return value type is not allowed: "
+               << static_cast<int>(type);
       return false;
+    }
   }
 }
 
@@ -101,6 +105,7 @@ ClientStatus ExtractFlowReturnValue(
       devtools_reply_status, devtools_result, __FILE__, __LINE__,
       js_line_offset, num_stack_entries_to_drop);
   if (!status.ok()) {
+    DVLOG(1) << "The JS flow result did not contain a valid value.";
     return status;
   }
 
@@ -113,6 +118,7 @@ ClientStatus ExtractFlowReturnValue(
 
   if (!remote_object->HasValue() ||
       !IsAllowedRemoteType(remote_object->GetType())) {
+    DVLOG(1) << "The JS flow result did not have a value or had a bad type.";
     status.set_proto_status(INVALID_ACTION);
     status.mutable_details()
         ->mutable_unexpected_error_info()
@@ -126,6 +132,8 @@ ClientStatus ExtractFlowReturnValue(
 
   std::string error_message;
   if (!ContainsOnlyAllowedValues(*remote_object->GetValue(), error_message)) {
+    DVLOG(1) << "The JS flow result did contain disallowed values. "
+             << error_message;
     status.set_proto_status(INVALID_ACTION);
     status.mutable_details()
         ->mutable_unexpected_error_info()
@@ -146,6 +154,7 @@ ClientStatus ExtractJsFlowActionReturnValue(
   }
 
   if (!value.is_dict()) {
+    DVLOG(1) << "The JS flow result was not an object.";
     return ClientStatusWithSourceLocation(INVALID_ACTION, __FILE__, __LINE__);
   }
 
