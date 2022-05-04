@@ -100,8 +100,7 @@ double ProtobufModelScorer::ComputeScore(const FeatureMap& features) const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void ProtobufModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
-    base::OnceCallback<void(base::flat_map<std::string, double>)> callback)
-    const {
+    base::OnceCallback<void(std::vector<double>)> callback) const {
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_.IsValid()) {
     base::Time start_post_task_time = base::Time::Now();
@@ -119,7 +118,7 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
         "SBClientPhishing.TfLiteModelLoadTime.ProtobufScorer",
         base::Time::Now() - start_post_task_time);
   } else {
-    std::move(callback).Run(base::flat_map<std::string, double>());
+    std::move(callback).Run(std::vector<double>());
   }
 }
 #endif

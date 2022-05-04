@@ -132,7 +132,7 @@ void OnModelInputCreated(
     int input_height,
     std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(base::flat_map<std::string, double>)> callback) {
+    base::OnceCallback<void(std::vector<double>)> callback) {
   base::Time before_operation = base::Time::Now();
   tflite::task::vision::FrameBuffer::Plane plane{
       reinterpret_cast<const tflite::uint8*>(model_input.data()),
@@ -147,15 +147,15 @@ void OnModelInputCreated(
   if (!statusor_result.ok()) {
     VLOG(1) << statusor_result.status().ToString();
     callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<std::string, double>()));
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
     return;
   }
 
-  base::flat_map<std::string, double> scores;
+  std::vector<double> scores(
+      statusor_result->classifications(0).classes().size());
   for (const tflite::task::vision::Class& clas :
        statusor_result->classifications(0).classes()) {
-    scores[clas.class_name()] = clas.score();
+    scores[clas.index()] = clas.score();
   }
 
   callback_task_runner->PostTask(
@@ -168,13 +168,12 @@ void OnClassifierCreated(
     int input_height,
     std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(base::flat_map<std::string, double>)> callback) {
+    base::OnceCallback<void(std::vector<double>)> callback) {
   base::Time before_operation = base::Time::Now();
   std::string model_input = GetModelInput(bitmap, input_width, input_height);
   if (model_input.empty()) {
     callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<std::string, double>()));
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
     return;
   }
   base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.GetModelInput",
@@ -198,7 +197,7 @@ void Scorer::ApplyVisualTfLiteModelHelper(
     int input_height,
     std::string model_data,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(base::flat_map<std::string, double>)> callback) {
+    base::OnceCallback<void(std::vector<double>)> callback) {
   TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
   base::Time before_operation = base::Time::Now();
   before_operation = base::Time::Now();
@@ -208,8 +207,7 @@ void Scorer::ApplyVisualTfLiteModelHelper(
                           base::Time::Now() - before_operation);
   if (!classifier) {
     callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<std::string, double>()));
+        FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
     return;
   }
 

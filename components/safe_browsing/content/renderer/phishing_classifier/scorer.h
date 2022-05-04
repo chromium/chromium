@@ -74,8 +74,7 @@ class Scorer {
   // order as `tflite_thresholds()`.
   virtual void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
-      base::OnceCallback<void(base::flat_map<std::string, double>)> callback)
-      const = 0;
+      base::OnceCallback<void(std::vector<double>)> callback) const = 0;
 #endif
 
   // Returns the version number of the loaded client model.
@@ -134,7 +133,7 @@ class Scorer {
       int input_height,
       std::string model_data,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::OnceCallback<void(base::flat_map<std::string, double>)> callback);
+      base::OnceCallback<void(std::vector<double>)> callback);
 
   base::MemoryMappedFile visual_tflite_model_;
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
