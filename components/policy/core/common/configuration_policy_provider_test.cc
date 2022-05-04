@@ -363,14 +363,14 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   policy_dict.SetIntKey("int", 789);
   policy_dict.SetStringKey("string", "string value");
 
-  base::ListValue list;
+  base::Value::List list;
   for (int i = 0; i < 2; ++i) {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetIntKey("subdictindex", i);
-    dict->SetKey("subdict", policy_dict.Clone());
+    base::Value::Dict dict;
+    dict.Set("subdictindex", i);
+    dict.Set("subdict", policy_dict.Clone());
     list.Append(std::move(dict));
   }
-  policy_dict.SetKey("list", std::move(list));
+  policy_dict.SetKey("list", base::Value(std::move(list)));
   policy_dict.SetKey("dict", policy_dict.Clone());
 
   // Install these policies as a Chrome policy.

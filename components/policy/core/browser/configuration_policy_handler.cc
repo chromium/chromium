@@ -257,8 +257,10 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
 
     std::unique_ptr<base::Value> mapped_value = Map(entry.GetString());
     if (mapped_value) {
-      if (output)
-        output->Append(std::move(mapped_value));
+      if (output) {
+        output->GetList().Append(
+            base::Value::FromUniquePtrValue(std::move(mapped_value)));
+      }
     } else if (errors) {
       errors->AddError(policy_name(), index, IDS_POLICY_OUT_OF_RANGE_ERROR);
     }

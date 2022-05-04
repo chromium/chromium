@@ -887,20 +887,19 @@ TEST(SchemaTest, Validate) {
     ASSERT_TRUE(subschema.valid());
     base::ListValue root;
 
-    auto dict_value = std::make_unique<base::DictionaryValue>();
-    base::ListValue* list_value =
-        dict_value->SetList("List", std::make_unique<base::ListValue>());
+    base::Value::Dict dict_value;
+    base::Value* list_value = dict_value.Set("List", base::Value::List());
     root.Append(std::move(dict_value));
 
     // Test that there are not errors here.
-    list_value->Append("blabla");
+    list_value->GetList().Append("blabla");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
 
     // Invalid list item.
-    list_value->Append(12345);
+    list_value->GetList().Append(12345);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
