@@ -406,26 +406,14 @@ class GLCopyTextureCHROMIUMTest
 
   void TearDown() override { gl_.Destroy(); }
 
-  void CreateBackingForTexture(GLenum target, GLsizei width, GLsizei height) {
-    if (target == GL_TEXTURE_RECTANGLE_ARB) {
-      std::unique_ptr<gfx::GpuMemoryBuffer> buffer(gl_.CreateGpuMemoryBuffer(
-          gfx::Size(width, height), gfx::BufferFormat::RGBA_8888));
-      GLuint image_id = glCreateImageCHROMIUM(buffer->AsClientBuffer(), width,
-                                              height, GL_RGBA);
-      glBindTexImage2DCHROMIUM(target, image_id);
-    } else {
-      glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA,
-                   GL_UNSIGNED_BYTE, nullptr);
-    }
-  }
-
   GLuint CreateDrawingTexture(GLenum target, GLsizei width, GLsizei height) {
     GLuint texture = 0;
     glGenTextures(1, &texture);
     glBindTexture(target, texture);
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    CreateBackingForTexture(target, width, height);
+    glTexImage2D(target, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
     return texture;
   }
 
@@ -1778,99 +1766,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopySubTextureOffset) {
 
   glDeleteTextures(2, textures_);
   glDeleteFramebuffers(1, &framebuffer_id_);
-}
-
-TEST_F(GLCopyTextureCHROMIUMTest, CopyTextureBetweenTexture2DAndRectangleArb) {
-  if (!GLTestHelper::HasExtension("GL_ARB_texture_rectangle")) {
-    LOG(INFO) <<
-        "GL_ARB_texture_rectangle not supported. Skipping test...";
-    return;
-  }
-
-  GLenum src_targets[] = {GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_2D};
-  GLenum dest_targets[] = {GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_2D};
-  GLsizei src_width = 30;
-  GLsizei src_height = 14;
-  GLsizei dest_width = 15;
-  GLsizei dest_height = 13;
-  GLsizei copy_region_x = 1;
-  GLsizei copy_region_y = 1;
-  GLsizei copy_region_width = 5;
-  GLsizei copy_region_height = 3;
-  uint8_t red[1 * 4] = {255u, 0u, 0u, 255u};
-  uint8_t blue[1 * 4] = {0u, 0u, 255u, 255u};
-  uint8_t green[1 * 4] = {0u, 255u, 0, 255u};
-  uint8_t white[1 * 4] = {255u, 255u, 255u, 255u};
-  uint8_t grey[1 * 4] = {199u, 199u, 199u, 255u};
-
-  for (size_t src_index = 0; src_index < std::size(src_targets); src_index++) {
-    GLenum src_target = src_targets[src_index];
-    for (size_t dest_index = 0; dest_index < std::size(dest_targets);
-         dest_index++) {
-      GLenum dest_target = dest_targets[dest_index];
-
-      CreateAndBindDestinationTextureAndFBO(dest_target);
-
-      // Allocate source and destination textures.
-      glBindTexture(src_target, textures_[0]);
-      CreateBackingForTexture(src_target, src_width, src_height);
-
-      glBindTexture(dest_target, textures_[1]);
-      CreateBackingForTexture(dest_target, dest_width, dest_height);
-
-      // The bottom left is red, bottom right is blue, top left is green, top
-      // right is white.
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, src_target,
-                             textures_[0], 0);
-      glBindTexture(src_target, textures_[0]);
-      for (GLint x = 0; x < src_width; ++x) {
-        for (GLint y = 0; y < src_height; ++y) {
-          uint8_t* data;
-          if (x < src_width / 2) {
-            data = y < src_height / 2 ? red : green;
-          } else {
-            data = y < src_height / 2 ? blue : white;
-          }
-          glTexSubImage2D(src_target, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                          data);
-        }
-      }
-
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, dest_target,
-                             textures_[1], 0);
-      glBindTexture(dest_target, textures_[1]);
-
-      // Copy the subtexture x=[13,18) y=[6,9) to the destination.
-      glClearColor(grey[0] / 255.f, grey[1] / 255.f, grey[2] / 255.f, 1.0);
-      glClear(GL_COLOR_BUFFER_BIT);
-      glCopySubTextureCHROMIUM(textures_[0], 0, dest_target, textures_[1], 0,
-                               copy_region_x, copy_region_y, 13, 6,
-                               copy_region_width, copy_region_height, false,
-                               false, false);
-      EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-      for (GLint x = 0; x < dest_width; ++x) {
-        for (GLint y = 0; y < dest_height; ++y) {
-          if (x < copy_region_x || x >= copy_region_x + copy_region_width ||
-              y < copy_region_y || y >= copy_region_y + copy_region_height) {
-            GLTestHelper::CheckPixels(x, y, 1, 1, 0, grey, nullptr);
-            continue;
-          }
-
-          uint8_t* expected_color;
-          if (x < copy_region_x + 2) {
-            expected_color = y < copy_region_y + 1 ? red : green;
-          } else {
-            expected_color = y < copy_region_y + 1 ? blue : white;
-          }
-          GLTestHelper::CheckPixels(x, y, 1, 1, 0, expected_color, nullptr);
-        }
-      }
-
-      glDeleteTextures(2, textures_);
-      glDeleteFramebuffers(1, &framebuffer_id_);
-    }
-  }
 }
 
 }  // namespace gpu
