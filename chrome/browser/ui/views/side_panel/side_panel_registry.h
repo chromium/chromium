@@ -42,8 +42,13 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   void AddObserver(SidePanelRegistryObserver* observer);
   void RemoveObserver(SidePanelRegistryObserver* observer);
 
-  void Register(std::unique_ptr<SidePanelEntry> entry);
-  void Deregister(SidePanelEntry::Id id);
+  // Registers a SidePanelEntry. Returns true if the entry is successfully
+  // registered and false if a SidePanelEntry already exists in the registry for
+  // the provided SidePanelEntry::Id.
+  bool Register(std::unique_ptr<SidePanelEntry> entry);
+  // Deregisters the entry for the given SidePanelEntry::Id. Returns true if
+  // successful and false if there is no entry registered for the |id|.
+  bool Deregister(SidePanelEntry::Id id);
 
   absl::optional<SidePanelEntry*> active_entry() { return active_entry_; }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
