@@ -135,9 +135,12 @@ HRESULT CReauthCredential::ValidateExistingUser(const std::wstring& username,
 }
 
 HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
+  LOGFN(VERBOSE) << "field_id=" << field_id;
+
   if (field_id == FID_PROVIDER_LABEL) {
     std::wstring label(
         GetStringResource(IDS_EXISTING_AUTH_FID_PROVIDER_LABEL_BASE));
+    LOGFN(VERBOSE) << "label=" << label;
     return ::SHStrDupW(label.c_str(), value);
   } else if (field_id == FID_DESCRIPTION) {
     wchar_t* sid_buffer = nullptr;
@@ -190,6 +193,8 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
     }
 
     std::wstring label(GetStringResource(description_label_id));
+    LOGFN(VERBOSE) << "field_id=" << field_id << " label=" << label;
+
     return ::SHStrDupW(label.c_str(), value);
   }
 
@@ -216,6 +221,7 @@ HRESULT CReauthCredential::SetOSUserInfo(BSTR sid, BSTR domain, BSTR username) {
   DCHECK(sid);
   DCHECK(domain);
   DCHECK(username);
+  LOGFN(VERBOSE);
 
   os_user_domain_ = domain;
   os_user_sid_ = sid;
@@ -232,6 +238,7 @@ HRESULT CReauthCredential::SetOSUserInfo(BSTR sid, BSTR domain, BSTR username) {
 
 HRESULT CReauthCredential::SetEmailForReauth(BSTR email) {
   DCHECK(email);
+  LOGFN(VERBOSE) << "email=" << email;
 
   email_for_reauth_ = email;
   return S_OK;

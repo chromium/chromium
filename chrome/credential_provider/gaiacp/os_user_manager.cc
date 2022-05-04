@@ -610,6 +610,8 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
     wcscpy_s(domain, domain_size, local_domain_buffer);
   }
 
+  LOGFN(VERBOSE) << "username=" << std::wstring(username)
+                 << " domain=" << std::wstring(domain);
   ::LocalFree(psid);
   return hr;
 }
@@ -642,6 +644,8 @@ HRESULT OSUserManager::FindUserBySidWithFallback(const wchar_t* sid,
 }
 
 bool OSUserManager::IsUserDomainJoined(const std::wstring& sid) {
+  LOGFN(VERBOSE) << "sid=" << sid;
+
   wchar_t username[kWindowsUsernameBufferLength];
   wchar_t domain[kWindowsDomainBufferLength];
 
@@ -653,8 +657,11 @@ bool OSUserManager::IsUserDomainJoined(const std::wstring& sid) {
     return hr;
   }
 
-  return !base::EqualsCaseInsensitiveASCII(
+  bool domain_joined = !base::EqualsCaseInsensitiveASCII(
       domain, OSUserManager::GetLocalDomain().c_str());
+  LOGFN(VERBOSE) << "sid=" << sid << " domain_joined=" << domain_joined;
+
+  return domain_joined;
 }
 
 HRESULT OSUserManager::RemoveUser(const wchar_t* username,
