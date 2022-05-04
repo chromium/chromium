@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/mrfu_ranker.h"
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/util/ftrl_optimizer.h"
 
@@ -104,7 +105,23 @@ void MrfuCategoryRanker::Train(const LaunchData& launch) {
 }
 
 void MrfuCategoryRanker::SetDefaultCategoryScores() {
-  // TODO(crbug.com/1199206): Implement.
+  // Default category prioritization:
+  //
+  //   P1: Apps
+  //       Play Store
+  //       Settings
+  //   P2: Web
+  //       Files (local and Drive)
+  //       Shortcuts (which are under the Help category)
+  //   P3: Everything else
+  //
+  // Achieve this by training once each, in reverse order.
+  mrfu_->Use(CategoryToString(Category::kHelp));
+  mrfu_->Use(CategoryToString(Category::kFiles));
+  mrfu_->Use(CategoryToString(Category::kWeb));
+  mrfu_->Use(CategoryToString(Category::kSettings));
+  mrfu_->Use(CategoryToString(Category::kPlayStore));
+  mrfu_->Use(CategoryToString(Category::kApps));
 }
 
 }  // namespace app_list

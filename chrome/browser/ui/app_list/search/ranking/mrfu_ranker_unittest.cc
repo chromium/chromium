@@ -55,6 +55,59 @@ TEST_F(MrfuResultRankerTest, TrainAndRank) {
 
 class MrfuCategoryRankerTest : public RankerTestBase {};
 
+TEST_F(MrfuCategoryRankerTest, DefaultCategoryScores) {
+  MrfuCategoryRanker ranker(MrfuCache::Params(),
+                            MrfuCache::Proto(GetPath(), base::Seconds(0)));
+  Wait();
+
+  ResultsMap results;
+  // The following categories of results have default category scores.
+  results[ResultType::kInstalledApp] =
+      MakeResults({"apps"}, ResultType::kInstalledApp, Category::kApps);
+  results[ResultType::kPlayStoreApp] = MakeResults(
+      {"playstore"}, ResultType::kPlayStoreApp, Category::kPlayStore);
+  results[ResultType::kOsSettings] =
+      MakeResults({"settings"}, ResultType::kOsSettings, Category::kSettings);
+  results[ResultType::kOmnibox] =
+      MakeResults({"omnibox"}, ResultType::kOmnibox, Category::kWeb);
+  results[ResultType::kFileSearch] =
+      MakeResults({"files"}, ResultType::kFileSearch, Category::kFiles);
+  results[ResultType::kKeyboardShortcut] = MakeResults(
+      {"shortcuts"}, ResultType::kKeyboardShortcut, Category::kHelp);
+
+  // The following categories of results do not have default category scores.
+  results[ResultType::kAssistantText] = MakeResults(
+      {"g"}, ResultType::kAssistantText, Category::kSearchAndAssistant);
+  results[ResultType::kArcAppShortcut] =
+      MakeResults({"h"}, ResultType::kArcAppShortcut, Category::kAppShortcuts);
+
+  CategoriesList categories({{.category = Category::kApps},
+                             {.category = Category::kPlayStore},
+                             {.category = Category::kSettings},
+                             {.category = Category::kWeb},
+                             {.category = Category::kFiles},
+                             {.category = Category::kHelp},
+                             {.category = Category::kSearchAndAssistant},
+                             {.category = Category::kAppShortcuts}});
+  ranker.Start(u"query", results, categories);
+  auto scores =
+      ranker.GetCategoryRanks(results, categories, ResultType::kInstalledApp);
+  ASSERT_EQ(scores.size(), 8u);
+
+  // Expect the first six categories of |categories| to be ranked in descending
+  // order.
+  EXPECT_GT(scores[0], scores[1]);
+  EXPECT_GT(scores[1], scores[2]);
+  EXPECT_GT(scores[2], scores[3]);
+  EXPECT_GT(scores[3], scores[4]);
+  EXPECT_GT(scores[4], scores[5]);
+
+  // Expect the remaining two categories to be ranked below the first six. Note
+  // that the default ranking between these two is not defined.
+  EXPECT_GT(scores[5], scores[6]);
+  EXPECT_GT(scores[5], scores[7]);
+}
+
 TEST_F(MrfuCategoryRankerTest, TrainAndRank) {
   MrfuCategoryRanker ranker(MrfuCache::Params(),
                             MrfuCache::Proto(GetPath(), base::Seconds(0)));
