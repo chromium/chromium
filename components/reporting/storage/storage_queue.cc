@@ -859,6 +859,14 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       return;
     }
 
+    // If expected sequencing id is at or beyond the last (empty) file,
+    // we have succeeded - there are no records to upload.
+    if (sequence_info_.sequencing_id() >=
+        storage_queue_->files_.rbegin()->first) {
+      Response(Status::StatusOK());
+      return;
+    }
+
     // Collect and set aside the files in the set that might have data
     // for the Upload.
     files_ =
