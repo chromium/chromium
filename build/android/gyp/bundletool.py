@@ -8,9 +8,10 @@
 Bundletool is distributed as a versioned jar file. This script abstracts the
 location and version of this jar file, as well as the JVM invokation."""
 
+# Warning: Check if still being run as python2: https://crbug.com/1322618
+
 import logging
 import os
-import shlex
 import sys
 
 from util import build_utils
@@ -31,7 +32,7 @@ def RunBundleTool(args, warnings_as_errors=(), print_stdout=False):
   cmd = build_utils.JavaCmd(verify, xmx='4G')
   cmd += ['-jar', BUNDLETOOL_JAR_PATH]
   cmd += args
-  logging.debug('%s', shlex.join(cmd))
+  logging.debug(' '.join(cmd))
   return build_utils.CheckOutput(
       cmd,
       print_stdout=print_stdout,
