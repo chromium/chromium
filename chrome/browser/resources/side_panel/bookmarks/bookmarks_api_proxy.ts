@@ -14,8 +14,7 @@ export interface BookmarksApiProxy {
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
-  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers):
-      void;
+  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers): void;
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
   showContextMenu(id: string, x: number, y: number): void;
 }
@@ -61,8 +60,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
         }));
   }
 
-  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers) {
-    this.handler.openBookmark({url}, depth, clickModifiers);
+  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers) {
+    this.handler.openBookmark(BigInt(id), depth, clickModifiers);
   }
 
   pasteToBookmark(parentId: string, destinationId?: string) {

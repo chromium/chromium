@@ -17,9 +17,9 @@ interface BookmarksPageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface BookmarksPageHandler {
-  // Opens a bookmark by URL and passes the parent folder depth for metrics
-  // collection.
-  OpenBookmark(url.mojom.Url url, int32 parent_folder_depth,
+  // Opens the bookmark specified by node_id and passes the parent folder
+  // depth for metrics collection.
+  OpenBookmark(int64 node_id, int32 parent_folder_depth,
                ui.mojom.ClickModifiers click_modifiers);
 
   // Opens a context menu for a bookmark node. The id parameter is internally

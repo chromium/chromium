@@ -86,7 +86,7 @@ export class BookmarkFolderElement extends PolymerElement {
 
     event.preventDefault();
     event.stopPropagation();
-    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+    this.bookmarksApi_.openBookmark(event.model.item.id!, this.depth, {
       middleButton: true,
       altKey: event.altKey,
       ctrlKey: event.ctrlKey,
@@ -99,7 +99,7 @@ export class BookmarkFolderElement extends PolymerElement {
       event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
-    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+    this.bookmarksApi_.openBookmark(event.model.item.id!, this.depth, {
       middleButton: false,
       altKey: event.altKey,
       ctrlKey: event.ctrlKey,

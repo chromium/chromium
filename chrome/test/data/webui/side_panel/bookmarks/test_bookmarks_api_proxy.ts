@@ -42,8 +42,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve(this.folders_);
   }
 
-  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers) {
-    this.methodCalled('openBookmark', url, depth, clickModifiers);
+  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers) {
+    this.methodCalled('openBookmark', id, depth, clickModifiers);
   }
 
   setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {

@@ -142,9 +142,9 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('OpensBookmark', async () => {
     getChildElements()[1]!.click();
-    const [url, parentFolderDepth] =
+    const [id, parentFolderDepth] =
         await bookmarksApi.whenCalled('openBookmark');
-    assertEquals(folder.children![1]!.url, url);
+    assertEquals(folder.children![1]!.id, id);
     assertEquals(0, parentFolderDepth);
   });
 
