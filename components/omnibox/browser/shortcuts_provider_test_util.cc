@@ -74,18 +74,29 @@ void RunShortcutsProviderTest(
     const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
     std::string expected_top_result,
     std::u16string top_result_inline_autocompletion) {
-  base::RunLoop().RunUntilIdle();
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
+  RunShortcutsProviderTest(provider, input, expected_urls, expected_top_result,
+                           top_result_inline_autocompletion);
+}
+
+void RunShortcutsProviderTest(
+    scoped_refptr<ShortcutsProvider> provider,
+    const AutocompleteInput& input,
+    const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
+    std::string expected_top_result,
+    std::u16string top_result_inline_autocompletion) {
+  base::RunLoop().RunUntilIdle();
   provider->Start(input, false);
   EXPECT_TRUE(provider->done());
 
   ACMatches ac_matches = provider->matches();
 
-  std::string debug = base::StringPrintf(
-      "Input [%s], prevent inline [%d], matches:\n",
-      base::UTF16ToUTF8(text).c_str(), prevent_inline_autocomplete);
+  std::string debug =
+      base::StringPrintf("Input [%s], prevent inline [%d], matches:\n",
+                         base::UTF16ToUTF8(input.text()).c_str(),
+                         input.prevent_inline_autocomplete());
   for (auto match : ac_matches) {
     debug += base::StringPrintf("  URL [%s], default [%d]\n",
                                 match.destination_url.spec().c_str(),

@@ -423,12 +423,19 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
         // is also of the default search provider.
         (input.prefer_keyword() && keyword_matches);
   }
-  // True if input is in keyword mode and the match is a URL suggestion or the
-  // match has a different keyword.
-  bool would_cause_leaving_keyword_mode =
-      input.prefer_keyword() && !(is_search_type && keyword_matches);
 
-  if (!would_cause_leaving_keyword_mode) {
+  const bool match_has_explicit_keyword =
+      !match
+           .GetSubstitutingExplicitlyInvokedKeyword(
+               client_->GetTemplateURLService())
+           .empty();
+
+  // If the input is in keyword mode, don't inline a match without or with a
+  // different keyword. Otherwise, if the input is not in keyword mode, don't
+  // inline a match with a keyword.
+  if (input.prefer_keyword()
+          ? is_search_type && keyword_matches && match_has_explicit_keyword
+          : !match_has_explicit_keyword) {
     if (is_search_type) {
       if (match.fill_into_edit.size() >= input.text().size() &&
           std::equal(match.fill_into_edit.begin(),

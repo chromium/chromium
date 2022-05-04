@@ -70,4 +70,12 @@ void RunShortcutsProviderTest(
     std::string expected_top_result,
     std::u16string top_result_inline_autocompletion);
 
+// Like above, but with a custom `input`.
+void RunShortcutsProviderTest(
+    scoped_refptr<ShortcutsProvider> provider,
+    const AutocompleteInput& input,
+    const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
+    std::string expected_top_result,
+    std::u16string top_result_inline_autocompletion);
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_TEST_UTIL_H_

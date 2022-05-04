@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -39,198 +40,180 @@ using ExpectedURLs = std::vector<ExpectedURLAndAllowedToBeDefault>;
 
 namespace {
 
+// Returns up to 99,999 incrementing GUIDs of the format
+// "BD85DBA2-8C29-49F9-84AE-48E1E_____E0".
+int currentGuid = 0;
+std::string GetGuid() {
+  currentGuid++;
+  DCHECK_LE(currentGuid, 99999);
+  return base::StringPrintf("BD85DBA2-8C29-49F9-84AE-48E1E%05dE0", currentGuid);
+}
+
 struct TestShortcutData shortcut_test_db[] = {
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E0", "goog", "www.google.com",
-     "http://www.google.com/", AutocompleteMatch::DocumentType::NONE, "Google",
-     "0,1,4,0", "Google", "0,3,4,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E1", "slash", "slashdot.org",
-     "http://slashdot.org/", AutocompleteMatch::DocumentType::NONE,
-     "slashdot.org", "0,3,5,1", "Slashdot - News for nerds, stuff that matters",
-     "0,2,5,0", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL,
-     "", 0, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E2", "news", "slashdot.org",
-     "http://slashdot.org/", AutocompleteMatch::DocumentType::NONE,
-     "slashdot.org", "0,1", "Slashdot - News for nerds, stuff that matters",
-     "0,0,11,2,15,0", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_TITLE, "", 0, 5},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E3", "news", "sports.yahoo.com",
-     "http://sports.yahoo.com/", AutocompleteMatch::DocumentType::NONE,
-     "sports.yahoo.com", "0,1",
+    {GetGuid(), "goog", "www.google.com", "http://www.google.com/",
+     AutocompleteMatch::DocumentType::NONE, "Google", "0,1,4,0", "Google",
+     "0,3,4,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL,
+     "", 1, 100},
+    {GetGuid(), "slash", "slashdot.org", "http://slashdot.org/",
+     AutocompleteMatch::DocumentType::NONE, "slashdot.org", "0,3,5,1",
+     "Slashdot - News for nerds, stuff that matters", "0,2,5,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 0, 100},
+    {GetGuid(), "news", "slashdot.org", "http://slashdot.org/",
+     AutocompleteMatch::DocumentType::NONE, "slashdot.org", "0,1",
+     "Slashdot - News for nerds, stuff that matters", "0,0,11,2,15,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_TITLE, "", 0, 5},
+    {GetGuid(), "news", "sports.yahoo.com", "http://sports.yahoo.com/",
+     AutocompleteMatch::DocumentType::NONE, "sports.yahoo.com", "0,1",
      "Yahoo! Sports - Sports News, Scores, Rumors, Fantasy Games, and more",
      "0,0,23,2,27,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 2, 5},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E4", "news weather",
-     "www.cnn.com/index.html", "http://www.cnn.com/index.html",
-     AutocompleteMatch::DocumentType::NONE, "www.cnn.com/index.html", "0,1",
+    {GetGuid(), "news weather", "www.cnn.com/index.html",
+     "http://www.cnn.com/index.html", AutocompleteMatch::DocumentType::NONE,
+     "www.cnn.com/index.html", "0,1",
      "CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video",
      "0,0,19,2,23,0,38,2,45,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 1, 10},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E5", "nhl scores", "sports.yahoo.com",
-     "http://sports.yahoo.com/", AutocompleteMatch::DocumentType::NONE,
-     "sports.yahoo.com", "0,1",
+    {GetGuid(), "nhl scores", "sports.yahoo.com", "http://sports.yahoo.com/",
+     AutocompleteMatch::DocumentType::NONE, "sports.yahoo.com", "0,1",
      "Yahoo! Sports - Sports News, Scores, Rumors, Fantasy Games, and more",
      "0,0,29,2,35,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_BODY, "", 1, 10},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E6", "nhl scores",
-     "www.nhl.com/scores/index.html", "http://www.nhl.com/scores/index.html",
+    {GetGuid(), "nhl scores", "www.nhl.com/scores/index.html",
+     "http://www.nhl.com/scores/index.html",
      AutocompleteMatch::DocumentType::NONE, "www.nhl.com/scores/index.html",
      "0,1,4,3,7,1", "January 13, 2010 - NHL.com - Scores",
      "0,0,19,2,22,0,29,2,35,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_URL, "", 5, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E7", "just", "www.testsite.com/a.html",
+    {GetGuid(), "just", "www.testsite.com/a.html",
      "http://www.testsite.com/a.html", AutocompleteMatch::DocumentType::NONE,
      "www.testsite.com/a.html", "0,1", "Test - site - just a test",
      "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 5, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E8", "just", "www.testsite.com/b.html",
+    {GetGuid(), "just", "www.testsite.com/b.html",
      "http://www.testsite.com/b.html", AutocompleteMatch::DocumentType::NONE,
      "www.testsite.com/b.html", "0,1", "Test - site - just a test",
      "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 5, 2},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E9", "just", "www.testsite.com/c.html",
+    {GetGuid(), "just", "www.testsite.com/c.html",
      "http://www.testsite.com/c.html", AutocompleteMatch::DocumentType::NONE,
      "www.testsite.com/c.html", "0,1", "Test - site - just a test",
      "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 8, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880EA", "just a",
-     "www.testsite.com/d.html", "http://www.testsite.com/d.html",
-     AutocompleteMatch::DocumentType::NONE, "www.testsite.com/d.html", "0,1",
-     "Test - site - just a test", "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
+    {GetGuid(), "just a", "www.testsite.com/d.html",
+     "http://www.testsite.com/d.html", AutocompleteMatch::DocumentType::NONE,
+     "www.testsite.com/d.html", "0,1", "Test - site - just a test",
+     "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 12, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880EB", "just a t",
-     "www.testsite.com/e.html", "http://www.testsite.com/e.html",
-     AutocompleteMatch::DocumentType::NONE, "www.testsite.com/e.html", "0,1",
-     "Test - site - just a test", "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
+    {GetGuid(), "just a t", "www.testsite.com/e.html",
+     "http://www.testsite.com/e.html", AutocompleteMatch::DocumentType::NONE,
+     "www.testsite.com/e.html", "0,1", "Test - site - just a test",
+     "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 12, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880EC", "just a te",
-     "www.testsite.com/f.html", "http://www.testsite.com/f.html",
-     AutocompleteMatch::DocumentType::NONE, "www.testsite.com/f.html", "0,1",
-     "Test - site - just a test", "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
+    {GetGuid(), "just a te", "www.testsite.com/f.html",
+     "http://www.testsite.com/f.html", AutocompleteMatch::DocumentType::NONE,
+     "www.testsite.com/f.html", "0,1", "Test - site - just a test",
+     "0,0,14,2,18,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_TITLE, "", 12, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880ED", "ago",
-     "www.daysagotest.com/a.html", "http://www.daysagotest.com/a.html",
-     AutocompleteMatch::DocumentType::NONE, "www.daysagotest.com/a.html",
-     "0,1,8,3,11,1", "Test - site", "0,0", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880EE", "ago",
-     "www.daysagotest.com/b.html", "http://www.daysagotest.com/b.html",
-     AutocompleteMatch::DocumentType::NONE, "www.daysagotest.com/b.html",
-     "0,1,8,3,11,1", "Test - site", "0,0", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 2, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880EF", "ago",
-     "www.daysagotest.com/c.html", "http://www.daysagotest.com/c.html",
-     AutocompleteMatch::DocumentType::NONE, "www.daysagotest.com/c.html",
-     "0,1,8,3,11,1", "Test - site", "0,0", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 3, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F0", "ago",
-     "www.daysagotest.com/d.html", "http://www.daysagotest.com/d.html",
-     AutocompleteMatch::DocumentType::NONE, "www.daysagotest.com/d.html",
-     "0,1,8,3,11,1", "Test - site", "0,0", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 4, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F2", "abcdef.com", "http://abcdef.com",
-     "http://abcdef.com/", AutocompleteMatch::DocumentType::NONE, "Abcdef",
-     "0,1,4,0", "Abcdef", "0,3,4,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F3", "query", "query",
-     "https://www.google.com/search?q=query",
+    {GetGuid(), "ago", "www.daysagotest.com/a.html",
+     "http://www.daysagotest.com/a.html", AutocompleteMatch::DocumentType::NONE,
+     "www.daysagotest.com/a.html", "0,1,8,3,11,1", "Test - site", "0,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
+    {GetGuid(), "ago", "www.daysagotest.com/b.html",
+     "http://www.daysagotest.com/b.html", AutocompleteMatch::DocumentType::NONE,
+     "www.daysagotest.com/b.html", "0,1,8,3,11,1", "Test - site", "0,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 1},
+    {GetGuid(), "ago", "www.daysagotest.com/c.html",
+     "http://www.daysagotest.com/c.html", AutocompleteMatch::DocumentType::NONE,
+     "www.daysagotest.com/c.html", "0,1,8,3,11,1", "Test - site", "0,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 3, 1},
+    {GetGuid(), "ago", "www.daysagotest.com/d.html",
+     "http://www.daysagotest.com/d.html", AutocompleteMatch::DocumentType::NONE,
+     "www.daysagotest.com/d.html", "0,1,8,3,11,1", "Test - site", "0,0",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 4, 1},
+    {GetGuid(), "abcdef.com", "http://abcdef.com", "http://abcdef.com/",
+     AutocompleteMatch::DocumentType::NONE, "Abcdef", "0,1,4,0", "Abcdef",
+     "0,3,4,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL,
+     "", 1, 100},
+    {GetGuid(), "query", "query", "https://www.google.com/search?q=query",
      AutocompleteMatch::DocumentType::NONE, "query", "0,0", "Google Search",
      "0,4", ui::PAGE_TRANSITION_GENERATED,
      AutocompleteMatchType::SEARCH_HISTORY, "google.com", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F4", "word", "www.word",
-     "https://www.google.com/search?q=www.word",
+    {GetGuid(), "word", "www.word", "https://www.google.com/search?q=www.word",
      AutocompleteMatch::DocumentType::NONE, "www.word", "0,0", "Google Search",
      "0,4", ui::PAGE_TRANSITION_GENERATED,
      AutocompleteMatchType::SEARCH_HISTORY, "google.com", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F5", "about:o", "chrome://omnibox",
-     "chrome://omnibox/", AutocompleteMatch::DocumentType::NONE,
-     "about:omnibox", "0,3,10,1", "", "", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::NAVSUGGEST, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F6", "www/real sp",
-     "http://www/real space/long-url-with-space.html",
+    {GetGuid(), "about:o", "chrome://omnibox", "chrome://omnibox/",
+     AutocompleteMatch::DocumentType::NONE, "about:omnibox", "0,3,10,1", "", "",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::NAVSUGGEST, "", 1, 100},
+    {GetGuid(), "www/real sp", "http://www/real space/long-url-with-space.html",
      "http://www/real%20space/long-url-with-space.html",
      AutocompleteMatch::DocumentType::NONE,
      "www/real space/long-url-with-space.html", "0,3,11,1",
      "Page With Space; Input with Space", "0,0", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F7", "duplicate",
-     "http://duplicate.com", "http://duplicate.com/",
+    {GetGuid(), "duplicate", "http://duplicate.com", "http://duplicate.com/",
      AutocompleteMatch::DocumentType::NONE, "Duplicate", "0,1", "Duplicate",
      "0,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "",
      1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F8", "dupl", "http://duplicate.com",
-     "http://duplicate.com/", AutocompleteMatch::DocumentType::NONE,
-     "Duplicate", "0,1", "Duplicate", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880F9", "notrailing.com/",
-     "http://notrailing.com", "http://notrailing.com/",
-     AutocompleteMatch::DocumentType::NONE, "No Trailing Slash", "0,1",
-     "No Trailing Slash on fill_into_edit", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FA", "http:///foo.com",
-     "http://foo.com", "http://foo.com/", AutocompleteMatch::DocumentType::NONE,
-     "Foo - Typo in Input", "0,1",
+    {GetGuid(), "dupl", "http://duplicate.com", "http://duplicate.com/",
+     AutocompleteMatch::DocumentType::NONE, "Duplicate", "0,1", "Duplicate",
+     "0,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "",
+     1, 100},
+    {GetGuid(), "notrailing.com/", "http://notrailing.com",
+     "http://notrailing.com/", AutocompleteMatch::DocumentType::NONE,
+     "No Trailing Slash", "0,1", "No Trailing Slash on fill_into_edit", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 100},
+    {GetGuid(), "http:///foo.com", "http://foo.com", "http://foo.com/",
+     AutocompleteMatch::DocumentType::NONE, "Foo - Typo in Input", "0,1",
      "Foo - Typo in Input Corrected in fill_into_edit", "0,1",
      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FB", "trailing1 ",
-     "http://trailing1.com", "http://trailing1.com/",
+    {GetGuid(), "trailing1 ", "http://trailing1.com", "http://trailing1.com/",
      AutocompleteMatch::DocumentType::NONE, "Trailing1 - Space in Shortcut",
      "0,1", "Trailing1 - Space in Shortcut", "0,1", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_URL, "", 1, 100},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FC", "about:trailing2 ",
-     "chrome://trailing2blah", "chrome://trailing2blah/",
-     AutocompleteMatch::DocumentType::NONE, "Trailing2 - Space in Shortcut",
-     "0,1", "Trailing2 - Space in Shortcut", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 100},
+    {GetGuid(), "about:trailing2 ", "chrome://trailing2blah",
+     "chrome://trailing2blah/", AutocompleteMatch::DocumentType::NONE,
+     "Trailing2 - Space in Shortcut", "0,1", "Trailing2 - Space in Shortcut",
+     "0,1", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "",
+     1, 100},
 
     // 4 shortcuts to verify aggregating shortcuts.
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FD", "wikipedia", "",
-     "https://wikipedia.org/wilson7", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FE", "wilson7", "",
-     "https://wikipedia.org/wilson7", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 2, 2},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FF", "winston", "",
-     "https://wikipedia.org/winston", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 3},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088100", "wilson7", "",
-     "https://wikipedia.org/wilson7-other",
+    {GetGuid(), "wikipedia", "", "https://wikipedia.org/wilson7",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
+    {GetGuid(), "wilson7", "", "https://wikipedia.org/wilson7",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
+    {GetGuid(), "winston", "", "https://wikipedia.org/winston",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 3},
+    {GetGuid(), "wilson7", "", "https://wikipedia.org/wilson7-other",
      AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
 
     // 7 shortcuts to verify the interaction of the provider limit and
     // aggregating shortcuts.
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088101", "zebra1", "",
-     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088102", "zebra2", "",
-     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 2},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088103", "zebra3", "",
-     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 3},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088104", "zebra4", "",
-     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 4},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088105", "zebra5", "",
-     "https://wikipedia.org/zebra-b", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 6},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088106", "zebra6", "",
-     "https://wikipedia.org/zebra-b", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 4},
-    {"BD85DBA2-8C29-49F9-84AE-48E1E9088107", "zebra7", "",
-     "https://wikipedia.org/zebra-c", AutocompleteMatch::DocumentType::NONE, "",
-     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
-     AutocompleteMatchType::HISTORY_URL, "", 1, 10},
+    {GetGuid(), "zebra1", "", "https://wikipedia.org/zebra-a",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
+    {GetGuid(), "zebra2", "", "https://wikipedia.org/zebra-a",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 2},
+    {GetGuid(), "zebra3", "", "https://wikipedia.org/zebra-a",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 3},
+    {GetGuid(), "zebra4", "", "https://wikipedia.org/zebra-a",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 4},
+    {GetGuid(), "zebra5", "", "https://wikipedia.org/zebra-b",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 6},
+    {GetGuid(), "zebra6", "", "https://wikipedia.org/zebra-b",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 4},
+    {GetGuid(), "zebra7", "", "https://wikipedia.org/zebra-c",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 10},
 };
 
 ShortcutsDatabase::Shortcut MakeShortcut(
@@ -478,6 +461,99 @@ TEST_F(ShortcutsProviderTest, TrickySingleMatch) {
                            u"blah");
 }
 
+TEST_F(ShortcutsProviderTest, SimpleSingleMatchKeyword) {
+  // Add a non-default search engine.
+  TemplateURLData data;
+  data.SetShortName(u"yahoo");
+  data.SetKeyword(u"yahoo.com");
+  data.SetURL("http://www.yahoo.com/{searchTerms}");
+  client_->GetTemplateURLService()->Add(std::make_unique<TemplateURL>(data));
+
+  // Add 4 shortcuts with various keyword states to the db.
+  const auto create_keyword_shortcut =
+      [&](std::string fill_into_edit, std::string keyword,
+          std::string destination_url, bool explicit_keyword,
+          bool search) -> TestShortcutData {
+    const ui::PageTransition transition =
+        explicit_keyword ? ui::PageTransition(ui::PAGE_TRANSITION_TYPED |
+                                              ui::PAGE_TRANSITION_KEYWORD)
+                         : ui::PAGE_TRANSITION_TYPED;
+    return {GetGuid(),
+            fill_into_edit,
+            fill_into_edit,
+            destination_url,
+            AutocompleteMatch::DocumentType::NONE,
+            "",
+            "0,1",
+            "",
+            "0,1",
+            transition,
+            search ? AutocompleteMatchType::SEARCH_HISTORY
+                   : AutocompleteMatchType::HISTORY_URL,
+            keyword,
+            1,
+            10};
+  };
+  TestShortcutData shortcuts[] = {
+      create_keyword_shortcut("yahoo.com explicit keyword", "yahoo.com",
+                              "https://yahoo.com/explicit-keyword", true, true),
+      create_keyword_shortcut("google.com non-explicit keyword", "google.com",
+                              "https://google.com/non-explicit-keyword", false,
+                              true),
+      create_keyword_shortcut("google.com navigation", "",
+                              "https://google.com/navigation", false, false),
+      create_keyword_shortcut("yahoo.com search on google.com", "google.com",
+                              "https://google.com/q=yahoo.com", true, true),
+  };
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       shortcuts, std::size(shortcuts));
+
+  const auto test = [&](const std::u16string text, bool prefer_keyword,
+                        std::string expected_url, bool allowed_to_be_default,
+                        std::u16string expected_autocompletion) {
+    AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_prefer_keyword(prefer_keyword);
+
+    ExpectedURLs expected_urls;
+    expected_urls.push_back(
+        ExpectedURLAndAllowedToBeDefault(expected_url, allowed_to_be_default));
+
+    RunShortcutsProviderTest(provider_, input, expected_urls, expected_url,
+                             expected_autocompletion);
+  };
+
+  // When the input is in keyword mode, a match with the same keyword may be
+  // default.
+  test(u"yahoo.com exp", true, "https://yahoo.com/explicit-keyword", true,
+       u"licit keyword");
+
+  // When the input is in keyword mode, a match with a different keyword can not
+  // be default.
+  test(u"yahoo.com search ", true, "https://google.com/q=yahoo.com", false,
+       u"");
+
+  // When the input is in keyword mode, a match without a keyword can not be
+  // default.
+  test(u"google.com navigat", true, "https://google.com/navigation", false,
+       u"");
+
+  // When the input is in keyword mode, a match with a keyword hint can not be
+  // default.
+  test(u"google.com non-e", true, "https://google.com/non-explicit-keyword",
+       false, u"");
+
+  // When the input is NOT in keyword mode, a match with a keyword can not be
+  // default.
+  test(u"yahoo.com ex", false, "https://yahoo.com/explicit-keyword", false,
+       u"");
+
+  // When the input is NOT in keyword mode, a match with a keyword hint can be
+  // default.
+  test(u"google.com non-ex", false, "https://google.com/non-explicit-keyword",
+       true, u"plicit keyword");
+}
+
 TEST_F(ShortcutsProviderTest, MultiMatch) {
   std::u16string text(u"NEWS");
   ExpectedURLs expected_urls;
@@ -604,21 +680,21 @@ TEST_F(ShortcutsProviderTest, CalculateScore_ShortShortcutText) {
 
 TEST_F(ShortcutsProviderTest, DeleteMatch) {
   TestShortcutData shortcuts_to_test_delete[] = {
-      {"BD85DBA2-8C29-49F9-84AE-48E1E90881F1", "delete", "www.deletetest.com/1",
+      {GetGuid(), "delete", "www.deletetest.com/1",
        "http://www.deletetest.com/1", AutocompleteMatch::DocumentType::NONE,
        "http://www.deletetest.com/1", "0,2", "Erase this shortcut!", "0,0",
        ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
-      {"BD85DBA2-8C29-49F9-84AE-48E1E90881F2", "erase", "www.deletetest.com/1",
+      {GetGuid(), "erase", "www.deletetest.com/1",
        "http://www.deletetest.com/1", AutocompleteMatch::DocumentType::NONE,
        "http://www.deletetest.com/1", "0,2", "Erase this shortcut!", "0,0",
        ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_TITLE, "", 1,
        1},
-      {"BD85DBA2-8C29-49F9-84AE-48E1E90881F3", "keep", "www.deletetest.com/1/2",
+      {GetGuid(), "keep", "www.deletetest.com/1/2",
        "http://www.deletetest.com/1/2", AutocompleteMatch::DocumentType::NONE,
        "http://www.deletetest.com/1/2", "0,2", "Keep this shortcut!", "0,0",
        ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_TITLE, "", 1,
        1},
-      {"BD85DBA2-8C29-49F9-84AE-48E1E90881F4", "delete", "www.deletetest.com/2",
+      {GetGuid(), "delete", "www.deletetest.com/2",
        "http://www.deletetest.com/2", AutocompleteMatch::DocumentType::NONE,
        "http://www.deletetest.com/2", "0,2", "Erase this shortcut!", "0,0",
        ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 1},
