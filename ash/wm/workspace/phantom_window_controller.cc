@@ -30,6 +30,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -308,13 +309,17 @@ void PhantomWindowController::ShowPhantomWidget() {
   phantom_widget_->SetOpacity(0);
   ui::Layer* widget_layer = phantom_widget_->GetLayer();
 
+  // Layer uses bounds in parent so convert from screen bounds.
+  gfx::Rect bounds = target_bounds_in_screen_;
+  wm::ConvertRectFromScreen(phantom_widget_->GetNativeWindow()->parent(),
+                            &bounds);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kScrimEntranceSizeAnimationDurationMs)
-      .SetBounds(widget_layer, target_bounds_in_screen_,
-                 gfx::Tween::ACCEL_20_DECEL_100)
+      .SetBounds(widget_layer, bounds, gfx::Tween::ACCEL_20_DECEL_100)
       .At(base::Seconds(0))
       .SetDuration(kScrimEntranceOpacityAnimationDurationMs)
       .SetOpacity(widget_layer, 1, gfx::Tween::LINEAR);
