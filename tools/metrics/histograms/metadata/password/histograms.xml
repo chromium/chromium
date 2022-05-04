@@ -995,10 +995,9 @@ chromium-metrics-reviews@google.com.
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Count of leaked credentials found when the password bulk check completed
-    successfully (see '.LeaksFoundOnErrorOrCanceled' for non-success cases).
-    Note that this counts unique username+password pairs, so in the case of
-    password reuse, this does not correspond to the number of user-visible
-    credentials.
+    successfully. Note that this counts unique username+password pairs, so in
+    the case of password reuse, this does not correspond to the number of
+    user-visible credentials.
   </summary>
 </histogram>
 
