@@ -481,7 +481,7 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() const {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName()
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfileName()
     const {
   return GetAllProfilesAttributesSorted(true);
 }

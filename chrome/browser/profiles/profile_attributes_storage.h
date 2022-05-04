@@ -79,7 +79,7 @@ class ProfileAttributesStorage
 
   // Returns all non-Guest profile attributes sorted by local profile name.
   std::vector<ProfileAttributesEntry*>
-  GetAllProfilesAttributesSortedByLocalProfilName() const;
+  GetAllProfilesAttributesSortedByLocalProfileName() const;
 
   // Returns a ProfileAttributesEntry with the data for the profile at |path|
   // if the operation is successful. Returns |nullptr| otherwise.

@@ -73,7 +73,7 @@ base::Value ProfileInternalsHandler::GetProfilesList() {
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributesSortedByLocalProfilName();
+          .GetAllProfilesAttributesSortedByLocalProfileName();
   for (const ProfileAttributesEntry* entry : entries) {
     profiles_list.Append(CreateProfileEntry(entry));
   }
