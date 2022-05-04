@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 
+#include <surface-augmenter-client-protocol.h>
+
 #include <utility>
 
 #include "base/bind.h"
@@ -48,6 +50,11 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
 
   wayland_overlay_config->rounded_clip_bounds =
       input.overlay_plane_data.rounded_corners;
+
+  // Solid color quads are created as wl_buffers. Though, some overlays may
+  // have background data passed.
+  if (!input.overlay_plane_data.is_solid_color)
+    wayland_overlay_config->background_color = input.overlay_plane_data.color;
   return wayland_overlay_config;
 }
 }  // namespace mojo
@@ -96,8 +103,7 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_dma_buf,
     bool supports_viewporter,
     bool supports_acquire_fence,
-    bool supports_non_backed_solid_color_buffers,
-    bool supports_subpixel_accurate_position) {
+    uint32_t supported_surface_augmentor_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -107,10 +113,17 @@ void WaylandBufferManagerGpu::Initialize(
   supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
   supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
-  supports_non_backed_solid_color_buffers_ =
-      supports_non_backed_solid_color_buffers;
-  supports_subpixel_accurate_position_ = supports_subpixel_accurate_position;
   supports_dmabuf_ = supports_dma_buf;
+
+  supports_non_backed_solid_color_buffers_ =
+      supported_surface_augmentor_version >=
+      SURFACE_AUGMENTER_CREATE_SOLID_COLOR_BUFFER_SINCE_VERSION;
+  supports_subpixel_accurate_position_ =
+      supported_surface_augmentor_version >=
+      SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+  supports_surface_background_color_ =
+      supported_surface_augmentor_version >=
+      AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION;
 
   BindHostInterface(std::move(remote_host));
 
@@ -272,7 +285,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
       surface_scale_factor, gfx::RectF(bounds_rect),
       gfx::RectF(1.f, 1.f) /* no crop */, damage_region, false,
       1.0f /*opacity*/, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      gfx::RRectF()));
+      gfx::RRectF(), absl::nullopt));
 
   CommitOverlays(widget, frame_id, std::move(overlay_configs));
 }

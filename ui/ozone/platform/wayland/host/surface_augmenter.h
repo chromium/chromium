@@ -36,6 +36,8 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
 
   bool SupportsSubpixelAccuratePosition() const;
 
+  uint32_t GetSurfaceAugmentorVersion() const;
+
   wl::Object<augmented_surface> CreateAugmentedSurface(wl_surface* surface);
   wl::Object<augmented_sub_surface> CreateAugmentedSubSurface(
       wl_subsurface* subsurface);

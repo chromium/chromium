@@ -101,9 +101,9 @@ bool WaylandBufferManagerHost::SupportsNonBackedSolidColorBuffers() const {
   return !!connection_->surface_augmenter();
 }
 
-bool WaylandBufferManagerHost::SupportsSubpixelAccuratePosition() const {
-  return connection_->surface_augmenter() &&
-         connection_->surface_augmenter()->SupportsSubpixelAccuratePosition();
+uint32_t WaylandBufferManagerHost::GetSurfaceAugmentorVersion() const {
+  auto* augmenter = connection_->surface_augmenter();
+  return augmenter ? augmenter->GetSurfaceAugmentorVersion() : 0u;
 }
 
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(

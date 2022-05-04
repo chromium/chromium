@@ -516,8 +516,14 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromTextureQuad(
 
   if (quad->background_color != SK_ColorTRANSPARENT &&
       (quad->background_color != SK_ColorBLACK ||
-       quad->ShouldDrawWithBlending()))
-    return CandidateStatus::kFailBlending;
+       quad->ShouldDrawWithBlending())) {
+    // This path can also be used by other platforms like Ash/Chrome, which does
+    // not support overlays with background color. Only LaCros/Wayland supports
+    // that.
+    if (!is_delegated_context)
+      return CandidateStatus::kFailBlending;
+    candidate->color = quad->background_color;
+  }
 
   candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 

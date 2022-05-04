@@ -8,13 +8,14 @@
 #include <wayland-util.h>
 
 #include "base/logging.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 2;
+constexpr uint32_t kMaxVersion = 3;
 }
 
 // static
@@ -50,8 +51,12 @@ SurfaceAugmenter::SurfaceAugmenter(surface_augmenter* surface_augmenter,
 SurfaceAugmenter::~SurfaceAugmenter() = default;
 
 bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
-  return surface_augmenter_get_version(augmenter_.get()) >=
+  return GetSurfaceAugmentorVersion() >=
          SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+}
+
+uint32_t SurfaceAugmenter::GetSurfaceAugmentorVersion() const {
+  return surface_augmenter_get_version(augmenter_.get());
 }
 
 wl::Object<augmented_surface> SurfaceAugmenter::CreateAugmentedSurface(
@@ -74,15 +79,12 @@ wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(
     const gfx::Size& size) {
   wl_array color_data;
   wl_array_init(&color_data);
-  SkColor4f precise_color = SkColor4f::FromColor(color);
-  for (float component : precise_color.array()) {
-    float* ptr = static_cast<float*>(wl_array_add(&color_data, sizeof(float)));
-    DCHECK(ptr);
-    *ptr = component;
-  }
-
-  return wl::Object<wl_buffer>(surface_augmenter_create_solid_color_buffer(
-      augmenter_.get(), &color_data, size.width(), size.height()));
+  wl::SkColorToWlArray(color, color_data);
+  auto buffer =
+      wl::Object<wl_buffer>(surface_augmenter_create_solid_color_buffer(
+          augmenter_.get(), &color_data, size.width(), size.height()));
+  wl_array_release(&color_data);
+  return buffer;
 }
 
 }  // namespace ui

@@ -58,8 +58,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
       std::move(pending_remote), buffer_formats_with_modifiers,
       supports_dma_buf, buffer_manager_host_->SupportsViewporter(),
       buffer_manager_host_->SupportsAcquireFence(),
-      buffer_manager_host_->SupportsNonBackedSolidColorBuffers(),
-      buffer_manager_host_->SupportsSubpixelAccuratePosition());
+      buffer_manager_host_->GetSurfaceAugmentorVersion());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

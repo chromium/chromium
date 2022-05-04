@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -152,6 +153,11 @@ class WaylandSurface {
   // Sets the rounded clip bounds for this surface.
   void SetRoundedClipBounds(const gfx::RRectF& rounded_clip_bounds);
 
+  // Sets the background color for this surface, which will be blended with the
+  // wl_buffer contents during the compositing step on the Wayland compositor
+  // side.
+  void SetBackgroundColor(absl::optional<SkColor> background_color);
+
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
   void ApplyPendingState();
@@ -235,6 +241,11 @@ class WaylandSurface {
 
     gfx::RRectF rounded_clip_bounds;
     gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kRegular;
+
+    // Optional background color for this surface. This information
+    // can be used by Wayland compositor to correctly display delegated textures
+    // which require background color applied.
+    absl::optional<SkColor> background_color;
   };
 
   // Tracks the last sent src and dst values across wayland protocol s.t. we

@@ -868,7 +868,7 @@ bool WaylandWindow::CommitOverlays(
         root_surface()->buffer_id(), buffer_scale, gfx::RectF(visual_size),
         gfx::RectF(), gfx::Rect(), root_surface()->use_blending(),
         root_surface()->opacity(), gfx::GpuFenceHandle(),
-        gfx::OverlayPriorityHint::kNone, rounded_clip_bounds);
+        gfx::OverlayPriorityHint::kNone, rounded_clip_bounds, absl::nullopt);
   }
 
   frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(

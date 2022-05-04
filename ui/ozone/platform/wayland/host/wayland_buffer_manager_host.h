@@ -66,7 +66,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   bool SupportsAcquireFence() const;
   bool SupportsViewporter() const;
   bool SupportsNonBackedSolidColorBuffers() const;
-  bool SupportsSubpixelAccuratePosition() const;
+  uint32_t GetSurfaceAugmentorVersion() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //

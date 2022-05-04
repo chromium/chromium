@@ -46,6 +46,8 @@ namespace ui {
 
 namespace {
 
+constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
+
 // Fake GLImage that just schedules overlay plane. It must become busy when
 // scheduled and be associated with the swap id to track correct order of swaps
 // and releases of the image.
@@ -186,9 +188,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
         std::move(manager_ptr), kSupportedFormatsWithModifiers,
         /*supports_dma_buf=*/false,
         /*supports_viewporter=*/true,
-        /*supports_acquire_fence=*/false,
-        /*supports_non_backed_solid_color_buffers*/ false,
-        /*supports_subpixel_accurate_position*/ false);
+        /*supports_acquire_fence=*/false, kAugmentedSurfaceNotSupportedVersion);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();

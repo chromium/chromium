@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
@@ -99,6 +100,9 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
 
 // Returns converted SkPath in DIPs from the one in pixels.
 SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale);
+
+// Converts SkColor into wl_array.
+void SkColorToWlArray(const SkColor& color, wl_array& array);
 
 }  // namespace wl
 

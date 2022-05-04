@@ -59,8 +59,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_dma_buf,
       bool supports_viewporter,
       bool supports_acquire_fence,
-      bool supports_non_backed_solid_color_buffers,
-      bool supports_subpixel_accurate_position) override;
+      uint32_t supported_surface_augmentor_version) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -150,6 +149,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   }
   bool supports_subpixel_accurate_position() const {
     return supports_subpixel_accurate_position_;
+  }
+  bool supports_surface_background_color() const {
+    return supports_surface_background_color_;
   }
 
   // Adds a WaylandBufferManagerGpu binding.
@@ -252,6 +254,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // Determines whether subpixel accurate position is supported.
   bool supports_subpixel_accurate_position_ = false;
+
+  // Determines whether background information for surfaces is supported.
+  bool supports_surface_background_color_ = false;
 
   // Determines whether Wayland server supports Wayland protocols that allow to
   // export wl_buffers backed by dmabuf.

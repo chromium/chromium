@@ -95,6 +95,11 @@ bool WaylandOverlayManager::CanHandleCandidate(
   if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
+  if (candidate.background_color.has_value() &&
+      !manager_gpu_->supports_surface_background_color()) {
+    return false;
+  }
+
   if (is_delegated_context_) {
     // Support for subpixel accurate position could be checked in ctor, but the
     // WaylandBufferManagerGpu is not initialized when |this| is created. Thus,
