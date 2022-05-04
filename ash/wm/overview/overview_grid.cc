@@ -34,11 +34,11 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
-#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
@@ -1715,7 +1715,7 @@ void OverviewGrid::CommitNameChanges() {
 
   // The templates grid may not be shown.
   if (desks_templates_grid_widget_)
-    DesksTemplatesNameView::CommitChanges(desks_templates_grid_widget_.get());
+    SavedDeskNameView::CommitChanges(desks_templates_grid_widget_.get());
 }
 
 void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {

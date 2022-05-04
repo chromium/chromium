@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_NAME_VIEW_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_NAME_VIEW_H_
 
 #include <string>
 
@@ -14,21 +14,20 @@
 namespace ash {
 
 // Defines a textfield styled to normally look like a label. Allows modifying
-// the name of its corresponding template.
-class DesksTemplatesNameView : public DesksTextfield {
+// the name of its corresponding saved desk.
+class SavedDeskNameView : public DesksTextfield {
  public:
-  METADATA_HEADER(DesksTemplatesNameView);
+  METADATA_HEADER(SavedDeskNameView);
 
-  DesksTemplatesNameView();
-  DesksTemplatesNameView(const DesksTemplatesNameView&) = delete;
-  DesksTemplatesNameView& operator=(const DesksTemplatesNameView&) = delete;
-  ~DesksTemplatesNameView() override;
+  SavedDeskNameView();
+  SavedDeskNameView(const SavedDeskNameView&) = delete;
+  SavedDeskNameView& operator=(const SavedDeskNameView&) = delete;
+  ~SavedDeskNameView() override;
 
-  static constexpr int kTemplateNameViewHeight = 20;
+  static constexpr int kSavedDeskNameViewHeight = 20;
 
-  // Commits an on-going template name change (if any) by bluring the focus away
-  // from any view on `widget`, where `widget` should be the desks templates
-  // grid widget.
+  // Commits an on-going name change (if any) by bluring the focus away from any
+  // view on `widget`, where `widget` should be the saved desk library widget.
   static void CommitChanges(views::Widget* widget);
 
   const absl::optional<std::u16string> temporary_name() const {
@@ -59,11 +58,11 @@ class DesksTemplatesNameView : public DesksTextfield {
   absl::optional<std::u16string> temporary_name_;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, DesksTextfield)
+BEGIN_VIEW_BUILDER(/* no export */, SavedDeskNameView, DesksTextfield)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/* no export */, ash::DesksTemplatesNameView)
+DEFINE_VIEW_BUILDER(/* no export */, ash::SavedDeskNameView)
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_NAME_VIEW_H_

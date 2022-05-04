@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_name_view.h"
 
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -20,8 +20,8 @@ namespace ash {
 
 namespace {
 
-// The font size increase for the template name view. The default font size is
-// 12, so this will make the template name view font size 16.
+// The font size increase for the name view. The default font size is 12, so
+// this will make the name view font size 16.
 constexpr int kNameFontSizeDeltaDp = 4;
 
 // The distance from between the name view and its associated focus ring.
@@ -48,7 +48,7 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 
 }  // namespace
 
-DesksTemplatesNameView::DesksTemplatesNameView() {
+SavedDeskNameView::SavedDeskNameView() {
   SetFontList(GetFontList().Derive(kNameFontSizeDeltaDp, gfx::Font::NORMAL,
                                    gfx::Font::Weight::MEDIUM));
 
@@ -58,10 +58,10 @@ DesksTemplatesNameView::DesksTemplatesNameView() {
   focus_ring->SetHaloInset(-kFocusRingGapDp);
 }
 
-DesksTemplatesNameView::~DesksTemplatesNameView() = default;
+SavedDeskNameView::~SavedDeskNameView() = default;
 
 // static
-void DesksTemplatesNameView::CommitChanges(views::Widget* widget) {
+void SavedDeskNameView::CommitChanges(views::Widget* widget) {
   // TODO(crbug.com/1277302): Refactor this logic to be shared with
   // `DeskNameView::CommitChanges`.
 #if DCHECK_IS_ON()
@@ -70,36 +70,36 @@ void DesksTemplatesNameView::CommitChanges(views::Widget* widget) {
 
   auto* focus_manager = widget->GetFocusManager();
   focus_manager->ClearFocus();
-  // Avoid having the focus restored to the same `DesksTemplatesNameView` when
+  // Avoid having the focus restored to the same `SavedDeskNameView` when
   // the desks templates grid widget is refocused.
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-void DesksTemplatesNameView::OnContentsChanged() {
+void SavedDeskNameView::OnContentsChanged() {
   PreferredSizeChanged();
 }
 
-gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {
+gfx::Size SavedDeskNameView::CalculatePreferredSize() const {
   const gfx::Size preferred_size = DesksTextfield::CalculatePreferredSize();
   // Use the available width if it is larger than the preferred width.
   const int preferred_width =
       base::clamp(preferred_size.width(), 1, GetAvailableWidth());
-  return gfx::Size(preferred_width, kTemplateNameViewHeight);
+  return gfx::Size(preferred_width, kSavedDeskNameViewHeight);
 }
 
-void DesksTemplatesNameView::OnGestureEvent(ui::GestureEvent* event) {
+void SavedDeskNameView::OnGestureEvent(ui::GestureEvent* event) {
   DesksTextfield::OnGestureEvent(event);
   // Stop propagating this event so that the parent of `this`, which is a button
   // does not get the event.
   event->StopPropagation();
 }
 
-void DesksTemplatesNameView::SetViewName(const std::u16string& name) {
+void SavedDeskNameView::SetViewName(const std::u16string& name) {
   SetText(temporary_name_.value_or(name));
   PreferredSizeChanged();
 }
 
-int DesksTemplatesNameView::GetAvailableWidth() const {
+int SavedDeskNameView::GetAvailableWidth() const {
   auto* parent_view = static_cast<const views::BoxLayoutView*>(parent());
   int available_width = parent_view->width() -
                         parent_view->GetProperty(views::kMarginsKey)->width() -
@@ -117,7 +117,7 @@ int DesksTemplatesNameView::GetAvailableWidth() const {
   return std::max(1, available_width);
 }
 
-BEGIN_METADATA(DesksTemplatesNameView, DesksTextfield)
+BEGIN_METADATA(SavedDeskNameView, DesksTextfield)
 END_METADATA
 
 }  // namespace ash

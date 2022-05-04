@@ -62,7 +62,7 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   void DeleteTemplates(const std::vector<std::string>& uuids);
 
   // Returns true if a template name is being modified using an item view's
-  // `DesksTemplatesNameView` in this grid.
+  // `SavedDeskNameView` in this grid.
   bool IsTemplateNameBeingModified() const;
 
   // Returns the item view associated with `uuid`.

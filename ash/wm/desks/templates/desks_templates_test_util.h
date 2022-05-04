@@ -12,7 +12,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
-#include "ash/wm/desks/templates/desks_templates_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 

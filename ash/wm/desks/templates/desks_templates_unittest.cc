@@ -30,11 +30,11 @@
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
-#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -1004,8 +1004,7 @@ TEST_F(DesksTemplatesTest, SaveTemplateNudgesNameView) {
   ASSERT_EQ(3ul, GetAllEntries().size());
 
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Expect that the last added template item name view has focus.
   EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
@@ -2250,7 +2249,7 @@ TEST_F(DesksTemplatesTest, TemplateNameBounds) {
 
   OpenOverviewAndShowTemplatesGrid();
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(0);
-  DesksTemplatesNameView* name_view = item_view->name_view();
+  SavedDeskNameView* name_view = item_view->name_view();
   const views::Label* time_view =
       DesksTemplatesItemViewTestApi(item_view).time_view();
 
@@ -2286,8 +2285,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
 
   OpenOverviewAndShowTemplatesGrid();
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Test that we can add characters to the name and press enter to save it.
   ClickOnView(name_view);
@@ -2359,8 +2357,7 @@ TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
 
   OpenOverviewAndShowTemplatesGrid();
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Pressing enter with no changes to the text.
   ClickOnView(name_view);
@@ -2399,8 +2396,7 @@ TEST_F(DesksTemplatesTest, TemplateNameTestSpaces) {
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Pressing spacebar does not cause `name_view` to lose focus.
   ClickOnView(name_view);
@@ -2439,8 +2435,7 @@ TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Tab until we focus the name view of the first template item.
   SendKey(ui::VKEY_TAB);
@@ -2472,8 +2467,7 @@ TEST_F(DesksTemplatesTest, EditTemplateNameShutdownNoCrash) {
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Tab until we focus the name view of the first template item.
   SendKey(ui::VKEY_TAB);
@@ -2501,8 +2495,7 @@ TEST_F(DesksTemplatesTest, TemplatesNameHitTest) {
              DeskTemplateType::kTemplate);
 
     OpenOverviewAndShowTemplatesGrid();
-    DesksTemplatesNameView* name_view =
-        GetItemViewFromTemplatesGrid(0)->name_view();
+    SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
     const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
     // Hover to a point just inside main edge. This will cover the case where
     // the hit test logic is inverted.
@@ -3020,8 +3013,7 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   // Only one template left.
   EXPECT_EQ(1ul, desk_model()->GetEntryCount());
   // The Template has been replaced.
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(name_1), name_view->GetText());
   std::vector<const DeskTemplate*> entries = GetAllEntries();
   EXPECT_EQ(uuid_2, entries[0]->uuid());
@@ -3157,8 +3149,7 @@ TEST_F(DesksTemplatesTest, TouchForNameView) {
 
   OpenOverviewAndShowTemplatesGrid();
 
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   ASSERT_FALSE(name_view->HasFocus());
 
   // The name view should receive focus after getting a gesture tap.
@@ -3319,8 +3310,7 @@ TEST_F(DesksTemplatesTest, ClickOrTapToExitGridView) {
   {
     OpenOverviewAndShowTemplatesGrid();
 
-    DesksTemplatesNameView* name_view =
-        GetItemViewFromTemplatesGrid(0)->name_view();
+    SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
     EXPECT_FALSE(name_view->HasFocus());
 
     // The name view should receive focus after getting a mouse click.
@@ -3349,8 +3339,7 @@ TEST_F(DesksTemplatesTest, ClickOrTapToExitGridView) {
   {
     OpenOverviewAndShowTemplatesGrid();
 
-    DesksTemplatesNameView* name_view =
-        GetItemViewFromTemplatesGrid(0)->name_view();
+    SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
     EXPECT_FALSE(name_view->HasFocus());
 
     // The name view should receive focus after getting a gesture tap.
@@ -3485,8 +3474,7 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForDesksTemplatesUI();
   // Newly created template name_view.
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_TRUE(name_view->HasFocus());
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   DeskNameView* desk_name_view =
@@ -3599,8 +3587,7 @@ TEST_F(DesksTemplatesTest, NoSortBeforeNameConfirmed) {
   WaitForDesksTemplatesUI();
 
   // Newly created template name_view.
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_TRUE(name_view->HasFocus());
   ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
   EXPECT_EQ(u"Desk 1", name_view->GetText());
@@ -3683,7 +3670,7 @@ TEST_F(DesksTemplatesTest, AdminTemplate) {
   // Tests that the name is read only and not focusable.
   DesksTemplatesItemView* item_view =
       GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
-  DesksTemplatesNameView* name_view = item_view->name_view();
+  SavedDeskNameView* name_view = item_view->name_view();
   EXPECT_TRUE(name_view->GetReadOnly());
   EXPECT_FALSE(name_view->IsFocusable());
 

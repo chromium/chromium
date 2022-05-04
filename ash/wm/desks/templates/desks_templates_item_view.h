@@ -25,11 +25,11 @@ namespace ash {
 
 class CloseButton;
 class DesksTemplatesIconContainer;
-class DesksTemplatesNameView;
 class PillButton;
+class SavedDeskNameView;
 class ViewShadow;
 
-// A view that represents each individual template item in the desks templates
+// A view that represents each individual saved desk item in the saved desk
 // grid. The view has different shown contents depending on whether the mouse is
 // hovered over it.
 //   _________________________          _________________________
@@ -43,21 +43,21 @@ class ViewShadow;
 //            regular                             hover
 //
 // In the regular view we have the:
-// `name_view_`: top-left: DesksTemplatesNameView: It's an editable textbox that
-// contains the name of the template.
+// `name_view_`: top-left: SavedDeskNameView: It's an editable textbox that
+// contains the name of the saved desk.
 // `time_view_`: middle-left: Label: A label that lets the user know when the
-// template was created.
+// saved desk was created.
 // `icon_container_view_`: bottom-center: DesksTemplatesIconContainer: A
 // container that houses a couple icons/text that give an indication of which
-// apps are part of the template.
+// apps are part of the saved desk.
 // `managed_status_indicator`: top-right: ImageView: A icon that is visible if
-// the template was created by an admin.
+// the saved desk was created by an admin.
 //
 // In the hover view we have the:
 // `delete_button_`: top-right: Button: Shows a confirmation for deleting the
-// template when clicked.
+// saved desk when clicked.
 // `launch_button_`: bottom-center: Button: Launches the apps associated with
-// the template when clicked.
+// the saved desk when clicked.
 //
 // The whole view is also a button which does the same thing as `launch_button_`
 // when clicked.
@@ -74,7 +74,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   ~DesksTemplatesItemView() override;
 
   DeskTemplate* desk_template() const { return desk_template_.get(); }
-  DesksTemplatesNameView* name_view() const { return name_view_; }
+  SavedDeskNameView* name_view() const { return name_view_; }
   const base::GUID uuid() const { return desk_template_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
@@ -83,7 +83,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
                                     bool is_touch);
 
   // Returns true if the template's name is being modified (i.e. the
-  // `DesksTemplatesNameView` has the focus).
+  // `SavedDeskNameView` has the focus).
   bool IsTemplateNameBeingModified() const;
 
   // To prevent duplications when creating template from the same desk, check if
@@ -159,7 +159,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   std::unique_ptr<DeskTemplate> desk_template_;
 
   // Owned by the views hierarchy.
-  DesksTemplatesNameView* name_view_ = nullptr;
+  SavedDeskNameView* name_view_ = nullptr;
   // When template is managed by admin, `time_view_` will display management
   // description instead.
   views::Label* time_view_ = nullptr;
