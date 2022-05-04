@@ -57,12 +57,13 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSyncScreenAccessibilityIdentifier;
   self.titleText =
-      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
+      [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE];
   self.subtitleText =
-      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE];
-  self.secondaryActionString = [self
-      contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
-  self.activateSyncButtonID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
+      [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE];
+  self.secondaryActionString =
+      [self contentTextWithStringID:
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION];
+  self.activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
 
   self.primaryActionString =
       [self contentTextWithStringID:self.activateSyncButtonID];
