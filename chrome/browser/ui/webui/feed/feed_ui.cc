@@ -73,8 +73,6 @@ FeedUI::FeedUI(content::WebUI* web_ui) : ui::MojoBubbleWebUIController(web_ui) {
   // Configurable javascript for prototyping purposes.
   source->AddString("scriptUrl", kWebUiScriptFetchUrl.Get());
 
-  source->AddResourcePath("feed.mojom-webui.js", IDR_FEED_FEED_MOJOM_WEBUI_JS);
-
   // Register the URLDataSource
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source);
