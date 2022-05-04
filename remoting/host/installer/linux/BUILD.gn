@@ -5,6 +5,7 @@
 import("//build/config/zip.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_locales.gni")
+import("//remoting/remoting_options.gni")
 
 build_deb_script = "build_deb.py"
 deb_filename =
@@ -61,7 +62,6 @@ action("remoting_me2me_host_deb_installer") {
 
     # Files to be packaged into the deb.
     "//remoting/host/installer/linux/Xsession",
-    "//remoting/host/installer/linux/chrome-remote-desktop@.service",
     "//remoting/host/installer/linux/is-remoting-session",
     "//remoting/host/linux/configure_url_forwarder.py",
     "//remoting/host/linux/linux_me2me_host.py",
@@ -95,6 +95,15 @@ action("remoting_me2me_host_deb_installer") {
     "-o",
     ".",
   ]
+  if (remoting_use_wayland) {
+    inputs += [
+      "//remoting/host/installer/linux/chrome-remote-desktop-wayland@.service",
+    ]
+    args += [ "--remoting_use_wayland" ]
+  } else {
+    inputs +=
+        [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
+  }
 
   deps = [
     "//remoting/host:remoting_core",
