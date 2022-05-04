@@ -67,9 +67,11 @@ void ShellPopupWrapper::FillAnchorData(
 
 void ShellPopupWrapper::GrabIfPossible(WaylandConnection* connection,
                                        WaylandWindow* parent_window) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(switches::kUseWaylandExplicitGrab))
     return;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
