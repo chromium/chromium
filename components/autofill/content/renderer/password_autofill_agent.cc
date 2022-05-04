@@ -487,7 +487,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     return field.form_control_type == "checkbox";
   };
 
-  for (size_t i = username_index + 1; i <= password_index - 1; ++i) {
+  for (size_t i = username_index + 1; i < password_index; ++i) {
     if (ShouldIgnoreField(form_data.fields[i]))
       continue;
     return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
