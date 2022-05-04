@@ -3088,21 +3088,6 @@
             ]
         }
     ],
-    "DownloadHomeForExternalApp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DownloadHomeForExternalApp"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadLater": [
         {
             "platforms": [

@@ -607,7 +607,7 @@ const base::Feature kDownloadAutoResumptionThrottling{
     "DownloadAutoResumptionThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 extern const base::Feature kDownloadHomeForExternalApp{
-    "DownloadHomeForExternalApp", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DownloadHomeForExternalApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDownloadFileProvider{"DownloadFileProvider",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
