@@ -130,7 +130,6 @@ public class ContextualSearchPanelMetrics {
             }
 
             if (mWasContextualCardsDataShown) {
-                ContextualSearchUma.logContextualCardsResultsSeen(mWasSearchContentViewSeen);
                 EngagementSuppression.registerContextualCardsImpression(mWasSearchContentViewSeen);
             }
             ContextualSearchUma.logCardTagSeen(mWasSearchContentViewSeen, mCardTag);

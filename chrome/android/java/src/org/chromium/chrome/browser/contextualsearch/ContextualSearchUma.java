@@ -1396,16 +1396,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs whether results were seen when Contextual Cards data was shown.
-     * @param wasSeen Whether the search results were seen.
-     */
-    public static void logContextualCardsResultsSeen(boolean wasSeen) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchContextualCardsIntegration.ResultsSeen",
-                wasSeen ? Results.SEEN : Results.NOT_SEEN, Results.NUM_ENTRIES);
-    }
-
-    /**
      * Logs whether a quick action intent resolved to zero, one, or many apps.
      * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
      * @param numMatchingAppsApps The number of apps that the resolved intent matched.
