@@ -6710,6 +6710,25 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Crow.EntryPointShown">
+  <owner>skare@chromium.org</owner>
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    Crow entry point was shown. Note this may be noisy as it is presented
+    alongside other menu items.
+  </description>
+</action>
+
+<action name="Crow.LaunchCustomTab">
+  <owner>skare@chromium.org</owner>
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <description>
+    User launched the Crow custom tab via an entry point.
+  </description>
+</action>
+
 <action name="CryptidRendered">
   <owner>tmartino@chromium.org</owner>
   <description>
@@ -33595,6 +33614,13 @@ should be able to be added at any place in this file.
       label="Users tapped 'Manage Input Methods'"/>
   <affected-action name="ChromeOS.Settings.Languages"/>
   <affected-action name="ChromeOS.Settings.Languages.Browser"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AppMenu" label="via App Menu entry point"/>
+  <suffix name="Feed" label="via Feed entry point"/>
+  <affected-action name="Crow.EntryPointShown"/>
+  <affected-action name="Crow.LaunchCustomTab"/>
 </action-suffix>
 
 </actions>

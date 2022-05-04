@@ -19,6 +19,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
@@ -271,9 +272,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mCrowButton.getPrimaryTextView().setText(mCrowButtonDelegate.getButtonText());
         mCrowButton.setOnClickListener((view) -> {
             if (mTab == null) return;
+            RecordUserAction.record("Crow.LaunchCustomTab.AppMenu");
             Activity activity = mTab.getWindowAndroid().getActivity().get();
             mCrowButtonDelegate.launchCustomTab(activity, mUrl);
         });
+        RecordUserAction.record("Crow.EntryPointShown.AppMenu");
         mCrowButton.setVisibility(View.VISIBLE);
     }
 
