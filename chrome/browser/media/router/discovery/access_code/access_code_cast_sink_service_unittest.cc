@@ -225,7 +225,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // Add a cast sink discovered by access code to the list of routes.
   MediaSinkInternal access_code_sink2 = CreateCastSink(2);
   access_code_sink2.cast_data().discovery_type =
-        CastDiscoveryType::kAccessCodeManualEntry;
+      CastDiscoveryType::kAccessCodeManualEntry;
   MediaRoute media_route_access = CreateRouteForTesting(access_code_sink2);
 
   route_list.push_back(media_route_access);
@@ -374,7 +374,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
   // terminated before the caller is alerted to the successful discovery.
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
   cast_sink1.cast_data().discovery_type =
-        CastDiscoveryType::kAccessCodeManualEntry;
+      CastDiscoveryType::kAccessCodeManualEntry;
 
   MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
 
@@ -579,6 +579,10 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
   const MediaSinkInternal cast_sink2 = CreateCastSink(2);
   const MediaSinkInternal cast_sink3 = CreateCastSink(3);
 
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink2);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink3);
+
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink2);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink3);
@@ -627,6 +631,14 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
                    ->GetDict()
                    .empty());
 
+  // When the network changes, the sinks on that network should be removed.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink2));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink3));
+
   // Connect to a new network with different sinks.
   fake_network_info_.clear();
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
@@ -646,6 +658,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
 
   const MediaSinkInternal cast_sink4 = CreateCastSink(4);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink4);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink4);
 
   FastForwardUiAndIoTasks();
 
@@ -666,6 +679,10 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
       access_code_cast_sink_service_->GetWeakPtr()));
 
   FastForwardUiAndIoTasks();
+
+  // When the network changes, the sinks on that network should be removed.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink4));
 
   // Reconnecting to the previous ethernet network should restore the same sinks
   // from the cache and attempt to resolve them.
@@ -712,6 +729,10 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   const MediaSinkInternal cast_sink2 = CreateCastSink(2);
   const MediaSinkInternal cast_sink3 = CreateCastSink(3);
 
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink2);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink3);
+
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink2);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink3);
@@ -741,6 +762,15 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
 
   FastForwardUiAndIoTasks();
 
+  // When the network changes, the sinks on that network should NOT be removed.
+  // This is a new feature introduced through the saved devices feature
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink2));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink3));
+
   // Connect to a new network with different sinks.
   fake_network_info_.clear();
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
@@ -756,6 +786,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
 
   const MediaSinkInternal cast_sink4 = CreateCastSink(4);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink4);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink4);
 
   FastForwardUiAndIoTasks();
 
@@ -775,6 +806,10 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
       access_code_cast_sink_service_->GetWeakPtr()));
 
   FastForwardUiAndIoTasks();
+
+  // When the network changes, the sinks on that network should be removed.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink4));
 
   // Reconnecting to the previous ethernet network should restore the same sinks
   // from the cache and attempt to resolve them.

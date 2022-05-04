@@ -731,11 +731,28 @@ AccessCodeCastSinkService::ValidateDeviceFromSinkId(
   return media_sink.value();
 }
 
+void AccessCodeCastSinkService::RemoveExistingSinksOnNetwork() {
+  for (auto& sink_id_keypair : current_network_expiration_timers_) {
+    // Must find the sink from media router for removal since it has more total
+    // information.
+    base::PostTaskAndReplyWithResult(
+        cast_media_sink_service_impl_->task_runner().get(), FROM_HERE,
+        base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
+                       base::Unretained(cast_media_sink_service_impl_),
+                       sink_id_keypair.first),
+        base::BindOnce(&AccessCodeCastSinkService::RemoveMediaSinkFromRouter,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 void AccessCodeCastSinkService::OnNetworksChanged(
     const std::string& network_id) {
-  ResetExpirationTimers();
-  pending_expirations_.clear();
-  InitStoredDeviceConnectionsFromNetworkId(network_id);
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
+    RemoveExistingSinksOnNetwork();
+    ResetExpirationTimers();
+    pending_expirations_.clear();
+    InitStoredDeviceConnectionsFromNetworkId(network_id);
+  }
 }
 
 void AccessCodeCastSinkService::Shutdown() {

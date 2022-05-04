@@ -89,6 +89,10 @@ void MediaSinkServiceBase::SetTimerForTest(
   discovery_timer_ = std::move(timer);
 }
 
+void MediaSinkServiceBase::AddSinkForTest(const MediaSinkInternal& sink) {
+  sinks_.insert_or_assign(sink.sink().id(), sink);
+}
+
 void MediaSinkServiceBase::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (discovery_timer_->IsRunning())

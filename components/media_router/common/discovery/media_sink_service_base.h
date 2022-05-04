@@ -83,6 +83,7 @@ class MediaSinkServiceBase {
   const MediaSinkInternal* GetSinkByRoute(const MediaRoute& route) const;
 
   void SetTimerForTest(std::unique_ptr<base::OneShotTimer> timer);
+  void AddSinkForTest(const MediaSinkInternal& sink);
 
  protected:
   // Called when |discovery_timer_| expires. Informs subclass to report device

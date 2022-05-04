@@ -216,6 +216,8 @@ class AccessCodeCastSinkService : public KeyedService,
   absl::optional<const MediaSinkInternal> ValidateDeviceFromSinkId(
       const MediaSink::Id& sink_id);
 
+  void RemoveExistingSinksOnNetwork();
+
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;
 
