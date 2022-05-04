@@ -368,6 +368,7 @@ def _CheckTextAppearance(input_api, output_api):
       'android:fontFamily', 'android:textAllCaps']
   namespace = {'android': 'http://schemas.android.com/apk/res/android'}
   errors = []
+  differences = False
   for f in IncludedFiles(input_api):
     try:
       root = ET.fromstring(input_api.ReadFile(f))
@@ -398,17 +399,19 @@ def _CheckTextAppearance(input_api, output_api):
           errors.append('  %s:%d contains attribute %s\n    \t%s' % (
               f.LocalPath(), line_number+1, attribute, line.strip()))
           style_count += 1
+          if f.ChangedContents():
+            differences = True
         # Error for text attributes in layout.
         if widget_count > 0 and attribute in line:
           errors.append('  %s:%d contains attribute %s\n    \t%s' % (
               f.LocalPath(), line_number+1, attribute, line.strip()))
           widget_count -= 1
+          if f.ChangedContents():
+            differences = True
   # TODO(huayinz): Change the path on the error message to the corresponding
   # styles.xml when this check applies to all resource directories.
   if errors:
-    return [
-        output_api.PresubmitError(
-            '''
+    message = ('''
   Android Text Appearance Check failed:
     Your modified files contain Android text attributes defined outside
     text appearance styles, listed below.
@@ -438,8 +441,13 @@ def _CheckTextAppearance(input_api, output_api):
     Please contact arminaforoughi@chromium.org for UX approval, and
     src/chrome/android/java/res/OWNERS for questions.
     See https://crbug.com/775198 for more information.
-  ''', errors)
-    ]
+  ''')
+    if differences:
+      return [output_api.PresubmitError(message, errors)]
+    else:
+      # Report a warning instead of an error when running "presubmit --all" or
+      # "presubmit --files" so that these can run error free.
+      return [output_api.PresubmitPromptWarning(message, errors)]
   return []
 
 
