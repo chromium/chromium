@@ -403,10 +403,10 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
   // Report metrics for async document parsing or forced synchronous parsing.
-  // The document must be main frame to meet UKM requirements, and must have a
-  // high resolution clock for high quality data.
-  if (sync_policy == kAllowDeferredParsing && document.GetFrame() &&
-      document.GetFrame()->IsMainFrame() &&
+  // The document must be outermost main frame to meet UKM requirements, and
+  // must have a high resolution clock for high quality data.
+  if (sync_policy == kAllowDeferredParsing &&
+      document.IsInOutermostMainFrame() &&
       base::TimeTicks::IsHighResolution()) {
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
@@ -1311,10 +1311,10 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
 }
 
 std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
-  bool is_main_frame = GetDocument() && GetDocument()->GetFrame() &&
-                       GetDocument()->GetFrame()->IsMainFrame();
+  bool is_outermost_main_frame =
+      GetDocument() && GetDocument()->IsInOutermostMainFrame();
   bool have_seen_first_byte = task_runner_state_->SeenFirstByte();
-  return base::StrCat({is_main_frame ? ".MainFrame" : ".Subframe",
+  return base::StrCat({is_outermost_main_frame ? ".MainFrame" : ".Subframe",
                        have_seen_first_byte ? ".NonInitial" : ".Initial"});
 }
 
