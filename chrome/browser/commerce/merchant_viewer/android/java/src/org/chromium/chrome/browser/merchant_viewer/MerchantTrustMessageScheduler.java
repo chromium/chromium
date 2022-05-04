@@ -67,7 +67,7 @@ public class MerchantTrustMessageScheduler {
                             mTabSupplier.get().getWebContents())) {
                 mMetrics.startRecordingMessageImpact(messageContext.getHostName(), starRating);
                 if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
-                    messageEnqueuedCallback.onResult(null);
+                    messageEnqueuedCallback.onResult(messageContext);
                     // TODO(crbug.com/1298610): Use a new message clear reason.
                     clearScheduledMessage(MessageClearReason.UNKNOWN);
                 } else {
