@@ -1881,6 +1881,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
+    expires_after="2023-01-01">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Pumpkin installation is triggered when one of the features using Pumpkin
+    (currently the only feature using Pumpkin is Dictation) are enabled. This
+    histogram is recorded once when Pumpkin installation finishes with either
+    success or failure.
+  </summary>
+</histogram>
+
 <histogram name="SodaInstaller.BinaryInstallationFailureTime" units="ms"
     expires_after="2023-01-01">
   <owner>abigailbklein@google.com</owner>

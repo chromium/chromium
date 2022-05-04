@@ -4022,6 +4022,7 @@ source_set("unit_tests") {
 
   sources = [
     # TODO(lukasza): Move Drive tests outside of CrOS (crbug.com/498951).
+    "../ash/accessibility/pumpkin_installer_unittest.cc",
     "../ash/account_manager/account_apps_availability_unittest.cc",
     "../ash/account_manager/account_manager_edu_coexistence_controller_unittest.cc",
     "../ash/android_sms/android_sms_app_manager_impl_unittest.cc",
