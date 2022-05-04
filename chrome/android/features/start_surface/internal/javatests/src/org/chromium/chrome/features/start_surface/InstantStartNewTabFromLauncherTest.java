@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -156,18 +157,16 @@ public class InstantStartNewTabFromLauncherTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
-        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
-        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
+        waitForView(withId(R.id.search_box_text));
+        TextView urlBar = cta.findViewById(R.id.url_bar);
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
+        waitForView(withId(R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-        assertEquals(cta.findViewById(org.chromium.chrome.start_surface.R.id.toolbar_buttons)
-                             .getVisibility(),
-                View.INVISIBLE);
+        assertEquals(cta.findViewById(R.id.toolbar_buttons).getVisibility(), View.INVISIBLE);
         ToolbarDataProvider toolbarDataProvider =
                 cta.getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {

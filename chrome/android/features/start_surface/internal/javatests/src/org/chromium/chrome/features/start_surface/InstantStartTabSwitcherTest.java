@@ -59,6 +59,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -415,9 +416,7 @@ public class InstantStartTabSwitcherTest {
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.start_surface.R.id.feed_stream_recycler_view),
-                        isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
 
         // Rotate to landscape mode.
         ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
@@ -526,11 +525,10 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
         // Create a new search result tab by perform a query search in fake box.
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+        onViewWaiting(withId(R.id.search_box_text))
                 .check(matches(isCompletelyDisplayed()))
                 .perform(replaceText("test"));
-        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
-                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         StartSurfaceTestUtils.pressHome();

@@ -341,6 +341,7 @@ android_library("chrome_java") {
     "//cc:cc_java",
     "//chrome/android/features/keyboard_accessory:public_java",
     "//chrome/android/features/start_surface:public_java",
+    "//chrome/android/features/start_surface/internal:java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
@@ -632,6 +633,7 @@ android_library("chrome_java") {
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     "//third_party/androidx:androidx_viewpager_viewpager_java",
     "//third_party/blink/public:blink_headers_java",
@@ -713,6 +715,15 @@ android_library("chrome_java") {
   ]
 
   processor_args_javac = [ "dagger.fastInit=enabled" ]
+
+  if (!is_java_debug) {
+    if (!defined(proguard_configs)) {
+      proguard_configs = []
+    }
+    proguard_enabled = true
+    proguard_configs +=
+        [ "//chrome/android/features/start_surface/internal/proguard.flags" ]
+  }
 
   resources_package = "org.chromium.chrome"
 
@@ -946,7 +957,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/android/features/android_library_factory:junit_tests",
     "//chrome/android/features/keyboard_accessory:internal_java",
     "//chrome/android/features/start_surface:public_java",
-    "//chrome/android/features/start_surface/internal:java",
     "//chrome/android/features/tab_ui:java",
     "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/webapk/libs/client:client_java",
@@ -1353,7 +1363,6 @@ android_library("chrome_test_java") {
     "//cc:cc_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/start_surface:public_java",
-    "//chrome/android/features/start_surface/internal:java",
     "//chrome/android/features/start_surface/internal:java_resources",
     "//chrome/android/features/tab_ui:java",
     "//chrome/android/features/tab_ui:java_resources",

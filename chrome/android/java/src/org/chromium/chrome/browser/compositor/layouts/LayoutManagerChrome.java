@@ -30,13 +30,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -109,11 +108,8 @@ public class LayoutManagerChrome
         if (createOverviewLayout) {
             if (startSurface != null) {
                 assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
-                TabManagementDelegate tabManagementDelegate =
-                        TabManagementModuleProvider.getDelegate();
-                assert tabManagementDelegate != null;
 
-                mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(context, this,
+                mOverviewLayout = StartSurfaceDelegate.createStartSurfaceLayout(context, this,
                         renderHost, startSurface, jankTracker, startSurfaceScrimAnchor,
                         scrimCoordinator);
 

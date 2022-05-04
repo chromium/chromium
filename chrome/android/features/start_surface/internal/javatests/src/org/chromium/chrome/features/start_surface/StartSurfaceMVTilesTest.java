@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -219,7 +220,7 @@ public class StartSurfaceMVTilesTest {
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.primary_tasks_surface_view));
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(startSurfaceCoordinator.isMVTilesInitializedForTesting());
         });
@@ -376,18 +377,17 @@ public class StartSurfaceMVTilesTest {
     /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */
     private View waitForSnackbar() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        final String expectedSnackbarMessage = cta.getResources().getString(
-                org.chromium.chrome.start_surface.R.string.most_visited_item_removed);
+        final String expectedSnackbarMessage =
+                cta.getResources().getString(R.string.most_visited_item_removed);
         CriteriaHelper.pollUiThread(() -> {
             SnackbarManager snackbarManager = cta.getSnackbarManager();
             Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
-            TextView snackbarMessage =
-                    cta.findViewById(org.chromium.chrome.start_surface.R.id.snackbar_message);
+            TextView snackbarMessage = cta.findViewById(R.id.snackbar_message);
             Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
             Criteria.checkThat(
                     snackbarMessage.getText().toString(), Matchers.is(expectedSnackbarMessage));
         });
 
-        return cta.findViewById(org.chromium.chrome.start_surface.R.id.snackbar_button);
+        return cta.findViewById(R.id.snackbar_button);
     }
 }

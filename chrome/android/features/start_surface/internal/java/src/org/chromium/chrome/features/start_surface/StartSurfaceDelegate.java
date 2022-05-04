@@ -37,6 +37,17 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** StartSurfaceDelegate. */
 public class StartSurfaceDelegate {
+    /**
+     * Create the {@link StartSurfaceLayout}.
+     * @param context The current Android's context.
+     * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param renderHost The parent {@link LayoutRenderHost}.
+     * @param startSurface The {@link StartSurface} the layout should own.
+     * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
+     *         when overview is visible.
+     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
+     * @return The {@link StartSurfaceLayout}.
+     */
     public static Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker,
             ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
@@ -44,7 +55,37 @@ public class StartSurfaceDelegate {
                 startSurfaceScrimAnchor, scrimCoordinator);
     }
 
-    /** {@see StartSurfaceCoordinator} */
+    /**
+     * Create the {@link StartSurfaceCoordinator}
+     * @param activity The {@link Activity} creates this {@link StartSurface}.
+     * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
+     * @param sheetController A {@link BottomSheetController} to show content in the bottom sheet.
+     * @param startSurfaceOneshotSupplier Supplies the {@link StartSurface}, passing the owned
+     *         supplier to StartSurface itself.
+     * @param parentTabSupplier A {@link Supplier} to provide parent tab for
+     *         StartSurface.
+     * @param hadWarmStart Whether the activity had a warm start because the native library was
+     *         already fully loaded and initialized
+     * @param windowAndroid An instance of a {@link WindowAndroid}
+     * @param containerView The container {@link ViewGroup} for this ui, also the root view for
+     *         StartSurface.
+     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
+     * @param tabModelSelector Gives access to the current set of {@TabModel}.
+     * @param browserControlsManager Manages the browser controls.
+     * @param snackbarManager Manages the display of snackbars.
+     * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
+     * @param omniboxStubSupplier Supplies the {@link OmniboxStub}.
+     * @param tabContentManager Gives access to the tab content.
+     * @param modalDialogManager Manages the display of modal dialogs.
+     * @param chromeActivityNativeDelegate Delegate for native initialization.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param tabCreatorManager Manages creation of tabs.
+     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
+     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
+     * @param jankTracker Measures jank while tab switcher is visible.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @return the {@link StartSurface}
+     */
     public static StartSurface createStartSurface(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull BottomSheetController sheetController,

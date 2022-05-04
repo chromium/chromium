@@ -13,8 +13,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
-import org.chromium.chrome.start_surface.R;
 
 /** The coordinator to control the feed placeholder view. */
 public class FeedPlaceholderCoordinator {

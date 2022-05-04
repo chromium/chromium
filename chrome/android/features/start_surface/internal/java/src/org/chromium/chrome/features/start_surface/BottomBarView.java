@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.chrome.start_surface.R;
+import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** The bottom bar view. */

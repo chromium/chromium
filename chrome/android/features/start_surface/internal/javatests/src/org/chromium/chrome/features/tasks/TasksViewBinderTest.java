@@ -50,8 +50,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
-import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;

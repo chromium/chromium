@@ -428,9 +428,7 @@ public class InstantStartTest {
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.start_surface.R.id.feed_stream_recycler_view),
-                        isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
 
         cta.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> {

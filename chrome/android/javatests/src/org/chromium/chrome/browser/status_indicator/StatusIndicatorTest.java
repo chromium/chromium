@@ -206,8 +206,7 @@ public class StatusIndicatorTest {
         // clang-format on
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
-        onView(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.secondary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         Assert.assertFalse("Wrong initial composited view visibility.",
@@ -226,7 +225,7 @@ public class StatusIndicatorTest {
 
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
-        onView(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view))
+        onView(withId(R.id.secondary_tasks_surface_view))
                 .check(matches(
                         withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
 
@@ -238,7 +237,7 @@ public class StatusIndicatorTest {
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
-        onView(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view))
+        onView(withId(R.id.secondary_tasks_surface_view))
                 .check(matches(
                         withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
 
@@ -250,7 +249,7 @@ public class StatusIndicatorTest {
 
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
-        onView(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view))
+        onView(withId(R.id.secondary_tasks_surface_view))
                 .check(matches(
                         withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
     }

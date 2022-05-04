@@ -928,7 +928,7 @@ public class TabGridDialogTest {
         // Tab switcher is created, and the dummy signal to hide dialog is sent. This line would
         // crash if the dummy signal is not properly handled. See crbug.com/1096358.
         enterTabSwitcher(cta);
-        onView(allOf(withParent(withId(org.chromium.chrome.start_surface.R.id.tasks_surface_body)),
+        onView(allOf(withParent(withId(org.chromium.chrome.R.id.tasks_surface_body)),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(mActivityTestRule.getActivity()));
@@ -968,7 +968,7 @@ public class TabGridDialogTest {
 
         // Test undo closure in dialog from StartSurface tab switcher.
         enterTabSwitcher(cta);
-        onView(allOf(withParent(withId(org.chromium.chrome.start_surface.R.id.tasks_surface_body)),
+        onView(allOf(withParent(withId(org.chromium.chrome.R.id.tasks_surface_body)),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
@@ -980,9 +980,8 @@ public class TabGridDialogTest {
 
         // Test undo closure in dialog from StartSurface home page.
         clickScrimToExitDialog(cta);
-        onView(withId(org.chromium.chrome.start_surface.R.id.new_tab_button)).perform(click());
-        onView(allOf(withParent(withId(org.chromium.chrome.start_surface.R.id
-                                               .carousel_tab_switcher_container)),
+        onView(withId(R.id.new_tab_button)).perform(click());
+        onView(allOf(withParent(withId(org.chromium.chrome.R.id.carousel_tab_switcher_container)),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
