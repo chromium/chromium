@@ -1510,13 +1510,12 @@ gfx::Transform ScreenSpaceTransform(const LayerImpl* layer,
 void UpdatePageScaleFactor(PropertyTrees* property_trees,
                            TransformNode* page_scale_node,
                            float page_scale_factor) {
-  // TODO(wjmaclean): Once Issue #845097 is resolved, we can change the nullptr
-  // check below to a DCHECK.
   if (property_trees->transform_tree().page_scale_factor() ==
-          page_scale_factor ||
-      !page_scale_node) {
+      page_scale_factor) {
     return;
   }
+
+  DCHECK(page_scale_node);
 
   property_trees->transform_tree_mutable().set_page_scale_factor(
       page_scale_factor);

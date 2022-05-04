@@ -4151,8 +4151,6 @@ LayerTreeHostImpl::ProcessCompositorDeltas() {
   commit_data->is_scroll_active =
       input_delegate_ && GetInputHandler().IsCurrentlyScrolling();
   // We should never process non-unit page_scale_delta for an OOPIF subframe.
-  // TODO(wjmaclean): Remove this DCHECK as a pre-condition to closing the bug.
-  // https://crbug.com/845097
   DCHECK(!settings().is_layer_tree_for_subframe ||
          commit_data->page_scale_delta == 1.f);
   commit_data->top_controls_delta =
