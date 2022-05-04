@@ -447,17 +447,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.BlobItemSize.File.Unknown" enum="BooleanUnknown"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    True if the file size on blob append is unknown (which means the full file),
-    or false if a specific file length was populated. Recorded in
-    BlobStorageContext when we are adding a file item to a blob.
-  </summary>
-</histogram>
-
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>

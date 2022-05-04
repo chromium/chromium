@@ -143,7 +143,6 @@ BlobDataBuilder::FutureFile BlobDataBuilder::AppendFutureFile(
   total_size_ += length;
   transport_quota_needed_ += length;
   found_file_transport_ = true;
-  UMA_HISTOGRAM_BOOLEAN("Storage.BlobItemSize.File.Unknown", false);
 
   return FutureFile(std::move(item));
 }
@@ -162,8 +161,6 @@ void BlobDataBuilder::AppendFile(const FilePath& file_path,
   items_.push_back(std::move(shareable_item));
 
   total_size_ += length;
-  bool unknown_size = length == blink::BlobUtils::kUnknownSize;
-  UMA_HISTOGRAM_BOOLEAN("Storage.BlobItemSize.File.Unknown", unknown_size);
 }
 
 void BlobDataBuilder::AppendBlob(const std::string& uuid,
