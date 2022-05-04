@@ -1811,6 +1811,9 @@ extern const char kFeedStampDescription[];
 extern const char kGridTabSwitcherForTabletsName[];
 extern const char kGridTabSwitcherForTabletsDescription[];
 
+extern const char kInfoCardAcknowledgementTrackingName[];
+extern const char kInfoCardAcknowledgementTrackingDescription[];
+
 extern const char kInstanceSwitcherName[];
 extern const char kInstanceSwitcherDescription[];
 

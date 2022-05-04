@@ -3630,6 +3630,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "info-card-acknowledgement-tracking",
+    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "initial-navigation-entry",
     "owners": [ "rakina", "chrome-security-architecture@google.com" ],
     "expiry_milestone": 105

@@ -108,6 +108,9 @@ std::string GetFeedReferrerUrl();
 // Personalize feed for unsigned users.
 extern const base::Feature kPersonalizeFeedUnsignedUsers;
 
+// Feature that enables tracking the acknowledgement state for the info cards.
+extern const base::Feature kInfoCardAcknowledgementTracking;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

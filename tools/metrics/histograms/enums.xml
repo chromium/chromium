@@ -54019,6 +54019,7 @@ from previous Chrome versions.
   <int value="-1071043945" label="VerticalSnap:enabled"/>
   <int value="-1069628248" label="OmniboxZeroSuggestionsOnSERP:enabled"/>
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
+  <int value="-1068278508" label="InfoCardAcknowledgementTracking:disabled"/>
   <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
@@ -54907,6 +54908,7 @@ from previous Chrome versions.
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
   <int value="-482188490" label="ImpulseScrollAnimations:disabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
+  <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
   <int value="-475049740" label="disable-vr-shell"/>

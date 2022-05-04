@@ -251,5 +251,20 @@ TEST(ProtoUtilTest, ReadLaterDisabled) {
               Not(Contains((feedwire::Capability::READ_LATER))));
 }
 
+TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kInfoCardAcknowledgementTracking}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(
+      request.client_capability(),
+      Contains(feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING));
+}
+
 }  // namespace
 }  // namespace feed
