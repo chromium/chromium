@@ -154,7 +154,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
     NSDictionary* textAttributes = @{
       NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
       NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
       NSParagraphStyleAttributeName : paragraphStyle
     };
 

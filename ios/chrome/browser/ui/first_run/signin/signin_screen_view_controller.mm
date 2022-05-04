@@ -51,7 +51,7 @@ NSDictionary* FooterTextAttributes() {
   return @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
     NSParagraphStyleAttributeName : paragraph_style
   };
 }
