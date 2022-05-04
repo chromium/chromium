@@ -1074,7 +1074,8 @@ void ListBoxSelectType::ScrollToOptionTask() {
   // OptionRemoved() makes sure option_to_scroll_to_ doesn't have an option
   // with another owner.
   DCHECK_EQ(option->OwnerSelectElement(), select_);
-  select_->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
+  select_->GetDocument().UpdateStyleAndLayoutForNode(
+      select_, DocumentUpdateReason::kScroll);
   if (!select_->GetLayoutObject())
     return;
   PhysicalRect bounds = option->BoundingBoxForScrollIntoView();
