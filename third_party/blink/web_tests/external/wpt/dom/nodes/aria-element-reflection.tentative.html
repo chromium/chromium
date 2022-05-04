@@ -164,6 +164,7 @@
   <script>
 
   test(function(t) {
+    const contentAttrElement = document.getElementById("contentAttrElement");
     const idlAttrElement = document.getElementById("idlAttrElement");
 
     assert_equals(deletionParent.getAttribute("aria-activedescendant"), "contentAttrElement");
@@ -705,6 +706,24 @@
       assert_equals(originalDocumentDiv.ariaActiveDescendantElement, newDocSpan, "Implementation defined: moving object back *may* make reference visible.");
       assert_equals(fromDiv.getAttribute("aria-activedescendant"), "", "Invalid scope when set, so content attribute not set.");
     }, "Cross-document references and moves.");
+  </script>
+
+
+  <script>
+    test(function(t) {
+      const otherDoc = document.implementation.createHTMLDocument('otherDoc');
+      const otherDocDiv = otherDoc.createElement('div');
+      const otherDocSpan = otherDoc.createElement('span');
+      otherDocDiv.appendChild(otherDocSpan);
+      otherDoc.body.appendChild(otherDocDiv);
+
+      otherDocDiv.ariaActiveDescendantElement = otherDocSpan;
+      assert_equals(otherDocDiv.ariaActiveDescendantElement, otherDocSpan, "Setting reference on a different document.");
+
+      // Adopt element from other oducment.
+      document.body.appendChild(document.adoptNode(otherDocDiv));
+      assert_equals(otherDocDiv.ariaActiveDescendantElement, otherDocSpan, "Reference should be kept on the new document too.");
+    }, "Adopting element keeps references.");
   </script>
 
   <!-- TODO(chrishall): add additional GC test covering:
