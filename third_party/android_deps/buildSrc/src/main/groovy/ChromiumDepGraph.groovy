@@ -162,7 +162,7 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE.txt',
             licenseName: 'BSD'),
         org_jsoup_jsoup: new PropertyOverride(
-            cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.2',
+            cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
             licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
             licenseName: 'The MIT License'),
         org_ow2_asm_asm: new PropertyOverride(

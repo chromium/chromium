@@ -2417,6 +2417,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework',
+              'version': 'version:2@3.1.2.cr1',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/libs/com_google_android_datatransport_transport_api': {
       'packages': [
           {
@@ -3088,6 +3099,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/libs/com_google_protobuf_protobuf_lite': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_google_protobuf_protobuf_lite',
+              'version': 'version:2@3.0.1.cr1',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/libs/com_googlecode_java_diff_utils_diffutils': {
       'packages': [
           {
@@ -3253,6 +3275,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/libs/org_hamcrest_hamcrest': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/org_hamcrest_hamcrest',
+              'version': 'version:2@2.2.cr1',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/libs/org_jetbrains_annotations': {
       'packages': [
           {
@@ -3268,7 +3301,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib',
-              'version': 'version:2@1.6.20.cr1',
+              'version': 'version:2@1.6.21.cr1',
           },
       ],
       'condition': 'checkout_android',
@@ -3279,7 +3312,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_common',
-              'version': 'version:2@1.6.20.cr1',
+              'version': 'version:2@1.6.21.cr1',
           },
       ],
       'condition': 'checkout_android',
@@ -3335,6 +3368,17 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_metadata_jvm',
               'version': 'version:2@0.1.0.cr1',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/android_deps/libs/org_jsoup_jsoup': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/org_jsoup_jsoup',
+              'version': 'version:2@1.14.3.cr1',
           },
       ],
       'condition': 'checkout_android',
