@@ -110,15 +110,15 @@ bool ParseCodecString(const String& codec_string,
   return true;
 }
 
-VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config,
-                               ExceptionState& exception_state) {
+VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   VideoDecoderConfig* copy = VideoDecoderConfig::Create();
   copy->setCodec(config.codec());
 
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
     if (!desc_wrapper.data()) {
-      exception_state.ThrowTypeError("description is detached.");
+      // Checked by IsValidVideoDecoderConfig.
+      NOTREACHED();
       return nullptr;
     }
     DOMArrayBuffer* buffer_copy =
@@ -264,73 +264,66 @@ VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
 ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
                                               const VideoDecoderConfig* config,
                                               ExceptionState& exception_state) {
+  // Run the "check if a config is a valid VideoDecoderConfig" algorithm.
   String js_error_message;
   absl::optional<media::VideoType> video_type =
       IsValidVideoDecoderConfig(*config, &js_error_message /* out */);
-
   if (!video_type) {
     exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
-  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config);
+  // Run the "Clone Configuration" algorithm.
+  auto* config_copy = CopyConfig(*config);
 
-  if (hw_pref == HardwarePreference::kPreferHardware)
-    return IsAcceleratedConfigSupported(script_state, config, exception_state);
-
-  // Accept all supported configs if we are not requiring hardware only.
+  // Run the "Check Configuration Support" algorithm.
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
-  support->setSupported(media::IsSupportedVideoType(*video_type));
-
-  auto* config_copy = CopyConfig(*config, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-
   support->setConfig(config_copy);
 
-  return ScriptPromise::Cast(
-      script_state, ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-                        .ToLocalChecked());
-}
+  if (!media::IsSupportedVideoType(*video_type)) {
+    support->setSupported(false);
+    return ScriptPromise::Cast(
+        script_state,
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
+            .ToLocalChecked());
+  }
 
-ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
-    ScriptState* script_state,
-    const VideoDecoderConfig* config,
-    ExceptionState& exception_state) {
-  String js_error_message;
-  DCHECK(IsValidVideoDecoderConfig(*config, &js_error_message));
-
+  // Check that we can make a media::VideoDecoderConfig. The |js_error_message|
+  // is ignored, we report only via |support.supported|.
   absl::optional<MediaConfigType> media_config;
-
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc;
-  media_config = MakeMediaVideoDecoderConfig(*config, h264_converter, h264_avcc,
-                                             &js_error_message);
+  media_config = MakeMediaVideoDecoderConfig(*config_copy, h264_converter,
+                                             h264_avcc, &js_error_message);
 #else
-  media_config = MakeMediaVideoDecoderConfig(*config, &js_error_message);
+  media_config = MakeMediaVideoDecoderConfig(*config_copy, &js_error_message);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
   if (!media_config) {
-    exception_state.ThrowTypeError(js_error_message);
-    return ScriptPromise();
+    support->setSupported(false);
+    return ScriptPromise::Cast(
+        script_state,
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
+            .ToLocalChecked());
   }
 
-  auto* config_copy = CopyConfig(*config, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
+  // If hardware is preferred, asynchronously check for a hardware decoder.
+  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config_copy);
+  if (hw_pref == HardwarePreference::kPreferHardware) {
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromise promise = resolver->Promise();
+    RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
+        &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
+        std::make_unique<MediaConfigType>(*media_config),
+        WrapCrossThreadPersistent(resolver)));
+    return promise;
+  }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  VideoDecoderSupport* support = VideoDecoderSupport::Create();
-  support->setConfig(config_copy);
-
-  RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
-      &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
-      std::make_unique<MediaConfigType>(*media_config),
-      WrapCrossThreadPersistent(resolver)));
-
-  return promise;
+  // Otherwise, the config is supported.
+  support->setSupported(true);
+  return ScriptPromise::Cast(
+      script_state, ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
+                        .ToLocalChecked());
 }
 
 HardwarePreference VideoDecoder::GetHardwarePreference(
@@ -356,6 +349,14 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
   if (!ParseCodecString(config.codec(), video_type, *js_error_message))
     return absl::nullopt;
 
+  if (config.hasDescription()) {
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.data()) {
+      *js_error_message = "description is detached.";
+      return absl::nullopt;
+    }
+  }
+
   if (config.hasCodedWidth() || config.hasCodedHeight()) {
     if (!config.hasCodedWidth()) {
       *js_error_message =
@@ -370,10 +371,7 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
 
     const uint32_t coded_width = config.codedWidth();
     const uint32_t coded_height = config.codedHeight();
-    if (coded_width == 0 || coded_width > media::limits::kMaxDimension ||
-        coded_height == 0 || coded_height > media::limits::kMaxDimension) {
-      // TODO(crbug.com/1212865): Exceeding implementation limits should not
-      // throw in isConfigSupported() (the config is valid, just unsupported).
+    if (!coded_width || !coded_height) {
       *js_error_message = String::Format("Invalid coded size (%u, %u).",
                                          coded_width, coded_height);
       return absl::nullopt;
@@ -417,15 +415,21 @@ VideoDecoder::MakeMediaVideoDecoderConfig(
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     String* js_error_message) {
 
-  absl::optional<media::VideoType> video_type =
-      IsValidVideoDecoderConfig(config, js_error_message /* out */);
-  if (!video_type)
+  media::VideoType video_type;
+  if (!ParseCodecString(config.codec(), video_type, *js_error_message)) {
+    // Checked by IsValidVideoDecoderConfig().
+    NOTREACHED();
     return absl::nullopt;
+  }
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    // TODO(crbug.com/1179970): This should throw if description is detached.
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.data()) {
+      // Checked by IsValidVideoDecoderConfig().
+      NOTREACHED();
+      return absl::nullopt;
+    }
     if (!desc_wrapper.empty()) {
       const uint8_t* start = desc_wrapper.data();
       const size_t size = desc_wrapper.size();
@@ -434,7 +438,7 @@ VideoDecoder::MakeMediaVideoDecoderConfig(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (video_type->codec == media::VideoCodec::kH264 && !extra_data.empty()) {
+  if (video_type.codec == media::VideoCodec::kH264 && !extra_data.empty()) {
     out_h264_avcc =
         std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
     out_h264_converter =
@@ -450,7 +454,7 @@ VideoDecoder::MakeMediaVideoDecoderConfig(
     out_h264_converter.reset();
   }
 #else
-  if (video_type->codec == media::VideoCodec::kH264) {
+  if (video_type.codec == media::VideoCodec::kH264) {
     *js_error_message = "H.264 decoding is not supported.";
     return absl::nullopt;
   }
@@ -478,7 +482,7 @@ VideoDecoder::MakeMediaVideoDecoderConfig(
   // TODO(crbug.com/1138680): Ensure that this default value is acceptable
   // under the WebCodecs spec. Should be BT.709 for YUV, sRGB for RGB, or
   // whatever was explicitly set for codec strings that include a color space.
-  media::VideoColorSpace media_color_space = video_type->color_space;
+  media::VideoColorSpace media_color_space = video_type.color_space;
   if (config.hasColorSpace()) {
     VideoColorSpace* color_space =
         MakeGarbageCollected<VideoColorSpace>(config.colorSpace());
@@ -486,12 +490,15 @@ VideoDecoder::MakeMediaVideoDecoderConfig(
   }
 
   media::VideoDecoderConfig media_config;
-  media_config.Initialize(video_type->codec, video_type->profile,
+  media_config.Initialize(video_type.codec, video_type.profile,
                           media::VideoDecoderConfig::AlphaMode::kIsOpaque,
                           media_color_space, media::kNoTransformation,
                           coded_size, visible_rect, natural_size, extra_data,
                           media::EncryptionScheme::kUnencrypted);
   media_config.set_aspect_ratio(aspect_ratio);
+  if (!media_config.IsValidConfig()) {
+    return absl::nullopt;
+  }
 
   return media_config;
 }

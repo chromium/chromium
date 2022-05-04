@@ -122,10 +122,6 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
 
-  static ScriptPromise IsAcceleratedConfigSupported(ScriptState* script_state,
-                                                    const VideoDecoderConfig*,
-                                                    ExceptionState&);
-
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;
