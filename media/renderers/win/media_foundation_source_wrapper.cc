@@ -339,6 +339,9 @@ HRESULT MediaFoundationSourceWrapper::GetInputTrustAuthority(
     IUnknown** object_out) {
   DVLOG_FUNC(1);
 
+  if (state_ == State::kShutdown)
+    return MF_E_SHUTDOWN;
+
   if (stream_id >= StreamCount())
     return E_INVALIDARG;
 

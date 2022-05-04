@@ -307,9 +307,9 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
     return;
   }
 
-  if (!demuxer_stream_ || pending_stream_read_) {
+  if (!demuxer_stream_ || pending_stream_read_)
     return;
-  }
+
   demuxer_stream_->Read(
       base::BindOnce(&MediaFoundationStreamWrapper::OnDemuxerStreamRead,
                      weak_factory_.GetWeakPtr()));
