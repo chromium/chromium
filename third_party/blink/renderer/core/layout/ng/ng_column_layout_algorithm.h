@@ -114,10 +114,15 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // fragmentainer. This is not the case for out-of-flow positioned multicol
   // containers, though, as we're not allowed to insert a soft break before an
   // out-of-flow positioned node. Our implementation requires that an OOF start
-  // in the fragmentainer where it would "naturally" occur.
+  // in the fragmentainer where it would "naturally" occur. This is also not the
+  // case for floated multicols since float margins are treated as monolithic
+  // [1]. Given this, the margin of the float wouldn't get truncated after a
+  // break, which could lead to an infinite loop.
+  //
+  // [1] https://codereview.chromium.org/2479483002
   bool MayAbortOnInsufficientSpace() const {
     DCHECK(is_constrained_by_outer_fragmentation_context_);
-    return !Node().IsOutOfFlowPositioned();
+    return !Node().IsFloatingOrOutOfFlowPositioned();
   }
 
   const NGColumnSpannerPath* spanner_path_ = nullptr;
