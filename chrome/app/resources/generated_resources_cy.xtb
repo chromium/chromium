@@ -887,6 +887,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1823098433522728610">Mae gan y ddogfen hon gynnwys sensitif.</translation>
 <translation id="18245044880483936">Ni fydd data wrth gefn yn cyfrif tuag at gwota storfa Drive eich plentyn.</translation>
 <translation id="1825565032302550710">Rhaid i'r porth fod rhwng 1024 a 65535</translation>
+<translation id="182577151972096764">ryseitiau a welwyd yn ddiweddar</translation>
 <translation id="1826192255355608658">Cysoni eich nodau tudalen Chrome, cyfrineiriau, hanes a rhagor</translation>
 <translation id="1826516787628120939">Wrthi'n gwirio</translation>
 <translation id="1827738518074806965">Oriel gelf</translation>
@@ -1321,6 +1322,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2241053333139545397">Darllen a newid eich data ar nifer o wefannau</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2242687258748107519">Gwybodaeth am y Ffeil</translation>
+<translation id="2246129643805925002">Mae eich <ph name="DEVICE_TYPE" /> yn diweddaru'n awtomatig yn y cefndir i roi'r nodweddion diweddaraf a gwelliannau diogelwch i chi. Gallwch adolygu dewisiadau diweddaru yn y Gosodiadau.</translation>
 <translation id="2246549592927364792">Cael disgrifiadau o luniau gan Google?</translation>
 <translation id="2247738527273549923">Rheolir eich dyfais gan eich sefydliad</translation>
 <translation id="2249111429176737533">Ar agor fel ffenestr mewn tab</translation>
@@ -1613,6 +1615,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="249113932447298600">Mae'n ddrwg gennym, nid yw'r ddyfais <ph name="DEVICE_LABEL" /> yn cael ei chefnogi ar hyn o bryd.</translation>
 <translation id="2492461744635776704">Wrthi'n paratoi cais llofnodi tystysgrif</translation>
 <translation id="2493126929778606526">Eich lluniau gorau, wedi'u dewis yn awtomatig</translation>
+<translation id="2495524171012645395">Ryseitiau a welwyd yn ddiweddar</translation>
 <translation id="2496180316473517155">Hanes pori</translation>
 <translation id="2497229222757901769">Cyflymder y llygoden</translation>
 <translation id="2497852260688568942">Mae Cysoni wedi'i analluogi gan eich gweinyddwr</translation>
@@ -3432,6 +3435,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4289732974614035569">Dewiswch PIN</translation>
 <translation id="4290791284969893584">Ar ôl cau tudalen, mae'n bosib na fydd y tasgau y gwnaethoch eu cychwyn yn gorffen</translation>
 <translation id="4291265871880246274">Deialog Mewngofnodi</translation>
+<translation id="429234155571566255">y ryseitiau hyn a welwyd yn ddiweddar</translation>
 <translation id="4295072614469448764">Mae'r ap ar gael yn eich terfynell. Mae'n bosib y bydd eicon yn eich Lansiwr hefyd.</translation>
 <translation id="4295979599050707005">Mewngofnodwch eto i gadarnhau y gellir defnyddio'ch cyfrif <ph name="USER_EMAIL" /> gyda gwefannau, apiau ac estyniadau yn Chrome a Google Play. Gallwch hefyd dynnu'r cyfrif hwn. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Ailgychwyn ac ailosod</translation>
@@ -3492,6 +3496,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="435527878592612277">Dewiswch eich llun</translation>
 <translation id="4358302248024731679">Er mwyn gwneud diagnosis gwell o broblemau Bluetooth, gall defnyddwyr Google gynnwys logiau Bluetooth ychwanegol gyda'u hadroddiadau adborth. Pan fydd yr opsiwn hwn wedi'i dicio, bydd eich adroddiad yn cynnwys logiau btsnoop a HCI o'ch sesiwn bresennol, wedi'u glanweithio i gael gwared ar gymaint o PII â phosib. Cyfyngir mynediad at y logiau hyn i reolwyr grŵp cynhyrchion ChromeOS yn Listnr. Bydd logiau'n cael eu gwaredu ar ôl 90 diwrnod.</translation>
 <translation id="4358313196493694334">Sefydlogi lleoliad clicio</translation>
+<translation id="4358643842961018282">Mae eich dyfais yn gyfredol</translation>
 <translation id="4359408040881008151">Wedi'i osod oherwydd estyniad(au) dibynnol.</translation>
 <translation id="4359717112757026264">Dinaswedd</translation>
 <translation id="4361142739114356624">Mae'r Allwedd Breifat ar gyfer y Dystysgrif Cleient hon ar goll neu'n annilys</translation>
@@ -4785,7 +4790,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5658415415603568799">I fod yn fwy diogel, bydd Smart Lock yn gofyn i chi roi eich cyfrinair ar ôl 20 awr.</translation>
 <translation id="5659593005791499971">E-bost</translation>
 <translation id="5659833766619490117">Ni ellid cyfieithu'r dudalen hon</translation>
-<translation id="566097169318652001">Mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach, ac mae'n bosib y byddwch yn profi problemau diogelwch a pherfformiad. Mae'n bosib y bydd nodweddion allweddol yn eich apiau'n stopio gweithio hefyd pan fyddant yn mynd yn hen a byddwch yn colli'ch hawl i wneud hawliadau cyfreithiol.</translation>
 <translation id="5662513737565158057">Newid sut y bydd apiau Linux yn gweithio.</translation>
 <translation id="5667293444945855280">Drwgwedd</translation>
 <translation id="5667546120811588575">Wrthi'n gosod Google Play...</translation>
@@ -6110,7 +6114,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="697312151395002334">Caniateir i anfon ffenestri naid ac i ddefnyddio ailgyfeiriadau</translation>
 <translation id="6973611239564315524">Mae uwchraddiad i Debian 10 (Buster) ar gael</translation>
 <translation id="69739764870135975">Os mai Google yw eich peiriant chwilio diofyn hefyd, byddwch yn gweld awgrymiadau gwell sy'n berthnasol yn eu cyd-destun</translation>
-<translation id="6974609594866392343">Modd demo all-lein</translation>
 <translation id="697508444536771064">Diffodd Linux</translation>
 <translation id="6978121630131642226">Peiriannau Chwilio</translation>
 <translation id="6979044105893951891">Lansio a gadael sesiynau gwestai a reolir</translation>
@@ -7130,6 +7133,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7981313251711023384">Llwytho tudalennau ymlaen llaw i'w pori a'u chwilio'n gyflymach</translation>
 <translation id="798145602633458219">Atodi'r awgrym <ph name="SUGGESTION_NAME" /> i'w blwch chwilio</translation>
 <translation id="7981662863948574132">Ffenestr naid dangos EID a Chod QR dyfais</translation>
+<translation id="7981670705071137488">Ar ôl hyn, bydd diweddariadau meddalwedd yn digwydd yn y cefndir. Gallwch adolygu dewisiadau diweddaru yn y Gosodiadau.</translation>
 <translation id="7982083145464587921">Ailddechreuwch eich dyfais i drwsio'r gwall hwn.</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="7984068253310542383">Adlewyrchu <ph name="DISPLAY_NAME" /></translation>
@@ -7373,6 +7377,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8214489666383623925">Agor Ffeil...</translation>
 <translation id="8215129063232901118">Cael mynediad at alluoedd eich ffôn o'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217399928341212914">Parhau i rwystro lawrlwytho mwy nag un ffeil yn awtomatig</translation>
+<translation id="822050276545350872">O hyn ymlaen, dim angen aros</translation>
 <translation id="8221491193165283816">Rydych fel arfer yn rhwystro hysbysiadau. I ganiatáu i'r wefan hon eich hysbysu, cliciwch yma.</translation>
 <translation id="822347941086490485">Wrthi'n dod o hyd i ddyfeisiau HID...</translation>
 <translation id="8225046344534779393">Gwirio'r cysylltiad rhyngrwyd</translation>

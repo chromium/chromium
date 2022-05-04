@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ਡੱਚ (ਨੀਦਰਲੈਂਡ)</translation>
 <translation id="174937106936716857">ਫ਼ਾਈਲਾਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ</translation>
 <translation id="1755345808328621801">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
+<translation id="1757915090001272240">ਵਾਈਡ ਲਾਤੀਨੀ</translation>
 <translation id="1773212559869067373">ਪ੍ਰਮਾਣਿਕਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਸਥਾਨਕ ਰੂਪ ਵਿਚ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1775381402323441512">ਵੀਡੀਓ ਜਾਣਕਾਰੀ</translation>
 <translation id="180035236176489073">ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਣਾ ਪਵੇਗਾ।</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">ਸੇਵਾਵਾਂ</translation>
 <translation id="1829129547161959350">ਪੈਂਗਵਿਨ</translation>
 <translation id="183183971458492120">ਜਾਣਕਾਰੀ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
+<translation id="1832073788765803750">ਅੱਧੀ ਚੌੜਾਈ ਕਾਟਾਕਾਨਾ</translation>
 <translation id="1834290891154666894">ਵਿਸ਼ੇ ਸੰਬੰਧੀ ਵਿਕਲਪਿਕ ਨਾਮ ਦੇ ਮਿਲਾਨ ਵਾਲਾ ਇੰਦਰਾਜ ਅਵੈਧ ਹੈ</translation>
 <translation id="1838709767668011582">Google ਸਾਈਟ</translation>
 <translation id="1844692022597038441">ਇਹ ਫ਼ਾਈਲ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
@@ -516,7 +518,7 @@
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> 'ਤੇ <ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="535792325654997756">ਬਿੱਲੀਆਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="5358764674931277">ਫ੍ਰੇਮ ਰੇਟ</translation>
-<translation id="5363339716524495120">ਇਨਪੁਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
+<translation id="5363339716524495120">ਇਨਪੁੱਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
 <translation id="5368191757080475556">Linux ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5402367795255837559">ਬ੍ਰੇਲ</translation>
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
@@ -749,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ਮਿਲੀਆਂ
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
+<translation id="749452993132003881">ਹਿਰਾਗਾਨਾ</translation>
 <translation id="7495372004724182530">ਮਲਿਆਲਮ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="7505167922889582512">ਲੁਕਾਈਆਂ ਫਾਈਲਾਂ ਦਿਖਾਓ</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -837,7 +840,7 @@
 <translation id="8128733386027980860">ਡੀਵੋਰਯੈਕ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਕੇ.)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ਤੁਹਾਡੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤੀ ਗਈ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਮਿਟਾ ਨਹੀਂ ਸਕਦੇ ਕਿਉਂਕਿ ਇਹ ਤੁਹਾਡੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="813913629614996137">ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
-<translation id="8147028810663464959">ਅੱਖਰ ਚੌੜਾਈ ਪੂਰੀ ਹੈ</translation>
+<translation id="8147028810663464959">ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦੀ ਚੌੜਾਈ ਪੂਰੀ ਹੈ</translation>
 <translation id="8151638057146502721">ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="8154842056504218462">ਸਾਰੇ ਇੰਦਰਾਜ ਚੁਣੇ ਗਏ।</translation>
 <translation id="8157684860301034423">ਐਪ ਜਾਣਕਾਰੀ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
@@ -847,6 +850,7 @@
 <translation id="8208580316430297579">ਆਰਟਵਰਕ</translation>
 <translation id="8223479393428528563">ਆਫ਼ਲਾਈਨ ਵਰਤੋਂ ਲਈ ਇਹ ਫ਼ਾਈਲਾਂ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਵਾਪਸ ਆਨਲਾਈਨ ਜਾਓ, ਫ਼ਾਈਲਾਂ ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਅਤੇ <ph name="OFFLINE_CHECKBOX_NAME" /> ਵਿਕਲਪ ਚੁਣੋ।</translation>
 <translation id="8249296373107784235">ਰੋਕੋ</translation>
+<translation id="8250690786522693009">ਲਾਤੀਨੀ</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8261561378965667560">ਚੀਨੀ ਐਰੇ</translation>

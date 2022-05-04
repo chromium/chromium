@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
+<translation id="3517001332549868749">Chrome OS-i värsken.</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
 <translation id="3557205324756024651">Kohalik identiteet (valikuline)</translation>
@@ -554,6 +555,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
 <translation id="6704062477274546131">DNS-lahendus</translation>
 <translation id="6723839937902243910">Toide</translation>
+<translation id="6723847290197874913">Klaviatuuri taustavalgus</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
 <translation id="6747215703636344499">Peatatud – väljastussalv on täis</translation>
 <translation id="6749473226660745022">Fotod</translation>

@@ -872,6 +872,7 @@
 <translation id="1823098433522728610">這份文件含有敏感內容。</translation>
 <translation id="18245044880483936">備份資料不會計入貴子女的雲端硬碟儲存空間配額。</translation>
 <translation id="1825565032302550710">連接埠必須介於 1024 與 65535 之間</translation>
+<translation id="182577151972096764">最近瀏覽過的食譜</translation>
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1827738518074806965">畫廊</translation>
@@ -1305,6 +1306,7 @@
 <translation id="2241053333139545397">讀取及變更你在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2242687258748107519">檔案資訊</translation>
+<translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景自動進行更新，為你提供最新功能並改善安全性。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="2246549592927364792">要取得 Google 提供的圖片說明嗎？</translation>
 <translation id="2247738527273549923">這部裝置是由貴機構管理</translation>
 <translation id="2249111429176737533">在分頁視窗中開啟</translation>
@@ -1594,6 +1596,7 @@
 <translation id="249113932447298600">很抱歉，系統目前不支援 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="2492461744635776704">正在準備憑證簽署要求</translation>
 <translation id="2493126929778606526">自動精選最佳相片</translation>
+<translation id="2495524171012645395">最近瀏覽過的食譜</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497229222757901769">滑鼠速度</translation>
 <translation id="2497852260688568942">你的管理員停用了同步功能</translation>
@@ -3411,6 +3414,7 @@
 <translation id="4289732974614035569">選擇 PIN 碼</translation>
 <translation id="4290791284969893584">關閉網頁後，你已啟動的工作可能無法完成</translation>
 <translation id="4291265871880246274">登入對話方塊</translation>
+<translation id="429234155571566255">這些最近瀏覽過的食譜</translation>
 <translation id="4295072614469448764">應用程式已出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="4295979599050707005">請再次登入，並確認你的帳戶 (<ph name="USER_EMAIL" />) 可用於 Chrome 和 Google Play 的網站、應用程式與擴充功能。你也可以移除這個帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">重新啟動並重設</translation>
@@ -3471,6 +3475,7 @@
 <translation id="435527878592612277">請選取你的相片</translation>
 <translation id="4358302248024731679">為了進一步診斷藍牙問題，Google 員工可在意見回饋報告額外納入藍牙記錄。勾選這個選項後，你的報告就會納入目前工作階段的 btsnoop 和 HCI 記錄。這些記錄會經過處理，盡可能移除個人識別資訊 (PII)，且只有 Listnr 的 Chrome OS 產品團隊主管可以存取。系統會在 90 天後清除這些記錄。</translation>
 <translation id="4358313196493694334">穩定點擊位置</translation>
+<translation id="4358643842961018282">你的裝置已更新到最新版本</translation>
 <translation id="4359408040881008151">你已安裝相依的擴充功能，因此必須一併安裝這個擴充功能。</translation>
 <translation id="4359717112757026264">城市景觀</translation>
 <translation id="4361142739114356624">這個用戶端憑證沒有私密金鑰或私密金鑰無效</translation>
@@ -4761,7 +4766,6 @@
 <translation id="5658415415603568799">為了提升安全性，Smart Lock 會在經過 20 小時後要求您輸入密碼。</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5659833766619490117">無法翻譯這個網頁的內容</translation>
-<translation id="566097169318652001">裝置可能無法再正常運作，你可能會遇到安全性和效能問題。應用程式版本過舊，可能也會使應用程式的重要功能停止運作，你可能會失去法律請求的權利。</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
 <translation id="5667293444945855280">惡意程式</translation>
 <translation id="5667546120811588575">正在設定 Google Play...</translation>
@@ -5613,6 +5617,7 @@
 <translation id="6520876759015997832">第 <ph name="LIST_POSITION" /> 項搜尋結果，共 <ph name="LIST_SIZE" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往這個部分。</translation>
 <translation id="6521214596282732365">網站通常會使用你的字型，方便你透過線上的設計及圖像工具建立具有高度一致性的內容</translation>
 <translation id="6523303810310758032">如果刪除所有或特定網站的瀏覽記錄，也會一併刪除相關的評估資訊。查看<ph name="BEGIN_LINK" />你的瀏覽記錄<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Google 密碼管理工具無法將這些密碼儲存在你的 Google 帳戶中，你可以改為儲存至這部裝置。</translation>
 <translation id="6524735478670290456">Google 如何使用這些資料：</translation>
 <translation id="652492607360843641">你已連上<ph name="NETWORK_TYPE" />網路。</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -5917,6 +5922,7 @@
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818547713623251698">查看手機上的相片、媒體、通知和應用程式</translation>
 <translation id="6818802132960437751">內建防毒機制</translation>
+<translation id="6818920801736417483">要儲存密碼嗎？</translation>
 <translation id="6823174134746916417">觸控板點按功能</translation>
 <translation id="6824564591481349393">複製電子郵件地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
@@ -6076,7 +6082,6 @@
 <translation id="697312151395002334">可以傳送彈出式視窗及使用重新導向</translation>
 <translation id="6973611239564315524">現在可以升級至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 同時也是你的預設搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
-<translation id="6974609594866392343">離線示範模式</translation>
 <translation id="697508444536771064">關閉 Linux</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>
@@ -7096,6 +7101,7 @@
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
 <translation id="798145602633458219">將「<ph name="SUGGESTION_NAME" />」這項建議附加到搜尋框內</translation>
 <translation id="7981662863948574132">顯示裝置 EID 和 QR 圖碼彈出式視窗</translation>
+<translation id="7981670705071137488">日後，系統會在背景進行軟體更新作業。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修復這個錯誤。</translation>
 <translation id="7982789257301363584">網路</translation>
 <translation id="7984068253310542383">鏡像投射「<ph name="DISPLAY_NAME" />」</translation>
@@ -7340,6 +7346,7 @@
 <translation id="8214489666383623925">開啟檔案...</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機上的功能和內容</translation>
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
+<translation id="822050276545350872">從此不必再等待</translation>
 <translation id="8221491193165283816">你通常會封鎖通知。如要允許這個網站傳送通知給你，請按這裡。</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
 <translation id="8225046344534779393">檢查網際網路連線</translation>

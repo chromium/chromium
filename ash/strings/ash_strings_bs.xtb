@@ -854,6 +854,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6179832488876878285">Ovdje možete zakačiti važne fajlove. Otvorite aplikaciju Fajlovi da započnete.</translation>
 <translation id="619279033188484792">Pregledajte nedavne fotografije, medije i obavještenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">Odmah napunite do kraja</translation>
 <translation id="6220928844947387476">Sada istovremeno možete snimati sebe i svoj ekran</translation>
 <translation id="622484624075952240">Dolje</translation>
 <translation id="6231419273573514727">Performanse perifernog uređaja su možda ograničene</translation>
@@ -1189,6 +1190,7 @@ Nova instalacija</translation>
 <translation id="826107067893790409">Pritisnite Enter da otključate za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8270450402312105425">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od jednog sata}one{Vratite uređaj na prethodnu verziju u roku od # sata}few{Vratite uređaj na prethodnu verziju u roku od # sata}other{Vratite uređaj na prethodnu verziju u roku od # sati}}</translation>
+<translation id="8271580342040932214">Baterija je trenutačno na 80% i priključena u produljenje trajanja baterije. Napunit će se do kraja do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Prevucite ulijevo s četiri prsta da prebacite na prethodnu radnu površinu</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slabo</translation>
@@ -1272,6 +1274,7 @@ Nova instalacija</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Postavke načina unosa</translation>
 <translation id="8818320199597151042">Uklanjanje profila. Pričekajte nekoliko minuta.</translation>
+<translation id="8819728065740986820">Uključeno je adaptivno punjenje</translation>
 <translation id="8825863694328519386">Prevucite prstom slijeva nadesno da se vratite</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
@@ -1318,6 +1321,7 @@ Nova instalacija</translation>
 <translation id="9080132581049224423">Prevucite prema gore da odete na početnu stranicu</translation>
 <translation id="9080206825613744995">Mikrofon je u upotrebi.</translation>
 <translation id="9084606467167974638">Promijenite položaj menija</translation>
+<translation id="9085962983642906571">Baterija se zadržava na 80% dok je priključena u produljenje trajanja baterije.</translation>
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="9091626656156419976">Uklonjen je ekran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišavanje telefona</translation>

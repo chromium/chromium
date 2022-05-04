@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="2104796393919810494">ສ້ອມແປງສຳເລັດແລ້ວ</translation>
 <translation id="2105810540595158374">ອຸປະກອນແມ່ນມືເກມ.</translation>
+<translation id="2115956742084455574">ລະຫັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ຫວ່າງ <ph name="AVAILABLE_MEMORY" /> GB ຈາກທັງໝົດ <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2138109643290557664">ລ່ອງລອຍຜ່ານໄປ</translation>
@@ -142,6 +143,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463">ກວດພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ຫາກທ່ານເລືອກທີ່ຈະຢືນຢັນວ່ານີ້ໄດ້ຮັບການຕິດຕັ້ງແລ້ວ, ກະລຸນາເຮັດຕອນນີ້.</translation>
 <translation id="2363636958541445404">ເປີດຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -191,6 +193,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ຈຸດສິ້ນສຸດ</translation>
 <translation id="3069085583900247081">ທົດສອບບໍ່ສຳເລັດ</translation>
+<translation id="3076243757415932261">ກຳລັງກວດສອບອົງປະກອບ...</translation>
 <translation id="3083667275341675831">ການວິນິໄສການເຊື່ອມຕໍ່</translation>
 <translation id="3084958266922136097">ປິດການນຳໃຊ້ສກຣີນເຊັບເວີ</translation>
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
@@ -219,6 +222,7 @@
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
+<translation id="3404770484521709967">ຕິດຕັ້ງອົງປະກອບຢ່າງຖືກຕ້ອງແລ້ວ.</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
@@ -370,6 +374,7 @@
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4897058166682006107">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຊ້າຍເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4915052247106771211">ນີ້ຈະຣີເຊັດອຸປະກອນນີ້ໄປເປັນຄ່າຈາກໂຮງງານ (Powerwash).</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
@@ -424,6 +429,7 @@
 <translation id="5358174242040570474">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ໃຫ້ລອງເລືອກຮູບພື້ນຫຼັງອີກເທື່ອໜຶ່ງ ຫຼື ເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5376354385557966694">ໂໝດແຈ້ງອັດຕະໂນມັດ</translation>
+<translation id="537872351913703572">ອຸປະກອນຈະສົ່ງໄປຫາຜູ້ໃຊ້ ຫຼື ອົງການອື່ນ</translation>
 <translation id="5400907029458559844">ອຸປະກອນກຳລັງເຊື່ອມຕໍ່ຢູ່.</translation>
 <translation id="5401938042319910061">ເອີ້ນໃຊ້ສິ່ງທີ່ເຮັດປະຈຳທັງໝົດ</translation>
 <translation id="5423849171846380976">ເປີດໃຊ້ງານແລ້ວ</translation>
@@ -564,6 +570,7 @@
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="680983167891198932">ກະແຈ</translation>
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
+<translation id="6840315122969944400">ສ້ອມແປງ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
 <translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="6905724422583748843">ກັບໄປ <ph name="PAGE_NAME" /></translation>
@@ -673,6 +680,7 @@
 <translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
+<translation id="8083281199617904460">ຂັ້ນຕອນການສ້ອມແປງນີ້ແມ່ນສຳລັບຊ່າງສ້ອມແປງທີ່ໄດ້ຮັບການເຝິກມາແລ້ວ. ໃຫ້ເລີ່ມສະເພາະຫຼັງຈາກການປ່ຽນອົງປະກອບທີ່ເສຍຫາຍເທົ່ານັ້ນ.</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
@@ -726,6 +734,7 @@
 <translation id="8671972493856476349">ອັບເດດເປັນ <ph name="VERSION_NUMBER" /> ແລ້ວຣີສະຕາດ</translation>
 <translation id="8675354002693747642">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="8677859815076891398">ບໍ່ມີອະລະບ້ຳ. ສ້າງອະລະບໍ້າໃນ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">ອຸປະກອນຈະສົ່ງໄປຫາຜູ້ໃຊ້ດຽວກັນ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>

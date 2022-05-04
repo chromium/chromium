@@ -109,7 +109,7 @@
 <translation id="2008685064673031089">Пошук Prime</translation>
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2080070583977670716">Більше налаштувань</translation>
+<translation id="2080070583977670716">Інші налаштування</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
 <translation id="2104796393919810494">Ремонт завершено</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="3486220673238053218">визначення</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
+<translation id="3517001332549868749">Оновлення ОС Chrome</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3557205324756024651">Локальна ідентифікація (необов’язково)</translation>
@@ -554,6 +555,7 @@
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6723839937902243910">Заряд</translation>
+<translation id="6723847290197874913">Підсвічування клавіатури</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
 <translation id="6749473226660745022">Фото</translation>

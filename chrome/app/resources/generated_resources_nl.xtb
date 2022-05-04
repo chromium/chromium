@@ -4766,7 +4766,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5658415415603568799">Voor extra beveiliging vraagt Smart Lock je na 20 uur je wachtwoord op te geven.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659833766619490117">Deze pagina kan niet worden vertaald</translation>
-<translation id="566097169318652001">Je apparaat werkt misschien niet meer goed en je kunt beveiligings- en prestatieproblemen ondervinden. Belangrijke functies in je apps werken misschien ook niet meer als ze verouderd raken. Je raakt dan je recht op juridische eisen kwijt.</translation>
 <translation id="5662513737565158057">Wijzigen hoe Linux-apps werken.</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Google Play instellen...</translation>
@@ -5618,6 +5617,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6520876759015997832">Zoekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk op Enter om naar de sectie te navigeren.</translation>
 <translation id="6521214596282732365">Sites gebruiken je lettertypen meestal om te zorgen dat je hoogwaardige content kunt maken met online ontwerp- en grafische tools</translation>
 <translation id="6523303810310758032">Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor een specifieke site), verwijder je ook de hieraan gekoppelde metingsgegevens. Bekijk <ph name="BEGIN_LINK" />je browsegeschiedenis<ph name="END_LINK" />.</translation>
+<translation id="6523574494641144162">Google Wachtwoordmanager kan deze wachtwoorden niet opslaan in je Google-account. Je kunt ze op dit apparaat opslaan.</translation>
 <translation id="6524735478670290456">Hoe we deze gegevens gebruiken:</translation>
 <translation id="652492607360843641">Je hebt verbinding met een <ph name="NETWORK_TYPE" /> netwerk.</translation>
 <translation id="6527303717912515753">Delen</translation>
@@ -5922,6 +5922,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6818198425579322765">Paginataal om te vertalen</translation>
 <translation id="6818547713623251698">Foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="6818802132960437751">Ingebouwde virusbeveiliging</translation>
+<translation id="6818920801736417483">Wachtwoorden opslaan?</translation>
 <translation id="6823174134746916417">Tikken-om-te-klikken voor touchpad</translation>
 <translation id="6824564591481349393">&amp;E-mailadres kopiëren</translation>
 <translation id="6824584962142919697">Elementen &amp;inspecteren</translation>
@@ -6081,7 +6082,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="697312151395002334">Toestemming om pop-ups te sturen en omleidingen te gebruiken</translation>
 <translation id="6973611239564315524">Er is een upgrade beschikbaar voor Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Als Google ook je standaardzoekmachine is, krijg je betere, contextueel relevante suggesties te zien</translation>
-<translation id="6974609594866392343">Offline demomodus</translation>
 <translation id="697508444536771064">Linux afsluiten</translation>
 <translation id="6978121630131642226">Zoekmachines</translation>
 <translation id="6979044105893951891">Beheerde gastsessies starten en beëindigen</translation>

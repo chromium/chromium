@@ -851,6 +851,7 @@
 <translation id="6166852626429024716">ค้นหาอุปกรณ์ แอป การตั้งค่า เว็บ...</translation>
 <translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="619279033188484792">ดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">ชาร์จจนเต็มเลย</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
@@ -1185,6 +1186,7 @@
 <translation id="826107067893790409">กด Enter เพื่อปลดล็อกสำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8270450402312105425">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
+<translation id="8271580342040932214">แบตเตอรี่จะอยู่ที่ระดับ 80% เป็นการชั่วคราวในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่ แบตเตอรี่จะชาร์จจนเต็มภายใน <ph name="FULLY_CHARGE_TIME" /></translation>
 <translation id="8284362522226889623">ใช้ 4 นิ้วเลื่อนไปทางซ้ายเพื่อเปลี่ยนไปใช้เดสก์ก่อนหน้า</translation>
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8297006494302853456">อ่อน</translation>
@@ -1268,6 +1270,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="8818320199597151042">กำลังนำโปรไฟล์ออก รอสักครู่</translation>
+<translation id="8819728065740986820">การชาร์จแบบปรับอัตโนมัติเปิดอยู่</translation>
 <translation id="8825863694328519386">เลื่อนจากด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>
@@ -1314,6 +1317,7 @@
 <translation id="9080132581049224423">เลื่อนขึ้นเพื่อไปที่หน้าแรก</translation>
 <translation id="9080206825613744995">ใช้ไมโครโฟนอยู่</translation>
 <translation id="9084606467167974638">เปลี่ยนตำแหน่งเมนู</translation>
+<translation id="9085962983642906571">แบตเตอรี่จะคงไว้ที่ระดับ 80% ในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่</translation>
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>

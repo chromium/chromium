@@ -855,6 +855,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6166852626429024716">Bilatu gailuan, aplikazioetan, ezarpenetan, sarean…</translation>
 <translation id="6179832488876878285">Hemen aingura ditzakezu fitxategi garrantzitsuak. Hasteko, erabili Fitxategiak aplikazioa.</translation>
 <translation id="619279033188484792">Ikusi telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak <ph name="DEVICE_TYPE" /> bidez</translation>
+<translation id="619335566042889110">Kargatu guztiz</translation>
 <translation id="6220928844947387476">Zeure burua eta pantaila aldi berean graba ditzakezu orain</translation>
 <translation id="622484624075952240">Behera</translation>
 <translation id="6231419273573514727">Baliteke gailu periferikoaren errendimendua mugatuta egotea</translation>
@@ -1190,6 +1191,7 @@ Berriki instalatu da</translation>
 <translation id="826107067893790409">Sakatu Sartu <ph name="USER_EMAIL_ADDRESS" /> desblokeatzeko</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
+<translation id="8271580342040932214">Bateria % 80ean egongo da gailua entxufatuta egon bitartean, bateriaren iraupena luzatzeko. Ordu honetan kargatuko da guztiz bateria: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera</translation>
 <translation id="828708037801473432">Desaktibatuta</translation>
 <translation id="8297006494302853456">Ahula</translation>
@@ -1273,6 +1275,7 @@ Berriki instalatu da</translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>
 <translation id="881757059229893486">Idazketa-metodoen ezarpenak</translation>
 <translation id="8818320199597151042">Profila kentzen. Itxaron minutu batzuk.</translation>
+<translation id="8819728065740986820">Karga egokitua aktibatuta dago</translation>
 <translation id="8825863694328519386">Atzera egiteko, pasatu hatza ezkerretik eskuinera</translation>
 <translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
@@ -1319,6 +1322,7 @@ Berriki instalatu da</translation>
 <translation id="9080132581049224423">Orri nagusira joateko, pasatu hatza gora</translation>
 <translation id="9080206825613744995">Mikrofonoa abian da.</translation>
 <translation id="9084606467167974638">Aldatu menuaren kokapena</translation>
+<translation id="9085962983642906571">Bateria % 80ean mantentzen da gailua entxufatuta egon bitartean, bateriaren iraupena luzatzeko.</translation>
 <translation id="9089416786594320554">Idazketa-metodoak</translation>
 <translation id="9091626656156419976">Kendu da <ph name="DISPLAY_NAME" /> pantaila</translation>
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>

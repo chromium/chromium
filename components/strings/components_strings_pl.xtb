@@ -1051,6 +1051,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3816482573645936981">Wartość (zastąpiona)</translation>
 <translation id="382518646247711829">Jeśli używasz serwera proxy...</translation>
+<translation id="3826050100957962900">Logowanie się w przypadku innych firm</translation>
 <translation id="3827112369919217609">Bezwzględna</translation>
 <translation id="3827666161959873541">Kino familijne</translation>
 <translation id="3828924085048779000">Puste hasło jest niedozwolone.</translation>
@@ -1060,6 +1061,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowy dokument Google</translation>
 <translation id="385051799172605136">Wstecz</translation>
+<translation id="3851515670389017037">Seria czynności jest zamknięta</translation>
 <translation id="3858027520442213535">Zaktualizuj datę i godzinę</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3872834068356954457">Nauka</translation>
@@ -1355,6 +1357,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="470284880436071933">Przestępstwa i wymiar sprawiedliwości</translation>
 <translation id="4704732901923281920">Nauki biologiczne</translation>
 <translation id="4708268264240856090">Połączenie zostało przerwane</translation>
+<translation id="4709819737903924300">Seria czynności jest otwarta na całej wysokości</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Hasło użytkownika <ph name="USERNAME" /></translation>
@@ -1818,6 +1821,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5989320800837274978">Nie określono ani stałych serwerów proxy, ani adresu URL skryptu PAC.</translation>
 <translation id="5992691462791905444">Składanie typu Z</translation>
 <translation id="5995727681868049093">Zarządzaj swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
+<translation id="5997247540087773573">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę tego hasła oraz sprawdzenie innych zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
 <translation id="6006484371116297560">Klasyczny</translation>
 <translation id="6008122969617370890">Kolejność od N do 1</translation>
@@ -1856,6 +1860,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6061154937977953833">Zapasy</translation>
 <translation id="6064217302520318294">Blokada ekranu</translation>
 <translation id="6064602040258638498">Kupony i zniżki</translation>
+<translation id="6078813287646374487">Pokaż więcej informacji o tej stronie</translation>
 <translation id="6080696365213338172">Masz dostęp do treści dzięki certyfikatowi dostarczonemu przez administratora. Administrator może odczytać dane, jakie udostępnisz w <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Podobne wyszukiwania</translation>
 <translation id="6094273045989040137">Dodaj adnotacje</translation>
@@ -2594,6 +2599,7 @@ Dodatkowe informacje:
 <translation id="8163866351304776260">Cztery otwory po lewej</translation>
 <translation id="8175796834047840627">Jako zalogowany użytkownik możesz zapisać karty na Twoim koncie Google w Chrome. Możesz to zmienić w ustawieniach.</translation>
 <translation id="8176440868214972690">Administrator tego urządzenia wysłał do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
+<translation id="8179003511148538426">Seria czynności jest otwarta do połowy wysokości</translation>
 <translation id="8184538546369750125">Użyj globalnej wartości domyślnej (Zezwalaj)</translation>
 <translation id="8186706823560132848">Oprogramowanie</translation>
 <translation id="8190193880870196235">Zarządzane przez rozszerzenie</translation>

@@ -105,6 +105,7 @@
 <translation id="1813278315230285598">Palvelut</translation>
 <translation id="1829129547161959350">Pingviini</translation>
 <translation id="183183971458492120">Ladataan tietoja…</translation>
+<translation id="1832073788765803750">Kapea Katakana</translation>
 <translation id="1834290891154666894">Virheellinen aiheen vaihtoehtoisen nimen vastaavuusarvo</translation>
 <translation id="1838709767668011582">Google-sivusto</translation>
 <translation id="1844692022597038441">Tämä tiedosto ei ole käytettävissä offline-tilassa.</translation>
@@ -518,6 +519,7 @@
 <translation id="5335458522276292100">Varmuuskopioidaan <ph name="FILE_COUNT" /> <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Henkilö ja kissoja</translation>
 <translation id="5358764674931277">Kuvanopeus</translation>
+<translation id="5363339716524495120">Syöttökieli on kiina</translation>
 <translation id="5368191757080475556">Jaa kansio Linuxin kanssa</translation>
 <translation id="5402367795255837559">Pistekirjoitus</translation>
 <translation id="5411472733320185105">Älä käytä välityspalvelimen asetuksia näille palvelimille ja verkkotunnuksille:</translation>
@@ -540,6 +542,7 @@
 <translation id="5534520101572674276">Lasketaan kokoa</translation>
 <translation id="554153475311314364">translitteroitu kreikka</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
+<translation id="5583664733673201137">Välimerkkileveys on täysleveä</translation>
 <translation id="5602622065581044566">bulgaria, foneettinen näppäimistö</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>
 <translation id="5618330573454123917">Tämä tiedosto on tarkoitettu Windows-ohjelmistoa käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
@@ -838,6 +841,7 @@
 <translation id="8128733386027980860">englanti (Iso-Britannia), Dvorak-näppäimistö</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> on jaettu sinulle. Et voi poistaa sitä, koska et ole tiedoston omistaja.</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
+<translation id="8147028810663464959">Merkkileveys on täysleveä</translation>
 <translation id="8151638057146502721">Määritä</translation>
 <translation id="8154842056504218462">Kaikki kohteet valittiin.</translation>
 <translation id="8157684860301034423">Sovellustietojen noutaminen epäonnistui.</translation>

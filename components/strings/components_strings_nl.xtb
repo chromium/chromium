@@ -1047,6 +1047,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3816482573645936981">Waarde (vervangen)</translation>
 <translation id="382518646247711829">Als je een proxyserver gebruikt...</translation>
+<translation id="3826050100957962900">Externe login</translation>
 <translation id="3827112369919217609">Absoluut</translation>
 <translation id="3827666161959873541">Familiefilms</translation>
 <translation id="3828924085048779000">Een lege wachtwoordzin is niet toegestaan.</translation>
@@ -1056,6 +1057,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuw Google-document te maken</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="3851515670389017037">Trajecten gesloten</translation>
 <translation id="3858027520442213535">Datum en tijd updaten</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3872834068356954457">Wetenschap</translation>
@@ -1356,6 +1358,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="470284880436071933">Misdaad en misdaadbestrijding</translation>
 <translation id="4704732901923281920">Biologie</translation>
 <translation id="4708268264240856090">Je verbinding is onderbroken</translation>
+<translation id="4709819737903924300">Trajecten geopend op volledige hoogte</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Netwerkcontrole uitvoeren<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Wachtwoord voor <ph name="USERNAME" /></translation>
@@ -1819,6 +1822,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5989320800837274978">Er worden geen vaste proxyservers en geen pac-script-URL gespecificeerd.</translation>
 <translation id="5992691462791905444">Zizagvouw 2-slag oneven center</translation>
 <translation id="5995727681868049093">Je gegevens, privacy en beveiliging beheren in je Google-account</translation>
+<translation id="5997247540087773573">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6006484371116297560">Klassiek</translation>
 <translation id="6008122969617370890">Volgorde: van N naar 1</translation>
@@ -1857,6 +1861,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6061154937977953833">Worstelen</translation>
 <translation id="6064217302520318294">Schermvergrendeling</translation>
 <translation id="6064602040258638498">Kortingsbonnen en kortingsacties</translation>
+<translation id="6078813287646374487">Meer informatie over deze pagina tonen</translation>
 <translation id="6080696365213338172">Je hebt toegang tot content gekregen met behulp van een certificaat van je beheerder. Gegevens die je verstrekt aan <ph name="DOMAIN" />, kunnen door je beheerder worden onderschept.</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6094273045989040137">Aantekeningen maken</translation>
@@ -2594,6 +2599,7 @@ Aanvullende informatie:
 <translation id="8163866351304776260">Vier perforaties links</translation>
 <translation id="8175796834047840627">Chrome biedt aan je passen in je Google-account op te slaan omdat je bent ingelogd. Je kunt dit wijzigen in de instellingen.</translation>
 <translation id="8176440868214972690">De beheerder van dit apparaat heeft bepaalde gegevens gestuurd naar de volgende websites, zoals instellingen of beleidsregels.</translation>
+<translation id="8179003511148538426">Trajecten geopend op halve hoogte</translation>
 <translation id="8184538546369750125">Algemene standaardinstelling gebruiken (Toestaan)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Beheerd door een extensie</translation>

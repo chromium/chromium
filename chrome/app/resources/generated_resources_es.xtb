@@ -873,6 +873,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1823098433522728610">Este documento incluye contenido sensible.</translation>
 <translation id="18245044880483936">Los datos de la copia de seguridad no se tienen en cuenta para calcular el espacio de Almacenamiento en Drive de tu hijo.</translation>
 <translation id="1825565032302550710">El número de puerto debe estar entre 1024 y 65535</translation>
+<translation id="182577151972096764">recetas vistas recientemente</translation>
 <translation id="1826192255355608658">Sincroniza tus marcadores, tus contraseñas y tu historial de Chrome, entre otros elementos</translation>
 <translation id="1826516787628120939">Comprobando</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
@@ -1306,6 +1307,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2242687258748107519">Información del archivo</translation>
+<translation id="2246129643805925002">Tu <ph name="DEVICE_TYPE" /> se actualiza automáticamente en segundo plano para que disfrutes de las últimas funciones y mejoras de seguridad. Puedes revisar tus preferencias de actualización en Configuración.</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
 <translation id="2247738527273549923">Tu organización gestiona tu dispositivo.</translation>
 <translation id="2249111429176737533">Abrir como ventana con pestañas</translation>
@@ -1596,6 +1598,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="249113932447298600">Lo sentimos, pero el dispositivo <ph name="DEVICE_LABEL" /> no se admite en este momento.</translation>
 <translation id="2492461744635776704">Preparando solicitud de firma de certificado</translation>
 <translation id="2493126929778606526">Tus mejores fotos, seleccionadas automáticamente</translation>
+<translation id="2495524171012645395">Recetas vistas recientemente</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497229222757901769">Velocidad del ratón</translation>
 <translation id="2497852260688568942">El administrador ha inhabilitado la sincronización</translation>
@@ -3413,6 +3416,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4289732974614035569">Elige un PIN</translation>
 <translation id="4290791284969893584">Después de que cierres una página, es posible que no se completen las tareas que hayas iniciado</translation>
 <translation id="4291265871880246274">Cuadro de diálogo de inicio de sesión</translation>
+<translation id="429234155571566255">estas recetas vistas recientemente</translation>
 <translation id="4295072614469448764">La aplicación está disponible en tu terminal. Es posible que también haya un icono en el menú de aplicaciones.</translation>
 <translation id="4295979599050707005">Vuelve a iniciar sesión para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, aplicaciones y extensiones tanto en Chrome como en Google Play. También puedes quitar esta cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Reiniciar y restablecer</translation>
@@ -3473,6 +3477,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="435527878592612277">Selecciona una foto</translation>
 <translation id="4358302248024731679">Para diagnosticar mejor los problemas de Bluetooth, los Googlers pueden incluir registros de Bluetooth adicionales en sus comentarios. Si seleccionas esta opción, tu informe contendrá registros btsnoop y HCI de la sesión actual modificados para retirar tanta información personal identificable como sea posible. Solo los administradores del grupo de productos de ChromeOS de Listnr podrán acceder a estos registros, que se eliminarán definitivamente después de 90 días.</translation>
 <translation id="4358313196493694334">Estabilizar ubicación de clic</translation>
+<translation id="4358643842961018282">El dispositivo está actualizado</translation>
 <translation id="4359408040881008151">Instalada debido a las extensiones dependientes</translation>
 <translation id="4359717112757026264">Paisaje urbano</translation>
 <translation id="4361142739114356624">Falta la clave privada de este certificado de cliente o no es válida</translation>
@@ -4765,7 +4770,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5658415415603568799">Para mayor seguridad, Smart Lock te pedirá que introduzcas la contraseña después de 20 horas.</translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5659833766619490117">No se ha podido traducir la página</translation>
-<translation id="566097169318652001">Es posible que tu dispositivo ya no funcione correctamente y que tengas problemas de seguridad y rendimiento. También es posible que las funciones clave de tus aplicaciones dejen de funcionar cuando se queden obsoletas y que pierdas el derecho a presentar demandas judiciales.</translation>
 <translation id="5662513737565158057">Cambia el funcionamiento de las aplicaciones de Linux.</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
@@ -6082,7 +6086,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="697312151395002334">Puede enviar ventanas emergentes y usar redirecciones</translation>
 <translation id="6973611239564315524">Actualización a Debian 10 (Buster) disponible</translation>
 <translation id="69739764870135975">Si Google también es tu buscador predeterminado, verás mejores sugerencias y más relevantes contextualmente</translation>
-<translation id="6974609594866392343">Modo Demo sin conexión</translation>
 <translation id="697508444536771064">Apagar Linux</translation>
 <translation id="6978121630131642226">Buscadores</translation>
 <translation id="6979044105893951891">Iniciar y salir de las sesiones de invitado gestionadas</translation>
@@ -7102,6 +7105,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7981313251711023384">Cargar páginas previamente para que la navegación y las búsquedas sean más rápidas</translation>
 <translation id="798145602633458219">Añadir la sugerencia <ph name="SUGGESTION_NAME" /> al cuadro de búsqueda</translation>
 <translation id="7981662863948574132">Mostrar ventana emergente con EID y código QR del dispositivo</translation>
+<translation id="7981670705071137488">Después de que se complete este proceso, las actualizaciones de software se realizarán en segundo plano. Puedes revisar tus preferencias de actualización en Configuración.</translation>
 <translation id="7982083145464587921">Reinicia el dispositivo para solucionar el error.</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984068253310542383">Proyectar <ph name="DISPLAY_NAME" /></translation>
@@ -7346,6 +7350,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8214489666383623925">Abrir archivo...</translation>
 <translation id="8215129063232901118">Accede a las funciones de tu teléfono desde tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217399928341212914">Seguir bloqueando descargas automáticas de varios archivos</translation>
+<translation id="822050276545350872">A partir de ahora, se acabaron las esperas</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="822347941086490485">Buscando dispositivos HID...</translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet</translation>

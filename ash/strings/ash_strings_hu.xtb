@@ -855,6 +855,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6166852626429024716">Kereshet az eszközén, az alkalmazások és a beállítások között, az interneten…</translation>
 <translation id="6179832488876878285">Ide kitűzheti a fontos fájlokat. A kezdéshez nyissa meg a Fájlok alkalmazást.</translation>
 <translation id="619279033188484792">A telefonján található friss fotók, média és értesítések megtekintése <ph name="DEVICE_TYPE" /> eszközén</translation>
+<translation id="619335566042889110">Töltés a teljes akkumulátorszint eléréséig most</translation>
 <translation id="6220928844947387476">Mostantól egyszerre veheti fel magát és képernyőjét</translation>
 <translation id="622484624075952240">Le</translation>
 <translation id="6231419273573514727">Korlátozott lehet a perifériás teljesítmény</translation>
@@ -1190,6 +1191,7 @@ Frissen telepítve</translation>
 <translation id="826107067893790409">Nyomja meg az Enter billentyűt a következő fiók számára való feloldáshoz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8270450402312105425">{0,plural, =1{Eszköz módosítása az előző verzióra egy órán belül}other{Eszköz módosítása az előző verzióra # órán belül}}</translation>
+<translation id="8271580342040932214">Az akkumulátor-élettartam növelése érdekében az akkumulátorszint ideiglenesen 80%-on marad, amíg csatlakoztatva van az áramforráshoz. Az akkumulátor teljesen feltöltődik a következő időpontig: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Csúsztasson balra négy ujjal az előző asztalra váltáshoz</translation>
 <translation id="828708037801473432">Ki</translation>
 <translation id="8297006494302853456">Gyenge</translation>
@@ -1273,6 +1275,7 @@ Frissen telepítve</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Beviteli módszerek beállításai</translation>
 <translation id="8818320199597151042">Profil eltávolítása. Várjon néhány percet.</translation>
+<translation id="8819728065740986820">Az adaptív töltés be van kapcsolva</translation>
 <translation id="8825863694328519386">A visszalépéshez csúsztasson balról jobbra</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8841375032071747811">Vissza gomb</translation>
@@ -1319,6 +1322,7 @@ Frissen telepítve</translation>
 <translation id="9080132581049224423">Felfelé csúsztatva megjelenik a kezdőképernyő</translation>
 <translation id="9080206825613744995">A mikrofon használatban van.</translation>
 <translation id="9084606467167974638">Menü helyzetének módosítása</translation>
+<translation id="9085962983642906571">Az akkumulátor-élettartam növelése érdekében az akkumulátorszint 80%-on marad, amíg csatlakoztatva van az áramforráshoz.</translation>
 <translation id="9089416786594320554">Beviteli módszerek</translation>
 <translation id="9091626656156419976">A(z) <ph name="DISPLAY_NAME" /> kijelző eltávolítva</translation>
 <translation id="9098969848082897657">Telefon némítása</translation>

@@ -1054,6 +1054,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3810973564298564668">Halda</translation>
 <translation id="3816482573645936981">Väärtus (asendatud)</translation>
 <translation id="382518646247711829">Kui kasutate puhverserverit ...</translation>
+<translation id="3826050100957962900">Kolmanda osapoole sisselogimisviibad</translation>
 <translation id="3827112369919217609">Absoluutne</translation>
 <translation id="3827666161959873541">Koguperefilmid</translation>
 <translation id="3828924085048779000">Tühi parool ei ole lubatud.</translation>
@@ -1063,6 +1064,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3835233591525155343">Teie seadmekasutus</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, kiirelt uue Google'i dokumendi loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="385051799172605136">Tagasi</translation>
+<translation id="3851515670389017037">Teekonnad on suletud</translation>
 <translation id="3858027520442213535">Värskenda kuupäeva ja kellaaega</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3872834068356954457">Teadus</translation>
@@ -1332,6 +1334,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4607603470419975064">Nupp Kuva Chrome'i nõuanded, Chrome'i funktsioonide kohta lisateabe saamiseks vajutage sisestusklahvi</translation>
 <translation id="4607608436550361748">Vaadake Chrome'i nõuandeid</translation>
 <translation id="4617273035598175554">Jooniste ja animatsiooni tarkvara</translation>
+<translation id="4627165777145349100">Lisateave selle lehe kohta</translation>
 <translation id="4627675673814409125">Seda reeglit ei saa Chrome'i profiili tasemel määrata ja seda eiratakse.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4631649115723685955">Ostuboonus on lingitud</translation>
@@ -1362,6 +1365,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="470284880436071933">Kuritegevus ja õigusemõistmine</translation>
 <translation id="4704732901923281920">Bioloogiateadused</translation>
 <translation id="4708268264240856090">Teie ühendus katkes</translation>
+<translation id="4709819737903924300">Teekonnad on avatud täiskõrgusel</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windowsi võrgudiagnostika käitamine<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Kasutaja <ph name="USERNAME" /> parool</translation>
@@ -1825,6 +1829,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5989320800837274978">Määratud ei ole fikseeritud puhverservereid ega pac-skriptiga URL-i.</translation>
 <translation id="5992691462791905444">Z-kujuliselt volditud</translation>
 <translation id="5995727681868049093">Google'i kontol teabe, privaatsuse ja turvalisuse haldamine</translation>
+<translation id="5997247540087773573">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Teie kontode turvalisuse kaitsmiseks soovitab Google'i paroolihaldur teil seda parooli kohe muuta ja kontrollida oma salvestatud paroole.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6006484371116297560">Klassikaline</translation>
 <translation id="6008122969617370890">Järjestus n–1</translation>
@@ -1863,6 +1868,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6061154937977953833">Maadlus</translation>
 <translation id="6064217302520318294">Ekraanilukk</translation>
 <translation id="6064602040258638498">Kupongid ja sooduspakkumised</translation>
+<translation id="6078813287646374487">Kuva selle lehe kohta lisateavet</translation>
 <translation id="6080696365213338172">Olete sisule juurde pääsenud administraatori antud sertifikaadiga. Administraator saab domeenile <ph name="DOMAIN" /> edastatavaid andmeid kinni pidada.</translation>
 <translation id="6087312102907839798">Seotud otsingud</translation>
 <translation id="6094273045989040137">Lisa märkus</translation>
@@ -2601,6 +2607,7 @@ Lisateave:
 <translation id="8163866351304776260">Neli auku vasakul</translation>
 <translation id="8175796834047840627">Chrome pakub võimalust salvestada kaardid teie Google'i kontole, kuna olete sisse logitud. Seda käitumist saab seadetes muuta.</translation>
 <translation id="8176440868214972690">Seadme administraator on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
+<translation id="8179003511148538426">Teekonnad on avatud poolel kõrgusel</translation>
 <translation id="8184538546369750125">Kasuta globaalset vaikeseadet (luba)</translation>
 <translation id="8186706823560132848">Tarkvara</translation>
 <translation id="8190193880870196235">Haldab laiendus</translation>

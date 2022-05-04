@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Голланд (Нидерланд)</translation>
 <translation id="174937106936716857">Нийт файлын тоо</translation>
 <translation id="1755345808328621801">Энэ файл Windows программ хангамжийг ашиглаж буй PC-нд зориулагдсан. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. Chrome Веб Дэлгүүрээс орлуулж болох тохирох аппыг хайна уу.</translation>
+<translation id="1757915090001272240">Латин цагаан толгойгоор</translation>
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Үйлчилгээ</translation>
 <translation id="1829129547161959350">Пенгвин</translation>
 <translation id="183183971458492120">Мэдээллийг ачаалж байна...</translation>
+<translation id="1832073788765803750">Хагас өргөнтэй катакана</translation>
 <translation id="1834290891154666894">Субъектийн хоёрдогч нэрийн тохирлын оруулга буруу байна</translation>
 <translation id="1838709767668011582">Google сайт</translation>
 <translation id="1844692022597038441">Энэ файл нь боломжит оффлайн хэлбэртэй биш байна.</translation>
@@ -514,6 +516,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" />-г <ph name="BEGIN_LINK" />Google Драйвт<ph name="END_LINK" /> нөөцөлж байна</translation>
 <translation id="535792325654997756">Мууртай хүн</translation>
 <translation id="5358764674931277">Фреймийн хурд</translation>
+<translation id="5363339716524495120">Оролтын хэл нь Хятад хэл юм</translation>
 <translation id="5368191757080475556">Linux-тай фолдер хуваалцах</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5411472733320185105">Эдгээр сүлжээ эзэмшигч болон домайнуудад прокси тохируулгыг хэрэглэхгүй:</translation>
@@ -536,6 +539,7 @@
 <translation id="5534520101572674276">Хэмжээг тооцоолж байна</translation>
 <translation id="554153475311314364">Грек галиг</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Цэг таслалын өргөн бүтэн байна</translation>
 <translation id="5602622065581044566">Авиа зүйн гартай болгар</translation>
 <translation id="5605830556594064952">АНУ-ын Дворак</translation>
 <translation id="5618330573454123917">Энэ файл нь Macintosh программ хангамжийг ашиглаж буй компьютерт зориулагдсан байна. Энэ нь таны ChromeOS-г ажиллуулдаг төхөөрөмжид тохирохгүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
@@ -745,6 +749,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> олдсон
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Драйвт<ph name="END_LINK" /> нөөцлөхөд бэлэн</translation>
+<translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малайлам авиа зүй</translation>
 <translation id="7505167922889582512">Далд файлуудыг харуулах</translation>
 <translation id="7514365320538308">Татаж авах</translation>
@@ -833,6 +838,7 @@
 <translation id="8128733386027980860">Dvorak гартай англи (ИБ)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Тантай хуваалцагдсан байна. Та энэ файлыг эзэмшдэггүй учраас устгах боломжгүй.</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
+<translation id="8147028810663464959">Тэмдэгтүүдийн өргөн бүтэн байна</translation>
 <translation id="8151638057146502721">Тохируулах</translation>
 <translation id="8154842056504218462">Бүх оролтыг сонгосон.</translation>
 <translation id="8157684860301034423">Аппын мэдээллийг сэргээж чадсангүй.</translation>
@@ -842,6 +848,7 @@
 <translation id="8208580316430297579">Урлагийн бүтээл</translation>
 <translation id="8223479393428528563">Эдгээр файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
+<translation id="8250690786522693009">Латин цагаан толгойгоор</translation>
 <translation id="8250920743982581267">Документ</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8261561378965667560">Хятад матрицын арга</translation>

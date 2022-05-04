@@ -1055,6 +1055,7 @@
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3816482573645936981">مقدار (جایگزین‌شده)</translation>
 <translation id="382518646247711829">اگر از سرور پراکسی استفاده می‌کنید...</translation>
+<translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
 <translation id="3827112369919217609">دقیق</translation>
 <translation id="3827666161959873541">فیلم خانوادگی</translation>
 <translation id="3828924085048779000">گذرعبارت خالی مجاز نیست.</translation>
@@ -1064,6 +1065,7 @@
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع «سندنگار Google» جدید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="385051799172605136">بازگشت</translation>
+<translation id="3851515670389017037">«سفرهای جستجو» بسته شد</translation>
 <translation id="3858027520442213535">به‌روزرسانی تاریخ و زمان</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3872834068356954457">علم</translation>
@@ -1364,6 +1366,7 @@
 <translation id="470284880436071933">جنایت و عدالت</translation>
 <translation id="4704732901923281920">علوم زیستی</translation>
 <translation id="4708268264240856090">اتصال شما قطع شد</translation>
+<translation id="4709819737903924300">«سفرهای جستجو» به‌صورت کامل باز شد</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">گذرواژه <ph name="USERNAME" /></translation>
@@ -1827,6 +1830,7 @@
 <translation id="5989320800837274978">‏سرور پروکسی ثابت و URL اسکریپت pac. تعیین نشده‌اند.</translation>
 <translation id="5992691462791905444">‏تاخوردگی Z شکل مهندسی</translation>
 <translation id="5995727681868049093">‏مدیریت اطلاعات، حریم‌خصوصی، و امنیت در «حساب Google»</translation>
+<translation id="5997247540087773573">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6006484371116297560">کلاسيک</translation>
 <translation id="6008122969617370890">‏ترتیب N تا ۱</translation>
@@ -1865,6 +1869,7 @@
 <translation id="6061154937977953833">كُشتی</translation>
 <translation id="6064217302520318294">قفل صفحه</translation>
 <translation id="6064602040258638498">پیشنهادهای کوپن و تخفیف</translation>
+<translation id="6078813287646374487">نمایش اطلاعات بیشتر درباره این صفحه</translation>
 <translation id="6080696365213338172">شما با استفاده از گواهی ارائه شده توسط سرپرست سیستم به محتوا دسترسی پیدا کرده‌اید. داده‌هایی که به <ph name="DOMAIN" /> ارائه می‌کنید ممکن است توسط سرپرست سیستم رهگیری شوند.</translation>
 <translation id="6087312102907839798">جستجوهای مربوط</translation>
 <translation id="6094273045989040137">حاشیه‌نویسی</translation>
@@ -2603,6 +2608,7 @@
 <translation id="8163866351304776260">چهار سوراخ در چپ</translation>
 <translation id="8175796834047840627">‏چون به سیستم وارد شده‌اید، Chrome پیشنهاد می‌کند کارت‌ها را در حساب Google ذخیره کنید. در تنظیمات می‌توانید این رفتار را تغییر دهید.</translation>
 <translation id="8176440868214972690">سرپرست این دستگاه اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>
+<translation id="8179003511148538426">«سفرهای جستجو» تا نیمه باز شد</translation>
 <translation id="8184538546369750125">استفاده از پیش‌فرض جهانی (مجاز)</translation>
 <translation id="8186706823560132848">نرم‌افزار</translation>
 <translation id="8190193880870196235">تحت‌مدیریت افزونه</translation>
@@ -2889,7 +2895,7 @@
 <translation id="9036306139374661733">میکروفون مجاز شود؟</translation>
 <translation id="9038649477754266430">استفاده از یک سرویس پیش‌بینی برای بار کردن سریع‌تر صفحه‌ها</translation>
 <translation id="9039213469156557790">علاوه بر این، این صفحه دارای منابع دیگری است که امن نیستند. دیگران می‌توانند در حین انتقال، این منابع را ببینند و این منابع می‌توانند برای تغییر رفتار صفحه، توسط یک مهاجم تغییر داده شوند.</translation>
-<translation id="9040464167025094690">‏دکمه «دستگاهم را پیدا کن»؛ برای پیدا کردن دستگاهتان در «حساب Google»، کلید «ورود» را فشار دهید</translation>
+<translation id="9040464167025094690">‏دکمه «یافتن دستگاهم»؛ برای پیدا کردن دستگاهتان در «حساب Google»، کلید «ورود» را فشار دهید</translation>
 <translation id="9042617223719777575">ظرفیت بالا</translation>
 <translation id="9044359186343685026">استفاده از شناسه لمسی</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>

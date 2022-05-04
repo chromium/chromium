@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
+<translation id="3517001332549868749">Chrome 操作系统更新</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
@@ -554,6 +555,7 @@
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6723839937902243910">电源</translation>
+<translation id="6723847290197874913">键盘背光</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
 <translation id="6749473226660745022">照片</translation>

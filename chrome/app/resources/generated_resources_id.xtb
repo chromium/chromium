@@ -4787,7 +4787,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5658415415603568799">Untuk tambahan keamanan, Smart Lock akan meminta Anda memasukkan sandi setelah 20 jam.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Halaman ini tidak dapat diterjemahkan</translation>
-<translation id="566097169318652001">Perangkat Anda mungkin tidak lagi berfungsi dengan baik, dan Anda mungkin mengalami masalah keamanan dan performa. Fitur utama di aplikasi Anda juga dapat berhenti berfungsi jika sudah usang dan Anda akan kehilangan hak untuk mengajukan klaim hukum.</translation>
 <translation id="5662513737565158057">Mengubah cara kerja aplikasi Linux.</translation>
 <translation id="5667293444945855280">Program Jahat</translation>
 <translation id="5667546120811588575">Menyiapkan Google Play...</translation>
@@ -5641,6 +5640,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6520876759015997832">Hasil penelusuran <ph name="LIST_POSITION" /> dari <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk membuka bagian.</translation>
 <translation id="6521214596282732365">Situs biasanya menggunakan font Anda agar Anda dapat membuat konten berkualitas tinggi dengan alat desain dan grafis online</translation>
 <translation id="6523303810310758032">Saat Anda menghapus histori penjelajahan, baik semua histori maupun histori untuk situs tertentu, berarti Anda juga menghapus informasi pengukuran terkait. Lihat <ph name="BEGIN_LINK" />histori penjelajahan Anda<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Pengelola Sandi Google tidak dapat menyimpan sandi ini di Akun Google Anda. Anda dapat menyimpannya ke perangkat ini.</translation>
 <translation id="6524735478670290456">Cara kami menggunakan data ini:</translation>
 <translation id="652492607360843641">Anda terhubung ke jaringan <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Bagikan</translation>
@@ -5945,6 +5945,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6818198425579322765">Bahasa Asal Terjemahan Halaman</translation>
 <translation id="6818547713623251698">Lihat foto, media, notifikasi, dan aplikasi ponsel</translation>
 <translation id="6818802132960437751">Fitur perlindungan bawaan terhadap virus</translation>
+<translation id="6818920801736417483">Simpan sandi?</translation>
 <translation id="6823174134746916417">Ketuk untuk mengklik touchpad</translation>
 <translation id="6824564591481349393">Salin Alamat &amp;Email</translation>
 <translation id="6824584962142919697">&amp;Periksa elemen</translation>
@@ -6104,7 +6105,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="697312151395002334">Diizinkan mengirim pop-up dan menggunakan pengalihan</translation>
 <translation id="6973611239564315524">Upgrade ke versi Debian 10 (Buster) sudah tersedia</translation>
 <translation id="69739764870135975">Jika Google juga merupakan mesin telusur default Anda, Anda akan melihat saran yang lebih baik dan relevan secara kontekstual</translation>
-<translation id="6974609594866392343">Mode demo offline</translation>
 <translation id="697508444536771064">Matikan Linux</translation>
 <translation id="6978121630131642226">Mesin Telusur</translation>
 <translation id="6979044105893951891">Luncurkan dan tutup sesi tamu terkelola</translation>

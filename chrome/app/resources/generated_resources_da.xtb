@@ -4788,7 +4788,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5658415415603568799">Af sikkerhedshensyn beder Smart Lock dig om at angive din adgangskode efter 20 timer.</translation>
 <translation id="5659593005791499971">Mail</translation>
 <translation id="5659833766619490117">Denne side kunne ikke oversættes</translation>
-<translation id="566097169318652001">Din enhed fungerer muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen. Vigtige funktion i dine apps kan også holde op med at fungere, når de bliver forældet, og du mister retten til at indgive juridiske krav.</translation>
 <translation id="5662513737565158057">Skift indstillingerne for, hvordan Linux-apps fungerer.</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Konfigurerer Google Play...</translation>
@@ -5642,6 +5641,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6520876759015997832">Søgeresultat <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryk på Enter for at gå til sektionen.</translation>
 <translation id="6521214596282732365">Websites bruger som regel dine skrifttyper, så du kan oprette indhold i høj kvalitet med design- og grafikværktøjer online</translation>
 <translation id="6523303810310758032">Når du sletter din browserhistorik – det hele eller for et specifikt website – sletter du også de tilhørende målingsoplysninger. Se <ph name="BEGIN_LINK" />din browserhistorik<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Google Adgangskodeadministrator kunne ikke gemme disse adgangskoder på din Google-konto. Du kan gemme dem på denne enhed.</translation>
 <translation id="6524735478670290456">Sådan bruger vi dataene:</translation>
 <translation id="652492607360843641">Du har oprettet forbindelse til et <ph name="NETWORK_TYPE" />-netværk.</translation>
 <translation id="6527303717912515753">Del</translation>
@@ -5948,6 +5948,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6818198425579322765">Sidens sprog, som skal oversættes</translation>
 <translation id="6818547713623251698">Se din telefons billeder, mediefiler, notifikationer og apps</translation>
 <translation id="6818802132960437751">Indbygget virusbeskyttelse</translation>
+<translation id="6818920801736417483">Vil du gemme adgangskoderne?</translation>
 <translation id="6823174134746916417">Tryk-hurtigt-for-at-klikke på touchplade</translation>
 <translation id="6824564591481349393">Kopier mailadress&amp;e</translation>
 <translation id="6824584962142919697">&amp;Inspect elements (Undersøg elementer)</translation>
@@ -6107,7 +6108,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="697312151395002334">Har tilladelse til at sende pop op-vinduer og bruge omdirigeringer</translation>
 <translation id="6973611239564315524">Der er en tilgængelig opdatering til Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
-<translation id="6974609594866392343">Offline demotilstand</translation>
 <translation id="697508444536771064">Luk Linux</translation>
 <translation id="6978121630131642226">Søgemaskiner</translation>
 <translation id="6979044105893951891">Start og afslut administrerede gæstesessioner</translation>

@@ -854,6 +854,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6166852626429024716">Pesquisar no dispositivo, em apps, nas configurações, na Web…</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
 <translation id="619279033188484792">Veja as fotos, mídias e notificações recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
+<translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6220928844947387476">Agora é possível gravar você e a tela ao mesmo tempo</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
@@ -1189,6 +1190,7 @@ Nova instalação</translation>
 <translation id="826107067893790409">Pressione "Enter" para desbloquear para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8270450402312105425">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 hora}one{Reverta o dispositivo para a versão anterior em até # hora}other{Reverta o dispositivo para a versão anterior em até # horas}}</translation>
+<translation id="8271580342040932214">A bateria fica temporariamente em 80% enquanto o dispositivo está conectado à fonte de energia para prolongar a duração. Ela será totalmente carregada até <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Deslize para a esquerda com quatro dedos para acessar o espaço de trabalho anterior</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
@@ -1272,6 +1274,7 @@ Nova instalação</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configurações de métodos de entrada</translation>
 <translation id="8818320199597151042">Removendo o perfil. Aguarde alguns minutos.</translation>
+<translation id="8819728065740986820">O Carregamento adaptável está ativado</translation>
 <translation id="8825863694328519386">Deslize da esquerda para voltar</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8841375032071747811">Botão "Voltar"</translation>
@@ -1318,6 +1321,7 @@ Nova instalação</translation>
 <translation id="9080132581049224423">Deslize para cima para ir para a tela inicial</translation>
 <translation id="9080206825613744995">O microfone está sendo usado.</translation>
 <translation id="9084606467167974638">Alternar posição do menu</translation>
+<translation id="9085962983642906571">A bateria fica em 80% enquanto o dispositivo está conectado à fonte de energia para prolongar a duração.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Tela <ph name="DISPLAY_NAME" /> removida</translation>
 <translation id="9098969848082897657">Silenciar smartphone</translation>

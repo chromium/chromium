@@ -371,6 +371,7 @@
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Device has <ph name="BATTERY_PERCENTAGE" />% left bud battery.</translation>
+<translation id="4915052247106771211">This will reset the device to factory settings (Powerwash).</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
@@ -425,6 +426,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5358174242040570474">Something went wrong. Try choosing a wallpaper again or reopen the app.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
+<translation id="537872351913703572">Device will go to a different user or organisation</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
 <translation id="5401938042319910061">Run all routines</translation>
 <translation id="5423849171846380976">Activated</translation>
@@ -727,6 +729,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8671972493856476349">Update to <ph name="VERSION_NUMBER" /> and restart</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8680431479333800907">Device will go to the same user</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use the left or right arrow keys to manage this feature.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>

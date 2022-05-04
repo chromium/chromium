@@ -854,6 +854,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6166852626429024716">Cihaz, tətbiqlər, ayarlar, vebdə və s. axtarın</translation>
 <translation id="6179832488876878285">Vacib fayllarınızı buraya bərkidə bilərsiniz. Başlamaq üçün Fayllar tətbiqini açın.</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotolarına, media və bildirişlərinə baxın</translation>
+<translation id="619335566042889110">İndi tam şarj edin</translation>
 <translation id="6220928844947387476">İndi özünüzü və ekranınızı eyni vaxtda çəkə bilərsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Periferik cihaz performansı məhdud ola bilər</translation>
@@ -1189,6 +1190,7 @@ Yeni quraşdırma</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> üçün kiliddən çıxarmaq üçün Enter düyməsini basın</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8270450402312105425">{0,plural, =1{Bir saat ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# saat ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
+<translation id="8271580342040932214">Batareyanın ömrünü uzatmaq üçün enerji mənbəyinə qoşulduqda batareyanız müvəqqəti olaraq 80% səviyyəsində olur. Batareya bu vaxtadək tam şarj ediləcək: <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">Əvvəlki masaya keçmək üçün dörd barmaqla sola çəkin</translation>
 <translation id="828708037801473432">Deaktiv</translation>
 <translation id="8297006494302853456">Zəif</translation>
@@ -1272,6 +1274,7 @@ Yeni quraşdırma</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Daxiletmə Metodları Ayarları</translation>
 <translation id="8818320199597151042">Profil silinir. Bir neçə dəqiqə gözləyin.</translation>
+<translation id="8819728065740986820">Adaptiv şarj aktivdir</translation>
 <translation id="8825863694328519386">Geri qayıtmaq üçün soldan sürüşdürün</translation>
 <translation id="8834539327799336565">Hazırda qoşulub</translation>
 <translation id="8841375032071747811">"Geri" düyməsi</translation>
@@ -1318,6 +1321,7 @@ Yeni quraşdırma</translation>
 <translation id="9080132581049224423">Əsas səhifəyə keçmək üçün yuxarı çəkin</translation>
 <translation id="9080206825613744995">Mikrofon istifadə olunur.</translation>
 <translation id="9084606467167974638">Menyu vəziyyətini dəyişin</translation>
+<translation id="9085962983642906571">Batareyanın ömrünü uzatmaq üçün enerji mənbəyinə qoşulduqda batareyanız 80% səviyyəsində saxlanılır.</translation>
 <translation id="9089416786594320554">Daxiletmə metodları</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> silindi</translation>
 <translation id="9098969848082897657">Telefonu səssiz edin</translation>

@@ -1055,6 +1055,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3816482573645936981">Værdi (tilsidesat)</translation>
 <translation id="382518646247711829">Hvis du bruger en proxyserver...</translation>
+<translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3827666161959873541">Familiefilm</translation>
 <translation id="3828924085048779000">Tomme adgangssætninger er ikke tilladt.</translation>
@@ -1064,6 +1065,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette et nyt Google-dokument</translation>
 <translation id="385051799172605136">Tilbage</translation>
+<translation id="3851515670389017037">Rejser er lukket</translation>
 <translation id="3858027520442213535">Opdater dato og tid</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3872834068356954457">Videnskab</translation>
@@ -1364,6 +1366,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="470284880436071933">Kriminalitet og retshåndhævelse</translation>
 <translation id="4704732901923281920">Biologisk videnskab</translation>
 <translation id="4708268264240856090">Din forbindelse blev afbrudt</translation>
+<translation id="4709819737903924300">Rejser er åbnet i fuld højde</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Køre Windows Netværksdiagnosticering<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
@@ -1827,6 +1830,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5989320800837274978">Der er hverken angivet faste proxyservere eller en .pac-scriptwebadresse.</translation>
 <translation id="5992691462791905444">Z-fals med kant foroven</translation>
 <translation id="5995727681868049093">Administrer din konto, dit privatliv og beskyttelsen på din Google-konto</translation>
+<translation id="5997247540087773573">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Google Adgangskodeadministrator, at du ændrer det nu og tjekker dine gemte adgangskoder.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Klassisk</translation>
 <translation id="6008122969617370890">N-til-1-rækkefølge</translation>
@@ -1865,6 +1869,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6061154937977953833">Brydning</translation>
 <translation id="6064217302520318294">Skærmlås</translation>
 <translation id="6064602040258638498">Rabatter og kupontilbud</translation>
+<translation id="6078813287646374487">Vis flere oplysninger om denne side</translation>
 <translation id="6080696365213338172">Du har opnår adgang til indhold vha. et administratorcertifikat. De data, du angiver til <ph name="DOMAIN" />, kan indhentes af din administrator.</translation>
 <translation id="6087312102907839798">Relaterede søgninger</translation>
 <translation id="6094273045989040137">Annoter</translation>
@@ -2603,6 +2608,7 @@ Yderligere oplysninger:
 <translation id="8163866351304776260">Fire huller i venstre side</translation>
 <translation id="8175796834047840627">Chrome tilbyder at gemme dine kort på din Google-konto, fordi du er logget ind. Du kan ændre dette i indstillingerne.</translation>
 <translation id="8176440868214972690">Administratoren af denne enhed har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>
+<translation id="8179003511148538426">Rejser er åbnet i halv højde</translation>
 <translation id="8184538546369750125">Brug global standard (tillad)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Administreres af en udvidelse</translation>

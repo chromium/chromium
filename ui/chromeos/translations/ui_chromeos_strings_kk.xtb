@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">Нидерланд (Нидерланд)</translation>
 <translation id="174937106936716857">Барлық файлдар саны</translation>
 <translation id="1755345808328621801">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Ол ChromeOS жүйесімен жұмыс істейтін құрылғымен үйлесімді емес. Chrome Web Store дүкенінен сәйкес келетін балама қолданбаны іздеңіз.</translation>
+<translation id="1757915090001272240">Кең латын</translation>
 <translation id="1773212559869067373">Аутентификация сертификаты жергілікті негізде қабылданбады</translation>
 <translation id="1775381402323441512">Бейне ақпараты</translation>
 <translation id="180035236176489073">Бұл файлдарға кіру үшін желіде болуыңыз керек.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">Қызметтер</translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Ақпарат жүктелуде…</translation>
+<translation id="1832073788765803750">Жарты енді катакана</translation>
 <translation id="1834290891154666894">Енгізілген балама атау тақырыбы сәйкестігі жарамсыз.</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1844692022597038441">Бұл файл желіден тыс қолжетімді емес.</translation>
@@ -516,6 +518,7 @@
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> файлдың <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> қызметіндегі сақтық көшірмесі жасалуда</translation>
 <translation id="535792325654997756">Мысықтары бар адам</translation>
 <translation id="5358764674931277">Кадр жиілігі</translation>
+<translation id="5363339716524495120">Енгізу тілі – қытай</translation>
 <translation id="5368191757080475556">Қалтаны Linux жүйесімен бөлісу</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5411472733320185105">Мына хосттар мен домендер үшін прокси параметрлерін пайдаланбау:</translation>
@@ -538,6 +541,7 @@
 <translation id="5534520101572674276">Көлемін есептеу</translation>
 <translation id="554153475311314364">Грек (транслитерация)</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5583664733673201137">Тыныс белгілерінің ені – толық</translation>
 <translation id="5602622065581044566">Болгар (фонетикалық пернетақтамен)</translation>
 <translation id="5605830556594064952">АҚШ Дворак</translation>
 <translation id="5618330573454123917">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Ол ChromeOS жүйесімен жұмыс істейтін құрылғымен үйлесімді емес. ChromeOS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ ақпарат алыңыз<ph name="END_LINK_HELP" />.</translation>
@@ -747,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> файл табылды
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дискіне сақтық көшірмесін жасауға болады</translation>
+<translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетикалық)</translation>
 <translation id="7505167922889582512">Жасырын файлдарды көрсету</translation>
 <translation id="7514365320538308">Жүктеу</translation>
@@ -835,6 +840,7 @@
 <translation id="8128733386027980860">Ағылшын (БК), Дворак пернетақтасымен</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сізбен бөлісілді. Өзіңіздікі болмағандықтан, оны жоя алмайсыз.</translation>
 <translation id="813913629614996137">Дайындауда…</translation>
+<translation id="8147028810663464959">Таңба ені – толық</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
 <translation id="8154842056504218462">Барлық жазба таңдалды.</translation>
 <translation id="8157684860301034423">Қолданба туралы ақпарат алынбады.</translation>
@@ -844,6 +850,7 @@
 <translation id="8208580316430297579">Өнер туындысы</translation>
 <translation id="8223479393428528563">Бұл файлдарды желіден тыс сақтау үшін желіге қайта қосылып, файлдарды тінтуірдің оң жағымен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
 <translation id="8249296373107784235">Доғару</translation>
+<translation id="8250690786522693009">Латын</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8261561378965667560">Қытай (құрылымдық енгізу)</translation>

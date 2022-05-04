@@ -95,6 +95,7 @@
 <translation id="1747761757048858544">ලන්දේසි (නෙදර්ලන්තය)</translation>
 <translation id="174937106936716857">මුළු ගොනු ගණන</translation>
 <translation id="1755345808328621801">මෙම ගොනුව Windows මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය ඔබගේ ChromeOS ධාවනය වන උපාංගය සමඟ නොගැළපේ. කරුණාකර ගැළපෙන ප්‍රතිස්ථාපන යෙදුමක් Chrome Web Store හි සොයන්න.</translation>
+<translation id="1757915090001272240">පළල ලතින්</translation>
 <translation id="1773212559869067373">තහවුරු කිරීමේ සහතිකය ස්ථානීයව ප්‍රතික්ෂේප කෙරිණි</translation>
 <translation id="1775381402323441512">වීඩියෝ තොරතුරු</translation>
 <translation id="180035236176489073">මෙම ගොනු වෙත පිවිසීමට ඔබ ඔන්ලයින් සිටිය යුතුය.</translation>
@@ -104,6 +105,7 @@
 <translation id="1813278315230285598">සේවා</translation>
 <translation id="1829129547161959350">පෙන්ගුයින්</translation>
 <translation id="183183971458492120">තොරතුරු පූරණ කරමින්...</translation>
+<translation id="1832073788765803750">අර්ධ පළල කටකානා</translation>
 <translation id="1834290891154666894">වලංගු නොවන මාතෘකා විකල්ප නම ගැළපීම ඇතුළත් කිරීම</translation>
 <translation id="1838709767668011582">Google අඩවිය</translation>
 <translation id="1844692022597038441">මෙම ගොනුව ඕෆ්ලයින් ලෙස ලද නොහැකිය.</translation>
@@ -749,6 +751,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> හමු විය
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> වෙත උපස්ථ කිරීමට සූදානම්</translation>
+<translation id="749452993132003881">හිරගනා</translation>
 <translation id="7495372004724182530">මලයාලම් ශබ්දිම</translation>
 <translation id="7505167922889582512">සැඟවුණු ගොනු පෙන්වන්න</translation>
 <translation id="7514365320538308">බාගන්න</translation>
@@ -847,6 +850,7 @@
 <translation id="8208580316430297579">සිත්තම්</translation>
 <translation id="8223479393428528563">මෙම ගොනු මාර්ගගත නොවන භාවිතයට සුරැකීමට, නැවත මාර්ගගත වී, ගොනු මත දකුණු ක්ලික් කර, <ph name="OFFLINE_CHECKBOX_NAME" /> අභිප්‍රේතය තෝරන්න.</translation>
 <translation id="8249296373107784235">අහෝසි කරන්න</translation>
+<translation id="8250690786522693009">ලතින්</translation>
 <translation id="8250920743982581267">ලේඛන</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8261561378965667560">චීන අරාව</translation>

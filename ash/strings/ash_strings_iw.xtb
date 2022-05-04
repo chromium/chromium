@@ -854,6 +854,7 @@
 <translation id="6166852626429024716">חיפוש במכשיר, באפליקציות, בהגדרות, באינטרנט...</translation>
 <translation id="6179832488876878285">כאן אפשר להצמיד את הקבצים החשובים. יש לפתוח את אפליקציית 'קבצים' כדי להתחיל.</translation>
 <translation id="619279033188484792">הצגת התראות, מדיה ותמונות מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
+<translation id="619335566042889110">לטעינה מלאה</translation>
 <translation id="6220928844947387476">יש לך אפשרות להקליט את עצמך ואת המסך באותו הזמן</translation>
 <translation id="622484624075952240">למטה</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
@@ -1191,6 +1192,7 @@
 <translation id="826107067893790409">‏יש להקיש על Enter כדי לבטל את הנעילה בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}many{שינוי המכשיר לגרסה קודמת בתוך # שעות}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
+<translation id="8271580342040932214">כדי להאריך את חיי הסוללה, טעינת הסוללה מושהית זמנית ב-80% בזמן החיבור למטען. הסוללה תיטען במלואה עד <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="8284362522226889623">יש להחליק ימינה בעזרת ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>
@@ -1274,6 +1276,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">הגדרות של שיטת הקלט</translation>
 <translation id="8818320199597151042">הסרת הפרופיל מתבצעת. יש להמתין מספר דקות.</translation>
+<translation id="8819728065740986820">הטעינה הדינמית מופעלת</translation>
 <translation id="8825863694328519386">יש להחליק מצד ימין כדי לחזור אחורה</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8841375032071747811">לחצן 'הקודם'</translation>
@@ -1320,6 +1323,7 @@
 <translation id="9080132581049224423">כדי לחזור לדף הבית, מחליקים כלפי מעלה</translation>
 <translation id="9080206825613744995">המיקרופון נמצא בשימוש.</translation>
 <translation id="9084606467167974638">שינוי מיקום התפריט</translation>
+<translation id="9085962983642906571">כדי להאריך את חיי הסוללה, טעינת הסוללה מושהית ב-80% בזמן החיבור למטען.</translation>
 <translation id="9089416786594320554">שיטות קלט</translation>
 <translation id="9091626656156419976">הוסרה התצוגה של <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">השתקת הטלפון</translation>

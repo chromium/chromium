@@ -4756,7 +4756,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="5658415415603568799">Ze względów bezpieczeństwa Smart Lock poprosi Cię o podanie hasła po upływie 20 godzin.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659833766619490117">Nie udało się przetłumaczyć tej strony</translation>
-<translation id="566097169318652001">Twoje urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością. W nieaktualnych aplikacjach mogą przestać działać również główne funkcje, co spowoduje utratę możliwości składania roszczeń prawnych.</translation>
 <translation id="5662513737565158057">Możesz zmienić sposób działania aplikacji na Linuksa.</translation>
 <translation id="5667293444945855280">Złośliwe oprogramowanie</translation>
 <translation id="5667546120811588575">Konfiguruję Google Play…</translation>
@@ -5610,6 +5609,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6520876759015997832">Wynik wyszukiwania <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Aby przejść do tej sekcji, naciśnij Enter.</translation>
 <translation id="6521214596282732365">Witryny zwykle używają Twoich czcionek, aby umożliwić Ci tworzenie treści wysokiej jakości za pomocą narzędzi online służących do tworzenia grafiki i projektowania</translation>
 <translation id="6523303810310758032">Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą określonej witryny – usuniesz także powiązane z nią informacje o pomiarach skuteczności reklam. Zobacz <ph name="BEGIN_LINK" />swoją historię przeglądania<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">Menedżerowi haseł Google nie udało się zapisać tych haseł na Twoim koncie Google. Możesz je zapisać na tym urządzeniu.</translation>
 <translation id="6524735478670290456">Jak wykorzystujemy te dane:</translation>
 <translation id="652492607360843641">Masz połączenie z siecią <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
@@ -5918,6 +5918,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6818198425579322765">Język strony do przetłumaczenia</translation>
 <translation id="6818547713623251698">Wyświetlaj zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="6818802132960437751">Wbudowana ochrona antywirusowa</translation>
+<translation id="6818920801736417483">Zapisać hasła?</translation>
 <translation id="6823174134746916417">Kliknięcie przez dotknięcie touchpada</translation>
 <translation id="6824564591481349393">Kopiuj adres &amp;e-mail</translation>
 <translation id="6824584962142919697">&amp;Sprawdź elementy</translation>
@@ -6077,7 +6078,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="697312151395002334">Zezwolono na wysyłanie wyskakujących okienek i używanie przekierowań</translation>
 <translation id="6973611239564315524">Dostępne jest uaktualnienie do Debiana 10 (Buster)</translation>
 <translation id="69739764870135975">Jeśli Google jest Twoją domyślną wyszukiwarką, zobaczysz lepiej dopasowane sugestie</translation>
-<translation id="6974609594866392343">Tryb demo offline</translation>
 <translation id="697508444536771064">Wyłącz Linuksa</translation>
 <translation id="6978121630131642226">Wyszukiwarki</translation>
 <translation id="6979044105893951891">Rozpoczynanie i kończenie zarządzanych sesji gościa</translation>

@@ -4785,7 +4785,6 @@
 <translation id="5658415415603568799">為提高安全性，Smart Lock 將會在 20 小時後要求您輸入密碼。</translation>
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5659833766619490117">無法翻譯此網頁的內容</translation>
-<translation id="566097169318652001">裝置可能無法再正常運作，您可能會遇到安全性和效能問題。應用程式如果過舊，其重要功能亦可能會停止運作，而您將失去提出法律申索的權利。</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
 <translation id="5667293444945855280">惡意軟件</translation>
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
@@ -5639,6 +5638,7 @@
 <translation id="6520876759015997832"><ph name="LIST_SIZE" /> 項搜尋結果的第 <ph name="LIST_POSITION" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往該部分。</translation>
 <translation id="6521214596282732365">為了讓您透過網上的設計及圖像工具建立高傳真度的內容，網站通常會使用您的字型</translation>
 <translation id="6523303810310758032">刪除瀏覽紀錄時 (包括刪除所有或特定網站)，系統亦會刪除關聯的評估資料。請查看<ph name="BEGIN_LINK" />您的瀏覽記錄<ph name="END_LINK" /></translation>
+<translation id="6523574494641144162">「Google 密碼管理工具」無法將這些密碼儲存在您的 Google 帳戶中，您可改為儲存至此裝置。</translation>
 <translation id="6524735478670290456">我們如何使用這些資料：</translation>
 <translation id="652492607360843641">您已連接<ph name="NETWORK_TYPE" />網絡。</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -5943,6 +5943,7 @@
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818547713623251698">查看手機上的相片、媒體、通知和應用程式</translation>
 <translation id="6818802132960437751">內置防毒功能</translation>
+<translation id="6818920801736417483">要儲存密碼嗎？</translation>
 <translation id="6823174134746916417">觸控板輕按點撃功能</translation>
 <translation id="6824564591481349393">複製電郵地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
@@ -6102,7 +6103,6 @@
 <translation id="697312151395002334">已允許傳送彈出式視窗和使用重新導向</translation>
 <translation id="6973611239564315524">可以升級至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
-<translation id="6974609594866392343">離線示範模式</translation>
 <translation id="697508444536771064">關閉 Linux</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>

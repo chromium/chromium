@@ -542,7 +542,7 @@
 <translation id="5534520101572674276">正在計算大小</translation>
 <translation id="554153475311314364">希臘文 (音譯)</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5583664733673201137">標點符號為全形</translation>
+<translation id="5583664733673201137">標點符號寬度為全形</translation>
 <translation id="5602622065581044566">保加利亞文 (拼音鍵盤)</translation>
 <translation id="5605830556594064952">Dvorak 美式鍵盤</translation>
 <translation id="5618330573454123917">此檔案是專為使用 Macintosh 軟件的電腦而設，與運行 Chrome OS 的裝置並不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
@@ -841,7 +841,7 @@
 <translation id="8128733386027980860">英文 (英國)，Dvorak 鍵盤</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」是他人與您共用的項目。您不是這個檔案的擁有者，無法刪除這個檔案。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
-<translation id="8147028810663464959">字元為全形</translation>
+<translation id="8147028810663464959">字元寬度為全形</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154842056504218462">揀晒所有項目。</translation>
 <translation id="8157684860301034423">無法擷取應用程式資料。</translation>

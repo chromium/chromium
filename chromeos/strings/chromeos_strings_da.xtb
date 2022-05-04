@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
+<translation id="3517001332549868749">ChromeOS-opdatering</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfrit)</translation>
@@ -553,6 +554,7 @@
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6723839937902243910">Strøm</translation>
+<translation id="6723847290197874913">Tastaturlys</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6749473226660745022">Billeder</translation>

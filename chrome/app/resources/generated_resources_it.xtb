@@ -4769,7 +4769,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5658415415603568799">Per maggiore sicurezza, Smart Lock ti chiederà di inserire la password dopo 20 ore.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Impossibile tradurre questa pagina</translation>
-<translation id="566097169318652001">Il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza. Inoltre, le funzionalità principali delle tue app potrebbero smettere di funzionare quando diventano obsolete e perderai il diritto di presentare rivendicazioni legali.</translation>
 <translation id="5662513737565158057">Cambia il funzionamento delle app Linux.</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Configurazione di Google Play...</translation>
@@ -6085,7 +6084,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="697312151395002334">Possono inviare popup e utilizzare reindirizzamenti</translation>
 <translation id="6973611239564315524">È disponibile un upgrade a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
-<translation id="6974609594866392343">Modalità demo offline</translation>
 <translation id="697508444536771064">Arresta Linux</translation>
 <translation id="6978121630131642226">Motori di ricerca</translation>
 <translation id="6979044105893951891">Avvio e chiusura di sessioni Ospite gestite</translation>
@@ -7587,7 +7585,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8460932807646981183">Gestisci motori di ricerca e ricerca nei siti</translation>
 <translation id="84613761564611563">Interfaccia utente di configurazione rete richiesta. Attendi...</translation>
 <translation id="8461914792118322307">Proxy</translation>
-<translation id="8463001014623882202">Autorizzazione non riuscita</translation>
+<translation id="8463001014623882202">Autorizzazione negata</translation>
 <translation id="846374874681391779">Barra dei download</translation>
 <translation id="8463955938112983119">Plug-in <ph name="PLUGIN_NAME" /> disabilitato.</translation>
 <translation id="8464132254133862871">Questo account utente non è idoneo per il servizio.</translation>

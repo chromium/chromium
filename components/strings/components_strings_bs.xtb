@@ -1055,6 +1055,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3816482573645936981">Vrijednost (zamijenjeno)</translation>
 <translation id="382518646247711829">Ako koristite proksi server...</translation>
+<translation id="3826050100957962900">Prijava treće strane</translation>
 <translation id="3827112369919217609">Apsolutno</translation>
 <translation id="3827666161959873541">Porodični filmovi</translation>
 <translation id="3828924085048779000">Polje za pristupni izraz ne može biti prazno.</translation>
@@ -1829,7 +1830,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5989320800837274978">Nije naveden fiksni proksi server niti URL pac skripte.</translation>
 <translation id="5992691462791905444">Inženjersko Z-presavijanje</translation>
 <translation id="5995727681868049093">Upravljajte podacima, privatnošću i sigurnošću na Google računu</translation>
-<translation id="5997247540087773573">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Google upravitelj zaporki preporučuje da je odmah promijenite i provjerite svoje spremljene zaporke.</translation>
+<translation id="5997247540087773573">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Googleov Upravitelj lozinki preporučuje da odmah promijenite lozinku i provjerite sačuvane lozinke.</translation>
 <translation id="6000758707621254961">Broj rezultata <ph name="RESULT_COUNT" /> za "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Klasično</translation>
 <translation id="6008122969617370890">Redoslijed od N do 1</translation>
@@ -1868,7 +1869,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6061154937977953833">Hrvanje</translation>
 <translation id="6064217302520318294">Zaključavanje ekrana</translation>
 <translation id="6064602040258638498">Kuponi i popusti</translation>
-<translation id="6078813287646374487">Prikaži više informacija o ovoj stranici</translation>
+<translation id="6078813287646374487">Prikažite više informacija o ovoj stranici</translation>
 <translation id="6080696365213338172">Pristupili ste sadržaju putem potvrde koju je pružio administrator. Administrator može presresti podatke koje pružite domeni <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Srodna pretraživanja</translation>
 <translation id="6094273045989040137">Dodajte bilješku</translation>

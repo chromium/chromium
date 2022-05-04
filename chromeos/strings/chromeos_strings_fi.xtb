@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
+<translation id="3517001332549868749">ChromeOS-päivitys</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
@@ -554,6 +555,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6723839937902243910">Virta</translation>
+<translation id="6723847290197874913">Näppämistön taustavalo</translation>
 <translation id="672609503628871915">Uudet ominaisuudet</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="6749473226660745022">Kuvat</translation>

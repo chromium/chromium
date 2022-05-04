@@ -133,6 +133,7 @@
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1125550662859510761">Megjelenés: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natív)</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
+<translation id="1128090040635299943">Folyamatban van a Linux konfigurálása. A folyamat néhány percig tart.</translation>
 <translation id="1128591060186966949">Keresőmotor beállítása</translation>
 <translation id="1129420403709586868">Megtekintheti a telefonon található fotókat és médiatartalmakat</translation>
 <translation id="1129850422003387628">Alkalmazáskezelés</translation>
@@ -334,6 +335,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1327794256477341646">A helyadatokat igénylő funkciók nem működnek</translation>
 <translation id="1329191040029425999">Győződjön meg arról, hogy eszköze naprakész, majd próbálkozzon újra</translation>
 <translation id="1330145147221172764">Képernyő-billentyűzet engedélyezése</translation>
+<translation id="1331625853030156663">A(z) <ph name="APP_NAME" /> megnyitáshoz engedélyezze a „Lezárási képernyő megjelenítése, az alvó módból történő felébresztéskor” beállítást</translation>
 <translation id="1331977651797684645">Én voltam.</translation>
 <translation id="1333489022424033687">Lehetséges, hogy néhány funkció nem működik a(z) <ph name="ORIGIN" /> helyen, amíg nem törli a más webhelyek által az Ön eszközén tárolt adatokat.</translation>
 <translation id="1333965224356556482">A webhelyek nem tekinthetik meg az Ön tartózkodási helyét</translation>
@@ -3343,6 +3345,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="420283545744377356">Képernyővédő kikapcsolása</translation>
 <translation id="4203065553461038553">A fájl neve vagy helye túl hosszú</translation>
 <translation id="4204851595694839599">Milyen volt a játékélmény?</translation>
+<translation id="4205157409548006256">Hiba történt a Linux konfigurálásakor.</translation>
 <translation id="4206144641569145248">Idegen</translation>
 <translation id="4206323443866416204">Visszajelzés</translation>
 <translation id="4207522141889799150">A webhely (<ph name="SITE" />) engedélyeinek módosítása</translation>
@@ -4786,7 +4789,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5658415415603568799">A nagyobb biztonság érdekében a Smart Lock 20 óra elteltével megkéri, hogy adja meg jelszavát.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659833766619490117">Nem sikerült lefordítani az oldalt</translation>
-<translation id="566097169318652001">Előfordulhat, hogy az eszköz már nem működik megfelelően, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat. Az alkalmazásban található kulcsfontosságú funkciók működése szintén leállhat, ha már elavulttá válnak, Ön pedig elveszíti a jogi keresetek benyújtására vonatkozó jogát.</translation>
 <translation id="5662513737565158057">A linuxos alkalmazások működésének módosítása.</translation>
 <translation id="5667293444945855280">Ártalmas program</translation>
 <translation id="5667546120811588575">A Google Play beállítása…</translation>
@@ -5810,6 +5812,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6686665106869989887">Lap jobbra helyezve</translation>
 <translation id="6686817083349815241">Jelszó mentése</translation>
 <translation id="6687079240787935001">A következők elrejtése: <ph name="MODULE_TITLE" /></translation>
+<translation id="6688391094668641513">A(z) <ph name="ORIGIN" /> olvasásának és módosításának kérelmezése:</translation>
 <translation id="6689714331348768690">Hívja a számítógéphez őt: <ph name="SUPERVISED_USER_NAME" />. Hangmintája létrehozásához gyermekének fel kell olvasnia néhány kifejezést erről a képernyőről.
     <ph name="BR" />
     Ha <ph name="SUPERVISED_USER_NAME" /> segítségre szorul a felolvasáshoz, kérje meg, hogy ismételje Ön után. Suttogjon a mikrofontól távol, hogy a Segéd gyermeke hangját tanulja meg, ne az Önét.</translation>
@@ -6103,7 +6106,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="697312151395002334">Megjeleníthetnek előugró ablakokat, és használhatnak átirányításokat</translation>
 <translation id="6973611239564315524">Frissíthet a következőre: Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ha a Google az alapértelmezett keresőmotorja is, jobb és a kontextusnak megfelelő javaslatokat láthat.</translation>
-<translation id="6974609594866392343">Offline demó mód</translation>
 <translation id="697508444536771064">A Linux leállítása</translation>
 <translation id="6978121630131642226">Keresők</translation>
 <translation id="6979044105893951891">Felügyelt vendég-munkafolyamatok indítása és befejezése</translation>
@@ -6322,6 +6324,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Oldal elhagyása}other{Oldalak elhagyása}}</translation>
 <translation id="7207457272187520234">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a beállítást kötelezővé tette az eszköz tulajdonosa. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti.</translation>
 <translation id="7207631048330366454">Alkalmazások keresése</translation>
+<translation id="720808544705441386">Nem nyitható meg az alkalmazás</translation>
 <translation id="7210499381659830293">Bővítményalapú nyomtatók</translation>
 <translation id="7211783048245131419">Még nem lett hozzárendelve kapcsoló</translation>
 <translation id="7212097698621322584">A módosításhoz adja meg jelenlegi PIN-kódját. Ha nem tudja a PIN-kódot, vissza kell állítania a biztonsági hardverkulcsot, majd új PIN-kódot kell létrehoznia.</translation>
@@ -7478,6 +7481,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8324784016256120271">A webhelyek használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken, például a hirdetések személyre szabása érdekében.</translation>
 <translation id="8325413836429495820">Nem használhatják a vágólapot</translation>
 <translation id="8326478304147373412">PKCS #7, tanúsítványlánc</translation>
+<translation id="8327386430364625757">Matematikai betűtípus</translation>
 <translation id="8327676037044516220">Engedélyek és tartalombeállítások</translation>
 <translation id="8330617762701840933">Olyan webhelyek listája, amelyek átirányítanak alternatív böngészőkre.</translation>
 <translation id="8330689128072902965">A közelben lévő ismerősei megoszthatnak Önnel tartalmakat. Kattintson a módosításhoz.</translation>

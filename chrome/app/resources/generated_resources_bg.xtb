@@ -880,6 +880,7 @@
 <translation id="1823098433522728610">В този документ има поверително съдържание.</translation>
 <translation id="18245044880483936">Данните в резервното копие не се отчитат в квотата на хранилището на детето ви в Диск.</translation>
 <translation id="1825565032302550710">Портът трябва да е число между 1024 и 65535</translation>
+<translation id="182577151972096764">наскоро прегледаните рецепти</translation>
 <translation id="1826192255355608658">Синхронизиране на вашите отметки, пароли, история и др. в Chrome</translation>
 <translation id="1826516787628120939">Извършва се проверка</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
@@ -1314,6 +1315,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2241053333139545397">Четене и промяна на данните ви в няколко уебсайта.</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2242687258748107519">Информация за файла</translation>
+<translation id="2246129643805925002">Устройството ви <ph name="DEVICE_TYPE" /> се актуализира автоматично на заден план, за да получавате най-новите функции и подобрения в сигурността. Можете да прегледате предпочитанията за актуализациите в настройките.</translation>
 <translation id="2246549592927364792">Да се изтеглят ли от Google описания за изображенията?</translation>
 <translation id="2247738527273549923">Устройството ви се управлява от организацията ви</translation>
 <translation id="2249111429176737533">Отваряне като прозорец с раздели</translation>
@@ -1606,6 +1608,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="249113932447298600">За съжаление понастоящем устройството <ph name="DEVICE_LABEL" /> не се поддържа.</translation>
 <translation id="2492461744635776704">Заявката за подписване на сертификат се подготвя</translation>
 <translation id="2493126929778606526">Автоматично избиране на най-добрите ви снимки</translation>
+<translation id="2495524171012645395">Наскоро прегледани рецепти</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2497229222757901769">Скорост на мишката</translation>
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
@@ -3426,6 +3429,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4289732974614035569">Изберете ПИН</translation>
 <translation id="4290791284969893584">След като затворите дадена страница, стартираните от вас задачи може да не бъдат завършени</translation>
 <translation id="4291265871880246274">Диалогов прозорец за вход</translation>
+<translation id="429234155571566255">тези наскоро прегледани рецепти</translation>
 <translation id="4295072614469448764">Приложението е налично в терминала. Възможно е също да има икона в стартовия панел.</translation>
 <translation id="4295979599050707005">Моля, влезте отново, за да потвърдите, че профилът ви <ph name="USER_EMAIL" /> може да се използва с уебсайтове, приложения и разширения в Chrome и Google Play. Имате възможност също да го премахнете. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Рестартиране и нулиране</translation>
@@ -3486,6 +3490,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="435527878592612277">Изберете своя снимка</translation>
 <translation id="4358302248024731679">За по-добра диагностика на проблемите с Bluetooth служителите на Google могат да включват в сигналите си с отзиви допълнителни регистрационни файлове за Bluetooth. Когато за тази опция е поставена отметка, сигналът ви ще съдържа регистрационните файлове за btsnoop и HCI от текущата ви сесия, като от тях ще бъде премахната възможно най-много информация, позволяваща лично идентифициране (PII). Достъпът до тези файлове ще бъде ограничен до мениджърите на групата за продукта Chrome OS в Listnr. Файловете ще бъдат изтрити безвъзвратно след 90 дни.</translation>
 <translation id="4358313196493694334">Стабилизиране при мястото за кликване</translation>
+<translation id="4358643842961018282">Устройството ви е актуално</translation>
 <translation id="4359408040881008151">Инсталирано заради зависимо разширение или съответно разширения.</translation>
 <translation id="4359717112757026264">Градски пейзажи</translation>
 <translation id="4361142739114356624">Частният ключ за този клиентски сертификат липсва или е невалиден</translation>
@@ -4780,7 +4785,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5658415415603568799">За допълнителна сигурност Smart Lock ще ви помоли да въведете паролата си след 20 часа.</translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5659833766619490117">Тази страница не можа да бъде преведена</translation>
-<translation id="566097169318652001">Възможно е устройството ви вече да не работи правилно и може да имате проблеми със сигурността и производителността. Ключовите функции в някои приложения също може да спрат да работят, когато не са актуални, и ще изгубите правото си да предявявате правни искове.</translation>
 <translation id="5662513737565158057">Променете начина на работа на приложенията за Linux.</translation>
 <translation id="5667293444945855280">Злонамерен софтуер</translation>
 <translation id="5667546120811588575">Google Play се настройва...</translation>
@@ -6097,7 +6101,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="697312151395002334">Сайтове с разрешение за изпращане на изскачащи прозорци и използване на пренасочвания</translation>
 <translation id="6973611239564315524">Налице е надстройка до Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ако Google е и търсещата ви машина по подразбиране, ще виждате по-добри и контекстуално уместни предложения</translation>
-<translation id="6974609594866392343">Офлайн демонстрационен режим</translation>
 <translation id="697508444536771064">Изключване на Linux</translation>
 <translation id="6978121630131642226">Търсещи машини</translation>
 <translation id="6979044105893951891">Стартиране и прекратяване на управлявани сесии като гост</translation>
@@ -7117,6 +7120,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7981313251711023384">Предварително зареждане на страниците с цел по-бързо сърфиране и търсене</translation>
 <translation id="798145602633458219">Добавяне на предложението <ph name="SUGGESTION_NAME" /> към полето за търсене</translation>
 <translation id="7981662863948574132">Показване на изскачащ прозорец с EID номера на устройството и QR код</translation>
+<translation id="7981670705071137488">След това софтуерните актуализации ще се извършват на заден план. Можете да прегледате предпочитанията за тях в настройките.</translation>
 <translation id="7982083145464587921">Моля, рестартирайте устройството си, за да поправите тази грешка.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7984068253310542383">Дублиране на <ph name="DISPLAY_NAME" /></translation>
@@ -7361,6 +7365,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8214489666383623925">Отваряне на файл...</translation>
 <translation id="8215129063232901118">Осъществявайте достъп до функциите на телефона си от устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217399928341212914">Автоматичното изтегляне на няколко файла да остане блокирано</translation>
+<translation id="822050276545350872">Оттук нататък не се изисква чакане</translation>
 <translation id="8221491193165283816">Обикновено блокирате известията. Кликнете тук, за да разрешите на този сайт да ви изпраща известия.</translation>
 <translation id="822347941086490485">Търсят се HID устройства...</translation>
 <translation id="8225046344534779393">Проверете връзката с интернет</translation>

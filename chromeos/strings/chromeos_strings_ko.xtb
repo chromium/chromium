@@ -113,6 +113,7 @@
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
 <translation id="2104796393919810494">수리 완료됨</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
+<translation id="2115956742084455574">잘못된 코드</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />GB 중 <ph name="AVAILABLE_MEMORY" />GB를 사용할 수 있습니다.</translation>
 <translation id="2138109643290557664">바다에 누워</translation>
@@ -142,6 +143,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2360257214555822463"><ph name="LINK_BEGIN" />정규화되지 않은 구성요소<ph name="LINK_END" />가 감지되었습니다. 이 구성요소가 설치되었음을 확인하려면 지금 확인하세요.</translation>
 <translation id="2363636958541445404">화면 보호기 옵션을 선택하려면 기능을 사용 설정하세요.</translation>
 <translation id="2364498172489649528">통과</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -191,6 +193,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3069085583900247081">테스트 실패</translation>
+<translation id="3076243757415932261">구성요소 확인 중...</translation>
 <translation id="3083667275341675831">연결 진단</translation>
 <translation id="3084958266922136097">화면 보호기 사용 중지</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
@@ -219,6 +222,7 @@
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
+<translation id="3404770484521709967">구성요소가 제대로 설치되었습니다.</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">보안</translation>
@@ -564,6 +568,7 @@
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
+<translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> 수리</translation>
 <translation id="6853312040151791195">방전 속도</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
@@ -672,6 +677,7 @@
 <translation id="8045012663542226664">마이크 음소거</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
+<translation id="8083281199617904460">전문 기술자가 수리해야 합니다. 반드시 고장 난 구성요소를 교체한 후 시작하세요.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>

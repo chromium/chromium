@@ -3710,6 +3710,16 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="5179853299156742425">URL, über die die Desktopvorlage heruntergeladen werden kann.</translation>
 <translation id="5182055907976889880">Google Drive in <ph name="PRODUCT_OS_NAME" /> konfigurieren</translation>
 <translation id="5182483318861266793">Ablage auf der rechten Seite des Bildschirms anzeigen</translation>
+<translation id="5184298474980725716">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
+
+      Wenn die Richtlinie aktiviert ist, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
+
+      Ist sie deaktiviert, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
+
+      Ist die Richtlinie nicht konfiguriert, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
+
+      Hinweis: Wenn die Richtlinie <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, sind Onlinerecherchen unter chrome://history/journeys verfügbar, möglicherweise aber nicht in der Omnibox. Außerdem können sie weniger relevant für den Nutzer sein.
+      </translation>
 <translation id="51859390023061147">Funktion zur vollständigen Wiederherstellung deaktivieren.</translation>
 <translation id="5189360528842591274">Verbindung nur zu den Bluetooth-Diensten in der Liste erlauben</translation>
 <translation id="5190426551516379357">Wenn die Richtlinie konfiguriert ist, wird ein minimaler eingeschränkter Modus auf YouTube erzwungen und verhindert, dass Nutzer einen weniger eingeschränkten Modus auswählen. Wird diese Richtlinie

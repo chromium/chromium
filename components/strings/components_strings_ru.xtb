@@ -1050,6 +1050,7 @@
 <translation id="3810973564298564668">Перейти</translation>
 <translation id="3816482573645936981">Значение (заменяемое)</translation>
 <translation id="382518646247711829">Если вы используете прокси-сервер...</translation>
+<translation id="3826050100957962900">Предложения войти в аккаунт от третьих сторон</translation>
 <translation id="3827112369919217609">Абсолютный</translation>
 <translation id="3827666161959873541">Семейные фильмы</translation>
 <translation id="3828924085048779000">Пустые кодовые фразы запрещены.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="3835233591525155343">Использование устройства</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать документ Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851515670389017037">Сеансы закрыты</translation>
 <translation id="3858027520442213535">Обновить дату и время</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3872834068356954457">Наука</translation>
@@ -1354,6 +1356,7 @@
 <translation id="470284880436071933">Преступления и правосудие</translation>
 <translation id="4704732901923281920">Биологические науки</translation>
 <translation id="4708268264240856090">Соединение прервано</translation>
+<translation id="4709819737903924300">Окно с сеансами развернуто на весь экран</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Выполните диагностику сети в Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Пароль аккаунта пользователя <ph name="USERNAME" /></translation>
@@ -1817,6 +1820,7 @@
 <translation id="5989320800837274978">Ни фиксированные прокси-серверы, ни URL PAC-скриптов не указаны.</translation>
 <translation id="5992691462791905444">Укороченная фальцовка гармошкой</translation>
 <translation id="5995727681868049093">Настроить параметры конфиденциальности и безопасности в аккаунте Google</translation>
+<translation id="5997247540087773573">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте сохраненные пароли в Google Менеджере паролей.</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6008122969617370890">В порядке от N до 1</translation>
@@ -1855,6 +1859,7 @@
 <translation id="6061154937977953833">Борьба</translation>
 <translation id="6064217302520318294">Блокировка экрана</translation>
 <translation id="6064602040258638498">Купоны и скидки</translation>
+<translation id="6078813287646374487">Показать дополнительную информацию об этой странице</translation>
 <translation id="6080696365213338172">Вы используете сертификат, предоставленный администратором, поэтому он может заблокировать передачу данных на сайт <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Связанные запросы</translation>
 <translation id="6094273045989040137">Аннотировать</translation>
@@ -2593,6 +2598,7 @@
 <translation id="8163866351304776260">Четыре отверстия слева</translation>
 <translation id="8175796834047840627">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек.</translation>
 <translation id="8176440868214972690">Администратор устройства отправил на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
+<translation id="8179003511148538426">Сеансы показаны в нижней половине экрана</translation>
 <translation id="8184538546369750125">Использовать глобальный параметр по умолчанию (разрешать)</translation>
 <translation id="8186706823560132848">Программное обеспечение</translation>
 <translation id="8190193880870196235">Управляется расширением</translation>

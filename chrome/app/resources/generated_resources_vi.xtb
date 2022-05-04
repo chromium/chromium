@@ -884,6 +884,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1823098433522728610">Tài liệu này có nội dung nhạy cảm.</translation>
 <translation id="18245044880483936">Dữ liệu sao lưu sẽ không tính vào định mức bộ nhớ Drive của con bạn.</translation>
 <translation id="1825565032302550710">Cổng phải nằm trong khoảng 1024 và 65535</translation>
+<translation id="182577151972096764">công thức mới xem gần đây</translation>
 <translation id="1826192255355608658">Đồng bộ hóa dấu trang, mật khẩu, nhật ký duyệt web trên Chrome, v.v.</translation>
 <translation id="1826516787628120939">Đang kiểm tra</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
@@ -1318,6 +1319,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2241053333139545397">Đọc và thay đổi dữ liệu của bạn trên một số trang web</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2242687258748107519">Thông tin tệp</translation>
+<translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> của bạn tự động cập nhật ở chế độ nền để đem đến cho bạn những cải tiến về khả năng bảo mật và tính năng mới nhất. Bạn có thể xem xét các lựa chọn ưu tiên về bản cập nhật trong phần Cài đặt.</translation>
 <translation id="2246549592927364792">Lấy nội dung mô tả hình ảnh từ Google?</translation>
 <translation id="2247738527273549923">Thiết bị do tổ chức của bạn quản lý</translation>
 <translation id="2249111429176737533">Mở bằng cửa sổ dạng thẻ</translation>
@@ -1610,6 +1612,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="249113932447298600">Rất tiếc, thiết bị <ph name="DEVICE_LABEL" /> không được hỗ trợ vào thời điểm này.</translation>
 <translation id="2492461744635776704">Đang chuẩn bị yêu cầu ký chứng chỉ</translation>
 <translation id="2493126929778606526">Những ảnh đẹp nhất của bạn được chọn tự động</translation>
+<translation id="2495524171012645395">Công thức mới xem gần đây</translation>
 <translation id="2496180316473517155">Lịch sử duyệt web</translation>
 <translation id="2497229222757901769">Tốc độ chuột</translation>
 <translation id="2497852260688568942">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
@@ -3428,6 +3431,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4289732974614035569">Hãy chọn một mã PIN</translation>
 <translation id="4290791284969893584">Sau khi đóng một trang, các thao tác bạn đã bắt đầu có thể không hoàn tất</translation>
 <translation id="4291265871880246274">Hộp thoại đăng nhập</translation>
+<translation id="429234155571566255">những công thức mới xem này</translation>
 <translation id="4295072614469448764">Ứng dụng này hiện đã có trong thiết bị của bạn. Ngoài ra, có thể có một biểu tượng trong Trình chạy.</translation>
 <translation id="4295979599050707005">Vui lòng đăng nhập lại để xác nhận rằng tài khoản <ph name="USER_EMAIL" /> của bạn có thể dùng với các trang web, ứng dụng và tiện ích trong Chrome cũng như Google Play. Bạn cũng có thể xóa tài khoản này. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Khởi động lại và đặt lại</translation>
@@ -3488,6 +3492,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="435527878592612277">Chọn ảnh của bạn</translation>
 <translation id="4358302248024731679">Để chẩn đoán chính xác hơn các vấn đề về Bluetooth, nhân viên của Google có thể đưa thêm nhật ký Bluetooth vào báo cáo phản hồi của họ. Khi bạn chọn tuỳ chọn này, báo cáo của bạn sẽ bao gồm cả nhật ký btsnoop và HCI từ phiên hoạt động hiện tại, trong đó đã loại bỏ nhiều thông tin nhận dạng cá nhân nhất có thể. Chỉ người quản lý nhóm sản phẩm ChromeOS trong Listnr mới có quyền truy cập vào các nhật ký này. Nhật ký sẽ bị xoá hoàn toàn sau 90 ngày.</translation>
 <translation id="4358313196493694334">Ổn định vị trí nhấp</translation>
+<translation id="4358643842961018282">Phiên bản trên thiết bị của bạn là phiên bản mới nhất</translation>
 <translation id="4359408040881008151">Đã được cài đặt vì (các) tiện ích phụ thuộc.</translation>
 <translation id="4359717112757026264">Cảnh thành phố</translation>
 <translation id="4361142739114356624">Khóa cá nhân cho chứng chỉ ứng dụng này còn thiếu hoặc không hợp lệ</translation>
@@ -4780,7 +4785,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5658415415603568799">Để tăng cường bảo mật, Smart Lock sẽ yêu cầu bạn nhập mật khẩu sau 20 giờ.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Không thể dịch trang này</translation>
-<translation id="566097169318652001">Thiết bị của bạn có thể sẽ không còn hoạt động bình thường và bạn có thể gặp phải các vấn đề về hiệu suất và bảo mật. Các tính năng chính trong ứng dụng của bạn cũng có thể ngừng hoạt động khi chúng trở nên lỗi thời và bạn sẽ mất quyền đưa ra các khiếu nại pháp lý.</translation>
 <translation id="5662513737565158057">Thay đổi cách hoạt động của ứng dụng Linux.</translation>
 <translation id="5667293444945855280">Phần mềm độc hại</translation>
 <translation id="5667546120811588575">Đang thiết lập Google Play...</translation>
@@ -6097,7 +6101,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="697312151395002334">Được phép gửi cửa sổ bật lên và dùng lệnh chuyển hướng</translation>
 <translation id="6973611239564315524">Đã có bản nâng cấp lên Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Nếu cũng đặt Google là công cụ tìm kiếm mặc định, thì bạn sẽ nhận được nội dung đề xuất phù hợp và có liên quan đến ngữ cảnh hơn</translation>
-<translation id="6974609594866392343">Chế độ minh họa ngoại tuyến</translation>
 <translation id="697508444536771064">Tắt Linux</translation>
 <translation id="6978121630131642226">Công cụ Tìm kiếm</translation>
 <translation id="6979044105893951891">Chạy và thoát khỏi các phiên khách được quản lý</translation>
@@ -7117,6 +7120,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
 <translation id="798145602633458219">Thêm đề xuất <ph name="SUGGESTION_NAME" /> vào hộp tìm kiếm</translation>
 <translation id="7981662863948574132">Hiện cửa sổ bật lên hiển thị mã QR và số EID của thiết bị</translation>
+<translation id="7981670705071137488">Sau khi quá trình này kết thúc, việc cập nhật phần mềm sẽ diễn ra ở chế độ nền. Bạn có thể xem xét các lựa chọn ưu tiên về bản cập nhật trong phần Cài đặt.</translation>
 <translation id="7982083145464587921">Vui lòng khởi động lại thiết bị của bạn để sửa lỗi này.</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7984068253310542383">Phản chiếu <ph name="DISPLAY_NAME" /></translation>
@@ -7361,6 +7365,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8214489666383623925">Mở Tệp...</translation>
 <translation id="8215129063232901118">Sử dụng các tính năng của điện thoại trên chiếc <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
+<translation id="822050276545350872">Từ đây trở đi, bạn không cần phải chờ đợi nữa</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
 <translation id="822347941086490485">Đang tìm thiết bị HID...</translation>
 <translation id="8225046344534779393">Kiểm tra kết nối Internet</translation>

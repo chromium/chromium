@@ -229,6 +229,7 @@
 <translation id="3484914941826596830">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant la mise à jour du micrologiciel. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
+<translation id="3517001332549868749">Mise à jour Chrome OS</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="3557205324756024651">Identité locale (facultatif)</translation>
@@ -554,6 +555,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6723839937902243910">Alimentation</translation>
+<translation id="6723847290197874913">Rétroéclairage du clavier</translation>
 <translation id="672609503628871915">Voir les nouveautés</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
 <translation id="6749473226660745022">Photos</translation>

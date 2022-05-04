@@ -1968,6 +1968,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2832124733806557606">Your child can use a PIN to sign in to or unlock the device.</translation>
 <translation id="2835177225987815960">Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.</translation>
 <translation id="2835547721736623118">Speech recognition service</translation>
+<translation id="2836232638504556905">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" />.</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="2836635946302913370">Signing in with this username has been disabled by your administrator.</translation>
 <translation id="283669119850230892">To use the network <ph name="NETWORK_ID" />, first complete your connection to the Internet below.</translation>
@@ -2249,6 +2250,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
 <translation id="3108931485517391283">Can't receive</translation>
+<translation id="3109206895301430738">Saved tab groups</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311214366526552035">Download anyway</translation>
 <translation id="3112292765614504292">App size: <ph name="APP_SIZE" /></translation>
@@ -4787,7 +4789,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5658415415603568799">For added security, Smart Lock will ask you to enter your password after 20 hours.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">This page could not be translated</translation>
-<translation id="566097169318652001">Your device may no longer work properly, and you may experience security and performance issues. Key features in your apps may also stop working when they become outdated and you’ll lose your right to make legal claims.</translation>
 <translation id="5662513737565158057">Change how Linux apps will work.</translation>
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Setting up Google Play…</translation>
@@ -6106,7 +6107,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="697312151395002334">Allowed to send pop-ups and use redirects</translation>
 <translation id="6973611239564315524">An upgrade to Debian 10 (Buster) is available</translation>
 <translation id="69739764870135975">If Google is also your default search engine, you'll see better, contextually relevant suggestions</translation>
-<translation id="6974609594866392343">Offline demo mode</translation>
 <translation id="697508444536771064">Shut down Linux</translation>
 <translation id="6978121630131642226">Search Engines</translation>
 <translation id="6979044105893951891">Launch and exit managed guest sessions</translation>

@@ -851,6 +851,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6166852626429024716">Auf deinem Gerät, in Apps, Einstellungen oder im Web suchen…</translation>
 <translation id="6179832488876878285">Du kannst wichtige Dateien hier anpinnen. Öffne die Dateien App, um zu starten.</translation>
 <translation id="619279033188484792">Letzte Fotos, Medien und Benachrichtigungen von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
+<translation id="619335566042889110">Jetzt vollständig aufladen</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
 <translation id="622484624075952240">Abwärts</translation>
 <translation id="6231419273573514727">Die Leistung der Peripheriegeräte ist möglicherweise eingeschränkt</translation>
@@ -1185,6 +1186,7 @@ Neuinstallation</translation>
 <translation id="826107067893790409">Zum Entsperren für <ph name="USER_EMAIL_ADDRESS" /> Eingabetaste drücken</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
+<translation id="8271580342040932214">Dein Akku bleibt vorübergehend mit 80 % aufgeladen, während er ans Stromnetz angeschlossen ist, um die Akkulaufzeit zu verlängern. Bis <ph name="FULLY_CHARGE_TIME" /> wird der Akku vollständig aufgeladen.</translation>
 <translation id="8284362522226889623">Wische mit vier Fingern nach links, um zum vorigen Desktop zu wechseln</translation>
 <translation id="828708037801473432">Aus</translation>
 <translation id="8297006494302853456">Schwach</translation>
@@ -1268,6 +1270,7 @@ Neuinstallation</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="881757059229893486">Einstellungen für Eingabemethoden</translation>
 <translation id="8818320199597151042">Profil wird entfernt. Warte ein paar Minuten.</translation>
+<translation id="8819728065740986820">Adaptives Laden ist aktiviert</translation>
 <translation id="8825863694328519386">Von links nach rechts wischen, um zurückzugehen</translation>
 <translation id="8834539327799336565">Derzeit verbunden</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
@@ -1314,6 +1317,7 @@ Neuinstallation</translation>
 <translation id="9080132581049224423">Nach oben wischen, um zum Startbildschirm zu gehen</translation>
 <translation id="9080206825613744995">Mikrofon wird verwendet.</translation>
 <translation id="9084606467167974638">Menüposition wechseln</translation>
+<translation id="9085962983642906571">Dein Akku bleibt mit 80 % aufgeladen, während er ans Stromnetz angeschlossen ist, um die Akkulaufzeit zu verlängern.</translation>
 <translation id="9089416786594320554">Eingabemethoden</translation>
 <translation id="9091626656156419976">Bildschirm <ph name="DISPLAY_NAME" /> wurde entfernt</translation>
 <translation id="9098969848082897657">Smartphone stummschalten</translation>

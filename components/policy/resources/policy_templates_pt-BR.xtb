@@ -3738,6 +3738,16 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5179853299156742425">O URL no qual o download do modelo de espaço de trabalho pode ser feito.</translation>
 <translation id="5182055907976889880">Configura o Google Drive no <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posicionar a estante no lado direito da tela</translation>
+<translation id="5184298474980725716">Esta política controla a visibilidade de jornadas na página do histórico do Chrome.
+
+      Se ela for ativada, as jornadas vão ficar visíveis em chrome://history/journeys.
+
+      Se for desativada, isso não vai acontecer.
+
+      Se a política for deixada sem definição, as jornadas vão ficar visíveis em chrome://history/journeys por padrão e os usuários poderão mudar a visibilidade.
+
+      Se a política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> for desativada, mas a <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> for ativada ou deixada sem definição, as jornadas ainda vão ficar disponíveis em chrome://history/journeys, mas talvez não estejam na omnibox e sejam menos relevantes para o usuário.
+      </translation>
 <translation id="51859390023061147">Desativar o recurso de restauração completa.</translation>
 <translation id="5189360528842591274">Permitir conexão apenas com os serviços Bluetooth na lista</translation>
 <translation id="5190426551516379357">Se a política for definida, um nível mínimo do Modo restrito será aplicado ao YouTube e os usuários não poderão escolher um modo menos restrito. Se for definida como:

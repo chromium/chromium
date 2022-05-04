@@ -854,6 +854,7 @@
 <translation id="6166852626429024716">기기, 앱, 설정, 웹에서 검색...</translation>
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
 <translation id="619279033188484792">휴대전화의 최근 사진, 미디어, 알림을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
+<translation id="619335566042889110">지금 완전히 충전하기</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
@@ -1189,6 +1190,7 @@
 <translation id="826107067893790409">Enter 키를 눌러서 <ph name="USER_EMAIL_ADDRESS" /> 잠금 해제</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
+<translation id="8271580342040932214">전원에 연결된 상태에서 배터리 수명 연장을 위해 충전량이 일시적으로 80%로 유지됩니다. 배터리는 <ph name="FULLY_CHARGE_TIME" />에 완전히 충전됩니다.</translation>
 <translation id="8284362522226889623">이전 데스크로 전환하려면 네 손가락을 사용해 왼쪽으로 스와이프하세요.</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>
@@ -1272,6 +1274,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">입력 방법 설정</translation>
 <translation id="8818320199597151042">프로필을 삭제하는 중입니다. 잠시만 기다려 주세요.</translation>
+<translation id="8819728065740986820">자동 조절 충전 사용 설정됨</translation>
 <translation id="8825863694328519386">돌아가려면 왼쪽에서 스와이프하세요.</translation>
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>
@@ -1318,6 +1321,7 @@
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>
 <translation id="9080206825613744995">마이크가 사용 중입니다.</translation>
 <translation id="9084606467167974638">메뉴 위치 전환</translation>
+<translation id="9085962983642906571">전원에 연결된 상태에서 배터리 수명 연장을 위해 충전량이 80%로 유지됩니다.</translation>
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="9091626656156419976">디스플레이 <ph name="DISPLAY_NAME" /> 제거됨</translation>
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>

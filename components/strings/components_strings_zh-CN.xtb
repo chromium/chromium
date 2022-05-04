@@ -1047,6 +1047,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3816482573645936981">值（已被取代）</translation>
 <translation id="382518646247711829">如果您使用代理服务器…</translation>
+<translation id="3826050100957962900">第三方登录</translation>
 <translation id="3827112369919217609">绝对</translation>
 <translation id="3827666161959873541">面向家庭的影片</translation>
 <translation id="3828924085048779000">密码输入字段不能留空。</translation>
@@ -1056,6 +1057,7 @@
 <translation id="3835233591525155343">您的设备使用情况</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 文档</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3851515670389017037">“历程”工作表已关闭</translation>
 <translation id="3858027520442213535">更新日期和时间</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3872834068356954457">科学</translation>
@@ -1320,6 +1322,7 @@
 <translation id="4607603470419975064">“查看 Chrome 提示”按钮，按 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="4617273035598175554">图形与动画软件</translation>
+<translation id="4627165777145349100">详细了解此页面</translation>
 <translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
 <translation id="4628948037717959914">照片</translation>
 <translation id="4631649115723685955">已关联返现</translation>
@@ -1350,6 +1353,7 @@
 <translation id="470284880436071933">犯罪与司法</translation>
 <translation id="4704732901923281920">生物科学</translation>
 <translation id="4708268264240856090">您的连接已中断</translation>
+<translation id="4709819737903924300">“历程”工作表已全屏打开</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />运行 Windows 网络诊断<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
@@ -1813,6 +1817,7 @@
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="5995727681868049093">在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
+<translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6006484371116297560">经典</translation>
 <translation id="6008122969617370890">从 N 到 1 的顺序</translation>
@@ -1851,6 +1856,7 @@
 <translation id="6061154937977953833">摔跤</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6064602040258638498">优惠券与折扣优惠</translation>
+<translation id="6078813287646374487">显示此页面的更多相关信息</translation>
 <translation id="6080696365213338172">您已使用管理员提供的证书访问了内容，因此管理员可以拦截您提供给 <ph name="DOMAIN" /> 的数据。</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6094273045989040137">注释</translation>
@@ -2588,6 +2594,7 @@
 <translation id="8163866351304776260">四孔（左侧）</translation>
 <translation id="8175796834047840627">Chrome 会主动询问是否要将您的卡保存到您的 Google 帐号中，因为您已登录。您可在“设置”中更改此行为。</translation>
 <translation id="8176440868214972690">此设备的管理员已将某些信息（例如设置或政策）发送给下列网站。</translation>
+<translation id="8179003511148538426">“历程”工作表已半屏打开</translation>
 <translation id="8184538546369750125">使用全局默认设置（允许）</translation>
 <translation id="8186706823560132848">软件</translation>
 <translation id="8190193880870196235">由一款扩展程序管理</translation>
