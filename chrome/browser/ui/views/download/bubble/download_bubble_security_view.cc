@@ -98,8 +98,6 @@ void DownloadBubbleSecurityView::CloseBubble() {
 
 void DownloadBubbleSecurityView::OnCheckboxClicked() {
   first_button_->SetEnabled(checkbox_->GetChecked());
-  first_button_->SetEnabledTextColors(GetColorProvider()->GetColor(
-      download_row_view_->ui_info().secondary_color));
 }
 
 void DownloadBubbleSecurityView::UpdateIconAndText() {
@@ -127,6 +125,7 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
 
   checkbox_->SetVisible(ui_info.has_checkbox);
   if (ui_info.has_checkbox) {
+    checkbox_->SetChecked(false);
     checkbox_->SetText(ui_info.checkbox_label);
   }
 }
@@ -221,9 +220,9 @@ void DownloadBubbleSecurityView::UpdateButtons() {
     first_button_ = GetButtonForCommand(ui_info.subpage_buttons[0].command);
     first_button_->SetText(ui_info.subpage_buttons[0].label);
     first_button_->SetProminent(ui_info.subpage_buttons[0].is_prominent);
-    if (ui_info.has_checkbox) {
-      first_button_->SetEnabled(false);
-    }
+    first_button_->SetEnabledTextColors(GetColorProvider()->GetColor(
+        download_row_view_->ui_info().secondary_color));
+    first_button_->SetEnabled(!ui_info.has_checkbox);
     first_button_->SetVisible(true);
   }
   if (ui_info.subpage_buttons.size() > 1) {
