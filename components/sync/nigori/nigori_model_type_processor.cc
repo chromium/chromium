@@ -268,7 +268,8 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   root_node->SetStringKey("modelType", ModelTypeToDebugString(NIGORI));
 
   auto all_nodes = std::make_unique<base::ListValue>();
-  all_nodes->Append(std::move(root_node));
+  all_nodes->GetList().Append(
+      base::Value::FromUniquePtrValue(std::move(root_node)));
   std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
 }
 
