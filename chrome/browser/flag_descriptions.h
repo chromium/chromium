@@ -1735,26 +1735,14 @@ extern const char kContextMenuPopupStyleDescription[];
 extern const char kContextualSearchDebugName[];
 extern const char kContextualSearchDebugDescription[];
 
-extern const char kContextualSearchDelayedIntelligenceName[];
-extern const char kContextualSearchDelayedIntelligenceDescription[];
-
 extern const char kContextualSearchForceCaptionName[];
 extern const char kContextualSearchForceCaptionDescription[];
 
 extern const char kContextualSearchLongpressResolveName[];
 extern const char kContextualSearchLongpressResolveDescription[];
 
-extern const char kContextualSearchMlTapSuppressionName[];
-extern const char kContextualSearchMlTapSuppressionDescription[];
-
 extern const char KContextualSearchNewSettingsName[];
 extern const char KContextualSearchNewSettingsDescription[];
-
-extern const char kContextualSearchRankerQueryName[];
-extern const char kContextualSearchRankerQueryDescription[];
-
-extern const char kContextualSearchThinWebViewImplementationName[];
-extern const char kContextualSearchThinWebViewImplementationDescription[];
 
 extern const char kContextualSearchTranslationsName[];
 extern const char kContextualSearchTranslationsDescription[];

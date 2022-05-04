@@ -3082,12 +3082,6 @@ const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "
     "and server.";
 
-const char kContextualSearchDelayedIntelligenceName[] =
-    "Contextual Search Delayed Intelligence";
-const char kContextualSearchDelayedIntelligenceDescription[] =
-    "Enables an intelligent search for default-enabled users when they open "
-    "the bottom sheet.";
-
 const char kContextualSearchForceCaptionName[] =
     "Contextual Search force a caption";
 const char kContextualSearchForceCaptionDescription[] =
@@ -3102,29 +3096,11 @@ const char kContextualSearchLongpressResolveDescription[] =
     "potentially privacy sensitive!  This disables the tap gesture from "
     "triggering Touch to Search unless that experiment arm is enabled.";
 
-const char kContextualSearchMlTapSuppressionName[] =
-    "Contextual Search ML tap suppression";
-const char kContextualSearchMlTapSuppressionDescription[] =
-    "Enables tap gestures to be suppressed to improve CTR by applying machine "
-    "learning.  The \"Contextual Search Ranker prediction\" flag must also be "
-    "enabled!";
-
 const char KContextualSearchNewSettingsName[] =
     "Contextual Search new settings";
 const char KContextualSearchNewSettingsDescription[] =
     "Adds a toggle to Settings page to specifically control Contextual Search "
     "opt-in state, and update Opt-in messages.";
-
-const char kContextualSearchRankerQueryName[] =
-    "Contextual Search Ranker prediction";
-const char kContextualSearchRankerQueryDescription[] =
-    "Enables prediction of tap gestures using Assist-Ranker machine learning.";
-
-const char kContextualSearchThinWebViewImplementationName[] =
-    "Use Contextual Search ThinWebView implementation";
-const char kContextualSearchThinWebViewImplementationDescription[] =
-    "Use ThinWebView and BottomSheet based implementation for Contextual"
-    "Search.";
 
 const char kContextualSearchTranslationsName[] =
     "Contextual Search translations";
