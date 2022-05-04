@@ -2041,7 +2041,7 @@ void RenderProcessHostImpl::CreateLockManager(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   storage_partition_impl_->GetQuotaManager()->proxy()->GetOrCreateBucket(
-      storage_key, storage::kDefaultBucketName, GetUIThreadTaskRunner({}),
+      storage::BucketInitParams(storage_key), GetUIThreadTaskRunner({}),
       base::BindOnce(&RenderProcessHostImpl::CreateLockManagerWithBucketInfo,
                      instance_weak_factory_.GetWeakPtr(), std::move(receiver)));
 }

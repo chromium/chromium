@@ -1111,7 +1111,7 @@ void IndexedDBContextImpl::GetOrCreateDefaultBucket(
   const auto& bucket_locator = storage_key_to_bucket_locator_.find(storage_key);
   if (bucket_locator == storage_key_to_bucket_locator_.end()) {
     quota_manager_proxy_->GetOrCreateBucket(
-        storage_key, storage::kDefaultBucketName, idb_task_runner_,
+        storage::BucketInitParams(storage_key), idb_task_runner_,
         base::BindOnce(
             [](IndexedDBContextImpl* context,
                GetOrCreateDefaultBucketCallback inner_callback,

@@ -214,8 +214,9 @@ class QuotaManagerImplTest : public testing::Test {
   QuotaErrorOr<BucketInfo> GetOrCreateBucket(const StorageKey& storage_key,
                                              const std::string& bucket_name) {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-    quota_manager_impl_->GetOrCreateBucket(storage_key, bucket_name,
-                                           future.GetCallback());
+    BucketInitParams params(storage_key);
+    params.name = bucket_name;
+    quota_manager_impl_->GetOrCreateBucket(params, future.GetCallback());
     return future.Take();
   }
 
@@ -796,18 +797,17 @@ TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindLambdaForTesting([&]() {
-        StorageKey storage_key = ToStorageKey("http://b.com");
-        std::string bucket_name = "bucket_b";
+        BucketInitParams params(ToStorageKey("http://b.com"));
+        params.name = "bucket_b";
         // Ensure that the synchronous function returns a bucket.
-        auto bucket = quota_manager_impl_->proxy()->GetOrCreateBucketSync(
-            storage_key, bucket_name);
+        auto bucket =
+            quota_manager_impl_->proxy()->GetOrCreateBucketSync(params);
         ASSERT_TRUE(bucket.ok());
         BucketId created_bucket_id = bucket.value().id;
 
         // Ensure that the synchronous function does not create a new bucket
         // each time.
-        bucket = quota_manager_impl_->proxy()->GetOrCreateBucketSync(
-            storage_key, bucket_name);
+        bucket = quota_manager_impl_->proxy()->GetOrCreateBucketSync(params);
         EXPECT_TRUE(bucket.ok());
         EXPECT_EQ(bucket.value().id, created_bucket_id);
         loop.Quit();

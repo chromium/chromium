@@ -252,22 +252,21 @@ TEST_P(QuotaDatabaseTest, HostQuota) {
 TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
-  StorageKey storage_key =
-      StorageKey::CreateFromStringForTesting("http://google/");
-  std::string bucket_name = "google_bucket";
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"));
+  params.name = "google_bucket";
 
-  QuotaErrorOr<BucketInfo> result =
-      db->GetOrCreateBucket(storage_key, bucket_name);
+  QuotaErrorOr<BucketInfo> result = db->GetOrCreateBucket(params);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
   ASSERT_GT(created_bucket.id.value(), 0);
-  ASSERT_EQ(created_bucket.name, bucket_name);
-  ASSERT_EQ(created_bucket.storage_key, storage_key);
+  ASSERT_EQ(created_bucket.name, params.name);
+  ASSERT_EQ(created_bucket.storage_key, params.storage_key);
   ASSERT_EQ(created_bucket.type, kTemp);
 
   // Should return the same bucket when querying again.
-  result = db->GetOrCreateBucket(storage_key, bucket_name);
+  result = db->GetOrCreateBucket(params);
   ASSERT_TRUE(result.ok());
 
   BucketInfo retrieved_bucket = result.value();
@@ -961,13 +960,13 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
 TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
-  const StorageKey kStorageKey =
-      StorageKey::CreateFromStringForTesting("http://google/");
-  const std::string kBucketName = "google_bucket";
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"));
+  params.name = "google_bucket";
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetOrCreateBucket(kStorageKey, kBucketName);
+    auto result = db->GetOrCreateBucket(params);
     ASSERT_TRUE(result.ok());
   }
   // Move db file paths to legacy file path for path migration test setup.
@@ -979,7 +978,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   // Reopen database, check that db is migrated to new path with bucket data.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetBucket(kStorageKey, kBucketName, kTemp);
+    auto result = db->GetBucket(params.storage_key, params.name, kTemp);
     EXPECT_TRUE(result.ok());
     EXPECT_FALSE(base::PathExists(kLegacyFilePath));
     EXPECT_TRUE(base::PathExists(DbPath()));
@@ -990,13 +989,13 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
 TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
-  const StorageKey kStorageKey =
-      StorageKey::CreateFromStringForTesting("http://google/");
-  const std::string kBucketName = "google_bucket";
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"));
+  params.name = "google_bucket";
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetOrCreateBucket(kStorageKey, kBucketName);
+    auto result = db->GetOrCreateBucket(params);
     ASSERT_TRUE(result.ok());
   }
   // Copy db file paths to legacy file path to mimic bad migration state.
@@ -1005,7 +1004,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   // Reopen database, check that db is migrated and is in a good state.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetBucket(kStorageKey, kBucketName, kTemp);
+    auto result = db->GetBucket(params.storage_key, params.name, kTemp);
     EXPECT_TRUE(result.ok());
     EXPECT_FALSE(base::PathExists(kLegacyFilePath));
     EXPECT_TRUE(base::PathExists(DbPath()));
@@ -1014,13 +1013,12 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
 
 TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
   QuotaDatabase db(ProfilePath());
-  StorageKey storage_key =
-      StorageKey::CreateFromStringForTesting("http://google/");
-  std::string bucket_name = "google_bucket";
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"));
+  params.name = "google_bucket";
 
   {
-    QuotaErrorOr<BucketInfo> result =
-        db.GetOrCreateBucket(storage_key, bucket_name);
+    QuotaErrorOr<BucketInfo> result = db.GetOrCreateBucket(params);
     ASSERT_TRUE(result.ok()) << "Failed to create bucket to be used in test";
   }
 
@@ -1036,8 +1034,7 @@ TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
   {
     base::HistogramTester histograms;
 
-    QuotaErrorOr<BucketInfo> result =
-        db.GetOrCreateBucket(storage_key, bucket_name);
+    QuotaErrorOr<BucketInfo> result = db.GetOrCreateBucket(params);
     EXPECT_FALSE(result.ok());
 
     histograms.ExpectTotalCount("Quota.QuotaDatabaseError", 1);

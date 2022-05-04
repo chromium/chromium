@@ -392,9 +392,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(
-              blink::StorageKey(url::Origin::Create(database_open_url)),
-              storage::kDefaultBucketName);
+          ->GetOrCreateBucketSync(storage::BucketInitParams(
+              blink::StorageKey(url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -431,9 +430,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(
-              blink::StorageKey(url::Origin::Create(database_open_url)),
-              storage::kDefaultBucketName);
+          ->GetOrCreateBucketSync(storage::BucketInitParams(
+              blink::StorageKey(url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -765,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(kTestStorageKey, storage::kDefaultBucketName);
+          ->GetOrCreateBucketSync(storage::BucketInitParams(kTestStorageKey));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   EXPECT_EQ(0,
@@ -1042,7 +1040,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
       ->GetQuotaManager()
       ->proxy()
       ->GetOrCreateBucket(
-          storage_key, storage::kDefaultBucketName,
+          storage::BucketInitParams(storage_key),
           base::SequencedTaskRunnerHandle::Get(),
           base::BindOnce(base::BindLambdaForTesting(
               [&](storage::QuotaErrorOr<storage::BucketInfo> result) {
@@ -1224,9 +1222,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(blink::StorageKey(url::Origin::Create(
-                                      embedded_test_server()->base_url())),
-                                  storage::kDefaultBucketName);
+          ->GetOrCreateBucketSync(storage::BucketInitParams(blink::StorageKey(
+              url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -1320,9 +1317,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
           ->GetDefaultStoragePartition()
           ->GetQuotaManager()
           ->proxy()
-          ->GetOrCreateBucketSync(blink::StorageKey(url::Origin::Create(
-                                      embedded_test_server()->base_url())),
-                                  storage::kDefaultBucketName);
+          ->GetOrCreateBucketSync(storage::BucketInitParams(blink::StorageKey(
+              url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.ok());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);

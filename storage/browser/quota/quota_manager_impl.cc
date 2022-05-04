@@ -1032,8 +1032,7 @@ void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
 }
 
 void QuotaManagerImpl::GetOrCreateBucket(
-    const StorageKey& storage_key,
-    const std::string& bucket_name,
+    const BucketInitParams& bucket_params,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
@@ -1045,12 +1044,11 @@ void QuotaManagerImpl::GetOrCreateBucket(
   }
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](const StorageKey& storage_key, const std::string& bucket_name,
-             QuotaDatabase* database) {
+          [](const BucketInitParams& params, QuotaDatabase* database) {
             DCHECK(database);
-            return database->GetOrCreateBucket(storage_key, bucket_name);
+            return database->GetOrCreateBucket(params);
           },
-          storage_key, bucket_name),
+          bucket_params),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

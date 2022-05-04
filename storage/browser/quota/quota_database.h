@@ -22,6 +22,7 @@
 #include "base/types/id_type.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -110,14 +111,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaError DeleteHostQuota(const std::string& host,
                              blink::mojom::StorageType type);
 
-  // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
-  // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
-  // a new bucket with the specified policies. Returns a QuotaError if the
-  // operation has failed.
-  // TODO(crbug/1203467): Include more policies when supported.
-  QuotaErrorOr<BucketInfo> GetOrCreateBucket(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name);
+  // Gets the bucket described by `params.storage_key` and `params.name` for
+  // StorageType kTemporary and returns the BucketInfo. If a bucket fitting the
+  // params doesn't exist, it creates a new bucket with the policies in
+  // `params`. Note that in the case where an existing bucket is retrieved, the
+  // policies in `params` are ignored. Returns a QuotaError if the operation has
+  // failed.
+  QuotaErrorOr<BucketInfo> GetOrCreateBucket(const BucketInitParams& params);
 
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
   // used by FileSystem, and is expected to be removed when
@@ -309,7 +309,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const std::string& bucket_name,
       int use_count,
       base::Time last_accessed,
-      base::Time last_modified);
+      base::Time last_modified,
+      absl::optional<base::Time> expiration,
+      int64_t quota);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

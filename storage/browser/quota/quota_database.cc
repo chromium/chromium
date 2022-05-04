@@ -201,12 +201,11 @@ QuotaError QuotaDatabase::SetHostQuota(const std::string& host,
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucket(
-    const StorageKey& storage_key,
-    const std::string& bucket_name) {
+    const BucketInitParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   QuotaErrorOr<BucketInfo> bucket_result =
-      GetBucket(storage_key, bucket_name, StorageType::kTemporary);
+      GetBucket(params.storage_key, params.name, StorageType::kTemporary);
 
   if (bucket_result.ok())
     return bucket_result;
@@ -215,8 +214,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucket(
     return bucket_result.error();
 
   base::Time now = base::Time::Now();
-  return CreateBucketInternal(storage_key, StorageType::kTemporary, bucket_name,
-                              /*use_count=*/0, now, now);
+  return CreateBucketInternal(
+      params.storage_key, StorageType::kTemporary, params.name,
+      /*use_count=*/0, now, now, params.expiration, params.quota);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
@@ -236,7 +236,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
 
   base::Time now = base::Time::Now();
   return CreateBucketInternal(storage_key, type, bucket_name, /*use_count=*/0,
-                              now, now);
+                              now, now, absl::nullopt, 0);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
@@ -247,7 +247,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
 
   base::Time now = base::Time::Now();
   return CreateBucketInternal(storage_key, storage_type, bucket_name,
-                              /*use_count=*/0, now, now);
+                              /*use_count=*/0, now, now, absl::nullopt, 0);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
@@ -1067,7 +1067,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
     const std::string& bucket_name,
     int use_count,
     base::Time last_accessed,
-    base::Time last_modified) {
+    base::Time last_modified,
+    absl::optional<base::Time> expiration,
+    int64_t quota) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug/1210259): Add DCHECKs for input validation.
   QuotaError open_error = EnsureOpened();
@@ -1086,7 +1088,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
         "last_modified,"
         "expiration,"
         "quota) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)";
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, storage_key.Serialize());
@@ -1096,7 +1098,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   statement.BindInt(4, use_count);
   statement.BindTime(5, last_accessed);
   statement.BindTime(6, last_modified);
-  statement.BindTime(7, base::Time::Max());
+  const base::Time expires = expiration.value_or(base::Time::Max());
+  statement.BindTime(7, expires);
+  statement.BindInt64(8, quota);
 
   if (!statement.Run())
     return QuotaError::kDatabaseError;
@@ -1110,7 +1114,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   Commit();
 
   return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
-                    base::Time::Max(), 0);
+                    expires, quota);
 }
 
 bool operator<(const QuotaDatabase::BucketTableEntry& lhs,

@@ -71,8 +71,10 @@ class MockQuotaManagerTest : public testing::Test {
       const std::string& bucket_name) {
     QuotaErrorOr<BucketInfo> result;
     base::RunLoop run_loop;
+    BucketInitParams params(storage_key);
+    params.name = bucket_name;
     manager_->GetOrCreateBucket(
-        storage_key, bucket_name,
+        params,
         base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
           result = std::move(bucket);
           run_loop.Quit();

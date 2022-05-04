@@ -350,7 +350,7 @@ void MediaLicenseManager::DidGetMediaLicenses(
     }
     const blink::StorageKey& storage_key = storage_key_and_files.first;
     quota_manager_proxy()->GetOrCreateBucket(
-        storage_key, storage::kDefaultBucketName,
+        storage::BucketInitParams(storage_key),
         base::SequencedTaskRunnerHandle::Get(),
         base::BindOnce(&MediaLicenseManager::OpenPluginFileSystemsForStorageKey,
                        weak_factory_.GetWeakPtr(), storage_key,
@@ -490,7 +490,7 @@ void MediaLicenseManager::DidClearPluginPrivateData() {
     const auto& storage_key = receivers.first;
     // Get the default bucket for `storage_key`.
     quota_manager_proxy()->GetOrCreateBucket(
-        storage_key, storage::kDefaultBucketName,
+        storage::BucketInitParams(storage_key),
         base::SequencedTaskRunnerHandle::Get(),
         base::BindOnce(&MediaLicenseManager::DidGetBucket,
                        weak_factory_.GetWeakPtr(), storage_key));
@@ -523,7 +523,7 @@ void MediaLicenseManager::OpenCdmStorage(
 
   // Get the default bucket for `storage_key`.
   quota_manager_proxy()->GetOrCreateBucket(
-      storage_key, storage::kDefaultBucketName,
+      storage::BucketInitParams(storage_key),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&MediaLicenseManager::DidGetBucket,
                      weak_factory_.GetWeakPtr(), storage_key));

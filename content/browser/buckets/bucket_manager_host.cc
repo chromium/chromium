@@ -61,7 +61,7 @@ void BucketManagerHost::BindReceiver(
 }
 
 void BucketManagerHost::OpenBucket(const std::string& name,
-                                   blink::mojom::BucketPoliciesPtr policy,
+                                   blink::mojom::BucketPoliciesPtr policies,
                                    OpenBucketCallback callback) {
   if (!IsValidBucketName(name)) {
     receivers_.ReportBadMessage("Invalid bucket name");
@@ -74,10 +74,18 @@ void BucketManagerHost::OpenBucket(const std::string& name,
     return;
   }
 
+  storage::BucketInitParams params((blink::StorageKey(origin_)));
+  params.name = name;
+  if (policies) {
+    if (policies->expires)
+      params.expiration = *policies->expires;
+
+    params.quota = policies->quota;
+  }
   manager_->quota_manager_proxy()->GetOrCreateBucket(
-      blink::StorageKey(origin_), name, base::SequencedTaskRunnerHandle::Get(),
+      params, base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&BucketManagerHost::DidGetBucket,
-                     weak_factory_.GetWeakPtr(), std::move(policy),
+                     weak_factory_.GetWeakPtr(), std::move(policies),
                      std::move(callback)));
 }
 

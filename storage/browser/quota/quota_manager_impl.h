@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -181,8 +182,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // operation has failed.
   // This method is declared as virtual to allow test code to override it.
   virtual void GetOrCreateBucket(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name,
+      const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
   // used by FileSystem, and is expected to be removed when

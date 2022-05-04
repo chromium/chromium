@@ -190,7 +190,7 @@ void ServiceWorkerRegistry::CreateNewRegistration(
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
     quota_manager_proxy_->GetOrCreateBucket(
-        key, storage::kDefaultBucketName, base::ThreadTaskRunnerHandle::Get(),
+        storage::BucketInitParams(key), base::ThreadTaskRunnerHandle::Get(),
         base::BindOnce(
             &ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo,
             weak_factory_.GetWeakPtr(), std::move(options), key,

@@ -105,7 +105,7 @@ void CacheStorageContextImpl::AddReceiver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   quota_manager_proxy_->GetOrCreateBucket(
-      storage_key, storage::kDefaultBucketName,
+      storage::BucketInitParams(storage_key),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,

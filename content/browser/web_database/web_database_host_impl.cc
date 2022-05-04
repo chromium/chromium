@@ -125,8 +125,9 @@ void WebDatabaseHostImpl::OpenFileValidated(const std::u16string& vfs_file_name,
                                                    database_name)) {
     DCHECK(db_tracker_->quota_manager_proxy());
     db_tracker_->quota_manager_proxy()->GetOrCreateBucket(
-        blink::StorageKey(storage::GetOriginFromIdentifier(origin_identifier)),
-        storage::kDefaultBucketName, db_tracker_->task_runner(),
+        storage::BucketInitParams(blink::StorageKey(
+            storage::GetOriginFromIdentifier(origin_identifier))),
+        db_tracker_->task_runner(),
         base::BindOnce(&WebDatabaseHostImpl::OpenFileWithBucketCreated,
                        weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
                        desired_flags, std::move(callback)));

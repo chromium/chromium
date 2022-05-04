@@ -2401,9 +2401,10 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   storage::BucketLocator GetOrCreateBucket(const blink::StorageKey& storage_key,
                                            const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_proxy_->GetOrCreateBucket(storage_key, name,
-                                            base::ThreadTaskRunnerHandle::Get(),
-                                            future.GetCallback());
+    storage::BucketInitParams params(storage_key);
+    params.name = name;
+    quota_manager_proxy_->GetOrCreateBucket(
+        params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();

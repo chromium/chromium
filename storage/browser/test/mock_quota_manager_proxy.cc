@@ -35,14 +35,11 @@ void MockQuotaManagerProxy::RegisterClient(
 }
 
 void MockQuotaManagerProxy::GetOrCreateBucket(
-    const blink::StorageKey& storage_key,
-    const std::string& bucket_name,
+    const BucketInitParams& params,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  if (mock_quota_manager_) {
-    mock_quota_manager_->GetOrCreateBucket(storage_key, bucket_name,
-                                           std::move(callback));
-  }
+  if (mock_quota_manager_)
+    mock_quota_manager_->GetOrCreateBucket(params, std::move(callback));
 }
 
 void MockQuotaManagerProxy::GetBucket(
