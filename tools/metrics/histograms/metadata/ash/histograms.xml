@@ -2578,8 +2578,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NightLight.ScheduleType" enum="AshNightLightScheduleType"
-    expires_after="2022-04-24">
+    expires_after="2023-05-01">
   <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
   <summary>
     The selected Night Light schedule type. Emitted when the user changes the
     Night Light schedule type from the Display System Settings.
