@@ -263,6 +263,8 @@ if (is_win || is_mac || is_linux) {
         "win/install_progress_observer.h",
         "win/installer_api.cc",
         "win/installer_api.h",
+        "win/manifest_util.cc",
+        "win/manifest_util.h",
         "win/net/network.h",
         "win/net/network_fetcher.cc",
         "win/net/network_fetcher.h",
@@ -636,6 +638,7 @@ if (is_win || is_mac || is_linux) {
         "test/integration_tests_win.cc",
         "util_win_unittest.cc",
         "win/installer_api_unittest.cc",
+        "win/manifest_util_unittest.cc",
         "win/net/network_unittest.cc",
         "win/protocol_parser_xml_unittest.cc",
         "win/setup/setup_util_unittest.cc",
@@ -668,6 +671,7 @@ if (is_win || is_mac || is_linux) {
         "test/data/tagged_encode_utf8.exe",
         "test/data/tagged_magic_utf16.exe",
         "test/data/updater.runtime_deps",
+        "//chrome/test/data/updater/OfflineManifest.gup",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
       ]
 

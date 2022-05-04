@@ -15,6 +15,7 @@
 #include "chrome/updater/splash_screen.h"
 
 namespace base {
+class FilePath;
 class Version;
 }
 
@@ -34,6 +35,11 @@ class AppInstallController
   virtual void InstallApp(const std::string& app_id,
                           const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
+
+  virtual void InstallAppOffline(const std::string& app_id,
+                                 const std::string& app_name,
+                                 const base::FilePath& offline_dir,
+                                 base::OnceCallback<void(int)> callback) = 0;
 
  protected:
   virtual ~AppInstallController() = default;

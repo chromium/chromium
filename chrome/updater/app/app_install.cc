@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -58,6 +59,14 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallApp(const std::string& /*app_id*/,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), 0));
+  }
+
+  void InstallAppOffline(const std::string& app_id,
+                         const std::string& app_name,
+                         const base::FilePath& offline_dir,
+                         base::OnceCallback<void(int)> callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
   }
@@ -232,8 +241,19 @@ void AppInstall::MaybeInstallApp() {
     return;
   }
   app_install_controller_ = app_install_controller_maker_.Run(update_service_);
-  app_install_controller_->InstallApp(
-      app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
+
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (cmd_line->HasSwitch(kOfflineDirSwitch)) {
+    // Presence of "offlinedir" in command line indicates this is an offline
+    // install.
+    app_install_controller_->InstallAppOffline(
+        app_id_, app_name_, cmd_line->GetSwitchValuePath(kOfflineDirSwitch),
+        base::BindOnce(&AppInstall::Shutdown, this));
+
+  } else {
+    app_install_controller_->InstallApp(
+        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
+  }
 }
 
 }  // namespace updater

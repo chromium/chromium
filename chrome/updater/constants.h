@@ -163,6 +163,10 @@ extern const char kHealthCheckSwitch[];
 // scenario.
 extern const char kHandoffSwitch[];
 
+// Specifies the full path to the offline install resources. The folder
+// contains offline installer and the manifest file.
+extern const char kOfflineDirSwitch[];
+
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting
