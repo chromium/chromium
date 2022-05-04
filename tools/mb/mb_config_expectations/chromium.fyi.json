@@ -931,7 +931,8 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-rel-skylab-fyi": {
@@ -1057,8 +1058,9 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_javascript_coverage": true
+      "use_javascript_coverage": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-code-coverage": {
