@@ -32,37 +32,8 @@ constexpr char kTestUser[] = "user@test";
 
 // HoldingSpaceAnimationRegistryTest -------------------------------------------
 
-class HoldingSpaceAnimationRegistryTest
-    : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<
-          /*animation_v2_enabled=*/bool,
-          /*animation_v2_delay_enabled=*/bool>> {
+class HoldingSpaceAnimationRegistryTest : public AshTestBase {
  public:
-  HoldingSpaceAnimationRegistryTest() {
-    std::vector<base::Feature> disabled_features;
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
-
-    if (IsAnimationV2Enabled()) {
-      enabled_features.push_back(
-          base::test::ScopedFeatureList::FeatureAndParams(
-              features::kHoldingSpaceInProgressAnimationV2,
-              {{"delay_enabled",
-                IsAnimationV2DelayEnabled() ? "true" : "false"}}));
-    } else {
-      disabled_features.push_back(features::kHoldingSpaceInProgressAnimationV2);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
-
-  bool IsAnimationV2Enabled() const { return std::get<0>(GetParam()); }
-
-  bool IsAnimationV2DelayEnabled() const {
-    return IsAnimationV2Enabled() && std::get<1>(GetParam());
-  }
-
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -134,22 +105,15 @@ class HoldingSpaceAnimationRegistryTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockHoldingSpaceClient> holding_space_client_;
   HoldingSpaceModel holding_space_model_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceAnimationRegistryTest,
-                         testing::Combine(
-                             /*animation_v2_enabled=*/testing::Bool(),
-                             /*animation_v2_delay_enabled=*/testing::Bool()));
 
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
 
-TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
+TEST_F(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
   using Type = ProgressRingAnimation::Type;
 
   StartSession();
@@ -173,17 +137,14 @@ TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/1"),
               HoldingSpaceProgress(0, absl::nullopt));
 
-  bool v2_enabled = IsAnimationV2Enabled();
-  bool v2_with_delay_disabled = v2_enabled && !IsAnimationV2DelayEnabled();
-
   // Verify animation `registry()` state.
-  ExpectProgressIconAnimationExistsForKey(controller(), v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(controller(), v2_enabled);
+  ExpectProgressIconAnimationExistsForKey(controller(), true);
+  ExpectProgressIconAnimationHasAnimatedForKey(controller(), true);
   ExpectProgressRingAnimationOfTypeForKey(controller(), Type::kIndeterminate);
   ExpectProgressIconAnimationExistsForKey(item_0, false);
   ExpectProgressRingAnimationOfTypeForKey(item_0, absl::nullopt);
-  ExpectProgressIconAnimationExistsForKey(item_1, v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(item_1, v2_with_delay_disabled);
+  ExpectProgressIconAnimationExistsForKey(item_1, true);
+  ExpectProgressIconAnimationHasAnimatedForKey(item_1, false);
   ExpectProgressRingAnimationOfTypeForKey(item_1, Type::kIndeterminate);
 
   // Add a determinately in-progress item to the `model()`.
@@ -192,31 +153,31 @@ TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
               HoldingSpaceProgress(0, 10));
 
   // Verify animation `registry()` state.
-  ExpectProgressIconAnimationExistsForKey(controller(), v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(controller(), v2_enabled);
+  ExpectProgressIconAnimationExistsForKey(controller(), true);
+  ExpectProgressIconAnimationHasAnimatedForKey(controller(), true);
   ExpectProgressRingAnimationOfTypeForKey(controller(), Type::kIndeterminate);
   ExpectProgressIconAnimationExistsForKey(item_0, false);
   ExpectProgressRingAnimationOfTypeForKey(item_0, absl::nullopt);
-  ExpectProgressIconAnimationExistsForKey(item_1, v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(item_1, v2_with_delay_disabled);
+  ExpectProgressIconAnimationExistsForKey(item_1, true);
+  ExpectProgressIconAnimationHasAnimatedForKey(item_1, false);
   ExpectProgressRingAnimationOfTypeForKey(item_1, Type::kIndeterminate);
-  ExpectProgressIconAnimationExistsForKey(item_2, v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(item_2, v2_with_delay_disabled);
+  ExpectProgressIconAnimationExistsForKey(item_2, true);
+  ExpectProgressIconAnimationHasAnimatedForKey(item_2, false);
   ExpectProgressRingAnimationOfTypeForKey(item_2, absl::nullopt);
 
   // Complete the first in-progress item.
   model()->UpdateItem(item_1->id())->SetProgress(HoldingSpaceProgress(10, 10));
 
   // Verify animation `registry()` state.
-  ExpectProgressIconAnimationExistsForKey(controller(), v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(controller(), v2_enabled);
+  ExpectProgressIconAnimationExistsForKey(controller(), true);
+  ExpectProgressIconAnimationHasAnimatedForKey(controller(), true);
   ExpectProgressRingAnimationOfTypeForKey(controller(), absl::nullopt);
   ExpectProgressIconAnimationExistsForKey(item_0, false);
   ExpectProgressRingAnimationOfTypeForKey(item_0, absl::nullopt);
   ExpectProgressIconAnimationExistsForKey(item_1, false);
   ExpectProgressRingAnimationOfTypeForKey(item_1, Type::kPulse);
-  ExpectProgressIconAnimationExistsForKey(item_2, v2_enabled);
-  ExpectProgressIconAnimationHasAnimatedForKey(item_2, v2_with_delay_disabled);
+  ExpectProgressIconAnimationExistsForKey(item_2, true);
+  ExpectProgressIconAnimationHasAnimatedForKey(item_2, false);
   ExpectProgressRingAnimationOfTypeForKey(item_2, absl::nullopt);
 
   // Complete the second in-progress item.

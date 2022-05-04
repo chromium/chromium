@@ -183,10 +183,8 @@ class ProgressIndicatorView : public views::View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
     if (progress_indicator_) {
       gfx::Rect bounds(GetLocalBounds());
-      if (features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
-        ToCenteredSize(
-            &bounds, gfx::Size(kProgressIndicatorSize, kProgressIndicatorSize));
-      }
+      ToCenteredSize(&bounds,
+                     gfx::Size(kProgressIndicatorSize, kProgressIndicatorSize));
       progress_indicator_->layer()->SetBounds(bounds);
     }
   }
@@ -532,13 +530,11 @@ void HoldingSpaceItemChipView::UpdateImageAndProgressIndicatorVisibility() {
       !is_secondary_action_visible && !checkmark()->GetVisible();
 
   // Similarly, the `image_` may be visible iff there is no visible secondary
-  // action or multiselect UI but additionally, when v2 animations are enabled,
-  // the `image_` may only be visible when `progress` is hidden or complete.
+  // action or multiselect UI but additionally the `image_` may only be visible
+  // when `progress` is hidden or complete.
   bool is_image_visible = is_progress_indicator_inner_icon_visible;
-  if (features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
-    const HoldingSpaceProgress& progress = item()->progress();
-    is_image_visible &= progress.IsHidden() || progress.IsComplete();
-  }
+  const HoldingSpaceProgress& progress = item()->progress();
+  is_image_visible &= progress.IsHidden() || progress.IsComplete();
 
   image_->SetVisible(is_image_visible);
   progress_indicator_->SetInnerIconVisible(

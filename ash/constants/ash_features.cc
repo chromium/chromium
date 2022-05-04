@@ -812,18 +812,6 @@ const base::Feature kHideArcMediaNotifications{
 const base::Feature kHideShelfControlsInTabletMode{
     "HideShelfControlsInTabletMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables V2 implementation for visual representation of in-progress items in
-// Tote, the productivity feature that aims to reduce context switching by
-// enabling users to collect content and transfer or access it later.
-const base::Feature kHoldingSpaceInProgressAnimationV2{
-    "HoldingSpaceInProgressAnimationV2", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables delay for the `kHoldingSpaceInProgressAnimationV2` feature so that
-// progress icon animations won't start until any associated holding space tray
-// item previews have had the opportunity to animate in.
-const base::FeatureParam<bool> kHoldingSpaceInProgressAnimationV2DelayEnabled{
-    &kHoldingSpaceInProgressAnimationV2, "delay_enabled", true};
-
 // Enables in-progress downloads notification suppression with the productivity
 // feature that aims to reduce context switching by enabling users to collect
 // content and transfer or access it later.
@@ -1783,15 +1771,6 @@ bool IsHideArcMediaNotificationsEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
-}
-
-bool IsHoldingSpaceInProgressAnimationV2Enabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceInProgressAnimationV2);
-}
-
-bool IsHoldingSpaceInProgressAnimationV2DelayEnabled() {
-  return IsHoldingSpaceInProgressAnimationV2Enabled() &&
-         kHoldingSpaceInProgressAnimationV2DelayEnabled.Get();
 }
 
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {

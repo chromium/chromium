@@ -32,7 +32,6 @@ constexpr float kOuterRingOpacity = 0.6f;
 constexpr float kInnerRingStrokeWidthScaleFactor = 1.5f / 28.f;
 constexpr float kOuterRingStrokeWidth = 2.f;
 constexpr float kOuterRingStrokeWidthScaleFactor = 4.f / 28.f;
-constexpr float kOuterRingTrackOpacity = 0.3f;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -98,7 +97,6 @@ SkPath CreateRoundedRectPath(const gfx::RectF& rect, float corner_radius) {
 // Returns the size for the inner icon given `layer` dimensions.
 // NOTE: this method should only be called when v2 animations are enabled.
 float GetInnerIconSize(const ui::Layer* layer) {
-  DCHECK(features::IsHoldingSpaceInProgressAnimationV2Enabled());
   const gfx::Size& size = layer->size();
   return kInnerIconSizeScaleFactor * std::min(size.width(), size.height());
 }
@@ -106,7 +104,6 @@ float GetInnerIconSize(const ui::Layer* layer) {
 // Returns the stroke width for the inner icon given `layer` dimensions.
 // NOTE: this method should only be called when v2 animations are enabled.
 float GetInnerRingStrokeWidth(const ui::Layer* layer) {
-  DCHECK(features::IsHoldingSpaceInProgressAnimationV2Enabled());
   const gfx::Size& size = layer->size();
   return kInnerRingStrokeWidthScaleFactor *
          std::min(size.width(), size.height());
@@ -114,30 +111,20 @@ float GetInnerRingStrokeWidth(const ui::Layer* layer) {
 
 // Returns the opacity for the outer ring given the current `progress`.
 float GetOuterRingOpacity(const absl::optional<float>& progress) {
-  return features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
-                 progress != ProgressIndicator::kProgressComplete
-             ? kOuterRingOpacity
-             : 1.f;
+  return progress != ProgressIndicator::kProgressComplete ? kOuterRingOpacity
+                                                          : 1.f;
 }
 
 // Returns the stroke width for the outer ring given `layer` dimensions and
 // the current `progress`.
 float GetOuterRingStrokeWidth(const ui::Layer* layer,
                               const absl::optional<float>& progress) {
-  if (features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
-      progress != ProgressIndicator::kProgressComplete) {
+  if (progress != ProgressIndicator::kProgressComplete) {
     const gfx::Size& size = layer->size();
     return kOuterRingStrokeWidthScaleFactor *
            std::min(size.width(), size.height());
   }
   return kOuterRingStrokeWidth;
-}
-
-// Returns the stroke cap.
-cc::PaintFlags::Cap GetStrokeCap() {
-  return features::IsHoldingSpaceInProgressAnimationV2Enabled()
-             ? cc::PaintFlags::Cap::kDefault_Cap
-             : cc::PaintFlags::Cap::kRound_Cap;
 }
 
 // DefaultProgressIndicatorAnimationRegistry -----------------------------------
@@ -211,13 +198,8 @@ class DefaultProgressIndicatorAnimationRegistry
             weak_ptr_factory_.GetWeakPtr(), animation));
   }
 
-  // Ensures that a progress icon animation exists and is started. NOTE: This
-  // method no-ops if in-progress animation v2 is disabled since in such cases
-  // there is no progress icon to animate.
+  // Ensures that a progress icon animation exists and is started.
   void EnsureProgressIconAnimation() {
-    if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
-      return;
-
     if (!GetProgressIconAnimationForKey(progress_indicator_)) {
       SetProgressIconAnimationForKey(progress_indicator_,
                                      std::make_unique<ProgressIconAnimation>())
@@ -462,19 +444,12 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStrokeCap(GetStrokeCap());
+  flags.setStrokeCap(cc::PaintFlags::Cap::kDefault_Cap);
   flags.setStrokeWidth(outer_ring_stroke_width);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
   const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);
-
-  // Outer ring track.
-  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
-    flags.setColor(SkColorSetA(
-        color, SK_AlphaOPAQUE * kOuterRingTrackOpacity * outer_ring_opacity));
-    canvas->DrawPath(path, flags);
-  }
 
   // Outer ring.
   flags.setColor(SkColorSetA(
@@ -490,10 +465,6 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
     canvas->DrawPath(CreatePathSegment(path, start, 1.f), flags);
     canvas->DrawPath(CreatePathSegment(path, 0.f, end), flags);
   }
-
-  // The inner ring and inner icon are only present in v2.
-  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
-    return;
 
   // The inner ring and inner icon should be absent once progress completes.
   // This would occur if the progress ring is animating post completion.

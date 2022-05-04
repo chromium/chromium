@@ -2821,9 +2821,6 @@ extern const char kHelpAppLauncherSearchDescription[];
 extern const char kHelpAppSearchServiceIntegrationName[];
 extern const char kHelpAppSearchServiceIntegrationDescription[];
 
-extern const char kHoldingSpaceInProgressAnimationV2Name[];
-extern const char kHoldingSpaceInProgressAnimationV2Description[];
-
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 

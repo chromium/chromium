@@ -143,12 +143,9 @@ void DictationButtonTray::UpdateIcon(bool dictation_active) {
 
 void DictationButtonTray::UpdateIconOpacityAndTransform() {
   // Updating the tray `icon_` opacity and transform is done to prevent overlap
-  // with the inner icon of the `progress_indicator_` which is only present when
-  // in-progress animation v2 is enabled.
-  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled() ||
-      !progress_indicator_) {
+  // with the inner icon of the `progress_indicator_`
+  if (!progress_indicator_)
     return;
-  }
 
   // When `progress` is not `complete`, the `progress_indicator_` will paint an
   // inner icon in the same position as the tray `icon_`. To prevent overlap,

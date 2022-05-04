@@ -7923,13 +7923,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWin10TabSearchCaptionButton)},
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-holding-space-in-progress-animation-v2",
-     flag_descriptions::kHoldingSpaceInProgressAnimationV2Name,
-     flag_descriptions::kHoldingSpaceInProgressAnimationV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceInProgressAnimationV2)},
-#endif
-
     {"omnibox-updated-connection-security-indicators",
      flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsName,
      flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsDescription,

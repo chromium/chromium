@@ -119,12 +119,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
 
   // Ensures that the icon animation for the specified `key` exists. If
   // necessary, a new animation is created and started, notifying any animation
-  // changed callbacks. NOTE: This method no-ops unless in-progress animations
-  // v2 is enabled.
+  // changed callbacks.
   void EnsureIconAnimationForKey(const void* key) {
-    if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
-      return;
-
     if (registry_->GetProgressIconAnimationForKey(key))
       return;
 
@@ -132,14 +128,11 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
         key, std::make_unique<ProgressIconAnimation>());
 
     // Only `Start()` the `animation` if it is associated with the holding space
-    // `controller_` or if animation delay is disabled. In all other cases, the
-    // `animation` is associated with a holding space item and will be started
-    // after the associated holding space tray item preview has had the
-    // opportunity to animate in.
-    if (key == controller_ ||
-        !features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+    // `controller_`. In all other cases, the `animation` is associated with a
+    // holding space item and will be started after the associated holding space
+    // tray item preview has had the opportunity to animate in.
+    if (key == controller_)
       animation->Start();
-    }
   }
 
   // Ensures that the ring animation for the specified `key` is of the desired

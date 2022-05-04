@@ -690,10 +690,8 @@ void HoldingSpaceTray::UpdatePreviewsState() {
   UpdatePreviewsVisibility();
   SchedulePreviewsIconUpdate();
 
-  if (PreviewsShown() ||
-      !features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+  if (PreviewsShown())
     return;
-  }
 
   // When previews are shown, progress icon animations are started on completion
   // of preview animations. When previews are *not* shown, there is nothing to
@@ -765,11 +763,6 @@ bool HoldingSpaceTray::PreviewsShown() const {
 }
 
 void HoldingSpaceTray::UpdateDefaultTrayIcon() {
-  // Overlap between the `default_tray_icon_` and the `progress_indicator_` is
-  // only a concern if v2 animations are enabled.
-  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
-    return;
-
   const absl::optional<float>& progress = progress_indicator_->progress();
 
   // If `progress` is not `complete`, there is potential for overlap between the

@@ -314,13 +314,9 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
   void UpdateOpacity() {
     // Opacity need not be updated if:
     // * `item_` is destroyed and is being animated out,
-    // * `layer()` does not exist, or
-    // * in-progress animations v2 is disabled since in that case there is no
-    //   progress indicator inner icon which would otherwise result in overlap.
-    if (!item_ || !layer() ||
-        !features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+    // * `layer()` does not exist.
+    if (!item_ || !layer())
       return;
-    }
 
     const bool is_item_visibly_in_progress =
         !item_->progress().IsHidden() && !item_->progress().IsComplete();
@@ -346,13 +342,9 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
   void UpdateTransform() {
     // Transform need not be updated if:
     // * `item_` is destroyed and is being animated out,
-    // * `layer()` does not exist, or
-    // * in-progress animations v2 is disabled since in that case there is no
-    //   progress indicator inner icon which would otherwise result in overlap.
-    if (!item_ || !layer() ||
-        !features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+    // * `layer()` does not exist.
+    if (!item_ || !layer())
       return;
-    }
 
     const bool is_item_visibly_in_progress =
         !item_->progress().IsHidden() && !item_->progress().IsComplete();
@@ -434,13 +426,11 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   if (!NeedsLayer()) {
     // Since the holding space tray icon preview will not be animated, any
     // associated progress icon animation can `Start()` immediately.
-    if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
-      auto* key = progress_indicator_->animation_key();
-      auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
-      auto* animation = registry->GetProgressIconAnimationForKey(key);
-      if (animation && !animation->HasAnimated())
-        animation->Start();
-    }
+    auto* key = progress_indicator_->animation_key();
+    auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+    auto* animation = registry->GetProgressIconAnimationForKey(key);
+    if (animation && !animation->HasAnimated())
+      animation->Start();
     return;
   }
 
@@ -483,19 +473,16 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
 
   // Any associated progress icon animation should `Start()` only after
   // completion of the holding space tray icon preview animation.
-  if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
-    auto observer = std::make_unique<CallbackLayerAnimationObserver>();
-    sequence->AddObserver(observer.get());
-    observer->SetAnimationCompletedCallback(base::BindOnce(
-        [](CallbackLayerAnimationObserver* observer, const void* key) {
-          auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
-          auto* animation = registry->GetProgressIconAnimationForKey(key);
-          if (animation && !animation->HasAnimated())
-            animation->Start();
-        },
-        base::Owned(std::move(observer)),
-        progress_indicator_->animation_key()));
-  }
+  auto observer = std::make_unique<CallbackLayerAnimationObserver>();
+  sequence->AddObserver(observer.get());
+  observer->SetAnimationCompletedCallback(base::BindOnce(
+      [](CallbackLayerAnimationObserver* observer, const void* key) {
+        auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+        auto* animation = registry->GetProgressIconAnimationForKey(key);
+        if (animation && !animation->HasAnimated())
+          animation->Start();
+      },
+      base::Owned(std::move(observer)), progress_indicator_->animation_key()));
 
   layer()->GetAnimator()->StartAnimation(sequence.release());
 }

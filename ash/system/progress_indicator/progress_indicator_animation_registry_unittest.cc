@@ -21,38 +21,21 @@ namespace {
 
 // ProgressIndicatorAnimationRegistryTest --------------------------------------
 
-// Base class for tests of the `ProgressIndicatorAnimationRegistry`
-// parameterized by whether animation v2 is enabled.
-class ProgressIndicatorAnimationRegistryTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          /*animation_v2_enabled=*/bool> {
+// Base class for tests of the `ProgressIndicatorAnimationRegistry`.
+class ProgressIndicatorAnimationRegistryTest : public testing::Test {
  public:
-  ProgressIndicatorAnimationRegistryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceInProgressAnimationV2, IsAnimationV2Enabled());
-  }
-
-  // Returns whether animation v2 is enabled given test parameterization.
-  bool IsAnimationV2Enabled() const { return GetParam(); }
-
   // Returns the `registry_` under test.
   ProgressIndicatorAnimationRegistry* registry() { return &registry_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ProgressIndicatorAnimationRegistry registry_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProgressIndicatorAnimationRegistryTest,
-                         /*in_progress_animation_v2_enabled=*/testing::Bool());
 
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
 
-TEST_P(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
+TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
   // Create `master_keys` for progress animations which may be referenced from
   // each test case.
   std::vector<size_t> master_keys = {1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u};
@@ -170,7 +153,7 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
   }
 }
 
-TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
+TEST_F(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
   // Create `key` and verify no progress icon animation is set.
   size_t key = 0u;
   EXPECT_FALSE(registry()->GetProgressIconAnimationForKey(&key));
@@ -203,7 +186,7 @@ TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
   EXPECT_EQ(callback_call_count, 2u);
 }
 
-TEST_P(ProgressIndicatorAnimationRegistryTest, SetProgressRingAnimationForKey) {
+TEST_F(ProgressIndicatorAnimationRegistryTest, SetProgressRingAnimationForKey) {
   // Create `key` and verify no progress ring animation is set.
   size_t key = 0u;
   EXPECT_FALSE(registry()->GetProgressRingAnimationForKey(&key));
