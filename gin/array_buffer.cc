@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
@@ -28,18 +29,44 @@ static_assert(V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT == 2,
               "array buffers must have two internal fields");
 
 // ArrayBufferAllocator -------------------------------------------------------
+ArrayBufferAllocator::ArrayBufferAllocator() {
+  // When the V8 sandbox is enabled, the ArrayBuffer partition must be
+  // placed inside of it. For that, PA's ConfigurablePool is created inside
+  // the V8 sandbox during initialization of V8, and this partition is
+  // placed inside the configurable pool.
+  // Note that V8 must already have been initialized at this point, otherwise
+  // the configurable pool will not be available and the partition will be
+  // created in the default pool instead. The following CHECK verifies that.
+#if defined(V8_SANDBOXED_POINTERS)
+  // TODO(saelo) consider adding a V8::IsSandboxInitialized().
+  CHECK_GT(v8::V8::GetSandboxSizeInBytes(), 0u);
+#endif
+  // These configuration options are copied from blink's ArrayBufferPartition.
+  partition_.init({
+      base::PartitionOptions::AlignedAlloc::kDisallowed,
+      base::PartitionOptions::ThreadCache::kDisabled,
+      base::PartitionOptions::Quarantine::kAllowed,
+      base::PartitionOptions::Cookie::kAllowed,
+      base::PartitionOptions::BackupRefPtr::kDisabled,
+      base::PartitionOptions::UseConfigurablePool::kIfAvailable,
+  });
+}
 
 void* ArrayBufferAllocator::Allocate(size_t length) {
-  // TODO(bbudge) Use partition allocator for malloc/calloc allocations.
-  return calloc(1, length);
+  int flags = partition_alloc::AllocFlags::kZeroFill |
+              partition_alloc::AllocFlags::kReturnNull;
+  return partition_.root()->AllocWithFlags(flags, length,
+                                           "gin::ArrayBufferAllocator");
 }
 
 void* ArrayBufferAllocator::AllocateUninitialized(size_t length) {
-  return malloc(length);
+  int flags = partition_alloc::AllocFlags::kReturnNull;
+  return partition_.root()->AllocWithFlags(flags, length,
+                                           "gin::ArrayBufferAllocator");
 }
 
 void ArrayBufferAllocator::Free(void* data, size_t length) {
-  free(data);
+  partition_.root()->Free(data);
 }
 
 ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapper.h"
@@ -20,11 +21,16 @@ namespace gin {
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
+  ArrayBufferAllocator();
+
   void* Allocate(size_t length) override;
   void* AllocateUninitialized(size_t length) override;
   void Free(void* data, size_t length) override;
 
   GIN_EXPORT static ArrayBufferAllocator* SharedInstance();
+
+ private:
+  base::PartitionAllocator partition_;
 };
 
 class GIN_EXPORT ArrayBuffer {
