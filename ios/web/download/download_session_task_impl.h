@@ -6,14 +6,16 @@
 #define IOS_WEB_DOWNLOAD_DOWNLOAD_SESSION_TASK_IMPL_H_
 
 #include "base/callback.h"
-#include "base/ios/block_types.h"
+#include "base/files/file.h"
 #include "ios/web/download/download_task_impl.h"
 
-namespace net {
-class URLFetcherResponseWriter;
-}
-
 namespace web {
+namespace download {
+namespace internal {
+class Session;
+class TaskInfo;
+}  // namespace internal
+}  // namespace download
 
 // Implementation of DownloadTaskImpl that uses NSURLRequest to perform the
 // download.
@@ -49,46 +51,26 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   void CancelInternal() final;
 
  private:
-  // Called once net::URLFetcherResponseWriter completes the download
-  void OnWriterDownloadFinished(int error_code);
+  friend class download::internal::Session;
 
-  // Called once the net::URLFetcherResponseWriter created in
-  // Start() has been initialised. The download can be started
-  // unless the initialisation has failed (as reported by the
-  // |writer_initialization_status| result).
-  void OnWriterInitialized(
-      std::unique_ptr<net::URLFetcherResponseWriter> writer,
-      int writer_initialization_status);
+  // Called when the file has been created.
+  void OnFileCreated(base::File file);
 
-  // Creates background NSURLSession with given |identifier| and |cookies|.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies);
+  // Called when the cookies has been fetched.
+  void OnCookiesFetched(base::File file, NSArray<NSHTTPCookie*>* cookies);
 
-  // Asynchronously returns cookies for WebState associated with this task.
-  // Must be called on UI thread. The callback will be invoked on the UI thread.
-  void GetCookies(base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
+  // Called when information about the download is received from the
+  // background NSURLSessionTask.
+  void ApplyTaskInfo(download::internal::TaskInfo task_info);
 
-  // Starts the download with given cookies.
-  void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
+  // Called when data has been written to disk.
+  void OnDataWritten(int64_t data_size);
 
-  // Called to implement the method -URLSession:task:didCompleteWithError:
-  // from NSURLSessionDataDelegate.
-  void OnTaskDone(NSURLSessionTask* task, NSError* error);
-
-  // Called to implement the method -URLSession:dataTask:didReceiveData:
-  // from NSURLSessionDataDelegate.
-  void OnTaskData(NSURLSessionTask* task,
-                  NSData* data,
-                  ProceduralBlock completion_handler);
-
-  // Called from either OnTaskData() or OnTaskDone() to update the task
-  // progress, and optionally notify the observer of those updates.
-  void OnTaskTick(NSURLSessionTask* task, bool notify_download_updated);
+  // Recompute the completion percentage from received bytes.
+  void RecomputePercentCompleted();
 
   SessionFactory session_factory_;
-  std::unique_ptr<net::URLFetcherResponseWriter> writer_;
-  NSURLSession* session_ = nil;
-  NSURLSessionTask* session_task_ = nil;
+  std::unique_ptr<download::internal::Session> session_;
 
   base::WeakPtrFactory<DownloadSessionTaskImpl> weak_factory_{this};
 };

@@ -65,9 +65,6 @@ class DownloadSessionTaskImplTest : public PlatformTest {
                                 base::Unretained(this)))),
         session_delegate_callbacks_queue_(
             dispatch_queue_create(nullptr, DISPATCH_QUEUE_SERIAL)) {
-    DCHECK(!session_);
-    session_ = OCMStrictClassMock([NSURLSession class]);
-
     browser_state_.SetOffTheRecord(true);
     browser_state_.SetCookieStore(std::make_unique<FakeCookieStore>());
     web_state_.SetBrowserState(&browser_state_);
@@ -75,13 +72,6 @@ class DownloadSessionTaskImplTest : public PlatformTest {
 
   // Starts the download and return NSURLSessionDataTask fake for this task.
   CRWFakeNSURLSessionTask* Start(const base::FilePath& path) {
-    // Inject fake NSURLSessionDataTask into DownloadTaskImpl.
-    NSURL* url = [NSURL URLWithString:@(kUrl)];
-    session_task_ = [[CRWFakeNSURLSessionTask alloc] initWithURL:url];
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod = kHttpMethod;
-    OCMExpect([session_ dataTaskWithRequest:request]).andReturn(session_task_);
-
     web::test::WaitDownloadTaskUpdated observer(task_.get());
     task_->Start(path);
     observer.Wait();
@@ -143,6 +133,15 @@ class DownloadSessionTaskImplTest : public PlatformTest {
 
   NSURLSession* CreateSession(NSURLSessionConfiguration* configuration,
                               id<NSURLSessionDataDelegate> delegate) {
+    session_ = OCMStrictClassMock([NSURLSession class]);
+
+    // Inject fake NSURLSessionDataTask into DownloadTaskImpl.
+    NSURL* url = [NSURL URLWithString:@(kUrl)];
+    session_task_ = [[CRWFakeNSURLSessionTask alloc] initWithURL:url];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod = kHttpMethod;
+    OCMExpect([session_ dataTaskWithRequest:request]).andReturn(session_task_);
+
     session_configuration_ = configuration;
     session_delegate_ = delegate;
 
@@ -391,7 +390,12 @@ TEST_F(DownloadSessionTaskImplTest, FailureInTheMiddle) {
   EXPECT_EQ(task_->GetErrorCode(), net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
-  EXPECT_EQ(100, task_->GetPercentComplete());
+  EXPECT_EQ(23, task_->GetPercentComplete());
+  EXPECT_NSEQ(
+      @(kReceivedData),
+      [[NSString alloc]
+          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
+              encoding:NSUTF8StringEncoding]);
 }
 
 // Tests that CreateSession is called with the correct cookies from the cookie
