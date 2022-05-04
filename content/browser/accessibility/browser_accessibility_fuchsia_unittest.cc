@@ -616,6 +616,30 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
 }
 
 TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToleratesNonexistentOffsetContainerNodeID) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  node_2.relative_bounds.offset_container_id = 100;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node, node_2),
+          test_browser_accessibility_delegate_.get()));
+
+  // Verify that node 2's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* child =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(child);
+  auto child_node_data = child->ToFuchsiaNodeData();
+  ASSERT_TRUE(child_node_data.has_container_id());
+  // Offset container ID should default to 0 if the specified node doesn't
+  // exist.
+  EXPECT_EQ(child_node_data.container_id(), 0u);
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
        ToFuchsiaNodeDataTranslatesNodeIDAndChildIDs) {
   ui::AXNodeData node;
   node.id = kRootId;

@@ -6,6 +6,7 @@
 
 #include <lib/ui/scenic/cpp/commands.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
@@ -393,7 +394,15 @@ uint32_t BrowserAccessibilityFuchsia::GetOffsetContainerOrRootNodeID() const {
 
   BrowserAccessibilityFuchsia* fuchsia_container =
       ToBrowserAccessibilityFuchsia(offset_container);
-  DCHECK(fuchsia_container);
+
+  // TODO(https://crbug.com/1321935): Remove this check once we understand why
+  // we're getting non-existent offset container IDs from blink.
+  if (!fuchsia_container) {
+    ZX_LOG(ERROR, ZX_OK) << "Node " << GetId()
+                         << " references non-existent offset container ID "
+                         << offset_container_id;
+    return 0;
+  }
 
   return fuchsia_container->GetFuchsiaNodeID();
 }
