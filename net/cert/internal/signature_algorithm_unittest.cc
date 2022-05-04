@@ -9,7 +9,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/pem.h"
 #include "net/der/input.h"
@@ -600,8 +599,8 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPss) {
   EXPECT_EQ(32u, params->salt_length());
 }
 
-// Parses a rsaPss algorithm that has an empty parameters. It should use all the
-// default values (SHA1 and salt length of 20).
+// Parses a rsaPss algorithm that has an empty parameters. This encodes the
+// default, SHA-1, which we do not support.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -616,16 +615,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssEmptyParams) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha1, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
+  EXPECT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that has NULL parameters. This fails.
@@ -680,39 +670,6 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssDataAfterParams) {
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
   ASSERT_FALSE(ParseDer(kData, &algorithm));
-}
-
-// Parses a rsaPss algorithm that uses defaults (by ommitting the values) for
-// everything except the salt length.
-//
-//   SEQUENCE (2 elem)
-//       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
-//       SEQUENCE (1 elem)
-//           [2] (1 elem)
-//               INTEGER  23
-TEST(SignatureAlgorithmTest, ParseDerRsaPssDefaultsExceptForSaltLength) {
-  // clang-format off
-  const uint8_t kData[] = {
-      0x30, 0x12,  // SEQUENCE (62 bytes)
-      0x06, 0x09,  // OBJECT IDENTIFIER (9 bytes)
-      0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0A,
-      0x30, 0x05,  // SEQUENCE (5 bytes)
-      0xA2, 0x03,  // [2] (3 bytes)
-      0x02, 0x01,  // INTEGER (1 byte)
-      0x17,
-  };
-  // clang-format on
-  std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha1, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-  EXPECT_EQ(23u, params->salt_length());
 }
 
 // Parses a rsaPss algorithm that has unrecognized data (NULL) within the
@@ -792,7 +749,8 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssBadTrailer) {
 }
 
 // Parses a rsaPss algorithm that uses SHA384 for the hash, and leaves the rest
-// as defaults (including the mask gen).
+// as defaults, specifying a SHA-1 MGF-1 hash. This fails because we require
+// the hashes match.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -816,52 +774,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultHash) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha384, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
-}
-
-// Parses a rsaPss algorithm that uses SHA384 for the hash, however in the
-// AlgorithmIdentifier for the hash function the parameters are omitted instead
-// of NULL.
-//
-//   SEQUENCE (2 elem)
-//       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
-//       SEQUENCE (1 elem)
-//           [0] (1 elem)
-//               SEQUENCE (1 elem)
-//                   OBJECT IDENTIFIER  2.16.840.1.101.3.4.2.2
-TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultHashAbsentParams) {
-  // clang-format off
-  const uint8_t kData[] = {
-      0x30, 0x1C,  // SEQUENCE (28 bytes)
-      0x06, 0x09,  // OBJECT IDENTIFIER (9 bytes)
-      0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0A,
-      0x30, 0x0F,  // SEQUENCE (15 bytes)
-      0xA0, 0x0D,  // [0] (13 bytes)
-      0x30, 0x0B,  // SEQUENCE (11 bytes)
-      0x06, 0x09,  // OBJECT IDENTIFIER (9 bytes)
-      0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
-  };
-  // clang-format on
-  std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha384, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
+  EXPECT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that uses an invalid hash algorithm (twiddled the
@@ -891,7 +804,8 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssUnsupportedHashOid) {
 }
 
 // Parses a rsaPss algorithm that uses SHA512 MGF1 for the mask gen, and
-// defaults for the rest.
+// defaults (SHA-1) for the rest. This fails because we require the hashes
+// match.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -920,16 +834,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultMaskGen) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha1, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha512, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
+  EXPECT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that uses a mask gen with an unrecognized OID
@@ -966,7 +871,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssUnsupportedMaskGen) {
 }
 
 // Parses a rsaPss algorithm that uses SHA256 for the hash, and SHA512 for the
-// MGF1.
+// MGF1. This fails because we require the hashes match.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1004,20 +909,12 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultHashAndMaskGen) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha256, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha512, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
+  EXPECT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that uses SHA256 for the hash, and SHA256 for the
-// MGF1, and a salt length of 10.
+// MGF1, and a salt length of 10. This fails because we require a standard salt
+// length.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1060,16 +957,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultHashAndMaskGenAndSalt) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha256, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha256, params->mgf1_hash());
-  EXPECT_EQ(10u, params->salt_length());
+  EXPECT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies default hash (SHA1).
@@ -1097,8 +985,6 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultHash) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  base::HistogramTester histogram_tester;
-
   ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
@@ -1132,8 +1018,6 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultMaskGen) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  base::HistogramTester histogram_tester;
-
   ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
@@ -1158,34 +1042,50 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultSaltLength) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  base::HistogramTester histogram_tester;
-
   ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies default trailer field.
 // It is invalid to specify the default.
-//
-//   SEQUENCE (2 elem)
-//       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
-//       SEQUENCE (1 elem)
-//           [3] (1 elem)
-//               INTEGER  1
 TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultTrailerField) {
-  // clang-format off
+  // SEQUENCE {
+  //   # rsassa-pss
+  //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+  //   SEQUENCE {
+  //     [0] {
+  //       SEQUENCE {
+  //         # sha256
+  //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+  //         NULL {}
+  //       }
+  //     }
+  //     [1] {
+  //       SEQUENCE {
+  //         # mgf1
+  //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+  //         SEQUENCE {
+  //           # sha256
+  //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+  //           NULL {}
+  //         }
+  //       }
+  //     }
+  //     [2] {
+  //       INTEGER { 32 }
+  //     }
+  //     [3] {
+  //       INTEGER { 1 }
+  //     }
+  //   }
+  // }
   const uint8_t kData[] = {
-      0x30, 0x12,  // SEQUENCE (18 bytes)
-      0x06, 0x09,  // OBJECT IDENTIFIER (9 bytes)
-      0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0A,
-      0x30, 0x05,  // SEQUENCE (5 bytes)
-      0xA3, 0x03,  // [3] (3 bytes)
-      0x02, 0x01,  // INTEGER (1 byte)
-      0x01,
-  };
-  // clang-format on
+      0x30, 0x46, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+      0x0a, 0x30, 0x39, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+      0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+      0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+      0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
+      0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x20, 0xa3, 0x03, 0x02, 0x01, 0x01};
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  base::HistogramTester histogram_tester;
-
   ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
@@ -1238,103 +1138,17 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssMultipleDefaultParameterValues) {
   };
   // clang-format on
   std::unique_ptr<SignatureAlgorithm> algorithm;
-  base::HistogramTester histogram_tester;
-
   ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
-TEST(SignatureAlgorithmTest, RsaPssClassification) {
+TEST(SignatureAlgorithmTest, ParseRsaPss) {
   // Test data generated with https://github.com/google/der-ascii.
   struct {
     std::vector<uint8_t> data;
-    RsaPssClassification expected_classification;
-  } kTests[] = {
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   SEQUENCE {
-      //     [0] {
-      //       SEQUENCE {
-      //         # sha256
-      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
-      //         NULL {}
-      //       }
-      //     }
-      //     [1] {
-      //       SEQUENCE {
-      //         # mgf1
-      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
-      //         SEQUENCE {
-      //           # sha384
-      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
-      //           NULL {}
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-      {{0x30, 0x3c, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
-        0x01, 0x0a, 0x30, 0x2f, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60,
-        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1,
-        0x1c, 0x30, 0x1a, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
-        0x01, 0x01, 0x08, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-        0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00},
-       RsaPssClassification::kDigestMismatch},
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   SEQUENCE {
-      //     [0] {
-      //       SEQUENCE {
-      //         # md5
-      //         OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
-      //         NULL {}
-      //       }
-      //     }
-      //     [1] {
-      //       SEQUENCE {
-      //         # mgf1
-      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
-      //         SEQUENCE {
-      //           # md5
-      //           OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
-      //           NULL {}
-      //         }
-      //       }
-      //     }
-      //     [2] {
-      //       INTEGER { 16 }
-      //     }
-      //   }
-      // }
-      {{0x30, 0x3f, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
-        0x01, 0x0a, 0x30, 0x32, 0xa0, 0x0e, 0x30, 0x0c, 0x06, 0x08, 0x2a,
-        0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05, 0x05, 0x00, 0xa1, 0x1b,
-        0x30, 0x19, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
-        0x01, 0x08, 0x30, 0x0c, 0x06, 0x08, 0x2a, 0x86, 0x48, 0x86, 0xf7,
-        0x0d, 0x02, 0x05, 0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x10},
-       RsaPssClassification::kLegacyDigest},
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   # SHA-1 with salt length 20 is the default.
-      //   SEQUENCE {}
-      // }
-      {{0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
-        0x0a, 0x30, 0x00},
-       RsaPssClassification::kSha1},
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   SEQUENCE {
-      //     [2] {
-      //       INTEGER { 21 }
-      //     }
-      //   }
-      // }
-      {{0x30, 0x12, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
-        0x01, 0x01, 0x0a, 0x30, 0x05, 0xa2, 0x03, 0x02, 0x01, 0x15},
-       RsaPssClassification::kSha1NonstandardSalt},
+    DigestAlgorithm expected_digest;
+    DigestAlgorithm expected_mgf1_hash;
+    uint32_t expected_salt_length;
+  } kValidTests[] = {
       // SEQUENCE {
       //   # rsassa-pss
       //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
@@ -1368,41 +1182,9 @@ TEST(SignatureAlgorithmTest, RsaPssClassification) {
         0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
         0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
         0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x20},
-       RsaPssClassification::kSha256},
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   SEQUENCE {
-      //     [0] {
-      //       SEQUENCE {
-      //         # sha256
-      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
-      //         NULL {}
-      //       }
-      //     }
-      //     [1] {
-      //       SEQUENCE {
-      //         # mgf1
-      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
-      //         SEQUENCE {
-      //           # sha256
-      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
-      //           NULL {}
-      //         }
-      //       }
-      //     }
-      //     [2] {
-      //       INTEGER { 33 }
-      //     }
-      //   }
-      // }
-      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
-        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-        0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
-        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
-        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
-        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x21},
-       RsaPssClassification::kSha256NonstandardSalt},
+       DigestAlgorithm::Sha256,
+       DigestAlgorithm::Sha256,
+       32},
       // SEQUENCE {
       //   # rsassa-pss
       //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
@@ -1436,41 +1218,9 @@ TEST(SignatureAlgorithmTest, RsaPssClassification) {
         0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
         0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
         0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x30},
-       RsaPssClassification::kSha384},
-      // SEQUENCE {
-      //   # rsassa-pss
-      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
-      //   SEQUENCE {
-      //     [0] {
-      //       SEQUENCE {
-      //         # sha384
-      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
-      //         NULL {}
-      //       }
-      //     }
-      //     [1] {
-      //       SEQUENCE {
-      //         # mgf1
-      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
-      //         SEQUENCE {
-      //           # sha384
-      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
-      //           NULL {}
-      //         }
-      //       }
-      //     }
-      //     [2] {
-      //       INTEGER { 49 }
-      //     }
-      //   }
-      // }
-      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
-        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-        0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
-        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
-        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
-        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x31},
-       RsaPssClassification::kSha384NonstandardSalt},
+       DigestAlgorithm::Sha384,
+       DigestAlgorithm::Sha384,
+       48},
       // SEQUENCE {
       //   # rsassa-pss
       //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
@@ -1504,7 +1254,201 @@ TEST(SignatureAlgorithmTest, RsaPssClassification) {
         0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
         0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03,
         0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x40},
-       RsaPssClassification::kSha512},
+       DigestAlgorithm::Sha512,
+       DigestAlgorithm::Sha512,
+       64},
+
+      // The same inputs as above, but the NULLs in the digest algorithms are
+      // omitted.
+      {{0x30, 0x3d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x30, 0xa0, 0x0d, 0x30, 0x0b, 0x06, 0x09, 0x60,
+        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0xa1, 0x1a, 0x30,
+        0x18, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x08, 0x30, 0x0b, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03,
+        0x04, 0x02, 0x01, 0xa2, 0x03, 0x02, 0x01, 0x20},
+       DigestAlgorithm::Sha256,
+       DigestAlgorithm::Sha256,
+       32},
+      {{0x30, 0x3d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x30, 0xa0, 0x0d, 0x30, 0x0b, 0x06, 0x09, 0x60,
+        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0xa1, 0x1a, 0x30,
+        0x18, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x08, 0x30, 0x0b, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03,
+        0x04, 0x02, 0x02, 0xa2, 0x03, 0x02, 0x01, 0x30},
+       DigestAlgorithm::Sha384,
+       DigestAlgorithm::Sha384,
+       48},
+      {{0x30, 0x3d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x30, 0xa0, 0x0d, 0x30, 0x0b, 0x06, 0x09, 0x60,
+        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0xa1, 0x1a, 0x30,
+        0x18, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x08, 0x30, 0x0b, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03,
+        0x04, 0x02, 0x03, 0xa2, 0x03, 0x02, 0x01, 0x40},
+       DigestAlgorithm::Sha512,
+       DigestAlgorithm::Sha512,
+       64}};
+  for (const auto& t : kValidTests) {
+    std::unique_ptr<SignatureAlgorithm> algorithm;
+    ASSERT_TRUE(ParseDer(t.data, &algorithm));
+    ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
+    EXPECT_EQ(t.expected_digest, algorithm->digest());
+    EXPECT_EQ(t.expected_mgf1_hash, algorithm->ParamsForRsaPss()->mgf1_hash());
+    EXPECT_EQ(t.expected_salt_length,
+              algorithm->ParamsForRsaPss()->salt_length());
+  }
+
+  struct {
+    std::vector<uint8_t> data;
+  } kInvalidTests[] = {
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha256
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha384
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x3c, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x2f, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60,
+        0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1,
+        0x1c, 0x30, 0x1a, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
+        0x01, 0x01, 0x08, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+        0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00}},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # md5
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # md5
+      //           OBJECT_IDENTIFIER { 1.2.840.113549.2.5 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 16 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x3f, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x0a, 0x30, 0x32, 0xa0, 0x0e, 0x30, 0x0c, 0x06, 0x08, 0x2a,
+        0x86, 0x48, 0x86, 0xf7, 0x0d, 0x02, 0x05, 0x05, 0x00, 0xa1, 0x1b,
+        0x30, 0x19, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01,
+        0x01, 0x08, 0x30, 0x0c, 0x06, 0x08, 0x2a, 0x86, 0x48, 0x86, 0xf7,
+        0x0d, 0x02, 0x05, 0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x10}},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   # SHA-1 with salt length 20 is the default.
+      //   SEQUENCE {}
+      // }
+      {{0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x00}},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [2] {
+      //       INTEGER { 21 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x12, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d,
+        0x01, 0x01, 0x0a, 0x30, 0x05, 0xa2, 0x03, 0x02, 0x01, 0x15}},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha256
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha256
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.1 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 33 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x21}},
+      // SEQUENCE {
+      //   # rsassa-pss
+      //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
+      //   SEQUENCE {
+      //     [0] {
+      //       SEQUENCE {
+      //         # sha384
+      //         OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //         NULL {}
+      //       }
+      //     }
+      //     [1] {
+      //       SEQUENCE {
+      //         # mgf1
+      //         OBJECT_IDENTIFIER { 1.2.840.113549.1.1.8 }
+      //         SEQUENCE {
+      //           # sha384
+      //           OBJECT_IDENTIFIER { 2.16.840.1.101.3.4.2.2 }
+      //           NULL {}
+      //         }
+      //       }
+      //     }
+      //     [2] {
+      //       INTEGER { 49 }
+      //     }
+      //   }
+      // }
+      {{0x30, 0x41, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+        0x0a, 0x30, 0x34, 0xa0, 0x0f, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
+        0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
+        0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
+        0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02,
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x31}},
+
       // SEQUENCE {
       //   # rsassa-pss
       //   OBJECT_IDENTIFIER { 1.2.840.113549.1.1.10 }
@@ -1537,24 +1481,11 @@ TEST(SignatureAlgorithmTest, RsaPssClassification) {
         0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0xa1, 0x1c, 0x30, 0x1a,
         0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x08, 0x30,
         0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03,
-        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x41},
-       RsaPssClassification::kSha512NonstandardSalt},
+        0x05, 0x00, 0xa2, 0x03, 0x02, 0x01, 0x41}},
   };
-  for (const auto& t : kTests) {
-    base::HistogramTester histogram_tester;
-
+  for (const auto& t : kInvalidTests) {
     std::unique_ptr<SignatureAlgorithm> algorithm;
-    // The legacy digests are not currently reachable because
-    // `ParseHashAlgorithm` does not support them.
-    if (t.expected_classification == RsaPssClassification::kLegacyDigest) {
-      EXPECT_FALSE(ParseDer(t.data, &algorithm));
-      continue;
-    }
-    ASSERT_TRUE(ParseDer(t.data, &algorithm));
-    ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-
-    histogram_tester.ExpectUniqueSample("Net.CertVerifier.RsaPssClassification",
-                                        t.expected_classification, 1);
+    EXPECT_FALSE(ParseDer(t.data, &algorithm));
   }
 }
 

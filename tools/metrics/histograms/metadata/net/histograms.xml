@@ -296,16 +296,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.RsaPssClassification"
-    enum="RsaPssClassification" expires_after="2022-12-31">
-  <owner>davidben@chromium.org</owner>
-  <owner>src/net/cert/OWNERS</owner>
-  <summary>
-    While parsing an RSASSA-PSS signature algorithm, the kinds of parameters
-    that were encountered.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier_First_Job_Latency" units="ms"
     expires_after="never">
 <!-- expires-never: core cert verifier metric; monitored by Chirps -->

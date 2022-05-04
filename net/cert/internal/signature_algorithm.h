@@ -39,37 +39,6 @@ enum class SignatureAlgorithmId {
   Dsa,       // DSA
 };
 
-// A classification of the RSA-PSS parameters. This is only used in histograms
-// and is gathered with the hope to reduce RSA-PSS to a small set of enums in
-// the future. See https://crbug.com/1279975.
-//
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "RsaPssClassification" in src/tools/metrics/histograms/enums.xml.
-enum class RsaPssClassification {
-  // The MGF-1 digest and signing digest did not match.
-  kDigestMismatch = 0,
-  // The digest algorithm was MD5 or older.
-  kLegacyDigest = 1,
-  // SHA-1 with salt length of 20.
-  kSha1 = 2,
-  // SHA-1 with a non-standard salt length.
-  kSha1NonstandardSalt = 3,
-  // SHA-256 with a salt length of 32.
-  kSha256 = 4,
-  // SHA-256 with a non-standard salt length.
-  kSha256NonstandardSalt = 5,
-  // SHA-384 with a salt length of 48.
-  kSha384 = 6,
-  // SHA-384 with a non-standard salt length.
-  kSha384NonstandardSalt = 7,
-  // SHA-512 with a salt length of 64.
-  kSha512 = 8,
-  // SHA-512 with a non-standard salt length.
-  kSha512NonstandardSalt = 9,
-  kMaxValue = kSha512NonstandardSalt,
-};
-
 // Parses a HashAlgorithm as defined by RFC 5912:
 //
 //     HashAlgorithm  ::=  AlgorithmIdentifier{DIGEST-ALGORITHM,
@@ -116,6 +85,8 @@ class NET_EXPORT RsaPssParameters : public SignatureAlgorithmParameters {
 
 // SignatureAlgorithm describes a signature algorithm and its parameters. This
 // corresponds to "AlgorithmIdentifier" from RFC 5280.
+//
+// TODO(crbug.com/1321691): Replace this with a simple enum.
 class NET_EXPORT SignatureAlgorithm {
  public:
   SignatureAlgorithm(const SignatureAlgorithm&) = delete;

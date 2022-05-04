@@ -98,20 +98,12 @@ TEST(VerifySignedDataTest, EcdsaPrime256v1Sha512) {
   RunTestCase(SUCCESS, "ecdsa-prime256v1-sha512.pem");
 }
 
-TEST(VerifySignedDataTest, RsaPssSha1) {
-  RunTestCase(SUCCESS, "rsa-pss-sha1-salt20.pem");
-}
-
-TEST(VerifySignedDataTest, RsaPssSha256Mgf1Sha512Salt33) {
-  RunTestCase(SUCCESS, "rsa-pss-sha256-mgf1-sha512-salt33.pem");
-}
-
 TEST(VerifySignedDataTest, RsaPssSha256) {
-  RunTestCase(SUCCESS, "rsa-pss-sha256-salt10.pem");
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem");
 }
 
-TEST(VerifySignedDataTest, RsaPssSha1WrongSalt) {
-  RunTestCase(FAILURE, "rsa-pss-sha1-wrong-salt.pem");
+TEST(VerifySignedDataTest, RsaPssSha256WrongSalt) {
+  RunTestCase(FAILURE, "rsa-pss-sha256-wrong-salt.pem");
 }
 
 TEST(VerifySignedDataTest, EcdsaSecp384r1Sha256CorruptedData) {
@@ -162,28 +154,13 @@ TEST(VerifySignedDataTest, RsaPkcs1Sha1KeyParamsAbsent) {
   RunTestCase(FAILURE, "rsa-pkcs1-sha1-key-params-absent.pem");
 }
 
-TEST(VerifySignedDataTest, RsaPssSha1Salt20UsingPssKeyNoParams) {
-  // We do not support RSA-PSS SPKIs.
-  RunTestCase(FAILURE, "rsa-pss-sha1-salt20-using-pss-key-no-params.pem");
-}
-
 TEST(VerifySignedDataTest, RsaPkcs1Sha1UsingPssKeyNoParams) {
   RunTestCase(FAILURE, "rsa-pkcs1-sha1-using-pss-key-no-params.pem");
 }
 
-TEST(VerifySignedDataTest, RsaPssSha256Salt10UsingPssKeyWithParams) {
+TEST(VerifySignedDataTest, RsaPssSha256UsingPssKeyWithParams) {
   // We do not support RSA-PSS SPKIs.
-  RunTestCase(FAILURE, "rsa-pss-sha256-salt10-using-pss-key-with-params.pem");
-}
-
-TEST(VerifySignedDataTest, RsaPssSha256Salt10UsingPssKeyWithWrongParams) {
-  RunTestCase(FAILURE,
-              "rsa-pss-sha256-salt10-using-pss-key-with-wrong-params.pem");
-}
-
-TEST(VerifySignedDataTest, RsaPssSha256Salt12UsingPssKeyWithNullParams) {
-  RunTestCase(FAILURE,
-              "rsa-pss-sha1-salt20-using-pss-key-with-null-params.pem");
+  RunTestCase(FAILURE, "rsa-pss-sha256-using-pss-key-with-params.pem");
 }
 
 TEST(VerifySignedDataTest, EcdsaPrime256v1Sha512SpkiParamsNull) {

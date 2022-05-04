@@ -8,9 +8,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/numerics/safe_math.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/der/input.h"
@@ -378,73 +375,6 @@ std::unique_ptr<SignatureAlgorithm> ParseEcdsa(DigestAlgorithm digest,
   return ParseHashAlgorithm(params, mgf1_hash);
 }
 
-// Consumes an optional, explicitly-tagged INTEGER from |parser|, using the
-// indicated context-specific class number. Values greater than 32-bits will be
-// rejected.
-//
-// Returns true on success.
-[[nodiscard]] bool ReadOptionalContextSpecificUint32(
-    der::Parser* parser,
-    uint8_t class_number,
-    absl::optional<uint32_t>* out) {
-  absl::optional<der::Input> field;
-
-  // Read the context specific value.
-  if (!parser->ReadOptionalTag(der::ContextSpecificConstructed(class_number),
-                               &field)) {
-    return false;
-  }
-
-  if (field.has_value()) {
-    // Parse the integer contained in it.
-    der::Parser number_parser(field.value());
-    uint64_t uint64_value;
-
-    if (!number_parser.ReadUint64(&uint64_value))
-      return false;
-    if (number_parser.HasMore())
-      return false;
-
-    // Cast the number to a uint32_t
-    base::CheckedNumeric<uint32_t> casted(uint64_value);
-    if (!casted.IsValid())
-      return false;
-    *out = casted.ValueOrDie();
-  }
-
-  return true;
-}
-
-RsaPssClassification ClassifyRsaPssParams(DigestAlgorithm digest,
-                                          DigestAlgorithm mgf1_hash,
-                                          uint32_t salt_length) {
-  if (digest != mgf1_hash) {
-    return RsaPssClassification::kDigestMismatch;
-  }
-  switch (digest) {
-    case DigestAlgorithm::Sha1:
-      return salt_length == 20 ? RsaPssClassification::kSha1
-                               : RsaPssClassification::kSha1NonstandardSalt;
-    case DigestAlgorithm::Sha256:
-      return salt_length == 32 ? RsaPssClassification::kSha256
-                               : RsaPssClassification::kSha256NonstandardSalt;
-    case DigestAlgorithm::Sha384:
-      return salt_length == 48 ? RsaPssClassification::kSha384
-                               : RsaPssClassification::kSha384NonstandardSalt;
-    case DigestAlgorithm::Sha512:
-      return salt_length == 64 ? RsaPssClassification::kSha512
-                               : RsaPssClassification::kSha512NonstandardSalt;
-    case DigestAlgorithm::Md2:
-    case DigestAlgorithm::Md4:
-    case DigestAlgorithm::Md5:
-      // Assuming anything using RSA-PSS long postdates these digests. Note this
-      // is also unreachable because `ParseHashAlgorithm` does not output these.
-      return RsaPssClassification::kLegacyDigest;
-  }
-  NOTREACHED();
-  return RsaPssClassification::kLegacyDigest;
-}
-
 // Parses the parameters for an RSASSA-PSS signature algorithm, as defined by
 // RFC 5912:
 //
@@ -465,7 +395,8 @@ RsaPssClassification ClassifyRsaPssParams(DigestAlgorithm digest,
 //     }
 //
 // Which is to say the parameters MUST be present, and of type
-// RSASSA-PSS-params.
+// RSASSA-PSS-params. Additionally, we only support the RSA-PSS parameter
+// combinations representable by TLS 1.3 (RFC 8446).
 //
 // Note also that DER encoding (ITU-T X.690 section 11.5) prohibits
 // specifying default values explicitly. The parameter should instead be
@@ -481,60 +412,43 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   if (parser.HasMore())
     return nullptr;
 
-  absl::optional<der::Input> field;
-
-  // Parse:
-  //     hashAlgorithm     [0] HashAlgorithm DEFAULT sha1Identifier,
-  DigestAlgorithm hash = DigestAlgorithm::Sha1;
-  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(0),
-                                     &field)) {
-    return nullptr;
-  }
-  if (field.has_value() && !ParseHashAlgorithm(field.value(), &hash))
-    return nullptr;
-  // Default hash should be specified by omission.
-  if (field.has_value() && hash == DigestAlgorithm::Sha1)
-    return nullptr;
-
-  // Parse:
-  //     maskGenAlgorithm  [1] MaskGenAlgorithm DEFAULT mgf1SHA1,
-  DigestAlgorithm mgf1_hash = DigestAlgorithm::Sha1;
-  if (!params_parser.ReadOptionalTag(der::ContextSpecificConstructed(1),
-                                     &field)) {
-    return nullptr;
-  }
-  if (field.has_value() && !ParseMaskGenAlgorithm(field.value(), &mgf1_hash))
-    return nullptr;
-  // Default mask generation should be specified by omission.
-  if (field.has_value() && mgf1_hash == DigestAlgorithm::Sha1)
-    return nullptr;
-
-  // Parse:
-  //     saltLength        [2] INTEGER DEFAULT 20,
-  absl::optional<uint32_t> opt_salt_length;
-  if (!ReadOptionalContextSpecificUint32(&params_parser, 2, &opt_salt_length)) {
-    return nullptr;
-  }
-  // Default salt length should be specified by omission.
-  if (opt_salt_length.has_value() && opt_salt_length.value() == 20u)
-    return nullptr;
-  uint32_t salt_length = opt_salt_length.value_or(20u);
-
-  // There must not be any unconsumed data left. (RFC 5912 does not explicitly
-  // include an extensibility point for RSASSA-PSS-params)
+  // The default values for hashAlgorithm, maskGenAlgorithm, and saltLength
+  // correspond to SHA-1, which we do not support with RSA-PSS, so treat them as
+  // required fields. Explicitly-specified defaults will be rejected later, when
+  // we limit combinations. Additionally, as the trailerField is required to be
+  // the default, we simply ignore it and reject it as any other trailing data.
   //
-  // This check will also reject trailerField if present. We only support
-  // a value of 1, which is the default value and thus must be omitted. If
-  // trailerField is present, it is either an incorrect encoding of the
-  // default value, or a value we do not support.
-  if (params_parser.HasMore())
+  //     hashAlgorithm     [0] HashAlgorithm DEFAULT sha1Identifier,
+  //     maskGenAlgorithm  [1] MaskGenAlgorithm DEFAULT mgf1SHA1,
+  //     saltLength        [2] INTEGER DEFAULT 20,
+  //     trailerField      [3] INTEGER DEFAULT 1
+  der::Input field;
+  DigestAlgorithm hash, mgf1_hash;
+  der::Parser salt_length_parser;
+  uint64_t salt_length;
+  if (!params_parser.ReadTag(der::ContextSpecificConstructed(0), &field) ||
+      !ParseHashAlgorithm(field, &hash) ||
+      !params_parser.ReadTag(der::ContextSpecificConstructed(1), &field) ||
+      !ParseMaskGenAlgorithm(field, &mgf1_hash) ||
+      !params_parser.ReadConstructed(der::ContextSpecificConstructed(2),
+                                     &salt_length_parser) ||
+      !salt_length_parser.ReadUint64(&salt_length) ||
+      salt_length_parser.HasMore() || params_parser.HasMore()) {
     return nullptr;
+  }
 
-  // See https://crbug.com/1279975.
-  UMA_HISTOGRAM_ENUMERATION("Net.CertVerifier.RsaPssClassification",
-                            ClassifyRsaPssParams(hash, mgf1_hash, salt_length));
+  // Only combinations of RSASSA-PSS-params specified by TLS 1.3 (RFC 8446) are
+  // supported.
+  if ((hash == DigestAlgorithm::Sha256 &&
+       mgf1_hash == DigestAlgorithm::Sha256 && salt_length == 32) ||
+      (hash == DigestAlgorithm::Sha384 &&
+       mgf1_hash == DigestAlgorithm::Sha384 && salt_length == 48) ||
+      (hash == DigestAlgorithm::Sha512 &&
+       mgf1_hash == DigestAlgorithm::Sha512 && salt_length == 64)) {
+    return SignatureAlgorithm::CreateRsaPss(hash, mgf1_hash, salt_length);
+  }
 
-  return SignatureAlgorithm::CreateRsaPss(hash, mgf1_hash, salt_length);
+  return nullptr;
 }
 
 DEFINE_CERT_ERROR_ID(kUnknownAlgorithmIdentifierOid,

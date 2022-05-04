@@ -79894,19 +79894,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Error parsing certificate"/>
 </enum>
 
-<enum name="RsaPssClassification">
-  <int value="0" label="The MGF-1 digest and signing digest did not match"/>
-  <int value="1" label="The digest algorithm was MD5 or older"/>
-  <int value="2" label="SHA-1 with salt length of 20"/>
-  <int value="3" label="SHA-1 with a non-standard salt length"/>
-  <int value="4" label="SHA-256 with a salt length of 32"/>
-  <int value="5" label="SHA-256 with a non-standard salt length"/>
-  <int value="6" label="SHA-384 with a salt length of 48"/>
-  <int value="7" label="SHA-384 with a non-standard salt length"/>
-  <int value="8" label="SHA-512 with a salt length of 64"/>
-  <int value="9" label="SHA-512 with a non-standard salt length"/>
-</enum>
-
 <enum name="RTCAPIName">
   <int value="0" label="GetUserMedia"/>
   <int value="1" label="PeerConnection00"/>
