@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../../assert.js';
 import {CameraManager} from '../../device/index.js';
 import {
   PhotoResolutionOption,
@@ -11,6 +10,7 @@ import {
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
+import * as state from '../../state.js';
 import {Facing, Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
@@ -24,6 +24,8 @@ export class PhotoResolutionSettings extends BaseSettings {
   private readonly menu: HTMLElement;
 
   private focusedDeviceId: string|null = null;
+
+  private menuScrollTop = 0;
 
   constructor(readonly cameraManager: CameraManager) {
     super(ViewName.PHOTO_RESOLUTION_SETTINGS);
@@ -59,13 +61,13 @@ export class PhotoResolutionSettings extends BaseSettings {
             this.menu, '#resolution-text-template',
             I18nString.LABEL_NO_RESOLUTION_OPTION);
       } else {
-        assert(options.length === 2);
         for (const option of options) {
           this.addResolutionItem(deviceId, facing, option);
         }
       }
     }
     setupI18nElements(this.menu);
+    this.menu.scrollTop = this.menuScrollTop;
   }
 
   private addResolutionItem(
@@ -98,8 +100,13 @@ export class PhotoResolutionSettings extends BaseSettings {
     if (!input.checked) {
       input.addEventListener('click', (event) => {
         this.focusedDeviceId = deviceId;
-        this.cameraManager.setPrefPhotoResolutionLevel(
-            deviceId, option.resolutionLevel);
+        this.menuScrollTop = this.menu.scrollTop;
+        if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+          this.cameraManager.setPrefPhotoResolution(deviceId, resolution);
+        } else {
+          this.cameraManager.setPrefPhotoResolutionLevel(
+              deviceId, option.resolutionLevel);
+        }
         event.preventDefault();
       });
     }

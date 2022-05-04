@@ -52,6 +52,7 @@ export enum State {
   RECORDING_UI_PAUSED = 'recording-ui-paused',
   SAVE_METADATA = 'save-metadata',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
+  SHOW_ALL_RESOLUTIONS = 'show-all-resolutions',
   SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
   SHOW_METADATA = 'show-metadata',
   SHOW_SCAN_MODE = 'show-scan-mode',

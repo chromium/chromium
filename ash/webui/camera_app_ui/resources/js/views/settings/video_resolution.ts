@@ -11,6 +11,7 @@ import {
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
+import * as state from '../../state.js';
 import {Facing, Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
@@ -24,6 +25,8 @@ export class VideoResolutionSettings extends BaseSettings {
   private readonly menu: HTMLElement;
 
   private focusedDeviceId: string|null = null;
+
+  private menuScrollTop = 0;
 
   constructor(readonly cameraManager: CameraManager) {
     super(ViewName.VIDEO_RESOLUTION_SETTINGS);
@@ -66,6 +69,7 @@ export class VideoResolutionSettings extends BaseSettings {
       }
     }
     setupI18nElements(this.menu);
+    this.menu.scrollTop = this.menuScrollTop;
   }
 
   private addResolutionItem(
@@ -73,7 +77,17 @@ export class VideoResolutionSettings extends BaseSettings {
     const optionElement =
         instantiateTemplate('#video-resolution-item-template');
     const span = dom.getFrom(optionElement, 'span', HTMLSpanElement);
-    const text = util.toVideoResoloutionOptionLabel(option.resolutionLevel);
+
+    let text;
+    const label = util.toVideoResoloutionOptionLabel(option.resolutionLevel);
+    if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+      const mpInfo = loadTimeData.getI18nMessage(
+          I18nString.LABEL_RESOLUTION_MP,
+          option.fpsOptions[0].resolutions[0].mp);
+      text = `${label} (${mpInfo})`;
+    } else {
+      text = label;
+    }
     span.textContent = text;
     const deviceName =
         loadTimeData.getI18nMessage(util.getLabelFromFacing(facing));
@@ -119,8 +133,13 @@ export class VideoResolutionSettings extends BaseSettings {
     if (!input.checked) {
       input.addEventListener('click', (event) => {
         this.focusedDeviceId = deviceId;
-        this.cameraManager.setPrefVideoResolutionLevel(
-            deviceId, option.resolutionLevel);
+        this.menuScrollTop = this.menu.scrollTop;
+        if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+          this.cameraManager.setPrefVideoResolution(deviceId, resolution);
+        } else {
+          this.cameraManager.setPrefVideoResolutionLevel(
+              deviceId, option.resolutionLevel);
+        }
         event.preventDefault();
       });
     }

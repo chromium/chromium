@@ -142,6 +142,14 @@ export class CameraManager implements EventListener {
         this.reconfigure();
       }
     });
+
+    state.addObserver(state.State.SHOW_ALL_RESOLUTIONS, async () => {
+      // Rebuilds the options to adapt to the new state. Then, reconfigure the
+      // stream so that it will apply the new resolution order. At last, update
+      // the checked status of the resolution options.
+      this.scheduler.reconfigurer.capturePreferrer.buildOptions();
+      await this.tryReconfigure(() => {/* Do nothing */});
+    });
   }
 
   getCameraInfo(): CameraInfo {
@@ -377,6 +385,26 @@ export class CameraManager implements EventListener {
     this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolutionLevel(
           deviceId, level);
+    });
+  }
+
+  /**
+   * Used when showing all resolutions.
+   */
+  setPrefPhotoResolution(deviceId: string, resolution: Resolution): void {
+    this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolution(
+          deviceId, resolution);
+    });
+  }
+
+  /**
+   * Used when showing all resolutions.
+   */
+  setPrefVideoResolution(deviceId: string, resolution: Resolution): void {
+    this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolution(
+          deviceId, resolution);
     });
   }
 

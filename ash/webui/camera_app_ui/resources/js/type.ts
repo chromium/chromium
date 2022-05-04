@@ -52,7 +52,10 @@ export class Resolution {
    * @param resolution Resolution to be compared with.
    * @return Whether width/height of resolutions are equal.
    */
-  equals(resolution: Resolution): boolean {
+  equals(resolution: Resolution|null): boolean {
+    if (resolution === null) {
+      return false;
+    }
     return this.width === resolution.width && this.height === resolution.height;
   }
 

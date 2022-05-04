@@ -680,6 +680,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label to represent photo/video resolution using the amount of mega pixels (= 1 million pixels)" name="IDS_LABEL_RESOLUTION_MP">
         <ph name="magapixels_amount">$1<ex>2.8</ex></ph> MP
       </message>
+      <message desc="Label for expert mode option: show all resolutions." name="IDS_EXPERT_SHOW_ALL_RESOLUTIONS">
+        Show all resolutions
+      </message>
     </messages>
   </release>
 </grit>
