@@ -25,6 +25,7 @@ import androidx.test.filters.SmallTest;
 import com.google.common.collect.ImmutableMap;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -147,6 +148,12 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void setUp() throws Exception {
         mTestPage = "/chrome/test/data/android/contextualsearch/tap_test.html";
         super.setUp();
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        if (mActionTester != null) mActionTester.tearDown();
     }
 
     //============================================================================================
