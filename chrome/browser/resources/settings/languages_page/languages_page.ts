@@ -8,7 +8,6 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -17,7 +16,10 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_css.m.js';
+// <if expr="_google_chrome or not is_macosx">
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+// </if>
+
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './languages.js';
@@ -36,14 +38,14 @@ import './edit_dictionary_page.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
-import {Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {getTemplate} from './languages_page.html.js';
 import {LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
@@ -52,7 +54,10 @@ import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} 
 type FocusConfig = Map<string, (string|(() => void))>;
 
 const SettingsLanguagesPageElementBase =
-    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
+    RouteObserverMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement)))) as {
+      new (): PolymerElement & RouteObserverMixinInterface &
+          PrefsMixinInterface & I18nMixinInterface,
+    };
 
 export class SettingsLanguagesPageElement extends
     SettingsLanguagesPageElementBase {
@@ -116,14 +121,6 @@ export class SettingsLanguagesPageElement extends
         value: false,
       },
 
-      /**
-       * Whether the language settings list is opened.
-       */
-      languagesOpened_: {
-        type: Boolean,
-        observer: 'onLanguagesOpenedChanged_',
-      },
-
       showAddLanguagesDialog_: Boolean,
 
       focusConfig_: {
@@ -167,7 +164,6 @@ export class SettingsLanguagesPageElement extends
   private detailLanguage_?: LanguageState;
   private enableDesktopRestructuredLanguageSettings_: boolean;
   private hideSpellCheckLanguages_: boolean;
-  private languagesOpened_: boolean;
   private showAddLanguagesDialog_: boolean;
   private focusConfig_: FocusConfig;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
@@ -300,13 +296,6 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
-   * @return The display name for a given language code.
-   */
-  private getProspectiveUILanguageName_(languageCode: string): string {
-    return this.languageHelper.getLanguage(languageCode)!.displayName;
-  }
-
-  /**
    * Handler to initiate another attempt at downloading the spell check
    * dictionary for a specified language.
    */
@@ -348,12 +337,8 @@ export class SettingsLanguagesPageElement extends
     return undefined;
   }
 
-  /**
-   * @param newVal The new value of languagesOpened_.
-   * @param oldVal The old value of languagesOpened_.
-   */
-  private onLanguagesOpenedChanged_(newVal: boolean, oldVal: boolean) {
-    if (!oldVal && newVal) {
+  override currentRouteChanged(currentRoute: Route) {
+    if (currentRoute === routes.LANGUAGES) {
       this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
           LanguageSettingsPageImpressionType.MAIN);
     }

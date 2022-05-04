@@ -1,8 +1,4 @@
     <style include="cr-shared-style settings-shared action-link iron-flex">
-      #languagesCollapse .list-item.selected {
-        min-height: var(--settings-row-two-line-min-height);
-      }
-
       .name-with-error-list {
         padding: 14px 0;
       }
@@ -72,24 +68,11 @@
           </cr-link-row>
         </template>
         <template is="dom-if" if="[[!enableDesktopRestructuredLanguageSettings_]]">
-          <cr-expand-button
-              aria-label="$i18n{languagesExpandA11yLabel}"
-              class="cr-row first"
-              expanded="{{languagesOpened_}}">
-            <div>$i18n{languagesListTitle}</div>
-<if expr="is_win">
-            <div class="secondary" id="languageSectionSecondaryText">
-              [[getProspectiveUILanguageName_(languages.prospectiveUILanguage)]]
-            </div>
-</if>
-          </cr-expand-button>
-          <iron-collapse id="languagesCollapse" opened="[[languagesOpened_]]">
-            <settings-languages-subpage
-                languages="{{languages}}"
-                prefs="{{prefs}}"
-                language-helper="{{languageHelper}}">
-            </settings-languages-subpage>
-          </iron-collapse>
+          <settings-languages-subpage
+              languages="{{languages}}"
+              prefs="{{prefs}}"
+              language-helper="{{languageHelper}}">
+          </settings-languages-subpage>
         </template>
         <settings-toggle-button
             id="enableSpellcheckingToggle"

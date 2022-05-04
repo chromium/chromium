@@ -5,14 +5,16 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguageHelper, LanguagesBrowserProxyImpl, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, IronCollapseElement, Router, routes} from 'chrome://settings/settings.js';
-
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
 import {loadTimeData, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="_google_chrome">
+import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
 
 // <if expr="not is_macosx">
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -28,9 +30,10 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 const languages_page_tests = {
   TestNames: {
-    LanguageSettings: 'language_settings',
     Spellcheck: 'spellcheck_all',
+    // <if expr="_google_chrome">
     SpellcheckOfficialBuild: 'spellcheck_official',
+    // </if>
     RestructuredLanguageSettings: 'restructured language settings',
   },
 };
@@ -40,7 +43,6 @@ Object.assign(window, {languages_page_tests});
 suite('languages page', function() {
   let languageHelper: LanguageHelper;
   let languagesPage: SettingsLanguagesPageElement;
-  let languagesCollapse: IronCollapseElement;
   let browserProxy: TestLanguagesBrowserProxy;
 
   suiteSetup(function() {
@@ -73,11 +75,6 @@ suite('languages page', function() {
 
       document.body.appendChild(languagesPage);
       flush();
-      languagesCollapse =
-          languagesPage.shadowRoot!.querySelector<IronCollapseElement>(
-              '#languagesCollapse')!;
-      languagesCollapse.opened = true;
-
       languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
     });
@@ -85,22 +82,6 @@ suite('languages page', function() {
 
   teardown(function() {
     document.body.innerHTML = '';
-  });
-
-  suite(languages_page_tests.TestNames.LanguageSettings, function() {
-    test('decoupled language subtitle', function() {
-      const secondaryText = languagesPage.shadowRoot!.querySelector(
-          '#languageSectionSecondaryText');
-      // <if expr="is_win">
-      // Set to English from FakeLanguageSettingsPrivate.
-      assertEquals(
-          secondaryText!.textContent!.trim(), 'English (United States)');
-      // </if>
-
-      // <if expr="not is_win">
-      assertEquals(secondaryText, null);
-      // </if>
-    });
   });
 
   suite(languages_page_tests.TestNames.Spellcheck, function() {
@@ -327,6 +308,7 @@ suite('languages page', function() {
     // </if>
   });
 
+  // <if expr="_google_chrome">
   suite(languages_page_tests.TestNames.SpellcheckOfficialBuild, function() {
     test('enabling and disabling the spelling service', () => {
       const previousValue =
@@ -339,6 +321,7 @@ suite('languages page', function() {
           languagesPage.prefs.spellcheck.use_spelling_service.value);
     });
   });
+  // </if>
 });
 
 suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
@@ -387,7 +370,6 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
   });
 
   test('languageSubpageTriggerVisible', function() {
-    assertFalse(isChildVisible(languagesPage, '#languagesCollapse'));
     assertTrue(isChildVisible(languagesPage, '#languagesSubpageTrigger'));
   });
 
