@@ -7,6 +7,16 @@ class {{export_attribute}} {{union.name}} {
   using Data_ = internal::{{union.name}}_Data;
   using Tag = Data_::{{union.name}}_Tag;
 
+  template <typename... Args>
+  static {{union.name}}Ptr New(Args&&... args) {
+    static_assert(
+        sizeof...(args) < 0,
+        "Do not use Union::New(); to create a union of a given subtype, use "
+        "New<SubType>(), not New() followed by set_<sub_type>(). To represent "
+        "an empty union, mark the field or parameter as nullable in the mojom "
+        "definition.");
+  }
+
 {%-  for field in union.fields %}
   // Construct an instance holding |{{field.name}}|.
   static {{union.name}}Ptr
