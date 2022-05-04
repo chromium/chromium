@@ -109,8 +109,6 @@ class ASH_EXPORT Desk {
 
   base::AutoReset<bool> GetScopedNotifyContentChangedDisabler();
 
-  bool ContainsAppWindows() const;
-
   // Sets the desk's name to |new_name| and updates the observers.
   // |set_by_user| should be true if this name was given to the desk by the user
   // from its mini view in overview mode.

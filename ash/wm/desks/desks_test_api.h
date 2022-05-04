@@ -15,10 +15,6 @@ class LabelButton;
 class ScrollView;
 }  // namespace views
 
-namespace ui {
-class SimpleMenuModel;
-}  // namespace ui
-
 namespace ash {
 
 class Desk;
@@ -45,7 +41,6 @@ class DesksTestApi {
   GetPersistentDesksBarDeskButtons();
   static DeskActionContextMenu* GetContextMenuForDesk(int index);
   static views::LabelButton* GetCloseAllUndoToastDismissButton();
-  static const ui::SimpleMenuModel& GetContextMenuModelForDesk(int index);
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
