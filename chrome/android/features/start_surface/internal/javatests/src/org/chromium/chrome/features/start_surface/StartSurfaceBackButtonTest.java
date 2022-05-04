@@ -513,8 +513,7 @@ public class StartSurfaceBackButtonTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisableIf.
-        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
+    @DisabledTest(message = "https://crbug.com/1246457")
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
         // TODO(https://crbug.com/1093632): Requires 2 back press/gesture events now. Make this
@@ -534,7 +533,7 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1281915")
+    @DisabledTest(message = "https://crbug.com/1246457")
     public void testSwipeBackOnTabOfLaunchTypeStartSurface() throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
