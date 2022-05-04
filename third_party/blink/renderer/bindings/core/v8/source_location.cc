@@ -193,7 +193,7 @@ void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
   // TODO(altimin): Add TracedValue support to v8::StringView and remove
   // ToCoreString calls.
   dict.Add("functionName", ToCoreString(stack_trace_->topFunctionName()));
-  dict.Add("scriptId", stack_trace_->topScriptId());
+  dict.Add("scriptId", String::Number(stack_trace_->topScriptId()));
   dict.Add("url", ToCoreString(stack_trace_->topSourceURL()));
   dict.Add("lineNumber", stack_trace_->topLineNumber());
   dict.Add("columnNumber", stack_trace_->topColumnNumber());
