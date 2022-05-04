@@ -51,13 +51,13 @@ class SpeechRecognitionTestHelper {
   void WaitForRecognitionStarted();
   // Waits for the speech recognition service to stop.
   void WaitForRecognitionStopped();
-  // Sends a fake speech result and waits for tasks to finish.
-  void SendFakeSpeechResultAndWait(const std::string& transcript,
-                                   bool is_final);
-  // Similar to above, but ensures that `is_final` is true.
-  void SendFinalFakeSpeechResultAndWait(const std::string& transcript);
+  // Sends an interim (non-finalized) fake speech result and waits for tasks to
+  // finish.
+  void SendInterimResultAndWait(const std::string& transcript);
+  // Sends a final fake speech result and waits for tasks to finish.
+  void SendFinalResultAndWait(const std::string& transcript);
   // Sends a fake speech recognition error and waits for tasks to finish.
-  void SendFakeSpeechRecognitionErrorAndWait();
+  void SendErrorAndWait();
   // Returns a list of features that should be enabled.
   std::vector<base::Feature> GetEnabledFeatures();
   // Returns a list of features that should be disabled.
@@ -69,6 +69,10 @@ class SpeechRecognitionTestHelper {
   void SetUpOnDeviceRecognition(Profile* profile);
   std::unique_ptr<KeyedService> CreateTestOnDeviceSpeechRecognitionService(
       content::BrowserContext* context);
+
+  // Sends a fake speech result and waits for tasks to finish.
+  void SendFakeSpeechResultAndWait(const std::string& transcript,
+                                   bool is_final);
 
   speech::SpeechRecognitionType type_;
   // For network recognition.

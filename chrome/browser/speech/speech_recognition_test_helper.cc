@@ -80,6 +80,16 @@ void SpeechRecognitionTestHelper::WaitForRecognitionStopped() {
   base::RunLoop().RunUntilIdle();
 }
 
+void SpeechRecognitionTestHelper::SendInterimResultAndWait(
+    const std::string& transcript) {
+  SendFakeSpeechResultAndWait(transcript, /*is_final=*/false);
+}
+
+void SpeechRecognitionTestHelper::SendFinalResultAndWait(
+    const std::string& transcript) {
+  SendFakeSpeechResultAndWait(transcript, /*is_final=*/true);
+}
+
 void SpeechRecognitionTestHelper::SendFakeSpeechResultAndWait(
     const std::string& transcript,
     bool is_final) {
@@ -97,12 +107,7 @@ void SpeechRecognitionTestHelper::SendFakeSpeechResultAndWait(
   }
 }
 
-void SpeechRecognitionTestHelper::SendFinalFakeSpeechResultAndWait(
-    const std::string& transcript) {
-  SendFakeSpeechResultAndWait(transcript, /*is_final=*/true);
-}
-
-void SpeechRecognitionTestHelper::SendFakeSpeechRecognitionErrorAndWait() {
+void SpeechRecognitionTestHelper::SendErrorAndWait() {
   base::RunLoop loop;
   if (type_ == speech::SpeechRecognitionType::kNetwork) {
     fake_speech_recognition_manager_->SendFakeError(loop.QuitClosure());

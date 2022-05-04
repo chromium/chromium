@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
 // an error.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, Error) {
   HandleStartAndWait(absl::optional<std::string>(), absl::optional<bool>());
-  SendFakeSpeechRecognitionErrorAndWait();
+  SendErrorAndWait();
   ASSERT_TRUE(delegate_handled_stop());
   ASSERT_FALSE(ran_on_stop_once_callback());
   ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
   ASSERT_EQ(u"", last_transcript());
   ASSERT_FALSE(last_is_final());
 
-  SendFinalFakeSpeechResultAndWait("Final result");
+  SendFinalResultAndWait("Final result");
   ASSERT_EQ(u"Final result", last_transcript());
   ASSERT_TRUE(last_is_final());
 
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
   ASSERT_EQ(u"Interim result", last_transcript());
   ASSERT_FALSE(last_is_final());
 
-  SendFinalFakeSpeechResultAndWait("Final result");
+  SendFinalResultAndWait("Final result");
   ASSERT_EQ(u"Final result", last_transcript());
   ASSERT_TRUE(last_is_final());
 }

@@ -61,19 +61,18 @@ void SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped() {
   test_helper_.WaitForRecognitionStopped();
 }
 
-void SpeechRecognitionPrivateBaseTest::SendFakeSpeechResultAndWait(
-    const std::string& transcript,
-    bool is_final) {
-  test_helper_.SendFakeSpeechResultAndWait(transcript, is_final);
-}
-
-void SpeechRecognitionPrivateBaseTest::SendFinalFakeSpeechResultAndWait(
+void SpeechRecognitionPrivateBaseTest::SendInterimResultAndWait(
     const std::string& transcript) {
-  test_helper_.SendFinalFakeSpeechResultAndWait(transcript);
+  test_helper_.SendInterimResultAndWait(transcript);
 }
 
-void SpeechRecognitionPrivateBaseTest::SendFakeSpeechRecognitionErrorAndWait() {
-  test_helper_.SendFakeSpeechRecognitionErrorAndWait();
+void SpeechRecognitionPrivateBaseTest::SendFinalResultAndWait(
+    const std::string& transcript) {
+  test_helper_.SendFinalResultAndWait(transcript);
+}
+
+void SpeechRecognitionPrivateBaseTest::SendErrorAndWait() {
+  test_helper_.SendErrorAndWait();
 }
 
 }  // namespace extensions

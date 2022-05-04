@@ -51,10 +51,9 @@ class SpeechRecognitionPrivateBaseTest
   // Routers to SpeechRecognitionTestHelper methods.
   void WaitForRecognitionStarted();
   void WaitForRecognitionStopped();
-  void SendFakeSpeechResultAndWait(const std::string& transcript,
-                                   bool is_final);
-  void SendFinalFakeSpeechResultAndWait(const std::string& transcript);
-  void SendFakeSpeechRecognitionErrorAndWait();
+  void SendInterimResultAndWait(const std::string& transcript);
+  void SendFinalResultAndWait(const std::string& transcript);
+  void SendErrorAndWait();
 
  private:
   SpeechRecognitionTestHelper test_helper_;
