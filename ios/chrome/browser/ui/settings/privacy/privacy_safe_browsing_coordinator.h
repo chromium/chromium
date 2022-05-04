@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
 @class PrivacySafeBrowsingCoordinator;
 
 // Delegate for PrivacySafeBrowsingCoordinator.

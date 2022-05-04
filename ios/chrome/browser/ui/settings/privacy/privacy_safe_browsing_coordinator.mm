@@ -12,11 +12,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
@@ -84,9 +79,6 @@
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
   self.viewController.modelDelegate = self.mediator;
-  self.viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
