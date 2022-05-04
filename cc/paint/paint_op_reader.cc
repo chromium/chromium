@@ -160,6 +160,8 @@ void PaintOpReader::ReadData(size_t bytes, void* data) {
 
 void PaintOpReader::ReadSize(size_t* size) {
   AlignMemory(8);
+  if (!valid_)
+    return;
   uint64_t size64 = 0;
   ReadSimple(&size64);
   *size = size64;
