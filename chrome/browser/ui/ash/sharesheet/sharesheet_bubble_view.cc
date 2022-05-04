@@ -469,9 +469,7 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
 
 // CloseBubble is called from a ShareAction or after an app launches.
 void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
-  if (!is_bubble_closing_) {
-    CloseWidgetWithAnimateFadeOut(reason);
-  }
+  CloseWidgetWithAnimateFadeOut(reason);
 }
 
 bool SharesheetBubbleView::AcceleratorPressed(
@@ -484,6 +482,13 @@ bool SharesheetBubbleView::AcceleratorPressed(
       delegator_->OnAcceleratorPressed(accelerator, active_target_)) {
     return true;
   }
+
+  // If the bubble is already in the process of closing, return early without
+  // doing anything.
+  if (is_bubble_closing_) {
+    return true;
+  }
+
   // If delivered_callback_ is not null at this point, then the sharesheet was
   // closed before a target was selected.
   if (delivered_callback_) {
@@ -493,7 +498,6 @@ bool SharesheetBubbleView::AcceleratorPressed(
   ::sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
       ::sharesheet::SharesheetMetrics::UserAction::kCancelledThroughEscPress);
   CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kEscKeyPressed);
-
   return true;
 }
 
@@ -730,7 +734,9 @@ void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
 
 void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
     views::Widget::ClosedReason closed_reason) {
-  constexpr auto kSharesheetOpacityFadeOutTime = base::Milliseconds(80);
+  if (is_bubble_closing_) {
+    return;
+  }
 
   // Don't attempt to react to tablet mode changes while the sharesheet is
   // closing.
@@ -738,6 +744,7 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
   is_bubble_closing_ = true;
   ui::Layer* layer = View::GetWidget()->GetLayer();
 
+  constexpr auto kSharesheetOpacityFadeOutTime = base::Milliseconds(80);
   auto scoped_settings =
       std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
   scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
