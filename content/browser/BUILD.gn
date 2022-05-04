@@ -2241,6 +2241,7 @@ source_set("browser") {
       "sandbox_parameters_mac.mm",
       "scheduler/responsiveness/native_event_observer_mac.mm",
       "screenlock_monitor/screenlock_monitor_device_source_mac.mm",
+      "speech/tts_mac.h",
       "speech/tts_mac.mm",
       "theme_helper_mac.h",
       "theme_helper_mac.mm",
