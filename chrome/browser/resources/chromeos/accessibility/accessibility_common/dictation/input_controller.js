@@ -22,12 +22,6 @@ export class InputController {
      */
     this.previousImeEngineId_ = '';
 
-    /**
-     * The current composition text, if any.
-     * @private {string}
-     */
-    this.currentComposition_ = '';
-
     /** @private {function():void} */
     this.stopDictationCallback_ = stopDictationCallback;
 
@@ -109,22 +103,10 @@ export class InputController {
    * composed, commits it.
    */
   disconnect() {
-    // Commit composition text, if any.
-    if (this.currentComposition_.length > 0) {
-      this.commitText(this.currentComposition_);
-    }
-
     // Clean up IME state and reset to the previous IME method.
     this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
     chrome.inputMethodPrivate.setCurrentInputMethod(this.previousImeEngineId_);
     this.previousImeEngineId_ = '';
-  }
-
-  /**
-   * @return {boolean} Whether any text is currently being composed.
-   */
-  hasCompositionText() {
-    return this.currentComposition_.length > 0;
   }
 
   /**
@@ -138,7 +120,6 @@ export class InputController {
 
     text = this.adjustCommitText_(text);
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});
-    this.setCurrentComposition('');
   }
 
   /**
@@ -183,11 +164,6 @@ export class InputController {
     }
 
     this.editableNode_ = node;
-  }
-
-  /** @param {string} text */
-  setCurrentComposition(text) {
-    this.currentComposition_ = text;
   }
 
   /**

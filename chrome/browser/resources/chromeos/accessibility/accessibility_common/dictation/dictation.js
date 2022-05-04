@@ -158,7 +158,7 @@ export class Dictation {
     this.active_ = false;
     // Stop speech recognition.
     chrome.speechRecognitionPrivate.stop({}, () => {});
-    if (this.inputController_.hasCompositionText() || this.interimText_) {
+    if (this.interimText_) {
       this.endTone_.play();
     } else {
       this.cancelTone_.play();
@@ -217,14 +217,8 @@ export class Dictation {
    * @private
    */
   async processSpeechRecognitionResult_(transcript, isFinal) {
-    // TODO(crbug.com/1216111): Make dictation.js store the current composition
-    // (we already have a member called interimText_) and remove the
-    // currentComposition_ member from input_controller.js. This aligns more
-    // closely with the model-view-controller design pattern.
-    this.inputController_.setCurrentComposition(transcript);
-
     if (!isFinal) {
-      this.setInterimText_(transcript);
+      this.showInterimText_(transcript);
       return;
     }
 
@@ -344,7 +338,7 @@ export class Dictation {
    * @param {string} text
    * @private
    */
-  setInterimText_(text) {
+  showInterimText_(text) {
     // TODO(crbug.com/1252037): Need to find a way to show interim text that is
     // only whitespace. Google Cloud Speech can return a newline character
     // although SODA does not seem to do that. The newline character looks wrong

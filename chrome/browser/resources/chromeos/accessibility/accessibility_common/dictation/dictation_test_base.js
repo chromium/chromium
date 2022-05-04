@@ -31,6 +31,9 @@ DictationE2ETestBase = class extends E2ETestBase {
     this.mockSpeechRecognitionPrivate = new MockSpeechRecognitionPrivate();
     chrome.speechRecognitionPrivate = this.mockSpeechRecognitionPrivate;
 
+    this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;
+    this.hintType = this.mockAccessibilityPrivate.DictationBubbleHintType;
+
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
@@ -296,5 +299,77 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
    */
   updateSpeechRecognitionProperties(properties) {
     this.mockSpeechRecognitionPrivate.updateProperties(properties);
+  }
+
+  // UI-related methods.
+
+  /**
+   * Waits for the updateDictationBubble() API to be called with the given
+   * properties.
+   * @param {DictationBubbleProperties} targetProps
+   */
+  async waitForUIProperties(targetProps) {
+    // Poll until the updateDictationBubble() API gets called with
+    // `targetProps`.
+    return new Promise(resolve => {
+      const printErrorMessageTimeoutId = setTimeout(() => {
+        this.printErrorMessage_(targetProps);
+      }, 3.5 * 1000);
+      const intervalId = setInterval(() => {
+        if (this.uiPropertiesMatch_(targetProps)) {
+          clearTimeout(printErrorMessageTimeoutId);
+          clearInterval(intervalId);
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
+   * Returns true if `targetProps` matches the most recent UI properties. Must
+   * match exactly.
+   * @param {DictationBubbleProperties} targetProps
+   * @return {boolean}
+   * @private
+   */
+  uiPropertiesMatch_(targetProps) {
+    /** @type {function(!Array<string>,!Array<string>) : boolean} */
+    const areEqual = (arr1, arr2) => {
+      return arr1.every((val, index) => val === arr2[index]);
+    };
+
+    const actualProps = this.mockAccessibilityPrivate.getDictationBubbleProps();
+    if (!actualProps) {
+      return false;
+    }
+
+    if (Object.keys(actualProps).length !== Object.keys(targetProps).length) {
+      return false;
+    }
+
+    for (const key of Object.keys(targetProps)) {
+      if (Array.isArray(targetProps[key]) && Array.isArray(actualProps[key])) {
+        // For arrays, ensure that we compare the contents of the arrays.
+        if (!areEqual(targetProps[key], actualProps[key])) {
+          return false;
+        }
+      } else if (targetProps[key] !== actualProps[key]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * @param {DictationBubbleProperties} props
+   * @private
+   */
+  printErrorMessage_(props) {
+    console.error(`Still waiting for UI properties
+      visible: ${props.visible}
+      icon: ${props.icon}
+      text: ${props.text}
+      hints: ${props.hints}`);
   }
 };

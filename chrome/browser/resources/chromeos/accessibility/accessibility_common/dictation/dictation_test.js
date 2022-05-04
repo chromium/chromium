@@ -201,3 +201,20 @@ SYNC_TEST_F(
       this.sendFinalSpeechResult('type this is a test');
       await this.assertCommittedText('this is a test');
     });
+
+SYNC_TEST_F(
+    'DictationE2ETest', 'DontCommitAfterMacroSuccess', async function() {
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('move to the next line');
+      // Perform the next line command.
+      this.sendFinalSpeechResult('move to the next line');
+      // Wait for the UI to show macro success.
+      await this.waitForUIProperties({
+        visible: true,
+        icon: this.iconType.MACRO_SUCCESS,
+        text: this.commandStrings.NAV_NEXT_LINE,
+      });
+      this.toggleDictationOff();
+      // No text should be committed.
+      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+    });
