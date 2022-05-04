@@ -1492,6 +1492,8 @@ source_set("chromeos") {
     "../ash/file_manager/io_task.h",
     "../ash/file_manager/io_task_controller.cc",
     "../ash/file_manager/io_task_controller.h",
+    "../ash/file_manager/io_task_util.cc",
+    "../ash/file_manager/io_task_util.h",
     "../ash/file_manager/open_util.cc",
     "../ash/file_manager/open_util.h",
     "../ash/file_manager/open_with_browser.cc",

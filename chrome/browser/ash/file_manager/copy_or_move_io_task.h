@@ -26,7 +26,7 @@ namespace file_manager {
 namespace io_task {
 
 // This class represents a copy or move operation. It checks whether there is
-// enough space for the copy or moveto occur, and also sends the copy or move
+// enough space for the copy or move to occur, and also sends the copy or move
 // requests to the storage backend.
 class CopyOrMoveIOTask : public IOTask {
  public:

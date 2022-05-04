@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -66,23 +67,6 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
   // TODO(crbug.com/1312336): Replace FileManagerCopyOrMoveHookDelegate with new
   // class.
   return file_system_context->operation_runner()->Copy(
-      source_url, destination_url, options,
-      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-      std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback),
-      std::move(complete_callback));
-}
-
-// Starts the move operation via FileSystemOperationRunner.
-storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const storage::FileSystemURL& source_url,
-    const storage::FileSystemURL& destination_url,
-    storage::FileSystemOperation::CopyOrMoveOptionSet options,
-    const FileManagerCopyOrMoveHookDelegate::ProgressCallback&
-        progress_callback,
-    storage::FileSystemOperation::StatusCallback complete_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  return file_system_context->operation_runner()->Move(
       source_url, destination_url, options,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback),
