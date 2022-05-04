@@ -527,7 +527,8 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 }
 
-TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
+// Flaky as reported in: https://crbug.com/1322325
+TEST_F(IndexedDBFactoryTest, DISABLED_InMemoryFactoriesStay) {
   SetupInMemoryContext();
   ASSERT_TRUE(context()->IsInMemoryContext());
 
