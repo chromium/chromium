@@ -1616,6 +1616,9 @@ extern const char kSharedHighlightingV2Description[];
 extern const char kSharedHighlightingAmpName[];
 extern const char kSharedHighlightingAmpDescription[];
 
+extern const char kSharedHighlightingRefinedBlocklistName[];
+extern const char kSharedHighlightingRefinedBlocklistDescription[];
+
 extern const char kDraw1PredictedPoint12Ms[];
 extern const char kDraw2PredictedPoints6Ms[];
 extern const char kDraw1PredictedPoint6Ms[];

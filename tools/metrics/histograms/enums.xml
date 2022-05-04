@@ -53103,6 +53103,7 @@ from previous Chrome versions.
   <int value="-1661282561" label="SharingHubDesktopOmnibox:enabled"/>
   <int value="-1660972490" label="gpu-rasterization-msaa-sample-count"/>
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
+  <int value="-1658461830" label="SharedHighlightingRefinedBlocklist:enabled"/>
   <int value="-1656667928"
       label="UseSyncInvalidationsForWalletAndOffer:disabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
@@ -58423,6 +58424,7 @@ from previous Chrome versions.
   <int value="1907273605" label="NtpZeroSuggest:disabled"/>
   <int value="1909117215" label="animated-image-resume"/>
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
+  <int value="1910562940" label="SharedHighlightingRefinedBlocklist:disabled"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>

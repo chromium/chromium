@@ -5297,6 +5297,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "shared-highlighting-refined-blocklist",
+    "owners": ["jeffreycohen", "chrome-with-friends-robots@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "shared-highlighting-v2",
     "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 99

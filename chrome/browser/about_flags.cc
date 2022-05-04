@@ -6897,6 +6897,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"shared-highlighting-amp", flag_descriptions::kSharedHighlightingAmpName,
      flag_descriptions::kSharedHighlightingAmpDescription, kOsAll,
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingAmp)},
+    {"shared-highlighting-refined-blocklist",
+     flag_descriptions::kSharedHighlightingRefinedBlocklistName,
+     flag_descriptions::kSharedHighlightingRefinedBlocklistDescription, kOsAll,
+     FEATURE_VALUE_TYPE(share::kSharedHighlightingRefinedBlocklist)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"shimless-rma-flow", flag_descriptions::kShimlessRMAFlowName,

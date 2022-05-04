@@ -2871,6 +2871,11 @@ const char kSharedHighlightingAmpName[] = "Shared Highlighting for AMP Viewers";
 const char kSharedHighlightingAmpDescription[] =
     "Enables Shared Highlighting for AMP Viwers.";
 
+const char kSharedHighlightingRefinedBlocklistName[] =
+    "Shared Highlighting Blocklist Refinement";
+const char kSharedHighlightingRefinedBlocklistDescription[] =
+    "Narrow the Blocklist for enabling Shared Highlighting.";
+
 const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";
 const char kDraw2PredictedPoints6Ms[] = "2 points, each 6ms ahead.";
 const char kDraw1PredictedPoint6Ms[] = "1 point 6ms ahead.";
