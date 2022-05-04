@@ -106,18 +106,35 @@ def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
 
 def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
   logging.info('Looking up source paths from dwarfdump')
+  query_count = 0
+  match_count = 0
+  abs_count = 0
   for symbol in raw_symbols:
     if symbol.section_name != models.SECTION_TEXT:
       continue
+    query_count += 1
     source_path = dwarf_source_mapper.FindSourceForTextAddress(symbol.address)
-    if source_path and not os.path.isabs(source_path):
-      symbol.source_path = source_path
+    if source_path:
+      match_count += 1
+      if os.path.isabs(source_path):
+        # Use basename for any absolute path. NDK prebuilts have these.
+        # E.g.: /buildbot/src/android/ndk-release-r23/toolchain/llvm-project/
+        #       libcxx/src/vector.cpp
+        symbol.source_path = os.path.join(models.SYSTEM_PREFIX_PATH,
+                                          os.path.basename(source_path))
+        abs_count += 1
+      else:
+        symbol.source_path = source_path
+  logging.info('dwarfdump found %d of %d .text symbols. Ignored %d abs paths',
+               match_count, query_count, abs_count)
   # Majority of unmatched queries are for assembly source files (ex libav1d)
   # and v8 builtins.
-  assert dwarf_source_mapper.unmatched_queries_ratio < 0.2, (
-      'Percentage of failing |dwarf_source_mapper| queries ' +
-      '({}%) >= 20% '.format(dwarf_source_mapper.unmatched_queries_ratio * 100)
-      + 'FindSourceForTextAddress() likely has a bug.')
+  if query_count > 0:
+    unmatched_ratio = (query_count - match_count) / query_count
+    assert unmatched_ratio < 0.2, (
+        'Percentage of failing |dwarf_source_mapper| queries ' +
+        '({}%) >= 20% '.format(unmatched_ratio * 100) +
+        'FindSourceForTextAddress() likely has a bug.')
 
 
 def _ConnectNmAliases(raw_symbols):

@@ -25,8 +25,6 @@ class _SourceMapper:
   def __init__(self, range_info_list):
     self._range_info_list = range_info_list
     self._largest_address = 0
-    self._unmatched_queries_count = 0
-    self._total_queries_count = 0
 
     if self._range_info_list:
       self._largest_address = self._range_info_list[-1][0].stop
@@ -36,7 +34,6 @@ class _SourceMapper:
 
     Only symbols in the .text section of the elf file are supported.
     """
-    self._total_queries_count += 1
     # Bisect against stop = self._largest_address + 1 to avoid bisecting against
     # the "source path" tuple component.
     bisect_index = bisect.bisect_right(
@@ -47,7 +44,6 @@ class _SourceMapper:
       if info[0].start <= address < info[0].stop:
         return info[1]
 
-    self._unmatched_queries_count += 1
     return ''
 
   def NumberOfPaths(self):
@@ -56,10 +52,6 @@ class _SourceMapper:
   @property
   def num_ranges(self):
     return len(self._range_info_list)
-
-  @property
-  def unmatched_queries_ratio(self):
-    return self._unmatched_queries_count / self._total_queries_count
 
 
 def CreateAddressSourceMapper(elf_path):
@@ -82,6 +74,7 @@ def _Parse(elf_path):
       '--debug-info',
       '--recurse-depth=0',
   ]
+  logging.debug('Running: %s', ' '.join(cmd))
   stdout = subprocess.check_output(cmd,
                                    stderr=subprocess.DEVNULL,
                                    encoding='utf-8')
@@ -206,15 +199,20 @@ def _ExtractDwValue(line):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('dwarf_dump_output', type=os.path.realpath)
+  group = parser.add_mutually_exclusive_group(required=True)
+  group.add_argument('--dwarf-dump-output', type=os.path.realpath)
+  group.add_argument('--elf-file', type=os.path.realpath)
 
   args = parser.parse_args()
   logging.basicConfig(level=logging.DEBUG,
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-  with open(args.dwarf_dump_output, 'r') as f:
-    source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines())
-  logging.warning('Found %d source paths across %s ranges',
+  if args.dwarf_dump_output:
+    with open(args.dwarf_dump_output, 'r') as f:
+      source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines())
+  else:
+    source_mapper = CreateAddressSourceMapper(args.elf_file)
+  logging.warning('Found %d source paths across %d ranges',
                   source_mapper.NumberOfPaths(), source_mapper.num_ranges)
 
 
