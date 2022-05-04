@@ -218,7 +218,7 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   DCHECK(!instance_);
   instance_ = this;
 
-  DCHECK(model_);
+  CHECK(model_);
 
   if (!profile) {
     // If no profile was passed, we take the currently active profile and use it

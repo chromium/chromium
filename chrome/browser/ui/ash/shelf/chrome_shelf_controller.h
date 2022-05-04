@@ -443,7 +443,7 @@ class ChromeShelfController
   Profile* latest_active_profile_ = nullptr;
 
   // The ShelfModel instance owned by ash::Shell's ShelfController.
-  ash::ShelfModel* model_;
+  ash::ShelfModel* const model_;
 
   // Guaranteed to outlive this class. The central authority for creating
   // ShelfItems from app_ids.
