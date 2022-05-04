@@ -18,6 +18,10 @@
 
 namespace ash {
 
+namespace {
+namespace cros_healthd = ::ash::cros_healthd;
+}  // namespace
+
 class ProbeServiceTest : public testing::Test {
  public:
   void SetUp() override {

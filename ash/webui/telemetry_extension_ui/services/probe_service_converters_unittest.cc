@@ -23,6 +23,8 @@ namespace mojom = ::chromeos::cros_healthd::mojom;
 
 namespace converters {
 
+namespace cros_healthd = ::ash::cros_healthd;
+
 // Note: in some tests we intentionally use New() with no arguments for
 // cros_healthd::mojom types, because there can be some fields that we don't
 // test yet.

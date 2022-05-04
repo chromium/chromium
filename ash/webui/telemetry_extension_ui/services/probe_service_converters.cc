@@ -17,6 +17,8 @@ namespace converters {
 
 namespace {
 
+namespace cros_healthd = ::ash::cros_healthd;
+
 cros_healthd::mojom::ProbeCategoryEnum Convert(
     health::mojom::ProbeCategoryEnum input) {
   switch (input) {
