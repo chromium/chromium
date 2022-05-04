@@ -221,6 +221,8 @@ NetworkChangeManagerClient::ConnectionTypeFromShill(
       technology == shill::kNetworkTechnologyLteAdvanced) {
     return net::NetworkChangeNotifier::CONNECTION_4G;
   }
+  if (technology == shill::kNetworkTechnology5gNr)
+    return net::NetworkChangeNotifier::CONNECTION_5G;
 
   // Default cellular type is 2G.
   return net::NetworkChangeNotifier::CONNECTION_2G;

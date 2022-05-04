@@ -92,6 +92,8 @@ TEST(NetworkChangeManagerClientTest, ConnectionTypeFromShill) {
        NetworkChangeNotifier::CONNECTION_4G},
       {shill::kTypeCellular, shill::kNetworkTechnologyLteAdvanced,
        NetworkChangeNotifier::CONNECTION_4G},
+      {shill::kTypeCellular, shill::kNetworkTechnology5gNr,
+       NetworkChangeNotifier::CONNECTION_5G},
       {shill::kTypeCellular, "unknown technology",
        NetworkChangeNotifier::CONNECTION_2G}};
 
