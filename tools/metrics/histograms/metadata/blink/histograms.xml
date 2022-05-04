@@ -2900,17 +2900,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.WindowOpen.FromAdState" enum="WindowOpenFromAdState"
-    expires_after="2019-08-30">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Indicates whether the page called window.open() with an ad script in the
-    stack and/or from an ad subframe. Recorded whenever window.open() is called
-    when AdTagging is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Blink.{CookieOperation}Time.Manager{ManagerState}" units="ms"
     expires_after="2022-08-09">
   <owner>cduvall@chromium.org</owner>

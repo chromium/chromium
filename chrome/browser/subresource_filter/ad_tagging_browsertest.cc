@@ -395,7 +395,6 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
 const char kSubresourceFilterOriginStatusHistogram[] =
     "PageLoad.Clients.Ads.FrameCounts.AdFrames.PerFrame."
     "OriginStatus";
-const char kWindowOpenFromAdStateHistogram[] = "Blink.WindowOpen.FromAdState";
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifySameOriginWithoutNavigate) {
   // The test assumes pages gets deleted after navigation, triggering histogram
@@ -939,16 +938,6 @@ void ExpectWindowOpenUkmEntry(const ukm::TestUkmRecorder& ukm_recorder,
       from_ad_script);
 }
 
-void ExpectWindowOpenUmaEntry(const base::HistogramTester& histogram_tester,
-                              bool from_ad_subframe,
-                              bool from_ad_script) {
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  blink::FromAdState state =
-      blink::GetFromAdState(from_ad_subframe, from_ad_script);
-  histogram_tester.ExpectBucketCount(kWindowOpenFromAdStateHistogram, state,
-                                     1 /* expected_count */);
-}
-
 enum class NavigationInitiationType {
   kWindowOpen,
   kSetLocation,
@@ -1070,7 +1059,6 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
   bool from_ad_script = from_ad_subframe;
   ExpectWindowOpenUkmEntry(ukm_recorder, false /* from_main_frame */,
                            main_frame_url, from_ad_subframe, from_ad_script);
-  ExpectWindowOpenUmaEntry(histogram_tester, from_ad_subframe, from_ad_script);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1102,7 +1090,6 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
   bool from_ad_subframe = false;
   ExpectWindowOpenUkmEntry(ukm_recorder, true /* from_main_frame */,
                            main_frame_url, from_ad_subframe, from_ad_script);
-  ExpectWindowOpenUmaEntry(histogram_tester, from_ad_subframe, from_ad_script);
 }
 
 INSTANTIATE_TEST_SUITE_P(
