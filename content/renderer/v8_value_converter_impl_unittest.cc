@@ -928,15 +928,15 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
   recursive_array->Set(context, 0, recursive_array).Check();
 
   // The first repetition should be trimmed and replaced by a null value.
-  base::ListValue expected_list;
-  expected_list.Append(std::make_unique<base::Value>());
+  base::Value::List expected_list;
+  expected_list.Append(base::Value());
 
   // The actual result.
   std::unique_ptr<base::Value> actual_list(
       converter.FromV8Value(recursive_array, context));
   ASSERT_TRUE(actual_list.get());
 
-  EXPECT_TRUE(expected_list == *actual_list);
+  EXPECT_TRUE(expected_list == actual_list->GetList());
 
   // Now create a recursive object
   const std::string key("key");
