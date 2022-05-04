@@ -887,10 +887,8 @@ void DesktopNativeWidgetAura::Show(ui::WindowShowState show_state,
                                    const gfx::Rect& restore_bounds) {
   if (!content_window_)
     return;
-  // Avoid changing desktop window visibility state when browser is running in
-  // headless mode, see https://crbug.com/1237546.
-  if (!headless_mode_)
-    desktop_window_tree_host_->Show(show_state, restore_bounds);
+
+  desktop_window_tree_host_->Show(show_state, restore_bounds);
 }
 
 void DesktopNativeWidgetAura::Hide() {

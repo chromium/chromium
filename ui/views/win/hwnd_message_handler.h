@@ -810,6 +810,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // call HandleWindowMinimizedOrRestored() when we get a WM_ACTIVATE message.
   bool notify_restore_on_activate_ = false;
 
+  // This tracks headless window visibility state. In headless mode
+  // the platform window is always hidden, so we use this boolean
+  // to track the window's requested visibility state.
+  bool headless_window_visibility_state_ = false;
+
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the
   // window destruction and ensure that the map is cleaned up.
