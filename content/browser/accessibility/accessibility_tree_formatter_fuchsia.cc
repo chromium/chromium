@@ -202,7 +202,9 @@ void AccessibilityTreeFormatterFuchsia::AddDefaultFilters(
 
 base::Value AccessibilityTreeFormatterFuchsia::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
-  CHECK(root);
+  if (!root) {
+    return base::Value(base::Value::Type::DICTIONARY);
+  }
 
   BrowserAccessibility* root_internal =
       BrowserAccessibility::FromAXPlatformNodeDelegate(root);
