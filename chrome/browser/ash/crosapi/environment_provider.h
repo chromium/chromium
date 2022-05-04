@@ -10,12 +10,10 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/values_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
-
-using MojoPolicyMap =
-    base::flat_map<::policy::PolicyNamespace, std::vector<uint8_t>>;
 
 // Provides ash-chrome specific flags/configurations (like session type).
 class EnvironmentProvider {
@@ -51,14 +49,14 @@ class EnvironmentProvider {
   virtual void SetDeviceAccountPolicy(const std::string& policy_blob);
 
   // Getter and updater of the component policy for given namespace. The policy
-  // blob is serialized PolicyFetchResponse received from the server, or parsed
-  // from the file after is was validated.
-  const MojoPolicyMap& GetDeviceAccountComponentPolicy();
+  // blob is serialized JSON received from the server, or parsed from the file
+  // after is was validated.
+  const policy::ComponentPolicyMap& GetDeviceAccountComponentPolicy();
 
-  // Updates the component policy for given namespace. The policy blob is
-  // serialized PolicyFetchResponse received from the server, or parsed from the
-  // file after is was validated.
-  void SetDeviceAccountComponentPolicy(MojoPolicyMap serialized_policy);
+  // Updates the component policy for given namespace. The policy value is JSON
+  // received from the server, or parsed from the file after is was validated.
+  void SetDeviceAccountComponentPolicy(
+      policy::ComponentPolicyMap component_policy);
 
   // Getter and setter for last device policy fetch attempt timestamp.
   virtual base::Time GetLastPolicyFetchAttemptTimestamp();
@@ -70,8 +68,8 @@ class EnvironmentProvider {
   std::string device_account_policy_blob_;
 
   // The component policy to be passed to Lacros. The map value is the
-  // serialized policy blob.
-  MojoPolicyMap component_policy_;
+  // JSON corresponding to the policy for namespace.
+  policy::ComponentPolicyMap component_policy_;
 
   // The last timestamp at which device account policy fetch was attempted.
   base::Time last_policy_fetch_attempt_;

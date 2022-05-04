@@ -91,6 +91,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
@@ -103,8 +104,6 @@
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
-using MojoPolicyMap =
-    base::flat_map<::policy::PolicyNamespace, std::vector<uint8_t>>;
 
 namespace crosapi {
 namespace browser_util {
@@ -133,15 +132,15 @@ absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
 }
 
 // Returns the map containing component policy for each namespace. The values
-// represent the serialized policy blob for the namespace.
-const absl::optional<MojoPolicyMap> GetDeviceAccountComponentPolicy(
+// represent the JSON policy for the namespace.
+absl::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy(
     EnvironmentProvider* environment_provider) {
-  const MojoPolicyMap& map =
+  const policy::ComponentPolicyMap& map =
       environment_provider->GetDeviceAccountComponentPolicy();
   if (map.empty())
     return absl::nullopt;
 
-  return map;
+  return policy::CopyComponentPolicyMap(map);
 }
 
 // Returns the device specific data needed for Lacros.

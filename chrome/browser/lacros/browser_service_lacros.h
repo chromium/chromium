@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "components/policy/core/common/values_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class GURL;
@@ -32,6 +33,8 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   // crosapi::mojom::BrowserService:
   void REMOVED_0(REMOVED_0Callback callback) override;
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
+  void REMOVED_16(base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>
+                      policy) override;
   void NewWindow(bool incognito,
                  bool should_trigger_session_restore,
                  NewWindowCallback callback) override;
@@ -92,9 +95,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                           Profile* profile);
   void RestoreTabWithProfile(RestoreTabCallback callback, Profile* profile);
   void OpenForFullRestoreWithProfile(Profile* profile);
-  void UpdateComponentPolicy(
-      base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy)
-      override;
+  void UpdateComponentPolicy(policy::ComponentPolicyMap policy) override;
 
   // Called when a session is restored.
   void OnSessionRestored(Profile* profile, int num_tabs_restored);

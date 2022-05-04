@@ -22,6 +22,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_export.h"
 
 namespace base {
@@ -148,14 +149,10 @@ class POLICY_EXPORT ComponentCloudPolicyService
   void UpdateFromClient();
   void UpdateFromSchemaRegistry();
   void Disconnect();
-  void SetPolicy(
-      std::unique_ptr<PolicyBundle> policy,
-      std::unique_ptr<ComponentCloudPolicyServiceObserver::ComponentPolicyMap>
-          serialized_policy);
+  void SetPolicy(std::unique_ptr<PolicyBundle> policy,
+                 const ComponentPolicyMap& component_policy);
   void FilterAndInstallPolicy();
-  void NotifyComponentPolicyUpdated(
-      std::unique_ptr<ComponentCloudPolicyServiceObserver::ComponentPolicyMap>
-          serialized_policy);
+  void NotifyComponentPolicyUpdated(const ComponentPolicyMap& component_policy);
 
   std::string policy_type_;
   raw_ptr<Delegate> delegate_;

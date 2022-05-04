@@ -27,13 +27,12 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
 
-using ComponentPolicyMap =
-    policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap;
 using ScopedResponseMap = std::unordered_map<policy::PolicyNamespace,
                                              em::PolicyFetchResponse,
                                              policy::PolicyNamespaceHash>;
@@ -208,9 +207,8 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ComponentCloudPolicyService::SetPolicy, service_, std::move(bundle),
-          std::make_unique<ComponentPolicyMap>(store_.serialized_policy())));
+      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
+                     std::move(bundle), store_.GetJsonPolicyMap()));
 
   initialized_ = true;
 
@@ -241,9 +239,8 @@ void ComponentCloudPolicyService::Backend::
   bundle->CopyFrom(store_.policy());
   service_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ComponentCloudPolicyService::SetPolicy, service_, std::move(bundle),
-          std::make_unique<ComponentPolicyMap>(store_.serialized_policy())));
+      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
+                     std::move(bundle), store_.GetJsonPolicyMap()));
 }
 
 void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
@@ -510,13 +507,13 @@ void ComponentCloudPolicyService::Disconnect() {
 
 void ComponentCloudPolicyService::SetPolicy(
     std::unique_ptr<PolicyBundle> policy,
-    std::unique_ptr<ComponentPolicyMap> serialized_policy) {
+    const ComponentPolicyMap& component_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Store the current unfiltered policies.
   unfiltered_policy_ = std::move(policy);
 
-  NotifyComponentPolicyUpdated(std::move(serialized_policy));
+  NotifyComponentPolicyUpdated(component_policy);
   FilterAndInstallPolicy();
 }
 
@@ -539,9 +536,9 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
 }
 
 void ComponentCloudPolicyService::NotifyComponentPolicyUpdated(
-    std::unique_ptr<ComponentPolicyMap> serialized_policy) {
+    const ComponentPolicyMap& component_policy) {
   for (auto& observer : observers_) {
-    observer.OnComponentPolicyUpdated(*serialized_policy);
+    observer.OnComponentPolicyUpdated(component_policy);
   }
 }
 

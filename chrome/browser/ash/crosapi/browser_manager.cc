@@ -75,6 +75,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -1209,11 +1210,13 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
 }
 
 void BrowserManager::OnComponentPolicyUpdated(
-    const policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap&
-        serialized_policy) {
-  environment_provider_->SetDeviceAccountComponentPolicy(serialized_policy);
-  if (browser_service_.has_value())
-    browser_service_->service->UpdateComponentPolicy(serialized_policy);
+    const policy::ComponentPolicyMap& component_policy) {
+  environment_provider_->SetDeviceAccountComponentPolicy(
+      policy::CopyComponentPolicyMap(component_policy));
+  if (browser_service_.has_value()) {
+    browser_service_->service->UpdateComponentPolicy(
+        policy::CopyComponentPolicyMap(component_policy));
+  }
 }
 
 void BrowserManager::OnComponentPolicyServiceDestruction(

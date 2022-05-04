@@ -67,6 +67,10 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
     NOTIMPLEMENTED();
   }
+  void REMOVED_16(
+      base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>) override {
+    NOTIMPLEMENTED();
+  }
 
   void NewWindow(bool incognito,
                  bool should_trigger_session_restore,
@@ -92,8 +96,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void UpdateKeepAlive(bool enabled) override {}
   void OpenForFullRestore() override {}
   void UpdateComponentPolicy(
-      base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy)
-      override {}
+      base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;

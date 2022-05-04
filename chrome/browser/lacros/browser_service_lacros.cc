@@ -185,6 +185,11 @@ void BrowserServiceLacros::REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) {
   NOTIMPLEMENTED();
 }
 
+void BrowserServiceLacros::REMOVED_16(
+    base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy) {
+  NOTIMPLEMENTED();
+}
+
 void BrowserServiceLacros::NewWindow(bool incognito,
                                      bool should_trigger_session_restore,
                                      NewWindowCallback callback) {
@@ -675,7 +680,7 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
 }
 
 void BrowserServiceLacros::UpdateComponentPolicy(
-    base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>> policy) {
+    policy::ComponentPolicyMap policy) {
   // TODO(crbug.com/1284279): Process received data in Lacros.
 }
 

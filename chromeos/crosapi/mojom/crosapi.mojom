@@ -715,8 +715,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 43
-// Next id: 43
+// Next version: 44
+// Next id: 44
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -984,7 +984,13 @@ struct BrowserInitParams {
   // the map are serialized PolicyFetchResponse proto messages from
   // components/policy/proto/device_management_backend.proto.
   [MinVersion=41]
-  map<crosapi.mojom.PolicyNamespace, array<uint8>>? device_account_component_policy@41;
+  map<crosapi.mojom.PolicyNamespace, array<uint8>>? REMOVED_41@41;
+
+  // Component (i.e. chrome extensions) policy for the device account.
+  // Maps `PolicyNamespace` representing an extension to the JSON policy
+  // value for that extension.
+  [MinVersion=43]
+  map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value>? device_account_component_policy@43;
 };
 
 // Parameters to specify OpenUrl behavior.
@@ -1019,8 +1025,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 67.
-// Next ID: 18
+// Next MinVersion: 68.
+// Next ID: 19
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1138,11 +1144,16 @@ interface BrowserService {
   [MinVersion=64]
   OpenForFullRestore@15();
 
+  // The old UpdateComponentPolicy method.
+  [MinVersion=67]
+  REMOVED_16@16(map<crosapi.mojom.PolicyNamespace, array<uint8>> policy);
+
   // Notifies Lacros to update the component policy data. The values of the map
-  // are serialized PolicyFetchResponse proto messages from
-  // components/policy/proto/device_management_backend.proto.
-  [MinVersion=65]
-  UpdateComponentPolicy@16(map<crosapi.mojom.PolicyNamespace, array<uint8>> policy);
+  // are JSON policy data downloaded by Ash. The `component_policy` argument
+  // maps `PolicyNamespace` representing an extension to the JSON policy value
+  // for that extension.
+  [MinVersion=67]
+  UpdateComponentPolicy@18(map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value> component_policy);
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

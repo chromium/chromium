@@ -32,6 +32,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service_observer.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -474,12 +475,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
   // policy::ComponentCloudPolicyService::Observer:
-  // Updates the component policy for given namespace. The policy blob is
-  // serialized PolicyFetchResponse received from the server, or parsed from the
-  // file after is was validated.
+  // Updates the component policy for given namespace. The policy blob is JSON
+  // value received from the server, or parsed from the file after is was
+  // validated.
   void OnComponentPolicyUpdated(
-      const policy::ComponentCloudPolicyServiceObserver::ComponentPolicyMap&
-          serialized_policy) override;
+      const policy::ComponentPolicyMap& component_policy) override;
   void OnComponentPolicyServiceDestruction(
       policy::ComponentCloudPolicyService* service) override;
 

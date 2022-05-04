@@ -80,6 +80,25 @@ const ComponentCloudPolicyStore::DomainConstants* GetDomainConstantsForType(
   return nullptr;
 }
 
+base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
+  base::Value::Dict result;
+  // This is actually safe because this code just copies the value,
+  // not caring about its type.
+  result.Set(kValue, entry.value_unsafe()->Clone());
+  if (entry.level == POLICY_LEVEL_RECOMMENDED) {
+    result.Set(kLevel, base::StringPiece(kRecommended));
+  }
+  return result;
+}
+
+base::Value::Dict TranslatePolicyMapToJson(const PolicyMap& policy_map) {
+  base::Value::Dict result;
+  for (const auto& [key, entry] : policy_map) {
+    result.Set(key, TranslatePolicyMapEntryToJson(entry));
+  }
+  return result;
+}
+
 }  // namespace
 
 ComponentCloudPolicyStore::Delegate::~Delegate() = default;
@@ -197,9 +216,6 @@ void ComponentCloudPolicyStore::Load() {
     cached_hashes_[ns] = payload.secure_hash();
     stored_policy_times_[ns] =
         base::Time::FromJavaTime(policy_data.timestamp());
-
-    serialized_policy_[ns] =
-        std::vector<uint8_t>(it->second.begin(), it->second.end());
   }
   delegate_->OnComponentCloudPolicyStoreUpdated();
 }
@@ -232,8 +248,6 @@ bool ComponentCloudPolicyStore::Store(const PolicyNamespace& ns,
   policy_bundle_.Get(ns).Swap(&policy);
   cached_hashes_[ns] = secure_hash;
   stored_policy_times_[ns] = base::Time::FromJavaTime(policy_data->timestamp());
-  serialized_policy_[ns] =
-      std::vector<uint8_t>(serialized_policy.begin(), serialized_policy.end());
   delegate_->OnComponentCloudPolicyStoreUpdated();
   return true;
 }
@@ -250,7 +264,6 @@ void ComponentCloudPolicyStore::Delete(const PolicyNamespace& ns) {
 
   if (!policy_bundle_.Get(ns).empty()) {
     policy_bundle_.Get(ns).Clear();
-    serialized_policy_.erase(ns);
     delegate_->OnComponentCloudPolicyStoreUpdated();
   }
 }
@@ -286,7 +299,6 @@ void ComponentCloudPolicyStore::Purge(const PurgeFilter& filter) {
       cached_hashes_.erase(prev);
       DCHECK(stored_policy_times_.count(ns));
       stored_policy_times_.erase(ns);
-      serialized_policy_.erase(ns);
     } else {
       ++it;
     }
@@ -305,7 +317,6 @@ void ComponentCloudPolicyStore::Clear() {
 
   cached_hashes_.clear();
   stored_policy_times_.clear();
-  serialized_policy_.clear();
   const PolicyBundle empty_bundle;
   if (!policy_bundle_.Equals(empty_bundle)) {
     policy_bundle_.Clear();
@@ -461,6 +472,15 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
   }
 
   return true;
+}
+
+ComponentPolicyMap ComponentCloudPolicyStore::GetJsonPolicyMap() {
+  ComponentPolicyMap result;
+  for (const auto& [policy_namespace, policy_map] : policy_bundle_) {
+    result[policy_namespace] =
+        base::Value(TranslatePolicyMapToJson(policy_map));
+  }
+  return result;
 }
 
 }  // namespace policy

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_COMPONENT_CLOUD_POLICY_SERVICE_OBSERVER_H_
 
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/values_util.h"
 
 namespace policy {
 
@@ -15,16 +16,12 @@ class ComponentCloudPolicyService;
 class POLICY_EXPORT ComponentCloudPolicyServiceObserver
     : public base::CheckedObserver {
  public:
-  using ComponentPolicyMap =
-      base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>;
-
   ~ComponentCloudPolicyServiceObserver() override = default;
 
   // Called on changes to store->policy() and/or store->policy_map(). The
-  // values in the `serialized_policy` map are the serialized
-  // PolicyFetchResponse objects received from the server.
+  // values in the `policy` map are the JSON data received from the server.
   virtual void OnComponentPolicyUpdated(
-      const ComponentPolicyMap& serialized_policy) = 0;
+      const ComponentPolicyMap& component_policy) = 0;
   virtual void OnComponentPolicyServiceDestruction(
       ComponentCloudPolicyService* service) = 0;
 };

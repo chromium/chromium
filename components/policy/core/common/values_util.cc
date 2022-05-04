@@ -25,4 +25,12 @@ base::flat_set<std::string> ValueToStringSet(const base::Value* value) {
   return base::flat_set<std::string>(std::move(item_vector));
 }
 
+ComponentPolicyMap CopyComponentPolicyMap(const ComponentPolicyMap& map) {
+  ComponentPolicyMap new_map;
+  for (const auto& [policy_namespace, value] : map) {
+    new_map[policy_namespace] = value.Clone();
+  }
+  return new_map;
+}
+
 }  // namespace policy
