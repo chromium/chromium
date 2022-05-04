@@ -1115,8 +1115,7 @@
     },
     {
       name: "FileSystemAccessAccessHandle",
-      origin_trial_feature_name: "FileSystemAccessAccessHandle",
-      status: "experimental",
+      status: "stable",
     },
     {
       // In-development features for the File System Access API.
