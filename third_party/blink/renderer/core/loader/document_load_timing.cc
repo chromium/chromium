@@ -129,6 +129,8 @@ void DocumentLoadTiming::WriteNavigationStartDataIntoTracedValue(
            document_loader_ ? document_loader_->Url().GetString() : "");
   dict.Add("isLoadingMainFrame",
            GetFrame() ? GetFrame()->IsMainFrame() : false);
+  dict.Add("isOutermostMainFrame",
+           GetFrame() ? GetFrame()->IsOutermostMainFrame() : false);
   dict.Add("navigationId", IdentifiersFactory::LoaderId(document_loader_));
 }
 

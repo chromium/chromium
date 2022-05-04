@@ -1793,6 +1793,7 @@ void FrameLoader::WriteIntoTrace(perfetto::TracedValue context) const {
     frame_dict.Add("id_ref", IdentifiersFactory::FrameId(frame_.Get()));
   }
   dict.Add("isLoadingMainFrame", frame_->IsMainFrame());
+  dict.Add("isOutermostMainFrame", frame_->IsOutermostMainFrame());
   dict.Add("documentLoaderURL",
            document_loader_ ? document_loader_->Url().GetString() : String());
 }
