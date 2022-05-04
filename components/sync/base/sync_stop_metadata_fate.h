@@ -9,7 +9,6 @@ namespace syncer {
 
 // Passed as an argument when stopping sync to control whether models should
 // clear its metadata (e.g. sync disabled vs browser shutdown).
-// TODO(crbug.com/1229171): Maybe unify with ShutdownReason.
 enum SyncStopMetadataFate { KEEP_METADATA, CLEAR_METADATA };
 
 }  // namespace syncer
