@@ -20531,6 +20531,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="19" label="Failed to clean up ephemeral cryptohome"/>
 </enum>
 
+<enum name="CryptohomeFetchUssExperimentConfigStatus">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Error"/>
+</enum>
+
 <enum name="CryptohomeLECredError">
   <summary>
     The result when a Low Entropy CheckCredential operation was performed.
@@ -20782,6 +20788,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="192" label="TSS Error NvRam Area Already Exists"/>
   <int value="193" label="TSS Error NvRam Area Doesn't Exist"/>
   <int value="194" label="TSS Error Unknown Error"/>
+</enum>
+
+<enum name="CryptohomeUssExperimentFlag">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Not found"/>
 </enum>
 
 <enum name="CTComplianceStatus">
