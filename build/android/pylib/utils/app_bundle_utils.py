@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import pathlib
 import re
 import shutil
 import sys
@@ -17,11 +18,11 @@ from util import md5_check
 from util import resource_utils
 import bundletool
 
-# List of valid modes for GenerateBundleApks()
-BUILD_APKS_MODES = ('default', 'universal', 'system', 'system_compressed')
+# "system_apks" is "default", but with locale list and compressed dex.
+_SYSTEM_MODES = ('system', 'system_apks')
+BUILD_APKS_MODES = _SYSTEM_MODES + ('default', 'universal')
 OPTIMIZE_FOR_OPTIONS = ('ABI', 'SCREEN_DENSITY', 'LANGUAGE',
                         'TEXTURE_COMPRESSION_FORMAT')
-_SYSTEM_MODES = ('system_compressed', 'system')
 
 _ALL_ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
 
@@ -143,7 +144,11 @@ def GenerateBundleApks(bundle_path,
         if mode not in BUILD_APKS_MODES:
           raise Exception('Invalid mode parameter %s (should be in %s)' %
                           (mode, BUILD_APKS_MODES))
-        cmd_args += ['--mode=' + mode]
+        if mode != 'system_apks':
+          cmd_args += ['--mode=' + mode]
+        else:
+          # Specify --optimize-for to prevent language splits being created.
+          cmd_args += ['--optimize-for=device_tier']
 
       if optimize_for:
         if optimize_for not in OPTIMIZE_FOR_OPTIONS:
@@ -153,10 +158,11 @@ def GenerateBundleApks(bundle_path,
         cmd_args += ['--optimize-for=' + optimize_for]
 
       if device_spec:
-        spec_file = os.path.join(tmp_dir, 'device.json')
-        with open(spec_file, 'w') as f:
-          json.dump(device_spec, f)
-        cmd_args += ['--device-spec=' + spec_file]
+        data = json.dumps(device_spec)
+        logging.debug('Device Spec: %s', data)
+        spec_file = pathlib.Path(tmp_dir) / 'device.json'
+        spec_file.write_text(data)
+        cmd_args += ['--device-spec=' + str(spec_file)]
 
       bundletool.RunBundleTool(cmd_args)
 

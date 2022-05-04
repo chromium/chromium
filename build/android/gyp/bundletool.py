@@ -10,6 +10,7 @@ location and version of this jar file, as well as the JVM invokation."""
 
 import logging
 import os
+import shlex
 import sys
 
 from util import build_utils
@@ -30,7 +31,7 @@ def RunBundleTool(args, warnings_as_errors=(), print_stdout=False):
   cmd = build_utils.JavaCmd(verify, xmx='4G')
   cmd += ['-jar', BUNDLETOOL_JAR_PATH]
   cmd += args
-  logging.debug(' '.join(cmd))
+  logging.debug('%s', shlex.join(cmd))
   return build_utils.CheckOutput(
       cmd,
       print_stdout=print_stdout,
