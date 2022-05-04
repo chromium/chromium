@@ -604,6 +604,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // Set up the new current step.
     current_step_ = std::move(configuration_->steps.front());
     configuration_->steps.pop_front();
+    ++active_step_index_;
     DCHECK(!current_step_->element || current_step_->element == element);
     current_step_->element =
         current_step_->type == StepType::kHidden ? nullptr : element;
@@ -700,13 +701,6 @@ void InteractionSequence::StageNextStep() {
       RunIfValid(std::move(current_step_->end_callback),
                  current_step_->element.get());
     }
-    // Fast forward to the next step before aborting so we get the correct
-    // information on the failed step in the abort callback.
-    current_step_ = std::move(configuration_->steps.front());
-    configuration_->steps.pop_front();
-    // We don't want to call the step-end callback during Abort() since we
-    // didn't technically start the step.
-    current_step_->end_callback = StepEndCallback();
     Abort(AbortedReason::kElementNotVisibleAtStartOfStep);
     return;
   }
@@ -791,35 +785,44 @@ void InteractionSequence::StageNextStep() {
 
 void InteractionSequence::Abort(AbortedReason reason) {
   DCHECK(started_);
-  configuration_->steps.clear();
   next_step_hidden_subscription_ = ElementTracker::Subscription();
-  // The current object could be destroyed during callbacks, so ensure we save
-  // a handle to the testing run loop (if there is one).
+  // The entire InteractionSequence could also go away during a callback, so
+  // save anything we need locally so that we don't have to access any class
+  // members as we finish terminating the sequence.
   base::OnceClosure quit_closure =
       std::move(quit_run_loop_closure_for_testing_);
-  if (current_step_) {
+  std::unique_ptr<Step> current_step = std::move(current_step_);
+  AbortedCallback aborted_callback =
+      std::move(configuration_->aborted_callback);
+  int active_step_index = active_step_index_;
+  StepType target_step_type = StepType::kShown;
+  ElementIdentifier target_id;
+  // The element could go away independently of the sequence.
+  SafeElementReference target_element;
+  if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
+      reason == AbortedReason::kElementHiddenBeforeSequenceStart) {
+    ++active_step_index;
+    if (next_step()) {
+      target_step_type = next_step()->type;
+      target_id = next_step()->id;
+    }
+  } else if (current_step) {
+    target_step_type = current_step->type;
+    target_id = current_step->id;
+    target_element = SafeElementReference(current_step->element);
+  }
+  configuration_->steps.clear();
+
+  // Note that if the sequence has already been aborted, this is a no-op, the
+  // callbacks will already be null.
+  if (current_step) {
     // Stop listening for events; we don't want additional callbacks during
     // teardown.
-    current_step_->subscription = ElementTracker::Subscription();
-    // The current step's element could go away during a callback, so hedge our
-    // bets by using a safe reference.
-    SafeElementReference element(current_step_->element);
-    // The entire InteractionSequence could also go away during a callback, so
-    // save anything we need locally so that we don't have to access any class
-    // members as we finish terminating the sequence.
-    std::unique_ptr<Step> last_step = std::move(current_step_);
-    AbortedCallback aborted_callback =
-        std::move(configuration_->aborted_callback);
-    RunIfValid(std::move(last_step->end_callback), element.get());
-    RunIfValid(std::move(aborted_callback), element.get(), last_step->id,
-               last_step->type, reason);
-  } else {
-    // Aborted before any steps were run. Pass default values.
-    // Note that if the sequence has already been aborted, this is a no-op, the
-    // callback will already be null.
-    RunIfValid(std::move(configuration_->aborted_callback), nullptr,
-               ElementIdentifier(), StepType::kShown, reason);
+    current_step->subscription = ElementTracker::Subscription();
+    RunIfValid(std::move(current_step->end_callback), current_step->element);
   }
+  RunIfValid(std::move(aborted_callback), active_step_index,
+             target_element.get(), target_id, target_step_type, reason);
   RunIfValid(std::move(quit_closure));
 }
 

@@ -292,8 +292,12 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   }
   DCHECK_EQ(current_step, max_progress);
 
+  // Note that the step number we are using here is not the same as the the
+  // InteractionSequence::AbortCallback step (`sequence_step`) which counts all
+  // steps; `current_step` in this case is the visual bubble count, which does
+  // not count hidden steps.
   builder.SetAbortedCallback(base::BindOnce(
-      [](int step_number, TutorialService* tutorial_service,
+      [](int step_number, TutorialService* tutorial_service, int sequence_step,
          ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
          ui::InteractionSequence::StepType last_step_type,
          ui::InteractionSequence::AbortedReason aborted_reason) {

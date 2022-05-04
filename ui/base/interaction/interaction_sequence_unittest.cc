@@ -136,7 +136,7 @@ TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
   element.reset();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(nullptr, ElementIdentifier(), InteractionSequence::StepType::kShown,
+      Run(1, nullptr, kTestIdentifier1, InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::
               kElementHiddenBeforeSequenceStart),
       sequence->Start());
@@ -384,7 +384,7 @@ TEST(InteractionSeuenceTest, TransitionOnCustomEventFailsIfMustBeVisible) {
           .Build();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(nullptr, element2.identifier(),
+      Run(2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kCustomEvent,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
       sequence->Start());
@@ -435,7 +435,8 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
           .Build();
   EXPECT_CALL(
       aborted,
-      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+      Run(2, nullptr, element2.identifier(),
+          InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
       .Times(1);
   sequence->Start();
@@ -540,7 +541,7 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
           .Build();
   EXPECT_CALL(
       aborted,
-      Run(nullptr, element2.identifier(),
+      Run(2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kHidden,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
       .Times(1);
@@ -866,7 +867,7 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
 
   EXPECT_CALLS_IN_SCOPE_2(
       step2_end, Run, aborted,
-      Run(testing::_, element2.identifier(),
+      Run(3, testing::_, element2.identifier(),
           InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep),
       element2.Hide());
@@ -1605,7 +1606,8 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
   // called.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+      Run(2, nullptr, element2.identifier(),
+          InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kSequenceDestroyed),
       sequence.reset());
 }
@@ -1675,7 +1677,7 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
   element1.Show();
 
   std::unique_ptr<InteractionSequence> sequence;
-  auto callback = [&](TrackedElement*, ElementIdentifier,
+  auto callback = [&](int, TrackedElement*, ElementIdentifier,
                       InteractionSequence::StepType,
                       InteractionSequence::AbortedReason) { sequence.reset(); };
   sequence =
@@ -1783,7 +1785,7 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
   element1.Show();
 
   std::unique_ptr<InteractionSequence> sequence;
-  auto callback = [&](TrackedElement*, ElementIdentifier,
+  auto callback = [&](int, TrackedElement*, ElementIdentifier,
                       InteractionSequence::StepType,
                       InteractionSequence::AbortedReason) { sequence.reset(); };
   sequence =
@@ -2187,7 +2189,7 @@ TEST(InteractionSequenceTest, MustBeVisibleAtStart_DefaultsToTrueForActivated) {
   sequence->Start();
   EXPECT_CALLS_IN_SCOPE_3(
       step1_end, Run, step2_end, Run, aborted,
-      Run(nullptr, element3.identifier(),
+      Run(3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
       element1.Show());
@@ -2227,7 +2229,7 @@ TEST(InteractionSequenceTest,
   sequence->Start();
   EXPECT_CALLS_IN_SCOPE_3(
       step1_end, Run, step2_end, Run, aborted,
-      Run(nullptr, element3.identifier(),
+      Run(3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kCustomEvent,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
       element1.Show());
@@ -2322,7 +2324,7 @@ TEST(InteractionSequenceTest,
   // Fail step four.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(&element3, element3.identifier(),
+      Run(4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep),
       element3.Hide());
@@ -2382,7 +2384,7 @@ TEST(InteractionSequenceTest,
   // Fail step four.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(&element3, element3.identifier(),
+      Run(4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep),
       element3.Hide());
@@ -2634,7 +2636,8 @@ TEST(InteractionSequenceTest,
   element1.Hide();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(nullptr, element1.identifier(), InteractionSequence::StepType::kShown,
+      Run(1, nullptr, element1.identifier(),
+          InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
       sequence->Start());
 }
@@ -2667,7 +2670,8 @@ TEST(InteractionSequenceTest,
   element2.Hide();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+      Run(3, nullptr, element2.identifier(),
+          InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
       element1.Activate());
 }

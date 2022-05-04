@@ -103,8 +103,14 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // sequence of steps, or if this object is deleted after the sequence starts.
   // The most recent event is described by the parameters; if the target element
   // is no longer available it will be null.
+  //
+  // The active step will be 0 before the sequence starts, and is incremented on
+  // each step transition after the previous step's end callback is called, or
+  // if the next step's precondition fails (so that it refers to the correct
+  // step).
   using AbortedCallback =
-      base::OnceCallback<void(TrackedElement* last_element,
+      base::OnceCallback<void(int active_step,
+                              TrackedElement* last_element,
                               ElementIdentifier last_id,
                               StepType last_step_type,
                               AbortedReason aborted_reason)>;
@@ -391,6 +397,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // context() if `target` is null.
   ElementContext GetElementContext(const TrackedElement* target) const;
 
+  int active_step_index_ = 0;
   bool missing_first_element_ = false;
   bool started_ = false;
   bool trigger_during_callback_ = false;
