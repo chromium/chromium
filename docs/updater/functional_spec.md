@@ -65,6 +65,15 @@ process is determined by command-line arguments:
     *   --install-from-out-dir
         *   If specified, the program searches for an updater.runtime_deps file
         *   and copies all such files to the install directory.
+    *  --offlinedir=...
+        *   Performs offline install, which means no update check or file
+            download is performed against the server during installation.
+            All data is read from the files in the directory instead.
+        *   Files in offline directory:
+            * Manifest file, named `OfflineManifest.gup` or *`<app-id>`*`.gup`.
+              The file contains the update check response in XML format.
+            * App installer.
+        *   The switch can be combined with `--handoff` above.
 *   --uninstall
     *   Uninstall all versions of the updater.
 *   --uninstall-self

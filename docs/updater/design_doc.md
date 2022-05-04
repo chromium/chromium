@@ -126,6 +126,69 @@ line, to allow the relaunched process to exit with an error if it is not running
 at the correct integrity level.
 
 ##### Offline Installers
+Offline install performs the installation with no update check or file download
+against the server in the process. All data is read from the files in the
+specified directory instead.
+
+An example offline install command line on Windows platform:
+
+```
+updater.exe /handoff "&appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=MyApp&needsadmin=True&installdataindex =verboselog"
+           /installsource offline
+           /sessionid "{E85204C6-6F2F-40BF-9E6C-4952208BB977}"
+           /offlinedir "C:\Users\chrome-bot\AppData\Local\ForgedPath"]
+```
+Please note DOS style command line switch is also supported for backward
+compatibility.
+
+##### Manifest file
+The offline install process looks for `OfflineManifest.gup` in the
+offline directory, and falls back to *`<app-id>`*`.gup` if needed.
+The `.gup` file contains the update check response in XML format. An
+example of the XML file:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <app appid="{CDABE316-39CD-43BA-8440-6D1E0547AEE6}" status="ok">
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="http://dl.google.com/foo/install/1.2.3.4/"/>
+      </urls>
+      <manifest version="1.2.3.4">
+        <packages>
+          <package hash="abcdef" hash_sha256="sha256hash_foobar"
+           name="my_installer.exe" required="true" size="12345678"/>
+        </packages>
+        <actions>
+          <action event="install" needsadmin="false" run="my_installer.exe"
+           arguments="--baz"/>
+          <action event="postinstall" onsuccess="exitsilentlyonlaunchcmd"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <!-- "system_level" is not included in any of the definitions. needsadmin
+          controls this. -->
+    <data index="verboselog" name="install" status="ok">
+      {
+        "distribution": {
+          "verbose_logging": true
+        }
+      }
+    </data>
+  </app>
+</response>
+```
+The manifest file is parsed to extract the installer command. The above
+manifest leads to installation command:
+ ```
+ C:\Users\chrome-bot\AppData\Local\ForgedPath\my_installer.exe --baz
+ ```
+
+The example handoff install command line also specifies
+`installdataindex=verboselog`, and the manifest has a matching install
+data. That means the install data is extracted and passed to the app
+installer. See [installdataindex](#installdataindex) below for details.
+
 TODO(crbug.com/1035895): Document the standalone installer.
 
 TODO(crbug.com/1035895): Document bundling the updater with apps.
