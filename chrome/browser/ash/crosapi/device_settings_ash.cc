@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
@@ -56,7 +57,8 @@ void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
 
   // TODO(crbug.com/1243869): Get device_status from |client| and pass as the
   // second parameter.
-  std::move(callback).Run(client->GetChromePolicies(), base::Value());
+  std::move(callback).Run(base::Value(client->GetChromePolicies()),
+                          base::Value());
 }
 
 }  // namespace crosapi

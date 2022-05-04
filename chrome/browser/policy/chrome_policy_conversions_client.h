@@ -35,10 +35,10 @@ class ChromePolicyConversionsClient : public PolicyConversionsClient {
   SchemaRegistry* GetPolicySchemaRegistry() const override;
   const ConfigurationPolicyHandlerList* GetHandlerList() const override;
   bool HasUserPolicies() const override;
-  base::Value GetExtensionPolicies(PolicyDomain policy_domain) override;
+  base::Value::List GetExtensionPolicies(PolicyDomain policy_domain) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Value GetDeviceLocalAccountPolicies() override;
-  base::Value GetIdentityFields() override;
+  base::Value::List GetDeviceLocalAccountPolicies() override;
+  base::Value::Dict GetIdentityFields() override;
 #endif
 
  private:

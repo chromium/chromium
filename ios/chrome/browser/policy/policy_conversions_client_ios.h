@@ -32,7 +32,8 @@ class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
   policy::SchemaRegistry* GetPolicySchemaRegistry() const override;
   const policy::ConfigurationPolicyHandlerList* GetHandlerList() const override;
   bool HasUserPolicies() const override;
-  base::Value GetExtensionPolicies(policy::PolicyDomain policy_domain) override;
+  base::Value::List GetExtensionPolicies(
+      policy::PolicyDomain policy_domain) override;
 
  private:
   ChromeBrowserState* browser_state_;

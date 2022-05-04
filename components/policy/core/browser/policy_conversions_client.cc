@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -77,7 +78,7 @@ std::string PolicyConversionsClient::ConvertValueToJSON(
   return json_string;
 }
 
-base::Value PolicyConversionsClient::GetChromePolicies() {
+base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
   DCHECK(HasUserPolicies());
 
   PolicyService* policy_service = GetPolicyService();
@@ -85,7 +86,7 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
     LOG(ERROR) << "Cannot dump Chrome policies, no schema registry";
-    return Value(Value::Type::DICTIONARY);
+    return Value::Dict();
   }
 
   const scoped_refptr<SchemaMap> schema_map = schema_registry->schema_map();
@@ -111,7 +112,7 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
                          GetKnownPolicies(schema_map, policy_namespace));
 }
 
-base::Value PolicyConversionsClient::GetPrecedencePolicies() {
+base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
   DCHECK(HasUserPolicies());
 
   PolicyNamespace policy_namespace =
@@ -122,28 +123,28 @@ base::Value PolicyConversionsClient::GetPrecedencePolicies() {
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
     LOG(ERROR) << "Cannot dump Chrome precedence policies, no schema registry";
-    return Value(Value::Type::DICTIONARY);
+    return Value::Dict();
   }
 
-  base::Value values(base::Value::Type::DICTIONARY);
+  base::Value::Dict values;
   // Iterate through all precedence metapolicies and retrieve their value only
   // if they are set in the PolicyMap.
   for (auto* policy : metapolicy::kPrecedence) {
     auto* entry = chrome_policies.Get(policy);
 
     if (entry) {
-      values.SetKey(
-          policy, GetPolicyValue(policy, entry->DeepCopy(), PoliciesSet(),
-                                 PoliciesSet(), nullptr,
-                                 GetKnownPolicies(schema_registry->schema_map(),
-                                                  policy_namespace)));
+      values.Set(policy,
+                 GetPolicyValue(policy, entry->DeepCopy(), PoliciesSet(),
+                                PoliciesSet(), nullptr,
+                                GetKnownPolicies(schema_registry->schema_map(),
+                                                 policy_namespace)));
     }
   }
 
   return values;
 }
 
-base::Value PolicyConversionsClient::GetPrecedenceOrder() {
+base::Value::List PolicyConversionsClient::GetPrecedenceOrder() {
   DCHECK(HasUserPolicies());
 
   PolicyNamespace policy_namespace =
@@ -194,10 +195,9 @@ base::Value PolicyConversionsClient::GetPrecedenceOrder() {
     }
   }
 
-  base::Value precedence_order_localized(base::Value::Type::LIST);
+  base::Value::List precedence_order_localized;
   for (int label_id : precedence_order) {
-    precedence_order_localized.Append(
-        base::Value(l10n_util::GetStringUTF16(label_id)));
+    precedence_order_localized.Append(l10n_util::GetStringUTF16(label_id));
   }
 
   return precedence_order_localized;
@@ -218,7 +218,7 @@ Value PolicyConversionsClient::CopyAndMaybeConvert(
     return value_copy;
   }
 
-  Value result(Value::Type::LIST);
+  Value::List result;
   for (const auto& element : value_copy.GetListDeprecated()) {
     if (element.is_dict()) {
       result.Append(Value(ConvertValueToJSON(element)));
@@ -226,10 +226,10 @@ Value PolicyConversionsClient::CopyAndMaybeConvert(
       result.Append(element.Clone());
     }
   }
-  return result;
+  return base::Value(std::move(result));
 }
 
-Value PolicyConversionsClient::GetPolicyValue(
+Value::Dict PolicyConversionsClient::GetPolicyValue(
     const std::string& policy_name,
     const PolicyMap::Entry& policy,
     const PoliciesSet& deprecated_policies,
@@ -239,23 +239,22 @@ Value PolicyConversionsClient::GetPolicyValue(
         known_policy_schemas) const {
   absl::optional<Schema> known_policy_schema =
       GetKnownPolicySchema(known_policy_schemas, policy_name);
-  Value value(Value::Type::DICTIONARY);
-  value.SetKey("value", CopyAndMaybeConvert(*policy.value_unsafe(),
-                                            known_policy_schema));
+  Value::Dict value;
+  value.Set("value",
+            CopyAndMaybeConvert(*policy.value_unsafe(), known_policy_schema));
   if (convert_types_enabled_) {
-    value.SetKey(
-        "scope",
-        Value((policy.scope == POLICY_SCOPE_USER) ? "user" : "machine"));
-    value.SetKey("level", Value(Value((policy.level == POLICY_LEVEL_RECOMMENDED)
-                                          ? "recommended"
-                                          : "mandatory")));
-    value.SetKey("source", Value(policy.IsDefaultValue()
-                                     ? "sourceDefault"
-                                     : kPolicySources[policy.source].name));
+    value.Set("scope",
+              (policy.scope == POLICY_SCOPE_USER) ? "user" : "machine");
+    value.Set("level", (policy.level == POLICY_LEVEL_RECOMMENDED)
+                           ? "recommended"
+                           : "mandatory");
+    value.Set("source", policy.IsDefaultValue()
+                            ? "sourceDefault"
+                            : kPolicySources[policy.source].name);
   } else {
-    value.SetKey("scope", Value(policy.scope));
-    value.SetKey("level", Value(policy.level));
-    value.SetKey("source", Value(policy.source));
+    value.Set("scope", policy.scope);
+    value.Set("level", policy.level);
+    value.Set("source", policy.source);
   }
 
   // Policies that have at least one source that could not be merged will
@@ -275,8 +274,8 @@ Value PolicyConversionsClient::GetPolicyValue(
       policy_has_unmerged_source = true;
       break;
     }
-    value.SetKey("allSourcesMerged", Value(policy.conflicts.size() <= 1 ||
-                                           !policy_has_unmerged_source));
+    value.Set("allSourcesMerged",
+              (policy.conflicts.size() <= 1 || !policy_has_unmerged_source));
   }
 
   std::u16string error;
@@ -301,37 +300,37 @@ Value PolicyConversionsClient::GetPolicyValue(
           {policy_map_errors, errors->GetErrors(policy_name)}, u"\n");
   }
   if (!error.empty())
-    value.SetKey("error", Value(error));
+    value.Set("error", error);
 
   std::u16string warning = policy.GetLocalizedMessages(
       PolicyMap::MessageType::kWarning,
       base::BindRepeating(&l10n_util::GetStringUTF16));
   if (!warning.empty())
-    value.SetKey("warning", Value(warning));
+    value.Set("warning", warning);
 
   std::u16string info = policy.GetLocalizedMessages(
       PolicyMap::MessageType::kInfo,
       base::BindRepeating(&l10n_util::GetStringUTF16));
   if (!info.empty())
-    value.SetKey("info", Value(info));
+    value.Set("info", info);
 
   if (policy.ignored())
-    value.SetBoolKey("ignored", true);
+    value.Set("ignored", true);
 
   if (deprecated_policies.find(policy_name) != deprecated_policies.end())
-    value.SetBoolKey("deprecated", true);
+    value.Set("deprecated", true);
 
   if (future_policies.find(policy_name) != future_policies.end())
-    value.SetBoolKey("future", true);
+    value.Set("future", true);
 
   if (!policy.conflicts.empty()) {
-    Value override_values(Value::Type::LIST);
-    Value supersede_values(Value::Type::LIST);
+    Value::List override_values;
+    Value::List supersede_values;
 
     bool has_override_values = false;
     bool has_supersede_values = false;
     for (const auto& conflict : policy.conflicts) {
-      base::Value conflicted_policy_value =
+      base::Value::Dict conflicted_policy_value =
           GetPolicyValue(policy_name, conflict.entry(), deprecated_policies,
                          future_policies, errors, known_policy_schemas);
       switch (conflict.conflict_type()) {
@@ -348,24 +347,24 @@ Value PolicyConversionsClient::GetPolicyValue(
       }
     }
     if (has_override_values) {
-      value.SetKey("conflicts", std::move(override_values));
+      value.Set("conflicts", std::move(override_values));
     }
     if (has_supersede_values) {
-      value.SetKey("superseded", std::move(supersede_values));
+      value.Set("superseded", std::move(supersede_values));
     }
   }
 
   return value;
 }
 
-Value PolicyConversionsClient::GetPolicyValues(
+Value::Dict PolicyConversionsClient::GetPolicyValues(
     const PolicyMap& map,
     PolicyErrorMap* errors,
     const PoliciesSet& deprecated_policies,
     const PoliciesSet& future_policies,
     const absl::optional<PolicyConversions::PolicyToSchemaMap>&
         known_policy_schemas) const {
-  base::Value values(base::Value::Type::DICTIONARY);
+  base::Value::Dict values;
   for (const auto& entry : map) {
     const std::string& policy_name = entry.first;
     const PolicyMap::Entry& policy = entry.second;
@@ -373,10 +372,10 @@ Value PolicyConversionsClient::GetPolicyValues(
       continue;
     if (policy.IsDefaultValue() && drop_default_values_enabled_)
       continue;
-    base::Value value =
+    base::Value::Dict value =
         GetPolicyValue(policy_name, policy, deprecated_policies,
                        future_policies, errors, known_policy_schemas);
-    values.SetKey(policy_name, std::move(value));
+    values.Set(policy_name, std::move(value));
   }
   return values;
 }
@@ -427,11 +426,11 @@ bool PolicyConversionsClient::GetUserPoliciesEnabled() const {
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-Value PolicyConversionsClient::GetUpdaterPolicies() {
+Value::Dict PolicyConversionsClient::GetUpdaterPolicies() {
   return updater_policies_
              ? GetPolicyValues(*updater_policies_, nullptr, PoliciesSet(),
                                PoliciesSet(), updater_policy_schemas_)
-             : base::Value(base::Value::Type::DICTIONARY);
+             : base::Value::Dict();
 }
 
 bool PolicyConversionsClient::PolicyConversionsClient::HasUpdaterPolicies()
