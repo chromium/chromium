@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
@@ -150,8 +151,18 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessIfNecessary() override;
   // Callbacks /////////////////////////////////////////////////////////////////
 
-  // Called by Browser::WindowFullscreenStateChanged.
+  // Called by Browser::WindowFullscreenStateChanged. This is called immediately
+  // as fullscreen mode is toggled.
   void WindowFullscreenStateChanged();
+
+  // Called by BrowserView::FullscreenStateChanged. This is called after
+  // fullscreen mode is toggled and after the transition animation completes.
+  void FullscreenTransititionCompleted();
+
+  // Runs the given closure unless a fullscreen transition is currently in
+  // progress. If a transition is in progress, the execution of the closure is
+  // deferred and run after the transition is complete.
+  void RunOrDeferUntilTransitionIsComplete(base::OnceClosure callback);
 
   void set_is_tab_fullscreen_for_testing(bool is_tab_fullscreen) {
     is_tab_fullscreen_for_testing_ = is_tab_fullscreen;
@@ -216,6 +227,13 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // True if this controller has toggled into tab OR browser fullscreen.
   bool toggled_into_fullscreen_ = false;
+
+  // True if the transition to / from fullscreen has started, but not completed.
+  bool started_fullscreen_transition_ = false;
+
+  // This closure will be called after the transition to / from fullscreen
+  // is completed.
+  base::OnceClosure fullscreen_transition_complete_callback_;
 
   // Set in OnTabDeactivated(). Used to see if we're in the middle of
   // deactivation of a tab.

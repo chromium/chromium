@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -426,6 +427,31 @@ TEST_F(FullscreenControllerStateUnitTest,
             browser()
                 ->exclusive_access_manager()
                 ->GetExclusiveAccessExitBubbleType());
+}
+
+// Tests that RunOrDeferUntilTransitionIsComplete runs the lambda when nothing
+// is happening (no transition in progress).
+TEST_F(FullscreenControllerStateUnitTest,
+       RunOrDeferUntilTransitionIsCompleteNow) {
+  AddTab(browser(), GURL(url::kAboutBlankURL));
+  bool lambda_called = false;
+  GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
+      base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));
+  EXPECT_TRUE(lambda_called);
+}
+
+// Tests that RunOrDeferUntilTransitionIsComplete does not run the lambda while
+// a transition is in progress and runs it after the transition completes.
+TEST_F(FullscreenControllerStateUnitTest,
+       RunOrDeferUntilTransitionIsCompleteDefer) {
+  AddTab(browser(), GURL(url::kAboutBlankURL));
+  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  bool lambda_called = false;
+  GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
+      base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));
+  EXPECT_FALSE(lambda_called);
+  GetFullscreenController()->FullscreenTransititionCompleted();
+  EXPECT_TRUE(lambda_called);
 }
 
 // Test that switching tabs takes the browser out of tab fullscreen.

@@ -330,7 +330,6 @@ void FullscreenController::WindowFullscreenStateChanged() {
   ExclusiveAccessContext* const exclusive_access_context =
       exclusive_access_manager()->context();
   bool exiting_fullscreen = !exclusive_access_context->IsFullscreen();
-
   PostFullscreenChangeNotification();
   if (exiting_fullscreen) {
     toggled_into_fullscreen_ = false;
@@ -339,6 +338,20 @@ void FullscreenController::WindowFullscreenStateChanged() {
   } else {
     toggled_into_fullscreen_ = true;
   }
+}
+
+void FullscreenController::FullscreenTransititionCompleted() {
+  if (fullscreen_transition_complete_callback_)
+    std::move(fullscreen_transition_complete_callback_).Run();
+  started_fullscreen_transition_ = false;
+}
+
+void FullscreenController::RunOrDeferUntilTransitionIsComplete(
+    base::OnceClosure callback) {
+  if (started_fullscreen_transition_)
+    fullscreen_transition_complete_callback_ = std::move(callback);
+  else
+    std::move(callback).Run();
 }
 
 bool FullscreenController::HandleUserPressedEscape() {
@@ -438,7 +451,7 @@ void FullscreenController::EnterFullscreenModeInternal(
     return;
   }
 #endif
-
+  started_fullscreen_transition_ = true;
   toggled_into_fullscreen_ = true;
   bool entering_tab_fullscreen = option == TAB && !tab_fullscreen_;
   GURL url;
@@ -493,6 +506,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
 
   RecordExitingUMA();
   toggled_into_fullscreen_ = false;
+  started_fullscreen_transition_ = true;
 #if BUILDFLAG(IS_MAC)
   // Mac windows report a state change instantly, and so we must also clear
   // state_prior_to_tab_fullscreen_ to match them else other logic using

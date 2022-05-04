@@ -1661,6 +1661,13 @@ void Browser::AddNewContents(WebContents* source,
     window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
     fullscreen_controller->FullscreenTabOpeningPopup(source,
                                                      new_contents.get());
+    // Defer popup creation if the opener has a fullscreen transition in
+    // progress. This works around a defect on Mac where separate displays
+    // cannot switch their independent spaces simultaneously (crbug.com/1315749)
+    fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
+        &chrome::AddWebContents, this, source, std::move(new_contents),
+        target_url, disposition, initial_rect, window_action));
+    return;
   }
 
   chrome::AddWebContents(this, source, std::move(new_contents), target_url,

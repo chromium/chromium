@@ -1821,6 +1821,10 @@ void BrowserView::FullscreenStateChanged() {
     UpdateWindowControlsOverlayEnabled();
 
 #endif  // BUILDFLAG(IS_MAC)
+
+  GetExclusiveAccessManager()
+      ->fullscreen_controller()
+      ->FullscreenTransititionCompleted();
 }
 
 void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
@@ -4065,6 +4069,13 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   }
 
   browser_->WindowFullscreenStateChanged();
+#if !BUILDFLAG(IS_MAC)
+  // On Mac platforms, FullscreenStateChanged() is invoked from
+  // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
+  // fullscreen transition is complete. On other platforms, there is no
+  // asynchronous transition so we synchronously invoke the function.
+  FullscreenStateChanged();
+#endif
 
   if (fullscreen && !chrome::IsRunningInAppMode()) {
     UpdateExclusiveAccessExitBubbleContent(
