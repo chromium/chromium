@@ -387,7 +387,7 @@ def CheckChanges(input_api, output_api):
 
     if (f.LocalPath().endswith('.proto')):
       proto_file_changed = True
-    if (f.LocalPath().endswith('/proto_visitors.h')):
+    if (f.LocalPath().endswith(os.path.sep + 'proto_visitors.h')):
       proto_visitors_changed = True
 
   if proto_file_changed and not proto_visitors_changed:
