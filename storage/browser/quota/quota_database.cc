@@ -61,9 +61,11 @@ const char kBucketTable[] = "buckets";
 // TODO(crbug.com/1254535): Remove once enough time has passed to ensure that
 // this flag is no longer stored and supported in the QuotaDatabase.
 const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
+// Deprecated bootstrap flag, invalidated in 03/2022 as part of crbug/1306279.
+const char kDeprecatedBucketsTableBootstrapped[] = "IsBucketsTableBootstrapped";
 // Flag to ensure that all existing data for storage keys have been
 // registered into the buckets table.
-const char kBucketsTableBootstrapped[] = "IsBucketsTableBootstrapped";
+const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
 const int kCommitIntervalMs = 30000;
 
@@ -717,6 +719,7 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
   // TODO(crbug.com/1254535): Remove once enough time has passed to ensure that
   // this flag is no longer stored and supported in the QuotaDatabase.
   meta_table_->DeleteKey(kIsOriginTableBootstrapped);
+  meta_table_->DeleteKey(kDeprecatedBucketsTableBootstrapped);
 
   return meta_table_->SetValue(kBucketsTableBootstrapped, bootstrap_flag)
              ? QuotaError::kNone
