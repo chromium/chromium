@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1209766) Flaky on lacros
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HitTestMultipleWindows DISABLED_HitTestMultipleWindows
@@ -664,6 +664,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_HitTestMultipleWindows) {
                                {.page_url = "hit_test_multiple_windows.html"}))
       << message_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

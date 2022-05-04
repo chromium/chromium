@@ -33,11 +33,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -59,7 +56,7 @@ namespace {
 
 constexpr char kTextPlain[] = "text/plain";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 apps::mojom::IntentFilterPtr CreateFileURLFilter(
     const std::vector<std::string>& patterns,
     const std::string& activity_name,
@@ -107,7 +104,7 @@ const std::string URLPatternToFileSystemPattern(const URLPattern& pattern,
   base::ReplaceChars(path, "*", ".*", &path);
   return path;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 apps::mojom::IntentFilterPtr CreateMimeTypeShareFilter(
     const std::vector<std::string>& mime_types) {
@@ -537,7 +534,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
 
 apps::IntentFilters CreateIntentFiltersForExtension(
     const extensions::Extension* extension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list) {
@@ -557,12 +554,12 @@ apps::IntentFilters CreateIntentFiltersForExtension(
   return filters;
 #else
   return {};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list)
@@ -581,7 +578,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
   return filters;
 #else
   return {};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -112,13 +112,13 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   dbus::Bus* bus = chromeos::LacrosDBusThreadManager::Get()->GetSystemBus();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (bus) {
     bluez::BluezDBusManager::Initialize(bus);
   } else {
     bluez::BluezDBusManager::InitializeFake();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (bus) {
@@ -288,7 +288,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 void ShellBrowserMainParts::PostDestroyThreads() {
   extensions_browser_client_.reset();
   ExtensionsBrowserClient::Set(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::BluezDBusManager::Shutdown();
 #elif BUILDFLAG(IS_LINUX)

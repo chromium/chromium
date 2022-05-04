@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/login.h"
 #include "content/public/browser/browser_context.h"
 

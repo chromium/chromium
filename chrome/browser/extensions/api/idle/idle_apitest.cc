@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
@@ -80,7 +79,7 @@ IN_PROC_BROWSER_TEST_P(IdleApiTest, SetDetectionInterval) {
                     ->GetThresholdForTest(last_loaded_extension_id()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(IdleApiTest, IdleGetAutoLockDelay) {
   ASSERT_TRUE(RunExtensionTest("idle/get_auto_lock_delay")) << message_;
 }

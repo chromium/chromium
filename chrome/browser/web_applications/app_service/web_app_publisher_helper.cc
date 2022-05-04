@@ -1049,7 +1049,7 @@ void WebAppPublisherHelper::SetPermission(
       url, url, permission_type, permission_value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebAppPublisherHelper::StopApp(const std::string& app_id) {
   if (IsShuttingDown()) {
     return;

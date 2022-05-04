@@ -25,7 +25,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #endif
 
@@ -61,7 +61,7 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<UrlHandlersParser>());
   registry->RegisterHandler(std::make_unique<URLOverridesHandler>());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
 #endif
 

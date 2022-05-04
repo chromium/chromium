@@ -19,7 +19,6 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
@@ -226,7 +225,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void StopApp(const std::string& app_id);
 #endif
 
