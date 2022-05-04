@@ -213,12 +213,6 @@ source_set("headless_browsertests_filters") {
   data = [ "//testing/buildbot/filters/fuchsia.headless_browsertests.filter" ]
 }
 
-source_set("net_perftests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/fuchsia.net_perftests.filter" ]
-}
-
 source_set("services_unittests_filters") {
   testonly = true
 

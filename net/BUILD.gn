@@ -4786,7 +4786,6 @@ if (!is_ios) {
     data_deps = [
       # Needed for isolate script to execute.
       "//testing:run_perf_test",
-      "//testing/buildbot/filters:net_perftests_filters",
     ]
     if (enable_websockets) {
       sources += [ "websockets/websocket_frame_perftest.cc" ]
