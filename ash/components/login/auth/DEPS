@@ -14,6 +14,7 @@ include_rules = [
   "+chromeos/login/login_state",
   "+components/account_id",
   "+components/device_event_log",
+  "+components/metrics",
   "+components/password_manager",
   "+components/prefs",
   "+components/user_manager",

@@ -436,6 +436,13 @@ void ExistingUserController::UpdateLoginDisplay(
 
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
+  GetLoginDisplayHost()->metrics_recorder()->OnShowUsersOnSignin(
+      show_users_on_signin);
+  bool enable_ephemeral_users;
+  cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
+                             &enable_ephemeral_users);
+  GetLoginDisplayHost()->metrics_recorder()->OnEnableEphemeralUsers(
+      enable_ephemeral_users);
   user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
   // By default disable offline login from the error screen.
@@ -466,6 +473,7 @@ void ExistingUserController::UpdateLoginDisplay(
   // Records total number of users on the login screen.
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
+  GetLoginDisplayHost()->metrics_recorder()->OnUserCount(regular_users_counter);
 
   auto login_users = ExtractLoginUsers(users);
 
