@@ -80,8 +80,7 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
 
   // Add two synthetic trials and confirm that they show up in the list.
   SyntheticTrialGroup synth_trial(
-      HashName("Trial3"), HashName("Group3"),
-      variations::SyntheticTrialAnnotationMode::kNextLog);
+      "Trial3", "Group3", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial);
 
   EXPECT_EQ("3", GetNumExperimentsCrashKey());
@@ -109,12 +108,10 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
 
   // Replace synthetic trial group and add one more.
   SyntheticTrialGroup synth_trial2(
-      HashName("Trial3"), HashName("Group3_A"),
-      variations::SyntheticTrialAnnotationMode::kNextLog);
+      "Trial3", "Group3_A", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial2);
   SyntheticTrialGroup synth_trial3(
-      HashName("Trial4"), HashName("Group4"),
-      variations::SyntheticTrialAnnotationMode::kNextLog);
+      "Trial4", "Group4", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial3);
 
   EXPECT_EQ("5", GetNumExperimentsCrashKey());

@@ -69,11 +69,11 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   SyntheticTrialRegistry registry;
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup trial1_group1(HashName("TestTrial1"), HashName("Group1"),
+  SyntheticTrialGroup trial1_group1("TestTrial1", "Group1",
                                     SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial1_group1);
 
-  SyntheticTrialGroup trial2_group2(HashName("TestTrial2"), HashName("Group2"),
+  SyntheticTrialGroup trial2_group2("TestTrial2", "Group2",
                                     SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial2_group2);
   // Ensure that time has advanced by at least a tick before proceeding.
@@ -95,7 +95,7 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   WaitUntilTimeChanges(begin_log_time);
 
   // Change the group for the first trial after the log started.
-  SyntheticTrialGroup trial1_group2(HashName("TestTrial1"), HashName("Group2"),
+  SyntheticTrialGroup trial1_group2("TestTrial1", "Group2",
                                     SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial1_group2);
   registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
@@ -103,7 +103,7 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
 
   // Add a new trial after the log started and confirm that it doesn't show up.
-  SyntheticTrialGroup trial3_group3(HashName("TestTrial3"), HashName("Group3"),
+  SyntheticTrialGroup trial3_group3("TestTrial3", "Group3",
                                     SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial3_group3);
   registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
@@ -114,11 +114,9 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   // active immediately, and confirm they both show up despite being added after
   // the log started.
   SyntheticTrialGroup trial3_group3_current_log(
-      HashName("TestTrial3"), HashName("Group3"),
-      SyntheticTrialAnnotationMode::kCurrentLog);
+      "TestTrial3", "Group3", SyntheticTrialAnnotationMode::kCurrentLog);
   SyntheticTrialGroup trial4_group4_current_log(
-      HashName("TestTrial4"), HashName("Group4"),
-      SyntheticTrialAnnotationMode::kCurrentLog);
+      "TestTrial4", "Group4", SyntheticTrialAnnotationMode::kCurrentLog);
   registry.RegisterSyntheticFieldTrial(trial3_group3_current_log);
   registry.RegisterSyntheticFieldTrial(trial4_group4_current_log);
   registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
@@ -222,11 +220,11 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup trial1(HashName("TestTrial1"), HashName("Group1"),
+  SyntheticTrialGroup trial1("TestTrial1", "Group1",
                              SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial1);
 
-  SyntheticTrialGroup trial2(HashName("TestTrial2"), HashName("Group2"),
+  SyntheticTrialGroup trial2("TestTrial2", "Group2",
                              SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial2);
 
@@ -238,12 +236,14 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   GetSyntheticTrialGroupIdsAsString(&output);
   EXPECT_EQ(2U, output.size());
 
+  ActiveGroupId trial1_id = trial1.id();
   std::string trial1_hash =
-      base::StringPrintf("%x-%x", trial1.id.name, trial1.id.group);
+      base::StringPrintf("%x-%x", trial1_id.name, trial1_id.group);
   EXPECT_TRUE(base::Contains(output, trial1_hash));
 
+  ActiveGroupId trial2_id = trial2.id();
   std::string trial2_hash =
-      base::StringPrintf("%x-%x", trial2.id.name, trial2.id.group);
+      base::StringPrintf("%x-%x", trial2_id.name, trial2.id().group);
   EXPECT_TRUE(base::Contains(output, trial2_hash));
 }
 

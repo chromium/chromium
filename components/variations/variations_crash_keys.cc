@@ -206,7 +206,7 @@ void VariationsCrashKeys::OnSyntheticTrialsChanged(
   // not be too many synthetic trials, this is not too big of an issue.
   synthetic_trials_string_.clear();
   for (const auto& synthetic_trial : synthetic_trials) {
-    synthetic_trials_string_ += ActiveGroupToString(synthetic_trial.id);
+    synthetic_trials_string_ += ActiveGroupToString(synthetic_trial.id());
   }
   num_synthetic_trials_ = synthetic_trials.size();
 

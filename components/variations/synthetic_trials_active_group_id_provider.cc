@@ -37,7 +37,7 @@ void SyntheticTrialsActiveGroupIdProvider::OnSyntheticTrialsChanged(
     base::AutoLock scoped_lock(lock_);
     synthetic_trials_.clear();
     for (const auto& group : groups)
-      synthetic_trials_.push_back(group.id);
+      synthetic_trials_.push_back(group.id());
   }
 
   // Update the experiments list for crash reports.

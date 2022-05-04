@@ -12,7 +12,7 @@
 
 namespace variations {
 
-struct SyntheticTrialGroup;
+class SyntheticTrialGroup;
 
 // The key used in crash reports to indicate the number of active experiments.
 // Should match the number of entries in kExperimentListKey.

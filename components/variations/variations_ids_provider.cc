@@ -251,13 +251,13 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
   synthetic_variation_ids_set_.clear();
   for (const SyntheticTrialGroup& group : groups) {
     VariationID id = GetGoogleVariationIDFromHashes(
-        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id);
+        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
     }
     id = GetGoogleVariationIDFromHashes(GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-                                        group.id);
+                                        group.id());
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_SIGNED_IN));

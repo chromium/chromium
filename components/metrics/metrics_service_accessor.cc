@@ -48,21 +48,10 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     base::StringPiece trial_name,
     base::StringPiece group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
-  return RegisterSyntheticFieldTrialWithNameAndGroupHash(
-      metrics_service, variations::HashName(trial_name),
-      variations::HashName(group_name), annotation_mode);
-}
-
-// static
-bool MetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameAndGroupHash(
-    MetricsService* metrics_service,
-    uint32_t trial_name_hash,
-    uint32_t group_name_hash,
-    variations::SyntheticTrialAnnotationMode annotation_mode) {
   if (!metrics_service)
     return false;
 
-  variations::SyntheticTrialGroup trial_group(trial_name_hash, group_name_hash,
+  variations::SyntheticTrialGroup trial_group(trial_name, group_name,
                                               annotation_mode);
   metrics_service->GetSyntheticTrialRegistry()->RegisterSyntheticFieldTrial(
       trial_group);

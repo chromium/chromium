@@ -15,13 +15,19 @@ namespace variations {
 
 namespace {
 
-const ActiveGroupId kFieldTrialIds[] = {{37, 43}, {13, 47}, {23, 17}};
-const ActiveGroupId kSyntheticTrialIds[] = {{55, 15}, {66, 16}};
-const ActiveGroupId kAllTrialIds[] = {{37, 43},
-                                      {13, 47},
-                                      {23, 17},
-                                      {55, 15},
-                                      {66, 16}};
+const ActiveGroupId kFieldTrialIds[] = {MakeActiveGroupId("Trial1", "Group1"),
+                                        MakeActiveGroupId("Trial2", "Group2"),
+                                        MakeActiveGroupId("Trial3", "Group3")};
+const SyntheticTrialGroup kSyntheticFieldTrials[] = {
+    SyntheticTrialGroup("Synthetic1",
+                        "SyntheticGroup1",
+                        variations::SyntheticTrialAnnotationMode::kNextLog),
+    SyntheticTrialGroup("Synthetic2",
+                        "SyntheticGroup2",
+                        variations::SyntheticTrialAnnotationMode::kNextLog)};
+const ActiveGroupId kAllTrialIds[] = {
+    kFieldTrialIds[0], kFieldTrialIds[1], kFieldTrialIds[2],
+    kSyntheticFieldTrials[0].id(), kSyntheticFieldTrials[1].id()};
 
 class TestProvider : public FieldTrialsProvider {
  public:
@@ -60,16 +66,15 @@ class FieldTrialsProviderTest : public ::testing::Test {
  protected:
   // Register trials which should get recorded.
   void RegisterExpectedSyntheticTrials() {
-    for (const ActiveGroupId& id : kSyntheticTrialIds) {
-      registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
-          id.name, id.group,
-          variations::SyntheticTrialAnnotationMode::kNextLog));
+    for (const SyntheticTrialGroup& synthetic_trial : kSyntheticFieldTrials) {
+      registry_.RegisterSyntheticFieldTrial(synthetic_trial);
     }
   }
   // Register trial which shouldn't get recorded.
   void RegisterExtraSyntheticTrial() {
     registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
-        100, 1000, variations::SyntheticTrialAnnotationMode::kNextLog));
+        "ExtraSynthetic", "ExtraGroup",
+        variations::SyntheticTrialAnnotationMode::kNextLog));
   }
 
   // Waits until base::TimeTicks::Now() no longer equals |value|. This should

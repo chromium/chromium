@@ -51,14 +51,6 @@ class MetricsServiceAccessor {
       base::StringPiece group_name,
       variations::SyntheticTrialAnnotationMode annotation_mode);
 
-  // Same as RegisterSyntheticFieldTrial above, but takes in the trial and group
-  // names as hashes rather than computing those hashes from the strings.
-  static bool RegisterSyntheticFieldTrialWithNameAndGroupHash(
-      MetricsService* metrics_service,
-      uint32_t trial_name_hash,
-      uint32_t group_name_hash,
-      variations::SyntheticTrialAnnotationMode annotation_mode);
-
   // IsMetricsReportingEnabled() in non-official builds unconditionally returns
   // false. This results in different behavior for tests running in official vs
   // non-official builds. To get consistent behavior call this with true, which
