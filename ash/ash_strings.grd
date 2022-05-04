@@ -4306,7 +4306,7 @@ Here are some things you can try to get started.
       </message>
 
       <message name="IDS_ASH_PROJECTOR_SAVE_FAILURE_TITLE" desc="The title of the notification when saving Projector recording fails.">
-        Can’t save recording
+        Can't save screencast
       </message>
 
       <message name="IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT" desc="The text of the notification when saving Projector recording fails.">
@@ -4314,7 +4314,7 @@ Here are some things you can try to get started.
       </message>
 
       <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION" desc="The test of the notification when Projector transcription fails.">
-        Can't generate transcription
+        Can't generate transcript
       </message>
 
       <!-- SODA Download strings -->
