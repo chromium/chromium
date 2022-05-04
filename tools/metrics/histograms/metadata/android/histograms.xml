@@ -1484,7 +1484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
-    expires_after="2022-06-12">
+    expires_after="2022-09-12">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
