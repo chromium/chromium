@@ -12,19 +12,19 @@ namespace media {
 TEST(VideoBitrateAllocationTest, Constructor_DefaultsModeConstant) {
   VideoBitrateAllocation allocation;
 
-  ASSERT_EQ(allocation.GetSumBitrate().mode(), Bitrate::Mode::kConstant);
+  ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kConstant);
 }
 
 TEST(VideoBitrateAllocationTest, Constructor_ConstantBitrate_CorrectMode) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kConstant);
 
-  ASSERT_EQ(allocation.GetSumBitrate().mode(), Bitrate::Mode::kConstant);
+  ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kConstant);
 }
 
 TEST(VideoBitrateAllocationTest, Constructor_VariableBitrate_CorrectMode) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
 
-  ASSERT_EQ(allocation.GetSumBitrate().mode(), Bitrate::Mode::kVariable);
+  ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kVariable);
 }
 
 TEST(VideoBitrateAllocationTest,

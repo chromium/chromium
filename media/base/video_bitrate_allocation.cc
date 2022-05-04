@@ -98,6 +98,10 @@ const Bitrate VideoBitrateAllocation::GetSumBitrate() const {
   return sum_bitrate_;
 }
 
+Bitrate::Mode VideoBitrateAllocation::GetMode() const {
+  return sum_bitrate_.mode();
+}
+
 std::string VideoBitrateAllocation::ToString() const {
   size_t num_active_spatial_layers = 0;
   size_t num_temporal_layers[kMaxSpatialLayers] = {};

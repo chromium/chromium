@@ -64,6 +64,9 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   // bps equals the sum of the layers' bitrates.
   const Bitrate GetSumBitrate() const;
 
+  // Returns the encoding rate control mode of this allocation.
+  Bitrate::Mode GetMode() const;
+
   std::string ToString() const;
 
   bool operator==(const VideoBitrateAllocation& other) const;

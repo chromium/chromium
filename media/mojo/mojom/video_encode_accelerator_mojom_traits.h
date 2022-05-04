@@ -84,8 +84,7 @@ class StructTraits<media::mojom::VideoBitrateAllocationDataView,
 
   static absl::optional<uint32_t> variable_bitrate_peak(
       const media::VideoBitrateAllocation& bitrate_allocation) {
-    if (bitrate_allocation.GetSumBitrate().mode() ==
-        media::Bitrate::Mode::kConstant) {
+    if (bitrate_allocation.GetMode() == media::Bitrate::Mode::kConstant) {
       return absl::nullopt;
     } else {
       return absl::optional<uint32_t>(
