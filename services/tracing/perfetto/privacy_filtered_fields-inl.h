@@ -324,7 +324,7 @@ constexpr MessageInfo kChromeSamplingProfilerSampleCollected = {
     kChromeSamplingProfilerSampleCollectedIndices, nullptr};
 
 // Proto Message: RendererMainThreadTaskExecution
-constexpr int kRendererMainThreadTaskExecutionIndices[] = {1, 2, 3, 4, -1};
+constexpr int kRendererMainThreadTaskExecutionIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kRendererMainThreadTaskExecution = {
     kRendererMainThreadTaskExecutionIndices, nullptr};
 
