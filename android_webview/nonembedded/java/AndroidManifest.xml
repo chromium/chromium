@@ -5,6 +5,13 @@
   LICENSE file.
 -->
 
+<!--
+Note: This is a jinja2 template, processed at build time into the final manifest.
+
+Blocks denoted with { % block some_name % }foo{ % endblock % } can be overridden
+by a child template that "extends" this file.
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="{{manifest_package|default('com.android.webview')}}"
@@ -174,6 +181,8 @@
                     android:externalService="true"
                     tools:ignore="ExportedService"
                     android:visibleToInstantApps="true" />
+                {% block extra_application_definitions %}
+                {% endblock %}
             {% endif %}
         {% endmacro %}
         {{ common(manifest_package|default('com.android.webview'), library|default('libwebviewchromium.so')) }}
