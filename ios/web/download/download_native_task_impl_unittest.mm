@@ -74,8 +74,8 @@ TEST_F(DownloadNativeTaskImplTest, DefaultState) {
     EXPECT_EQ(0, task_->GetErrorCode());
     EXPECT_EQ(-1, task_->GetHttpCode());
     EXPECT_EQ(0, task_->GetReceivedBytes());
-    EXPECT_EQ(0, task_->GetTotalBytes());
-    EXPECT_EQ(0, task_->GetPercentComplete());
+    EXPECT_EQ(-1, task_->GetTotalBytes());
+    EXPECT_EQ(-1, task_->GetPercentComplete());
     EXPECT_EQ(kContentDisposition, task_->GetContentDisposition());
     EXPECT_EQ(kMimeType, task_->GetMimeType());
     EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
@@ -93,7 +93,7 @@ TEST_F(DownloadNativeTaskImplTest, SuccessfulDownload) {
     EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
     {
       web::test::WaitDownloadTaskDone observer(task_.get());
-      task_->Start(base::FilePath(), DownloadTask::Destination::kToMemory);
+      task_->Start(base::FilePath());
       observer.Wait();
     }
 

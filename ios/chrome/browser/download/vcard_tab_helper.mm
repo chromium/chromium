@@ -34,23 +34,32 @@ void VcardTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   // and OnDownloadUpdated called immediately.
   tasks_.insert(std::move(task));
   task_ptr->AddObserver(this);
-  task_ptr->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task_ptr->Start(base::FilePath());
 }
 
 void VcardTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
-  auto it = tasks_.find(updated_task);
-  DCHECK(it != tasks_.end());
-
+  auto iterator = tasks_.find(updated_task);
+  DCHECK(iterator != tasks_.end());
   if (!updated_task->IsDone())
     return;
 
-  NSData* vcardData = updated_task->GetResponseData();
-  if (vcardData) {
-    [delegate_ openVcardFromData:vcardData];
-  }
+  // Extract the std::unique_ptr<> from the std::set<>.
+  auto node = tasks_.extract(iterator);
+  auto task = std::move(node.value());
+  DCHECK_EQ(task.get(), updated_task);
 
+  // Stop observing the task as its ownership is transfered to the callback
+  // that will destroy when it is invoked or cancelled.
   updated_task->RemoveObserver(this);
-  tasks_.erase(it);
+  updated_task->GetResponseData(
+      base::BindOnce(&VcardTabHelper::OnDownloadDataRead,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void VcardTabHelper::OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
+                                        NSData* data) {
+  DCHECK(task);
+  [delegate_ openVcardFromData:data];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(VcardTabHelper)

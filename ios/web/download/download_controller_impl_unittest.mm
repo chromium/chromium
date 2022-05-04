@@ -114,8 +114,8 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
     EXPECT_NSEQ(@"POST", task->GetHttpMethod());
     EXPECT_FALSE(task->IsDone());
     EXPECT_EQ(0, task->GetErrorCode());
-    EXPECT_EQ(0, task->GetTotalBytes());
-    EXPECT_EQ(0, task->GetPercentComplete());
+    EXPECT_EQ(-1, task->GetTotalBytes());
+    EXPECT_EQ(-1, task->GetPercentComplete());
     EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
     EXPECT_EQ(kMimeType, task->GetMimeType());
     EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());

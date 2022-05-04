@@ -101,8 +101,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 - (void)startDownloadToLocalFileAtPath:(NSString*)path {
-  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)),
-                       web::DownloadTask::Destination::kToDisk);
+  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)));
 }
 
 - (void)cancel {

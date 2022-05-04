@@ -108,7 +108,7 @@ TEST_F(DownloadTest, SuccessfulDownload) {
   // Start the download task and wait for completion.
   {
     web::test::WaitDownloadTaskDone observer(task);
-    task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    task->Start(base::FilePath());
     observer.Wait();
   }
 

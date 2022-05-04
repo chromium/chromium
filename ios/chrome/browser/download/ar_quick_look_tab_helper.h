@@ -13,10 +13,6 @@
 
 @protocol ARQuickLookTabHelperDelegate;
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace web {
 class DownloadTask;
 class WebState;
@@ -89,17 +85,13 @@ class ARQuickLookTabHelper
   // web::DownloadTaskObserver:
   void OnDownloadUpdated(web::DownloadTask* download_task) override;
 
-  // Asynchronously starts download operation in |destination_dir|.
-  void DownloadWithDestinationDir(const base::FilePath& destination_dir,
-                                  web::DownloadTask* download_task,
-                                  bool directory_created);
-
   // Previews the downloaded USDZ file or confirms the download if download has
   // not started.
   void ConfirmOrPreviewDownload(web::DownloadTask* download_task);
 
   web::WebState* web_state_ = nullptr;
   __weak id<ARQuickLookTabHelperDelegate> delegate_ = nil;
+
   // The current download task.
   std::unique_ptr<web::DownloadTask> download_task_;
 

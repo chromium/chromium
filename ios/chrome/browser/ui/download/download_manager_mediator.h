@@ -41,11 +41,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   void StartDowloading();
 
  private:
-  // Asynchronously starts download operation in the given directory.
-  void DownloadWithDestinationDir(const base::FilePath& destination_dir,
-                                  web::DownloadTask* task,
-                                  bool directory_created);
-
   // Updates consumer from web::DownloadTask.
   void UpdateConsumer();
 

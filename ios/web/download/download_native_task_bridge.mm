@@ -4,9 +4,11 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import "base/callback.h"
 #import "base/check.h"
-#include "ios/web/download/download_result.h"
-#include "net/base/net_errors.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/web/download/download_result.h"
+#import "net/base/net_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,8 +25,8 @@
 @implementation DownloadNativeTaskBridge {
   void (^_startDownloadBlock)(NSURL*);
   id<DownloadNativeTaskBridgeDelegate> _delegate;
-  void (^_progressionHandler)();
-  web::DownloadCompletionHandler _completionHandler;
+  NativeDownloadTaskProgressCallback _progressCallback;
+  NativeDownloadTaskCompleteCallback _completeCallback;
   BOOL _observingDownloadProgress;
 }
 
@@ -79,24 +81,15 @@
   _download = nil;
 }
 
-- (void)startDownload:(NSURL*)url
-    progressionHandler:(void (^)())progressionHandler
-     completionHandler:(web::DownloadCompletionHandler)completionHandler {
-  // Logic for when the same file is redownloaded as it will use the same file
-  // path.
-  if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
-    NSError* error = nil;
-    if (![[NSFileManager defaultManager] removeItemAtPath:[url path]
-                                                    error:&error]) {
-      [self download:_download didFailWithError:error resumeData:nil];
-      return;
-    }
-  }
+- (void)startDownload:(const base::FilePath&)path
+     progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback {
+  DCHECK(!path.empty());
 
-  _progressionHandler = progressionHandler;
-  _completionHandler = completionHandler;
-
-  _urlForDownload = [url copy];
+  _progressCallback = std::move(progressCallback);
+  _completeCallback = std::move(completeCallback);
+  _urlForDownload =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
 
   if (_resumeData) {
     DCHECK(!_startDownloadBlock);
@@ -124,8 +117,10 @@
     //-decideDestinationUsingResponse:suggestedFilename:completionHandler:
     // where the download will be started.
   } else {
+    _progressCallback.Reset();
+
     web::DownloadResult download_result(net::ERR_FAILED, /*can_retry=*/false);
-    (_completionHandler)(download_result);
+    std::move(_completeCallback).Run(download_result);
   }
 }
 
@@ -140,17 +135,17 @@
 - (void)download:(WKDownload*)download
     decideDestinationUsingResponse:(NSURLResponse*)response
                  suggestedFilename:(NSString*)suggestedFilename
-                 completionHandler:
-                     (void (^)(NSURL* destination))completionHandler API_AVAILABLE(ios(15)) {
+                 completionHandler:(void (^)(NSURL* destination))handler
+    API_AVAILABLE(ios(15)) {
   _response = response;
   _suggestedFilename = suggestedFilename;
 
   if (_urlForDownload) {
     // Resuming a download.
     [self startObservingDownloadProgress];
-    completionHandler(_urlForDownload);
+    handler(_urlForDownload);
   } else {
-    _startDownloadBlock = completionHandler;
+    _startDownloadBlock = handler;
     [_delegate onDownloadNativeTaskBridgeReadyForDownload:self];
   }
 }
@@ -160,17 +155,21 @@
           resumeData:(NSData*)resumeData API_AVAILABLE(ios(15)) {
   self.resumeData = resumeData;
   [self stopObservingDownloadProgress];
-  if (_completionHandler) {
+  if (!_completeCallback.is_null()) {
+    _progressCallback.Reset();
+
     web::DownloadResult download_result(net::ERR_FAILED, resumeData != nil);
-    (_completionHandler)(download_result);
+    std::move(_completeCallback).Run(download_result);
   }
 }
 
 - (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
   [self stopObservingDownloadProgress];
-  if (_completionHandler) {
+  if (!_completeCallback.is_null()) {
+    _progressCallback.Reset();
+
     web::DownloadResult download_result(net::OK);
-    (_completionHandler)(download_result);
+    std::move(_completeCallback).Run(download_result);
   }
 }
 
@@ -180,8 +179,11 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context API_AVAILABLE(ios(15)) {
-  if (_progressionHandler)
-    _progressionHandler();
+  if (!_progressCallback.is_null()) {
+    NSProgress* progress = self.progress;
+    _progressCallback.Run(progress.completedUnitCount, progress.totalUnitCount,
+                          progress.fractionCompleted);
+  }
 }
 
 #pragma mark - Private methods
@@ -190,18 +192,18 @@
   DCHECK(!_observingDownloadProgress);
 
   _observingDownloadProgress = YES;
-  [_download.progress addObserver:self
-                       forKeyPath:@"fractionCompleted"
-                          options:NSKeyValueObservingOptionNew
-                          context:nil];
+  [self.progress addObserver:self
+                  forKeyPath:@"fractionCompleted"
+                     options:NSKeyValueObservingOptionNew
+                     context:nil];
 }
 
 - (void)stopObservingDownloadProgress {
   if (_observingDownloadProgress) {
     _observingDownloadProgress = NO;
-    [_download.progress removeObserver:self
-                            forKeyPath:@"fractionCompleted"
-                               context:nil];
+    [self.progress removeObserver:self
+                       forKeyPath:@"fractionCompleted"
+                          context:nil];
   }
 }
 

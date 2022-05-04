@@ -35,7 +35,7 @@ NSString* const kHttpMethod = @"POST";
 }  //  namespace
 
 // Creates a non-virtual class to use for testing
-class FakeDownloadTaskImpl : public DownloadTaskImpl {
+class FakeDownloadTaskImpl final : public DownloadTaskImpl {
  public:
   FakeDownloadTaskImpl(
       WebState* web_state,
@@ -55,15 +55,8 @@ class FakeDownloadTaskImpl : public DownloadTaskImpl {
                          identifier,
                          task_runner) {}
 
-  NSData* GetResponseData() const override { return response_data_; }
-
-  const base::FilePath& GetResponsePath() const override {
-    return response_path_;
-  }
-
- private:
-  base::FilePath response_path_;
-  __strong NSData* response_data_ = nil;
+  void StartInternal(const base::FilePath& path) final {}
+  void CancelInternal() final {}
 };
 
 // Test fixture for testing DownloadTaskImplTest class.
@@ -108,7 +101,7 @@ TEST_F(DownloadTaskImplTest, DefaultState) {
 TEST_F(DownloadTaskImplTest, SuccessfulInitialization) {
   // Simulates successful download and tests that Start() and
   // OnDownloadFinished are overloaded correctly
-  task_->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task_->Start(base::FilePath());
   EXPECT_EQ(DownloadTask::State::kInProgress, task_->GetState());
 
   // Tests that Cancel() is overloaded

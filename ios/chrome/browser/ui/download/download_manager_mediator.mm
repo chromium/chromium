@@ -62,30 +62,7 @@ void DownloadManagerMediator::StartDowloading() {
   // "Start Download" button.
   [consumer_ setState:kDownloadManagerStateInProgress];
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&base::CreateDirectory, download_dir),
-      base::BindOnce(&DownloadManagerMediator::DownloadWithDestinationDir,
-                     weak_ptr_factory_.GetWeakPtr(), download_dir, task_));
-}
-
-void DownloadManagerMediator::DownloadWithDestinationDir(
-    const base::FilePath& destination_dir,
-    web::DownloadTask* task,
-    bool directory_created) {
-  if (!directory_created) {
-    [consumer_ setState:kDownloadManagerStateFailed];
-    return;
-  }
-
-  if (task_ != task) {
-    // Download task has been replaced, so simply ignore the old download.
-    return;
-  }
-
-  base::FilePath filename = task_->GenerateFileName();
-  base::FilePath path = destination_dir.Append(filename);
-  task->Start(path, web::DownloadTask::Destination::kToDisk);
+  task_->Start(download_dir.Append(task_->GenerateFileName()));
 }
 
 void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {

@@ -4,7 +4,6 @@
 
 #import "ios/web/public/test/fakes/fake_download_task.h"
 
-#import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "net/url_request/url_fetcher_response_writer.h"
 
@@ -37,8 +36,7 @@ DownloadTask::State FakeDownloadTask::GetState() const {
   return state_;
 }
 
-void FakeDownloadTask::Start(const base::FilePath& path,
-                             Destination destination_hint) {
+void FakeDownloadTask::Start(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   response_data_ = nil;
   response_path_ = path;
@@ -52,9 +50,10 @@ void FakeDownloadTask::Cancel() {
   OnDownloadUpdated();
 }
 
-NSData* FakeDownloadTask::GetResponseData() const {
+void FakeDownloadTask::GetResponseData(
+    ResponseDataReadCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return response_data_;
+  std::move(callback).Run(response_data_);
 }
 
 const base::FilePath& FakeDownloadTask::GetResponsePath() const {

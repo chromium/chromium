@@ -22,6 +22,11 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace web {
+namespace download {
+namespace internal {
+struct CreateFileResult;
+}  // namespace internal
+}  // namespace download
 
 class DownloadTaskObserver;
 class WebState;
@@ -41,32 +46,52 @@ class DownloadTaskImpl : public DownloadTask {
                    NSString* identifier,
                    const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
-  // DownloadTask overrides:
-  WebState* GetWebState() override;
-  DownloadTask::State GetState() const override;
-  void Start(const base::FilePath& path, Destination destination_hint) override;
-  void Cancel() override;
-  NSString* GetIdentifier() const override;
-  const GURL& GetOriginalUrl() const override;
-  NSString* GetHttpMethod() const override;
-  bool IsDone() const override;
-  int GetErrorCode() const override;
-  int GetHttpCode() const override;
-  int64_t GetTotalBytes() const override;
-  int64_t GetReceivedBytes() const override;
-  int GetPercentComplete() const override;
-  std::string GetContentDisposition() const override;
-  std::string GetOriginalMimeType() const override;
-  std::string GetMimeType() const override;
-  base::FilePath GenerateFileName() const override;
-  bool HasPerformedBackgroundDownload() const override;
-  void AddObserver(DownloadTaskObserver* observer) override;
-  void RemoveObserver(DownloadTaskObserver* observer) override;
-
   ~DownloadTaskImpl() override;
 
+  // DownloadTask overrides:
+  WebState* GetWebState() final;
+  DownloadTask::State GetState() const final;
+  void Start(const base::FilePath& path) final;
+  void Cancel() final;
+  NSString* GetIdentifier() const final;
+  const GURL& GetOriginalUrl() const final;
+  NSString* GetHttpMethod() const final;
+  bool IsDone() const final;
+  int GetErrorCode() const final;
+  int GetHttpCode() const final;
+  int64_t GetTotalBytes() const final;
+  int64_t GetReceivedBytes() const final;
+  int GetPercentComplete() const final;
+  std::string GetContentDisposition() const final;
+  std::string GetOriginalMimeType() const final;
+  std::string GetMimeType() const final;
+  base::FilePath GenerateFileName() const final;
+  bool HasPerformedBackgroundDownload() const final;
+  void AddObserver(DownloadTaskObserver* observer) final;
+  void RemoveObserver(DownloadTaskObserver* observer) final;
+  void GetResponseData(ResponseDataReadCallback callback) const final;
+  const base::FilePath& GetResponsePath() const final;
+
  private:
+  // Needs to be overridden by sub-classes to perform the download. When this
+  // method is invoked, `path` is non-empty, its parent directory exists, the
+  // location is writable, but the file does not exist.
+  virtual void StartInternal(const base::FilePath& path) = 0;
+
+  // Needs to be overridden by sub-classes to clean themselves when the
+  // download is cancelled. If they need to clean during their shutdown,
+  // then they need to call `CancelInternal()` from their destructor.
+  virtual void CancelInternal() = 0;
+
+  // Can be overridden by sub-classes to return a suggested name for the
+  // downloaded file. The default implementation returns an empty string.
   virtual std::string GetSuggestedName() const;
+
+  // Invoked when UIApplicationWillResignActiveNotification is received.
+  void OnAppWillResignActive();
+
+  // Invoked asynchronously when the file has been created.
+  void OnDownloadFileCreated(download::internal::CreateFileResult result);
 
  protected:
   // Called when download was completed and the data writing was finished.
@@ -96,6 +121,9 @@ class DownloadTaskImpl : public DownloadTask {
   bool has_performed_background_download_ = false;
   DownloadResult download_result_;
   WebState* web_state_ = nullptr;
+
+  base::FilePath path_;
+  bool owns_file_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

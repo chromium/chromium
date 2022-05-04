@@ -67,7 +67,7 @@ TEST_F(DataUrlDownloadTaskTest, ValidDataUrl) {
   // Start the task and wait for completion.
   {
     web::test::WaitDownloadTaskDone observer(&task);
-    task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    task.Start(base::FilePath());
     observer.Wait();
   }
 
@@ -103,7 +103,7 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
   // Start the task and wait for completion.
   {
     web::test::WaitDownloadTaskDone observer(&task);
-    task.Start(path, web::DownloadTask::Destination::kToDisk);
+    task.Start(path);
     observer.Wait();
   }
 
@@ -137,14 +137,13 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
   // Start the task and wait for completion.
   {
     web::test::WaitDownloadTaskDone observer(&task);
-    task.Start(base::FilePath(FILE_PATH_LITERAL("/no-such-dir/file.txt")),
-               web::DownloadTask::Destination::kToDisk);
+    task.Start(base::FilePath(FILE_PATH_LITERAL("/no-such-dir/file.txt")));
     observer.Wait();
   }
 
   // Verify the state of downloaded task.
   EXPECT_EQ(DownloadTask::State::kFailed, task.GetState());
-  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, task.GetErrorCode());
+  EXPECT_EQ(net::ERR_ACCESS_DENIED, task.GetErrorCode());
   EXPECT_EQ(-1, task.GetTotalBytes());
   EXPECT_EQ(0, task.GetReceivedBytes());
   EXPECT_EQ(0, task.GetPercentComplete());
@@ -166,7 +165,7 @@ TEST_F(DataUrlDownloadTaskTest, EmptyDataUrl) {
   // Start the task and wait for completion.
   {
     web::test::WaitDownloadTaskDone observer(&task);
-    task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+    task.Start(base::FilePath());
     observer.Wait();
   }
 

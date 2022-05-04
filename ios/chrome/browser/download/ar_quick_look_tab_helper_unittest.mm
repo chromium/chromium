@@ -286,8 +286,8 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToRandomValue) {
   EXPECT_TRUE(delegate().allowsContentScaling);
 }
 
-// Tests replacing the download task brefore it's started.
-TEST_P(ARQuickLookTabHelperTest, ReplaceUnstartedDownload) {
+// Tests replacing the download task before it make any progress.
+TEST_P(ARQuickLookTabHelperTest, ReplaceStartedNoProgressDownload) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   tab_helper()->Download(std::move(task));
@@ -315,7 +315,7 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceUnstartedDownload) {
       kHistogramName,
       static_cast<base::HistogramBase::Sample>(
           IOSDownloadARModelState::kStarted),
-      1);
+      2);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
       static_cast<base::HistogramBase::Sample>(

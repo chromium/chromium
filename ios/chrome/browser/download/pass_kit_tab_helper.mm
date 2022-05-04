@@ -58,7 +58,7 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   // unfinished tasks.
   tasks_.insert(std::move(task));
   task_ptr->AddObserver(this);
-  task_ptr->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task_ptr->Start(base::FilePath());
 }
 
 void PassKitTabHelper::SetDelegate(id<PassKitTabHelperDelegate> delegate) {
@@ -66,24 +66,35 @@ void PassKitTabHelper::SetDelegate(id<PassKitTabHelperDelegate> delegate) {
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
-  auto it = tasks_.find(updated_task);
-  DCHECK(it != tasks_.end());
-
+  auto iterator = tasks_.find(updated_task);
+  DCHECK(iterator != tasks_.end());
   if (!updated_task->IsDone())
     return;
 
-  NSData* nsdata = updated_task->GetResponseData();
-  PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
+  // Extract the std::unique_ptr<> from the std::set<>.
+  auto node = tasks_.extract(iterator);
+  auto task = std::move(node.value());
+  DCHECK_EQ(task.get(), updated_task);
+
+  // Stop observing the task as its ownership is transfered to the callback
+  // that will destroy when it is invoked or cancelled.
+  updated_task->RemoveObserver(this);
+  updated_task->GetResponseData(
+      base::BindOnce(&PassKitTabHelper::OnDownloadDataRead,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void PassKitTabHelper::OnDownloadDataRead(
+    std::unique_ptr<web::DownloadTask> task,
+    NSData* data) {
+  DCHECK(task);
+  PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
   [delegate_ passKitTabHelper:this
          presentDialogForPass:pass
                      webState:web_state_];
 
-  UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult,
-                            GetUmaResult(updated_task),
+  UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult, GetUmaResult(task.get()),
                             DownloadPassKitResult::Count);
-
-  updated_task->RemoveObserver(this);
-  tasks_.erase(it);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(PassKitTabHelper)

@@ -7,7 +7,22 @@
 
 #import <WebKit/WebKit.h>
 
+#include "base/callback_forward.h"
 #include "ios/web/download/download_result.h"
+
+namespace base {
+class FilePath;
+}
+
+// Callback invoked repeatedly when new data is received from the WKDownload*.
+using NativeDownloadTaskProgressCallback =
+    base::RepeatingCallback<void(int64_t bytes_received,
+                                 int64_t total_bytes,
+                                 double fraction_completed)>;
+
+// Callback invoked once the WKDownload completes, possibly in error.
+using NativeDownloadTaskCompleteCallback =
+    base::OnceCallback<void(web::DownloadResult result)>;
 
 @class DownloadNativeTaskBridge;
 
@@ -40,10 +55,11 @@
 // Cancels download
 - (void)cancel;
 
-// Starts download and sets |progressionHandler| and |completionHandler|
-- (void)startDownload:(NSURL*)url
-    progressionHandler:(void (^)())progressionHander
-     completionHandler:(web::DownloadCompletionHandler)completionHandler;
+// Starts download to `path` with given `progressCallback` and
+// `completeCallback`.
+- (void)startDownload:(const base::FilePath&)path
+     progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback;
 
 @property(nonatomic, readonly) WKDownload* download API_AVAILABLE(ios(15));
 @property(nonatomic, readonly) NSURLResponse* response;

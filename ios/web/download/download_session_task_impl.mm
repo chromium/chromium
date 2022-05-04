@@ -208,65 +208,25 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
 
 DownloadSessionTaskImpl::~DownloadSessionTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CancelInternal();
+}
+
+void DownloadSessionTaskImpl::StartInternal(const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!path.empty());
+
+  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner_, path);
+  net::URLFetcherFileWriter* writer_ptr = writer.get();
+  writer_ptr->Initialize(
+      base::BindOnce(&DownloadSessionTaskImpl::OnWriterInitialized,
+                     weak_factory_.GetWeakPtr(), std::move(writer)));
+}
+
+void DownloadSessionTaskImpl::CancelInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_factory_.InvalidateWeakPtrs();
   [session_task_ cancel];
   session_task_ = nil;
-}
-
-NSData* DownloadSessionTaskImpl::GetResponseData() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(writer_);
-  net::URLFetcherStringWriter* string_writer = writer_->AsStringWriter();
-  if (string_writer) {
-    const std::string& data = string_writer->data();
-    return [NSData dataWithBytes:data.c_str() length:data.size()];
-  }
-
-  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
-  if (file_writer) {
-    const base::FilePath& path = file_writer->file_path();
-    return [NSData
-        dataWithContentsOfFile:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
-  }
-
-  return nil;
-}
-
-const base::FilePath& DownloadSessionTaskImpl::GetResponsePath() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(writer_);
-  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
-  if (file_writer) {
-    const base::FilePath& path = file_writer->file_path();
-    return path;
-  }
-
-  static const base::FilePath kEmptyPath;
-  return kEmptyPath;
-}
-
-void DownloadSessionTaskImpl::Start(const base::FilePath& path,
-                                    Destination destination_hint) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DownloadTaskImpl::Start(path, destination_hint);
-  if (destination_hint == Destination::kToMemory) {
-    OnWriterInitialized(std::make_unique<net::URLFetcherStringWriter>(),
-                        net::OK);
-  } else {
-    DCHECK(path != base::FilePath());
-    auto writer =
-        std::make_unique<net::URLFetcherFileWriter>(task_runner_, path);
-    net::URLFetcherFileWriter* writer_ptr = writer.get();
-    writer_ptr->Initialize(
-        base::BindOnce(&DownloadSessionTaskImpl::OnWriterInitialized,
-                       weak_factory_.GetWeakPtr(), std::move(writer)));
-  }
-}
-
-void DownloadSessionTaskImpl::Cancel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [session_task_ cancel];
-  session_task_ = nil;
-  DownloadTaskImpl::Cancel();
 }
 
 void DownloadSessionTaskImpl::OnWriterDownloadFinished(int error_code) {
@@ -278,7 +238,7 @@ void DownloadSessionTaskImpl::OnWriterDownloadFinished(int error_code) {
   if (writer_->AsFileWriter())
     writer_->AsFileWriter()->DisownFile();
   session_task_ = nil;
-  DownloadTaskImpl::OnDownloadFinished(DownloadResult(error_code));
+  OnDownloadFinished(DownloadResult(error_code));
 }
 
 void DownloadSessionTaskImpl::OnWriterInitialized(

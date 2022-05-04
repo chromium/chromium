@@ -66,7 +66,18 @@ bool WaitDownloadTaskDone::ShouldStopWaiting(DownloadTask* task) const {
 }
 
 NSData* GetDownloadTaskResponseData(DownloadTask* task) {
-  return task->GetResponseData();
+  __block NSData* response_data = nil;
+
+  base::RunLoop run_loop;
+  task->GetResponseData(base::BindOnce(
+      ^(base::OnceClosure done_closure, NSData* data) {
+        response_data = data;
+        std::move(done_closure).Run();
+      },
+      run_loop.QuitClosure()));
+  run_loop.Run();
+
+  return response_data;
 }
 
 }  // namespace test

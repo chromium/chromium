@@ -7,7 +7,6 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/sequence_checker.h"
 #include "ios/web/download/download_task_impl.h"
 
 @class DownloadNativeTaskBridge;
@@ -37,20 +36,17 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   ~DownloadNativeTaskImpl() final;
 
   // DownloadTaskImpl overrides:
-  void Start(const base::FilePath& path, Destination destination_hint) final;
-  void Cancel() final;
+  void StartInternal(const base::FilePath& path) final;
+  void CancelInternal() final;
   std::string GetSuggestedName() const final;
 
-  // DownloadTask overrides:
-  NSData* GetResponseData() const final;
-  const base::FilePath& GetResponsePath() const final;
-  int64_t GetTotalBytes() const final;
-  int64_t GetReceivedBytes() const final;
-  int GetPercentComplete() const final;
-
  private:
+  // Invoked when the WKDownload* tasks make progress.
+  void OnDownloadProgress(int64_t bytes_received,
+                          int64_t total_bytes,
+                          double fraction_complete);
+
   DownloadNativeTaskBridge* download_bridge_ API_AVAILABLE(ios(15)) = nil;
-  base::FilePath download_path_;
 
   base::WeakPtrFactory<DownloadNativeTaskImpl> weak_factory_{this};
 };

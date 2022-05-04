@@ -44,13 +44,9 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
 
   ~DownloadSessionTaskImpl() final;
 
-  // DownloadTask overrides:
-  NSData* GetResponseData() const final;
-  const base::FilePath& GetResponsePath() const final;
-
   // DownloadTaskImpl overrides:
-  void Start(const base::FilePath& path, Destination destination_hint) final;
-  void Cancel() final;
+  void StartInternal(const base::FilePath& path) final;
+  void CancelInternal() final;
 
  private:
   // Called once net::URLFetcherResponseWriter completes the download

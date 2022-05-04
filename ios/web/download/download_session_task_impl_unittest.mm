@@ -74,8 +74,7 @@ class DownloadSessionTaskImplTest : public PlatformTest {
   }
 
   // Starts the download and return NSURLSessionDataTask fake for this task.
-  CRWFakeNSURLSessionTask* Start(const base::FilePath& path,
-                                 DownloadTask::Destination destination_hint) {
+  CRWFakeNSURLSessionTask* Start(const base::FilePath& path) {
     // Inject fake NSURLSessionDataTask into DownloadTaskImpl.
     NSURL* url = [NSURL URLWithString:@(kUrl)];
     session_task_ = [[CRWFakeNSURLSessionTask alloc] initWithURL:url];
@@ -84,7 +83,7 @@ class DownloadSessionTaskImplTest : public PlatformTest {
     OCMExpect([session_ dataTaskWithRequest:request]).andReturn(session_task_);
 
     web::test::WaitDownloadTaskUpdated observer(task_.get());
-    task_->Start(path, destination_hint);
+    task_->Start(path);
     observer.Wait();
 
     DCHECK(session_task_);
@@ -99,9 +98,7 @@ class DownloadSessionTaskImplTest : public PlatformTest {
 
   // Starts the download and return NSURLSessionDataTask fake for this task.
   // Same as above, but uses URLFetcherStringWriter as response writer.
-  CRWFakeNSURLSessionTask* Start() {
-    return Start(base::FilePath(), DownloadTask::Destination::kToMemory);
-  }
+  CRWFakeNSURLSessionTask* Start() { return Start(base::FilePath()); }
 
   // Session and session delegate injected into DownloadTaskImpl for testing.
   NSURLSession* session() { return session_; }
@@ -216,11 +213,6 @@ TEST_F(DownloadSessionTaskImplTest, UnknownLengthContentDownload) {
   EXPECT_EQ(0, task_->GetErrorCode());
   EXPECT_EQ(-1, task_->GetTotalBytes());
   EXPECT_EQ(-1, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      @(kData),
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   int64_t kDataSize = strlen(kData);
@@ -294,11 +286,6 @@ TEST_F(DownloadSessionTaskImplTest, SmallResponseDownload) {
   EXPECT_EQ(kDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      @(kData),
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   SimulateDownloadCompletion(session_task);
@@ -333,11 +320,6 @@ TEST_F(DownloadSessionTaskImplTest, LargeResponseDownload) {
   EXPECT_EQ(kData1Size + kData2Size, task_->GetTotalBytes());
   EXPECT_EQ(kData1Size, task_->GetReceivedBytes());
   EXPECT_EQ(42, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      @(kData1),
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 
   // The second part of the response has arrived.
   SimulateDataDownload(session_task, kData2);
@@ -347,11 +329,6 @@ TEST_F(DownloadSessionTaskImplTest, LargeResponseDownload) {
   EXPECT_EQ(kData1Size + kData2Size, task_->GetTotalBytes());
   EXPECT_EQ(kData1Size + kData2Size, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      [@(kData1) stringByAppendingString:@(kData2)],
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   SimulateDownloadCompletion(session_task);
@@ -403,11 +380,6 @@ TEST_F(DownloadSessionTaskImplTest, FailureInTheMiddle) {
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(23, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      @(kReceivedData),
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 
   // Download has failed.
   NSError* error = [NSError errorWithDomain:NSURLErrorDomain
@@ -416,15 +388,10 @@ TEST_F(DownloadSessionTaskImplTest, FailureInTheMiddle) {
   session_task.countOfBytesExpectedToReceive = 0;  // This is 0 when offline.
   SimulateDownloadCompletion(session_task, error);
   EXPECT_EQ(DownloadTask::State::kFailed, task_->GetState());
-  EXPECT_TRUE(task_->GetErrorCode() == net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_EQ(task_->GetErrorCode(), net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_NSEQ(
-      @(kReceivedData),
-      [[NSString alloc]
-          initWithData:web::test::GetDownloadTaskResponseData(task_.get())
-              encoding:NSUTF8StringEncoding]);
 }
 
 // Tests that CreateSession is called with the correct cookies from the cookie
@@ -469,8 +436,7 @@ TEST_F(DownloadSessionTaskImplTest, FileDeletion) {
   ASSERT_FALSE(base::PathExists(temp_file));
 
   // Start the download.
-  CRWFakeNSURLSessionTask* session_task =
-      Start(temp_file, web::DownloadTask::Destination::kToDisk);
+  CRWFakeNSURLSessionTask* session_task = Start(temp_file);
   ASSERT_TRUE(session_task);
 
   // Deliver the response and verify that download file exists.

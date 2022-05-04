@@ -185,8 +185,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()),
-              web::DownloadTask::Destination::kToDisk);
+  task->Start(path.Append(task->GenerateFileName()));
 
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload will retain and
@@ -249,7 +248,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
 // one.
 TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
   auto task = CreateTestTask();
-  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task->Start(base::FilePath());
   task->SetDone(true);
 
   [coordinator_ downloadManagerTabHelper:tab_helper()
@@ -450,8 +449,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()),
-              web::DownloadTask::Destination::kToDisk);
+  task->Start(path.Append(task->GenerateFileName()));
 
   // Stub UIActivityViewController.
   OCMStub([download_view_controller_mock presentViewController:[OCMArg any]
@@ -603,7 +601,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
 // should present the confirmation dialog.
 TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   auto task = CreateTestTask();
-  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task->Start(base::FilePath());
   coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
@@ -885,8 +883,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()),
-              web::DownloadTask::Destination::kToDisk);
+  task->Start(path.Append(task->GenerateFileName()));
 
   // Start the download.
   @autoreleasepool {

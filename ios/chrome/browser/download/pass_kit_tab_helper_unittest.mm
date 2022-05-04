@@ -4,23 +4,24 @@
 
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 
-#include <memory>
+#import <memory>
 
 #import <PassKit/PassKit.h>
 
-#include "base/callback_helpers.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "base/callback_helpers.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/download/download_test_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/base/io_buffer.h"
-#include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "net/base/io_buffer.h"
+#import "net/base/net_errors.h"
+#import "net/url_request/url_fetcher_response_writer.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,6 +47,7 @@ class PassKitTabHelperTest : public PlatformTest {
     return PassKitTabHelper::FromWebState(&web_state_);
   }
 
+  base::test::TaskEnvironment task_environment_;
   web::FakeWebState web_state_;
   FakePassKitTabHelperDelegate* delegate_;
   base::HistogramTester histogram_tester_;

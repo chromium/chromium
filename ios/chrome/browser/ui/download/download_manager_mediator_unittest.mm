@@ -229,7 +229,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
-  task()->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task()->Start(base::FilePath());
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(0.0, consumer_.progress);

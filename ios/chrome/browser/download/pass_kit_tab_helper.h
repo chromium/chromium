@@ -5,12 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_PASS_KIT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_PASS_KIT_TAB_HELPER_H_
 
+#import <Foundation/Foundation.h>
+
 #include <memory>
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "ios/web/public/web_state_user_data.h"
 
 @protocol PassKitTabHelperDelegate;
 namespace web {
@@ -65,11 +68,17 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
 
+  // Called when the downloaded data is available.
+  void OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
+                          NSData* data);
+
   web::WebState* web_state_;
   __weak id<PassKitTabHelperDelegate> delegate_ = nil;
   // Set of unfinished download tasks.
   std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
       tasks_;
+
+  base::WeakPtrFactory<PassKitTabHelper> weak_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

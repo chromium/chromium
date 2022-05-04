@@ -149,7 +149,7 @@ TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
   web::FakeDownloadTask* task_ptr = task.get();
   ASSERT_FALSE(tab_helper()->has_download_task());
   tab_helper()->Download(std::move(task));
-  task_ptr->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  task_ptr->Start(base::FilePath());
   ASSERT_TRUE(tab_helper()->has_download_task());
 
   task_ptr->Cancel();

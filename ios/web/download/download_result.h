@@ -35,8 +35,6 @@ class DownloadResult {
   bool can_retry_ = true;
 };
 
-using DownloadCompletionHandler = void (^)(DownloadResult download_result);
-
 }  // namespace web
 
 #endif  // IOS_WEB_DOWNLOAD_DOWNLOAD_RESULT_H_

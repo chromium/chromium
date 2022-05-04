@@ -4,6 +4,9 @@
 
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
 
+#import "base/callback.h"
+#import "base/strings/sys_string_conversions.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -31,12 +34,12 @@
   _progress = [NSProgress progressWithTotalUnitCount:0];
 }
 
-- (void)startDownload:(NSURL*)url
-    progressionHandler:(void (^)())progressionHandler
-     completionHandler:(web::DownloadCompletionHandler)completionHandler {
-  [super startDownload:url
-      progressionHandler:progressionHandler
-       completionHandler:completionHandler];
+- (void)startDownload:(const base::FilePath&)path
+     progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback {
+  [super startDownload:path
+      progressCallback:std::move(progressCallback)
+      completeCallback:std::move(completeCallback)];
 
   // Simulates completing a download progress
   _progress = [NSProgress progressWithTotalUnitCount:100];
