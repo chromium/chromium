@@ -653,6 +653,7 @@ crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht 
 crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ Failure ]
 crbug.com/1268426 external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
 crbug.com/1268426 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
 
 # No emoji flag symbols available in the Windows system emoji font.
 crbug.com/1272436 [ Win10.20h2 ] external/wpt/css/CSS2/text/bidi-flag-emoji-02.html [ Failure ]
@@ -1436,6 +1437,9 @@ crbug.com/1176315 external/wpt/css/css-counter-styles/counter-style-at-rule/symb
 crbug.com/993813 external/wpt/css/css-overflow/webkit-line-clamp-008.html [ Failure ]
 crbug.com/993813 [ Mac ] external/wpt/css/css-overflow/webkit-line-clamp-025.html [ Failure ]
 crbug.com/993813 external/wpt/css/css-overflow/webkit-line-clamp-029.html [ Failure ]
+
+# Maybe WontFix according to the bug
+crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 
 # Lack of support for font-language-override
 crbug.com/481430 external/wpt/css/css-fonts/font-language-override-01.html [ Failure ]
@@ -3425,16 +3429,7 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/genera
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
-crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cross-origin-isolated.window.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/reporting/cross-origin-reports-isolated.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain.sub.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/document-domain.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/third-party-storage-partitioning/external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-nested-fenced-frame.https.html [ Timeout ]
@@ -5722,6 +5717,10 @@ crbug.com/1223883 external/wpt/html/webappapis/user-prompts/newline-normalizatio
 crbug.com/1222729 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
 crbug.com/678633 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure ]
 crbug.com/1317071 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html [ Failure Timeout ]
+crbug.com/1317071 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cross-origin-isolated.window.html [ Timeout ]
+crbug.com/1317071 [ Mac10.12 ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
+crbug.com/1317071 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain.sub.https.html [ Timeout ]
+crbug.com/1317071 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/document-domain.sub.https.html [ Timeout ]
 
 # Sheriff 2020-03-05
 crbug.com/1058073 [ Mac10.14 ] accessibility/content-changed-notification-causes-crash.html [ Failure Pass ]
