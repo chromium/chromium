@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
@@ -81,9 +82,23 @@ bool ParseAttributionFilterData(
   if (!object)
     return false;
 
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(kMaxValuesPerAttributionFilter < kExclusiveMaxHistogramValue,
+                "Bump the version for histogram Conversions.ValuesPerFilter");
+
+  static_assert(
+      kMaxAttributionFiltersPerSource < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.FiltersPerFilterData");
+
   const wtf_size_t num_filters = object->size();
   if (num_filters > kMaxAttributionFiltersPerSource)
     return false;
+
+  // The metrics are called potentially many times while parsing an attribution
+  // header, therefore using the macros to avoid the overhead of taking a lock
+  // and performing a map lookup.
+  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", num_filters);
 
   for (wtf_size_t i = 0; i < num_filters; ++i) {
     JSONObject::Entry entry = object->at(i);
@@ -100,6 +115,8 @@ bool ParseAttributionFilterData(
     const wtf_size_t num_values = array->size();
     if (num_values > kMaxValuesPerAttributionFilter)
       return false;
+
+    UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", num_values);
 
     WTF::Vector<String> values;
 

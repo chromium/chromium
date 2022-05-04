@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
@@ -1202,6 +1204,63 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
     bool valid = ParseEventTriggerData(test_case.json, actual);
     EXPECT_EQ(valid, test_case.valid) << test_case.description;
     EXPECT_EQ(actual, test_case.expected) << test_case.description;
+  }
+}
+
+TEST(AttributionResponseParsingTest, FilterValuesHistogram) {
+  const auto make_filter_data = [](wtf_size_t n) {
+    auto array = std::make_unique<JSONArray>();
+    for (wtf_size_t i = 0; i < n; ++i) {
+      array->PushString("x");
+    }
+
+    JSONObject object;
+    object.SetArray("a", std::move(array));
+    return object.ToJSONString();
+  };
+
+  const struct {
+    wtf_size_t size;
+    bool expected;
+  } kTestCases[] = {
+      {0, true},
+      {kMaxValuesPerAttributionFilter, true},
+      {kMaxValuesPerAttributionFilter + 1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    mojom::blink::AttributionFilterData filter_data;
+    ParseFilters(make_filter_data(test_case.size), filter_data);
+    histograms.ExpectUniqueSample("Conversions.ValuesPerFilter", test_case.size,
+                                  test_case.expected);
+  }
+}
+
+TEST(AttributionResponseParsingTest, FiltersSizeHistogram) {
+  const auto make_filter_data = [](wtf_size_t n) {
+    JSONObject object;
+    for (wtf_size_t i = 0; i < n; ++i) {
+      object.SetArray(String::Number(i), std::make_unique<JSONArray>());
+    }
+    return object.ToJSONString();
+  };
+
+  const struct {
+    wtf_size_t size;
+    bool expected;
+  } kTestCases[] = {
+      {0, true},
+      {kMaxAttributionFiltersPerSource, true},
+      {kMaxAttributionFiltersPerSource + 1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    mojom::blink::AttributionFilterData filter_data;
+    ParseFilters(make_filter_data(test_case.size), filter_data);
+    histograms.ExpectUniqueSample("Conversions.FiltersPerFilterData",
+                                  test_case.size, test_case.expected);
   }
 }
 

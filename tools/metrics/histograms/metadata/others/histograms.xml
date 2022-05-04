@@ -3388,6 +3388,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.FiltersPerFilterData" units="filters"
+    expires_after="2022-10-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures filter sizes in source and trigger registrations. This includes
+    filter data in source, top-level trigger, event-level and aggregatable
+    trigger data. Recorded once for each filter data when parsed from the
+    attributionsrc response.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ImpressionIgnoredByFeaturePolicy"
     enum="BooleanIgnored" expires_after="M105">
   <owner>apaseltiner@chromium.org</owner>
@@ -3752,6 +3765,19 @@ chromium-metrics-reviews@google.com.
     load. Recorded when the page navigates away or is otherwise closed. Only
     recorded for non-off-the-record profiles (OTR profiles have the feature
     disabled).
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ValuesPerFilter" units="values"
+    expires_after="2022-10-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of values in a filter. This includes filter data in
+    source, top-level trigger, event-level and aggregatable trigger data.
+    Recorded once for each filter in the filter data when parsed from the
+    attributionsrc response.
   </summary>
 </histogram>
 
