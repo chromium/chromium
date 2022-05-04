@@ -25,6 +25,11 @@ using base::Time;
 
 namespace web_cache {
 
+constexpr uint64_t kNoCapacitySet = std::numeric_limits<uint64_t>::max();
+
+WebCacheManager::WebCacheInfo::WebCacheInfo() : last_capacity(kNoCapacitySet){};
+WebCacheManager::WebCacheInfo::~WebCacheInfo() = default;
+
 static const int kReviseAllocationDelayMS = 200;
 
 // The default size limit of the in-memory cache is 8 MB
@@ -75,7 +80,7 @@ void WebCacheManager::Add(int renderer_id) {
   if (host) {
     mojo::Remote<mojom::WebCache> service;
     host->BindReceiver(service.BindNewPipeAndPassReceiver());
-    web_cache_services_[renderer_id] = std::move(service);
+    web_cache_services_[renderer_id].service = std::move(service);
   }
 
   // Revise our allocation strategy to account for this new renderer.
@@ -280,24 +285,24 @@ void WebCacheManager::AddToStrategy(const std::set<int>& renderers,
 }
 
 void WebCacheManager::EnactStrategy(const AllocationStrategy& strategy) {
-  // Inform each render process of its cache allocation.
-  auto allocation = strategy.begin();
-  while (allocation != strategy.end()) {
+  for (auto& [render_process_id, new_capacity] : strategy) {
     content::RenderProcessHost* host =
-        content::RenderProcessHost::FromID(allocation->first);
-    if (host) {
-      // This is the capacity this renderer has been allocated.
-      uint64_t capacity = allocation->second;
+        content::RenderProcessHost::FromID(render_process_id);
+    if (!host)
+      continue;
 
-      // Find the mojo::Remote<WebCache> by renderer process id.
-      auto it = web_cache_services_.find(allocation->first);
-      if (it != web_cache_services_.end()) {
-        const mojo::Remote<mojom::WebCache>& service = it->second;
-        DCHECK(service);
-        service->SetCacheCapacity(capacity);
-      }
-    }
-    ++allocation;
+    // Find the mojo::Remote<WebCache> by renderer process id.
+    auto it = web_cache_services_.find(render_process_id);
+    if (it == web_cache_services_.end())
+      continue;
+
+    WebCacheInfo& cache_info = it->second;
+    if (cache_info.last_capacity == new_capacity)
+      continue;
+
+    DCHECK(cache_info.service);
+    cache_info.service->SetCacheCapacity(new_capacity);
+    cache_info.last_capacity = new_capacity;
   }
 }
 
@@ -318,9 +323,9 @@ void WebCacheManager::ClearRendererCache(
       // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(*iter);
       if (it != web_cache_services_.end()) {
-        const mojo::Remote<mojom::WebCache>& service = it->second;
-        DCHECK(service);
-        service->ClearCache(occasion == ON_NAVIGATION);
+        WebCacheInfo& cache_info = it->second;
+        DCHECK(cache_info.service);
+        cache_info.service->ClearCache(occasion == ON_NAVIGATION);
       }
     }
   }
@@ -331,6 +336,8 @@ void WebCacheManager::ReviseAllocationStrategy() {
 
   DCHECK(stats_.size() <=
       active_renderers_.size() + inactive_renderers_.size());
+
+  callback_pending_ = false;
 
   // Check if renderers have gone inactive.
   FindInactiveRenderers();
@@ -382,6 +389,12 @@ void WebCacheManager::ReviseAllocationStrategy() {
 void WebCacheManager::ReviseAllocationStrategyLater() {
   if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
     return;
+
+  // Avoid piling up notifications.
+  if (callback_pending_)
+    return;
+
+  callback_pending_ = true;
 
   // Ask to be called back in a few milliseconds to actually recompute our
   // allocation.
