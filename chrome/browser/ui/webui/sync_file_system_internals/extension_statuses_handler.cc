@@ -56,11 +56,11 @@ void ConvertExtensionStatusToDictionary(
     if (!extension)
       continue;
 
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetStringKey("extensionID", extension_id);
-    dict->SetStringKey("extensionName", extension->name());
-    dict->SetStringKey("status", itr->second);
-    list.Append(std::move(dict));
+    base::Value::Dict dict;
+    dict.Set("extensionID", extension_id);
+    dict.Set("extensionName", extension->name());
+    dict.Set("status", itr->second);
+    list.GetList().Append(std::move(dict));
   }
 
   std::move(callback).Run(list);
