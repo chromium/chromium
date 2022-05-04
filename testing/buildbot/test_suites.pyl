@@ -229,7 +229,7 @@
       'cc_unittests': {},
       'content_browsertests': {
         'swarming': {
-          'shards': 15,
+          'shards': 20,
         },
       },
       'viz_unittests': {},
