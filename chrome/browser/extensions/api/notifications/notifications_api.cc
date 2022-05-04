@@ -648,16 +648,13 @@ NotificationsGetAllFunction::RunNotificationsApi() {
   std::set<std::string> notification_ids =
       GetDisplayHelper()->GetNotificationIdsForExtension(extension_->url());
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  base::Value::Dict result;
 
-  for (auto iter = notification_ids.begin(); iter != notification_ids.end();
-       iter++) {
-    result->SetKey(StripScopeFromIdentifier(extension_->id(), *iter),
-                   base::Value(true));
+  for (const auto& entry : notification_ids) {
+    result.Set(StripScopeFromIdentifier(extension_->id(), entry), true);
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 NotificationsGetPermissionLevelFunction::

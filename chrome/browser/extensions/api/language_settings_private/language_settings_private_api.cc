@@ -19,7 +19,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -205,8 +204,7 @@ CreateTranslatePrefsForBrowserContext(
 }  // namespace
 
 LanguageSettingsPrivateGetLanguageListFunction::
-    LanguageSettingsPrivateGetLanguageListFunction()
-    : language_list_(std::make_unique<base::ListValue>()) {}
+    LanguageSettingsPrivateGetLanguageListFunction() = default;
 
 LanguageSettingsPrivateGetLanguageListFunction::
     ~LanguageSettingsPrivateGetLanguageListFunction() = default;
@@ -229,7 +227,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       std::move(spellcheck_languages));
 
   // Build the language list.
-  language_list_->ClearList();
+  language_list_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::flat_set<std::string> allowed_ui_locales(GetAllowedLanguages(
       Profile::FromBrowserContext(browser_context())->GetPrefs()));
@@ -259,7 +257,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    language_list_->Append(base::Value::FromUniquePtrValue(language.ToValue()));
+    language_list_.Append(base::Value::FromUniquePtrValue(language.ToValue()));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -271,7 +269,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     language.code = ash::extension_ime_util::kArcImeLanguage;
     language.display_name =
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
-    language_list_->Append(base::Value::FromUniquePtrValue(language.ToValue()));
+    language_list_.Append(base::Value::FromUniquePtrValue(language.ToValue()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -295,16 +293,14 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
+  return RespondNow(OneArgument(base::Value(std::move(language_list_))));
 }
 
 #if BUILDFLAG(IS_WIN)
 void LanguageSettingsPrivateGetLanguageListFunction::
     OnDictionariesInitialized() {
   UpdateSupportedPlatformDictionaries();
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
+  Respond(OneArgument(base::Value(std::move(language_list_))));
   // Matches the AddRef in Run().
   Release();
 }
@@ -313,7 +309,7 @@ void LanguageSettingsPrivateGetLanguageListFunction::
     UpdateSupportedPlatformDictionaries() {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
-  for (auto& language_val : language_list_->GetListDeprecated()) {
+  for (auto& language_val : language_list_) {
     if (service->UsesWindowsDictionary(*language_val.FindStringKey("code"))) {
       language_val.SetBoolKey("supportsSpellcheck", new bool(true));
     }

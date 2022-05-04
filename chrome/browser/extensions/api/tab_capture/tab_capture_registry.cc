@@ -145,18 +145,17 @@ TabCaptureRegistry::GetFactoryInstance() {
 
 void TabCaptureRegistry::GetCapturedTabs(
     const std::string& extension_id,
-    base::ListValue* list_of_capture_info) const {
+    base::Value::List* capture_info_list) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(list_of_capture_info);
-  list_of_capture_info->ClearList();
+  DCHECK(capture_info_list);
+  capture_info_list->clear();
   for (const std::unique_ptr<LiveRequest>& request : requests_) {
     if (request->is_anonymous() || !request->is_verified() ||
         request->extension_id() != extension_id)
       continue;
     tab_capture::CaptureInfo info;
     request->GetCaptureInfo(&info);
-    list_of_capture_info->GetList().Append(
-        base::Value::FromUniquePtrValue(info.ToValue()));
+    capture_info_list->Append(base::Value::FromUniquePtrValue(info.ToValue()));
   }
 }
 

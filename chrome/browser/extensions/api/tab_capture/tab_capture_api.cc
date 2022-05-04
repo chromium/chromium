@@ -216,19 +216,16 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   // virtual audio/video capture devices and set up all the data flows.  The
   // custom JS bindings can be found here:
   // chrome/renderer/resources/extensions/tab_capture_custom_bindings.js
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->MergeDictionary(params->options.ToValue().get());
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  base::Value result = params->options.ToValue()->Clone();
+  return RespondNow(OneArgument(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+  base::Value::List list;
   if (registry)
-    registry->GetCapturedTabs(extension()->id(), list.get());
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
+    registry->GetCapturedTabs(extension()->id(), &list);
+  return RespondNow(OneArgument(base::Value(std::move(list))));
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {

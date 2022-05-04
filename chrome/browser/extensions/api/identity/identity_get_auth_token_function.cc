@@ -325,14 +325,12 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
     const std::set<std::string>& granted_scopes) {
   RecordFunctionResult(IdentityGetAuthTokenError(), remote_consent_approved_);
 
-  std::unique_ptr<base::Value> granted_scopes_value =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value::List granted_scopes_value;
   for (const auto& scope : granted_scopes)
-    granted_scopes_value->Append(scope);
+    granted_scopes_value.Append(scope);
 
-  CompleteAsyncRun(TwoArguments(
-      base::Value(access_token),
-      base::Value::FromUniquePtrValue(std::move(granted_scopes_value))));
+  CompleteAsyncRun(TwoArguments(base::Value(access_token),
+                                base::Value(std::move(granted_scopes_value))));
 }
 
 void IdentityGetAuthTokenFunction::CompleteFunctionWithError(

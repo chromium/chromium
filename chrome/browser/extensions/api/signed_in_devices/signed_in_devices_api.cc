@@ -127,24 +127,22 @@ ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
   if (is_local) {
     std::unique_ptr<DeviceInfo> device =
         GetLocalDeviceInfo(extension_id(), profile);
-    std::unique_ptr<base::ListValue> result(new base::ListValue());
+    base::Value::List result;
     if (device.get()) {
-      result->Append(base::Value::FromUniquePtrValue(device->ToValue()));
+      result.Append(base::Value::FromUniquePtrValue(device->ToValue()));
     }
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+    return RespondNow(OneArgument(base::Value(std::move(result))));
   }
 
   std::vector<std::unique_ptr<DeviceInfo>> devices =
       GetAllSignedInDevices(extension_id(), profile);
 
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
 
   for (const std::unique_ptr<DeviceInfo>& device : devices)
-    result->Append(base::Value::FromUniquePtrValue(device->ToValue()));
+    result.Append(base::Value::FromUniquePtrValue(device->ToValue()));
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 }  // namespace extensions

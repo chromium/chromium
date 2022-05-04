@@ -555,7 +555,7 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ApiParameterExtractor<windows::GetAll::Params> extractor(params.get());
-  std::unique_ptr<base::ListValue> window_list(new base::ListValue());
+  base::Value::List window_list;
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
@@ -565,14 +565,13 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
                                           extractor.type_filters())) {
       continue;
     }
-    window_list->Append(base::Value::FromUniquePtrValue(
+    window_list.Append(base::Value::FromUniquePtrValue(
         ExtensionTabUtil::CreateWindowValueForExtension(
             *controller->GetBrowser(), extension(), populate_tab_behavior,
             source_context_type())));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(window_list))));
+  return RespondNow(OneArgument(base::Value(std::move(window_list))));
 }
 
 bool WindowsCreateFunction::ShouldOpenIncognitoWindow(
@@ -1126,7 +1125,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   if (params->query_info.window_type != tabs::WINDOW_TYPE_NONE)
     window_type = tabs::ToString(params->query_info.window_type);
 
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   Browser* last_active_browser =
       chrome::FindAnyBrowser(profile, include_incognito_information());
@@ -1268,15 +1267,14 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
         continue;
       }
 
-      result->Append(base::Value::FromUniquePtrValue(
+      result.Append(base::Value::FromUniquePtrValue(
           CreateTabObjectHelper(web_contents, extension(),
                                 source_context_type(), tab_strip, i)
               ->ToValue()));
     }
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {

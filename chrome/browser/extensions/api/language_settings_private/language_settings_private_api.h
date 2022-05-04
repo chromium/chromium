@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_LANGUAGE_SETTINGS_PRIVATE_LANGUAGE_SETTINGS_PRIVATE_API_H_
 
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "extensions/browser/extension_function.h"
@@ -37,7 +38,7 @@ class LanguageSettingsPrivateGetLanguageListFunction
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
-  std::unique_ptr<base::ListValue> language_list_;
+  base::Value::List language_list_;
 };
 
 // Implements the languageSettingsPrivate.enableLanguage method.
