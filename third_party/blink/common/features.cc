@@ -457,8 +457,14 @@ const base::Feature kCssSelectorFragmentAnchor{
     "CssSelectorFragmentAnchor", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // File handling integration. https://crbug.com/829689
-const base::Feature kFileHandlingAPI{"FileHandlingAPI",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFileHandlingAPI {
+  "FileHandlingAPI",
+#if BUILDFLAG(IS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // File handling icons. https://crbug.com/1218213
 const base::Feature kFileHandlingIcons{"FileHandlingIcons",
