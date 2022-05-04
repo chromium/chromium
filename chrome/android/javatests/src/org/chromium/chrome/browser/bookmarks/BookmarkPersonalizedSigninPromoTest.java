@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -99,6 +99,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1294402")
     public void testSigninButtonDefaultAccount() {
         final CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -120,7 +121,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1294402")
+    @DisabledTest(message = "crbug.com/1294402")
     public void testSigninButtonNotDefaultAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
