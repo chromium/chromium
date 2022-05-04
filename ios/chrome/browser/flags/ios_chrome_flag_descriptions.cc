@@ -504,6 +504,11 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
+const char kSmartSortingNewOverflowMenuName[] =
+    "Smart Sorting the new Overflow Menu";
+const char kSmartSortingNewOverflowMenuDescription[] =
+    "Enables smart sorting the new overflow menu carousel by frecency.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

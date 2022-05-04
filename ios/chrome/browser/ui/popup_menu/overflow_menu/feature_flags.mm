@@ -13,6 +13,9 @@
 const base::Feature kNewOverflowMenu{"NewOverflowMenu",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSmartSortingNewOverflowMenu{
+    "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
@@ -29,4 +32,9 @@ bool IsPasswordManagerBrandingUpdateEnabled() {
   }
 
   return false;
+}
+
+bool IsSmartSortingNewOverflowMenuEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kSmartSortingNewOverflowMenu);
 }

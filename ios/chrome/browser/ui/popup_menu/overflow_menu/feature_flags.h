@@ -7,13 +7,19 @@
 
 #include "base/feature_list.h"
 
-// Feature to enable the new overflow menu;
+// Feature to enable the new overflow menu.
 extern const base::Feature kNewOverflowMenu;
+
+// Feature to enable smart sorting the new overflow menu.
+extern const base::Feature kSmartSortingNewOverflowMenu;
 
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
 // Whether the new Google Password Manager branding is enabled.
 bool IsPasswordManagerBrandingUpdateEnabled();
+
+// Whether smart sorting the new overflow menu is enabled.
+bool IsSmartSortingNewOverflowMenuEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_FEATURE_FLAGS_H_

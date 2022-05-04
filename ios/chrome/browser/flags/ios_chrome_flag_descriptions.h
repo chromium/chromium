@@ -457,6 +457,11 @@ extern const char kSingleCellContentSuggestionsDescription[];
 extern const char kSingleNtpName[];
 extern const char kSingleNtpDescription[];
 
+// Title and description for the flag to enable smart sorting the new overflow
+// menu.
+extern const char kSmartSortingNewOverflowMenuName[];
+extern const char kSmartSortingNewOverflowMenuDescription[];
+
 // Title and description for the flag to enable the Start Surface.
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];

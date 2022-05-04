@@ -898,6 +898,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplaySyncErrorsRefactorName,
      flag_descriptions::kDisplaySyncErrorsRefactorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisplaySyncErrorsRefactor)},
+    {"smart-sorting-new-overflow-menu",
+     flag_descriptions::kSmartSortingNewOverflowMenuName,
+     flag_descriptions::kSmartSortingNewOverflowMenuDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSmartSortingNewOverflowMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

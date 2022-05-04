@@ -5470,6 +5470,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "smart-sorting-new-overflow-menu",
+    "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100
