@@ -188,8 +188,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
 
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
-        // Don't show a special subtitle - the button's text is enough.
-        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(false));
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(true));
