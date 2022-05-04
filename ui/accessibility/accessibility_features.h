@@ -168,12 +168,21 @@ AX_BASE_EXPORT extern const base::Feature kReadAnything;
 // such as articles, in a comfortable reading experience in a side panel.
 AX_BASE_EXPORT bool IsReadAnythingEnabled();
 
+AX_BASE_EXPORT extern const base::Feature kReadAnythingWithScreen2x;
+
+// Returns true if read anything is enabled with screen2x integration, which
+// distills web pages using an ML model.
+AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
+
 // Enables using Screen AI library to add metadata for accessibility tools.
 AX_BASE_EXPORT extern const base::Feature kScreenAI;
 
 // Returns true if Screen AI feature is enabled. This feature uses a local
 // machine intelligence library to process browser screenshots and add metadata
 // to the accessibility tree.
+// TODO(https://crbug.com/1278249): Rename to IsScreenAIVisualAnnotationsEnabled
+// and add a new function that covers this and
+// IsReadAnythingWithScreen2xEnabled.
 AX_BASE_EXPORT bool IsScreenAIEnabled();
 
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made

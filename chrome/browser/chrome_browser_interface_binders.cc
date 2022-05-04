@@ -69,6 +69,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/translate/content/common/translate.mojom.h"
@@ -90,6 +91,11 @@
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#endif
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"
@@ -607,6 +613,17 @@ void BindMediaFoundationRendererNotifierHandler(
 }
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void BindScreen2xMainContentExtractor(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
+        receiver) {
+  ScreenAIServiceRouterFactory::GetForBrowserContext(
+      frame_host->GetProcess()->GetBrowserContext())
+      ->BindMainContentExtractor(std::move(receiver));
+}
+#endif
+
 void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
@@ -750,6 +767,13 @@ void PopulateChromeFrameBinders(
       render_frame_host->IsInPrimaryMainFrame()) {
     map->Add<blink::mojom::SubAppsService>(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(
+        base::BindRepeating(&BindScreen2xMainContentExtractor));
   }
 #endif
 }

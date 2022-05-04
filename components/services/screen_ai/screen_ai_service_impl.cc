@@ -8,6 +8,7 @@
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace {
 
@@ -29,17 +30,33 @@ namespace screen_ai {
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : library_(screen_ai::GetPreloadedLibraryFilePath()),
-      init_function_(reinterpret_cast<ScreenAIInitFunction>(
-          library_.GetFunctionPointer("Init"))),
-      annotator_function_(reinterpret_cast<ScreenAIAnnotateFunction>(
+    : library_(GetPreloadedLibraryFilePath()),
+      screen_ai_init_function_(reinterpret_cast<ScreenAIInitFunction>(
+          library_.GetFunctionPointer("InitScreenAI"))),
+      annotate_function_(reinterpret_cast<AnnotateFunction>(
           library_.GetFunctionPointer("Annotate"))),
+      screen_2x_init_function_(reinterpret_cast<Screen2xInitFunction>(
+          library_.GetFunctionPointer("InitScreen2x"))),
+      extract_main_content_function_(
+          reinterpret_cast<ExtractMainContentFunction>(
+              library_.GetFunctionPointer("ExtractMainContent"))),
       receiver_(this, std::move(receiver)) {
   auto init_result = InitializationResult::kOk;
-  if (!init_function_ || !annotator_function_)
-    init_result = InitializationResult::kErrorInvalidLibraryFunctions;
-  else if (!init_function_())
-    init_result = InitializationResult::kErrorInitializationFailed;
+
+  if (features::IsScreenAIEnabled()) {
+    if (!screen_ai_init_function_ || !annotate_function_)
+      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
+    else if (!screen_ai_init_function_())
+      init_result = InitializationResult::kErrorInitializationFailed;
+  }
+
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    if (!screen_2x_init_function_ || !extract_main_content_function_)
+      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
+    else if (!screen_2x_init_function_()) {
+      init_result = InitializationResult::kErrorInitializationFailed;
+    }
+  }
 
   if (init_result != InitializationResult::kOk) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
@@ -57,6 +74,13 @@ void ScreenAIService::BindAnnotator(
   screen_ai_annotators_.Add(this, std::move(annotator));
 }
 
+void ScreenAIService::BindMainContentExtractor(
+    mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
+        main_content_extractor) {
+  screen_2x_main_content_extractors_.Add(this,
+                                         std::move(main_content_extractor));
+}
+
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
   ui::AXTreeUpdate updates;
@@ -67,8 +91,8 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   std::string annotation_text;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  if (annotator_function_(image, annotation_text)) {
-    updates = DecodeProto(annotation_text);
+  if (annotate_function_(image, annotation_text)) {
+    updates = DecodeAnnotatorProto(annotation_text);
   } else {
     VLOG(1) << "Screen AI library could not process snapshot.";
   }
@@ -76,7 +100,7 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   std::move(callback).Run(updates);
 }
 
-ui::AXTreeUpdate ScreenAIService::DecodeProto(
+ui::AXTreeUpdate ScreenAIService::DecodeAnnotatorProto(
     const std::string& serialized_proto) {
   ui::AXTreeUpdate updates;
 
@@ -116,6 +140,13 @@ ui::AXTreeUpdate ScreenAIService::DecodeProto(
   // annotations, item types, confidence levels, etc.
 
   return updates;
+}
+
+void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
+                                         ContentExtractionCallback callback) {
+  // TODO(https://crbug.com/1278249): Call |extract_main_content_function_|,
+  // pass |snapshot| to it, receive results, and send them to |callback|.
+  std::move(callback).Run(std::vector<int32_t>());
 }
 
 }  // namespace screen_ai

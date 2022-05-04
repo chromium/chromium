@@ -19,6 +19,15 @@ void ScreenAIServiceRouter::BindScreenAIAnnotator(
     screen_ai_service_->BindAnnotator(std::move(receiver));
 }
 
+void ScreenAIServiceRouter::BindMainContentExtractor(
+    mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
+        receiver) {
+  LaunchIfNotRunning();
+
+  if (screen_ai_service_.is_bound())
+    screen_ai_service_->BindMainContentExtractor(std::move(receiver));
+}
+
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
   if (screen_ai_service_.is_bound())
     return;

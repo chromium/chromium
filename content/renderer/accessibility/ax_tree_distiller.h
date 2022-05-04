@@ -8,9 +8,16 @@
 #include <memory>
 #include <vector>
 
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/memory/weak_ptr.h"
+#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
 
 namespace content {
 
@@ -49,6 +56,16 @@ class CONTENT_EXPORT AXTreeDistiller {
   std::unique_ptr<ui::AXTreeUpdate> snapshot_;
   std::unique_ptr<std::vector<ui::AXNodeID>> content_node_ids_;
   bool is_distillable_ = true;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ScheduleScreen2xRun();
+  void ProcessScreen2xResult(const std::vector<ui::AXNodeID>& content_node_ids);
+
+  mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>
+      main_content_extractor_;
+
+  base::WeakPtrFactory<AXTreeDistiller> weak_ptr_factory_{this};
+#endif
 };
 
 }  // namespace content

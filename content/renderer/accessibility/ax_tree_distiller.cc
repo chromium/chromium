@@ -11,6 +11,8 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
+#include "content/renderer/render_frame_impl.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -103,13 +105,26 @@ void AddContentNodesToVector(const ui::AXNode* node,
 namespace content {
 
 AXTreeDistiller::AXTreeDistiller(RenderFrameImpl* render_frame)
-    : render_frame_(render_frame) {}
+    : render_frame_(render_frame) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+        main_content_extractor_.BindNewPipeAndPassReceiver());
+  }
+#endif
+}
 
 AXTreeDistiller::~AXTreeDistiller() = default;
 
 void AXTreeDistiller::Distill() {
   SnapshotAXTree();
   DistillAXTree();
+
+  // TODO(https://crbug.com/1278249): Move the call to a proper place.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled())
+    ScheduleScreen2xRun();
+#endif
 }
 
 void AXTreeDistiller::SnapshotAXTree() {
@@ -149,5 +164,20 @@ void AXTreeDistiller::DistillAXTree() {
 
   AddContentNodesToVector(article_node, content_node_ids_.get());
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void AXTreeDistiller::ScheduleScreen2xRun() {
+  DCHECK(main_content_extractor_.is_bound());
+  main_content_extractor_->ExtractMainContent(
+      *snapshot_, base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
+                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AXTreeDistiller::ProcessScreen2xResult(
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  // TODO(https://crbug.com/1278249): Use |content_node_ids|.
+}
+
+#endif
 
 }  // namespace content

@@ -15,13 +15,16 @@
 namespace screen_ai {
 
 using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+using ContentExtractionCallback =
+    base::OnceCallback<void(const std::vector<int32_t>&)>;
 
 // Sends the snapshot to a local machine learning library to get annotations
 // that can help in updating the accessibility tree. See more in:
 // google3/chrome/chromeos/accessibility/machine_intelligence/
 // chrome_screen_ai/README.md
 class ScreenAIService : public mojom::ScreenAIService,
-                        public mojom::ScreenAIAnnotator {
+                        public mojom::ScreenAIAnnotator,
+                        public mojom::Screen2xMainContentExtractor {
  public:
   explicit ScreenAIService(
       mojo::PendingReceiver<mojom::ScreenAIService> receiver);
@@ -35,25 +38,46 @@ class ScreenAIService : public mojom::ScreenAIService,
   // mojom::ScreenAIAnnotator
   void Annotate(const SkBitmap& image, AnnotationCallback callback) override;
 
+  // mojom::Screen2xMainContentExtractor
+  void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
+                          ContentExtractionCallback callback) override;
+
   // mojom::ScreenAIService
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;
 
-  // Converts the serialized proto from Screen AI library to a vector of
-  // screen_ai::mojom::Node.
-  ui::AXTreeUpdate DecodeProto(const std::string& serialized_proto);
+  // mojom::ScreenAIService
+  void BindMainContentExtractor(
+      mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
+          main_content_extractor) override;
+
+  // Converts the serialized proto from Screen AI library's annotation function
+  // to a vector of screen_ai::mojom::Node.
+  ui::AXTreeUpdate DecodeAnnotatorProto(const std::string& serialized_proto);
 
   typedef bool (*ScreenAIInitFunction)();
-  ScreenAIInitFunction init_function_;
+  ScreenAIInitFunction screen_ai_init_function_;
 
-  typedef bool (*ScreenAIAnnotateFunction)(const SkBitmap& /*image*/,
-                                           std::string& /*annotation_text*/);
-  ScreenAIAnnotateFunction annotator_function_;
+  typedef bool (*AnnotateFunction)(const SkBitmap& /*image*/,
+                                   std::string& /*annotation_text*/);
+  AnnotateFunction annotate_function_;
+
+  typedef bool (*Screen2xInitFunction)();
+  Screen2xInitFunction screen_2x_init_function_;
+
+  typedef bool (*ExtractMainContentFunction)(
+      const std::string& /*serialized_snapshot*/,
+      std::vector<int32_t>& /*content_node_ids*/);
+  ExtractMainContentFunction extract_main_content_function_;
 
   mojo::Receiver<mojom::ScreenAIService> receiver_;
 
-  // The set of receivers used to receive messages from the renderer clients.
+  // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;
+
+  // The set of receivers used to receive messages from main content extractors.
+  mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>
+      screen_2x_main_content_extractors_;
 };
 
 }  // namespace screen_ai

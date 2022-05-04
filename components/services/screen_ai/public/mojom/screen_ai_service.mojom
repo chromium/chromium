@@ -8,10 +8,10 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
-// Main interface a client uses for Screen AI services. Each browser mainframe
-// has its own ScreenAIAnnotator and all ScreenAIAnnotators of one profile use
-// one ScreenAIService.
-// Requests are sent from browsers in RenderFrameHostImpl class.
+// Main interface a client uses for Visual Annotation function of Screen AI
+// service. Each browser can have one AXScreenAIAnnotator which contains an
+// ScreenAIAnnotator.
+// All annotators of one browser profile use one ScreenAIService.
 interface ScreenAIAnnotator {
   // Receives a snapshot, schedules image processing, and returns the detected
   // items as an accessibility tree update.
@@ -19,12 +19,32 @@ interface ScreenAIAnnotator {
     (ax.mojom.AXTreeUpdate updates);
 };
 
+// Main interface a client uses for Main Content Extraction function of Screen
+// AI service. Each RenderFrameImpl can have one AXTreeDistiller which contains
+// an Screen2xMainContentExtractor.
+// All interfaces of one browser profile use one ScreenAIService.
+interface Screen2xMainContentExtractor {
+  // Receives the accessibility tree, schedules processing, and returns the main
+  // content of the given tree.
+  // TODO(https://crbug.com/1278249): Add an interface for sending back the
+  // result.
+  ExtractMainContent(ax.mojom.AXTreeUpdate snapshot) =>
+    (array<int32> content_node_ids);
+};
+
 
 // The service runs in a sandboxed process to run Screen AI service library. The
-// library provides an image processing module to analyze snapshots of the
-// browser and add more details to the accessibility tree.
+// library provides two AI modules:
+//   1) An image processing module to analyze snapshots of the browser and add
+//      more details to the accessibility tree.
+//   2) A text processing module that receives the accessibility tree and
+//      returns the main content of the tree.
 [ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
 interface ScreenAIService {
   // Binds a new annotator to the service.
   BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+
+  // Binds a new main content extractor to the service.
+  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
+    main_content_extractor);
 };
