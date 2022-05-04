@@ -1276,6 +1276,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.Macros.DocumentSize" units="KB"
     expires_after="2022-06-05">
+  <obsolete>
+    Removed 05-2022. This metric was historically stable and not being used.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
