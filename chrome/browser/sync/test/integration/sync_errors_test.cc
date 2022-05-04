@@ -358,17 +358,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   }
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223092
-#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
-  DISABLED_ShouldResendUncommittedEntitiesAfterBrowserRestart
-#else
-#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
-  ShouldResendUncommittedEntitiesAfterBrowserRestart
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SyncErrorTest,
-    MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
+IN_PROC_BROWSER_TEST_F(SyncErrorTest,
+                       ShouldResendUncommittedEntitiesAfterBrowserRestart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
