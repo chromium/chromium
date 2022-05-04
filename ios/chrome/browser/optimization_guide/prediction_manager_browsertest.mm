@@ -295,12 +295,15 @@ class PredictionManagerTestBase : public PlatformTest {
 
 class PredictionManagerTest : public PredictionManagerTestBase {
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            optimization_guide::features::kOptimizationHints,
-            optimization_guide::features::kRemoteOptimizationGuideFetching,
-            optimization_guide::features::kOptimizationTargetPrediction,
-            optimization_guide::features::kOptimizationGuideModelDownloading,
+            {optimization_guide::features::kOptimizationHints, {}},
+            {optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {}},
+            {optimization_guide::features::kOptimizationTargetPrediction,
+             {{"fetch_startup_delay_ms", "2000"}}},
+            {optimization_guide::features::kOptimizationGuideModelDownloading,
+             {}},
         },
         {});
   }
@@ -393,7 +396,8 @@ class PredictionManagerNoUserPermissionsTest : public PredictionManagerTest {
             {optimization_guide::features::kOptimizationHints, {}},
             {optimization_guide::features::kRemoteOptimizationGuideFetching,
              {}},
-            {optimization_guide::features::kOptimizationTargetPrediction, {}},
+            {optimization_guide::features::kOptimizationTargetPrediction,
+             {{"fetch_startup_delay_ms", "2000"}}},
             {optimization_guide::features::kOptimizationGuideModelDownloading,
              {}},
             {optimization_guide::features::kOptimizationHintsFieldTrials,
@@ -454,7 +458,8 @@ class PredictionManagerModelDownloadingBrowserTest
             {optimization_guide::features::kOptimizationHints, {}},
             {optimization_guide::features::kRemoteOptimizationGuideFetching,
              {}},
-            {optimization_guide::features::kOptimizationTargetPrediction, {}},
+            {optimization_guide::features::kOptimizationTargetPrediction,
+             {{"fetch_startup_delay_ms", "2000"}}},
             {optimization_guide::features::kOptimizationGuideModelDownloading,
              {{"unrestricted_model_downloading", "true"}}},
             {optimization_guide::features::kOptimizationHintsFieldTrials,

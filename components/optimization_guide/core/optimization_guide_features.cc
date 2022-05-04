@@ -417,7 +417,7 @@ base::TimeDelta PredictionModelFetchRetryDelay() {
 
 base::TimeDelta PredictionModelFetchStartupDelay() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
-      kOptimizationTargetPrediction, "fetch_startup_delay_ms", 2000));
+      kOptimizationTargetPrediction, "fetch_startup_delay_ms", 10000));
 }
 
 base::TimeDelta PredictionModelFetchInterval() {

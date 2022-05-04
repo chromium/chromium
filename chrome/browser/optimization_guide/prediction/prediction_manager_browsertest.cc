@@ -307,10 +307,14 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
 
  private:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kRemoteOptimizationGuideFetching,
-         optimization_guide::features::kOptimizationTargetPrediction},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {optimization_guide::features::kOptimizationHints, {}},
+            {optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {}},
+            {optimization_guide::features::kOptimizationTargetPrediction,
+             {{"fetch_startup_delay_ms", "2000"}}},
+        },
         {});
   }
 };
@@ -415,7 +419,8 @@ class PredictionManagerNoUserPermissionsTest
         {
             {features::kOptimizationHints, {}},
             {features::kRemoteOptimizationGuideFetching, {}},
-            {features::kOptimizationTargetPrediction, {}},
+            {features::kOptimizationTargetPrediction,
+             {{"fetch_startup_delay_ms", "2000"}}},
             {features::kOptimizationHintsFieldTrials,
              {{"allowed_field_trial_names",
                "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"

@@ -441,8 +441,9 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     models_and_features_store()->RunInitCallback(load_models,
                                                  have_models_in_store);
     RunUntilIdle();
-    // Move clock forward for any short delays added for the fetcher.
-    MoveClockForwardBy(base::Seconds(2));
+    // Move clock forward for any short delays added for the fetcher, until the
+    // startup fetch could start.
+    MoveClockForwardBy(base::Seconds(12));
   }
 
   void MoveClockForwardBy(base::TimeDelta time_delta) {
