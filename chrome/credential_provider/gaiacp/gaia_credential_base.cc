@@ -144,6 +144,7 @@ HRESULT GetExistingAccountMappingFromCD(
     std::string* sam_account_name,
     std::vector<std::string>* local_account_names,
     BSTR* error_text) {
+  LOGFN(VERBOSE);
   DCHECK(email.size() > 0);
   DCHECK(access_token.size() > 0);
   DCHECK(sam_account_name);
@@ -266,6 +267,7 @@ HRESULT GetUserAndDomainInfo(
 
   bool is_ad_user =
       os_user_manager->IsDeviceDomainJoined() && !sam_account_name.empty();
+  LOGFN(VERBOSE) << "is_ad_user=" << is_ad_user;
   // Login via existing AD account mapping when the device is domain joined if
   // the AD account mapping is available.
   if (is_ad_user) {
@@ -437,6 +439,7 @@ HRESULT FindExistingUserSidIfAvailable(const std::string& refresh_token,
     LOGFN(ERROR) << "GetExistingAccountMappingFromCD hr=" << putHR(hr);
     return hr;
   }
+  LOGFN(VERBOSE) << "sam_account_name=" << sam_account_name;
 
   std::wstring existing_sid = std::wstring();
   hr = GetUserAndDomainInfo(sam_account_name, local_account_names,

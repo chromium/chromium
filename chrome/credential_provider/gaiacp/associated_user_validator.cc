@@ -535,6 +535,8 @@ bool AssociatedUserValidator::IsAuthEnforcedForUser(const std::wstring& sid) {
 
 AssociatedUserValidator::EnforceAuthReason
 AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
+  LOGFN(VERBOSE);
+
   // Is user not associated, then we shouldn't have any auth enforcement.
   if (!IsUserAssociated(sid))
     return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
