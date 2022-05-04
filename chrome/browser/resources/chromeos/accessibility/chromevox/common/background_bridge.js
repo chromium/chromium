@@ -26,7 +26,7 @@ BackgroundBridge.BrailleBackground = {
 
   /**
    * @param {string} brailleTable The table for this translator to use.
-   * @return {!Promise}
+   * @return {!Promise<boolean>}
    */
   async refreshBrailleTable(brailleTable) {
     return BridgeHelper.sendMessage(
@@ -48,8 +48,8 @@ BackgroundBridge.ChromeVoxBackground = {
 BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).
-   * @return {!Promise<Object>} A map of all prefs except the key map from
-   *     localStorage.
+   * @return {!Promise<Object<string, string>>} A map of all prefs except the
+   *     key map from localStorage.
    */
   async getPrefs() {
     return BridgeHelper.sendMessage(
@@ -85,7 +85,7 @@ BackgroundBridge.ChromeVoxState = {
    * Method that updates the punctuation echo level, and also persists setting
    * to local storage.
    * @param {number} punctuationEcho The index of the desired punctuation echo
-   * level in AbstractTts.PUNCTUATION_ECHOES.
+   *     level in AbstractTts.PUNCTUATION_ECHOES.
    * @return {!Promise}
    */
   async updatePunctuationEcho(punctuationEcho) {
@@ -160,6 +160,18 @@ BackgroundBridge.PanelBackground = {
   },
 
   /**
+   * @return {!Promise<{
+   *     standardActions: !Array<!chrome.automation.ActionType>,
+   *     customActions: !Array<!chrome.automation.CustomAction>
+   * }>}
+   */
+  async getActionsForCurrentNode() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.GET_ACTIONS_FOR_CURRENT_NODE);
+  },
+
+  /**
    * @param {string} searchStr
    * @param {constants.Dir} dir
    * @param {boolean=} opt_nextObject
@@ -169,6 +181,26 @@ BackgroundBridge.PanelBackground = {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
         {searchStr, dir, opt_nextObject});
+  },
+
+  /**
+   * @param {number} actionId
+   * @return {!Promise}
+   */
+  async performCustomActionOnCurrentNode(actionId) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE, actionId);
+  },
+
+  /**
+   * @param {!chrome.automation.ActionType} action
+   * @return {!Promise}
+   */
+  async performStandardActionOnCurrentNode(action) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE, action);
   },
 
   /**

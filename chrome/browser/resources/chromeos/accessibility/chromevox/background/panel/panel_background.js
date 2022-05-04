@@ -14,6 +14,8 @@ export class PanelBackground {
   constructor() {
     /** @private {ISearch} */
     this.iSearch_;
+    /** @private {chrome.automation.AutomationNode} */
+    this.nodeForActions_;
   }
 
   static init() {
@@ -29,10 +31,26 @@ export class PanelBackground {
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH,
         () => PanelBackground.instance.destroyISearch_());
     BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.GET_ACTIONS_FOR_CURRENT_NODE,
+        () => PanelBackground.instance.getActionsForCurrentNode_());
+    BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
         ({searchStr, dir, opt_nextObject}) =>
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
+        (actionId) =>
+            PanelBackground.instance.performCustomActionOnCurrentNode_(
+                actionId));
+    BridgeHelper.registerHandler(
+        BridgeTarget.PANEL_BACKGROUND,
+        BridgeAction.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
+        (action) =>
+            PanelBackground.instance.performStandardActionOnCurrentNode_(
+                action));
     BridgeHelper.registerHandler(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE,
         () => PanelBackground.instance.setRangeToISearchNode_());
@@ -64,6 +82,31 @@ export class PanelBackground {
   }
 
   /**
+   * @return {{
+   *     standardActions: !Array<!chrome.automation.ActionType>,
+   *     customActions: !Array<!chrome.automation.CustomAction>
+   * }}
+   * @private
+   */
+  getActionsForCurrentNode_() {
+    this.nodeForActions_ = ChromeVoxState.instance.currentRange.start;
+    const result = {
+      standardActions: [],
+      customActions: [],
+    };
+    if (!this.nodeForActions_) {
+      return result;
+    }
+    if (this.nodeForActions_.standardActions) {
+      result.standardActions = this.nodeForActions_.standardActions;
+    }
+    if (this.nodeForActions_.customActions) {
+      result.customActions = this.nodeForActions_.customActions;
+    }
+    return result;
+  }
+
+  /**
    * @param {string} searchStr
    * @param {constants.Dir} dir
    * @param {boolean=} opt_nextObject
@@ -77,6 +120,26 @@ export class PanelBackground {
     }
 
     this.iSearch_.search(searchStr, dir, opt_nextObject);
+  }
+
+  /**
+   * @param {number} actionId
+   * @private
+   */
+  performCustomActionOnCurrentNode_(actionId) {
+    if (this.nodeForActions_) {
+      this.nodeForActions_.performCustomAction(actionId);
+    }
+  }
+
+  /**
+   * @param {!chrome.automation.ActionType} action
+   * @private
+   */
+  performStandardActionOnCurrentNode_(action) {
+    if (this.nodeForActions_) {
+      this.nodeForActions_.performStandardAction(action);
+    }
   }
 
   /**

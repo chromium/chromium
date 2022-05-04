@@ -503,29 +503,28 @@ export class Panel extends PanelInterface {
         Panel.addNodeMenu(menuData, node, isActivatedMenu);
       }
 
-      if (node && node.standardActions) {
-        for (let i = 0; i < node.standardActions.length; i++) {
-          const standardAction = node.standardActions[i];
-          const actionMsg = Panel.ACTION_TO_MSG_ID[standardAction];
-          if (!actionMsg) {
-            continue;
-          }
-          const actionDesc = Msgs.getMsg(actionMsg);
-          actionsMenu.addMenuItem(
-              actionDesc, '' /* menuItemShortcut */, '' /* menuItemBraille */,
-              '' /* gesture */,
-              node.performStandardAction.bind(node, standardAction));
+      const actions =
+          await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
+      for (const standardAction of actions.standardActions) {
+        const actionMsg = Panel.ACTION_TO_MSG_ID[standardAction];
+        if (!actionMsg) {
+          continue;
         }
+
+        const actionDesc = Msgs.getMsg(actionMsg);
+        actionsMenu.addMenuItem(
+            actionDesc, '' /* menuItemShortcut */, '' /* menuItemBraille */,
+            '' /* gesture */,
+            () => BackgroundBridge.PanelBackground
+                      .performStandardActionOnCurrentNode(standardAction));
       }
 
-      if (node && node.customActions) {
-        for (let i = 0; i < node.customActions.length; i++) {
-          const customAction = node.customActions[i];
-          actionsMenu.addMenuItem(
-              customAction.description, '' /* menuItemShortcut */,
-              '' /* menuItemBraille */, '' /* gesture */,
-              node.performCustomAction.bind(node, customAction.id));
-        }
+      for (const customAction of actions.customActions) {
+        actionsMenu.addMenuItem(
+            customAction.description, '' /* menuItemShortcut */,
+            '' /* menuItemBraille */, '' /* gesture */,
+            () => BackgroundBridge.PanelBackground
+                      .performCustomActionOnCurrentNode(customAction.id));
       }
 
       // Activate either the specified menu or the search menu.

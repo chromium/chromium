@@ -58,7 +58,8 @@ export class ChromeVoxPrefs {
 
   /**
    * Get the prefs (not including keys).
-   * @return {Object} A map of all prefs except the key map from localStorage.
+   * @return {Object<string, string>} A map of all prefs except the key map from
+   *     localStorage.
    */
   getPrefs() {
     const prefs = {};
