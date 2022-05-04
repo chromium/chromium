@@ -88,7 +88,14 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Linux, using too many threads for VP8 encoding has been linked to high
   // CPU usage on machines that are under stress. See http://crbug.com/1151148.
-  config->g_threads = std::min(config->g_threads, 2U);
+  // 5/3/2022 update: Perf testing has shown that doubling the number of threads
+  // on machines with a large number of cores will improve performance at higher
+  // desktop resolutions.  Doubling the number of threads leads to ~30% increase
+  // in framerate at 4K. This could be increased further however we don't want
+  // to risk reintroducing the problem from the bug above so take the safe gains
+  // and leave plenty of cores for the non-remoting workload.
+  uint threshold = config->g_threads >= 16 ? 4U : 2U;
+  config->g_threads = std::min(config->g_threads, threshold);
 #endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Value of 2 means using the real time profile. This is basically a
