@@ -5840,7 +5840,7 @@
   {
     "name": "update-history-entry-points-in-incognito",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "update-menu-item-custom-summary",
