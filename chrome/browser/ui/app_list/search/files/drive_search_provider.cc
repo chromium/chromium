@@ -6,11 +6,14 @@
 
 #include <cmath>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
@@ -43,7 +46,48 @@ void LogStatus(Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
 }
 
+// Stats each file to retrieve its last accessed time.
+std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> GetItemInfo(
+    std::vector<drivefs::mojom::QueryItemPtr> items,
+    base::FilePath mount_path) {
+  std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> item_info;
+
+  for (const auto& item : items) {
+    // Strip leading separators so that the path can be reparented.
+    const auto& path = item->path;
+    DCHECK(!path.value().empty());
+    const base::FilePath relative_path =
+        !path.value().empty() && base::FilePath::IsSeparator(path.value()[0])
+            ? base::FilePath(path.value().substr(1))
+            : path;
+
+    // Reparent the file path into the user's DriveFS mount.
+    DCHECK(!relative_path.IsAbsolute());
+    base::FilePath reparented_path = mount_path.Append(relative_path.value());
+
+    base::File::Info info;
+    absl::optional<base::Time> last_accessed;
+    if (base::GetFileInfo(reparented_path, &info))
+      last_accessed = info.last_accessed;
+
+    item_info.push_back(std::make_unique<DriveSearchProvider::ItemInfo>(
+        reparented_path, std::move(item->metadata), last_accessed));
+  }
+
+  return item_info;
+}
+
 }  // namespace
+
+DriveSearchProvider::ItemInfo::ItemInfo(
+    const base::FilePath& reparented_path,
+    drivefs::mojom::FileMetadataPtr metadata,
+    const absl::optional<base::Time>& last_accessed)
+    : reparented_path(reparented_path), last_accessed(last_accessed) {
+  this->metadata = std::move(metadata);
+}
+
+DriveSearchProvider::ItemInfo::~ItemInfo() = default;
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile)
     : profile_(profile),
@@ -81,11 +125,11 @@ void DriveSearchProvider::Start(const std::u16string& query) {
       drivefs::mojom::QueryParameters::SortField::kLastModified,
       drivefs::mojom::QueryParameters::SortDirection::kDescending,
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
-      base::BindOnce(&DriveSearchProvider::SetSearchResults,
+      base::BindOnce(&DriveSearchProvider::OnSearchDriveByFileName,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DriveSearchProvider::SetSearchResults(
+void DriveSearchProvider::OnSearchDriveByFileName(
     drive::FileError error,
     std::vector<drivefs::mojom::QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -105,24 +149,39 @@ void DriveSearchProvider::SetSearchResults(
     items = std::move(filtered_items);
   }
 
+  if (!drive_service_->IsMounted())
+    return;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&GetItemInfo, std::move(items),
+                     drive_service_->GetMountPointPath()),
+      base::BindOnce(&DriveSearchProvider::SetSearchResults,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void DriveSearchProvider::SetSearchResults(
+    std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> item_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   SearchProvider::Results results;
-  for (const auto& item : items) {
-    double relevance =
-        FileResult::CalculateRelevance(last_tokenized_query_, item->path);
+  for (const auto& info : item_info) {
+    double relevance = FileResult::CalculateRelevance(
+        last_tokenized_query_, info->reparented_path, info->last_accessed);
 
     std::unique_ptr<FileResult> result;
-    GURL url(item->metadata->alternate_url);
-    if (item->metadata->type ==
+    GURL url(info->metadata->alternate_url);
+    if (info->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
-      const auto type = item->metadata->shared
+      const auto type = info->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      result = MakeResult(item->path, relevance, type, GetDriveId(url));
+      result =
+          MakeResult(info->reparented_path, relevance, type, GetDriveId(url));
     } else {
-      result = MakeResult(item->path, relevance, FileResult::Type::kFile,
-                          GetDriveId(url));
+      result = MakeResult(info->reparented_path, relevance,
+                          FileResult::Type::kFile, GetDriveId(url));
     }
-    result->PenalizeRelevanceByAccessTime();
     results.push_back(std::move(result));
   }
 
@@ -133,24 +192,10 @@ void DriveSearchProvider::SetSearchResults(
 }
 
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
-    const base::FilePath& path,
+    const base::FilePath& reparented_path,
     double relevance,
     FileResult::Type type,
     const absl::optional<std::string>& drive_id) {
-  // Strip leading separators so that the path can be reparented.
-  // TODO(crbug.com/1154513): Remove this step once the drive backend returns
-  // results in relative path format.
-  DCHECK(!path.value().empty());
-  const base::FilePath relative_path =
-      !path.value().empty() && base::FilePath::IsSeparator(path.value()[0])
-          ? base::FilePath(path.value().substr(1))
-          : path;
-
-  // Reparent the file path into the user's DriveFS mount.
-  DCHECK(!relative_path.IsAbsolute());
-  const base::FilePath& reparented_path =
-      drive_service_->GetMountPointPath().Append(relative_path.value());
-
   // Add "Google Drive" as details.
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);

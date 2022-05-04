@@ -50,7 +50,8 @@ class FileResult : public ChromeSearchResult {
   // query is missing or the filename is empty.
   static double CalculateRelevance(
       const absl::optional<chromeos::string_matching::TokenizedString>& query,
-      const base::FilePath& filepath);
+      const base::FilePath& filepath,
+      const absl::optional<base::Time>& last_accessed);
 
   // Depending on the file type and display type, request a thumbnail for this
   // result. If the request is successful, the current icon will be replaced by
@@ -60,10 +61,6 @@ class FileResult : public ChromeSearchResult {
   // Asynchronously sets the details string for this result to a Drive-esque
   // justification string, eg. "You opened yesterday".
   void SetDetailsToJustificationString();
-
-  // Applies a penalty to this result's relevance score based on its last
-  // accessed time. The resultant score will be in [0, previous relevance].
-  void PenalizeRelevanceByAccessTime();
 
   void set_drive_id(const absl::optional<std::string>& drive_id) {
     drive_id_ = drive_id;
@@ -77,9 +74,6 @@ class FileResult : public ChromeSearchResult {
   // GetJustificationStringAsync.
   void OnJustificationStringReturned(
       absl::optional<std::u16string> justification);
-
-  // Callback for PenalizeRelevanceByAccesstime.
-  void OnFileInfoReturned(const absl::optional<base::File::Info>& info);
 
   const base::FilePath filepath_;
   const Type type_;

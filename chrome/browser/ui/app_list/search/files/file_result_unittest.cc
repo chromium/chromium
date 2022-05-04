@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,7 @@
 namespace app_list {
 namespace {
 
+using chromeos::string_matching::TokenizedString;
 using testing::DoubleNear;
 
 }  // namespace
@@ -33,15 +35,6 @@ class FileResultTest : public testing::Test {
 
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
-  }
-
-  // Returns a file path with its last_accessed set to |now - accessed_ago|.
-  base::FilePath TouchFile(base::TimeDelta accessed_ago) {
-    auto now = base::Time::Now();
-    base::FilePath path(temp_dir_.GetPath().Append("somefile"));
-    base::WriteFile(path, "content");
-    base::TouchFile(path, now - accessed_ago, now - accessed_ago);
-    return path;
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }
@@ -84,20 +77,19 @@ TEST_F(FileResultTest, HostedExtensionsIgnored) {
 }
 
 TEST_F(FileResultTest, PenalizeScore) {
-  double expected_score[] = {1.0, 0.9, 0.63};
+  base::FilePath path(temp_dir_.GetPath().Append("somefile"));
+  absl::optional<TokenizedString> query;
+  query.emplace(u"somefile");
+  base::Time now = base::Time::Now();
+
+  double expected_scores[] = {1.0, 0.9, 0.63};
   int access_days_ago[] = {0, 10, 30};
 
   for (int i = 0; i < 3; ++i) {
-    auto path = TouchFile(base::Days(access_days_ago[i]));
-    FileResult result("zero_state_file://", path, absl::nullopt,
-                      ash::AppListSearchResultType::kZeroStateFile,
-                      ash::SearchResultDisplayType::kList, 1.0,
-                      std::u16string(), FileResult::Type::kFile,
-                      profile_.get());
-    result.PenalizeRelevanceByAccessTime();
-    Wait();
-
-    EXPECT_THAT(result.relevance(), DoubleNear(expected_score[i], 0.01));
+    base::Time last_accessed = now - base::Days(access_days_ago[i]);
+    double relevance =
+        FileResult::CalculateRelevance(query, path, last_accessed);
+    EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01));
   }
 }
 

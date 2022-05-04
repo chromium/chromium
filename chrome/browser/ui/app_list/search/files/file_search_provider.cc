@@ -132,12 +132,10 @@ void FileSearchProvider::OnSearchComplete(
 
   SearchProvider::Results results;
   for (const auto& path : paths) {
-    double relevance =
-        FileResult::CalculateRelevance(last_tokenized_query_, path.path);
+    double relevance = FileResult::CalculateRelevance(
+        last_tokenized_query_, path.path, path.last_accessed);
     DCHECK((relevance >= 0.0) && (relevance <= 1.0));
-    auto result = MakeResult(path, relevance);
-    result->PenalizeRelevanceByAccessTime();
-    results.push_back(std::move(result));
+    results.push_back(MakeResult(path, relevance));
   }
 
   SwapResults(&results);

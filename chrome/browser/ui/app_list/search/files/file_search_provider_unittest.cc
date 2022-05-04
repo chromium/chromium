@@ -136,8 +136,8 @@ TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
 
   // Set the access times of all files to be different.
   const base::Time time = base::Time::Now();
-  const base::Time earlier_time = time - base::Minutes(5);
-  const base::Time earliest_time = time - base::Minutes(10);
+  const base::Time earlier_time = time - base::Days(5);
+  const base::Time earliest_time = time - base::Days(10);
   TouchFile(Path("file.txt"), time, time);
   TouchFile(Path("file.png"), earliest_time, time);
   TouchFile(Path("file.pdf"), earlier_time, time);
@@ -167,7 +167,7 @@ TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
 TEST_F(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   // Make two identically named files with different access times.
   const base::Time time = base::Time::Now();
-  const base::Time earlier_time = time - base::Minutes(5);
+  const base::Time earlier_time = time - base::Days(5);
   CreateDirectory("dir");
   WriteFile("dir/file");
   WriteFile("file");
