@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2022-09-01">
+    enum="BooleanSuccess" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2022-09-01">
+    enum="BooleanSuccess" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -51,6 +51,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ConfigureDisplays.External.Modeset.RefreshRate" units="Hz"
     expires_after="2022-09-01">
+  <obsolete>
+    Replaced by ConfigureDisplays.External.Modeset.Success.RefreshRate in M103.
+  </obsolete>
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -63,6 +66,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ConfigureDisplays.External.Modeset.Resolution"
     enum="DisplayResolution" expires_after="2022-09-01">
+  <obsolete>
+    Split into ConfigureDisplays.External.Modeset.OriginalRequest.Resolution and
+    ConfigureDisplays.External.Modeset.Success.Resolution in M103.
+  </obsolete>
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -75,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2022-09-01">
+    enum="BooleanSuccess" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -90,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2022-09-01">
+    enum="BooleanSuccess" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -104,6 +111,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ConfigureDisplays.Internal.Modeset.RefreshRate" units="Hz"
     expires_after="2022-09-01">
+  <obsolete>
+    Replaced by ConfigureDisplays.Internal.Modeset.Success.RefreshRate in M103.
+  </obsolete>
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -116,6 +126,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ConfigureDisplays.Internal.Modeset.Resolution"
     enum="DisplayResolution" expires_after="2022-09-01">
+  <obsolete>
+    Split into ConfigureDisplays.Internal.Modeset.OriginalRequest.Resolution and
+    ConfigureDisplays.Internal.Modeset.Success.Resolution in M103.
+  </obsolete>
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -128,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2022-09-01">
+    units="count" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -140,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2022-09-01">
+    units="%" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -152,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2022-09-01">
+    units="count" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
@@ -163,8 +177,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ConfigureDisplays.{Connection}.Modeset.Success.RefreshRate"
+    units="Hz" expires_after="2023-05-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
+  <summary>
+    Tracks an {Connection} display's resulting refresh rate after a successful
+    display configuration.
+  </summary>
+  <token key="Connection">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
+<histogram name="ConfigureDisplays.{Connection}.Modeset.{Report}.Resolution"
+    enum="DisplayResolution" expires_after="2023-05-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
+  <summary>{Connection} {Report}</summary>
+  <token key="Connection">
+    <variant name="External" summary="Tracks an external display's"/>
+    <variant name="Internal" summary="Tracks an internal display's"/>
+  </token>
+  <token key="Report">
+    <variant name="OriginalRequest"
+        summary="original resolution request during display configuration."/>
+    <variant name="Success"
+        summary="resulting resolution after a successful display
+                 configuration."/>
+  </token>
+</histogram>
+
 <histogram name="Display.External.BlockZeroSerialNumberType"
-    enum="BlockZeroSerialNumberType" expires_after="2022-09-01">
+    enum="BlockZeroSerialNumberType" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
@@ -175,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.NumOfSerialNumbersProvided" units="count"
-    expires_after="2022-09-01">
+    expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
@@ -186,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.ParseEdidOptionals" enum="ParseEdidOptionals"
-    expires_after="2022-09-01">
+    expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
@@ -197,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.MultipleDisplays.GenerateId.CollisionDetection"
-    enum="BooleanDisplayIdCollision" expires_after="2022-09-01">
+    enum="BooleanDisplayIdCollision" expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
@@ -211,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
-    expires_after="2022-09-01">
+    expires_after="2023-05-01">
   <owner>gildekel@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
   <owner>seanpaul@chromium.org</owner>

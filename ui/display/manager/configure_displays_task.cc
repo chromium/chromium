@@ -5,6 +5,7 @@
 #include "ui/display/manager/configure_displays_task.h"
 
 #include <cstddef>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -13,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/types/display_configuration_params.h"
@@ -25,12 +27,27 @@ namespace display {
 
 namespace {
 
+// The epsilon by which a refresh rate value may drift. For example:
+// 239.76Hz --> 240Hz. This value was chosen with the consideration of the
+// refresh rate value drifts presented in the "Video Formats—Video ID Code and
+// Aspect Ratios" table on p.40 of the CTA-861-G standard.
+constexpr float kRefreshRateEpsilon = 0.5f;
+
 // Because we do not offer hardware mirroring, the maximal number of external
 // displays that can be configured is limited by the number of available CRTCs,
 // which is usually three. Since the lifetime of the UMA using this value is one
 // year (exp. Nov. 2021), five buckets are more than enough for
 // its histogram (between 0 to 4 external monitors).
 constexpr int kMaxDisplaysCount = 5;
+
+// Consolidates the UMA name prefix creation to one location, since it is used
+// in many different call-sites.
+const std::string GetUmaNamePrefixForRequest(
+    const DisplayConfigureRequest& request) {
+  return request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL
+             ? std::string("ConfigureDisplays.Internal.Modeset.")
+             : std::string("ConfigureDisplays.External.Modeset.");
+}
 
 // Find the next best mode that is smaller than |request->mode|. The next best
 // mode is found by comparing resolutions, and if those are similar, comparing
@@ -82,63 +99,79 @@ void LogIfInvalidRequestForInternalDisplay(
 const int32_t kDisplayResolutionSamples[] = {1024, 1280, 1440, 1920,
                                              2560, 3840, 5120, 7680};
 
-// Computes the index of the enum DisplayResolution.
-// The index has to match the definition of the enum in enums.xml
-int ComputeDisplayResolutionEnum(const DisplayMode* mode) {
-  if (!mode)
-    return 0;  // Display is powered off
+void UpdateResolutionUma(const DisplayConfigureRequest& request,
+                         const std::string& uma_name) {
+  // Display is powered off.
+  if (!request.mode)
+    return;
 
-  const gfx::Size size = mode->size();
+  // First, compute the index of the enum DisplayResolution.
+  // The index has to match the definition of the enum in enums.xml.
+  const uint32_t samples_list_size = std::size(kDisplayResolutionSamples);
+  const gfx::Size size = request.mode->size();
   uint32_t width_idx = 0;
   uint32_t height_idx = 0;
-  for (; width_idx < std::size(kDisplayResolutionSamples); width_idx++) {
+  for (; width_idx < samples_list_size; width_idx++) {
     if (size.width() <= kDisplayResolutionSamples[width_idx])
       break;
   }
-  for (; height_idx < std::size(kDisplayResolutionSamples); height_idx++) {
+  for (; height_idx < samples_list_size; height_idx++) {
     if (size.height() <= kDisplayResolutionSamples[height_idx])
       break;
   }
 
-  if (width_idx == std::size(kDisplayResolutionSamples) ||
-      height_idx == std::size(kDisplayResolutionSamples))
-    return std::size(kDisplayResolutionSamples) *
-               std::size(kDisplayResolutionSamples) +
-           1;  // Overflow bucket
-  // Computes the index of DisplayResolution, starting from 1, since 0 is used
-  // when powering off the display.
-  return width_idx * std::size(kDisplayResolutionSamples) + height_idx + 1;
+  int display_resolution_index = 0;
+  if (width_idx == samples_list_size || height_idx == samples_list_size) {
+    // Check if we are in the overflow bucket.
+    display_resolution_index = samples_list_size * samples_list_size + 1;
+  } else {
+    // Compute the index of DisplayResolution, starting from 1, since 0 is used
+    // when powering off the display.
+    display_resolution_index = width_idx * samples_list_size + height_idx + 1;
+  }
+
+  base::UmaHistogramExactLinear(uma_name, display_resolution_index,
+                                samples_list_size * samples_list_size + 2);
 }
 
-void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
-  const bool internal =
-      request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+// A list of common refresh rates that are used to help fit approximate refresh
+// rate values into one of the common refresh rate bins.
+constexpr float kCommonDisplayRefreshRates[] = {
+    24.0, 25.0,  30.0,  45.0,  48.0,  50.0,  60.0, 75.0,
+    90.0, 100.0, 120.0, 144.0, 165.0, 200.0, 240.0};
 
-  base::UmaHistogramExactLinear(
-      internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
-               : "ConfigureDisplays.External.Modeset.Resolution",
-      ComputeDisplayResolutionEnum(request.mode),
-      std::size(kDisplayResolutionSamples) *
-              std::size(kDisplayResolutionSamples) +
-          2);
+void UpdateRefreshRateUma(const DisplayConfigureRequest& request,
+                          const std::string& uma_name) {
+  // Display is powered off.
+  if (!request.mode)
+    return;
 
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-      internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
-               : "ConfigureDisplays.External.Modeset.RefreshRate",
-      1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(request.mode ? std::round(request.mode->refresh_rate()) : 0);
+  base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+      uma_name, base::HistogramBase::kUmaTargetedHistogramFlag);
+
+  // Check if the refresh value is within an epsilon from one of the common
+  // refresh rate values.
+  for (size_t i = 0; i < std::size(kCommonDisplayRefreshRates); ++i) {
+    const bool is_within_epsilon =
+        std::abs(request.mode->refresh_rate() - kCommonDisplayRefreshRates[i]) <
+        kRefreshRateEpsilon;
+    if (is_within_epsilon) {
+      histogram->Add(kCommonDisplayRefreshRates[i]);
+      return;
+    }
+  }
+
+  // Since this is not a common refresh rate value, report it as is.
+  histogram->Add(request.mode->refresh_rate());
 }
 
 void UpdateAttemptSucceededUma(
     const std::vector<DisplayConfigureRequest>& requests,
     bool display_success) {
   for (const auto& request : requests) {
-    const bool internal =
-        request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-    base::UmaHistogramBoolean(
-        internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-                 : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
-        display_success);
+    const std::string uma_name_prefix = GetUmaNamePrefixForRequest(request);
+    base::UmaHistogramBoolean(uma_name_prefix + "AttemptSucceeded",
+                              display_success);
 
     VLOG(2) << "Configured status=" << display_success
             << " display=" << request.display->display_id()
@@ -155,19 +188,21 @@ void UpdateFinalStatusUma(
     const DisplayConfigureRequest& request = request_and_status.first;
 
     // Is this display SST (single-stream vs. MST multi-stream).
-    bool sst_display = request.display->base_connector_id() &&
-                       request.display->path_topology().empty();
+    const bool sst_display = request.display->base_connector_id() &&
+                             request.display->path_topology().empty();
     if (!sst_display)
       mst_external_displays++;
 
-    bool internal = request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-    if (internal)
+    if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
       total_external_displays--;
 
-    base::UmaHistogramBoolean(
-        internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
-                 : "ConfigureDisplays.External.Modeset.FinalStatus",
-        request_and_status.second);
+    const std::string uma_name_prefix = GetUmaNamePrefixForRequest(request);
+    if (request_and_status.second) {
+      UpdateResolutionUma(request, uma_name_prefix + "Success.Resolution");
+      UpdateRefreshRateUma(request, uma_name_prefix + "Success.RefreshRate");
+    }
+    base::UmaHistogramBoolean(uma_name_prefix + "FinalStatus",
+                              request_and_status.second);
   }
 
   base::UmaHistogramExactLinear(
@@ -212,6 +247,7 @@ ConfigureDisplaysTask::~ConfigureDisplaysTask() {
 void ConfigureDisplaysTask::Run() {
   DCHECK(!requests_.empty());
 
+  const bool is_first_attempt = pending_display_group_requests_.empty();
   std::vector<display::DisplayConfigurationParams> config_requests;
   for (const auto& request : requests_) {
     LogIfInvalidRequestForInternalDisplay(request);
@@ -219,13 +255,16 @@ void ConfigureDisplaysTask::Run() {
     config_requests.emplace_back(request.display->display_id(), request.origin,
                                  request.mode);
 
-    UpdateResolutionAndRefreshRateUma(request);
+    if (is_first_attempt) {
+      const std::string uma_name_prefix = GetUmaNamePrefixForRequest(request);
+      UpdateResolutionUma(request,
+                          uma_name_prefix + "OriginalRequest.Resolution");
+    }
   }
 
   const auto& on_configured =
-      pending_display_group_requests_.empty()
-          ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
-          : &ConfigureDisplaysTask::OnRetryConfigured;
+      is_first_attempt ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
+                       : &ConfigureDisplaysTask::OnRetryConfigured;
 
   delegate_->Configure(
       config_requests,
