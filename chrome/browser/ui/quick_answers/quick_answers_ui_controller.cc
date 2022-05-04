@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/browser_finder.h"            // nogncheck
 #include "chrome/browser/ui/browser_navigator.h"         // nogncheck
 #include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -167,7 +169,18 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   OpenUrl(GURL(kQuickAnswersSettingsUrl));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // OS settings app is implemented in Ash, but OpenUrl here does not qualify
+  // for redirection in Lacros due to security limitations. Thus we need to
+  // explicitly send the request to Ash to launch the OS settings app.
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
+
+  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(
+      GURL(kQuickAnswersSettingsUrl));
+#endif
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {
