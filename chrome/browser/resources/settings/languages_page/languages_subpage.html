@@ -25,8 +25,38 @@
     display: none;
   }
 
-  iron-icon.policy {
-    margin-inline-start: 10px;
+<if expr="is_win">
+  .explain-selected {
+    color: var(--google-green-700);
+    font-weight: initial;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .explain-selected {
+      color: var(--google-green-300);
+    }
+  }
+
+  #uiLanguageItem:focus {
+    background-color: transparent;
+  }
+
+  #uiLanguageItem span {
+    line-height: 20px;
+  }
+
+  #uiLanguageItem iron-icon.policy {
+    margin-inline-start: 20px;
+    margin-inline-end: 0;
+  }
+
+  #restartButton {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
+</if>
+
+  #offerTranslations:focus {
+    background-color: transparent;
   }
 </style>
 <div id="languagesSection">

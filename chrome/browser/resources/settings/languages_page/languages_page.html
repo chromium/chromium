@@ -3,37 +3,6 @@
         min-height: var(--settings-row-two-line-min-height);
       }
 
-      .explain-selected {
-        color: var(--google-green-700);
-        font-weight: initial;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .explain-selected {
-          color: var(--google-green-300);
-        }
-      }
-
-      .icon-external {
-        /* The negative margin messes up the outline border. These are in an
-           indented list so this looks fine until moved: crbug.com/708286. */
-        margin-inline-end: 0;
-      }
-
-      #uiLanguageItem:focus,
-      #offerTranslations:focus {
-        background-color: transparent;
-      }
-
-      #uiLanguageItem span {
-        line-height: 20px;
-      }
-
-      #uiLanguageItem cr-policy-indicator {
-        float: right;
-        margin-inline-start: 20px;
-      }
-
       .name-with-error-list {
         padding: 14px 0;
       }
@@ -87,14 +56,6 @@
 
       .spell-check-languages .list-item:last-of-type {
         border-bottom: var(--cr-separator-line);
-      }
-
-      #restartButton {
-        margin-inline-start: var(--settings-controlled-by-spacing);
-      }
-
-      .external-wrapper {
-        display: flex;
       }
     </style>
     <settings-languages languages="{{languages}}" prefs="{{prefs}}"
