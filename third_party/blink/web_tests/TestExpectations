@@ -7758,3 +7758,6 @@ crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
 crbug.com/1321293 fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure Pass ]
 crbug.com/1322072 [ Mac10.15 ] external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
 crbug.com/1322134 [ Mac11 ] virtual/gpu/fast/canvas/OffscreenCanvasImageRenderingPixelatedWorker.html [ Failure Pass ]
+
+# Sheriff 2022-05-04
+crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
