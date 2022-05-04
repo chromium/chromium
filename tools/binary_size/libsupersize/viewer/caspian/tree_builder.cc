@@ -15,7 +15,7 @@ namespace {
 /** Name used by a directory created to hold symbols with no name. */
 constexpr const char kComponentSep = '>';
 constexpr const char kPathSep = '/';
-constexpr const char* kNoName = "(No path)";
+constexpr const char kNoPath[] = "(No path)";
 }  // namespace
 
 TreeBuilder::TreeBuilder(SizeInfo* size_info) {
@@ -53,9 +53,10 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   std::unordered_map<GroupedPath, std::vector<const BaseSymbol*>>
       symbols_by_grouped_path;
   for (const BaseSymbol* sym : symbols_) {
-    GroupedPath key =
-        GroupedPath{lens_->ParentName(*sym),
-                    sym->SourcePath() ? sym->SourcePath() : sym->ObjectPath()};
+    const char* path = *sym->SourcePath()   ? sym->SourcePath()
+                       : *sym->ObjectPath() ? sym->ObjectPath()
+                                            : kNoPath;
+    GroupedPath key = GroupedPath{lens_->ParentName(*sym), path};
     if (ShouldIncludeSymbol(key, *sym)) {
       symbols_by_grouped_path[key].push_back(sym);
     }
@@ -175,12 +176,7 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
   if (file_node == nullptr || grouped_path.path.empty()) {
     file_node = new TreeNode();
     file_node->artifact_type = ArtifactType::kFile;
-
     file_node->id_path = grouped_path;
-    if (file_node->id_path.path.empty()) {
-      file_node->id_path.path = kNoName;
-    }
-
     file_node->short_name_index =
         file_node->id_path.size() - file_node->id_path.ShortName(sep_).size();
     _parents[file_node->id_path] = file_node;
