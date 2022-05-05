@@ -207,12 +207,6 @@ source_set("views_unittests_filters") {
   ]
 }
 
-source_set("headless_browsertests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/fuchsia.headless_browsertests.filter" ]
-}
-
 source_set("services_unittests_filters") {
   testonly = true
 

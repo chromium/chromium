@@ -831,7 +831,7 @@ test("headless_browsertests") {
     "//third_party/pywebsocket3/",
   ]
 
-  data_deps = [ "//testing/buildbot/filters:headless_browsertests_filters" ]
+  data_deps = []
 
   if (is_fuchsia) {
     use_cfv2 = false
