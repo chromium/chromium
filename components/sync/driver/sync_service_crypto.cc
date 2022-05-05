@@ -343,6 +343,8 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
 
 bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This should only be called when the engine has been initialized.
+  DCHECK(state_.engine);
 
   // We should never be called with an empty passphrase.
   DCHECK(!passphrase.empty());
@@ -390,7 +392,12 @@ void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
   delegate_->SetEncryptionBootstrapToken(
       SerializeNigoriAsBootstrapToken(*nigori));
 
-  SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
+  if (state_.engine) {
+    // Engine being initialized isn't a precondition of this method. In case
+    // it's not initialized, decryption passphrase will be set later, upon
+    // initialization.
+    SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
+  }
 }
 
 std::unique_ptr<Nigori> SyncServiceCrypto::GetDecryptionNigoriKey() const {
