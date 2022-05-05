@@ -48,12 +48,11 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
   DCHECK(window_);
   // Make sure for one valid navigation, we only fire one status change
   // notification.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->HasCommitted() &&
       (navigation_handle->IsInPrimaryMainFrame() ||
-       navigation_handle->HasSubframeNavigationEntryCommitted()) &&
+       (navigation_handle->GetParentFrame() &&
+        navigation_handle->GetParentFrame()->GetPage().IsPrimary() &&
+        navigation_handle->HasSubframeNavigationEntryCommitted())) &&
       (navigation_handle->GetURL() !=
        navigation_handle->GetPreviousMainFrameURL())) {
     controller_->NavigationEntryChanged(window_);
