@@ -13,10 +13,14 @@
 
 namespace android_webview {
 
-AwGLSurface::AwGLSurface(bool is_angle) : is_angle_(is_angle) {}
+AwGLSurface::AwGLSurface(gl::GLDisplayEGL* display, bool is_angle)
+    : gl::GLSurfaceEGL(display), is_angle_(is_angle) {}
 
-AwGLSurface::AwGLSurface(scoped_refptr<gl::GLSurface> surface)
-    : is_angle_(false), wrapped_surface_(std::move(surface)) {}
+AwGLSurface::AwGLSurface(gl::GLDisplayEGL* display,
+                         scoped_refptr<gl::GLSurface> surface)
+    : gl::GLSurfaceEGL(display),
+      is_angle_(false),
+      wrapped_surface_(std::move(surface)) {}
 
 AwGLSurface::~AwGLSurface() {
   Destroy();

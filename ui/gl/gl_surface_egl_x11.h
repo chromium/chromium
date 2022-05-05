@@ -18,7 +18,7 @@ namespace gl {
 class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
                                             public x11::EventObserver {
  public:
-  explicit NativeViewGLSurfaceEGLX11(x11::Window window);
+  NativeViewGLSurfaceEGLX11(GLDisplayEGL* display, x11::Window window);
   NativeViewGLSurfaceEGLX11(const NativeViewGLSurfaceEGLX11& other) = delete;
   NativeViewGLSurfaceEGLX11& operator=(const NativeViewGLSurfaceEGLX11& rhs) =
       delete;

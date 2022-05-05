@@ -44,7 +44,8 @@ class ImageReaderGLOwnerTest : public testing::Test {
         /*init_extensions=*/true,
         /*system_device_id=*/0);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
+    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                           gfx::Size(320, 240));
     surface_->Initialize();
 
     share_group_ = new gl::GLShareGroup();
@@ -140,8 +141,8 @@ TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
   if (!IsImageReaderSupported())
     return;
 
-  scoped_refptr<gl::GLSurface> new_surface(
-      new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240)));
+  scoped_refptr<gl::GLSurface> new_surface(new gl::PbufferGLSurfaceEGL(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   new_surface->Initialize();
 
   scoped_refptr<gl::GLShareGroup> new_share_group(new gl::GLShareGroup());

@@ -113,7 +113,7 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::EraseBuffers(
 GbmSurfacelessWayland::GbmSurfacelessWayland(
     WaylandBufferManagerGpu* buffer_manager,
     gfx::AcceleratedWidget widget)
-    : SurfacelessEGL(gfx::Size()),
+    : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
       buffer_manager_(buffer_manager),
       widget_(widget),
       has_implicit_external_sync_(

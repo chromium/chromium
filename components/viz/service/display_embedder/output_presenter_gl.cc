@@ -224,7 +224,8 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
     return nullptr;
   // TODO(https://crbug.com/1012401): don't depend on GL.
   auto gl_surface = base::MakeRefCounted<gl::GLSurfaceEGLSurfaceControl>(
-      window, base::ThreadTaskRunnerHandle::Get());
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), window,
+      base::ThreadTaskRunnerHandle::Get());
   if (!gl_surface->Initialize(gl::GLSurfaceFormat())) {
     LOG(ERROR) << "Failed to initialize GLSurfaceEGLSurfaceControl.";
     return nullptr;

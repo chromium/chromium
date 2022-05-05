@@ -499,6 +499,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (!gl_disabled) {
     if (!gl_use_swiftshader_) {
       if (!CollectGraphicsInfo(&gpu_info_)) {
+        VLOG(1) << "gpu::CollectGraphicsInfo failed";
         return false;
       }
 
@@ -533,8 +534,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
           // Collect GPU info, so we can use blocklist to disable vulkan if it
           // is needed.
           GPUInfo gpu_info;
-          if (!CollectGraphicsInfo(&gpu_info))
+          if (!CollectGraphicsInfo(&gpu_info)) {
+            VLOG(1) << "gpu::CollectGraphicsInfo failed";
             return false;
+          }
           auto gpu_feature_info = ComputeGpuFeatureInfo(
               gpu_info, gpu_preferences_, command_line, nullptr);
           gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
@@ -609,8 +612,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Collect GPU process info
   if (!gl_disabled) {
-    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences))
+    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences)) {
+      VLOG(1) << "gpu::CollectGpuExtraInfo failed";
       return false;
+    }
   }
 
   if (!gl_disabled) {

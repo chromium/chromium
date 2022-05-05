@@ -42,9 +42,11 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       delegate->GetFeatureInfo()->feature_flags().android_surface_control &&
       can_be_used_with_surface_control) {
     surface = new gl::GLSurfaceEGLSurfaceControl(
-        window, base::ThreadTaskRunnerHandle::Get());
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), window,
+        base::ThreadTaskRunnerHandle::Get());
   } else {
-    surface = new gl::NativeViewGLSurfaceEGL(window, nullptr);
+    surface = new gl::NativeViewGLSurfaceEGL(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), window, nullptr);
   }
 
   bool initialize_success = surface->Initialize(format);

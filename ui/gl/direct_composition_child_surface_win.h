@@ -32,7 +32,8 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
-  DirectCompositionChildSurfaceWin(VSyncCallback vsync_callback,
+  DirectCompositionChildSurfaceWin(GLDisplayEGL* display,
+                                   VSyncCallback vsync_callback,
                                    bool use_angle_texture_offset,
                                    size_t max_pending_frames,
                                    bool force_full_damage,

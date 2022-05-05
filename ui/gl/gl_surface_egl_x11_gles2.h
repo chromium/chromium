@@ -17,7 +17,8 @@ namespace gl {
 class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
     : public NativeViewGLSurfaceEGLX11 {
  public:
-  explicit NativeViewGLSurfaceEGLX11GLES2(x11::Window window);
+  explicit NativeViewGLSurfaceEGLX11GLES2(gl::GLDisplayEGL* display,
+                                          x11::Window window);
 
   NativeViewGLSurfaceEGLX11GLES2(const NativeViewGLSurfaceEGLX11GLES2&) =
       delete;

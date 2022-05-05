@@ -129,7 +129,8 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
       const gfx::Size& size) override {
     DCHECK_EQ(size.width(), 0);
     DCHECK_EQ(size.height(), 0);
-    return gl::InitializeGLSurface(new gl::SurfacelessEGL(size));
+    return gl::InitializeGLSurface(
+        new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
   }
 
  protected:

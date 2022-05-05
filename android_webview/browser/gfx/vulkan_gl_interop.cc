@@ -54,8 +54,9 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
  public:
   GLNonOwnedCompatibilityContext()
       : gl::GLContextEGL(nullptr),
-        surface_(
-            base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(gfx::Size(1, 1))) {
+        surface_(base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+            gl::GLSurfaceEGL::GetGLDisplayEGL(),
+            gfx::Size(1, 1))) {
     gl::GLContextAttribs attribs;
     Initialize(surface_.get(), attribs);
 

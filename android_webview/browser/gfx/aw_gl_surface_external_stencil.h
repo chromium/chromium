@@ -10,7 +10,7 @@
 namespace android_webview {
 class AwGLSurfaceExternalStencil : public AwGLSurface {
  public:
-  explicit AwGLSurfaceExternalStencil(bool is_angle);
+  AwGLSurfaceExternalStencil(gl::GLDisplayEGL* display, bool is_angle);
 
   AwGLSurfaceExternalStencil(const AwGLSurfaceExternalStencil&) = delete;
   AwGLSurfaceExternalStencil& operator=(const AwGLSurfaceExternalStencil&) =

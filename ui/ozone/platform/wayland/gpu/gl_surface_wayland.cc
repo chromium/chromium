@@ -29,9 +29,11 @@ std::unique_ptr<wl_egl_window, EGLWindowDeleter> CreateWaylandEglWindow(
       window->root_surface()->surface(), size.width(), size.height()));
 }
 
-GLSurfaceWayland::GLSurfaceWayland(WaylandEglWindowPtr egl_window,
+GLSurfaceWayland::GLSurfaceWayland(gl::GLDisplayEGL* display,
+                                   WaylandEglWindowPtr egl_window,
                                    WaylandWindow* window)
     : NativeViewGLSurfaceEGL(
+          display,
           reinterpret_cast<EGLNativeWindowType>(egl_window.get()),
           nullptr),
       egl_window_(std::move(egl_window)),

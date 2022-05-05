@@ -15,8 +15,10 @@ using ui::GetLastEGLErrorString;
 namespace gl {
 
 NativeViewGLSurfaceEGLX11GLES2::NativeViewGLSurfaceEGLX11GLES2(
+    gl::GLDisplayEGL* display,
     x11::Window window)
-    : NativeViewGLSurfaceEGLX11(x11::Window::None), parent_window_(window) {}
+    : NativeViewGLSurfaceEGLX11(display, x11::Window::None),
+      parent_window_(window) {}
 
 bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
   auto* connection = GetXNativeConnection();

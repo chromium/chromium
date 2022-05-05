@@ -53,10 +53,12 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
         case gl::kGLImplementationEGLGLES2:
           DCHECK(window != gfx::kNullAcceleratedWidget);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
+              gl::GLSurfaceEGL::GetGLDisplayEGL(),
               static_cast<x11::Window>(window)));
         case gl::kGLImplementationEGLANGLE:
           DCHECK(window != gfx::kNullAcceleratedWidget);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
+              gl::GLSurfaceEGL::GetGLDisplayEGL(),
               static_cast<x11::Window>(window)));
         default:
           NOTREACHED();
@@ -70,9 +72,11 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     if (gl::GLSurfaceEGL::GetGLDisplayEGL()
             ->IsEGLSurfacelessContextSupported() &&
         size.width() == 0 && size.height() == 0) {
-      return InitializeGLSurface(new gl::SurfacelessEGL(size));
+      return InitializeGLSurface(
+          new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
     } else {
-      return InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
+      return InitializeGLSurface(new gl::PbufferGLSurfaceEGL(
+          gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
     }
   }
 

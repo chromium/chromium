@@ -57,7 +57,8 @@ class CodecImageTest : public testing::Test {
         /*init_extensions=*/false,
         /*system_device_id=*/0);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
+    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                           gfx::Size(320, 240));
     surface_->Initialize();
     share_group_ = new gl::GLShareGroup();
     context_ = new gl::GLContextEGL(share_group_.get());
@@ -281,8 +282,8 @@ TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
 
 TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   // Make a new context current.
-  scoped_refptr<gl::GLSurface> surface(
-      new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240)));
+  scoped_refptr<gl::GLSurface> surface(new gl::PbufferGLSurfaceEGL(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   surface->Initialize();
   scoped_refptr<gl::GLShareGroup> share_group(new gl::GLShareGroup());
   scoped_refptr<gl::GLContext> context(new gl::GLContextEGL(share_group.get()));

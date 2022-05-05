@@ -203,7 +203,8 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override {
     return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(size));
+        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+            gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
   }
 
  protected:

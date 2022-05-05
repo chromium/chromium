@@ -48,14 +48,14 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
     // GL rendering to Flatland views is not supported. This function is
     // used only for unittests. Return an off-screen surface, so the tests pass.
     // TODO(crbug.com/1271760): Use Vulkan in unittests and remove this hack.
-    return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::SurfacelessEGL>(gfx::Size(100, 100)));
+    return gl::InitializeGLSurface(base::MakeRefCounted<gl::SurfacelessEGL>(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(100, 100)));
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override {
-    return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::SurfacelessEGL>(size));
+    return gl::InitializeGLSurface(base::MakeRefCounted<gl::SurfacelessEGL>(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
   }
 
   gl::EGLDisplayPlatform GetNativeDisplay() override {

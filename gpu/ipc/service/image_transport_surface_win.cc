@@ -56,7 +56,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       auto settings = CreateDirectCompositionSurfaceSettings(
           delegate->GetFeatureInfo()->workarounds());
       auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
-          surface_handle, std::move(vsync_callback), settings);
+          gl::GLSurfaceEGL::GetGLDisplayEGL(), surface_handle,
+          std::move(vsync_callback), settings);
       if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
         return nullptr;
       delegate->DidCreateAcceleratedSurfaceChildWindow(surface_handle,
@@ -65,7 +66,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     } else {
       surface = gl::InitializeGLSurface(
           base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
-              surface_handle,
+              gl::GLSurfaceEGL::GetGLDisplayEGL(), surface_handle,
               std::make_unique<gl::VSyncProviderWin>(surface_handle)));
       if (!surface)
         return nullptr;

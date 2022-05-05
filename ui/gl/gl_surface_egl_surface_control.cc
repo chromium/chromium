@@ -56,9 +56,11 @@ base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
 }  // namespace
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
+    GLDisplayEGL* display,
     ANativeWindow* window,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : root_surface_name_(BuildSurfaceName(kRootSurfaceName)),
+    : GLSurfaceEGL(display),
+      root_surface_name_(BuildSurfaceName(kRootSurfaceName)),
       child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
       window_rect_(0,
                    0,
@@ -90,8 +92,7 @@ bool GLSurfaceEGLSurfaceControl::Initialize(GLSurfaceFormat format) {
   // Surfaceless is always disabled on Android so we create a 1x1 pbuffer
   // surface.
   if (!offscreen_surface_) {
-    EGLDisplay display = GetEGLDisplay();
-    if (!display) {
+    if (!display_->GetDisplay()) {
       LOG(ERROR) << "Trying to create surface with invalid display.";
       return false;
     }
@@ -99,8 +100,8 @@ bool GLSurfaceEGLSurfaceControl::Initialize(GLSurfaceFormat format) {
     EGLint pbuffer_attribs[] = {
         EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE,
     };
-    offscreen_surface_ =
-        eglCreatePbufferSurface(display, GetConfig(), pbuffer_attribs);
+    offscreen_surface_ = eglCreatePbufferSurface(display_->GetDisplay(),
+                                                 GetConfig(), pbuffer_attribs);
     if (!offscreen_surface_) {
       LOG(ERROR) << "eglCreatePbufferSurface failed with error "
                  << ui::GetLastEGLErrorString();
@@ -140,7 +141,7 @@ void GLSurfaceEGLSurfaceControl::Destroy() {
   root_surface_.reset();
 
   if (offscreen_surface_) {
-    if (!eglDestroySurface(GetEGLDisplay(), offscreen_surface_)) {
+    if (!eglDestroySurface(display_->GetDisplay(), offscreen_surface_)) {
       LOG(ERROR) << "eglDestroySurface failed with error "
                  << ui::GetLastEGLErrorString();
     }

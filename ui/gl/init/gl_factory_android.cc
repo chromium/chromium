@@ -123,7 +123,8 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
-        return InitializeGLSurface(new NativeViewGLSurfaceEGL(window, nullptr));
+        return InitializeGLSurface(new NativeViewGLSurfaceEGL(
+            GLSurfaceEGL::GetGLDisplayEGL(), window, nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }
@@ -142,10 +143,12 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
     case kGLImplementationEGLANGLE: {
       if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
           (size.width() == 0 && size.height() == 0)) {
-        return InitializeGLSurfaceWithFormat(new SurfacelessEGL(size), format);
+        return InitializeGLSurfaceWithFormat(
+            new SurfacelessEGL(GLSurfaceEGL::GetGLDisplayEGL(), size), format);
       } else {
-        return InitializeGLSurfaceWithFormat(new PbufferGLSurfaceEGL(size),
-                                             format);
+        return InitializeGLSurfaceWithFormat(
+            new PbufferGLSurfaceEGL(GLSurfaceEGL::GetGLDisplayEGL(), size),
+            format);
       }
     }
     case kGLImplementationMockGL:

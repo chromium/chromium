@@ -17,8 +17,8 @@ namespace android_webview {
 // GLSurface.
 class AwGLSurface : public gl::GLSurfaceEGL {
  public:
-  explicit AwGLSurface(bool is_angle);
-  explicit AwGLSurface(scoped_refptr<gl::GLSurface> surface);
+  AwGLSurface(gl::GLDisplayEGL* display, bool is_angle);
+  AwGLSurface(gl::GLDisplayEGL* display, scoped_refptr<gl::GLSurface> surface);
 
   AwGLSurface(const AwGLSurface&) = delete;
   AwGLSurface& operator=(const AwGLSurface&) = delete;

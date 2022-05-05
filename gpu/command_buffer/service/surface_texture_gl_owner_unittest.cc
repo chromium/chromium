@@ -45,7 +45,8 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
         /*init_extensions=*/true,
         /*system_device_id=*/0);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
+    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                           gfx::Size(320, 240));
     surface_->Initialize();
 
     share_group_ = new gl::GLShareGroup();
@@ -123,8 +124,8 @@ TEST_F(SurfaceTextureGLOwnerTest, ContextAndSurfaceAreCaptured) {
 
 // Verify that destruction works even if some other context is current.
 TEST_F(SurfaceTextureGLOwnerTest, DestructionWorksWithWrongContext) {
-  scoped_refptr<gl::GLSurface> new_surface(
-      new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240)));
+  scoped_refptr<gl::GLSurface> new_surface(new gl::PbufferGLSurfaceEGL(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   new_surface->Initialize();
 
   scoped_refptr<gl::GLShareGroup> new_share_group(new gl::GLShareGroup());

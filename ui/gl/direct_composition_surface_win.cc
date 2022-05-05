@@ -383,12 +383,14 @@ void UpdateMonitorInfo() {
 }  // namespace
 
 DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
+    GLDisplayEGL* display,
     HWND parent_window,
     VSyncCallback vsync_callback,
     const Settings& settings)
-    : GLSurfaceEGL(),
+    : GLSurfaceEGL(display),
       child_window_(parent_window),
       root_surface_(new DirectCompositionChildSurfaceWin(
+          display,
           std::move(vsync_callback),
           settings.use_angle_texture_offset,
           settings.max_pending_frames,

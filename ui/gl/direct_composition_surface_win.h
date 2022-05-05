@@ -50,6 +50,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   };
 
   DirectCompositionSurfaceWin(
+      GLDisplayEGL* display,
       HWND parent_window,
       VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);

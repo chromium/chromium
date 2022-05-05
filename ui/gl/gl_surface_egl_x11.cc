@@ -13,8 +13,9 @@
 
 namespace gl {
 
-NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(x11::Window window)
-    : NativeViewGLSurfaceEGL(static_cast<uint32_t>(window), nullptr) {}
+NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(GLDisplayEGL* display,
+                                                     x11::Window window)
+    : NativeViewGLSurfaceEGL(display, static_cast<uint32_t>(window), nullptr) {}
 
 bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
   if (!NativeViewGLSurfaceEGL::Initialize(format))

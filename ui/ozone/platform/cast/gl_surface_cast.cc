@@ -46,6 +46,7 @@ namespace ui {
 GLSurfaceCast::GLSurfaceCast(gfx::AcceleratedWidget widget,
                              GLOzoneEglCast* parent)
     : NativeViewGLSurfaceEGL(
+          GLSurfaceEGL::GetGLDisplayEGL(),
           parent->GetNativeWindow(),
           std::make_unique<gfx::FixedVSyncProvider>(base::TimeTicks(),
                                                     GetVSyncInterval())),

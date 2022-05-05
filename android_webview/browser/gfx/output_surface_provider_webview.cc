@@ -116,21 +116,22 @@ OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
 
 void OutputSurfaceProviderWebView::InitializeContext() {
   DCHECK(!gl_surface_) << "InitializeContext() called twice";
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
   // an ANGLE context for the current native GL context.
   const bool is_angle =
-      !enable_vulkan_ && gl::GLSurfaceEGL::GetGLDisplayEGL()
-                             ->IsANGLEExternalContextAndSurfaceSupported();
+      !enable_vulkan_ && display->IsANGLEExternalContextAndSurfaceSupported();
 
   GLSurfaceContextPair real_context;
   if (enable_vulkan_) {
     DCHECK(!is_angle);
     real_context = GetRealContextForVulkan();
-    gl_surface_ =
-        base::MakeRefCounted<AwGLSurface>(std::move(real_context.first));
+    gl_surface_ = base::MakeRefCounted<AwGLSurface>(
+        display, std::move(real_context.first));
   } else {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
-    gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>(is_angle);
+    gl_surface_ =
+        base::MakeRefCounted<AwGLSurfaceExternalStencil>(display, is_angle);
   }
 
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());

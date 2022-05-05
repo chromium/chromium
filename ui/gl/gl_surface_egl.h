@@ -45,8 +45,7 @@ GL_EXPORT void GetEGLInitDisplays(bool supports_angle_d3d,
 // Interface for EGL surface.
 class GL_EXPORT GLSurfaceEGL : public GLSurface {
  public:
-  GLSurfaceEGL();
-
+  explicit GLSurfaceEGL(GLDisplayEGL* display);
   GLSurfaceEGL(const GLSurfaceEGL&) = delete;
   GLSurfaceEGL& operator=(const GLSurfaceEGL&) = delete;
   virtual EGLint GetNativeVisualID() const;
@@ -77,6 +76,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 
   EGLConfig config_ = nullptr;
   GLSurfaceFormat format_;
+  GLDisplayEGL* display_ = nullptr;
 
  private:
   static bool InitializeOneOffCommon(GLDisplayEGL* display);
@@ -87,7 +87,8 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
                                          public EGLTimestampClient {
  public:
-  NativeViewGLSurfaceEGL(EGLNativeWindowType window,
+  NativeViewGLSurfaceEGL(GLDisplayEGL* display,
+                         EGLNativeWindowType window,
                          std::unique_ptr<gfx::VSyncProvider> vsync_provider);
 
   NativeViewGLSurfaceEGL(const NativeViewGLSurfaceEGL&) = delete;
@@ -192,7 +193,7 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 // Encapsulates a pbuffer EGL surface.
 class GL_EXPORT PbufferGLSurfaceEGL : public GLSurfaceEGL {
  public:
-  explicit PbufferGLSurfaceEGL(const gfx::Size& size);
+  PbufferGLSurfaceEGL(GLDisplayEGL* display, const gfx::Size& size);
 
   PbufferGLSurfaceEGL(const PbufferGLSurfaceEGL&) = delete;
   PbufferGLSurfaceEGL& operator=(const PbufferGLSurfaceEGL&) = delete;
@@ -223,7 +224,7 @@ class GL_EXPORT PbufferGLSurfaceEGL : public GLSurfaceEGL {
 // need to create a dummy EGLsurface in case we render to client API targets.
 class GL_EXPORT SurfacelessEGL : public GLSurfaceEGL {
  public:
-  explicit SurfacelessEGL(const gfx::Size& size);
+  SurfacelessEGL(GLDisplayEGL* display, const gfx::Size& size);
 
   SurfacelessEGL(const SurfacelessEGL&) = delete;
   SurfacelessEGL& operator=(const SurfacelessEGL&) = delete;

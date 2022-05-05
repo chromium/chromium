@@ -30,7 +30,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return base::WrapRefCounted<gl::GLSurface>(
-          new ImageTransportSurfaceOverlayMacEGL(delegate));
+          new ImageTransportSurfaceOverlayMacEGL(
+              gl::GLSurfaceEGL::GetGLDisplayEGL(), delegate));
 #endif
     case gl::kGLImplementationMockGL:
     case gl::kGLImplementationStubGL:

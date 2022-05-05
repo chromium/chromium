@@ -31,7 +31,8 @@ namespace gl {
 
 class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
  public:
-  explicit GLSurfaceEGLSurfaceControl(
+  GLSurfaceEGLSurfaceControl(
+      GLDisplayEGL* display,
       ANativeWindow* window,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

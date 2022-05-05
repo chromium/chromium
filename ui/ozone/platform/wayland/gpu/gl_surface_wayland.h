@@ -29,7 +29,9 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
  public:
   using WaylandEglWindowPtr = std::unique_ptr<wl_egl_window, EGLWindowDeleter>;
 
-  GLSurfaceWayland(WaylandEglWindowPtr egl_window, WaylandWindow* window);
+  GLSurfaceWayland(gl::GLDisplayEGL* display,
+                   WaylandEglWindowPtr egl_window,
+                   WaylandWindow* window);
 
   GLSurfaceWayland(const GLSurfaceWayland&) = delete;
   GLSurfaceWayland& operator=(const GLSurfaceWayland&) = delete;

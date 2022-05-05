@@ -40,7 +40,7 @@ void WaitForFence(EGLDisplay display, EGLSyncKHR fence) {
 GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
                                std::unique_ptr<DrmWindowProxy> window,
                                gfx::AcceleratedWidget widget)
-    : SurfacelessEGL(gfx::Size()),
+    : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
       surface_factory_(surface_factory),
       window_(std::move(window)),
       widget_(widget),

@@ -79,8 +79,8 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
   auto egl_window = CreateWaylandEglWindow(window);
   if (!egl_window)
     return nullptr;
-  return gl::InitializeGLSurface(
-      new GLSurfaceWayland(std::move(egl_window), window));
+  return gl::InitializeGLSurface(new GLSurfaceWayland(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), std::move(egl_window), window));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
@@ -106,9 +106,11 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
     const gfx::Size& size) {
   if (gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
       size.width() == 0 && size.height() == 0) {
-    return gl::InitializeGLSurface(new gl::SurfacelessEGL(size));
+    return gl::InitializeGLSurface(
+        new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
   } else {
-    return gl::InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
+    return gl::InitializeGLSurface(
+        new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
   }
 }
 

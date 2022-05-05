@@ -97,7 +97,8 @@ scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateOffscreenGLSurface(
     const gfx::Size& size) {
-  return gl::InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
+  return gl::InitializeGLSurface(
+      new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
 }
 
 gl::EGLDisplayPlatform GLOzoneEglCast::GetNativeDisplay() {
