@@ -17,6 +17,11 @@ struct SizePreferenceKey: PreferenceKey {
 
 /// A text view that clips long strings with a gradient mask.
 struct GradientTextView: View {
+  enum Dimensions {
+    /// When the text size variations are less than this value, they are ignored
+    /// so as to avoid triggering to many SwiftUI rendering cycles.
+    static let epsilon: CGFloat = 1.0
+  }
 
   // Text to be displayed.
   let text: NSAttributedString
@@ -45,10 +50,9 @@ struct GradientTextView: View {
     return NSLocale.characterDirection(forLanguage: languageCode as String) == .leftToRight
   }
 
-  /// True when the string doesn't fit into the text view and needs to be truncated and masked.
-  @State var truncated: Bool = false
-  /// Content text height as measured at rendering. Used to resize the container to not exceed the height of the text.
-  @State var textHeight: CGFloat = 0
+  /// Content text size as measured at rendering. Used to resize the container to not exceed the height of the text,
+  /// as well as detecting when the text needs to be truncated.
+  @State var textSize: CGSize = .zero
 
   var gradient: LinearGradient {
 
@@ -68,7 +72,6 @@ struct GradientTextView: View {
   }
 
   var body: some View {
-
     // This is equivalent to left/right since the locale is ignored below.
     let alignment: Alignment = isTextLTR ? .leading : .trailing
 
@@ -85,25 +88,29 @@ struct GradientTextView: View {
             geometry[bounds].size
           }
           .onPreferenceChange(SizePreferenceKey.self) { newSize in
-            truncated = newSize.width > geometry.size.width
-            textHeight = newSize.height
+            let textSizeChangedSufficiently =
+              abs(textSize.width - newSize.width) > Dimensions.epsilon
+              || abs(textSize.height - newSize.height) > Dimensions.epsilon
+            if textSizeChangedSufficiently {
+              textSize = newSize
+            }
           }
 
         // Wrap the text in a container with a fixed frame. The `text` is rendered
         // at fixedSize inside of it, therefore this acts as a way to clip it.
         let contents = VStack { text }
-          .frame(width: geometry.size.width, height: textHeight, alignment: alignment)
+          .frame(width: geometry.size.width, alignment: alignment)
           // Force LTR layout direction to prevent incorrect behavior in RTL locales.
           // The goal is to deal with the text language, not the user's locale.
           .environment(\.layoutDirection, .leftToRight)
 
+        let truncated = textSize.width > geometry.size.width
         if truncated {
           contents.mask(gradient)
         } else {
           contents
         }
-      }.frame(height: textHeight)
-
-    }
+      }
+    }.frame(height: textSize.height)
   }
 }
