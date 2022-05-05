@@ -14,6 +14,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -281,6 +282,50 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(const base::FilePath& file,
 
   return PublicKeyset(std::move(keys), /*fetch_time=*/now,
                       /*expiry_time=*/base::Time::Max());
+}
+
+std::vector<uint8_t> DecryptPayloadWithHpke(
+    const std::vector<uint8_t>& payload,
+    const EVP_HPKE_KEY& key,
+    const std::string& expected_serialized_shared_info) {
+  base::span<const uint8_t> enc =
+      base::make_span(payload).subspan(0, X25519_PUBLIC_VALUE_LEN);
+
+  std::vector<uint8_t> authenticated_info(
+      AggregatableReport::kDomainSeparationPrefix,
+      AggregatableReport::kDomainSeparationPrefix +
+          sizeof(AggregatableReport::kDomainSeparationPrefix));
+  authenticated_info.insert(authenticated_info.end(),
+                            expected_serialized_shared_info.begin(),
+                            expected_serialized_shared_info.end());
+
+  bssl::ScopedEVP_HPKE_CTX recipient_context;
+  if (!EVP_HPKE_CTX_setup_recipient(
+          /*ctx=*/recipient_context.get(), /*key=*/&key,
+          /*kdf=*/EVP_hpke_hkdf_sha256(),
+          /*aead=*/EVP_hpke_chacha20_poly1305(),
+          /*enc=*/enc.data(), /*enc_len=*/enc.size(),
+          /*info=*/authenticated_info.data(),
+          /*info_len=*/authenticated_info.size())) {
+    return {};
+  }
+
+  base::span<const uint8_t> ciphertext =
+      base::make_span(payload).subspan(X25519_PUBLIC_VALUE_LEN);
+  std::vector<uint8_t> plaintext(ciphertext.size());
+  size_t plaintext_len;
+
+  if (!EVP_HPKE_CTX_open(
+          /*ctx=*/recipient_context.get(), /*out=*/plaintext.data(),
+          /*out_len*/ &plaintext_len, /*max_out_len=*/plaintext.size(),
+          /*in=*/ciphertext.data(), /*in_len=*/ciphertext.size(),
+          /*ad=*/nullptr,
+          /*ad_len=*/0)) {
+    return {};
+  }
+
+  plaintext.resize(plaintext_len);
+  return plaintext;
 }
 
 }  // namespace aggregation_service

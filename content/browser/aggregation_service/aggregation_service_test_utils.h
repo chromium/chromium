@@ -74,6 +74,12 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(
     base::Time now,
     std::string* error_msg = nullptr);
 
+// Returns empty vector in the case of an error.
+std::vector<uint8_t> DecryptPayloadWithHpke(
+    const std::vector<uint8_t>& payload,
+    const EVP_HPKE_KEY& key,
+    const std::string& expected_serialized_shared_info);
+
 }  // namespace aggregation_service
 
 // The strings "ABCD1234" and "EFGH5678", Base64-decoded to bytes. Note that

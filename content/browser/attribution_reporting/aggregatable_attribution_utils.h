@@ -44,8 +44,8 @@ enum class AssembleAggregatableReportStatus {
   kMaxValue = kAssembleReportFailed,
 };
 
-absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
-    const AttributionReport& report);
+CONTENT_EXPORT absl::optional<AggregatableReportRequest>
+CreateAggregatableReportRequest(const AttributionReport& report);
 
 }  // namespace content
 
