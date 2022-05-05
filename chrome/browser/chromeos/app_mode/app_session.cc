@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
@@ -56,7 +57,19 @@ const char kKioskMetrics[] = "kiosk-metrics";
 
 const char kKioskSessionStateHistogram[] = "Kiosk.SessionState";
 const char kKioskSessionCountPerDayHistogram[] = "Kiosk.Session.CountPerDay";
+const char kKioskSessionDurationNormalHistogram[] =
+    "Kiosk.SessionDuration.Normal";
+const char kKioskSessionDurationInDaysNormalHistogram[] =
+    "Kiosk.SessionDurationInDays.Normal";
+const char kKioskSessionDurationCrashedHistogram[] =
+    "Kiosk.SessionDuration.Crashed";
+const char kKioskSessionDurationInDaysCrashedHistogram[] =
+    "Kiosk.SessionDurationInDays.Crashed";
 const char kKioskSessionLastDayList[] = "last-day-sessions";
+const char kKioskSessionStartTime[] = "session-start-time";
+
+const int kKioskHistogramBucketCount = 100;
+const base::TimeDelta kKioskSessionDurationHistogramLimit = base::Days(1);
 
 namespace {
 
@@ -118,29 +131,39 @@ class AppSessionMetricsService {
   ~AppSessionMetricsService() = default;
 
   void RecordKioskSessionStarted() {
+    RecordPreviousKioskSessionCrashIfAny();
     RecordKioskSessionState(KioskSessionState::kStarted);
     RecordKioskSessionCountPerDay();
   }
 
   void RecordKioskSessionWebStarted() {
+    RecordPreviousKioskSessionCrashIfAny();
     RecordKioskSessionState(KioskSessionState::kWebStarted);
     RecordKioskSessionCountPerDay();
   }
 
-  void RecordKioskSessionStopped() const {
+  void RecordKioskSessionStopped() {
     RecordKioskSessionState(KioskSessionState::kStopped);
+    RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
+                               kKioskSessionDurationInDaysNormalHistogram);
   }
 
-  void RecordKioskSessionCrashed() const {
+  void RecordKioskSessionCrashed() {
     RecordKioskSessionState(KioskSessionState::kCrashed);
+    RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
+                               kKioskSessionDurationInDaysCrashedHistogram);
   }
 
-  void RecordKioskSessionPluginCrashed() const {
+  void RecordKioskSessionPluginCrashed() {
     RecordKioskSessionState(KioskSessionState::kPluginCrashed);
+    RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
+                               kKioskSessionDurationInDaysCrashedHistogram);
   }
 
-  void RecordKioskSessionPluginHung() const {
+  void RecordKioskSessionPluginHung() {
     RecordKioskSessionState(KioskSessionState::kPluginHung);
+    RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
+                               kKioskSessionDurationInDaysCrashedHistogram);
   }
 
  private:
@@ -153,16 +176,53 @@ class AppSessionMetricsService {
                                 RetrieveLastDaySessionCount(base::Time::Now()));
   }
 
+  void RecordKioskSessionDuration(
+      const std::string& kiosk_session_duration_histogram,
+      const std::string& kiosk_session_duration_in_days_histogram) {
+    if (start_time_.is_null())
+      return;
+    base::TimeDelta duration = base::Time::Now() - start_time_;
+    if (duration >= kKioskSessionDurationHistogramLimit) {
+      base::UmaHistogramCounts100(kiosk_session_duration_in_days_histogram,
+                                  std::min(100, duration.InDays()));
+      duration = kKioskSessionDurationHistogramLimit;
+    }
+    base::UmaHistogramCustomTimes(
+        kiosk_session_duration_histogram, duration, base::Seconds(1),
+        kKioskSessionDurationHistogramLimit, kKioskHistogramBucketCount);
+    ClearStartTime();
+  }
+
+  void RecordPreviousKioskSessionCrashIfAny() {
+    const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
+
+    if (!metrics_value)
+      return;
+    const auto* metrics_dict = metrics_value->GetIfDict();
+    DCHECK(metrics_dict);
+
+    const auto* previous_start_time_value =
+        metrics_dict->Find(kKioskSessionStartTime);
+    if (!previous_start_time_value)
+      return;
+    auto previous_start_time = base::ValueToTime(previous_start_time_value);
+    if (!previous_start_time.has_value())
+      return;
+    // Setup |start_time_| to the previous not correctly completed session's
+    // start time. |start_time_| will be cleared once the crash session metrics
+    // are recorded.
+    start_time_ = previous_start_time.value();
+    RecordKioskSessionCrashed();
+  }
+
   size_t RetrieveLastDaySessionCount(base::Time session_start_time) {
     const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
     const base::Value::List* previous_times = nullptr;
-
     if (metrics_value) {
       const auto* metrics_dict = metrics_value->GetIfDict();
       DCHECK(metrics_dict);
 
       const auto* times_value = metrics_dict->Find(kKioskSessionLastDayList);
-
       if (times_value) {
         previous_times = times_value->GetIfList();
         DCHECK(previous_times);
@@ -179,17 +239,39 @@ class AppSessionMetricsService {
         }
       }
     }
-
     times.Append(base::TimeToValue(session_start_time));
     size_t result = times.size();
 
+    start_time_ = session_start_time;
+
     base::Value::Dict result_value;
     result_value.Set(kKioskSessionLastDayList, std::move(times));
+    result_value.Set(kKioskSessionStartTime, base::TimeToValue(start_time_));
     prefs_->SetDict(kKioskMetrics, std::move(result_value));
     return result;
   }
 
+  void ClearStartTime() {
+    start_time_ = base::Time();
+    const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
+    if (!metrics_value)
+      return;
+    const auto* metrics_dict = metrics_value->GetIfDict();
+    DCHECK(metrics_dict);
+
+    base::Value::Dict new_metrics_dict = metrics_dict->Clone();
+    DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));
+
+    prefs_->SetDict(kKioskMetrics, std::move(new_metrics_dict));
+  }
+
   PrefService* prefs_;
+  // Initialized once the kiosk session is started or during recording of the
+  // previously crashed kiosk session metrics.
+  // Cleared once the session's duration metric is recorded:
+  // either the session is successfully finished or crashed or on the next
+  // session startup.
+  base::Time start_time_;
 };
 
 class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {

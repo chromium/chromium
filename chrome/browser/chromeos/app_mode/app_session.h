@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
 class PrefRegistrySimple;
@@ -30,7 +31,15 @@ namespace chromeos {
 extern const char kKioskMetrics[];
 extern const char kKioskSessionStateHistogram[];
 extern const char kKioskSessionCountPerDayHistogram[];
+extern const char kKioskSessionDurationNormalHistogram[];
+extern const char kKioskSessionDurationInDaysNormalHistogram[];
+extern const char kKioskSessionDurationCrashedHistogram[];
+extern const char kKioskSessionDurationInDaysCrashedHistogram[];
+
 extern const char kKioskSessionLastDayList[];
+extern const char kKioskSessionStartTime[];
+
+extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
 
 class KioskSessionPluginHandler;
 class AppSessionMetricsService;

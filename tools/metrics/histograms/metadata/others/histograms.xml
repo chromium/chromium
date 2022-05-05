@@ -6773,8 +6773,62 @@ chromium-metrics-reviews@google.com.
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
-    Chrome OS only. Count of Kiosk sessions in the last 24h. Logged each time a
+    ChromeOS only. Count of Kiosk sessions in the last 24h. Logged each time a
     kiosk session is started.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.SessionDuration.Crashed" units="ms"
+    expires_after="2023-04-20">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Duration of a kiosk session that ended with a crash. Metrics
+    in this histogram are capped to 1 day (24 hours) to measure the number of
+    long sessions compared to short ones. See also
+    Kiosk.SessionDurationInDays.Crashed.
+
+    Note: Duration may be longer than actual session duration, because some
+    crashes can be detected only on the next session start up. In those cases a
+    duration effectively is a time between crashed session start and the
+    following kiosk session start.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.SessionDuration.Normal" units="ms"
+    expires_after="2023-04-20">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Duration of a kiosk session that ended successfully. Metrics
+    in this histogram are capped to 1 day (24 hours) to measure the number of
+    long sessions compared to short ones. See also
+    Kiosk.SessionDurationInDays.Normal.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.SessionDurationInDays.Crashed" units="days"
+    expires_after="2023-04-20">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Duration in days of a kiosk session that ended with a crash.
+    This metric only tracks kiosk sessions that last longer than 1 day.
+
+    Note: Duration may be longer than actual session duration, because some
+    crashes can be detected only on the next session start up. In those cases a
+    duration effectively is a time between crashed session start and the
+    following kiosk session start.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.SessionDurationInDays.Normal" units="days"
+    expires_after="2023-04-20">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Duration in days of a kiosk session that ended successfully.
+    This metric only tracks kiosk sessions that last longer than 1 day.
   </summary>
 </histogram>
 
@@ -6783,8 +6837,9 @@ chromium-metrics-reviews@google.com.
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
-    Chrome OS only. Records kiosk session states, whether it is started, closed,
-    crashed, etc. Emitted when the kiosk session state changes.
+    ChromeOS only. Records kiosk session states, whether it is started, closed,
+    crashed, etc. Emitted when the kiosk session state changes. Crashed kiosk
+    sessions can be detected on the following kiosk start.
   </summary>
 </histogram>
 

@@ -100,6 +100,8 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
                               KioskSessionState::kStopped, 1);
   EXPECT_EQ(2, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
 
+  histogram.ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
+  histogram.ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
   histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
 
@@ -121,6 +123,9 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
     base::Value::Dict value;
     value.Set(kKioskSessionLastDayList, std::move(session_list));
+    value.Set(kKioskSessionStartTime,
+              base::TimeToValue(base::Time::Now() -
+                                2 * kKioskSessionDurationHistogramLimit));
 
     local_state()->SetDict(kKioskMetrics, std::move(value));
   }
@@ -143,8 +148,16 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,
                               KioskSessionState::kWebStarted, 1);
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kCrashed, 1);
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
                               KioskSessionState::kStopped, 1);
-  EXPECT_EQ(2, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+  EXPECT_EQ(3, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+
+  histogram.ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
+  histogram.ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
+
+  histogram.ExpectTotalCount(kKioskSessionDurationInDaysCrashedHistogram, 1);
+  histogram.ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
 
   histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
