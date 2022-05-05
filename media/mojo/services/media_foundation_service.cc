@@ -73,10 +73,15 @@ constexpr VideoCodec kAllVideoCodecs[] = {
 
 constexpr AudioCodec kAllAudioCodecs[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    AudioCodec::kAAC,        AudioCodec::kEAC3, AudioCodec::kAC3,
+    AudioCodec::kAAC,
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    AudioCodec::kEAC3, AudioCodec::kAC3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
     AudioCodec::kMpegHAudio,
-#endif
-    AudioCodec::kVorbis,     AudioCodec::kFLAC, AudioCodec::kOpus};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    AudioCodec::kVorbis, AudioCodec::kFLAC, AudioCodec::kOpus};
 
 constexpr EncryptionScheme kAllEncryptionSchemes[] = {EncryptionScheme::kCenc,
                                                       EncryptionScheme::kCbcs};
