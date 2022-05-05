@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
+#import "ios/chrome/browser/ui/main/scene_ui_provider.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,18 +49,35 @@
       _identityObserverBridge;
 }
 
-@property(nonatomic, weak) CommandDispatcher* dispatcher;
+// Handler of application commands.
+@property(nonatomic, weak, readonly) id<ApplicationCommands>
+    applicationCommandsHandler;
 
 // Browser of the main interface of the scene.
 @property(nonatomic, assign) Browser* mainBrowser;
+
+// SceneUIProvider that provides the scene UI objects.
+@property(nonatomic, weak, readonly) id<SceneUIProvider> sceneUIProvider;
+
+// Handler of policy change commands.
+@property(nonatomic, weak, readonly) id<PolicyChangeCommands>
+    policyChangeCommandsHandler;
 
 @end
 
 @implementation SigninPolicySceneAgent
 
-- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  if ([super init])
-    _dispatcher = dispatcher;
+- (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
+             applicationCommandsHandler:
+                 (id<ApplicationCommands>)applicationCommandsHandler
+            policyChangeCommandsHandler:
+                (id<PolicyChangeCommands>)policyChangeCommandsHandler {
+  self = [super init];
+  if (self) {
+    _sceneUIProvider = sceneUIProvider;
+    _applicationCommandsHandler = applicationCommandsHandler;
+    _policyChangeCommandsHandler = policyChangeCommandsHandler;
+  }
   return self;
 }
 
@@ -190,8 +208,7 @@
 
   if (self.sceneState.appState.shouldShowForceSignOutPrompt) {
     // Show the sign-out prompt if the user was signed out due to policy.
-    [HandlerForProtocol(self.dispatcher, PolicyChangeCommands)
-        showForceSignedOutPrompt];
+    [self.policyChangeCommandsHandler showForceSignedOutPrompt];
     self.sceneState.appState.shouldShowForceSignOutPrompt = NO;
   }
 
@@ -215,12 +232,9 @@
     // sign-in prompt.
     __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
         std::make_unique<ScopedUIBlocker>(self.sceneState);
-    // Prompt to sign in if required by policy.
-    id<ApplicationCommands> handler =
-        HandlerForProtocol(self.dispatcher, ApplicationCommands);
 
     __weak __typeof(self) weakSelf = self;
-    [handler dismissModalDialogsWithCompletion:^{
+    [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{
       [weakSelf showForcedSigninPrompt];
       // Remove the blocker after the showSignin: command to make sure that the
       // blocker doesn't go down to 0 in which case the other scenes will try to
@@ -240,10 +254,9 @@
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:nil];
 
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
-  [handler showSignin:command
-      baseViewController:self.sceneState.controller.activeViewController];
+  [self.applicationCommandsHandler
+              showSignin:command
+      baseViewController:[self.sceneUIProvider activeViewController]];
 }
 
 // YES if the scene and the app are in a state where the UI of the scene is

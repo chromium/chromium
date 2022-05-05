@@ -113,5 +113,10 @@ const char kWebSQLAccess[] = "policy.web_sql_access";
 const char kLastPolicyCheckTime[] = "policy.last_policy_check_time";
 #endif
 
+#if BUILDFLAG(IS_IOS)
+const char kUserPolicyNotificationWasShown[] =
+    "policy.user_policy_notification_was_shown";
+#endif
+
 }  // namespace policy_prefs
 }  // namespace policy

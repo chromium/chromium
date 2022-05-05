@@ -488,6 +488,12 @@ Things to consider:
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chrome just got better! A new version is available.
       </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE" desc="The subtitle of the User Policy notification dialog. [iOS only] [300em]">
+        You are signed in and syncing your data with an account managed by <ph name="DOMAIN">$1<ex>doe.com</ex></ph> where its administrator can now set user policies specific to that account that can change the behavior of Chrome.
+      </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_TITLE" desc="The title of the User Policy notification dialog. [iOS only] [300em]">
+        Chrome now supports user policies for your managed account
+      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS auto-fill from Chrome password manager [iOS only]">
         Select Chrome
       </message>

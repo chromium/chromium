@@ -43,6 +43,9 @@ POLICY_EXPORT extern const char kWebSQLAccess[];
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 POLICY_EXPORT extern const char kLastPolicyCheckTime[];
 #endif
+#if BUILDFLAG(IS_IOS)
+POLICY_EXPORT extern const char kUserPolicyNotificationWasShown[];
+#endif
 
 }  // namespace policy_prefs
 }  // namespace policy

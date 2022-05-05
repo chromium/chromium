@@ -67,6 +67,11 @@ enum ProfileSignout : int {
   USER_CLICKED_SIGNOUT_PROFILE_MENU = 17,
   // User retriggered signin from the Android web sign-in bottomsheet.
   SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN = 18,
+  // User clicked on sign-out from the notification dialog for User Policy. The
+  // notification informs the user that from now on user policies may be
+  // effective on their browser if they Sync with their managed account. The
+  // user has the option to sign out to avoid user policies.
+  USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG = 19,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };

@@ -3409,6 +3409,12 @@ New Search
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION" desc="Button label that appears on a button to switch to some other window, when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used.">
           Switch to Open Window
       </message>
+      <message name="IDS_IOS_USER_POLICY_CONTINUE" desc="Label of the button to continue with the current managed account in the User Policy notification dialog. [iOS only] [300em]">
+        Continue
+      </message>
+      <message name="IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA" desc="Label of the button to sign out the current managed account and clear its data in the User Policy notification dialog. [iOS only] [300em]">
+        Sign Out and Clear Data
+      </message>
       <message name="IDS_IOS_APP_SWITCHER_SCENE_TITLE" desc="Shown under the Application title in the OS-level app switcher with the number of tabs in the window">
         {count, plural,
           =0 {{domain}}

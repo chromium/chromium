@@ -1,0 +1,36 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("user_policy_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "user_policy_scene_agent.h",
+    "user_policy_scene_agent.mm",
+    "user_policy_util.h",
+    "user_policy_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/ios",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_ui_provider",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

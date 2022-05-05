@@ -37,6 +37,7 @@
 #include "components/payments/core/payment_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_statistics_collector.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -336,6 +337,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
+
+  // Register pref used to determine whether the User Policy notification was
+  // already shown.
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kUserPolicyNotificationWasShown, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

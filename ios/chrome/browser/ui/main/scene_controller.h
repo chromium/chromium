@@ -42,10 +42,6 @@
 // YES if the tab grid is the main user interface at the moment.
 @property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;
 
-// The view controller that is active. Can be either a BrowserViewController or
-// TabGridViewController.
-@property(nonatomic, readonly) UIViewController* activeViewController;
-
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:

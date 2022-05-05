@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -101,9 +102,12 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_ui_provider.h"
 #import "ios/chrome/browser/ui/main/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
+#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -192,6 +196,7 @@ bool IsSigninForcedByPolicy() {
 @interface SceneController () <AppStateObserver,
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
+                               SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
                                UserFeedbackDataSource,
@@ -369,10 +374,6 @@ bool IsSigninForcedByPolicy() {
 
 - (BOOL)tabGridVisible {
   return self.mainCoordinator.isTabGridActive;
-}
-
-- (UIViewController*)activeViewController {
-  return self.mainCoordinator.activeViewController;
 }
 
 #pragma mark - SceneStateObserver
@@ -855,12 +856,34 @@ bool IsSigninForcedByPolicy() {
     [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];
   }
 
-  [self.sceneState
-      addAgent:[[SigninPolicySceneAgent alloc]
-                   initWithCommandDispatcher:mainCommandDispatcher]];
-
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
+
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
+  id<PolicyChangeCommands> policyChangeCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
+
+  [self.sceneState
+      addAgent:[[SigninPolicySceneAgent alloc]
+                       initWithSceneUIProvider:self
+                    applicationCommandsHandler:applicationCommandsHandler
+                   policyChangeCommandsHandler:policyChangeCommandsHandler]];
+
+  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
+  PrefService* prefService = browserState->GetPrefs();
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+
+  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+    [self.sceneState
+        addAgent:[[UserPolicySceneAgent alloc]
+                        initWithSceneUIProvider:self
+                                    authService:authService
+                     applicationCommandsHandler:applicationCommandsHandler
+                                    prefService:prefService
+                                    mainBrowser:mainBrowser]];
+  }
 
   // Now that the main browser's command dispatcher is created and the newly
   // started UI coordinators have registered with it, inject it into the
@@ -868,10 +891,8 @@ bool IsSigninForcedByPolicy() {
   // changes.
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  id<PolicyChangeCommands> handler =
-      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
   policyWatcherAgent->AddObserver(_policyWatcherObserverBridge.get());
-  policyWatcherAgent->Initialize(handler);
+  policyWatcherAgent->Initialize(policyChangeCommandsHandler);
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
       initWithBrowserInterfaceProvider:self.browserViewWrangler];
@@ -1020,7 +1041,7 @@ bool IsSigninForcedByPolicy() {
         browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
-  [self maybeShowDefaultBrowserPromo];
+  [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
 }
 
 // |YES| if Chrome is not the default browser, the app did not crash recently,
@@ -1040,9 +1061,23 @@ bool IsSigninForcedByPolicy() {
          !fre_field_trial::IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 }
 
-- (void)maybeShowDefaultBrowserPromo {
+- (void)maybeShowDefaultBrowserPromo:(Browser*)browser {
+  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
+  PrefService* prefService = browserState->GetPrefs();
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+
   if (self.sceneState.appState.startupInformation.isFirstRun ||
+      IsUserPolicyNotificationNeeded(authService, prefService) ||
       ![self potentiallyInterestedUser]) {
+    // Don't show the default browser promo when either (1) the user is going
+    // through the First Run screens, (2) the user MUST see the User Policy
+    // notification, OR (3) it was determined that the user isn't potentially
+    // interested in that promo.
+    //
+    // Showing the User Policy notification has priority over showing the
+    // default browser promo. Both dialogs are competing for the same time slot
+    // which is after the browser startup and the browser UI is initialized.
     return;
   }
   // Show the Default Browser promo UI if the user's past behavior fits
@@ -3231,6 +3266,12 @@ bool IsSigninForcedByPolicy() {
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
   }
+}
+
+#pragma mark - SceneUIProvider
+
+- (UIViewController*)activeViewController {
+  return self.mainCoordinator.activeViewController;
 }
 
 @end
