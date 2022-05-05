@@ -20,7 +20,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
@@ -2178,18 +2178,18 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientPolicyWithFeatureEnabledTest,
 
   // Without setting up the enterprise policy, desk templates feature is
   // controlled by feature flag, which is enabled in this test.
-  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_TRUE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 
   // Disable desk templates through policy.
   SetDeskTemplateEnabledPolicy(false);
   // Desk templates feature should be disabled, despite feature flag is set to
   // enabled.
-  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_FALSE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 
   // Enable desk templates through policy.
   SetDeskTemplateEnabledPolicy(true);
   // Desk templates feature should be enabled.
-  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_TRUE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 }
 
 class DesksTemplatesClientPolicyWithFeatureDisabledTest
@@ -2211,18 +2211,18 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientPolicyWithFeatureDisabledTest,
 
   // Without setting up the enterprise policy, desk templates feature is
   // controlled by feature flag, which is disabled in this test.
-  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_FALSE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 
   // Disable desk templates through policy.
   SetDeskTemplateEnabledPolicy(false);
   // Desk templates feature should be disabled.
-  EXPECT_FALSE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_FALSE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 
   // Enable desk templates through policy.
   SetDeskTemplateEnabledPolicy(true);
   // Desk templates feature should be enabled, despite feature flag is set to
   // disabled.
-  EXPECT_TRUE(ash::desks_templates_util::AreDesksTemplatesEnabled());
+  EXPECT_TRUE(ash::saved_desk_util::AreDesksTemplatesEnabled());
 }
 
 class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {

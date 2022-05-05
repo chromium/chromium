@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_animations.h"
+#include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_builder.h"

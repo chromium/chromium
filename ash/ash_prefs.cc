@@ -51,7 +51,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -81,7 +81,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   ClipboardNudgeController::RegisterProfilePrefs(registry);
   DarkModeController::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
-  desks_templates_util::RegisterProfilePrefs(registry);
+  saved_desk_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);

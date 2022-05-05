@@ -31,7 +31,7 @@
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -217,7 +217,7 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       // call this function past shutdown start. In this case we just continue
       // as if the saved desks Ui should be hidden.
       const bool should_show_templates_ui =
-          desks_templates_util::IsSavedDesksEnabled() &&
+          saved_desk_util::IsSavedDesksEnabled() &&
           !bar_view_->overview_grid()->overview_session()->is_shutting_down() &&
           DesksTemplatesPresenter::Get()->should_show_templates_ui();
       auto* zero_state_desks_templates_button =
@@ -378,7 +378,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
-  if (desks_templates_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::IsSavedDesksEnabled()) {
     expanded_state_desks_templates_button_ =
         scroll_view_contents_->AddChildView(
             std::make_unique<ExpandedDesksBarButton>(
@@ -978,7 +978,7 @@ void DesksBarView::OnNewDeskButtonPressed(
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
-  if (IsZeroState() || !desks_templates_util::IsSavedDesksEnabled())
+  if (IsZeroState() || !saved_desk_util::IsSavedDesksEnabled())
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
@@ -989,7 +989,7 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
 }
 
 void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
-  if (!desks_templates_util::IsSavedDesksEnabled())
+  if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
   const bool should_show_ui =

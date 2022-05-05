@@ -32,8 +32,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
@@ -170,7 +170,7 @@ void OverviewSession::Init(const WindowList& windows,
                            const WindowList& hide_windows) {
   Shell::Get()->AddShellObserver(this);
 
-  if (desks_templates_util::IsSavedDesksEnabled())
+  if (saved_desk_util::IsSavedDesksEnabled())
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
@@ -183,8 +183,7 @@ void OverviewSession::Init(const WindowList& windows,
   }
 
   // Create this before the desks bar widget.
-  if (desks_templates_util::IsSavedDesksEnabled() &&
-      !desks_templates_presenter_) {
+  if (saved_desk_util::IsSavedDesksEnabled() && !desks_templates_presenter_) {
     desks_templates_presenter_ =
         std::make_unique<DesksTemplatesPresenter>(this);
     saved_desk_dialog_controller_ =
@@ -795,7 +794,7 @@ void OverviewSession::OnWindowActivating(
 
   // Activating or deactivating one of the confirmation dialogs associated with
   // desks templates should not end overview.
-  if (gained_active && desks_templates_util::IsSavedDesksEnabled()) {
+  if (gained_active && saved_desk_util::IsSavedDesksEnabled()) {
     if (ShouldKeepOverviewOpenForSavedDeskDialog(gained_active, lost_active))
       return;
   }
@@ -887,7 +886,7 @@ void OverviewSession::OnWindowActivating(
 }
 
 bool OverviewSession::IsTemplatesUiLosingActivation(aura::Window* lost_active) {
-  if (!desks_templates_util::IsSavedDesksEnabled() || !lost_active)
+  if (!saved_desk_util::IsSavedDesksEnabled() || !lost_active)
     return false;
 
   for (auto& grid : grid_list_) {
@@ -1296,7 +1295,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         // templates grid slightly quicker.
         // TODO(crbug.com/1281685): Remove before feature launch.
 #if !defined(OFFICIAL_BUILD)
-      if (!desks_templates_util::IsSavedDesksEnabled())
+      if (!saved_desk_util::IsSavedDesksEnabled())
         return;
 
       // There are no templates to be viewed.
@@ -1420,7 +1419,7 @@ void OverviewSession::OnTabletModeEnded() {
 }
 
 void OverviewSession::OnTabletModeChanged() {
-  DCHECK(desks_templates_util::IsSavedDesksEnabled());
+  DCHECK(saved_desk_util::IsSavedDesksEnabled());
   DCHECK(desks_templates_presenter_);
   desks_templates_presenter_->UpdateDesksTemplatesUI();
 }
@@ -1519,7 +1518,7 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
 bool OverviewSession::ShouldKeepOverviewOpenForSavedDeskDialog(
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  DCHECK(desks_templates_util::IsSavedDesksEnabled());
+  DCHECK(saved_desk_util::IsSavedDesksEnabled());
   const views::Widget* dialog_widget =
       saved_desk_dialog_controller_->dialog_widget();
   if (!dialog_widget)

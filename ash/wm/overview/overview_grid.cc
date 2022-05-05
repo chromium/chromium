@@ -32,13 +32,13 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
@@ -1857,7 +1857,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // overview grid changes, i.e. switches between active desks and/or the
   // templates grid. This will be needed when we make it so that switching desks
   // keeps us in overview mode.
-  if (!desks_templates_util::IsSavedDesksEnabled())
+  if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
   // If there is only one item and it is animating to close, hide the widget as
@@ -2491,7 +2491,7 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
 
 void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
                                                         bool increment) {
-  if (!desks_templates_util::IsSavedDesksEnabled())
+  if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
   // Count apps without full restore in `num_unsupported_windows_`. This is to

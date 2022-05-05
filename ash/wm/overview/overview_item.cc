@@ -18,7 +18,7 @@
 #include "ash/style/default_colors.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/templates/desks_templates_animations.h"
+#include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"

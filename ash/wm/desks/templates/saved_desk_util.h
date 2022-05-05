@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_UTIL_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_UTIL_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
 
 #include "ash/ash_export.h"
 
@@ -11,7 +11,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-namespace desks_templates_util {
+namespace saved_desk_util {
 
 // Registers the per-profile preferences for whether desks templates are
 // enabled.
@@ -23,7 +23,7 @@ ASH_EXPORT bool IsDeskSaveAndRecallEnabled();
 
 ASH_EXPORT bool IsSavedDesksEnabled();
 
-}  // namespace desks_templates_util
+}  // namespace saved_desk_util
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_UTIL_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_

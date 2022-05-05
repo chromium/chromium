@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -20,7 +20,7 @@ PrefService* GetPrimaryUserPrefService() {
 
 }  // namespace
 
-namespace desks_templates_util {
+namespace saved_desk_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDeskTemplatesEnabled, false);
@@ -55,5 +55,5 @@ bool IsSavedDesksEnabled() {
   return AreDesksTemplatesEnabled() || IsDeskSaveAndRecallEnabled();
 }
 
-}  // namespace desks_templates_util
+}  // namespace saved_desk_util
 }  // namespace ash
