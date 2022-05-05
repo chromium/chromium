@@ -127,5 +127,5 @@ rm -fr %{buildroot}
 %doc python/tests/*.xsl
 
 %changelog
-* Mon Mar 28 2022 Daniel Veillard <veillard@redhat.com>
+* Tue May  3 2022 Daniel Veillard <veillard@redhat.com>
 - upstream release 1.1.35

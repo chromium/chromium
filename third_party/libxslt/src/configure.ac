@@ -8,6 +8,7 @@ m4_define([MICRO_VERSION], [35])
 AC_INIT([libxslt], [MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([libxslt/xslt.c])
 AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 AC_USE_SYSTEM_EXTENSIONS
 
@@ -66,36 +67,9 @@ AC_SUBST(LIBEXSLT_VERSION_INFO)
 AC_SUBST(LIBEXSLT_VERSION_NUMBER)
 AC_SUBST(LIBEXSLT_VERSION_EXTRA)
 
-AM_INIT_AUTOMAKE([foreign])
-
-# AM_MAINTAINER_MODE
-
-# Support silent build rules, requires at least automake-1.11. Disable
-# by either passing --disable-silent-rules to configure or passing V=1
-# to make
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
-dnl
-dnl Specific dir for HTML output ?
-dnl
-
-AC_ARG_WITH(html-dir, AS_HELP_STRING([--with-html-dir=path],
-            [path to base html directory, default $datadir/doc/html]),
-            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
-
-AC_ARG_WITH(html-subdir, AS_HELP_STRING([--with-html-subdir=path],
-            [directory used under html-dir, default $PACKAGE-$VERSION/html]),
-            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
-            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
-
-AC_SUBST(HTML_DIR)
-
-AC_ARG_ENABLE(rebuild-docs,
-[  --enable-rebuild-docs[[=yes/no]]  rebuild some generated docs [[default=no]]])
-if test "$enable_rebuild_docs" = "yes" -a "$srcdir" != "."; then
-  AC_MSG_ERROR([cannot rebuild docs when builddir != srcdir])
-fi
-AM_CONDITIONAL([REBUILD_DOCS], [test "$enable_rebuild_docs" = "yes"])
+AM_INIT_AUTOMAKE([1.15 foreign no-dist-gzip dist-xz])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
 
 dnl
 dnl Check the environment
@@ -108,10 +82,11 @@ AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
 AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
 PKG_PROG_PKG_CONFIG
 
-LT_INIT(win32-dll)
+LT_INIT([disable-static win32-dll])
+LT_LIB_M
 
 
-AC_CHECK_HEADERS(sys/types.h sys/time.h stdlib.h unistd.h string.h)
+AC_CHECK_HEADERS(sys/types.h sys/time.h unistd.h)
 
 dnl
 dnl if the system support linker version scripts for symbol versioning
@@ -157,25 +132,14 @@ dnl
 dnl Math detection
 dnl
 
-AC_CHECK_HEADERS(ieeefp.h nan.h math.h fp_class.h float.h)
-AC_CHECK_HEADERS(sys/timeb.h time.h sys/stat.h sys/select.h stdarg.h)
-AC_CHECK_HEADERS(errno.h)
+AC_CHECK_HEADERS(sys/timeb.h sys/stat.h sys/select.h)
 AC_CHECK_FUNCS(stat _stat)
-AC_CHECK_FUNC(pow, , AC_CHECK_LIB(m, pow,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_POW],[], [Define if pow is there])]))
-
-AC_CHECK_FUNC(floor, , AC_CHECK_LIB(m, floor,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_FLOOR],[], [Define if floor is there])]))
-
-AC_CHECK_FUNC(fabs, , AC_CHECK_LIB(m, fabs,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_FABS],[], [Define if fabs is there])]))
-
 
 AC_CHECK_FUNCS(gettimeofday)
-AC_CHECK_FUNCS(localtime localtime_r time gmtime gmtime_r ftime)
+AC_CHECK_FUNCS(localtime_r gmtime_r ftime)
 
 dnl Checking the standard string functions availability
-AC_CHECK_FUNCS(printf sprintf fprintf snprintf vfprintf vsprintf vsnprintf sscanf,,
+AC_CHECK_FUNCS(snprintf vsnprintf,,
                NEED_TRIO=1)
 
 dnl Checking for POSIX timers
@@ -216,121 +180,14 @@ dnl
 dnl check for python
 dnl
 
-PYTHON_VERSION=
-PYTHON_INCLUDES=
-PYTHON_SITE_PACKAGES=
-PYTHON_TESTS=
-pythondir=
 AC_ARG_WITH(python,
-[  --with-python[[=DIR]]     build Python bindings if found])
-AC_ARG_WITH(python_install_dir,
-[  --with-python-install-dir=DIR
-                          install Python bindings in DIR])
-if test "$with_python" != "no" ; then
-    if test -x "$with_python/bin/python"
-    then
-        echo Found python in $with_python/bin/python
-        PYTHON="$with_python/bin/python"
-    else
-        if test -x "$with_python/python.exe"
-        then
-            echo Found python in $with_python/python.exe
-            PYTHON="$with_python/python.exe"
-        else
-            if test -x "$with_python"
-            then
-                echo Found python in $with_python
-                PYTHON="$with_python"
-            else
-                if test -x "$PYTHON"
-                then
-                    echo Found python in environment PYTHON=$PYTHON
-                    with_python=`$PYTHON -c "import sys; print(sys.exec_prefix)"`
-                else
-                    AC_PATH_PROG(PYTHON, python python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python1.6 python1.5)
-		fi
-	    fi
-	fi
-    fi
-    if test "$PYTHON" != ""
-    then
-        PYTHON_VERSION=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_version())"`
-	PYTHON_INCLUDES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_inc())"`
-# does not work as it produce a /usr/lib/python path instead of/usr/lib64/python
-#
-#	PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
-	echo Found Python version $PYTHON_VERSION
-  LIBXML2_PYTHON=`$PYTHON -c "import sys
-try:
-    import libxml2
-    sys.stdout.write('1')
-except:
-    sys.stdout.write('0')
-"`
-	if test "$LIBXML2_PYTHON" = "1"
-	then
-	    echo Found libxml2-python module
-	else
-	    echo Warning: Missing libxml2-python
-  fi
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_INCLUDES" = ""
-    then
-	if test -r $with_python/include/python$PYTHON_VERSION/Python.h
-	then
-	    PYTHON_INCLUDES=$with_python/include/python$PYTHON_VERSION
-	else
-	    if test -r $prefix/include/python$PYTHON_VERSION/Python.h
-	    then
-	        PYTHON_INCLUDES=$prefix/include/python$PYTHON_VERSION
-	    else
-		if test -r /usr/include/python$PYTHON_VERSION/Python.h
-		then
-		    PYTHON_INCLUDES=/usr/include/python$PYTHON_VERSION
-		else
-	            if test -r $with_python/include/Python.h
-	            then
-	                PYTHON_INCLUDES=$with_python/include
-	            else
-		        echo could not find python$PYTHON_VERSION/Python.h or $with_python/include/Python.h
-		    fi
-		fi
-	    fi
-	fi
-    fi
-    if test "$with_python_install_dir" != ""
-    then
-	PYTHON_SITE_PACKAGES="$with_python_install_dir"
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_SITE_PACKAGES" = ""
-    then
-	if test -d $libdir/python$PYTHON_VERSION/site-packages
-	then
-	    PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
-	else
-	    if test -d $with_python/lib/site-packages
-	    then
-		PYTHON_SITE_PACKAGES=$with_python/lib/site-packages
-	    else
-		PYTHON_SITE_PACKAGES=$($PYTHON -c 'from distutils import sysconfig; print(sysconfig.get_python_lib(True,False,"${exec_prefix}"))')
-	    fi
-	fi
-    fi
-    pythondir='$(PYTHON_SITE_PACKAGES)'
-    PYTHON_LIBS=`python$PYTHON_VERSION-config --ldflags`
-else
-    PYTHON=
-fi
-AM_CONDITIONAL(WITH_PYTHON, test "$PYTHON_INCLUDES" != "")
-if test "$PYTHON_INCLUDES" != ""
-then
-    PYTHON_SUBDIR=python
-else
-    PYTHON_SUBDIR=
-fi
-AC_SUBST(pythondir)
-AC_SUBST(PYTHON_SUBDIR)
-AC_SUBST(PYTHON_LIBS)
+[  --with-python           build Python bindings (on)])
+
+AS_IF([test "x$with_python" != "xno"], [
+    AM_PATH_PYTHON
+    PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}])
+])
+AM_CONDITIONAL([WITH_PYTHON], [test "x$with_python" != "xno"])
 
 AC_ARG_WITH(crypto, [  --with-crypto           Add crypto support to exslt (on)])
 WITH_CRYPTO=0
@@ -376,19 +233,6 @@ AC_SUBST(WITH_CRYPTO)
 AC_SUBST(CRYPTO_TESTDIR)
 AC_SUBST(LIBGCRYPT_CFLAGS)
 AC_SUBST(LIBGCRYPT_LIBS)
-
-dnl
-dnl Debug for DV (-Wunreachable-code)
-dnl
-if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/XSLT" ]] || \
-   [[ "${LOGNAME}" = "bill" -a "`pwd`" = "/home/bill/gnomesvn/libxslt" ]]
-   then
-    if test "${with_mem_debug}" = "" ;
-    then
-	with_mem_debug="yes"
-    fi
-    CFLAGS="-Wall -g -O -ansi -pedantic -W -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat=2 -Wmissing-format-attribute -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline "
-fi
 
 AC_ARG_WITH(debug, [  --with-debug            Add the debugging code (on)])
 if test "$with_debug" = "no" ; then
@@ -521,7 +365,7 @@ if test "$enable_static" = "no"; then
     build_static_libs="no"
 fi
 
-if test "$build_shared_libs" = "no" -a "$build_static_libs" = "no"; then
+if test "$build_shared_libs" = "no" && test "$build_static_libs" = "no"; then
     build_static_libs="yes"
 fi
 
@@ -552,8 +396,8 @@ dnl
 dnl Try pkg-config first if nothing is set
 dnl
 
-if test "x$LIBXML_CONFIG_PREFIX" = "x" -a "x$LIBXML_LIBS" = "x"; then
-    if test "$build_static_libs" = "no"; then
+if test "x$LIBXML_CONFIG_PREFIX" = "x" && test "x$LIBXML_LIBS" = "x"; then
+    if test "$build_shared_libs" = "yes"; then
         PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= $LIBXML_REQUIRED_VERSION], [
             WITH_MODULES="`$PKG_CONFIG --variable=modules libxml-2.0`"
         ], [ ])
@@ -594,10 +438,6 @@ then
 fi
 
 
-AC_SUBST(CFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
-
 AC_ARG_WITH(plugins,
 [  --with-plugins          Add plugin extension support (on)])
 if test "$with_plugins" = ""
@@ -606,7 +446,7 @@ then
 fi
 
 AC_MSG_CHECKING([whether shared libraries will be built (required for plugins)])
-if test "$build_shared_libs" = "no" -a "$with_plugins" = "yes"; then
+if test "$build_shared_libs" = "no" && test "$with_plugins" = "yes"; then
 	 AC_MSG_RESULT(no)
 	 AC_MSG_WARN([Disabling plugin support.])
 	 AC_MSG_WARN([Plugins require that shared libraries be built.])
@@ -653,19 +493,14 @@ esac
 
 
 AC_SUBST(XSLTPROCDV)
-AC_SUBST(PYTHONSODV)
 AC_SUBST(XML_CONFIG)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
-AC_SUBST(PYTHON)
-AC_SUBST(PYTHON_VERSION)
-AC_SUBST(PYTHON_INCLUDES)
-AC_SUBST(PYTHON_SITE_PACKAGES)
 
 XSLT_LIBDIR='-L${libdir}'
 XSLT_INCLUDEDIR='-I${includedir}'
 XSLT_LIBS="-lxslt $LIBXML_LIBS"
-XSLT_PRIVATE_LIBS="$M_LIBS"
+XSLT_PRIVATE_LIBS="$LIBM"
 AC_SUBST(XSLT_LIBDIR)
 AC_SUBST(XSLT_INCLUDEDIR)
 AC_SUBST(XSLT_LIBS)
@@ -680,13 +515,9 @@ AC_SUBST(EXSLT_PRIVATE_LIBS)
 
 AC_SUBST(EXTRA_LIBS)
 
-AC_SUBST(M_LIBS)
-
 dnl for the spec file
 RELDATE=`date +'%a %b %e %Y'`
 AC_SUBST(RELDATE)
-
-rm -f COPYING.LIB COPYING 2>/dev/null && $LN_S $srcdir/Copyright COPYING
 
 
 AC_CONFIG_FILES([

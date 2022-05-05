@@ -26,7 +26,7 @@ diff --git a/src/libxslt/xsltlocale.h b/src/libxslt/xsltlocale.h
  typedef locale_t xsltLocale;
  typedef xmlChar xsltLocaleChar;
  
--#elif defined(_WIN32) && !defined(__CYGWIN__)
+-#elif defined(_WIN32)
 +#elif 0
  
  /*

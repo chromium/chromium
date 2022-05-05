@@ -1,0 +1,16 @@
+The out_fragment label is only used in a goto which is behind a #ifdef flag
+which isn't enabled when we compile libxslt, which leads to a compile error
+because out_fragment isn't used.
+
+diff --git a/libxslt/functions.c b/libxslt/functions.c
+index fa8b6d93..933ff88c 100644
+--- a/libxslt/functions.c
++++ b/libxslt/functions.c
+@@ -195,7 +195,6 @@ xsltDocumentFunctionLoadDocument(xmlXPathParserContextPtr ctxt, xmlChar* URI)
+         resObj = NULL;
+     }
+ 
+-out_fragment:
+     if (resObj == NULL)
+         resObj = xmlXPathNewNodeSet(NULL);
+     valuePush(ctxt, resObj);

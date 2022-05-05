@@ -15,13 +15,6 @@
 
 #include <string.h>
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
-
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -194,36 +187,17 @@ xsltDocumentFunctionLoadDocument(xmlXPathParserContextPtr ctxt, xmlChar* URI)
     xmlXPathFreeContext(xptrctxt);
 #endif /* LIBXML_XPTR_ENABLED */
 
-    if (resObj == NULL)
-	goto out_fragment;
-
-    switch (resObj->type) {
-	case XPATH_NODESET:
-	    break;
-	case XPATH_UNDEFINED:
-	case XPATH_BOOLEAN:
-	case XPATH_NUMBER:
-	case XPATH_STRING:
-	case XPATH_POINT:
-	case XPATH_USERS:
-	case XPATH_XSLT_TREE:
-	case XPATH_RANGE:
-	case XPATH_LOCATIONSET:
-	    xsltTransformError(tctxt, NULL, NULL,
-		"document() : XPointer does not select a node set: #%s\n",
-		fragment);
-	goto out_object;
+    if ((resObj != NULL) && (resObj->type != XPATH_NODESET)) {
+        xsltTransformError(tctxt, NULL, NULL,
+            "document() : XPointer does not select a node set: #%s\n",
+            fragment);
+        xmlXPathFreeObject(resObj);
+        resObj = NULL;
     }
 
+    if (resObj == NULL)
+        resObj = xmlXPathNewNodeSet(NULL);
     valuePush(ctxt, resObj);
-    xmlFree(fragment);
-    return;
-
-out_object:
-    xmlXPathFreeObject(resObj);
-
-out_fragment:
-    valuePush(ctxt, xmlXPathNewNodeSet(NULL));
     xmlFree(fragment);
 }
 
