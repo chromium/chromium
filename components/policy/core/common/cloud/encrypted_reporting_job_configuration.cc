@@ -67,6 +67,14 @@ void EncryptedReportingJobConfiguration::UpdateContext(
   context_ = std::move(context);
 }
 
+DeviceManagementService::Job::RetryMethod
+EncryptedReportingJobConfiguration::ShouldRetry(
+    int response_code,
+    const std::string& response_body) {
+  // Do not retry on the Job level - ERP has its own retry mechanism.
+  return DeviceManagementService::Job::NO_RETRY;
+}
+
 std::string EncryptedReportingJobConfiguration::GetUmaString() const {
   return "Enterprise.EncryptedReportingSuccess";
 }

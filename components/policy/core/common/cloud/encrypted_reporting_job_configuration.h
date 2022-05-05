@@ -96,6 +96,11 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
  protected:
   void UpdatePayloadBeforeGetInternal() override;
 
+  // DeviceManagementService::JobConfiguration
+  DeviceManagementService::Job::RetryMethod ShouldRetry(
+      int response_code,
+      const std::string& response_body) override;
+
   std::string GetUmaString() const override;
 
  private:
