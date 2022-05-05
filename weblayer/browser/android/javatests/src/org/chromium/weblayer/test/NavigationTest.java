@@ -124,6 +124,7 @@ public class NavigationTest {
             private Uri mReferrer;
             private Page mPage;
             private int mNavigationEntryOffset;
+            private boolean mWasFetchedFromCache;
 
             public void notifyCalled(Navigation navigation) {
                 notifyCalled(navigation, false);
@@ -155,6 +156,9 @@ public class NavigationTest {
                 }
                 if (majorVersion >= 92) {
                     mNavigationEntryOffset = navigation.getNavigationEntryOffset();
+                }
+                if (majorVersion >= 102) {
+                    mWasFetchedFromCache = navigation.wasFetchedFromCache();
                 }
                 notifyCalled();
             }
@@ -223,6 +227,10 @@ public class NavigationTest {
 
             public int getNavigationEntryOffset() {
                 return mNavigationEntryOffset;
+            }
+
+            public boolean wasFetchedFromCache() {
+                return mWasFetchedFromCache;
             }
         }
 
@@ -1721,5 +1729,24 @@ public class NavigationTest {
 
         assertEquals(committedPage, mCallback.onPageLanguageDeterminedCallback.getPage());
         assertEquals("fr", mCallback.onPageLanguageDeterminedCallback.getLanguage());
+    }
+
+    @MinWebLayerVersion(102)
+    @Test
+    @SmallTest
+    public void testWasFetchedFromCache() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+        setNavigationCallback(activity);
+        String url = mActivityTestRule.getTestServer().getURL("/cachetime");
+
+        mActivityTestRule.navigateAndWait(url);
+        assertFalse(mCallback.onCompletedCallback.wasFetchedFromCache());
+
+        mActivityTestRule.navigateAndWait(
+                mActivityTestRule.getTestServer().getURL("/cachetime?foo"));
+        assertFalse(mCallback.onCompletedCallback.wasFetchedFromCache());
+
+        mActivityTestRule.navigateAndWait(url);
+        assertTrue(mCallback.onCompletedCallback.wasFetchedFromCache());
     }
 }

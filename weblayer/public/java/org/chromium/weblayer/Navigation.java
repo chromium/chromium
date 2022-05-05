@@ -451,7 +451,7 @@ public class Navigation extends IClientNavigation.Stub {
         }
     }
 
-    /*
+    /**
      * Returns the Page object this navigation is occurring for.
      * This method may only be called in (1) {@link NavigationCallback.onNavigationCompleted} or
      * (2) {@link NavigationCallback.onNavigationFailed} when {@link Navigation#isErrorPage}
@@ -490,6 +490,23 @@ public class Navigation extends IClientNavigation.Stub {
         }
         try {
             return mNavigationImpl.getNavigationEntryOffset();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns true if the navigation response was fetched from the cache.
+     *
+     * @since 102
+     */
+    public boolean wasFetchedFromCache() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 102) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mNavigationImpl.wasFetchedFromCache();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

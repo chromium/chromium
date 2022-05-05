@@ -139,6 +139,10 @@ jint NavigationImpl::GetNavigationEntryOffset(JNIEnv* env) {
   return GetNavigationEntryOffset();
 }
 
+jboolean NavigationImpl::WasFetchedFromCache(JNIEnv* env) {
+  return WasFetchedFromCache();
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -180,6 +184,10 @@ Page* NavigationImpl::GetPage() {
 
 int NavigationImpl::GetNavigationEntryOffset() {
   return navigation_handle_->GetNavigationEntryOffset();
+}
+
+bool NavigationImpl::WasFetchedFromCache() {
+  return navigation_handle_->WasResponseCached();
 }
 
 GURL NavigationImpl::GetURL() {
