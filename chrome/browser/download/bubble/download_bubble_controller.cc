@@ -82,6 +82,11 @@ DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
           profile_->GetProfileKey())),
       offline_manager_(
           OfflineItemModelManagerFactory::GetForBrowserContext(profile_)) {
+  if (profile_->IsOffTheRecord()) {
+    Profile* original_profile = profile_->GetOriginalProfile();
+    original_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
+        original_profile->GetDownloadManager(), this);
+  }
   observation_.Observe(aggregator_.get());
 }
 
@@ -218,6 +223,13 @@ void DownloadBubbleUIController::OnDownloadUpdated(
     download::DownloadItem* item) {
   auto model = DownloadItemModel::Wrap(
       item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  // manager can be different from download_notifier_ when the current profile
+  // is off the record.
+  if (manager != download_notifier_.GetManager()) {
+    display_controller_->OnUpdatedItem(model->IsDone(),
+                                       /*show_details_if_done=*/false);
+    return;
+  }
   bool show_details_if_done =
       model->ShouldShowInBubble() &&
       (browser_ == chrome::FindLastActiveWithProfile(profile_.get()));
@@ -262,6 +274,9 @@ DownloadBubbleUIController::GetAllItemsToDisplay() {
   }
   std::vector<download::DownloadItem*> download_items;
   download_manager_->GetAllDownloads(&download_items);
+  if (original_notifier_) {
+    original_notifier_->GetManager()->GetAllDownloads(&download_items);
+  }
   for (download::DownloadItem* item : download_items) {
     DownloadUIModelPtr model = DownloadItemModel::Wrap(
         item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
