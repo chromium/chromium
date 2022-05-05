@@ -974,8 +974,13 @@ int RenderText::GetContentWidth() {
 
 int RenderText::GetBaseline() {
   if (baseline_ == kInvalidBaseline) {
-    baseline_ =
-        DetermineBaselineCenteringText(display_rect().height(), font_list());
+    const int centering_height =
+        (vertical_alignment_ == ALIGN_MIDDLE)
+            ? display_rect().height()
+            : std::max(font_list().GetHeight(), min_line_height());
+    baseline_ = DetermineBaselineCenteringText(centering_height, font_list());
+    if (vertical_alignment_ == ALIGN_BOTTOM)
+      baseline_ += display_rect().height() - centering_height;
   }
   DCHECK_NE(kInvalidBaseline, baseline_);
   return baseline_;

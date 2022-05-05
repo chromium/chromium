@@ -735,6 +735,16 @@ gfx::Rect Label::GetTextBounds() const {
                    display_text_->GetStringSize());
 }
 
+int Label::GetFontListY() const {
+  MaybeBuildDisplayText();
+
+  if (!display_text_)
+    return 0;
+
+  return GetInsets().top() + display_text_->GetBaseline() -
+         font_list().GetBaseline();
+}
+
 void Label::PaintText(gfx::Canvas* canvas) {
   MaybeBuildDisplayText();
 

@@ -325,6 +325,11 @@ class VIEWS_EXPORT Label : public View,
   // which may exceed the local bounds of the label.
   gfx::Rect GetTextBounds() const;
 
+  // Returns the Y coordinate the font_list() will actually be drawn at, in
+  // local coordinates.  This may differ from GetTextBounds().y() since the font
+  // is positioned inside the display rect.
+  int GetFontListY() const;
+
   void PaintText(gfx::Canvas* canvas);
 
   // View:

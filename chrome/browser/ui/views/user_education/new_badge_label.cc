@@ -120,19 +120,9 @@ void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
   const int badge_x = views::NewBadge::kNewBadgeHorizontalMargin - extra_width +
                       (base::i18n::IsRTL() ? width() - contents_bounds.x()
                                            : contents_bounds.right());
-  int top = contents_bounds.y();
-  switch (GetVerticalAlignment()) {
-    case gfx::VerticalAlignment::ALIGN_TOP:
-      break;
-    case gfx::VerticalAlignment::ALIGN_MIDDLE:
-      top += (contents_bounds.height() - font_list().GetHeight()) / 2;
-      break;
-    case gfx::VerticalAlignment::ALIGN_BOTTOM:
-      top += contents_bounds.height() - font_list().GetHeight();
-      break;
-  }
 
-  views::NewBadge::DrawNewBadge(canvas, this, badge_x, top, font_list());
+  views::NewBadge::DrawNewBadge(canvas, this, badge_x, GetFontListY(),
+                                font_list());
 }
 
 void NewBadgeLabel::UpdatePaddingForNewBadge() {
