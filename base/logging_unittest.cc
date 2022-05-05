@@ -86,15 +86,37 @@ class MockLogAssertHandler {
 
 TEST_F(LoggingTest, BasicLogging) {
   MockLogSource mock_log_source;
+
+  // 4 base logs: LOG, LOG_IF, PLOG, and PLOG_IF
+  int expected_logs = 4;
+
+  // 4 verbose logs: VLOG, VLOG_IF, PVLOG, PVLOG_IF.
+  if (VLOG_IS_ON(0))
+    expected_logs += 4;
+
+  // 4 debug logs: DLOG, DLOG_IF, DPLOG, DPLOG_IF.
+  if (DCHECK_IS_ON())
+    expected_logs += 4;
+
+  // 4 verbose debug logs: DVLOG, DVLOG_IF, DVPLOG, DVPLOG_IF
+  if (VLOG_IS_ON(0) && DCHECK_IS_ON())
+    expected_logs += 4;
+
   EXPECT_CALL(mock_log_source, Log())
-      .Times(DCHECK_IS_ON() ? 16 : 8)
+      .Times(expected_logs)
       .WillRepeatedly(Return("log message"));
 
   SetMinLogLevel(LOGGING_INFO);
 
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_EQ(DCHECK_IS_ON(), DLOG_IS_ON(INFO));
+
+#if BUILDFLAG(USE_RUNTIME_VLOG)
   EXPECT_TRUE(VLOG_IS_ON(0));
+#else
+  // VLOG defaults to off when not USE_RUNTIME_VLOG.
+  EXPECT_FALSE(VLOG_IS_ON(0));
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
   LOG(INFO) << mock_log_source.Log();
   LOG_IF(INFO, true) << mock_log_source.Log();
@@ -839,6 +861,40 @@ TEST_F(LoggingTest, String16) {
                  stream.str().c_str());
   }
 }
+
+#if !BUILDFLAG(USE_RUNTIME_VLOG)
+TEST_F(LoggingTest, BuildTimeVLOG) {
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static base::NoDestructor<std::string> log_string;
+  SetLogMessageHandler([](int severity, const char* file, int line,
+                          size_t start, const std::string& str) -> bool {
+    *log_string = str;
+    return true;
+  });
+
+  // No VLOG by default.
+  EXPECT_FALSE(VLOG_IS_ON(0));
+  VLOG(1) << "Expect not logged";
+  EXPECT_TRUE(log_string->empty());
+
+  // Re-define ENABLED_VLOG_LEVEL to enable VLOG(1).
+  // Note that ENABLED_VLOG_LEVEL has impact on all the code after it so please
+  // keep this test case the last one in this file.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
+  EXPECT_TRUE(VLOG_IS_ON(1));
+  EXPECT_FALSE(VLOG_IS_ON(2));
+
+  VLOG(1) << "Expect logged";
+  EXPECT_THAT(*log_string, ::testing::MatchesRegex(".* Expect logged\n"));
+
+  log_string->clear();
+  VLOG(2) << "Expect not logged";
+  EXPECT_TRUE(log_string->empty());
+}
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace
 

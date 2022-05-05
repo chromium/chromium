@@ -140,8 +140,10 @@ namespace logging {
 
 namespace {
 
+#if BUILDFLAG(USE_RUNTIME_VLOG)
 VlogInfo* g_vlog_info = nullptr;
 VlogInfo* g_vlog_info_prev = nullptr;
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
@@ -415,6 +417,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   g_log_format = settings.log_format;
 #endif
 
+#if BUILDFLAG(USE_RUNTIME_VLOG)
   if (base::CommandLine::InitializedForCurrentProcess()) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     // Don't bother initializing |g_vlog_info| unless we use one of the
@@ -433,6 +436,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
                        &g_min_log_level);
     }
   }
+#endif  // defined(USE_RUNTIME_VLOG)
 
   g_logging_destination = settings.logging_dest;
 
@@ -511,12 +515,17 @@ int GetVlogVerbosity() {
 
 int GetVlogLevelHelper(const char* file, size_t N) {
   DCHECK_GT(N, 0U);
+
+#if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = g_vlog_info;
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();
+#else
+  return GetVlogVerbosity();
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 }
 
 void SetLogItems(bool enable_process_id, bool enable_thread_id,
@@ -1157,6 +1166,12 @@ std::wstring GetLogFileFullPath() {
   return std::wstring();
 }
 #endif
+
+#if !BUILDFLAG(USE_RUNTIME_VLOG)
+int GetDisableAllVLogLevel() {
+  return -1;
+}
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging
 

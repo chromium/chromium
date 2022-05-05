@@ -68,7 +68,14 @@ class WebRtcTextLogTest : public testing::Test {
     if (!logging::InitLogging(settings)) {
       return false;
     }
+
+#if BUILDFLAG(USE_RUNTIME_VLOG)
     EXPECT_TRUE(VLOG_IS_ON(verbosity_level));
+#else
+    // VLOGs default to off when not using runtime vlog.
+    EXPECT_FALSE(VLOG_IS_ON(verbosity_level));
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
+
     EXPECT_FALSE(VLOG_IS_ON(verbosity_level + 1));
     return true;
   }
@@ -147,9 +154,12 @@ TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_WARNING)));
+
+#if BUILDFLAG(USE_RUNTIME_VLOG)
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_INFO)));
   // RTC_LOG_E
   EXPECT_TRUE(ContainsString(contents_of_file, strerror(kFakeError)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 }

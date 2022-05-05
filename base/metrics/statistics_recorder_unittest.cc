@@ -703,6 +703,14 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   EXPECT_EQ(callback_callcount, 1u);
 }
 
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+// The following check that StatisticsRecorder::InitLogOnShutdownWhileLocked
+// dumps the histogram graph to vlog if VLOG_IS_ON(1) at runtime. When
+// USE_RUNTIME_VLOG is not set, all vlog levels are determined at build time
+// and default to off. Since we do not want StatisticsRecorder to dump all the
+// time, VLOG in its code stays off. As a result, the following tests would
+// fail.
+
 TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOG_WARNING);
@@ -732,6 +740,7 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitialized) {
   EXPECT_TRUE(VLOG_IS_ON(1));
   EXPECT_TRUE(IsVLogInitialized());
 }
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
  public:

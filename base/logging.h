@@ -16,6 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/logging_buildflags.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
@@ -88,7 +89,17 @@
 //   VLOG(2) << "I'm printed when you run the program with --v=2 or more";
 //
 // These always log at the INFO log level (when they log at all).
-// The verbose logging can also be turned on module-by-module.  For instance,
+//
+// There is a build flag USE_RUNTIME_VLOG that controls whether verbose
+// logging is processed at runtime or at build time.
+//
+// When USE_RUNTIME_VLOG is not set, the verbose logging is processed at
+// build time. VLOG(n) is only included and compiled when `n` is less than or
+// equal to the verbose level defined by ENABLED_VLOG_LEVEL macro. Command line
+// switch --v and --vmodule are ignored in this mode.
+//
+// When USE_RUNTIME_VLOG is set, the verbose logging is controlled at
+// runtime and can be turned on module-by-module.  For instance,
 //    --vmodule=profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4 --v=0
 // will cause:
 //   a. VLOG(2) and lower messages to be printed from profile.{h,cc}
@@ -428,12 +439,54 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define LOG_IS_ON(severity) \
   (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
 
+#if !BUILDFLAG(USE_RUNTIME_VLOG)
+
+// When USE_RUNTIME_VLOG is not set, --vmodule is completely ignored and
+// ENABLED_VLOG_LEVEL macro is used to determine the enabled VLOG levels
+// at build time.
+//
+// Files that need VLOG would need to redefine ENABLED_VLOG_LEVEL to a desired
+// VLOG level number,
+// e.g.
+//   To enable VLOG(1) output,
+//
+//   For a source cc file:
+//
+//     #undef ENABLED_VLOG_LEVEL
+//     #define ENABLED_VLOG_LEVEL 1
+//
+//   For all cc files in a build target of a BUILD.gn:
+//
+//     source_set("build_target") {
+//       ...
+//
+//       defines = ["ENABLED_VLOG_LEVEL=1"]
+//     }
+
+// Returns a vlog level that suppresses all vlogs. Using this function so that
+// compiler cannot calculate VLOG_IS_ON() and generate unreached code
+// warnings.
+BASE_EXPORT int GetDisableAllVLogLevel();
+
+// Define the default ENABLED_VLOG_LEVEL if it is not defined. This is to
+// allow ENABLED_VLOG_LEVEL to be overridden from defines in cc flags.
+#if !defined(ENABLED_VLOG_LEVEL)
+#define ENABLED_VLOG_LEVEL (logging::GetDisableAllVLogLevel())
+#endif  // !defined(ENABLED_VLOG_LEVEL)
+
+#define VLOG_IS_ON(verboselevel) ((verboselevel) <= (ENABLED_VLOG_LEVEL))
+
+#else
+
 // We don't do any caching tricks with VLOG_IS_ON() like the
 // google-glog version since it increases binary size.  This means
 // that using the v-logging functions in conjunction with --vmodule
 // may be slow.
+
 #define VLOG_IS_ON(verboselevel) \
   ((verboselevel) <= ::logging::GetVlogLevel(__FILE__))
+
+#endif
 
 // Helper macro which avoids evaluating the arguments to a stream if
 // the condition doesn't hold. Condition is evaluated once and only once.
