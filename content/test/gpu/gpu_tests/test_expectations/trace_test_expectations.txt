@@ -175,6 +175,9 @@ crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 crbug.com/1183090 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
 
+# Severe flakes
+crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Underlay [ Skip ]
+
 # VP scaling tests are also flaky.
 crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_VP_SCALING [ Failure ]
 crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
