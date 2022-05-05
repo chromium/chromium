@@ -586,7 +586,7 @@ void SystemDataProvider::ComputeAndPopulateCpuUsage(
 
   // TODO(baileyberro): Handle devices with multiple physical CPUs.
   if (cpu_info.physical_cpus.size() > 1) {
-    LOG(ERROR) << "Device has more than one physical CPU";
+    VLOG(1) << "Device has more than one physical CPU";
   }
 
   const healthd::PhysicalCpuInfoPtr& physical_cpu_ptr =
