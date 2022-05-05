@@ -3,8 +3,9 @@
 // function in this file will return an empty directory in the sandboxed file
 // system.
 //
-// Another implementation of this function exists in local-fs-test-helpers.js,
-// where that version uses the local file system instead.
+// Another implementation of this function exists in
+// file-system-access/local-fs-test-helpers.js, where that version uses the
+// local file system instead.
 
 async function cleanupSandboxedFileSystem() {
   const dir = await navigator.storage.getDirectory();

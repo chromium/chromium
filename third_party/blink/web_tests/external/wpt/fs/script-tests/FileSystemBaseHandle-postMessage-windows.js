@@ -1,10 +1,10 @@
 'use strict';
 
 // This script depends on the following scripts:
-//    /file-system-access/resources/messaging-helpers.js
-//    /file-system-access/resources/messaging-blob-helpers.js
-//    /file-system-access/resources/messaging-serialize-helpers.js
-//    /file-system-access/resources/test-helpers.js
+//    /fs/resources/messaging-helpers.js
+//    /fs/resources/messaging-blob-helpers.js
+//    /fs/resources/messaging-serialize-helpers.js
+//    /fs/resources/test-helpers.js
 
 directory_test(async (t, root_dir) => {
   const child_window = await open_window(t, kDocumentMessageTarget);

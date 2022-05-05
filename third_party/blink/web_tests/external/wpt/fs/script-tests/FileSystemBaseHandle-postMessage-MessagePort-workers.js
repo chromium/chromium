@@ -1,10 +1,10 @@
 'use strict';
 
 // This script depends on the following scripts:
-//    /file-system-access/resources/messaging-helpers.js
-//    /file-system-access/resources/messaging-blob-helpers.js
-//    /file-system-access/resources/messaging-serialize-helpers.js
-//    /file-system-access/resources/test-helpers.js
+//    /fs/resources/messaging-helpers.js
+//    /fs/resources/messaging-blob-helpers.js
+//    /fs/resources/messaging-serialize-helpers.js
+//    /fs/resources/test-helpers.js
 //    /service-workers/service-worker/resources/test-helpers.sub.js
 
 directory_test(

@@ -1,10 +1,10 @@
 'use strict';
 
 // This script depends on the following scripts:
-//    /file-system-access/resources/messaging-helpers.js
-//    /file-system-access/resources/messaging-blob-helpers.js
-//    /file-system-access/resources/messaging-serialize-helpers.js
-//    /file-system-access/resources/test-helpers.js
+//    /fs/resources/messaging-helpers.js
+//    /fs/resources/messaging-blob-helpers.js
+//    /fs/resources/messaging-serialize-helpers.js
+//    /fs/resources/test-helpers.js
 //    /common/get-host-info.sub.js
 //    /service-workers/service-worker/resources/test-helpers.sub.js
 
@@ -199,7 +199,7 @@ directory_test(async (t, root_dir) => {
     /*target=*/iframe.contentWindow, /*target_origin=*/'*',
     /*expected_has_source*/true, /*expected_origin=*/location.origin);
   // Do not test receiving FileSystemHandles from the data URI iframe. Data URI
-  // iframes are insecure and do not expose the File System Access APIs.
+  // iframes are insecure and do not expose the File System APIs.
 }, 'Fail to send messages to a data URI iframe.');
 
 directory_test(async (t, root_dir) => {

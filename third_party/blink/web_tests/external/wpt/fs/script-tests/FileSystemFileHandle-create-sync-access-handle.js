@@ -1,8 +1,8 @@
 'use strict';
 
 // This script depends on the following scripts:
-//    /file-system-access/resources/messaging-helpers.js
-//    /file-system-access/resources/test-helpers.js
+//    /fs/resources/messaging-helpers.js
+//    /fs/resources/test-helpers.js
 
 directory_test(async (t, root_dir) => {
   assert_true(

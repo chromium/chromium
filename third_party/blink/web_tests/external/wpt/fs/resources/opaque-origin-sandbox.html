@@ -2,9 +2,8 @@
 <script>
   'use strict'
 
-  // Sends two messages to its creator:
-  // (1) The result of showDirectoryPicker().
-  // (2) The result of navigator.storage.getDirectory().
+  // Sends a message containing the result of navigator.storage.getDirectory()
+  // to its creator.
 
   function post_message(data) {
     if (window.parent !== null) {
@@ -13,17 +12,6 @@
     if (window.opener !== null) {
       window.opener.postMessage(data, { targetOrigin: '*' });
     }
-  }
-
-  try {
-    window.showDirectoryPicker()
-      .then(() => {
-        post_message('showDirectoryPicker(): FULFILLED');
-      }).catch(error => {
-        post_message(`showDirectoryPicker(): REJECTED: ${error.name}`);
-      });
-  } catch (error) {
-    post_message(`showDirectoryPicker(): EXCEPTION: ${error.name}`);
   }
 
   try {
