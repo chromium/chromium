@@ -5,28 +5,21 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_APP_DOWNLOADING_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_APP_DOWNLOADING_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class AppDownloadingScreen;
-}
 
 namespace chromeos {
 
-class AppDownloadingScreenView {
+class AppDownloadingScreenView
+    : public base::SupportsWeakPtr<AppDownloadingScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"app-downloading"};
+  inline constexpr static StaticOobeScreenId kScreenId{"app-downloading",
+                                                       "AppDownloadingScreen"};
 
   virtual ~AppDownloadingScreenView() = default;
 
-  // Sets screen this view belongs to.
-  virtual void Bind(ash::AppDownloadingScreen* screen) = 0;
-
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
 };
 
 // The sole implementation of the AppDownloadingScreenView, using WebUI.
@@ -46,18 +39,9 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void RegisterMessages() override;
 
   // AppDownloadingScreenView:
-  void Bind(ash::AppDownloadingScreen* screen) override;
-  void Show() override;
-  void Hide() override;
-
- private:
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
-
-  ash::AppDownloadingScreen* screen_ = nullptr;
+  void Show() final;
 };
 
 }  // namespace chromeos
