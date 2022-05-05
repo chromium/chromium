@@ -27,8 +27,7 @@ WebContentsSet BuildOpenerSet(content::WebContents* contents) {
   WebContentsSet result;
   while (contents) {
     result.insert(contents);
-    contents = content::WebContents::FromRenderFrameHost(
-        contents->GetOriginalOpener());
+    contents = contents->GetFirstWebContentsInLiveOriginalOpenerChain();
   }
 
   return result;

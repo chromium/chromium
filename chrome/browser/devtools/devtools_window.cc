@@ -832,7 +832,7 @@ std::unique_ptr<content::NavigationThrottle>
 DevToolsWindow::MaybeCreateNavigationThrottle(
     content::NavigationHandle* handle) {
   WebContents* web_contents = handle->GetWebContents();
-  if (!web_contents || !web_contents->HasOriginalOpener() ||
+  if (!web_contents || !web_contents->HasLiveOriginalOpenerChain() ||
       (web_contents->GetController().GetLastCommittedEntry() &&
        !web_contents->GetController()
             .GetLastCommittedEntry()
@@ -840,8 +840,8 @@ DevToolsWindow::MaybeCreateNavigationThrottle(
     return nullptr;
   }
 
-  WebContents* opener = WebContents::FromRenderFrameHost(
-      handle->GetWebContents()->GetOriginalOpener());
+  WebContents* opener =
+      handle->GetWebContents()->GetFirstWebContentsInLiveOriginalOpenerChain();
   DevToolsWindow* window = GetInstanceForInspectedWebContents(opener);
   if (!window || !window->open_new_window_for_popups_ ||
       GetInstanceForInspectedWebContents(web_contents))

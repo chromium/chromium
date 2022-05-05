@@ -152,7 +152,9 @@ class CONTENT_EXPORT FrameTreeNode {
 
   FrameTreeNode* opener() const { return opener_; }
 
-  FrameTreeNode* original_opener() const { return original_opener_; }
+  FrameTreeNode* first_live_main_frame_in_original_opener_chain() const {
+    return first_live_main_frame_in_original_opener_chain_;
+  }
 
   const absl::optional<base::UnguessableToken>& opener_devtools_frame_token() {
     return opener_devtools_frame_token_;
@@ -591,16 +593,24 @@ class CONTENT_EXPORT FrameTreeNode {
   // is disowned.
   std::unique_ptr<OpenerDestroyedObserver> opener_observer_;
 
-  // The frame that opened this frame, if any. Contrary to opener_, this
-  // cannot be changed unless the original opener is destroyed.
-  raw_ptr<FrameTreeNode> original_opener_ = nullptr;
+  // Unlike `opener_`, the "original opener chain" doesn't reflect
+  // window.opener, which can be suppressed or updated. The "original opener"
+  // is the main frame of the actual opener of this frame. This traces the all
+  // the way back, so if the original opener was closed (deleted or severed due
+  // to COOP), but _it_ had an original opener, this will return the original
+  // opener's original opener, etc. So this value will always be set as long as
+  // there is at least one live frame in the chain whose connection is not
+  // severed due to COOP.
+  raw_ptr<FrameTreeNode> first_live_main_frame_in_original_opener_chain_ =
+      nullptr;
 
   // The devtools frame token of the frame which opened this frame. This is
   // not cleared even if the opener is destroyed or disowns the frame.
   absl::optional<base::UnguessableToken> opener_devtools_frame_token_;
 
-  // An observer that clears this node's |original_opener_| if the opener is
-  // destroyed.
+  // An observer that updates this node's
+  // |first_live_main_frame_in_original_opener_chain_| to the next original
+  // opener in the chain if the original opener is destroyed.
   std::unique_ptr<OpenerDestroyedObserver> original_opener_observer_;
 
   // When created by an opener, the URL specified in window.open(url)

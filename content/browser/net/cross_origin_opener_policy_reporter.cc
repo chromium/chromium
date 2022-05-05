@@ -61,7 +61,8 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
 }
 
 FrameTreeNode* TopLevelOpener(FrameTreeNode* frame) {
-  FrameTreeNode* opener = frame->original_opener();
+  FrameTreeNode* opener =
+      frame->first_live_main_frame_in_original_opener_chain();
   return opener ? opener->frame_tree()->root() : nullptr;
 }
 

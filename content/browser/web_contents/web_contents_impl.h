@@ -498,8 +498,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool GotResponseToKeyboardLockRequest(bool allowed) override;
   bool HasOpener() override;
   RenderFrameHostImpl* GetOpener() override;
-  bool HasOriginalOpener() override;
-  RenderFrameHostImpl* GetOriginalOpener() override;
+  bool HasLiveOriginalOpenerChain() override;
+  WebContents* GetFirstWebContentsInLiveOriginalOpenerChain() override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   void DidChooseColorInColorChooser(SkColor color) override;
   void DidEndColorChooser() override;

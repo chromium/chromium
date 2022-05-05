@@ -39,9 +39,12 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
   if (!opener_rfh) {
     // If the child page is opened with "noopener" then the parent document
     // maintains the ability to close the child, but the child can't reach back
-    // and see it's parent. In this case there will be no "Opener", but there
-    // will be an "OriginalOpener".
-    opener_rfh = web_contents->GetOriginalOpener();
+    // and see it's parent. In this case there will be no "opener", but there
+    // will be an "original opener".
+    if (content::WebContents* original_opener_wc =
+            web_contents->GetFirstWebContentsInLiveOriginalOpenerChain()) {
+      opener_rfh = original_opener_wc->GetMainFrame();
+    }
   }
 
   if (!opener_rfh)

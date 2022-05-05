@@ -399,7 +399,8 @@ int SendToAllFramesImpl(FrameTree& frame_tree,
 }
 
 // Returns the set of all WebContentses that are reachable from |web_contents|
-// by applying some combination of WebContents::GetOriginalOpener() and
+// by applying some combination of
+// WebContents::GetFirstWebContentsInLiveOriginalOpenerChain() and
 // WebContents::GetOuterWebContents(). The |web_contents| parameter will be
 // included in the returned set.
 base::flat_set<WebContentsImpl*> GetAllOpeningWebContents(
@@ -415,10 +416,10 @@ base::flat_set<WebContentsImpl*> GetAllOpeningWebContents(
     auto insert_result = result.insert(current_contents);
 
     if (insert_result.second) {
-      RenderFrameHostImpl* opener_rfh = current_contents->GetOriginalOpener();
-      if (opener_rfh) {
-        current.insert(static_cast<WebContentsImpl*>(
-            WebContents::FromRenderFrameHost(opener_rfh)));
+      if (WebContents* opener_contents =
+              current_contents
+                  ->GetFirstWebContentsInLiveOriginalOpenerChain()) {
+        current.insert(static_cast<WebContentsImpl*>(opener_contents));
       }
 
       WebContentsImpl* outer_contents = current_contents->GetOuterWebContents();
@@ -5284,13 +5285,17 @@ RenderFrameHostImpl* WebContentsImpl::GetOpener() {
   return opener_ftn ? opener_ftn->current_frame_host() : nullptr;
 }
 
-bool WebContentsImpl::HasOriginalOpener() {
-  return GetOriginalOpener() != nullptr;
+bool WebContentsImpl::HasLiveOriginalOpenerChain() {
+  return GetFirstWebContentsInLiveOriginalOpenerChain() != nullptr;
 }
 
-RenderFrameHostImpl* WebContentsImpl::GetOriginalOpener() {
-  FrameTreeNode* opener_ftn = primary_frame_tree_.root()->original_opener();
-  return opener_ftn ? opener_ftn->current_frame_host() : nullptr;
+WebContents* WebContentsImpl::GetFirstWebContentsInLiveOriginalOpenerChain() {
+  FrameTreeNode* opener_ftn =
+      primary_frame_tree_.root()
+          ->first_live_main_frame_in_original_opener_chain();
+  return opener_ftn ? WebContents::FromRenderFrameHost(
+                          opener_ftn->current_frame_host())
+                    : nullptr;
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)

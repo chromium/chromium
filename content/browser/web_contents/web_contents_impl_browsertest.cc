@@ -1396,18 +1396,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   Shell* shell2 = OpenPopup(shell1, blank_url, "window2");
   Shell* shell3 = OpenPopup(shell2, blank_url, "window3");
 
-  EXPECT_EQ(shell2->web_contents(),
-            WebContents::FromRenderFrameHost(
-                shell3->web_contents()->GetOriginalOpener()));
-  EXPECT_EQ(shell1->web_contents(),
-            WebContents::FromRenderFrameHost(
-                shell2->web_contents()->GetOriginalOpener()));
+  EXPECT_EQ(
+      shell2->web_contents(),
+      shell3->web_contents()->GetFirstWebContentsInLiveOriginalOpenerChain());
+  EXPECT_EQ(
+      shell1->web_contents(),
+      shell2->web_contents()->GetFirstWebContentsInLiveOriginalOpenerChain());
 
   shell2->Close();
 
-  EXPECT_EQ(shell1->web_contents(),
-            WebContents::FromRenderFrameHost(
-                shell3->web_contents()->GetOriginalOpener()));
+  EXPECT_EQ(
+      shell1->web_contents(),
+      shell3->web_contents()->GetFirstWebContentsInLiveOriginalOpenerChain());
 }
 
 // TODO(clamy): Make the test work on Windows and on Mac. On Mac and Windows,

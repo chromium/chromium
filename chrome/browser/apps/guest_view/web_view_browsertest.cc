@@ -1739,7 +1739,8 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   ASSERT_NE(empty_guest_embedder, embedder_web_contents);
   ASSERT_TRUE(empty_guest_embedder);
   content::RenderFrameHost* empty_guest_opener =
-      empty_guest_web_contents->GetOriginalOpener();
+      empty_guest_web_contents->GetFirstWebContentsInLiveOriginalOpenerChain()
+          ->GetMainFrame();
   ASSERT_TRUE(empty_guest_opener);
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetMainFrame());
 }

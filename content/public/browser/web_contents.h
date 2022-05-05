@@ -1061,20 +1061,18 @@ class WebContents : public PageNavigator,
 
   // Returns true if this WebContents was opened by another WebContents, even
   // if the opener was suppressed. In contrast to HasOpener/GetOpener, the
-  // original opener doesn't reflect window.opener which can be suppressed or
-  // updated. This traces all the way back, so if the original owner was closed,
-  // but _it_ had an original owner, this will return the original owner's
-  // original owner, etc.
-  virtual bool HasOriginalOpener() = 0;
+  // "original opener chain" doesn't reflect window.opener which can be
+  // suppressed or updated. The "original opener" is the main frame of the
+  // actual opener of this frame. This traces the all the way back, so if the
+  // original opener was closed (deleted or severed due to COOP), but _it_ had
+  // an original opener, this will return the original opener's original opener,
+  // etc.
+  virtual bool HasLiveOriginalOpenerChain() = 0;
 
-  // Returns the original opener's main frame if HasOriginalOpener() is true, or
-  // nullptr otherwise. NOTE: This will always be the main frame of the actual
-  // original opener's frame tree, so it might be different from the actual
-  // original opener if it is a subframe. See https://crbug.com/705316 for more
-  // context.
-  // TODO(https://crbug.com/1311820): Consider renaming this function and other
-  // things related to "original openers", to make the quirk more obvious.
-  virtual RenderFrameHost* GetOriginalOpener() = 0;
+  // Returns the "original opener WebContents" if HasLiveOriginalOpenerChain()
+  // is true, or nullptr otherwise. See the comment for
+  // `HasLiveOriginalOpenerChain()` for more details.
+  virtual WebContents* GetFirstWebContentsInLiveOriginalOpenerChain() = 0;
 
   // Returns the WakeLockContext accociated with this WebContents.
   virtual device::mojom::WakeLockContext* GetWakeLockContext() = 0;
