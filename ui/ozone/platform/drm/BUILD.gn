@@ -5,6 +5,7 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/logging.gni")
 import("//build/config/ozone.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
@@ -180,6 +181,11 @@ source_set("gbm") {
 
   if (drm_commit_properties_on_page_flip) {
     defines += [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
+  }
+
+  if (!use_runtime_vlog) {
+    # Enable VLOG(1) when using build time VLOG.
+    defines += [ "ENABLED_VLOG_LEVEL=1" ]
   }
 }
 
