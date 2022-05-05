@@ -93,8 +93,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
-  virtual void AddGroupNotification(const Notification& notification,
-                                    bool newest_first) {}
+  virtual void AddGroupNotification(const Notification& notification) {}
 
   // Find the message view associated with a grouped notification id if it
   // exists.

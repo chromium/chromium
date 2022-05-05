@@ -62,8 +62,8 @@ class ASH_EXPORT AshNotificationView
   void GroupedNotificationsPreferredSizeChanged();
 
   // message_center::MessageView:
-  void AddGroupNotification(const message_center::Notification& notification,
-                            bool newest_first) override;
+  void AddGroupNotification(
+      const message_center::Notification& notification) override;
   void PopulateGroupNotifications(
       const std::vector<const message_center::Notification*>& notifications)
       override;

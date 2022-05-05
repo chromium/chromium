@@ -109,7 +109,8 @@ UnifiedMessageCenterView::~UnifiedMessageCenterView() {
 void UnifiedMessageCenterView::Init() {
   message_list_view_->Init();
 
-  AddChildView(notification_bar_);
+  if (!is_notifications_refresh_enabled_)
+    AddChildView(notification_bar_);
 
   // Need to set the transparent background explicitly, since ScrollView has
   // set the default opaque background color.
@@ -127,6 +128,9 @@ void UnifiedMessageCenterView::Init() {
   }
   AddChildView(scroller_);
 
+  if (is_notifications_refresh_enabled_)
+    AddChildView(notification_bar_);
+
   notification_bar_->Update(
       message_list_view_->GetTotalNotificationCount(),
       message_list_view_->GetTotalPinnedNotificationCount(),
@@ -137,7 +141,7 @@ void UnifiedMessageCenterView::SetMaxHeight(int max_height) {
   int max_scroller_height = max_height;
   if (notification_bar_->GetVisible()) {
     max_scroller_height -= is_notifications_refresh_enabled_
-                               ? notification_bar_->GetLocalBounds().height()
+                               ? notification_bar_->GetPreferredSize().height()
                                : kStackedNotificationBarHeight;
   }
   scroller_->ClipHeightTo(0, max_scroller_height);

@@ -224,8 +224,7 @@ void NotificationGroupingController::SetupParentNotification(
     parent_view->UpdateWithNotification(*new_parent_notification);
     // Grouped notifications should start off in the collapsed state.
     parent_view->SetExpanded(false);
-    parent_view->AddGroupNotification(*parent_notification,
-                                      /*newest_first=*/false);
+    parent_view->AddGroupNotification(*parent_notification);
   }
 }
 
@@ -333,7 +332,7 @@ void NotificationGroupingController::OnNotificationAdded(
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           parent_id);
   if (parent_view)
-    parent_view->AddGroupNotification(*notification, /*newest_first=*/false);
+    parent_view->AddGroupNotification(*notification);
   else
     message_center->ResetSinglePopup(parent_id);
 

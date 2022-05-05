@@ -528,11 +528,16 @@ TEST_P(UnifiedMessageCenterViewTest, StackingCounterLabelLayout) {
             message_center_view()->bounds().height());
 
   EXPECT_TRUE(GetNotificationBar()->GetVisible());
-  EXPECT_EQ(IsNotificationsRefreshEnabled() ? kMessageCenterPadding : 0,
-            GetNotificationBar()->bounds().y());
-  EXPECT_EQ(GetNotificationBar()->bounds().bottom(),
-            GetScroller()->bounds().y());
 
+  if (!features::IsNotificationsRefreshEnabled()) {
+    EXPECT_EQ(0, GetNotificationBar()->bounds().y());
+    EXPECT_EQ(GetNotificationBar()->bounds().bottom(),
+              GetScroller()->bounds().y());
+  } else {
+    EXPECT_EQ(kMessageCenterPadding, GetScroller()->bounds().y());
+    EXPECT_EQ(GetNotificationBar()->bounds().y(),
+              GetScroller()->bounds().bottom());
+  }
   // With the refresh enabled, we do not scroll the message center to the bottom
   // so the label should not be visible.
   if (IsNotificationsRefreshEnabled())
@@ -773,8 +778,9 @@ TEST_P(UnifiedMessageCenterViewInWidgetTest,
   auto id1 = AddNotification(false /* pinned */);
 
   // Toggle focus to the last notification MessageView.
-  auto* focused_message_view =
-      ToggleFocusToMessageView(1 /* index */, true /* reverse */);
+  auto* focused_message_view = ToggleFocusToMessageView(
+      features::IsNotificationsRefreshEnabled() ? 0 : 1 /* index */,
+      true /* reverse */);
   ASSERT_TRUE(focused_message_view);
   EXPECT_EQ(id1, focused_message_view->notification_id());
 

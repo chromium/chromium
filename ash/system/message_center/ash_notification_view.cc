@@ -654,8 +654,7 @@ base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
 }
 
 void AshNotificationView::AddGroupNotification(
-    const message_center::Notification& notification,
-    bool newest_first) {
+    const message_center::Notification& notification) {
   // Do not add a grouped notification if a view for it already exists.
   if (FindGroupNotificationView(notification.id()))
     return;
@@ -671,9 +670,8 @@ void AshNotificationView::AddGroupNotification(
   notification_view->set_scroller(
       scroller() ? scroller() : grouped_notifications_scroll_view_);
 
-  grouped_notifications_container_->AddChildViewAt(
-      std::move(notification_view),
-      newest_first ? 0 : grouped_notifications_container_->children().size());
+  grouped_notifications_container_->AddChildViewAt(std::move(notification_view),
+                                                   0);
 
   total_grouped_notifications_++;
   left_content_->SetVisible(false);
@@ -688,10 +686,9 @@ void AshNotificationView::PopulateGroupNotifications(
   total_grouped_notifications_ = 0;
   grouped_notifications_container_->RemoveAllChildViews();
 
-  for (auto notification = notifications.rbegin();
-       notification != notifications.rend(); notification++) {
+  for (auto* notification : notifications) {
     auto notification_view =
-        std::make_unique<AshNotificationView>(**notification,
+        std::make_unique<AshNotificationView>(*notification,
                                               /*shown_in_popup=*/false);
     notification_view->SetVisible(
         total_grouped_notifications_ <

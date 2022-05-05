@@ -180,8 +180,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     for (int i = 0; i < 1; i++) {
       auto group_child = CreateTestNotification();
       group_child->SetGroupChild();
-      view->AddGroupNotification(*group_child.get(),
-                                 /*newest_first=*/false);
+      view->AddGroupNotification(*group_child.get());
     }
   }
 
@@ -520,7 +519,7 @@ TEST_F(AshNotificationViewTest, LeftContentNotVisibleInGroupedNotifications) {
   EXPECT_TRUE(GetLeftContent(notification_view())->GetVisible());
 
   auto group_child = CreateTestNotification();
-  notification_view()->AddGroupNotification(*group_child.get(), false);
+  notification_view()->AddGroupNotification(*group_child.get());
   EXPECT_FALSE(GetLeftContent(notification_view())->GetVisible());
 
   notification_view()->RemoveGroupNotification(group_child->id());
