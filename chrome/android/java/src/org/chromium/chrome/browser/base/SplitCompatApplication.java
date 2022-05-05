@@ -22,7 +22,6 @@ import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JNIUtils;
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.FirebaseConfig;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
@@ -128,16 +126,6 @@ public class SplitCompatApplication extends Application {
 
         if (isBrowserProcess) {
             UmaUtils.recordMainEntryPointTime();
-            // *** The Application Context should not be used before the locale override is set ***
-            if (GlobalAppLocaleController.getInstance().init(context)) {
-                // If the app locale override preference is set, create a new override
-                // context to use as the base context for the application.
-                // Must be initialized early to override Application level localizations.
-                Configuration config =
-                        GlobalAppLocaleController.getInstance().getOverrideConfig(context);
-                LocaleUtils.setDefaultLocalesFromConfiguration(config);
-                context = context.createConfigurationContext(config);
-            }
             performBrowserProcessPreloading(context);
         }
 

@@ -15,9 +15,8 @@ import org.chromium.ui.base.WindowAndroid;
  * Java part of PasswordEditBridge pair providing communication between native password manager code
  * and Java password edit dialog UI components.
  */
-public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.Delegate {
+public class PasswordEditDialogBridge {
     private long mNativeDialog;
-    private final PasswordEditDialogCoordinator mDialogCoordinator;
 
     @CalledByNative
     static PasswordEditDialogBridge create(
@@ -27,31 +26,16 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
 
     private PasswordEditDialogBridge(long nativeDialog, @NonNull WindowAndroid windowAndroid) {
         mNativeDialog = nativeDialog;
-        mDialogCoordinator = PasswordEditDialogCoordinator.create(windowAndroid, this);
     }
 
     @CalledByNative
     void show(@NonNull String[] usernames, int selectedUsernameIndex, @NonNull String password,
             @NonNull String origin, @Nullable String account) {
-        mDialogCoordinator.show(usernames, selectedUsernameIndex, password, origin, account);
     }
 
     @CalledByNative
     void dismiss() {
-        mDialogCoordinator.dismiss();
-    }
 
-    @Override
-    public void onDialogAccepted(int selectedUsernameIndex) {
-        assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onDialogAccepted(mNativeDialog, selectedUsernameIndex);
-    }
-
-    @Override
-    public void onDialogDismissed(boolean dialogAccepted) {
-        assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onDialogDismissed(mNativeDialog, dialogAccepted);
-        mNativeDialog = 0;
     }
 
     @NativeMethods

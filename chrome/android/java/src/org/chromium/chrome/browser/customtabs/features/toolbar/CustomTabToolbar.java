@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static org.chromium.base.MathUtils.interpolate;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -58,8 +54,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -74,9 +68,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -89,6 +81,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.chromium.base.MathUtils.interpolate;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
 
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
@@ -744,20 +739,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         public void onNativeLibraryReady() {
-            mSecurityButton.setOnClickListener(v -> {
-                Tab currentTab = mLocationBarDataProvider.getTab();
-                if (currentTab == null) return;
-                WebContents webContents = currentTab.getWebContents();
-                if (webContents == null) return;
-                Activity activity = currentTab.getWindowAndroid().getActivity().get();
-                if (activity == null) return;
-                if (mCurrentlyShowingBranding) return;
-                // For now we don't show "store info" row for custom tab.
-                new ChromePageInfo(mModalDialogManagerSupplier,
-                        TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
-                        OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
-                        .show(currentTab, ChromePageInfoHighlight.noHighlight());
-            });
         }
 
         @Override

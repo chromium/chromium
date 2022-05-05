@@ -18,7 +18,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -51,7 +50,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
     private final Runnable mPromoHeaderChangeAction;
 
     private @Nullable ProfileDataCache mProfileDataCache;
-    private final @Nullable SigninPromoController mSigninPromoController;
     private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
     private final @Nullable SyncService mSyncService;
 
@@ -72,16 +70,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
-            mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-            mProfileDataCache.addObserver(this);
-            mSigninPromoController = new SigninPromoController(
-                    SigninAccessPoint.BOOKMARK_MANAGER, SyncConsentActivityLauncherImpl.get());
-            mAccountManagerFacade.addObserver(this);
-        } else {
-            mProfileDataCache = null;
-            mSigninPromoController = null;
-        }
         updatePromoState();
     }
 
@@ -90,12 +78,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      */
     void destroy() {
         if (mSyncService != null) mSyncService.removeSyncStateChangedListener(this);
-
-        if (mSigninPromoController != null) {
-            mAccountManagerFacade.removeObserver(this);
-            mProfileDataCache.removeObserver(this);
-            mSigninPromoController.onPromoDestroyed();
-        }
 
         mSignInManager.removeSignInStateObserver(this);
     }
@@ -135,15 +117,12 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      * Sets up the sync promo view.
      */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSigninPromoController.setUpSyncPromoView(
-                mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }
 
     /**
      * Detaches the previously configured {@link PersonalizedSigninPromoView}.
      */
     void detachPersonalizePromoView() {
-        if (mSigninPromoController != null) mSigninPromoController.detach();
     }
 
     /**
@@ -203,9 +182,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
                         || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
                 && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
                         || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
-        if (mSigninPromoController != null && hasSyncPromoStateChangedtoShown) {
-            mSigninPromoController.increasePromoShowCount();
-        }
         if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
             SharedPreferencesManager.getInstance().incrementInt(
                     ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);

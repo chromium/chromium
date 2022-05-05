@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import android.widget.PopupWindow;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
-import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -21,7 +18,6 @@ import org.chromium.ui.base.WindowAndroid;
 public class PasswordGenerationPopupBridge implements PopupWindow.OnDismissListener {
     private final long mNativePasswordGenerationEditingPopupViewAndroid;
     private final Context mContext;
-    private final DropdownPopupWindow mPopup;
     private final View mAnchorView;
     /**
      * A convenience method for the constructor to be invoked from the native counterpart.
@@ -46,19 +42,6 @@ public class PasswordGenerationPopupBridge implements PopupWindow.OnDismissListe
         mNativePasswordGenerationEditingPopupViewAndroid = nativePopup;
         mContext = windowAndroid.getActivity().get();
         mAnchorView = anchorView;
-        // mContext could've been garbage collected.
-        if (mContext == null) {
-            mPopup = null;
-            // Prevent destroying the native counterpart when it's about to derefence its own
-            // members in UpdateBoundsAndRedrawPopup().
-            new Handler().post(this::onDismiss);
-        } else {
-            mPopup = new DropdownPopupWindow(mContext, anchorView);
-            mPopup.setOnDismissListener(this);
-            mPopup.disableHideOnOutsideTap();
-            mPopup.setContentDescriptionForAccessibility(
-                    mContext.getString(R.string.password_generation_popup_content_description));
-        }
     }
 
     /**
@@ -80,15 +63,7 @@ public class PasswordGenerationPopupBridge implements PopupWindow.OnDismissListe
      */
     @CalledByNative
     private void show(boolean isRtl, String explanationText) {
-        if (mPopup != null) {
-            float anchorWidth = mAnchorView.getLayoutParams().width;
-            assert anchorWidth > 0;
-            PasswordGenerationPopupAdapter adapter =
-                    new PasswordGenerationPopupAdapter(mContext, explanationText, anchorWidth);
-            mPopup.setAdapter(adapter);
-            mPopup.setRtl(isRtl);
-            mPopup.show();
-        }
+
     }
 
     /**
@@ -96,7 +71,6 @@ public class PasswordGenerationPopupBridge implements PopupWindow.OnDismissListe
      */
     @CalledByNative
     private void hide() {
-        if (mPopup != null) mPopup.dismiss();
     }
 
     @NativeMethods

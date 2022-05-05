@@ -472,20 +472,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             }
         };
 
-        FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(activity,
-                snackbarManager, windowAndroid,
-                new SnapScrollHelperImpl(mNewTabPageManager, mNewTabPageLayout), mNewTabPageLayout,
-                mBrowserControlsStateProvider.getTopControlsHeight(), isInNightMode, this, profile,
-                /* isPlaceholderShownInitially= */ false, bottomSheetController,
-                shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
-                NewTabPageUtils.decodeOriginFromNtpUrl(url),
-                PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
-                SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs,
-                FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
-                /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
-                HelpAndFeedbackLauncherImpl.getInstance());
-        mFeedSurfaceProvider = feedSurfaceCoordinator;
-
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
     }

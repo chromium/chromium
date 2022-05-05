@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/paint_preview/android/java",
   "+chrome/browser/password_check/android",
   "+chrome/browser/performance_hints/android/java",
-  "+chrome/browser/settings/android/java",
   "+chrome/browser/tabmodel/android/java",
   "+chrome/browser/page_annotations/android/java",
   "+chrome/browser/video_tutorials/android",

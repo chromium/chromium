@@ -4,22 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
-
 import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
 
 import androidx.test.filters.MediumTest;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -32,19 +21,20 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.site_settings.SiteSettingsTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.device.geolocation.LocationProviderOverrider;
-import org.chromium.device.geolocation.MockLocationProvider;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeoutException;
+
+import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests TrustedWebActivity location delegation.
@@ -146,20 +136,7 @@ public class TrustedWebActivityLocationDelegationTest {
     }
 
     private void setAllowChromeSiteLocation(boolean enabled) {
-        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
-                SiteSettingsCategory.Type.DEVICE_LOCATION);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SingleCategorySettings websitePreferences =
-                    (SingleCategorySettings) settingsActivity.getMainFragment();
-            ChromeSwitchPreference location =
-                    (ChromeSwitchPreference) websitePreferences.findPreference(
-                            SingleCategorySettings.BINARY_TOGGLE_KEY);
-
-            websitePreferences.onPreferenceChange(location, enabled);
-            settingsActivity.finish();
-        });
     }
 
     private void verifyLocationFromChrome() throws TimeoutException, Exception {

@@ -47,8 +47,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -68,7 +66,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -600,11 +597,6 @@ public class VrShell extends GvrLayout
     // Called when the user clicks on the security icon in the URL bar.
     @CalledByNative
     public void showPageInfo() {
-        Tab tab = mCurrentTabSupplier.get();
-        if (tab == null) return;
-        new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
-                /*storeInfoActionHandlerSupplier=*/null)
-                .show(tab, ChromePageInfoHighlight.noHighlight());
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

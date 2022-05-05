@@ -12,8 +12,6 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,10 +29,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
-import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoHighlight;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IUrlBarController;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
@@ -119,21 +114,7 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
     }
 
     private void showPageInfoUi(boolean showPublisherUrl) {
-        WebContents webContents = mBrowserImpl.getActiveTab().getWebContents();
 
-        String publisherUrl = null;
-        if (showPublisherUrl) {
-            String publisherUrlMaybeNull =
-                    UrlBarControllerImplJni.get().getPublisherUrl(mNativeUrlBarController);
-            if (publisherUrlMaybeNull != null && !TextUtils.isEmpty(publisherUrlMaybeNull)) {
-                publisherUrl = UrlUtilities.extractPublisherFromPublisherUrl(publisherUrlMaybeNull);
-            }
-        }
-
-        PageInfoController.show(mBrowserImpl.getWindowAndroid().getActivity().get(), webContents,
-                publisherUrl, PageInfoController.OpenedFromSource.TOOLBAR,
-                PageInfoControllerDelegateImpl.create(webContents),
-                PageInfoHighlight.noHighlight());
     }
 
     protected class UrlBarView

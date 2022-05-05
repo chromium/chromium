@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.night_mode.AutoDarkFeedbackSource;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +57,6 @@ public class ChromeFeedbackCollector
         sources.add(new IMEFeedbackSource());
         sources.add(new PermissionFeedbackSource());
         sources.add(new FeedbackContextFeedbackSource(initParams.feedbackContext));
-        sources.add(
-                new AutoDarkFeedbackSource(initParams.profile, activity, new GURL(initParams.url)));
-
         return sources;
     }
 

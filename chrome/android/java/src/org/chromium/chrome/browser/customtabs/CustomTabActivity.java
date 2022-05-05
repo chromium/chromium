@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -21,7 +18,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -42,15 +38,13 @@ import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TrustedCdn;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
+
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 /**
  * The activity for custom tabs. It will be launched on top of a client's task.
@@ -237,12 +231,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             }
             return true;
         } else if (id == R.id.info_menu_id) {
-            Tab tab = getTabModelSelector().getCurrentTab();
-            if (tab == null) return false;
-            String publisher = TrustedCdn.getContentPublisher(tab);
-            new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU,
-                    () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get())
-                    .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);
@@ -320,11 +308,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new CustomTabLaunchCauseMetrics(this);
-    }
-
-    @VisibleForTesting
-    public NightModeStateProvider getNightModeStateProviderForTesting() {
-        return super.getNightModeStateProvider();
     }
 
     @Override

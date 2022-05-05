@@ -91,7 +91,6 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//components/browser_ui/settings/android:java",
@@ -153,48 +152,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
-  ]
-}
-
-junit_binary("password_manager_junit_tests") {
-  testonly = true
-
-  sources = [
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelperTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
-    "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
-  ]
-
-  deps = [
-    ":android_backend_java_enums",
-    ":java",
-    ":public_impl_java",
-    ":settings_interface_java",
-    "$google_play_services_package:google_play_services_basement_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/signin/services/android:java",
-    "//chrome/browser/sync/android:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/browser_ui/settings/android:java",
-    "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/signin/public/android:java",
-    "//components/sync/android:sync_java",
-    "//components/sync/protocol:protocol_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/junit",
-    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

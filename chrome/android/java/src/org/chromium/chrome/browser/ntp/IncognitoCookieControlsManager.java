@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -12,12 +11,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge.CookieControlsServiceObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 
 /**
@@ -118,13 +113,5 @@ public class IncognitoCookieControlsManager
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.cookie_controls_card_managed_icon) {
-            Bundle fragmentArguments = new Bundle();
-            fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                    SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES));
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(
-                    v.getContext(), SingleCategorySettings.class, fragmentArguments);
-        }
     }
 }

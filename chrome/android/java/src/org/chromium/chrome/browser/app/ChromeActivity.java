@@ -133,22 +133,16 @@ import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -201,7 +195,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -213,7 +206,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListener;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -1163,9 +1155,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeSessionState.setIsInMultiWindowMode(
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
 
-        boolean appIsInNightMode = getNightModeStateProvider().isInNightMode();
-        boolean systemIsInNightMode = SystemNightModeMonitor.getInstance().isSystemNightModeOn();
-        ChromeSessionState.setDarkModeState(appIsInNightMode, systemIsInNightMode);
+        ChromeSessionState.setDarkModeState(false, false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ensurePictureInPictureController();
@@ -2227,11 +2217,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (mTabReparentingControllerSupplier.get() != null && didChangeTabletMode()) {
                 onScreenLayoutSizeChange();
             }
-            // We only handle VR UI mode and UI mode night changes. Any other changes should follow
-            // the default behavior of recreating the activity. Note that if UI mode night changes,
-            // with or without other changes, we will still recreate() until we get a callback from
-            // the ChromeBaseAppCompatActivity#onNightModeStateChanged or the overridden method in
-            // sub-classes if necessary.
+
             if (didChangeNonVrUiMode(mConfig.uiMode, newConfig.uiMode)
                     && !didChangeUiModeNight(mConfig.uiMode, newConfig.uiMode)) {
                 recreate();
@@ -2444,12 +2430,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
 
         if (id == R.id.preferences_id) {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(this);
-            RecordUserAction.record("MobileMenuSettings");
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Settings.OpenSettingsFromMenu.PerProfileType", type,
-                    BrowserProfileType.MAX_VALUE + 1);
             return true;
         }
 
@@ -2568,14 +2548,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        if (id == R.id.info_menu_id) {
-            ChromePageInfo pageInfo = new ChromePageInfo(getModalDialogManagerSupplier(), null,
-                    OpenedFromSource.MENU,
-                    () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get());
-            pageInfo.show(currentTab, ChromePageInfoHighlight.noHighlight());
-            return true;
-        }
-
         if (id == R.id.translate_id) {
             RecordUserAction.record("MobileMenuTranslate");
             Tracker tracker = TrackerFactory.getTrackerForProfile(
@@ -2638,30 +2610,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         currentTab, usingDesktopUserAgent, /* forcedByUser */ true);
             }
             RequestDesktopUtils.recordUserChangeUserAgent(usingDesktopUserAgent, getActivityTab());
-            return true;
-        }
-
-        if (id == R.id.auto_dark_web_contents_id || id == R.id.auto_dark_web_contents_check_id) {
-            // Get values needed to check/enable auto dark for the current site.
-            Profile profile = getCurrentTabModel().getProfile();
-            GURL url = currentTab.getUrl();
-
-            // Flip auto dark state.
-            boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(profile, url);
-            WebContentsDarkModeController.setEnabledForUrl(profile, url, !isEnabled);
-            currentTab.getWebContents().notifyRendererPreferenceUpdate();
-
-            WebContentsDarkModeController.recordAutoDarkUkm(
-                    currentTab.getWebContents(), !isEnabled);
-
-            // Show dialog informing user how to disable the feature globally and give feedback if
-            // disabling through the app menu for the nth time (determined by feature engagement).
-            if (isEnabled) {
-                WebContentsDarkModeMessageController.attemptToShowDialog(this, profile,
-                        url.getSpec(), getModalDialogManager(), new SettingsLauncherImpl(),
-                        HelpAndFeedbackLauncherImpl.getInstance());
-            }
-
             return true;
         }
 
@@ -2905,18 +2853,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @VisibleForTesting
     public RootUiCoordinator getRootUiCoordinatorForTesting() {
         return mRootUiCoordinator;
-    }
-
-    // NightModeStateProvider.Observer implementation.
-    @Override
-    public void onNightModeStateChanged() {
-        // Note: order matters here because the call to super will recreate the activity.
-        // Note: it's possible for this method to be called before mNightModeReparentingController
-        // is constructed.
-        if (mTabReparentingControllerSupplier.get() != null) {
-            mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
-        }
-        super.onNightModeStateChanged();
     }
 
     @VisibleForTesting

@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.dependency_injection;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.LAST_USED_REGULAR_PROFILE;
-
 import android.content.Context;
 
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
@@ -17,7 +14,6 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,6 +25,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.LAST_USED_REGULAR_PROFILE;
 
 /**
  * Module for {@link ChromeAppComponent}.
@@ -93,11 +92,6 @@ public class ChromeAppModule {
         // TrustedWebActivityServiceConnectionManager comes from AndroidX Browser
         // so we can't make it injectable.
         return TrustedWebActivityServiceConnectionPool.create(context);
-    }
-
-    @Provides
-    public SystemNightModeMonitor provideSystemNightModeMonitor() {
-        return SystemNightModeMonitor.getInstance();
     }
 
     @Provides

@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -49,7 +48,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -1565,14 +1563,6 @@ public class PaymentUiService
     // Implements PaymentRequestUI.Delegate:
     @Override
     public void onCardAndAddressSettingsClicked() {
-        Context context = mDelegate.getContext();
-        if (context == null) {
-            mDelegate.onUiAborted(AbortReason.OTHER, ErrorStrings.CONTEXT_NOT_FOUND);
-            return;
-        }
-
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(context);
     }
 
     // Implements PersonalDataManager.NormalizedAddressRequestDelegate:

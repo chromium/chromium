@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
-import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -79,10 +78,8 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -101,9 +98,6 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveButtonActionMenuCoordinator;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -207,8 +201,6 @@ public class RootUiCoordinator
     private ScrimCoordinator mScrimCoordinator;
     private DirectActionInitializer mDirectActionInitializer;
     private List<ButtonDataProvider> mButtonDataProviders;
-    @Nullable
-    private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private IdentityDiscController mIdentityDiscController;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
@@ -491,11 +483,6 @@ public class RootUiCoordinator
             mToolbarManager = null;
         }
 
-        if (mAdaptiveToolbarButtonController != null) {
-            mAdaptiveToolbarButtonController.destroy();
-            mAdaptiveToolbarButtonController = null;
-        }
-
         if (mAppMenuCoordinator != null) {
             mAppMenuCoordinator.unregisterAppMenuBlocker(this);
             mAppMenuCoordinator.unregisterAppMenuBlocker(mAppMenuBlocker);
@@ -693,7 +680,7 @@ public class RootUiCoordinator
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                     new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
-                            mModalDialogManagerSupplier.get(), new SettingsLauncherImpl());
+                            mModalDialogManagerSupplier.get());
             mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                     mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                     mProfileSupplier, incognitoReauthCoordinatorFactory);
@@ -815,8 +802,6 @@ public class RootUiCoordinator
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
             return true;
         } else if (id == R.id.get_image_descriptions_id) {
-            ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(mActivity,
-                    mModalDialogManagerSupplier.get(), mActivityTabProvider.get().getWebContents());
             return true;
         }
 
@@ -960,18 +945,8 @@ public class RootUiCoordinator
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
                             mActivityLifecycleDispatcher, mTabCreatorManagerSupplier,
                             mTabModelSelectorSupplier, trackerSupplier);
-            AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                    new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
-                            mActivityLifecycleDispatcher, new AdaptiveButtonActionMenuCoordinator(),
-                            mWindowAndroid, SharedPreferencesManager.getInstance());
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             mButtonDataProviders =
-                    Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
+                    Arrays.asList(mIdentityDiscController);
 
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),

@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -23,7 +20,6 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -32,26 +28,18 @@ import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.usage_stats.NotificationSuspender;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -60,6 +48,8 @@ import org.chromium.url.URI;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
 import java.net.URISyntaxException;
+
+import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 /**
  * Provides the ability for the NotificationPlatformBridgeAndroid to talk to the Android platform
@@ -239,54 +229,6 @@ public class NotificationPlatformBridge {
             }
         }
         return null;
-    }
-
-    /**
-     * Launches the notifications preferences screen. If the received intent indicates it came
-     * from the gear button on a flipped notification, this launches the site specific preferences
-     * screen.
-     *
-     * @param incomingIntent The received intent.
-     */
-    public static void launchNotificationPreferences(Intent incomingIntent) {
-        // This method handles an intent fired by the Android system. There is no guarantee that the
-        // native library is loaded at this point. The native library is needed for the preferences
-        // activity, and it loads the library, but there are some native calls even before that
-        // activity is started: from RecordUserAction.record and (indirectly) from
-        // UrlFormatter.formatUrlForSecurityDisplay.
-        ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-
-        // Use the application context because it lives longer. When using the given context, it
-        // may be stopped before the preferences intent is handled.
-        Context applicationContext = ContextUtils.getApplicationContext();
-
-        // If we can read an origin from the intent, use it to open the settings screen for that
-        // origin.
-        String origin = getOriginFromIntent(incomingIntent);
-        boolean launchSingleWebsitePreferences = origin != null;
-
-        Bundle fragmentArguments;
-        if (launchSingleWebsitePreferences) {
-            // Record that the user has clicked on the [Site Settings] button.
-            RecordUserAction.record("Notifications.ShowSiteSettings");
-
-            // All preferences for a specific origin.
-            fragmentArguments = SingleWebsiteSettings.createFragmentArgsForSite(origin);
-        } else {
-            // Notification preferences for all origins.
-            fragmentArguments = new Bundle();
-            fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                    SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-            fragmentArguments.putString(SingleCategorySettings.EXTRA_TITLE,
-                    applicationContext.getResources().getString(
-                            R.string.push_notifications_permission_title));
-        }
-
-        Class<? extends PreferenceFragmentCompat> fragment = launchSingleWebsitePreferences
-                ? SingleWebsiteSettings.class
-                : SingleCategorySettings.class;
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(applicationContext, fragment, fragmentArguments);
     }
 
     /**
@@ -551,8 +493,7 @@ public class NotificationPlatformBridge {
             return;
         }
 
-        NotificationWrapper notification = buildNotificationWrapper(
-                notificationBuilder, notificationType, notificationId, origin, actions, image);
+        NotificationWrapper notification = null;
 
         Callback<Boolean> suspendedCallback = (suspended) -> {
             // We will call displayNotification() again after the suspension is over.
@@ -649,43 +590,6 @@ public class NotificationPlatformBridge {
         notificationBuilder.setSilent(silent);
 
         return notificationBuilder;
-    }
-
-    private NotificationWrapper buildNotificationWrapper(
-            NotificationBuilderBase notificationBuilder, @NotificationType int notificationType,
-            String notificationId, String origin, ActionInfo[] actions, Bitmap image) {
-        Context context = ContextUtils.getApplicationContext();
-        Resources res = context.getResources();
-
-        // TODO(peter): Generalize the NotificationPlatformBridge sufficiently to not need
-        // to care about the individual notification types.
-        // Set up a pending intent for going to the settings screen for |origin|.
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Intent settingsIntent = settingsLauncher.createSettingsActivityIntent(context,
-                SingleWebsiteSettings.class.getName(),
-                SingleWebsiteSettings.createFragmentArgsForSite(origin));
-        settingsIntent.setData(makeIntentData(notificationId, origin, -1 /* actionIndex */));
-        PendingIntentProvider settingsIntentProvider = PendingIntentProvider.getActivity(context,
-                PENDING_INTENT_REQUEST_CODE, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // If action buttons are displayed, there isn't room for the full Site Settings button
-        // label and icon, so abbreviate it. This has the unfortunate side-effect of
-        // unnecessarily abbreviating it on Android Wear also (crbug.com/576656). If custom
-        // layouts are enabled, the label and icon provided here only affect Android Wear, so
-        // don't abbreviate them.
-        boolean abbreviateSiteSettings = actions.length > 0 && !useCustomLayouts(image != null);
-        int settingsIconId = abbreviateSiteSettings ? 0 : R.drawable.settings_cog;
-        CharSequence settingsTitle = abbreviateSiteSettings
-                ? res.getString(R.string.notification_site_settings_button)
-                : res.getString(R.string.page_info_site_settings_button);
-        // If the settings button is displayed together with the other buttons it has to be the
-        // last one, so add it after the other actions.
-        notificationBuilder.addSettingsAction(
-                settingsIconId, settingsTitle, settingsIntentProvider);
-
-        return notificationBuilder.build(
-                new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.SITES,
-                        notificationId /* notificationTag */, PLATFORM_ID /* notificationId */));
     }
 
     private NotificationBuilderBase createNotificationBuilder(Context context, boolean hasImage) {

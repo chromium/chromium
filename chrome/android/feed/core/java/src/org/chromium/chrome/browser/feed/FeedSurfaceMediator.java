@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
-
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -24,7 +21,6 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -67,6 +63,8 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.HashMap;
 import java.util.Locale;
+
+import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 /**
  * A mediator for the {@link FeedSurfaceCoordinator} responsible for interacting with the
@@ -156,15 +154,6 @@ public class FeedSurfaceMediator
 
         /** Update the content displayed in {@link PersonalizedSigninPromoView}. */
         private void maybeUpdateSignInPromo() {
-            // Only call #setupPromoViewFromCache() if SignInPromo is visible to avoid potentially
-            // blocking the UI thread for several seconds if the accounts cache is not populated
-            // yet.
-            if (isVisible()) {
-                mSigninPromoController.setUpSyncPromoView(mProfileDataCache,
-                        mCoordinator.getSigninPromoView().findViewById(
-                                R.id.signin_promo_view_container),
-                        this::onDismissPromo);
-            }
         }
 
         @Override
@@ -999,11 +988,7 @@ public class FeedSurfaceMediator
                                        SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY))
                                .getStreamKind();
         if (itemId == R.id.ntp_feed_header_menu_item_manage) {
-            Intent intent = new Intent(mContext, FeedManagementActivity.class);
-            intent.putExtra(FeedManagementActivity.INITIATING_STREAM_TYPE_EXTRA, feedType);
-            FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_MANAGE);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE);
-            mContext.startActivity(intent);
+
         } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));

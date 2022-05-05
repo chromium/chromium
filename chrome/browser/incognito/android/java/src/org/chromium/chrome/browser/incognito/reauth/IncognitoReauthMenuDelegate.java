@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
@@ -41,23 +40,17 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
 
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
-    private final SettingsLauncher mSettingsLauncher;
     private final BasicListMenu mIncognitoReauthMenu;
 
     /**
      * @param context The {@link Context} from where the android resources would be fetched.
      * @param tabModelSelector The {@link TabModelSelector} which would be used to close the
      *         Incognito tabs when the user clicks on "Close Incognito tabs" option.
-     * @param settingsLauncher The {@link SettingsLauncher} which is
-     *         responsible to opening the {@link SettingsActivity} when the user clicks on
-     *         "Settings" option.
      */
     IncognitoReauthMenuDelegate(@NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
-        mSettingsLauncher = settingsLauncher;
         mIncognitoReauthMenu = buildIncognitoReauthMenu();
     }
 
@@ -129,7 +122,6 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     private void onSettingsMenuItemClicked() {
-        mSettingsLauncher.launchSettingsActivity(mContext);
     }
 
     /**

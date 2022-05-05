@@ -65,8 +65,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderViewBinder.java",
     "java/src/org/chromium/chrome/browser/feed/sections/ViewVisibility.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsView.java",
@@ -201,7 +199,6 @@ android_resources("feed_java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
-    "java/res/xml/feed_autoplay_preferences.xml",
     "java/res/xml/tab_layout_badge.xml",
   ]
   deps = [
@@ -232,7 +229,6 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
     "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
   ]
 
   deps = [
@@ -243,7 +239,6 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
@@ -319,7 +314,6 @@ android_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:test_support_java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",

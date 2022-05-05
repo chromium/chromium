@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -287,12 +286,6 @@ public class OmniboxResourceProvider {
      */
     private static Context maybeWrapContext(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        // Only wraps the context in case of incognito.
-        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            return NightModeUtils.wrapContextWithNightModeConfig(
-                    context, R.style.Theme_Chromium_TabbedMode, /*nightMode=*/true);
-        }
-
         return context;
     }
 

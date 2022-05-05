@@ -4,11 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
-
-import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Pair;
@@ -42,9 +37,6 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsMod
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -56,6 +48,9 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
+import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
 
 /**
  * Contains functionality which is shared between {@link WebappActivity} and
@@ -78,7 +73,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabStatusBarColorProvider mStatusBarColorProvider;
     protected CustomTabActivityTabFactory mTabFactory;
     protected CustomTabIntentHandler mCustomTabIntentHandler;
-    protected CustomTabNightModeStateController mNightModeStateController;
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected Verifier mVerifier;
@@ -117,16 +111,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
-    protected NightModeStateProvider createNightModeStateProvider() {
-        // This is called before Dagger component is created, so using getInstance() directly.
-        mNightModeStateController = new CustomTabNightModeStateController(getLifecycleDispatcher(),
-                SystemNightModeMonitor.getInstance(), PowerSavingModeMonitor.getInstance());
-        return mNightModeStateController;
-    }
-
-    @Override
     protected void initializeNightModeStateProvider() {
-        mNightModeStateController.initialize(getDelegate(), getIntent());
     }
 
     @Override
@@ -183,11 +168,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
                 ? overridenBaseCustomTabFactory.create(mIntentDataProvider,
-                        getStartupTabPreloader(), mNightModeStateController,
+                        getStartupTabPreloader(), null,
                         intentIgnoringCriterion, getTopUiThemeColorProvider(),
                         new DefaultBrowserProviderImpl())
                 : new BaseCustomTabActivityModule(mIntentDataProvider, getStartupTabPreloader(),
-                        mNightModeStateController, intentIgnoringCriterion,
+                        null, intentIgnoringCriterion,
                         getTopUiThemeColorProvider(), new DefaultBrowserProviderImpl());
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent().createBaseCustomTabActivityComponent(
@@ -274,10 +259,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     private int getColorScheme() {
-        if (mNightModeStateController != null) {
-            return mNightModeStateController.isInNightMode() ? COLOR_SCHEME_DARK
-                                                             : COLOR_SCHEME_LIGHT;
-        }
         assert false : "NightModeStateController should have been already created";
         return COLOR_SCHEME_LIGHT;
     }

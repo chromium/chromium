@@ -30,7 +30,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -270,7 +269,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
      * Provides the RemoteViews, one per bookmark, to be shown in the widget.
      */
     private static class BookmarkAdapter
-            implements RemoteViewsService.RemoteViewsFactory, SystemNightModeMonitor.Observer {
+            implements RemoteViewsService.RemoteViewsFactory {
         // Can be accessed on any thread
         private final Context mContext;
         private final int mWidgetId;
@@ -289,7 +288,6 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mWidgetId = widgetId;
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
-            SystemNightModeMonitor.getInstance().addObserver(this);
         }
 
         @UiThread
@@ -344,10 +342,6 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @BinderThread
         @Override
         public void onDestroy() {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                if (mBookmarkModel != null) mBookmarkModel.destroy();
-                SystemNightModeMonitor.getInstance().removeObserver(this);
-            });
             deleteWidgetState(mWidgetId);
         }
 
@@ -501,12 +495,6 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             }
             views.setOnClickFillInIntent(R.id.list_item, fillIn);
             return views;
-        }
-
-        @Override
-        public void onSystemNightModeChanged() {
-            mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
-            redrawWidget(mWidgetId);
         }
     }
 }

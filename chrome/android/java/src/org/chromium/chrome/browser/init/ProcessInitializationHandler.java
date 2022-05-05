@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
-import org.chromium.chrome.browser.app.feature_guide.notifications.FeatureNotificationGuideDelegate;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantHistoryDeletionObserver;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
@@ -50,15 +49,12 @@ import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideService;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideServiceFactory;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
-import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
@@ -74,7 +70,6 @@ import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
@@ -290,7 +285,6 @@ public class ProcessInitializationHandler {
                 () -> PlatformContentCaptureController.getInstance()));
         HistoryDeletionBridge.getInstance().addObserver(
                 new AutofillAssistantHistoryDeletionObserver());
-        FeatureNotificationGuideService.setDelegate(new FeatureNotificationGuideDelegate());
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
     }
@@ -374,13 +368,6 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                HomepageManager.recordHomepageLocationTypeIfEnabled();
-            }
-        });
-
-        deferredStartupHandler.addDeferredTask(new Runnable() {
-            @Override
-            public void run() {
                 // Starts syncing with GSA.
                 AppHooks.get().createGsaHelper().startSync();
             }
@@ -457,8 +444,6 @@ public class ProcessInitializationHandler {
                 ()
                         -> AssistantVoiceSearchService.reportStartupUserEligibility(
                                 ContextUtils.getApplicationContext()));
-        deferredStartupHandler.addDeferredTask(
-                () -> GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics());
         deferredStartupHandler.addDeferredTask(() -> {
             // OptimizationTypes which we give a guarantee will be registered when we pass the
             // onDeferredStartup() signal to OptimizationGuide.
@@ -471,12 +456,6 @@ public class ProcessInitializationHandler {
             if (PriceTrackingUtilities.isPriceTrackingEligible()
                     && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
                 ShoppingPersistedTabData.onDeferredStartup();
-            }
-        });
-        deferredStartupHandler.addDeferredTask(() -> {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEATURE_NOTIFICATION_GUIDE)) {
-                FeatureNotificationGuideServiceFactory.getForProfile(
-                        Profile.getLastUsedRegularProfile());
             }
         });
     }

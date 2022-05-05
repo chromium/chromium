@@ -6,13 +6,7 @@ package org.chromium.chrome.browser.language.settings;
 
 import android.text.TextUtils;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.language.AppLocaleUtils;
-import org.chromium.chrome.browser.language.GlobalAppLocaleController;
-import org.chromium.chrome.browser.language.R;
-
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -34,8 +28,6 @@ public class LanguageItem {
 
     private final boolean mSupportTranslate;
 
-    private boolean mSupportAppUI;
-
     /**
      * Creates a new LanguageItem getting UI availability from ResourceBundle.
      * @param code The BCP-47 language tag for this language item.
@@ -49,7 +41,6 @@ public class LanguageItem {
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;
         mSupportTranslate = supportTranslate;
-        mSupportAppUI = AppLocaleUtils.isAvailableExactUiLanguage(code);
     }
 
     /**
@@ -105,20 +96,6 @@ public class LanguageItem {
     }
 
     /**
-     * @return Whether this language supports the Chrome UI.
-     */
-    public boolean isUISupported() {
-        return mSupportAppUI;
-    }
-
-    /**
-     * @return True if this language item represents the system default.
-     */
-    public boolean isSystemDefault() {
-        return AppLocaleUtils.isFollowSystemLanguage(mCode);
-    }
-
-    /**
      * Return the hashCode of the language code for this LanguageItem. The language code can be
      * used for the hash since two LanguageItems with equal language codes are equal.
      */
@@ -145,17 +122,4 @@ public class LanguageItem {
         return TextUtils.equals(mCode, other.mCode);
     }
 
-    /**
-     * Create a LanguageItem representing the system default language.
-     * @return LanguageItem
-     */
-    public static LanguageItem makeFollowSystemLanguageItem() {
-        String displayName = ContextUtils.getApplicationContext().getResources().getString(
-                R.string.default_lang_subtitle);
-        String nativeName =
-                GlobalAppLocaleController.getInstance().getOriginalSystemLocale().getDisplayName(
-                        Locale.getDefault());
-        return new LanguageItem(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE, displayName,
-                nativeName, true /*supportTranslate*/);
-    }
 }

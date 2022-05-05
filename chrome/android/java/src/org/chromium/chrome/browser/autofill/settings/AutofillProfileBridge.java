@@ -4,23 +4,16 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.app.Activity;
-
 import androidx.annotation.IntDef;
-import androidx.fragment.app.Fragment;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -219,14 +212,6 @@ public class AutofillProfileBridge {
     @CalledByNative
     private static void showAutofillCreditCardSettings(WebContents webContents) {
         // TODO
-    }
-
-    private static void showSettingSubpage(
-            WebContents webContents, Class<? extends Fragment> fragment) {
-        WeakReference<Activity> currentActivity =
-                webContents.getTopLevelNativeWindow().getActivity();
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(currentActivity.get(), fragment);
     }
 
     @NativeMethods

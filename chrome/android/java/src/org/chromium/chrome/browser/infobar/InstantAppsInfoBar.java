@@ -38,8 +38,6 @@ public class InstantAppsInfoBar extends ConfirmInfoBar {
         layout.setMessage(mData.getAppName());
         layout.getMessageLayout().addDescription(UrlFormatter.formatUrlForSecurityDisplay(
                 mData.getUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS));
-        layout.getPrimaryButton().setButtonColor(AppCompatResources.getColorStateList(
-                getContext(), R.color.app_banner_install_button_bg));
     }
 
     @Override

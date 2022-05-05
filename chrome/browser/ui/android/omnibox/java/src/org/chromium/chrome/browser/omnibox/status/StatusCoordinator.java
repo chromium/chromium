@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -42,7 +41,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
          * @param tab Tab containing the content to show page info for.
          * @param pageInfoHighlight Providing the highlight row info related to this dialog.
          */
-        void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight);
+        void show(Tab tab);
     }
 
     // TODO(crbug.com/1109369): Do not store the StatusView
@@ -250,7 +249,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             return;
         }
 
-        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getPageInfoHighlight());
+        mPageInfoAction.show(mLocationBarDataProvider.getTab());
         mMediator.onPageInfoOpened();
     }
 

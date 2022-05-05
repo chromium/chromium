@@ -11,6 +11,7 @@ public_vr_java_sources = [
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrDelegateProvider.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrDelegateProviderFallback.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrFallbackUtils.java",
+  "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrHandler.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrIntentDelegate.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrIntentDelegateFallback.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModeProviderImpl.java",

@@ -23,7 +23,6 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -190,23 +189,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     @VisibleForTesting
     static void run(Runnable runnable) {
-        try {
-            runnable.run();
-            updateNumConsecutiveCrashes(0);
-        } catch (Exception e) {
-            int numCrashes =
-                    getNumConsecutiveCrashes(getDelegate().getSharedPreferencesManager()) + 1;
-            updateNumConsecutiveCrashes(numCrashes);
 
-            if (numCrashes < CRASH_LIMIT) {
-                // Absorb the crash.
-                Log.e(SearchActivity.TAG,
-                        "Absorbing exception caught when attempting to launch widget.", e);
-            } else {
-                // Too many crashes have happened consecutively.  Let Android handle it.
-                throw e;
-            }
-        }
     }
 
     static boolean shouldShowFullString() {

@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
-
 import android.content.Context;
 import android.view.View;
 
@@ -29,13 +26,15 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
 public class AdaptiveToolbarButtonController implements ButtonDataProvider, ButtonDataObserver,
@@ -85,8 +84,6 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         mMenuClickListener = id -> {
             if (id == R.id.customize_adaptive_button_menu_id) {
                 RecordUserAction.record("MobileAdaptiveMenuCustomize");
-                settingsLauncher.launchSettingsActivity(
-                        context, AdaptiveToolbarPreferenceFragment.class);
                 return;
             }
             assert false : "unknown adaptive button menu id: " + id;

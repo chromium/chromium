@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -37,8 +38,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -61,11 +60,10 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
     private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private final BrowserServicesIntentDataProvider mDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final CustomTabNightModeStateController mNightModeStateController;
-    private final SystemNightModeMonitor mSystemNightModeMonitor;
 
     private ViewGroup mBottomBarView;
-    @Nullable private View mBottomBarContentView;
+    @Nullable
+    private View mBottomBarContentView;
     private PendingIntent mClickPendingIntent;
     private int[] mClickableIDs;
     private boolean mShowShadow = true;
@@ -92,19 +90,16 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
 
     @Inject
     public CustomTabBottomBarDelegate(Activity activity, WindowAndroid windowAndroid,
-            BrowserServicesIntentDataProvider dataProvider,
-            BrowserControlsSizer browserControlsSizer,
-            ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
-            CustomTabNightModeStateController nightModeStateController,
-            SystemNightModeMonitor systemNightModeMonitor, CustomTabActivityTabProvider tabProvider,
-            CustomTabCompositorContentInitializer compositorContentInitializer) {
+                                      BrowserServicesIntentDataProvider dataProvider,
+                                      BrowserControlsSizer browserControlsSizer,
+                                      ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
+                                      CustomTabActivityTabProvider tabProvider,
+                                      CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
         mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
-        mNightModeStateController = nightModeStateController;
-        mSystemNightModeMonitor = systemNightModeMonitor;
         mTabProvider = tabProvider;
         browserControlsSizer.addObserver(this);
 
@@ -130,7 +125,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
             mBottomBarContentView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     mBottomBarContentView.removeOnLayoutChangeListener(this);
                     mBrowserControlsSizer.setBottomControlsHeight(getBottomBarHeight(), 0);
                 }
@@ -168,6 +163,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
 
     /**
      * Updates the custom buttons on bottom bar area.
+     *
      * @param params The {@link CustomButtonParams} that describes the button to update.
      */
     public void updateBottomBarButtons(CustomButtonParams params) {
@@ -179,13 +175,14 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
     /**
      * Updates the RemoteViews on the bottom bar. If the given remote view is null, animates the
      * bottom bar out.
-     * @param remoteViews The new remote view hierarchy sent from the client.
-     * @param clickableIDs Array of view ids, the onclick event of which is intercepcted by chrome.
+     *
+     * @param remoteViews   The new remote view hierarchy sent from the client.
+     * @param clickableIDs  Array of view ids, the onclick event of which is intercepcted by chrome.
      * @param pendingIntent The {@link PendingIntent} that will be sent on clicking event.
      * @return Whether the update is successful.
      */
     public boolean updateRemoteViews(RemoteViews remoteViews, int[] clickableIDs,
-            PendingIntent pendingIntent) {
+                                     PendingIntent pendingIntent) {
         RecordUserAction.record("CustomTabsRemoteViewsUpdated");
         if (remoteViews == null) {
             if (mBottomBarView == null) return false;
@@ -233,7 +230,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
      * content is used instead.
      *
      * @param height The override height in pixels. A value of -1 is interpreted as "not set" and
-     *     means it will not be used.
+     *               means it will not be used.
      */
     public void setBottomBarHeight(int height) {
         mBottomBarHeightOverride = height;
@@ -263,6 +260,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
                         .withEndAction(() -> mBottomBarView.setVisibility(View.GONE))
                         .start();
             }
+
             @Override
             public void onOverlayPanelHidden() {
                 if (mBottomBarView == null) return;
@@ -311,9 +309,8 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
     }
 
     private boolean showRemoteViews(RemoteViews remoteViews) {
-        final View inflatedView = RemoteViewsWithNightModeInflater.inflate(remoteViews,
-                getBottomBarView(), mNightModeStateController.isInNightMode(),
-                mSystemNightModeMonitor.isSystemNightModeOn());
+        final View inflatedView = remoteViews.apply(ContextUtils.getApplicationContext(),
+                getBottomBarView());
 
         if (inflatedView == null) return false;
 
@@ -333,7 +330,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
         inflatedView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 inflatedView.removeOnLayoutChangeListener(this);
                 mBrowserControlsSizer.setBottomControlsHeight(getBottomBarHeight(), 0);
             }
@@ -342,7 +339,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
     }
 
     private static void sendPendingIntentWithUrl(PendingIntent pendingIntent, Intent extraIntent,
-            Activity activity, CustomTabActivityTabProvider tabProvider) {
+                                                 Activity activity, CustomTabActivityTabProvider tabProvider) {
         Intent addedIntent = extraIntent == null ? new Intent() : new Intent(extraIntent);
         Tab tab = tabProvider.getTab();
         if (tab != null) addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
@@ -359,6 +356,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
 
     /**
      * Returns whether the view was or can be inflated.
+     *
      * @return True if the ViewStub is present or was inflated. False otherwise.
      */
     private boolean isViewReady() {
@@ -369,12 +367,12 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                                        int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
         if (mBottomBarView != null) mBottomBarView.setTranslationY(bottomOffset);
         // If the bottom bar is not visible use the top controls as a guide to set state.
         int offset = getBottomBarHeight() == 0 ? topOffset : bottomOffset;
         int height = getBottomBarHeight() == 0 ? mBrowserControlsSizer.getTopControlsHeight()
-                                               : mBrowserControlsSizer.getBottomControlsHeight();
+                : mBrowserControlsSizer.getBottomControlsHeight();
         // Avoid spamming this callback across process boundaries, by only sending messages at
         // absolute transitions.
         if (Math.abs(offset) == height || offset == 0) {
@@ -395,7 +393,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
 
     /**
      * This method temporarily hides bottomBarView.
-     *
+     * <p>
      * If you need to remove bottom bar completely use {@link #hideBottomBar()}.
      *
      * @param hidesBottomBar whether bottom bar needs to be hidden.

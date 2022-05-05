@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
-import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -50,10 +49,7 @@ final class SigninBridge {
     @CalledByNative
     private static void launchSigninActivity(
             WindowAndroid windowAndroid, @SigninAccessPoint int accessPoint) {
-        final Context context = windowAndroid.getContext().get();
-        if (context != null) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
-        }
+        // TODO
     }
 
     /**

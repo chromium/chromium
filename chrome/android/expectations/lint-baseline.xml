@@ -927,28 +927,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 23): `getChannelIdForOrigin`"
-        errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="184"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 23): `getInstance`"
-        errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="184"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 24 (current min is 23): `create`"
         errorLine1="        mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),"
         errorLine2="                                                     ~~~~~~">
@@ -4150,61 +4128,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: UiAvailableTypes.TOP_AVAILABLE, UiAvailableTypes.ONLY_DEFAULT_AVAILABLE, UiAvailableTypes.NONE_AVAILABLE, UiAvailableTypes.OVERRIDDEN"
-        errorLine1="                availableStatus, UiAvailableTypes.NUM_ENTRIES);"
-        errorLine2="                                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java"
-            line="133"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UiCorrectTypes.CORRECT, UiCorrectTypes.INCORRECT, UiCorrectTypes.NOT_AVAILABLE, UiCorrectTypes.ONLY_JAVA_CORRECT"
-        errorLine1="                &quot;LanguageUsage.UI.Android.Correctness&quot;, correctStatus, UiCorrectTypes.NUM_ENTRIES);"
-        errorLine2="                                                                                      ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java"
-            line="140"
-            column="87"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UiCorrectTypes.CORRECT, UiCorrectTypes.INCORRECT, UiCorrectTypes.NOT_AVAILABLE, UiCorrectTypes.ONLY_JAVA_CORRECT"
-        errorLine1="                    UiCorrectTypes.NUM_ENTRIES);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java"
-            line="147"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UiCorrectTypes.CORRECT, UiCorrectTypes.INCORRECT, UiCorrectTypes.NOT_AVAILABLE, UiCorrectTypes.ONLY_JAVA_CORRECT"
-        errorLine1="                    UiCorrectTypes.NUM_ENTRIES);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java"
-            line="154"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: LocaleUpdateStatus.NO_CHANGE, LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED, LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED, LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED, LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED, LocaleUpdateStatus.FIRST_RUN"
-        errorLine1="                &quot;LanguageUsage.UI.Android.IsLocaleUpdated&quot;, status, LocaleUpdateStatus.NUM_ENTRIES);"
-        errorLine2="                                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeLocalizationUtils.java"
-            line="262"
-            column="88"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: FilteringResult.SURVEY_INFOBAR_ALREADY_DISPLAYED, FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT, FilteringResult.USER_ALREADY_SAMPLED_TODAY, FilteringResult.MAX_NUMBER_MISSING, FilteringResult.ROLLED_NON_ZERO_NUMBER, FilteringResult.USER_SELECTED_FOR_SURVEY, FilteringResult.FIRST_TIME_USER"
         errorLine1="                &quot;Android.Survey.SurveyFilteringResults&quot;, value, FilteringResult.NUM_ENTRIES);"
         errorLine2="                                                                                ~~~~~~~~~~~">
@@ -6416,39 +6339,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: NightModeEnabledReason.USER_PREFERENCE, NightModeEnabledReason.POWER_SAVE_MODE, NightModeEnabledReason.OTHER"
-        errorLine1="                NightModeEnabledReason.NUM_ENTRIES);"
-        errorLine2="                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java"
-            line="67"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK"
-        errorLine1="                &quot;Android.DarkTheme.Preference.State&quot;, theme, ThemeType.NUM_ENTRIES);"
-        errorLine2="                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java"
-            line="86"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeSettingsEntry.SETTINGS, ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE"
-        errorLine1="                &quot;Android.DarkTheme.ThemeSettingsEntry&quot;, entry, ThemeSettingsEntry.NUM_ENTRIES);"
-        errorLine2="                                                                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java"
-            line="116"
-            column="83"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: NoteShareDestination.FIRST_PARTY, NoteShareDestination.THIRD_PARTY"
         errorLine1="                NoteShareDestination.NUM_ENTRIES);"
         errorLine2="                                     ~~~~~~~~~~~">
@@ -7017,50 +6907,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
             line="251"
             column="16"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK"
-        errorLine1="        mButtons = new ArrayList&lt;>(Collections.nCopies(ThemeType.NUM_ENTRIES, null));"
-        errorLine2="                                                                 ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/settings/RadioButtonGroupThemePreference.java"
-            line="54"
-            column="66"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK"
-        errorLine1="        assert ThemeType.NUM_ENTRIES == 3;"
-        errorLine2="                         ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/settings/RadioButtonGroupThemePreference.java"
-            line="81"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK"
-        errorLine1="        for (int i = 0; i &lt; ThemeType.NUM_ENTRIES; i++) {"
-        errorLine2="                                      ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/settings/RadioButtonGroupThemePreference.java"
-            line="114"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK"
-        errorLine1="        assert mSetting >= 0 &amp;&amp; mSetting &lt; ThemeType.NUM_ENTRIES : &quot;No matching setting found.&quot;;"
-        errorLine2="                                                     ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/settings/RadioButtonGroupThemePreference.java"
-            line="121"
-            column="54"/>
     </issue>
 
     <issue
@@ -8381,17 +8227,6 @@
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
             line="184"
             column="41"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ThemeSettingsEntry.SETTINGS, ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE"
-        errorLine1="                ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageController.java"
-            line="316"
-            column="36"/>
     </issue>
 
     <issue

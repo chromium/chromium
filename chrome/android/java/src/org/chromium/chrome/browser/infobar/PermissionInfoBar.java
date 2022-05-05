@@ -4,17 +4,12 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.infobars.InfoBarLayout;
@@ -155,13 +150,7 @@ public class PermissionInfoBar
     }
 
     private void launchNotificationsSettingsPage() {
-        mLastClickOpenedSettings = true;
-        Bundle fragmentArguments = new Bundle();
-        fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(
-                getContext(), SingleCategorySettings.class, fragmentArguments);
+
     }
 
     /**

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceLayout.ZOOMING_DURATION;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -337,7 +335,7 @@ class TabListRecyclerView
                 assert maxDutyCycle > 0;
                 assert maxDutyCycle <= 1;
                 long suppressedFor = Math.min(
-                        (long) (elapsed * (1 - maxDutyCycle) / maxDutyCycle), ZOOMING_DURATION);
+                        (long) (elapsed * (1 - maxDutyCycle) / maxDutyCycle), 300);
 
                 mSuppressedUntil = SystemClock.elapsedRealtime() + suppressedFor;
                 Log.d(TAG, "DynamicView: spent %dms on getBitmap, suppress updating for %dms.",

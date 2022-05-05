@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -27,12 +26,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -76,7 +73,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private boolean mIsDestroyed;
 
     private final ProfileDataCache mProfileDataCache;
-    private final SigninPromoController mSigninPromoController;
     private final SyncService mSyncService;
 
     /**
@@ -112,8 +108,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSigninPromoController = new SigninPromoController(
-                SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
@@ -450,9 +444,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
                         || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
                 && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
                         || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
-        if (hasSyncPromoStateChangedtoShown) {
-            mSigninPromoController.increasePromoShowCount();
-        }
         mPromoState = newState;
     }
 
@@ -460,7 +451,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * Sets up the sync promo view.
      */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSigninPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
+
     }
 
     // SignInStateObserver implementation.

@@ -34,37 +34,23 @@ source_set("android") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreference.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/AllSiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/AutoDarkMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectInfo.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorage.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorageDialog.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingException.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingsResources.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/FourStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/NfcCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/NotificationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/PermissionInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SettingsNavigationSource.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteDataCleaner.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/Website.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteAddress.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePermissionsFetcher.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -164,10 +150,6 @@ android_resources("java_resources") {
     "java/res/layout/website_features.xml",
     "java/res/menu/website_preferences_menu.xml",
     "java/res/values/ids.xml",
-    "java/res/xml/all_site_preferences.xml",
-    "java/res/xml/single_website_preferences.xml",
-    "java/res/xml/site_settings_preferences.xml",
-    "java/res/xml/website_preferences.xml",
   ]
 
   deps = [

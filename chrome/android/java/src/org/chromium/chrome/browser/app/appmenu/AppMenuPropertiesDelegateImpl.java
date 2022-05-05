@@ -41,23 +41,19 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -84,7 +80,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
-import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -470,28 +465,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(isCurrentTabNotNull
                         && shouldShowPaintPreview(isChromeScheme, currentTab, isIncognito));
 
-        // Enable image descriptions if touch exploration is currently enabled.
-        if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
-            menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
-
-            int titleId = R.string.menu_stop_image_descriptions;
-            Profile profile = Profile.getLastUsedRegularProfile();
-            // If image descriptions are not enabled, then we want the menu item to be "Get".
-            if (!ImageDescriptionsController.getInstance().imageDescriptionsEnabled(profile)) {
-                titleId = R.string.menu_get_image_descriptions;
-            } else if (ImageDescriptionsController.getInstance().onlyOnWifiEnabled(profile)
-                    && DeviceConditions.getCurrentNetConnectionType(mContext)
-                            != ConnectionType.CONNECTION_WIFI) {
-                // If image descriptions are enabled, then we want "Stop", except in the special
-                // case that the user specified only on Wifi, and we are not currently on Wifi.
-                titleId = R.string.menu_get_image_descriptions;
-            }
-
-            menu.findItem(R.id.get_image_descriptions_id).setTitle(titleId);
-        } else {
-            menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
-        }
-
         // Disable find in page on the native NTP or on Start surface.
         menu.findItem(R.id.find_in_page_id)
                 .setVisible(isCurrentTabNotNull && shouldShowFindInPage(currentTab));
@@ -504,8 +477,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
 
         updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */, isChromeScheme);
-
-        updateAutoDarkMenuItem(menu, currentTab, isChromeScheme);
 
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id)
@@ -718,17 +689,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isNewWindowMenuFeatureEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.NEW_WINDOW_APP_MENU);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public boolean isAutoDarkWebContentsEnabled() {
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        assert profile != null;
-        boolean isFlagEnabled = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
-        boolean isFeatureEnabled =
-                WebContentsDarkModeController.isFeatureEnabled(mContext, profile);
-        return isFlagEnabled && isFeatureEnabled;
     }
 
     /**
@@ -1175,30 +1135,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             ? mContext.getString(R.string.menu_request_desktop_site_on)
                             : mContext.getString(R.string.menu_request_desktop_site_off));
         }
-    }
-
-    /**
-     * Updates the auto dark menu item's state.
-     *
-     * @param menu {@link Menu} for auto dark.
-     * @param currentTab Current tab being displayed.
-     * @param isChromeScheme Whether URL for the current tab starts with the chrome:// scheme.
-     */
-    protected void updateAutoDarkMenuItem(
-            Menu menu, @Nullable Tab currentTab, boolean isChromeScheme) {
-        MenuItem autoDarkMenuRow = menu.findItem(R.id.auto_dark_web_contents_row_menu_id);
-        MenuItem autoDarkMenuCheck = menu.findItem(R.id.auto_dark_web_contents_check_id);
-
-        // Hide app menu item if on non-NTP chrome:// page or auto dark not enabled.
-        boolean isAutoDarkEnabled = isAutoDarkWebContentsEnabled();
-        boolean itemVisible = currentTab != null && !isChromeScheme && isAutoDarkEnabled;
-        autoDarkMenuRow.setVisible(itemVisible);
-        if (!itemVisible) return;
-
-        // Set text based on if site is blocked or not.
-        boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(
-                mTabModelSelector.getCurrentModel().getProfile(), currentTab.getUrl());
-        autoDarkMenuCheck.setChecked(isEnabled);
     }
 
     protected void updateManagedByMenuItem(Menu menu, @Nullable Tab currentTab) {

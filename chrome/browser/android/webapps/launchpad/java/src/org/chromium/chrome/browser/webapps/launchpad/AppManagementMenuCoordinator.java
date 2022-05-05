@@ -8,7 +8,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +17,6 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -40,7 +37,6 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
 
     private final Context mContext;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final SettingsLauncher mSettingsLauncher;
 
     private PropertyModel mDialogModel;
 
@@ -56,11 +52,9 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
     private AppManagementMenuPermissionsCoordinator mPermissionsCoordinator;
 
     AppManagementMenuCoordinator(Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            SettingsLauncher settingsLauncher) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mSettingsLauncher = settingsLauncher;
     }
 
     void destroy() {
@@ -179,7 +173,5 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
     }
 
     private void onSiteSettingMenuItemClick(String url) {
-        Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
-        mSettingsLauncher.launchSettingsActivity(mContext, SingleWebsiteSettings.class, args);
     }
 }

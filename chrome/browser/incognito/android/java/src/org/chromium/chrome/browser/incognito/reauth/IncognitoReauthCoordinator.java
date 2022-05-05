@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthProperties.createPropertyModel;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +13,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthProperties.createPropertyModel;
 
 /**
  * The coordinator which is responsible for showing the Incognito re-authentication page.
@@ -51,8 +50,6 @@ class IncognitoReauthCoordinator {
      *         after an authentication attempt.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
      *         to initiate re-authentication.
-     * @param settingsLauncher A {@link SettingsLauncher} that allows to fire {@link
-     *         SettingsActivity}.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
     public IncognitoReauthCoordinator(@NonNull Context context,
@@ -60,14 +57,14 @@ class IncognitoReauthCoordinator {
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback,
             @NonNull IncognitoReauthManager incognitoReauthManager,
-            @NonNull SettingsLauncher settingsLauncher, boolean showFullScreen) {
+            boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mShowFullScreen = showFullScreen;
         mIncognitoReauthMediator = new IncognitoReauthMediator(
                 tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
         mIncognitoReauthMenuDelegate = (mShowFullScreen)
-                ? new IncognitoReauthMenuDelegate(mContext, tabModelSelector, settingsLauncher)
+                ? new IncognitoReauthMenuDelegate(mContext, tabModelSelector)
                 : null;
     }
 

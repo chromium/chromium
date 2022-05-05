@@ -164,7 +164,6 @@ public class ChromeActivitySessionTracker {
             updatePasswordEchoState();
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
-            ChromeLocalizationUtils.recordUiLanguageStatus();
             updateAcceptLanguages();
             mVariationsSession.start();
             mPowerBroadcastReceiver.onForegroundSessionStart();
@@ -235,7 +234,6 @@ public class ChromeActivitySessionTracker {
         String currentLocale = LocaleUtils.getDefaultLocaleListString();
         String previousLocale = SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.APP_LOCALE, null);
-        ChromeLocalizationUtils.recordLocaleUpdateStatus(previousLocale, currentLocale);
         if (!TextUtils.equals(previousLocale, currentLocale)) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.APP_LOCALE, currentLocale);

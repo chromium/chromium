@@ -30,8 +30,6 @@ import android.webkit.WebViewFactory;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import dalvik.system.DexFile;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
@@ -101,7 +99,6 @@ import org.chromium.weblayer_private.media.MediaSessionManager;
 import org.chromium.weblayer_private.media.MediaStreamManager;
 import org.chromium.weblayer_private.metrics.MetricsServiceClient;
 import org.chromium.weblayer_private.metrics.UmaUtils;
-import org.chromium.weblayer_private.settings.SettingsFragmentImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,6 +108,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import dalvik.system.DexFile;
 
 /**
  * Root implementation class for WebLayer.
@@ -387,19 +386,13 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Override
     public ISettingsFragment createSettingsFragmentImpl(
             IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
-        StrictModeWorkaround.apply();
-        Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
-                .asISettingsFragment();
+        return null;
     }
 
     @Override
     public ISiteSettingsFragment createSiteSettingsFragmentImpl(
             IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
-        StrictModeWorkaround.apply();
-        Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
-                .asISiteSettingsFragment();
+        return null;
     }
 
     @Override

@@ -132,7 +132,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
@@ -187,7 +186,6 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -253,8 +251,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
-
-    public static final SettingsLauncher SETTINGS_LAUNCHER = new SettingsLauncherImpl();
 
     public static final HashSet<String> TABBED_MODE_COMPONENT_NAMES = new HashSet<String>() {
         {
@@ -579,7 +575,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // LocaleManager can only function after the native library is loaded.
             mLocaleManager = LocaleManager.getInstance();
-            mLocaleManager.setSettingsLauncher(SETTINGS_LAUNCHER);
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
@@ -993,7 +988,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // This call is not guarded by a feature flag.
         SearchEngineChoiceNotification.handleSearchEngineChoice(
-                this, getSnackbarManager(), SETTINGS_LAUNCHER);
+                this, getSnackbarManager());
 
         if (!isWarmOnResume()) {
             SuggestionsMetrics.recordArticlesListVisible();

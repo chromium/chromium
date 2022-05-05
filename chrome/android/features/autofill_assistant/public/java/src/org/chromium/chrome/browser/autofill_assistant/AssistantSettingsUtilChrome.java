@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 
 /**
@@ -15,7 +14,5 @@ import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 public class AssistantSettingsUtilChrome implements AssistantSettingsUtil {
     @Override
     public void launch(Context context) {
-        new SettingsLauncherImpl().launchSettingsActivity(
-                context, AutofillAssistantPreferenceFragment.class);
     }
 }

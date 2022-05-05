@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
@@ -407,9 +406,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (profile == null) {
             return false;
         }
-        return isNightModeEnabled()
-                && WebContentsDarkModeController.isEnabledForUrl(
-                        profile, webContents.getVisibleUrl());
+        return isNightModeEnabled();
     }
 
     @Override

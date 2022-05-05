@@ -29,7 +29,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -238,9 +236,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // mode different from the UI mode we need.
         // TODO(https://crbug.com/938641): Remove this once Tab UIs are all inflated from
         // activity.
-        mThemedApplicationContext =
-                NightModeUtils.wrapContextWithNightModeConfig(ContextUtils.getApplicationContext(),
-                        ActivityUtils.getThemeId(), false /*nightMode*/);
+        mThemedApplicationContext = ContextUtils.getApplicationContext();
 
         mLaunchType = launchType;
 

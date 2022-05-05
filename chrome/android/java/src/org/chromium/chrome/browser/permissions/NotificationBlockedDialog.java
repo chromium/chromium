@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -18,10 +17,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -112,12 +107,7 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
 
     @CalledByNative
     private void showSettings() {
-        Bundle fragmentArguments = new Bundle();
-        fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
-                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(
-                mContext, SingleCategorySettings.class, fragmentArguments);
+        // TODO
     }
 
     @NativeMethods

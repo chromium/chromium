@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.app.Application;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -117,15 +115,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             @Override
             public void onDenied() {}
         });
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // TODO(huayinz): Add observer pattern for application configuration changes.
-        if (SplitCompatApplication.isBrowserProcess()) {
-            SystemNightModeMonitor.getInstance().onApplicationConfigurationChanged();
-        }
     }
 
     /**

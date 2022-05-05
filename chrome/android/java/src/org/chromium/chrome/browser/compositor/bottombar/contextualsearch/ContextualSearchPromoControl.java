@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.os.Handler;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,9 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchPromoHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -388,14 +384,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      * Handles a click in the settings link located in the Promo.
      */
     private void handleClickSettingsLink() {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(
-                        getContext(), ContextualSearchPreferenceFragment.class);
-            }
-        });
     }
 
     // ============================================================================================

@@ -173,9 +173,6 @@ public class UmaSessionStats {
      * flow, and when the user changes their preferences.
      */
     public static void changeMetricsReportingConsent(boolean consent) {
-        PrivacyPreferencesManagerImpl privacyManager = PrivacyPreferencesManagerImpl.getInstance();
-        // Update the metrics reporting preference.
-        privacyManager.setUsageAndCrashReporting(consent);
 
         // Perform native changes needed to reflect the new consent value.
         UmaSessionStatsJni.get().changeMetricsReportingConsent(consent);

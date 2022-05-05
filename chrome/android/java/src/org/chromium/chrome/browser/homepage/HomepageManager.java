@@ -8,18 +8,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
-import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
@@ -44,14 +38,12 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
-    private SettingsLauncher mSettingsLauncher;
 
     private HomepageManager() {
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mHomepageStateListeners = new ObserverList<>();
         HomepagePolicyManager.getInstance().addListener(this);
         PartnerBrowserCustomizations.getInstance().setPartnerHomepageListener(this);
-        mSettingsLauncher = new SettingsLauncherImpl();
     }
 
     /**
@@ -84,7 +76,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
     }
 
     /**
@@ -287,47 +278,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         notifyHomepageUpdated();
     }
 
-    /**
-     * Record histogram "Settings.Homepage.LocationType" with the current homepage location type.
-     */
-    public static void recordHomepageLocationTypeIfEnabled() {
-        if (!isHomepageEnabled()) return;
-
-        int homepageLocationType = getInstance().getHomepageLocationType();
-        RecordHistogram.recordEnumeratedHistogram("Settings.Homepage.LocationType",
-                homepageLocationType, HomepageLocationType.NUM_ENTRIES);
-    }
-
-    /**
-     * @return {@link HomepageLocationType} for current homepage settings.
-     */
-    @VisibleForTesting
-    public @HomepageLocationType int getHomepageLocationType() {
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl())
-                    ? HomepageLocationType.POLICY_NTP
-                    : HomepageLocationType.POLICY_OTHER;
-        }
-        if (getPrefHomepageUseChromeNTP()) {
-            return HomepageLocationType.USER_CUSTOMIZED_NTP;
-        }
-        if (getPrefHomepageUseDefaultUri()) {
-            if (!PartnerBrowserCustomizations.getInstance()
-                            .isHomepageProviderAvailableAndEnabled()) {
-                return HomepageLocationType.DEFAULT_NTP;
-            }
-
-            return UrlUtilities.isNTPUrl(
-                           PartnerBrowserCustomizations.getInstance().getHomePageUrl())
-                    ? HomepageLocationType.PARTNER_PROVIDED_NTP
-                    : HomepageLocationType.PARTNER_PROVIDED_OTHER;
-        }
-        // If user type NTP URI as their customized homepage, we'll record user is using NTP
-        return UrlUtilities.isNTPUrl(getPrefHomepageCustomUri())
-                ? HomepageLocationType.USER_CUSTOMIZED_NTP
-                : HomepageLocationType.USER_CUSTOMIZED_OTHER;
-    }
-
     @Override
     public void onHomepagePolicyUpdate() {
         notifyHomepageUpdated();
@@ -338,8 +288,4 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         notifyHomepageUpdated();
     }
 
-    @VisibleForTesting
-    public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
-        mSettingsLauncher = launcher;
-    }
 }

@@ -4,37 +4,21 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.app.Activity;
-
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** JNI call glue between the native password manager CredentialLeak class and Java objects. */
 public class CredentialLeakDialogBridge {
     private long mNativeCredentialLeakDialogViewAndroid;
-    private final PasswordManagerDialogCoordinator mCredentialLeakDialog;
     private final WindowAndroid mWindowAndroid;
 
     private CredentialLeakDialogBridge(
             @NonNull WindowAndroid windowAndroid, long nativeCredentialLeakDialogViewAndroid) {
         mNativeCredentialLeakDialogViewAndroid = nativeCredentialLeakDialogViewAndroid;
         mWindowAndroid = windowAndroid;
-
-        mCredentialLeakDialog =
-                new PasswordManagerDialogCoordinator(windowAndroid.getModalDialogManager(),
-                        windowAndroid.getActivity().get().findViewById(android.R.id.content),
-                        BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid));
     }
 
     @CalledByNative
@@ -46,71 +30,11 @@ public class CredentialLeakDialogBridge {
     @CalledByNative
     public void showDialog(String credentialLeakTitle, String credentialLeakDetails,
             boolean isChangeAutomaticallyAvailable, String positiveButton, String negativeButton) {
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null) return;
-
-        @DrawableRes
-        int headerDrawableId;
-        if (isChangeAutomaticallyAvailable) {
-            headerDrawableId = R.drawable.password_checkup_change_automatically;
-        } else {
-            headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerUI()
-                    ? R.drawable.password_check_header_red
-                    : R.drawable.password_checkup_warning;
-        };
-
-        PasswordManagerDialogContents contents = createDialogContents(credentialLeakTitle,
-                credentialLeakDetails, headerDrawableId, positiveButton,
-                isChangeAutomaticallyAvailable ? R.drawable.ic_autofill_assistant_white_24dp : 0,
-                negativeButton);
-        contents.setPrimaryButtonFilled(negativeButton != null);
-        contents.setHelpButtonCallback(this::showHelpArticle);
-
-        mCredentialLeakDialog.initialize(activity, contents);
-        mCredentialLeakDialog.showDialog();
-    }
-
-    private PasswordManagerDialogContents createDialogContents(String credentialLeakTitle,
-            String credentialLeakDetails, int illustrationId, String positiveButton,
-            int positiveButtonIconId, String negativeButton) {
-        return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                illustrationId, positiveButton, positiveButtonIconId, negativeButton,
-                this::onClick);
     }
 
     @CalledByNative
     private void destroy() {
         mNativeCredentialLeakDialogViewAndroid = 0;
-        mCredentialLeakDialog.dismissDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
-    }
-
-    private void onClick(@DialogDismissalCause int dismissalCause) {
-        if (mNativeCredentialLeakDialogViewAndroid == 0) return;
-        switch (dismissalCause) {
-            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                CredentialLeakDialogBridgeJni.get().accepted(
-                        mNativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge.this);
-                return;
-            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
-                CredentialLeakDialogBridgeJni.get().cancelled(
-                        mNativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge.this);
-                return;
-            default:
-                CredentialLeakDialogBridgeJni.get().closed(
-                        mNativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge.this);
-        }
-    }
-
-    private void showHelpArticle() {
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null) return;
-
-        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(mWindowAndroid);
-        if (currentTab == null) return;
-
-        Profile profile = Profile.fromWebContents(currentTab.getWebContents());
-        HelpAndFeedbackLauncherImpl.getInstance().show(activity,
-                activity.getString(R.string.help_context_password_leak_detection), profile, null);
     }
 
     @NativeMethods

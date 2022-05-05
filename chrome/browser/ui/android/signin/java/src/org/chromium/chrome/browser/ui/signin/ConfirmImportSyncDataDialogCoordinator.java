@@ -14,7 +14,6 @@ import androidx.annotation.MainThread;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -162,8 +161,6 @@ public class ConfirmImportSyncDataDialogCoordinator {
         // If the account is managed, disallow merging information.
         if (isCurrentAccountManaged) {
             mKeepSeparateOption.setChecked(true);
-            mConfirmImportOption.setOnClickListener(
-                    view -> ManagedPreferencesUtils.showManagedByAdministratorToast(context));
         } else {
             // The confirmation button gets enabled as soon as either of the radio button options
             // was selected.

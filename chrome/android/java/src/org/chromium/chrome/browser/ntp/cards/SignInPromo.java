@@ -12,18 +12,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
  * Superclass tracking whether a signin card could be shown.
@@ -48,7 +45,6 @@ public abstract class SignInPromo {
 
     private final SigninObserver mSigninObserver;
     private final SigninManager mSigninManager;
-    protected final SigninPromoController mSigninPromoController;
     protected final ProfileDataCache mProfileDataCache;
 
     protected SignInPromo(SigninManager signinManager) {
@@ -58,8 +54,6 @@ public abstract class SignInPromo {
         updateVisibility();
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSigninPromoController = new SigninPromoController(
-                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SyncConsentActivityLauncherImpl.get());
 
         mSigninObserver = new SigninObserver();
     }
@@ -135,7 +129,6 @@ public abstract class SignInPromo {
      * Updates visibility status. Overridden by subclasses that want to track visibility changes.
      */
     protected void setVisibilityInternal(boolean visibility) {
-        if (!mIsVisible && visibility) mSigninPromoController.increasePromoShowCount();
         mIsVisible = visibility;
     }
 
@@ -147,7 +140,6 @@ public abstract class SignInPromo {
     public void onDismissPromo() {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
-        mSigninPromoController.detach();
         setVisibilityInternal(false);
     }
 

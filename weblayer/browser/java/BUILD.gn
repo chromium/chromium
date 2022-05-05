@@ -37,7 +37,6 @@ android_resources("weblayer_resources") {
   deps = [
     ":weblayer_strings_grd",
     "//components/blocked_content/android:java_resources",
-    "//components/browser_ui/accessibility/android:java_resources",
     "//components/browser_ui/contacts_picker/android:java_resources",
     "//components/browser_ui/http_auth/android:java_resources",
     "//components/browser_ui/media/android:java_resources",
@@ -47,7 +46,6 @@ android_resources("weblayer_resources") {
     "//components/browser_ui/theme/android:java_resources",
     "//components/infobars/android:java_resources",
     "//components/omnibox/browser:java_resources",
-    "//components/page_info/android:java_resources",
     "//components/permissions/android:java_resources",
 
     # TODO(crbug.com/1137713): Determine why the creation of
@@ -198,9 +196,6 @@ android_library("java") {
     "org/chromium/weblayer_private/payments/WebLayerPaymentRequestService.java",
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
-    "org/chromium/weblayer_private/settings/SettingsFragmentImpl.java",
-    "org/chromium/weblayer_private/settings/WebLayerAccessibilitySettingsDelegate.java",
-    "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
     _bundle_utils_output,
   ]
   resources_package = "org.chromium.weblayer_private"

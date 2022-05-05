@@ -47,7 +47,6 @@ import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldView;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.autofill.prefeditor.EditorTextField;
-import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
@@ -240,8 +239,6 @@ public class EditorDialog
         LayoutParams params = (LayoutParams) shadow.getLayoutParams();
         params.topMargin = toolbar.getLayoutParams().height;
         shadow.setLayoutParams(params);
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(
-                SettingsUtils.getShowShadowOnScrollListener(scrollView, shadow));
     }
 
     /**

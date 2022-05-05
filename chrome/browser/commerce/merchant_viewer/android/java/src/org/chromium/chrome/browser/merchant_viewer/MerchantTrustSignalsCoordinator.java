@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
@@ -24,8 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.page_info.PageInfoFeatures;
@@ -44,8 +41,7 @@ import org.chromium.url.GURL;
  * Coordinator for managing merchant trust signals experience.
  */
 public class MerchantTrustSignalsCoordinator
-        implements PageInfoStoreInfoController.StoreInfoActionHandler,
-                   MerchantTrustMessageViewModel.MessageActionsHandler {
+        implements MerchantTrustMessageViewModel.MessageActionsHandler {
     /** Interface to control the omnibox store icon and the related IPH. */
     public interface OmniboxIconController {
         /**
@@ -260,17 +256,6 @@ public class MerchantTrustSignalsCoordinator
         }
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
                 BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl);
-    }
-
-    // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
-    @Override
-    public void onStoreInfoClicked(MerchantTrustSignalsV2 trustSignals) {
-        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
-                BottomSheetOpenedSource.FROM_PAGE_INFO, null);
-        // If user has clicked the "Store info" row, send a signal to disable {@link
-        // FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE}.
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
-        tracker.notifyEvent(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED);
     }
 
     private void launchDetailsPage(GURL detailsPageUrl, @BottomSheetOpenedSource int openSource,

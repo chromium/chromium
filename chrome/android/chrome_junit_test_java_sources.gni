@@ -198,7 +198,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
-  "junit/src/org/chromium/chrome/browser/signin/SyncConsentActivityLauncherImplTest.java",
   "junit/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsImageFetcherTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedMediatorUnitTest.java",

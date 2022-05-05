@@ -166,13 +166,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             return Action.FINISH_ACTIVITY_REMOVE_TASK;
         }
 
-        // The notification settings cog on the flipped side of Notifications and in the Android
-        // Settings "App Notifications" view will open us with a specific category.
-        if (mIntent.hasCategory(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES)) {
-            NotificationPlatformBridge.launchNotificationPreferences(mIntent);
-            return Action.FINISH_ACTIVITY;
-        }
-
         // Check if we should launch an Instant App to handle the intent.
         if (InstantAppsHandler.getInstance().handleIncomingIntent(
                     mActivity, mIntent, isCustomTabIntent, false)) {

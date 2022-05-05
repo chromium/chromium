@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.version_info.VersionInfo;
 
 import java.util.concurrent.TimeUnit;
@@ -44,13 +43,10 @@ public final class SearchEngineChoiceNotification {
     private static class NotificationSnackbarController implements SnackbarController {
         @NonNull
         private final Context mContext;
-        @NonNull
-        private final SettingsLauncher mSettingsLauncher;
 
         private NotificationSnackbarController(
-                @NonNull Context context, @NonNull SettingsLauncher settingsLauncher) {
+                @NonNull Context context) {
             mContext = context;
-            mSettingsLauncher = settingsLauncher;
         }
 
         @Override
@@ -76,10 +72,9 @@ public final class SearchEngineChoiceNotification {
      *
      * @param context Context in which to show the Snackbar.
      * @param snackbarManager Snackbar manager which will shown and manage the Snackbar.
-     * @param settingsLauncher Launcher of settings activity.
      */
     public static void handleSearchEngineChoice(@NonNull Context context,
-            @NonNull SnackbarManager snackbarManager, @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull SnackbarManager snackbarManager) {
         boolean searchEngineChoiceRequested = wasSearchEngineChoiceRequested();
         boolean searchEngineChoicePresented = wasSearchEngineChoicePresented();
         boolean searchEngineChoiceAvailable =
@@ -87,7 +82,7 @@ public final class SearchEngineChoiceNotification {
 
         if (searchEngineChoiceRequested && searchEngineChoiceAvailable
                 && !searchEngineChoicePresented) {
-            snackbarManager.showSnackbar(buildSnackbarNotification(context, settingsLauncher));
+            snackbarManager.showSnackbar(buildSnackbarNotification(context));
             updateSearchEngineChoicePresented();
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.SNACKBAR_SHOWN);
         } else {
@@ -98,8 +93,7 @@ public final class SearchEngineChoiceNotification {
         }
     }
 
-    private static Snackbar buildSnackbarNotification(
-            @NonNull Context context, @NonNull SettingsLauncher settingsLauncher) {
+    private static Snackbar buildSnackbarNotification(@NonNull Context context) {
         int durationSeconds = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION,
                 PARAM_NOTIFICATION_SNACKBAR_DURATION_SECONDS,
@@ -107,7 +101,7 @@ public final class SearchEngineChoiceNotification {
 
         return Snackbar
                 .make(context.getString(R.string.search_engine_choice_prompt),
-                        new NotificationSnackbarController(context, settingsLauncher),
+                        new NotificationSnackbarController(context),
                         Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION)
                 .setAction(context.getString(R.string.settings), null)
                 .setDuration((int) TimeUnit.SECONDS.toMillis(durationSeconds))

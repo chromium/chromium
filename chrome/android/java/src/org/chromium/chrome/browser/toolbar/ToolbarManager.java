@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -88,7 +87,6 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -148,7 +146,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -589,8 +586,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     -> ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
                             new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
                             postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
-            ChromePageInfo toolbarPageInfo = new ChromePageInfo(modalDialogManagerSupplier, null,
-                    OpenedFromSource.TOOLBAR, merchantTrustSignalsCoordinatorSupplier::get);
             ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
                 if (profileSupplier.hasValue()) {
                     ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
@@ -607,8 +602,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate,
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
-                    () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity),
-                    toolbarPageInfo::show, IntentHandler::bringTabToFront,
+                    null,
+                    null, IntentHandler::bringTabToFront,
                     DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
                     TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()

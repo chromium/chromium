@@ -33,11 +33,9 @@ source_set("unit_tests") {
 
 android_library("public_java") {
   deps = [
-    ":java_resources",
     ":password_check_java_enums",
-    ":public_ui_java",
-    "internal:public_ui_factory_java",
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/tab:java",
@@ -55,108 +53,9 @@ android_library("public_java") {
     "//url:gurl_java",
   ]
   sources = [
-    "java/src/org/chromium/chrome/browser/password_check/PasswordChangeType.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheck.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckFragmentView.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckMetricsRecorder.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckResolutionAction.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckUkmRecorder.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckUserAction.java",
-  ]
-  resources_package = "org.chromium.chrome.browser.password_check"
-}
-
-android_library("public_ui_java") {
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//url:gurl_java",
-  ]
-  sources = [
     "java/src/org/chromium/chrome/browser/password_check/CompromisedCredential.java",
-    "java/src/org/chromium/chrome/browser/password_check/PasswordCheckComponentUi.java",
   ]
-}
-
-junit_binary("password_check_junit_tests") {
-  testonly = true
-
-  sources = [ "junit/src/org/chromium/chrome/browser/password_check/PasswordCheckControllerTest.java" ]
-
-  deps = [
-    ":public_ui_java",
-    "internal:internal_factory_java",
-    "internal:internal_java",
-    "internal:public_ui_factory_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//build/android:build_java",
-    "//chrome/browser/device_reauth/android:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/password_check/android:password_check_java_enums",
-    "//chrome/browser/password_check/android:public_java",
-    "//chrome/browser/password_manager/android:java",
-    "//chrome/browser/password_manager/android:settings_interface_java",
-    "//chrome/browser/settings:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/browser_ui/settings/android:java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-    "//ui/android:ui_full_java",
-    "//url:gurl_java",
-  ]
-}
-
-android_library("test_java") {
-  testonly = true
-
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/password_check/PasswordCheckIntegrationTest.java",
-    "javatests/src/org/chromium/chrome/browser/password_check/PasswordCheckViewTest.java",
-  ]
-
-  deps = [
-    ":public_java",
-    ":public_ui_java",
-    "internal:internal_java",
-    "internal:internal_ui_factory_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//build/android:build_java",
-    "//chrome/android:chrome_java",
-    "//chrome/android:chrome_test_java",
-    "//chrome/android:chrome_test_util_java",
-    "//chrome/browser/feedback/android:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/password_check/android:password_check_java_enums",
-    "//chrome/browser/password_check/android/internal:public_factory_java",
-    "//chrome/browser/password_manager/android:java",
-    "//chrome/browser/password_manager/android:settings_interface_java",
-    "//chrome/browser/settings:java",
-    "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/browser_ui/widget/android:java",
-    "//components/embedder_support/android:util_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/android_sdk:android_test_base_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_full_java",
-    "//ui/android:ui_utils_java",
-    "//url:gurl_java",
-  ]
+#  resources_package = "org.chromium.chrome.browser.password_check"
 }
 
 generate_jni("jni_headers") {
@@ -164,24 +63,5 @@ generate_jni("jni_headers") {
   sources = [
     "internal/java/src/org/chromium/chrome/browser/password_check/PasswordCheckBridge.java",
     "java/src/org/chromium/chrome/browser/password_check/CompromisedCredential.java",
-  ]
-}
-
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable-night/password_check_header_red.xml",
-    "java/res/drawable-night/password_check_neutral.xml",
-    "java/res/drawable-night/password_checkup_change_automatically.xml",
-    "java/res/drawable-night/password_checkup_warning.xml",
-    "java/res/drawable/ic_autofill_assistant_white_24dp.xml",
-    "java/res/drawable/password_check_header_red.xml",
-    "java/res/drawable/password_check_neutral.xml",
-    "java/res/drawable/password_checkup_change_automatically.xml",
-    "java/res/drawable/password_checkup_warning.xml",
-  ]
-  deps = [
-    "//chrome/browser/ui/android/strings:ui_strings_grd",
-    "//components/browser_ui/settings/android:java_resources",
-    "//components/strings:components_strings_grd",
   ]
 }

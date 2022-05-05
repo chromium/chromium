@@ -25,7 +25,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
@@ -54,8 +53,6 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
-import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
-import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -63,7 +60,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
@@ -71,15 +67,12 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProd
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.share.crow.CrowIphController;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
@@ -100,7 +93,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -116,10 +108,8 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -606,12 +596,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         boolean didTriggerPromo = false;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
-            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, new SettingsLauncherImpl(),
-                    mTabModelSelectorSupplier.get().isIncognitoSelected());
-        }
-
         if (!didTriggerPromo) {
             didTriggerPromo = FeatureNotificationUtils.willShowIPH(FeatureType.DEFAULT_BROWSER);
             FeatureNotificationUtils.registerIPHCallback(FeatureType.DEFAULT_BROWSER, () -> {
@@ -666,27 +650,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mCrowIphController = new CrowIphController(mActivity,
                 mAppMenuCoordinator.getAppMenuHandler(), new CrowButtonDelegateImpl(),
                 mActivityTabProvider, mToolbarManager.getMenuButtonView());
-
-        if (!didTriggerPromo
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
-            // TODO(crbug.com/1252965): Investigate locking feature engagement system during
-            // "second run promos" to avoid !didTriggerPromo check.
-            Tab tab;
-            WebContents webContents;
-
-            Profile profile;
-            if ((tab = mActivityTabProvider.get()) != null
-                    && (webContents = tab.getWebContents()) != null) {
-                profile = Profile.fromWebContents(webContents);
-            } else {
-                profile = Profile.getLastUsedRegularProfile();
-                webContents = null;
-            }
-
-            WebContentsDarkModeMessageController.attemptToSendMessage(mActivity, profile,
-                    webContents, new SettingsLauncherImpl(), mMessageDispatcher);
-        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
@@ -908,19 +871,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean maybeShowPromo() {
-        // Only one promo can be shown in one run to avoid nagging users too much.
-        if (SigninPromoUtil.launchSigninPromoIfNeeded(mActivity,
-                    SyncConsentActivityLauncherImpl.get(), VersionInfo.getProductMajorVersion())) {
-            return true;
-        }
         if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
                     mActivity, mWindowAndroid, false /* ignoreMaxCount */)) {
             return true;
         }
-        if (AppLanguagePromoDialog.maybeShowPrompt(mActivity, mModalDialogManagerSupplier,
-                    () -> ApplicationLifetime.terminate(true))) {
-            return true;
-        }
-        return LanguageAskPrompt.maybeShowLanguageAskPrompt(mActivity, mModalDialogManagerSupplier);
+        return false;
     }
 }
