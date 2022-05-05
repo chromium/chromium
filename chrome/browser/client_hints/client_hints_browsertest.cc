@@ -220,12 +220,22 @@ void CheckUserAgentMinorVersion(const std::string& user_agent_value,
       "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
   // The minor version in the reduced UA string is always "0.0.0".
   static constexpr char kReducedMinorVersion[] = "0.0.0";
+  // The minor version in the ReduceUserAgentMinorVersion experiment is always
+  // "0.X.0", where X is the frozen build version.
+  const std::string kReduceUserAgentMinorVersion =
+      "0." +
+      std::string(blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
+      ".0";
 
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
                                      &minor_version));
+
   if (expected_user_agent_reduced) {
     EXPECT_EQ(minor_version, kReducedMinorVersion);
+  } else if (base::FeatureList::IsEnabled(
+                 blink::features::kReduceUserAgentMinorVersion)) {
+    EXPECT_EQ(minor_version, kReduceUserAgentMinorVersion);
   } else {
     EXPECT_NE(minor_version, kReducedMinorVersion);
   }

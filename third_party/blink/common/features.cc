@@ -1404,6 +1404,8 @@ const base::Feature kEventPath{"EventPath", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kReduceUserAgentMinorVersion{
     "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
+    &kReduceUserAgentMinorVersion, "build_version", "0"};
 
 // Enables correctly computing whether dedicated workers are secure contexts.
 // TODO(https://crbug.com/780031): Remove this once fully shipped.

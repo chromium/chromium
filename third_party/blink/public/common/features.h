@@ -689,6 +689,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kEventPath;
 
 // If enabled, the minor version of the User-Agent string will be reduced.
 BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kUserAgentFrozenBuildVersion;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSecureContextFixForWorkers;
 

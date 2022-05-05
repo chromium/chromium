@@ -5855,6 +5855,30 @@
             ]
         }
     ],
+    "ReduceUserAgentMinorVersionStudy": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "build_version": "9999"
+                    },
+                    "enable_features": [
+                        "ReduceUserAgentMinorVersion"
+                    ]
+                }
+            ]
+        }
+    ],
     "RelatedSearches": [
         {
             "platforms": [
