@@ -40,10 +40,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   };
 
   enum class BluetoothDeviceType {
-    kBredr = 0,
-    kBle = 1,
-    kDual = 2,
-    kUnknown = 3,
+    kUnknown = 0,
+    kBredr = 1,
+    kBle = 2,
+    kDual = 3,
   };
 
   enum class BluetoothSspVariant {
