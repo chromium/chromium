@@ -137,8 +137,17 @@ def _download_and_parse_build_info():
             build_info_dict = json.loads(f.read())
         dir_list = build_info_dict['target']['dir_list']
 
-        dependency_version_map = _parse_dir_list(dir_list)
-        return (dependency_version_map, version)
+        return dir_list, version
+
+
+def _create_local_dir_list(repo_path):
+    repo_path = repo_path.rstrip('/')
+    prefix_len = len(repo_path) + 1
+    ret = []
+    for dirpath, _, filenames in os.walk(repo_path):
+        for name in filenames:
+            ret.append(os.path.join('repository', dirpath[prefix_len:], name))
+    return ret
 
 
 def _process_build_gradle(dependency_version_map, androidx_repository_url):
@@ -210,6 +219,9 @@ def main():
                         default=0,
                         action='count',
                         help='Verbose level (multiple times for more)')
+    parser.add_argument('--local-repo',
+                        help='Path to a locally androidx maven repo to use '
+                        'instead of fetching the latest.')
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -217,11 +229,8 @@ def main():
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     libs_dir = os.path.join(_ANDROIDX_PATH, 'libs')
-
-    # Let recipe delete contents of lib directory because it has API to retry
-    # directory deletion if the first deletion attempt does not work.
-    if os.path.exists(libs_dir) and os.listdir(libs_dir):
-        raise Exception('Recipe did not empty \'libs\' directory.')
+    if os.path.exists(libs_dir):
+        shutil.rmtree(libs_dir)
 
     # Files uploaded to cipd are read-only. Delete them because they will be
     # re-generated.
@@ -232,8 +241,16 @@ def main():
         os.path.join(_ANDROIDX_PATH, 'build.gradle'),
     ])
 
-    dependency_version_map, version = _download_and_parse_build_info()
-    androidx_snapshot_repository_url = _build_snapshot_repository_url(version)
+    if args.local_repo:
+        version = 'local'
+        dir_list = _create_local_dir_list(args.local_repo)
+        androidx_snapshot_repository_url = ('file://' +
+                                            os.path.abspath(args.local_repo))
+    else:
+        dir_list, version = _download_and_parse_build_info()
+        androidx_snapshot_repository_url = _build_snapshot_repository_url(
+            version)
+    dependency_version_map = _parse_dir_list(dir_list)
     _process_build_gradle(dependency_version_map,
                           androidx_snapshot_repository_url)
 
@@ -243,15 +260,16 @@ def main():
     ]
     subprocess.run(fetch_all_cmd, check=True)
 
-    # Prepend '0' to version to avoid conflicts with previous version format.
-    version = 'cr-0' + version
+    if not args.local_repo:
+        # Prepend '0' to version to avoid conflicts with previous version format.
+        version = 'cr-0' + version
 
-    version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
-    with open(version_txt_path, 'w') as f:
-        f.write(version)
+        version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
+        with open(version_txt_path, 'w') as f:
+            f.write(version)
 
-    yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
-    _write_cipd_yaml(libs_dir, version, yaml_path)
+        yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
+        _write_cipd_yaml(libs_dir, version, yaml_path)
 
 
 if __name__ == '__main__':
