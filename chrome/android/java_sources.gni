@@ -8,9 +8,9 @@ import("//chrome/android/chrome_junit_test_java_sources.gni")
 import("//chrome/android/chrome_test_java_sources.gni")
 import("//chrome/android/features/autofill_assistant/public/java_sources.gni")
 import(
-    "//chrome/android/features/start_surface/internal/javatests/start_surface_test_java_sources.gni")
+    "//chrome/android/features/start_surface/javatests/start_surface_test_java_sources.gni")
 import(
-    "//chrome/android/features/start_surface/internal/junit/start_surface_junit_java_sources.gni")
+    "//chrome/android/features/start_surface/junit/start_surface_junit_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
 import(

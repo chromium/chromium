@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import androidx.annotation.Nullable;
+
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;

@@ -12,8 +12,7 @@ import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import(
-    "//chrome/android/features/start_surface/public/start_surface_public_java_sources.gni")
+import("//chrome/android/features/start_surface/start_surface_java_sources.gni")
 import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/features/vr/public_vr_java_sources.gni")
@@ -340,8 +339,8 @@ android_library("chrome_java") {
     "$google_play_services_package:google_play_services_vision_java",
     "//cc:cc_java",
     "//chrome/android/features/keyboard_accessory:public_java",
+    "//chrome/android/features/start_surface:java_resources",
     "//chrome/android/features/start_surface:public_java",
-    "//chrome/android/features/start_surface/internal:java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
@@ -689,7 +688,7 @@ android_library("chrome_java") {
 
   # Include sources from public_tab_management_java_sources.gni.
   sources += public_tab_management_java_sources
-  sources += start_surface_public_java_sources
+  sources += start_surface_java_sources
 
   if (enable_arcore) {
     deps += [
@@ -722,7 +721,7 @@ android_library("chrome_java") {
     }
     proguard_enabled = true
     proguard_configs +=
-        [ "//chrome/android/features/start_surface/internal/proguard.flags" ]
+        [ "//chrome/android/features/start_surface/proguard.flags" ]
   }
 
   resources_package = "org.chromium.chrome"
@@ -1362,8 +1361,8 @@ android_library("chrome_test_java") {
     "//build/config/android/test/resource_overlay:javatests",
     "//cc:cc_java",
     "//chrome/android:chrome_java",
+    "//chrome/android/features/start_surface:java_resources",
     "//chrome/android/features/start_surface:public_java",
-    "//chrome/android/features/start_surface/internal:java_resources",
     "//chrome/android/features/tab_ui:java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/webapk/libs/client:client_java",

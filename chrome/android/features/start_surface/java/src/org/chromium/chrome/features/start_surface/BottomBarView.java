@@ -18,7 +18,6 @@ import org.chromium.ui.widget.ChromeImageView;
 /** The bottom bar view. */
 // TODO(crbug.com/982018): Support dark mode.
 class BottomBarView extends FrameLayout {
-
     private TabLayout mTabLayout;
     private TabLayout.Tab mHomeTab;
     private TabLayout.Tab mExploreTab;
