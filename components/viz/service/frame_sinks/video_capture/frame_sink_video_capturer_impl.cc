@@ -791,10 +791,14 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   metadata.top_controls_visible_height = last_top_controls_visible_height_;
 
   oracle_->RecordCapture(utilization);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("gpu.capture", "Capture",
-                                    oracle_frame_number, "frame_number",
-                                    capture_frame_number, "trigger",
-                                    VideoCaptureOracle::EventAsString(event));
+  // Note: The following is used by
+  // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
+  // addition to the usual runtime tracing
+  // TODO(https://crbug.com/1322573): change to _NESTABLE_ variant of the macro
+  // once the bug is fixed.
+  TRACE_EVENT_ASYNC_BEGIN2("gpu.capture", "Capture", oracle_frame_number,
+                           "frame_number", capture_frame_number, "trigger",
+                           VideoCaptureOracle::EventAsString(event));
 
   const gfx::Size& source_size = oracle_->source_size();
   DCHECK(!source_size.IsEmpty());
@@ -1220,11 +1224,13 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
   // original source content.
   base::TimeTicks media_ticks;
   if (!oracle_->CompleteCapture(oracle_frame_number, !!frame, &media_ticks)) {
-    // The following is used by
+    // Note: The following is used by
     // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
-    // addition to the usual runtime tracing.
-    TRACE_EVENT_NESTABLE_ASYNC_END1("gpu.capture", "Capture",
-                                    oracle_frame_number, "success", false);
+    // addition to the usual runtime tracing
+    // TODO(https://crbug.com/1322573): change to _NESTABLE_ variant of the
+    // macro once the bug is fixed.
+    TRACE_EVENT_ASYNC_END1("gpu.capture", "Capture", oracle_frame_number,
+                           "success", false);
 
     MaybeScheduleRefreshFrame();
     return;
@@ -1236,12 +1242,14 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
   }
   frame->set_timestamp(media_ticks - *first_frame_media_ticks_);
 
-  // The following is used by
+  // Note: The following is used by
   // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
-  // addition to the usual runtime tracing.
-  TRACE_EVENT_NESTABLE_ASYNC_END2("gpu.capture", "Capture", oracle_frame_number,
-                                  "success", true, "time_delta",
-                                  frame->timestamp().InMicroseconds());
+  // addition to the usual runtime tracing
+  // TODO(https://crbug.com/1322573): change to _NESTABLE_ variant of the macro
+  // once the bug is fixed.
+  TRACE_EVENT_ASYNC_END2("gpu.capture", "Capture", oracle_frame_number,
+                         "success", true, "time_delta",
+                         frame->timestamp().InMicroseconds());
 
   // Clone a handle to the shared memory backing the populated video frame, to
   // send to the consumer.
