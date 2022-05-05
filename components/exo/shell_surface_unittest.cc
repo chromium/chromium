@@ -2307,4 +2307,19 @@ TEST_F(ShellSurfaceTest, WindowIsResizableWithEmptySizeConstraints) {
   EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
 }
 
+TEST_F(ShellSurfaceTest, SetSystemModal) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .SetUseSystemModalContainer()
+          .SetNoCommit()
+          .BuildShellSurface();
+
+  shell_surface->SetSystemModal(true);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_EQ(ui::MODAL_TYPE_SYSTEM, shell_surface->GetModalType());
+  EXPECT_FALSE(shell_surface->frame_enabled());
+}
+
 }  // namespace exo

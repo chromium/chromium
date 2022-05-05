@@ -302,6 +302,25 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
 }
 
+TEST_F(ClientControlledShellSurfaceTest,
+       NonSystemModalContainerCantChangeModality) {
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface = exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), /*is_modal=*/false);
+  gfx::Size desktop_size(640, 480);
+  std::unique_ptr<Buffer> desktop_buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(desktop_size)));
+  surface->Attach(desktop_buffer.get());
+  surface->SetInputRegion(cc::Region());
+
+  shell_surface->SetSystemModal(true);
+  surface->Commit();
+
+  // It is expected that a non system modal container is unable to set a system
+  // modal.
+  EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
+}
+
 TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
   gfx::Size buffer_size(128, 128);
   std::unique_ptr<Buffer> buffer(

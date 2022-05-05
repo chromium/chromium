@@ -727,6 +727,10 @@ void AuraToplevel::SetClientUsesScreenCoordinates() {
       &AuraToplevel::OnOriginChange, weak_ptr_factory_.GetWeakPtr()));
 }
 
+void AuraToplevel::SetSystemModal(bool modal) {
+  shell_surface_->SetSystemModal(modal);
+}
+
 void AddState(wl_array* states, xdg_toplevel_state state) {
   xdg_toplevel_state* value = static_cast<xdg_toplevel_state*>(
       wl_array_add(states, sizeof(xdg_toplevel_state)));
@@ -1067,12 +1071,23 @@ void aura_toplevel_set_restore_info(wl_client* client,
                                                         restore_window_id);
 }
 
+void aura_toplevel_set_system_modal(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetSystemModal(true);
+}
+
+void aura_toplevel_unset_system_modal(wl_client* client,
+                                      wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetSystemModal(false);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
     aura_toplevel_set_client_supports_window_bounds,
     aura_toplevel_set_window_bounds,
     aura_toplevel_set_restore_info,
+    aura_toplevel_set_system_modal,
+    aura_toplevel_unset_system_modal,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

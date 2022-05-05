@@ -112,6 +112,9 @@ class ShellToplevelWrapper {
 
   // Request that the server remove the applied orientation lock.
   virtual void Unlock() = 0;
+
+  // Request that the window be made a system modal.
+  virtual void SetSystemModal(bool modal) = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

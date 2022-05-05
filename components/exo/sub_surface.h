@@ -88,6 +88,7 @@ class SubSurface : public SurfaceDelegate,
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
+  void SetSystemModal(bool system_modal) override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

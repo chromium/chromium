@@ -101,6 +101,9 @@ class SurfaceDelegate {
   // Releases the pinned mode and allows the user to do other things again.
   virtual void Unpin() = 0;
 
+  // Sets the system modality.
+  virtual void SetSystemModal(bool modal) = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };

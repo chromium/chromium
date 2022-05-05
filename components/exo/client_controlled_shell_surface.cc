@@ -949,6 +949,22 @@ void ClientControlledShellSurface::CompositorLockTimedOut() {
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase overrides:
 
+void ClientControlledShellSurface::SetSystemModal(bool system_modal) {
+  // System modal container is used by clients to implement client side
+  // managed system modal dialogs using a single ShellSurface instance.
+  // Hit-test region will be non-empty when at least one dialog exists on
+  // the client side. Here we detect the transition between no client side
+  // dialog and at least one dialog so activatable state is properly
+  // updated.
+  if (container_ != ash::kShellWindowId_SystemModalContainer) {
+    LOG(ERROR)
+        << "Only a window in SystemModalContainer can change the modality";
+    return;
+  }
+
+  ShellSurfaceBase::SetSystemModal(system_modal);
+}
+
 void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
   const auto* screen = display::Screen::GetScreen();
   aura::Window* window = widget_->GetNativeWindow();

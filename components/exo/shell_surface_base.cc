@@ -26,6 +26,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -386,18 +387,6 @@ void ShellSurfaceBase::SetIcon(const gfx::ImageSkia& icon) {
 }
 
 void ShellSurfaceBase::SetSystemModal(bool system_modal) {
-  // System modal container is used by clients to implement client side
-  // managed system modal dialogs using a single ShellSurface instance.
-  // Hit-test region will be non-empty when at least one dialog exists on
-  // the client side. Here we detect the transition between no client side
-  // dialog and at least one dialog so activatable state is properly
-  // updated.
-  if (container_ != ash::kShellWindowId_SystemModalContainer) {
-    LOG(ERROR)
-        << "Only a window in SystemModalContainer can change the modality";
-    return;
-  }
-
   if (system_modal == system_modal_)
     return;
 
@@ -1228,6 +1217,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     activatable_ = false;
     DisableMovement();
   }
+
+  if (system_modal_)
+    SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   views::Widget::InitParams params;
   params.type = emulate_x11_override_redirect

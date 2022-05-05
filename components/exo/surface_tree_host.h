@@ -114,6 +114,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
+  void SetSystemModal(bool system_modal) override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

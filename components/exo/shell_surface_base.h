@@ -104,9 +104,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set icon for the surface.
   void SetIcon(const gfx::ImageSkia& icon);
 
-  // Sets the system modality.
-  void SetSystemModal(bool system_modal);
-
   // Set the application ID for the surface.
   void SetApplicationId(const char* application_id);
 
@@ -225,6 +222,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetInitialWorkspace(const char* initial_workspace) override;
   void Pin(bool trusted) override;
   void Unpin() override;
+  void SetSystemModal(bool system_modal) override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

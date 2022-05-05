@@ -12,6 +12,7 @@
 #include "ui/events/event.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
+#include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
@@ -47,8 +48,14 @@ void DesktopWindowTreeHostLacros::OnNativeWidgetCreated(
 }
 
 void DesktopWindowTreeHostLacros::InitModalType(ui::ModalType modal_type) {
+  if (ui::GetSystemModalExtension(*(platform_window()))) {
+    ui::GetSystemModalExtension(*(platform_window()))
+        ->SetSystemModal(modal_type == ui::MODAL_TYPE_SYSTEM);
+  }
+
   switch (modal_type) {
     case ui::MODAL_TYPE_NONE:
+    case ui::MODAL_TYPE_SYSTEM:
       break;
     default:
       // TODO(erg): Figure out under what situations |modal_type| isn't

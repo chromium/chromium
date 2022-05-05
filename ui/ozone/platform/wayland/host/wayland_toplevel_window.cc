@@ -81,6 +81,13 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   SetUpShellIntegration();
   OnDecorationModeChanged();
 
+  if (system_modal_ && aura_surface_ &&
+      zaura_surface_get_version(aura_surface_.get()) >=
+          ZAURA_SURFACE_SET_FRAME_SINCE_VERSION) {
+    zaura_surface_set_frame(aura_surface_.get(),
+                            ZAURA_SURFACE_FRAME_TYPE_SHADOW);
+  }
+
   if (screen_coordinates_enabled_)
     SetBounds(GetBounds());
 
@@ -482,6 +489,7 @@ bool WaylandToplevelWindow::OnInitialize(
   restore_window_id_ = properties.restore_window_id;
 
   SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
+  SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
   return true;
 }
 
@@ -744,6 +752,17 @@ void WaylandToplevelWindow::Unpin() const {
   }
 }
 
+void WaylandToplevelWindow::SetSystemModal(bool modal) {
+  system_modal_ = modal;
+  if (shell_toplevel_)
+    shell_toplevel_->SetSystemModal(modal);
+}
+
+void WaylandToplevelWindow::UpdateSystemModal() {
+  if (shell_toplevel_)
+    shell_toplevel_->SetSystemModal(system_modal_);
+}
+
 std::string WaylandToplevelWindow::GetWorkspace() const {
   return workspace_.has_value() ? base::NumberToString(workspace_.value())
                                 : std::string();
@@ -854,6 +873,7 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     SetInitialWorkspace();
     if (restore_session_id_)
       shell_toplevel_->SetRestoreInfo(restore_session_id_, restore_window_id_);
+    UpdateSystemModal();
   }
 
   if (connection()->gtk_shell1()) {

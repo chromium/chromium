@@ -239,6 +239,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Update the resizability based on the resize lock type.
   void UpdateResizability() override;
 
+  // Overridden from exo::ShellSurfaceBase
+  void SetSystemModal(bool system_modal) override;
+
  protected:
   // Overridden from ShellSurfaceBase:
   float GetScale() const override;

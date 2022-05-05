@@ -117,6 +117,7 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               (override));
   MOCK_METHOD(void, Pin, (bool trusted), (override));
   MOCK_METHOD(void, Unpin, (), (override));
+  MOCK_METHOD(void, SetSystemModal, (bool modal), (override));
 };
 
 }  // namespace

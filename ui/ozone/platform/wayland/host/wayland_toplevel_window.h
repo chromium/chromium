@@ -11,6 +11,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
+#include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
@@ -28,7 +29,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                               public WaylandExtension,
                               public WorkspaceExtension,
                               public DeskExtension,
-                              public PinnedModeExtension {
+                              public PinnedModeExtension,
+                              public SystemModalExtension {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                         WaylandConnection* connection);
@@ -174,6 +176,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Pin(bool trusted) const override;
   void Unpin() const override;
 
+  // SystemModalExtension:
+  void SetSystemModal(bool modal) override;
+  void UpdateSystemModal();
+
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);
 
@@ -283,6 +289,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   int32_t restore_session_id_ = 0;
   int32_t restore_window_id_ = 0;
+
+  // Current modal status.
+  bool system_modal_ = false;
 
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.
