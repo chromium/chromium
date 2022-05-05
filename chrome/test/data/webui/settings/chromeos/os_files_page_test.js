@@ -30,8 +30,8 @@ suite('FilesPageTests', function() {
 
   test('Disconnect Google Drive account,pref disabled/enabled', async () => {
     // The default state of the pref is disabled.
-    const disconnectGoogleDrive =
-        assert(filesPage.$$('#disconnectGoogleDriveAccount'));
+    const disconnectGoogleDrive = assert(
+        filesPage.shadowRoot.querySelector('#disconnectGoogleDriveAccount'));
     assertFalse(disconnectGoogleDrive.checked);
 
     disconnectGoogleDrive.shadowRoot.querySelector('cr-toggle').click();
@@ -40,7 +40,7 @@ suite('FilesPageTests', function() {
   });
 
   test('Smb Shares, Navigates to SMB_SHARES route on click', async () => {
-    const smbShares = assert(filesPage.$$('#smbShares'));
+    const smbShares = assert(filesPage.shadowRoot.querySelector('#smbShares'));
 
     smbShares.click();
     flush();
@@ -54,8 +54,9 @@ suite('FilesPageTests', function() {
 
     flush();
 
-    const deepLinkElement = filesPage.$$('#disconnectGoogleDriveAccount')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        filesPage.shadowRoot.querySelector('#disconnectGoogleDriveAccount')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

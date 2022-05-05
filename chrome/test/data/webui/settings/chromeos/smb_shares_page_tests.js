@@ -49,12 +49,12 @@ suite('AddSmbShareDialogTests', function() {
     page = document.createElement('settings-smb-shares-page');
     document.body.appendChild(page);
 
-    const button = page.$$('#addShare');
+    const button = page.shadowRoot.querySelector('#addShare');
     assertTrue(!!button);
     button.click();
     flush();
 
-    addDialog = page.$$('add-smb-share-dialog');
+    addDialog = page.shadowRoot.querySelector('add-smb-share-dialog');
     assertTrue(!!addDialog);
 
     flush();
@@ -162,9 +162,9 @@ suite('AddSmbShareDialogTests', function() {
   });
 
   test('ControlledByPolicy', function() {
-    const button = page.$$('#addShare');
+    const button = page.shadowRoot.querySelector('#addShare');
 
-    assertFalse(!!page.$$('cr-policy-pref-indicator'));
+    assertFalse(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertFalse(button.disabled);
 
     page.prefs = {
@@ -172,7 +172,7 @@ suite('AddSmbShareDialogTests', function() {
     };
     flush();
 
-    assertTrue(!!page.$$('cr-policy-pref-indicator'));
+    assertTrue(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
     assertTrue(button.disabled);
   });
 
@@ -225,19 +225,19 @@ suite('AddSmbShareDialogTests', function() {
     };
     document.body.appendChild(page);
 
-    const button = page.$$('#addShare');
+    const button = page.shadowRoot.querySelector('#addShare');
     assertTrue(!!button);
     assertFalse(button.disabled);
     button.click();
 
     flush();
 
-    addDialog = page.$$('add-smb-share-dialog');
+    addDialog = page.shadowRoot.querySelector('add-smb-share-dialog');
     assertTrue(!!addDialog);
 
     flush();
 
-    const openDialogButton = page.$$('#addShare');
+    const openDialogButton = page.shadowRoot.querySelector('#addShare');
     openDialogButton.click();
 
     assertEquals(expectedSmbUrl, addDialog.mountUrl_);

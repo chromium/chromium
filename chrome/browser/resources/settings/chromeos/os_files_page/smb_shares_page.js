@@ -11,53 +11,68 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-smb-shares-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsSmbSharesPageElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement);
 
-  behaviors: [
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsSmbSharesPageElement extends SettingsSmbSharesPageElementBase {
+  static get is() {
+    return 'settings-smb-shares-page';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    showAddSmbDialog_: Boolean,
-  },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
+      /** @private */
+      showAddSmbDialog_: Boolean,
+    };
+  }
 
   /**
    * Overridden from RouteObserverBehavior.
    * @param {!Route} route
+   * @param {!Route=} oldRoute
    * @protected
    */
-  currentRouteChanged(route) {
+  currentRouteChanged(route, oldRoute) {
     if (route === routes.SMB_SHARES) {
       this.showAddSmbDialog_ = Router.getInstance().getQueryParameters().get(
                                    'showAddShare') === 'true';
     }
-  },
+  }
 
   /** @private */
   onAddShareTap_() {
     this.showAddSmbDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddSmbDialogClosed_() {
     this.showAddSmbDialog_ = false;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSmbSharesPageElement.is, SettingsSmbSharesPageElement);
