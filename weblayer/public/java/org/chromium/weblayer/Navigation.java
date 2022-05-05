@@ -498,11 +498,11 @@ public class Navigation extends IClientNavigation.Stub {
     /**
      * Returns true if the navigation response was fetched from the cache.
      *
-     * @since 103
+     * @since 102
      */
     public boolean wasFetchedFromCache() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 103) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 102) {
             throw new UnsupportedOperationException();
         }
         try {

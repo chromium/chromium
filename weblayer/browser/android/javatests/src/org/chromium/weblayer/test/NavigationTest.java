@@ -157,7 +157,7 @@ public class NavigationTest {
                 if (majorVersion >= 92) {
                     mNavigationEntryOffset = navigation.getNavigationEntryOffset();
                 }
-                if (majorVersion >= 103) {
+                if (majorVersion >= 102) {
                     mWasFetchedFromCache = navigation.wasFetchedFromCache();
                 }
                 notifyCalled();
@@ -1731,7 +1731,7 @@ public class NavigationTest {
         assertEquals("fr", mCallback.onPageLanguageDeterminedCallback.getLanguage());
     }
 
-    @MinWebLayerVersion(103)
+    @MinWebLayerVersion(102)
     @Test
     @SmallTest
     public void testWasFetchedFromCache() throws Exception {
