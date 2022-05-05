@@ -23,6 +23,7 @@ extern const char kMediaDocumentsProviderAuthority[];
 extern const char kImagesRootDocumentId[];
 extern const char kVideosRootDocumentId[];
 extern const char kAudioRootDocumentId[];
+extern const char kDocumentsRootDocumentId[];
 
 // Returns an ID of a Media View volume.
 std::string GetMediaViewVolumeId(const std::string& root_document_id);
