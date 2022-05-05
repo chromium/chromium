@@ -4471,9 +4471,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.InitialMode" enum="AltTabMode"
-    expires_after="2022-03-09">
+    expires_after="2023-05-01">
   <owner>afakhry@chromium.org</owner>
-  <owner>cattalyya@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     Emitted when the user starts Alt-Tab, if and only if user had 2 or more
@@ -4483,7 +4483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Items" units="items"
-    expires_after="2022-10-10">
+    expires_after="2023-05-01">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
@@ -4494,9 +4494,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.ModeSwitchSource"
-    enum="AltTabModeSwitchSource" expires_after="2022-03-09">
+    enum="AltTabModeSwitchSource" expires_after="2023-05-01">
   <owner>afakhry@chromium.org</owner>
-  <owner>cattalyya@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode, if and only if user had 2
@@ -4506,9 +4506,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.SwitchMode" enum="AltTabMode"
-    expires_after="2022-03-09">
+    expires_after="2023-05-01">
   <owner>afakhry@chromium.org</owner>
-  <owner>cattalyya@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode from a click or keyboard, if
