@@ -234,11 +234,9 @@ SearchResultTag::SearchResultTag(int styles, uint32_t start, uint32_t end)
 SearchResultAction::SearchResultAction() = default;
 
 SearchResultAction::SearchResultAction(SearchResultActionType type,
-                                       const gfx::ImageSkia& image,
                                        const std::u16string& tooltip_text,
                                        bool visible_on_hover)
     : type(type),
-      image(image),
       tooltip_text(tooltip_text),
       visible_on_hover(visible_on_hover) {}
 

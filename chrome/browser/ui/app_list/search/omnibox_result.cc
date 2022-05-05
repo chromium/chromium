@@ -166,6 +166,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
   UpdateTitleAndDetails();
 
   if (is_zero_suggestion_) {
+    DCHECK(!ash::features::IsProductivityLauncherEnabled());
     InitializeButtonActions({ash::SearchResultActionType::kRemove,
                              ash::SearchResultActionType::kAppend});
   } else if (is_omnibox_search &&
@@ -373,24 +374,16 @@ void OmniboxResult::InitializeButtonActions(
     const std::vector<ash::SearchResultActionType>& button_actions) {
   Actions actions;
   for (ash::SearchResultActionType button_action : button_actions) {
-    gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
-    const int kImageButtonIconSize = kSystemIconDimension;
 
     switch (button_action) {
       case ash::SearchResultActionType::kRemove:
-        button_image =
-            gfx::CreateVectorIcon(ash::kSearchResultRemoveIcon,
-                                  kImageButtonIconSize, GetGenericIconColor());
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = true;  // visible upon hovering
         break;
       case ash::SearchResultActionType::kAppend:
-        button_image =
-            gfx::CreateVectorIcon(ash::kSearchResultAppendIcon,
-                                  kImageButtonIconSize, GetGenericIconColor());
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_APPEND_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = false;  // always visible
@@ -398,8 +391,7 @@ void OmniboxResult::InitializeButtonActions(
       default:
         NOTREACHED();
     }
-    Action search_action(button_action, button_image, button_tooltip,
-                         visible_on_hover);
+    Action search_action(button_action, button_tooltip, visible_on_hover);
     actions.emplace_back(search_action);
   }
 

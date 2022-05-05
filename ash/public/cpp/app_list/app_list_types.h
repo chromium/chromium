@@ -512,14 +512,12 @@ using SearchResultTags = std::vector<SearchResultTag>;
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
   SearchResultAction(SearchResultActionType type,
-                     const gfx::ImageSkia& image,
                      const std::u16string& tooltip_text,
                      bool visible_on_hover);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
   SearchResultActionType type;
-  gfx::ImageSkia image;
   std::u16string tooltip_text;
   // Visible when button or its parent row in hover state.
   bool visible_on_hover;
