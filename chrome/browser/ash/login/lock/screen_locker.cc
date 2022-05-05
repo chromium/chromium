@@ -82,9 +82,8 @@ namespace {
 using ::base::UserMetricsAction;
 
 // Returns true if fingerprint authentication is available for `user`.
-bool IsFingerprintAvailableForUser(const user_manager::User* user) {
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForUser(user);
+bool IsFingerprintAvailableForUser(
+    quick_unlock::QuickUnlockStorage* quick_unlock_storage) {
   return quick_unlock_storage &&
          quick_unlock_storage->IsFingerprintAuthenticationAvailable(
              quick_unlock::Purpose::kUnlock);
@@ -744,16 +743,21 @@ ScreenLocker::~ScreenLocker() {
   }
 }
 
-void ScreenLocker::MaybeStartFingerprintAuthSession(
+void ScreenLocker::StartFingerprintAuthSession(
     const user_manager::User* primary_user) {
-  // Start a fingerprint authentication session if fingerprint is available for
-  // the primary user. Only the primary user can use fingerprint.
-  if (IsFingerprintAvailableForUser(primary_user)) {
-    VLOG(1) << "Fingerprint is available on lock screen, start fingerprint "
-            << "auth session now.";
-    fp_service_->StartAuthSession();
+  auto* quick_unlock_storage =
+      quick_unlock::QuickUnlockFactory::GetForUser(primary_user);
+  if (IsFingerprintAvailableForUser(quick_unlock_storage)) {
+    VLOG(1) << "Fingerprint is available on lock screen.";
   } else {
-    VLOG(1) << "Fingerprint is not available on lock screen";
+    VLOG(1) << "Fingerprint is not available on lock screen.";
+  }
+  // Don't start a fingerprint auth session if the device does not have a
+  // fingerprint sensor, or if the user does not have fingerprint records
+  if (quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
+          quick_unlock::Purpose::kUnlock)) {
+    VLOG(1) << "Starting fingerprint AuthSession on the lock screen";
+    fp_service_->StartAuthSession();
   }
 }
 
@@ -773,7 +777,7 @@ void ScreenLocker::ScreenLockReady() {
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
 
-  MaybeStartFingerprintAuthSession(primary_user);
+  StartFingerprintAuthSession(primary_user);
 
   // Update fingerprint state for the user once we get their record.
   // Note that we do not check if fingerprint is available for this user
@@ -803,7 +807,7 @@ bool ScreenLocker::IsUserLoggedIn(const AccountId& account_id) const {
 }
 
 void ScreenLocker::OnRestarted() {
-  MaybeStartFingerprintAuthSession(
+  StartFingerprintAuthSession(
       user_manager::UserManager::Get()->GetPrimaryUser());
 }
 
@@ -819,13 +823,10 @@ void ScreenLocker::OnAuthScanDone(
   unlock_attempt_type_ = AUTH_FINGERPRINT;
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+  auto* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(primary_user);
-  if (!quick_unlock_storage ||
-      !quick_unlock_storage->IsFingerprintAuthenticationAvailable(
-          quick_unlock::Purpose::kUnlock)) {
-    // In theory this should be very rare. The auth session should be ended when
-    // fingerprint becomes unavailable.
+  if (!IsFingerprintAvailableForUser(quick_unlock_storage)) {
+    // If fingerprint is not available for the primary user, exit early.
     quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
         quick_unlock::FingerprintUnlockResult::kFingerprintUnavailable);
     return;
@@ -953,17 +954,12 @@ void ScreenLocker::MaybeDisablePinAndFingerprintFromTimeout(
               base::Unretained(this), "update_fingerprint_state_timer_",
               account_id));
     } else {
-      // Strong auth is unavailable; disable fingerprint if it was enabled.
+      // Strong auth is unavailable; update state to fingerprint disabled
       if (quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
               quick_unlock::Purpose::kUnlock)) {
         VLOG(1) << "Require strong auth to make fingerprint unlock available.";
         LoginScreen::Get()->GetModel()->SetFingerprintState(
             account_id, FingerprintState::DISABLED_FROM_TIMEOUT);
-        fp_service_->EndCurrentAuthSession(base::BindOnce([](bool success) {
-          if (success)
-            return;
-          DLOG(ERROR) << "Failed to end fingerprint auth session";
-        }));
       }
     }
   }

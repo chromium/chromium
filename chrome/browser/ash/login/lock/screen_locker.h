@@ -221,7 +221,7 @@ class ScreenLocker
 
   void OnFingerprintAuthFailure(const user_manager::User& user);
 
-  void MaybeStartFingerprintAuthSession(const user_manager::User* primary_user);
+  void StartFingerprintAuthSession(const user_manager::User* primary_user);
 
   // Called when the screen lock is ready.
   void ScreenLockReady();
