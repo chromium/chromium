@@ -251,13 +251,11 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
   LayoutObject* layout_object = target_element.GetLayoutObject();
-  if (paint_artifact_compositor) {
-    // Elements with subtrees containing will-change: contents are not
-    // composited for animations as if the contents change the tiles
-    // would need to be rerastered anyways.
-    if (layout_object && layout_object->Style()->SubtreeWillChangeContents()) {
-      reasons |= kTargetHasInvalidCompositingState;
-    }
+  // Elements with subtrees containing will-change: contents are not
+  // composited for animations as if the contents change the tiles
+  // would need to be rerastered anyways.
+  if (layout_object && layout_object->Style()->SubtreeWillChangeContents()) {
+    reasons |= kTargetHasInvalidCompositingState;
   }
 
   PropertyHandleSet properties = keyframe_effect.Properties();
@@ -441,6 +439,15 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
   if (CompositorPropertyAnimationsHaveNoEffect(target_element, effect,
                                                paint_artifact_compositor)) {
+#if DCHECK_IS_ON()
+    if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()))) {
+      ElementAnimations* element_animations =
+          target_element.GetElementAnimations();
+      DCHECK(element_animations &&
+             element_animations->CompositedBackgroundColorStatus() !=
+                 ElementAnimations::CompositedPaintStatus::kComposited);
+    }
+#endif
     reasons |= kCompositorPropertyAnimationsHaveNoEffect;
   }
 

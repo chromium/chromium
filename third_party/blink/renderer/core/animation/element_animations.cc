@@ -36,7 +36,7 @@
 
 namespace blink {
 
-ElementAnimations::ElementAnimations() : animation_style_change_(false) {}
+ElementAnimations::ElementAnimations() = default;
 
 ElementAnimations::~ElementAnimations() = default;
 
