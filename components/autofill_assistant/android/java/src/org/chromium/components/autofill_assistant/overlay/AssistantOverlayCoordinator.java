@@ -156,7 +156,10 @@ public class AssistantOverlayCoordinator {
                                            .with(ScrimProperties.GESTURE_DETECTOR, mEventFilter)
                                            .build();
             mScrim.showScrim(params);
-        } else {
+        } else if (mScrim.isShowingScrim()) {
+            // The mScrim.isShowingScrim() check is because of a race condition during a test where
+            // two OverlayCoordinators from two different direct action runs try to hide the scrim
+            // at the same time causing an exception.
             mScrim.hideScrim(/* fadeOut= */ true);
         }
         mScrimEnabled = enabled;

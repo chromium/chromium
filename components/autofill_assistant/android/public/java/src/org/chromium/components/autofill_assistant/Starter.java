@@ -161,6 +161,10 @@ public class Starter implements AssistantTabObserver, UserData {
         safeNativeOnInteractabilityChanged(isInteractable);
     }
 
+    public void onDirectActionTriggered() {
+        safeNativeOnDirectActionTriggered();
+    }
+
     /**
      * Forces native to re-evaluate the Chrome settings. Integration tests may need to call this to
      * ensure that programmatic updates to the Chrome settings are received by the native starter.
@@ -274,6 +278,14 @@ public class Starter implements AssistantTabObserver, UserData {
         StarterJni.get().onOnboardingFinished(mNativeStarter, Starter.this, shown, result);
     }
 
+    private void safeNativeOnDirectActionTriggered() {
+        if (mNativeStarter == 0) {
+            return;
+        }
+
+        StarterJni.get().onDirectActionTriggered(mNativeStarter, Starter.this);
+    }
+
     @CalledByNative
     static boolean getProactiveHelpSettingEnabled() {
         return AutofillAssistantPreferencesUtil.isProactiveHelpOn();
@@ -332,6 +344,7 @@ public class Starter implements AssistantTabObserver, UserData {
         void onInteractabilityChanged(
                 long nativeStarterDelegateAndroid, Starter caller, boolean isInteractable);
         void onActivityAttachmentChanged(long nativeStarterDelegateAndroid, Starter caller);
+        void onDirectActionTriggered(long nativeStarterDelegateAndroid, Starter caller);
         void start(long nativeStarterDelegateAndroid, Starter caller, String experimentIds,
                 String[] parameterNames, String[] parameterValues,
                 String[] deviceOnlyParameterNames, String[] deviceOnlyParameterValues,

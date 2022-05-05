@@ -31,6 +31,7 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
     private BottomSheetController mController;
     @Nullable
     private Callback<Integer> mOffsetController;
+    private boolean mDoNotReuse;
 
     public AssistantBottomSheetContent(
             Context context, Supplier<AssistantBottomBarDelegate> supplier) {
@@ -168,5 +169,18 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
 
     public Callback<Integer> getOffsetController() {
         return mOffsetController;
+    }
+
+    /**
+     * Marks the content as non-reusable. This is used in cases where it would be hard to properly
+     * transfer the content (like Trigger UI to Direct Action), and having a bottom sheet animation
+     * is expected/acceptable. See b/209399694.
+     */
+    public void setDoNotReuse(boolean doNotReuse) {
+        mDoNotReuse = doNotReuse;
+    }
+
+    public boolean isReusable() {
+        return !mDoNotReuse;
     }
 }

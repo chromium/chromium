@@ -52,7 +52,7 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                           staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
                           staticDependencies.getAccessibilityUtil(),
                           staticDependencies.createInfoPageUtil()),
-                    webContentsSupplier, staticDependencies);
+                    webContentsSupplier, staticDependencies, bottomSheetController);
         }
 
         @Override

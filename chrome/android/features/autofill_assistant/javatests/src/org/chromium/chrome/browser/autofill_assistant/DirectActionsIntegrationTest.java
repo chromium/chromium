@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -21,7 +22,10 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
@@ -48,7 +52,9 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DirectActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InfoBoxProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowInfoBoxProto;
@@ -56,11 +62,15 @@ import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TellProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill_assistant.AssistantDependencies;
@@ -73,6 +83,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Tests autofill-assistant direct actions.
@@ -83,11 +94,12 @@ public class DirectActionsIntegrationTest {
     public DirectActionsIntegrationTest() {}
 
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final AutofillAssistantCustomTabTestRule mAssistantTestRule =
+            new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "autofill_assistant_target_website.html");
 
     @Rule
-    public final TestRule mRulesChain =
-            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
-                    mTestRule, "autofill_assistant_target_website.html"));
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mAssistantTestRule);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -440,5 +452,104 @@ public class DirectActionsIntegrationTest {
         waitUntilViewMatchesCondition(withText("Last tell message"), isDisplayed());
         onView(allOf(withContentDescription("Close"), withEffectiveVisibility(Visibility.VISIBLE)))
                 .perform(click());
+    }
+
+    /**
+     * Regression test for b/209399694.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
+    public void
+    testDirectActionWhileTriggerUiOpen() {
+        String pageToLoad = "autofill_assistant_target_website.html";
+        // The problem happens when you trigger a direct action while the
+        // trigger UI is visible.
+
+        // Enable MSBB.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                    Profile.getLastUsedRegularProfile(), true);
+        });
+
+        // First set-up trigger script
+        TriggerScriptProto.Builder triggerScript =
+                TriggerScriptProto
+                        .newBuilder()
+                        /* no trigger condition */
+                        .setUserInterface(createDefaultTriggerScriptUI("Hello world",
+                                /* bubbleMessage = */ "",
+                                /* withProgressBar = */ false));
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
+        AutofillAssistantTestServiceRequestSender testServiceRequestSender =
+                new AutofillAssistantTestServiceRequestSender();
+        testServiceRequestSender.setNextResponse(/* httpStatus = */ 200, triggerScripts);
+        testServiceRequestSender.scheduleForInjection();
+
+        // Set up direct action script.
+        ArrayList<ActionProto> list = new ArrayList<>();
+        ArrayList<UserFormSectionProto> additionalSections = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .addAllAdditionalAppendedSections(additionalSections)
+                                         .setRequestTermsAndConditions(false))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Prompt"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath(pageToLoad)
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        // Start trigger script
+        HashMap<String, Object> parameters = new HashMap();
+        parameters.put("START_IMMEDIATELY", false);
+        parameters.put("REQUEST_TRIGGER_SCRIPT", true);
+        startAutofillAssistantWithParams(
+                mTestRule.getActivity(), mAssistantTestRule.getURL(), parameters);
+
+        // Wait until trigger UI is visible.
+        waitUntilViewMatchesCondition(withText("Hello world"), isCompletelyDisplayed());
+
+        // Trigger direct action.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions"));
+            mDirectActionHandler.performDirectAction(
+                    "fetch_website_actions", new Bundle(), mDirectActionResultCallback);
+            verify(mDirectActionResultCallback)
+                    .onResult(argThat(bundle -> bundle.getBoolean("success")));
+
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions", "some_direct_action"));
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Continue"), isDisplayed());
+
+        // Tapping on close button should stop script, close UI and not open
+        // trigger UI.
+        onView(allOf(withContentDescription("Close"), isDisplayed())).perform(click());
+        waitUntilViewAssertionTrue(withText("Hello world"), doesNotExist(), 2000L);
+        waitUntilViewAssertionTrue(withText("Prompt"), doesNotExist(), 2000L);
+        waitUntilViewAssertionTrue(withId(R.id.autofill_assistant), doesNotExist(), 2000L);
     }
 }

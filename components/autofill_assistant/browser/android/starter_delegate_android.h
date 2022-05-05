@@ -122,6 +122,10 @@ class StarterDelegateAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
+  void OnDirectActionTriggered(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
+
  private:
   friend class content::WebContentsUserData<StarterDelegateAndroid>;
   StarterDelegateAndroid(content::WebContents* web_contents,

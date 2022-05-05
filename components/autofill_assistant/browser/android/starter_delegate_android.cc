@@ -157,6 +157,16 @@ void StarterDelegateAndroid::OnActivityAttachmentChanged(
   starter_->OnDependenciesInvalidated();
 }
 
+void StarterDelegateAndroid::OnDirectActionTriggered(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  if (!starter_) {
+    return;
+  }
+
+  starter_->OnDirectActionTriggered();
+}
+
 bool StarterDelegateAndroid::GetIsFirstTimeUser() const {
   return Java_Starter_getIsFirstTimeUser(base::android::AttachCurrentThread());
 }
