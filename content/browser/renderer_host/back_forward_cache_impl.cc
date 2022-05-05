@@ -308,7 +308,6 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
     DCHECK(trigger);
     trigger->UpdateRequest(navigation_start, false /* destination_is_loaded */,
                            false /* show_reason_tab_switching */,
-                           false /* show_reason_unoccluded */,
                            true /* show_reason_bfcache_restore */);
   }
 }

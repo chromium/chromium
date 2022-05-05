@@ -893,16 +893,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Aura.WebContentsWindowUnOccludedTime" units="ms"
-    expires_after="2021-11-14">
-  <owner>alemate@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    The amount of time spent painting a WebContents frame when a window switches
-    from occluded to visible state.
-  </summary>
-</histogram>
-
 <histogram name="Autocomplete.Cleanup" units="entries" expires_after="M85">
   <owner>seblalancette@chromium.org</owner>
   <summary>

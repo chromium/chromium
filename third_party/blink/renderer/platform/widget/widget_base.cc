@@ -449,7 +449,6 @@ void WidgetBase::WasShown(bool was_evicted,
             record_tab_switch_time_request->event_start_time,
             record_tab_switch_time_request->destination_is_loaded,
             record_tab_switch_time_request->show_reason_tab_switching,
-            record_tab_switch_time_request->show_reason_unoccluded,
             record_tab_switch_time_request->show_reason_bfcache_restore));
   }
 
@@ -469,7 +468,6 @@ void WidgetBase::RequestPresentationTimeForNextFrame(
           false /* has_saved_frames */, visible_time_request->event_start_time,
           visible_time_request->destination_is_loaded,
           visible_time_request->show_reason_tab_switching,
-          visible_time_request->show_reason_unoccluded,
           visible_time_request->show_reason_bfcache_restore));
 }
 

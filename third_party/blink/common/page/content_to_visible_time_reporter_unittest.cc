@@ -22,8 +22,6 @@
 
 namespace blink {
 
-constexpr char kWebContentsUnOccludedHistogram[] =
-    "Aura.WebContentsWindowUnOccludedTime";
 constexpr char kBfcacheRestoreHistogram[] =
     "BackForwardCache.Restore.NavigationToFirstPaint";
 
@@ -145,7 +143,7 @@ class ContentToVisibleTimeReporterTest
         "Browser.Tabs.TabSwitchResult2.NoSavedFrames_Loaded",
         "Browser.Tabs.TabSwitchResult2.NoSavedFrames_NotLoaded",
         // Non-tab switch.
-        kWebContentsUnOccludedHistogram, kBfcacheRestoreHistogram};
+        kBfcacheRestoreHistogram};
     std::vector<std::string> unexpected_histograms;
     for (const char* histogram : kAllHistograms) {
       if (!base::Contains(histograms_with_values, histogram))
@@ -210,7 +208,6 @@ TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
@@ -242,7 +239,6 @@ TEST_P(ContentToVisibleTimeReporterTest, PresentationFailure) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
   std::move(callback).Run(gfx::PresentationFeedback::Failure());
 
@@ -264,7 +260,6 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start1, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
 
   task_environment_.FastForwardBy(kDuration);
@@ -291,7 +286,6 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start2, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
   const auto end2 = start2 + kOtherDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
@@ -332,7 +326,6 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start1, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
 
   task_environment_.FastForwardBy(kDuration);
@@ -345,7 +338,6 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start2, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ false,
           /* show_reason_bfcache_restore */ false));
   const auto end2 = start2 + kOtherDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
@@ -376,46 +368,44 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
       ContentToVisibleTimeReporter::TabSwitchResult::kSuccess, 1);
 }
 
-// Time is properly recorded to histogram when we have unoccluded event.
-TEST_P(ContentToVisibleTimeReporterTest, UnoccludedTimeIsRecorded) {
+// Time is properly recorded to histogram when we have bfcache restore event.
+TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ false,
-          /* show_reason_unoccluded */ true,
-          /* show_reason_bfcache_restore */ false));
+          /* show_reason_bfcache_restore */ true));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
   std::move(callback).Run(presentation_feedback);
 
-  ExpectHistogramsEmptyExcept({kWebContentsUnOccludedHistogram});
+  ExpectHistogramsEmptyExcept({kBfcacheRestoreHistogram});
 
-  // UnOccluded.
-  ExpectTotalSamples({kWebContentsUnOccludedHistogram}, 1);
-  ExpectTimeBucketCounts({kWebContentsUnOccludedHistogram}, kDuration, 1);
+  // Bfcache restore.
+  ExpectTotalSamples({kBfcacheRestoreHistogram}, 1);
+  ExpectTimeBucketCounts({kBfcacheRestoreHistogram}, kDuration, 1);
 }
 
 // Time is properly recorded to histogram when we have unoccluded event
 // and some other events too.
 TEST_P(ContentToVisibleTimeReporterTest,
-       TimeIsRecordedWithSavedFramesPlusUnoccludedTimeIsRecorded) {
+       TimeIsRecordedWithSavedFramesPlusBfcacheRestoreTimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
           /* show_reason_tab_switching */ true,
-          /* show_reason_unoccluded */ true,
-          /* show_reason_bfcache_restore */ false));
+          /* show_reason_bfcache_restore */ true));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
   std::move(callback).Run(presentation_feedback);
 
-  std::vector<std::string> expected_histograms{kWebContentsUnOccludedHistogram};
+  std::vector<std::string> expected_histograms{kBfcacheRestoreHistogram};
   base::Extend(expected_histograms, duration_histograms_);
   base::Extend(expected_histograms, result_histograms_);
   ExpectHistogramsEmptyExcept(expected_histograms);
@@ -429,28 +419,6 @@ TEST_P(ContentToVisibleTimeReporterTest,
   ExpectResultBucketCounts(
       result_histograms_,
       ContentToVisibleTimeReporter::TabSwitchResult::kSuccess, 1);
-
-  // UnOccluded.
-  ExpectTotalSamples({kWebContentsUnOccludedHistogram}, 1);
-  ExpectTimeBucketCounts({kWebContentsUnOccludedHistogram}, kDuration, 1);
-}
-
-// Time is properly recorded to histogram when we have bfcache restore event.
-TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
-  const auto start = base::TimeTicks::Now();
-  auto callback = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ false,
-          /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ true));
-  const auto end = start + kDuration;
-  auto presentation_feedback = gfx::PresentationFeedback(
-      end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
-  std::move(callback).Run(presentation_feedback);
-
-  ExpectHistogramsEmptyExcept({kBfcacheRestoreHistogram});
 
   // Bfcache restore.
   ExpectTotalSamples({kBfcacheRestoreHistogram}, 1);

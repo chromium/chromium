@@ -54,7 +54,6 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       base::TimeTicks event_start_time,
       bool destination_is_loaded,
       bool show_reason_tab_switching,
-      bool show_reason_unoccluded,
       bool show_reason_bfcache_restore);
 
   // Indicates that the tab associated with this recorder was hidden. If no
@@ -70,7 +69,6 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   void RecordHistogramsAndTraceEvents(
       TabSwitchResult tab_switch_result,
       bool show_reason_tab_switching,
-      bool show_reason_unoccluded,
       bool show_reason_bfcache_restore,
       const gfx::PresentationFeedback& feedback);
 

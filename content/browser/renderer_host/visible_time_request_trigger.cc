@@ -44,7 +44,6 @@ VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
         std::min(to->event_start_time, from->event_start_time);
     to->destination_is_loaded |= from->destination_is_loaded;
     to->show_reason_tab_switching |= from->show_reason_tab_switching;
-    to->show_reason_unoccluded |= from->show_reason_unoccluded;
     to->show_reason_bfcache_restore |= from->show_reason_bfcache_restore;
   }
   return to;
@@ -54,11 +53,10 @@ void VisibleTimeRequestTrigger::UpdateRequest(
     base::TimeTicks start_time,
     bool destination_is_loaded,
     bool show_reason_tab_switching,
-    bool show_reason_unoccluded,
     bool show_reason_bfcache_restore) {
   auto new_request = blink::mojom::RecordContentToVisibleTimeRequest::New(
       start_time, destination_is_loaded, show_reason_tab_switching,
-      show_reason_unoccluded, show_reason_bfcache_restore);
+      show_reason_bfcache_restore);
   // If `last_request_` is null, this will return `new_request` unchanged.
   last_request_ =
       ConsumeAndMergeRequests(std::move(last_request_), std::move(new_request));

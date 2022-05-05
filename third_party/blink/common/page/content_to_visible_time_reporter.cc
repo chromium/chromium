@@ -41,12 +41,6 @@ const char* GetHistogramSuffix(
   }
 }
 
-void ReportUnOccludedMetric(const base::TimeTicks requested_time,
-                            const gfx::PresentationFeedback& feedback) {
-  const base::TimeDelta delta = feedback.timestamp - requested_time;
-  UMA_HISTOGRAM_TIMES("Aura.WebContentsWindowUnOccludedTime", delta);
-}
-
 void RecordBackForwardCacheRestoreMetric(
     const base::TimeTicks requested_time,
     const gfx::PresentationFeedback& feedback) {
@@ -86,7 +80,6 @@ ContentToVisibleTimeReporter::TabWasShown(
     // every time a tab is backgrounded, even if the content is still visible.
     RecordHistogramsAndTraceEvents(TabSwitchResult::kMissedTabHide,
                                    true /* show_reason_tab_switching */,
-                                   false /* show_reason_unoccluded */,
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
   }
@@ -108,7 +101,6 @@ ContentToVisibleTimeReporter::TabWasShown(
       &ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents,
       weak_ptr_factory_.GetWeakPtr(), TabSwitchResult::kSuccess,
       tab_switch_start_state_->show_reason_tab_switching,
-      tab_switch_start_state_->show_reason_unoccluded,
       tab_switch_start_state_->show_reason_bfcache_restore);
 }
 
@@ -117,20 +109,18 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
                                           base::TimeTicks event_start_time,
                                           bool destination_is_loaded,
                                           bool show_reason_tab_switching,
-                                          bool show_reason_unoccluded,
                                           bool show_reason_bfcache_restore) {
   return TabWasShown(
       has_saved_frames,
       mojom::RecordContentToVisibleTimeRequest::New(
           event_start_time, destination_is_loaded, show_reason_tab_switching,
-          show_reason_unoccluded, show_reason_bfcache_restore));
+          show_reason_bfcache_restore));
 }
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
   if (tab_switch_start_state_) {
     RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
                                    true /* show_reason_tab_switching */,
-                                   false /* show_reason_unoccluded */,
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
     weak_ptr_factory_.InvalidateWeakPtrs();
@@ -148,14 +138,12 @@ bool ContentToVisibleTimeReporter::IsTabSwitchMetric2FeatureEnabled() {
 void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     TabSwitchResult tab_switch_result,
     bool show_reason_tab_switching,
-    bool show_reason_unoccluded,
     bool show_reason_bfcache_restore,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(tab_switch_start_state_);
   // If the DCHECK fail, make sure RenderWidgetHostImpl::WasShown was triggered
   // for recording the event.
-  DCHECK(show_reason_bfcache_restore || show_reason_unoccluded ||
-         show_reason_tab_switching);
+  DCHECK(show_reason_bfcache_restore || show_reason_tab_switching);
   // The kPresentationFailure result should only be used if `feedback` has a
   // failure.
   DCHECK_NE(tab_switch_result, TabSwitchResult::kPresentationFailure);
@@ -163,10 +151,6 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   if (show_reason_bfcache_restore) {
     RecordBackForwardCacheRestoreMetric(
         tab_switch_start_state_->event_start_time, feedback);
-  }
-
-  if (show_reason_unoccluded) {
-    ReportUnOccludedMetric(tab_switch_start_state_->event_start_time, feedback);
   }
 
   if (!show_reason_tab_switching)

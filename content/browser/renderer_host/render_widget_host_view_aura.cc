@@ -550,20 +550,7 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   DCHECK(host_->is_hidden());
   DCHECK_NE(visibility_, Visibility::VISIBLE);
 
-  const Visibility old_visibility = visibility_;
   visibility_ = Visibility::VISIBLE;
-
-  if (old_visibility == Visibility::OCCLUDED) {
-    // Add an unocclusion timing request. If `tab_switch_start_state` is null,
-    // this will return the new request unchanged.
-    tab_switch_start_state = VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-        std::move(tab_switch_start_state),
-        blink::mojom::RecordContentToVisibleTimeRequest::New(
-            base::TimeTicks::Now(), false /* destination_is_loaded */,
-            false /* show_reason_tab_switching */,
-            true /* show_reason_unoccluded */,
-            false /* show_reason_bfcache_restore */));
-  }
 
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
 

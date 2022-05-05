@@ -27,7 +27,6 @@ class VisibleTimeRequestTriggerTest : public testing::Test {
   enum class RequestField {
     kDestinationIsLoaded,
     kShowReasonTabSwitching,
-    kShowReasonUnOccluded,
     kShowReasonBFCacheRestore,
   };
   using RequestFieldSet =
@@ -53,7 +52,6 @@ class VisibleTimeRequestTriggerTest : public testing::Test {
         StartTimeFromDelta(start_time),
         enabled_fields.Has(RequestField::kDestinationIsLoaded),
         enabled_fields.Has(RequestField::kShowReasonTabSwitching),
-        enabled_fields.Has(RequestField::kShowReasonUnOccluded),
         enabled_fields.Has(RequestField::kShowReasonBFCacheRestore));
   }
 
@@ -66,7 +64,6 @@ class VisibleTimeRequestTriggerTest : public testing::Test {
     EXPECT_EQ(request->destination_is_loaded, expected.destination_is_loaded);
     EXPECT_EQ(request->show_reason_tab_switching,
               expected.show_reason_tab_switching);
-    EXPECT_EQ(request->show_reason_unoccluded, expected.show_reason_unoccluded);
     EXPECT_EQ(request->show_reason_bfcache_restore,
               expected.show_reason_bfcache_restore);
   }
@@ -200,7 +197,6 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(1)),
                           /*destination_is_loaded=*/false,
                           /*show_reason_tab_switching=*/true,
-                          /*show_reason_unoccluded=*/false,
                           /*show_reason_bfcache_restore=*/false);
     ExpectEqualRequests(trigger.TakeRequest(), *expected);
     EXPECT_TRUE(trigger.TakeRequest().is_null());
@@ -216,12 +212,10 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(2)),
                           /*destination_is_loaded=*/true,
                           /*show_reason_tab_switching=*/true,
-                          /*show_reason_unoccluded=*/false,
                           /*show_reason_bfcache_restore=*/false);
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(3)),
                           /*destination_is_loaded=*/false,
                           /*show_reason_tab_switching=*/false,
-                          /*show_reason_unoccluded=*/false,
                           /*show_reason_bfcache_restore=*/true);
     ExpectEqualRequests(trigger.TakeRequest(), *expected);
     EXPECT_TRUE(trigger.TakeRequest().is_null());
