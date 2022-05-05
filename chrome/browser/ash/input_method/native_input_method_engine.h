@@ -222,6 +222,7 @@ class NativeInputMethodEngine
 
     void HandleOnFocusAsyncForNativeMojoEngine(
         const std::string& engine_id,
+        int context_id,
         const IMEEngineHandlerInterface::InputContext& context,
         const AssistiveSuggesterSwitch::EnabledSuggestions&
             enabled_suggestions);

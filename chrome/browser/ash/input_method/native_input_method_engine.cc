@@ -772,13 +772,15 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
         assistive_suggester_->FetchEnabledSuggestionsFromBrowserContextThen(
             base::BindOnce(&NativeInputMethodEngine::ImeObserver::
                                HandleOnFocusAsyncForNativeMojoEngine,
-                           weak_ptr_factory_.GetWeakPtr(), engine_id, context));
+                           weak_ptr_factory_.GetWeakPtr(), engine_id,
+                           context_id, context));
       } else {
         // Because assistive_suggester is not available, we can assume that
         // there are no enabled suggestions. Hence we just run this function
         // synchronously with no enabled suggestions.
         HandleOnFocusAsyncForNativeMojoEngine(
-            engine_id, context, AssistiveSuggesterSwitch::EnabledSuggestions{});
+            engine_id, context_id, context,
+            AssistiveSuggesterSwitch::EnabledSuggestions{});
       }
     }
   } else {
@@ -791,9 +793,18 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
 void NativeInputMethodEngine::ImeObserver::
     HandleOnFocusAsyncForNativeMojoEngine(
         const std::string& engine_id,
+        int context_id,
         const IMEEngineHandlerInterface::InputContext& context,
         const AssistiveSuggesterSwitch::EnabledSuggestions&
             enabled_suggestions) {
+  // It is possible the text client got unfocused/or changed before this async
+  // function is run, if the new focus/blur event occurred fast enough. In that
+  // case, this async OnFocus call is obsolete, and should be skipped.
+  if (!text_client_.has_value() || text_client_->context_id != context_id ||
+      text_client_->state != TextClientState::kPending) {
+    return;
+  }
+
   InputFieldContext input_field_context =
       features::IsAssistiveMultiWordEnabled()
           ? CreateInputFieldContext(enabled_suggestions)
