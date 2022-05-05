@@ -7,6 +7,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "components/user_notes/model/user_note.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace user_notes {
 
@@ -19,12 +20,16 @@ class UserNoteInstance {
   UserNoteInstance(const UserNoteInstance&) = delete;
   UserNoteInstance& operator=(const UserNoteInstance&) = delete;
 
-  const UserNote& model() { return *model_; }
+  UserNote& model() const { return *model_; }
+  const gfx::Rect& rect() const { return rect_; }
 
  private:
   // A ref to the backing model of this note instance. The model is owned by
   // |UserNoteService|. The model is expected to outlive this class.
   base::SafeRef<UserNote> model_;
+  // A rect that corresponds to the location in the webpage where the associated
+  // highlight is.
+  gfx::Rect rect_;
 };
 
 }  // namespace user_notes

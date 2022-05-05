@@ -41,6 +41,10 @@ class UserNoteView : public views::View {
                                           : base::UnguessableToken::Null();
   }
 
+  const gfx::Rect& user_note_rect() const {
+    return user_note_instance_->rect();
+  }
+
  private:
   void OnCancelNewUserNote();
   void OnAddUserNote();
