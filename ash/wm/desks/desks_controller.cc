@@ -353,6 +353,21 @@ std::u16string DesksController::GetDeskDefaultName(size_t desk_index) {
   return l10n_util::GetStringUTF16(kDeskDefaultNameIds[desk_index]);
 }
 
+const std::u16string& DesksController::GetCombineDesksTargetName(
+    const Desk* desk) const {
+  if (desk == active_desk_ && desks_.size() > 1) {
+    Desk* target = GetPreviousDesk();
+
+    if (!target)
+      target = GetNextDesk();
+
+    DCHECK(target);
+    return target->name();
+  }
+
+  return active_desk_->name();
+}
+
 const Desk* DesksController::GetTargetActiveDesk() const {
   if (animation_)
     return desks_[animation_->ending_desk_index()].get();

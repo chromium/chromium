@@ -13,6 +13,7 @@
 namespace views {
 class LabelButton;
 class ScrollView;
+class View;
 }  // namespace views
 
 namespace ui {
@@ -46,6 +47,7 @@ class DesksTestApi {
   static DeskActionContextMenu* GetContextMenuForDesk(int index);
   static views::LabelButton* GetCloseAllUndoToastDismissButton();
   static const ui::SimpleMenuModel& GetContextMenuModelForDesk(int index);
+  static views::View* GetHighlightOverlayForDeskPreview(int index);
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();

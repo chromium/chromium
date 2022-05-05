@@ -105,9 +105,8 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
   if (features::IsDesksCloseAllEnabled()) {
-    // TODO(crbug.com/1308429): Replace PLACEHOLDER with the name of the initial
-    // target desk for combine desks operation.
-    std::u16string initial_combine_desks_target_name = u"PLACEHOLDER";
+    const std::u16string initial_combine_desks_target_name =
+        DesksController::Get()->GetCombineDesksTargetName(desk_);
 
     desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
         initial_combine_desks_target_name,
@@ -132,8 +131,6 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
                             DeskCloseType::kCloseAllWindowsAndWait),
         base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
                             base::Unretained(this)));
-
-    // TODO(crbug.com/1308429): Can initialize highlight overlay here.
   } else {
     close_desk_button_ = AddChildView(std::make_unique<CloseButton>(
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
@@ -249,9 +246,9 @@ void DeskMiniView::OpenContextMenu() {
   is_context_menu_open_ = true;
   UpdateDeskButtonVisibility();
 
-  // TODO(crbug.com/1308429): Should set highlight overlay to visible and update
-  // context menu item label for combining desks here to tell the user where the
-  // windows will go.
+  desk_preview_->SetHighlightOverlayVisibility(true);
+  context_menu_->UpdateCombineDesksTargetName(
+      DesksController::Get()->GetCombineDesksTargetName(desk_));
 
   // Only show the combine desks context menu option if there are app windows in
   // the desk, or if the desk is active and there are windows that should be
@@ -284,8 +281,6 @@ void DeskMiniView::Layout() {
             kCloseButtonMargin,
         kCloseButtonMargin, desk_action_view_size.width(),
         desk_action_view_size.height());
-
-    // TODO(crbug.com/1308429): Set bounds for a highlight overlay.
   } else {
     DCHECK(close_desk_button_);
     const int close_button_size =
@@ -602,7 +597,7 @@ void DeskMiniView::OnRemovingDesk(bool close_windows) {
 void DeskMiniView::OnContextMenuClosed() {
   is_context_menu_open_ = false;
   UpdateDeskButtonVisibility();
-  // TODO(crbug.com/1308429): Make highlight overlay visibility false here.
+  desk_preview_->SetHighlightOverlayVisibility(false);
 }
 
 void DeskMiniView::OnDeskPreviewPressed() {

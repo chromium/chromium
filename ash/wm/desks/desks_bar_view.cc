@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/utility/haptics_util.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_drag_proxy.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
@@ -678,6 +679,10 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
+  // We update combine desks tooltips here to reflect the updated desk default
+  // names.
+  MaybeUpdateCombineDesksTooltips();
+
   // Stop scroll even if the desk is on the scroll arrow buttons.
   left_scroll_button_->OnDeskHoverEnd();
   right_scroll_button_->OnDeskHoverEnd();
@@ -789,6 +794,7 @@ void DesksBarView::OnDeskAdded(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
   const bool is_expanding_bar_view = zero_state_new_desk_button_->GetVisible();
   UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
+  MaybeUpdateCombineDesksTooltips();
 }
 
 void DesksBarView::OnDeskRemoved(const Desk* desk) {
@@ -840,6 +846,8 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
       expanded_state_new_desk_button_, expanded_state_desks_templates_button_,
       begin_x - GetFirstMiniViewXOffset());
+
+  MaybeUpdateCombineDesksTooltips();
 }
 
 void DesksBarView::OnDeskReordered(int old_index, int new_index) {
@@ -853,6 +861,7 @@ void DesksBarView::OnDeskReordered(int old_index, int new_index) {
 
   // Call the animation function after reorder the mini views.
   PerformReorderDeskMiniViewAnimation(old_index, new_index, mini_views_);
+  MaybeUpdateCombineDesksTooltips();
 }
 
 void DesksBarView::OnDeskActivationChanged(const Desk* activated,
@@ -869,7 +878,9 @@ void DesksBarView::OnDeskSwitchAnimationLaunching() {}
 void DesksBarView::OnDeskSwitchAnimationFinished() {}
 
 void DesksBarView::OnDeskNameChanged(const Desk* desk,
-                                     const std::u16string& new_name) {}
+                                     const std::u16string& new_name) {
+  MaybeUpdateCombineDesksTooltips();
+}
 
 void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
                                       bool expanding_bar_view) {
@@ -1249,6 +1260,16 @@ void DesksBarView::OnDesksTemplatesButtonPressed() {
   overview_grid_->overview_session()->ShowDesksTemplatesGrids(
       IsZeroState(), base::GUID(),
       GetWidget()->GetNativeWindow()->GetRootWindow());
+}
+
+void DesksBarView::MaybeUpdateCombineDesksTooltips() {
+  if (!features::IsDesksCloseAllEnabled())
+    return;
+
+  for (auto* mini_view : mini_views_) {
+    mini_view->desk_action_view()->UpdateCombineDesksTooltip(
+        DesksController::Get()->GetCombineDesksTargetName(mini_view->desk()));
+  }
 }
 
 void DesksBarView::OnContentsScrolled() {

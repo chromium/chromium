@@ -117,6 +117,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   DeskAnimationBase* animation() const { return animation_.get(); }
 
+  // Finds and returns the name of the desk that `desk` would be combined with
+  // when the user clicks or presses the combine desks button or context menu
+  // item.
+  const std::u16string& GetCombineDesksTargetName(const Desk* desk) const;
+
   // Returns the current |active_desk()| or the soon-to-be active desk if a desk
   // switch animation is in progress.
   const Desk* GetTargetActiveDesk() const;
