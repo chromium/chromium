@@ -3576,7 +3576,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "enable_tab_group_auto_creation": "false"
+                        "enable_tab_group_auto_creation": "false",
+                        "show_open_in_tab_group_menu_item_first": "false"
                     },
                     "enable_features": [
                         "TabGridLayoutAndroid"
