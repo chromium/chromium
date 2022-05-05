@@ -115,17 +115,8 @@ PageContentAnnotationsWebContentsObserver::
           *web_contents),
       page_content_annotations_service_(page_content_annotations_service),
       template_url_service_(template_url_service),
-      optimization_guide_decider_(optimization_guide_decider),
-      max_size_for_text_dump_(features::MaxSizeForPageContentTextDump()) {
+      optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(page_content_annotations_service_);
-
-  if (!features::ShouldAnnotateTitleInsteadOfPageContent()) {
-    // Make sure we always attach ourselves to a PageTextObserver if we are
-    // annotating page content.
-    PageTextObserver* observer =
-        PageTextObserver::GetOrCreateForWebContents(web_contents);
-    observer->AddConsumer(this);
-  }
 
   if (features::RemotePageEntitiesEnabled() && optimization_guide_decider_) {
     optimization_guide_decider_->RegisterOptimizationTypes(
@@ -134,17 +125,7 @@ PageContentAnnotationsWebContentsObserver::
 }
 
 PageContentAnnotationsWebContentsObserver::
-    ~PageContentAnnotationsWebContentsObserver() {
-  // Only detach ourselves if |web_contents()| as well as PageTextObserver for
-  // |web_contents()| are still alive.
-  if (!web_contents())
-    return;
-
-  PageTextObserver* observer =
-      PageTextObserver::FromWebContents(web_contents());
-  if (observer)
-    observer->RemoveConsumer(this);
-}
+    ~PageContentAnnotationsWebContentsObserver() = default;
 
 void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -156,11 +137,9 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return;
 
-  PageData* page_data = nullptr;
-  if (features::ShouldAnnotateTitleInsteadOfPageContent()) {
-    page_data = PageData::GetOrCreateForPage(web_contents()->GetPrimaryPage());
-    page_data->set_navigation_id(navigation_handle->GetNavigationId());
-  }
+  PageData* page_data =
+      PageData::GetOrCreateForPage(web_contents()->GetPrimaryPage());
+  page_data->set_navigation_id(navigation_handle->GetNavigationId());
 
   optimization_guide::HistoryVisit history_visit = optimization_guide::
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
@@ -216,9 +195,10 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     }
   }
 
-  // TODO(crbug/1177102): Remove this title hack once the PageTextObserver works
-  // for same-document navigations.
-  if (navigation_handle->IsSameDocument()) {
+  // Same-document navigations and reloads do not trigger |TitleWasSet|, so we
+  // need to capture the title text here for these cases.
+  if (navigation_handle->IsSameDocument() ||
+      navigation_handle->GetReloadType() != content::ReloadType::NONE) {
     if (page_data) {
       page_data->set_annotation_was_requested();
     }
@@ -261,75 +241,6 @@ void PageContentAnnotationsWebContentsObserver::TitleWasSet(
     LOG(ERROR) << "Annotating main frame navigation: \n"
                << "URL: " << entry->GetURL() << "\n"
                << "Text: " << *(history_visit.text_to_annotate);
-  }
-}
-
-std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
-PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
-    content::NavigationHandle* navigation_handle) {
-  DCHECK(!features::ShouldAnnotateTitleInsteadOfPageContent());
-
-  DCHECK(navigation_handle->HasCommitted());
-
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
-
-  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
-    return nullptr;
-
-  if (navigation_handle->IsSameDocument())
-    return nullptr;
-
-  if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL()))
-    return nullptr;
-
-  if (optimization_guide::features::
-          ShouldPersistSearchMetadataForNonGoogleSearches() &&
-      ExtractSearchMetadata(template_url_service_,
-                            navigation_handle->GetURL())) {
-    return nullptr;
-  }
-
-  std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request =
-      std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();
-  request->max_size = max_size_for_text_dump_;
-  request->events = {mojom::TextDumpEvent::kFirstLayout};
-  request->dump_amp_subframes = true;
-  request->callback = base::BindOnce(
-      &PageContentAnnotationsWebContentsObserver::OnTextDumpReceived,
-      weak_ptr_factory_.GetWeakPtr(),
-      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-          navigation_handle->GetWebContents(),
-          navigation_handle->GetNavigationId()));
-  return request;
-}
-
-void PageContentAnnotationsWebContentsObserver::OnTextDumpReceived(
-    HistoryVisit visit,
-    const PageTextDumpResult& result) {
-  DCHECK(!features::ShouldAnnotateTitleInsteadOfPageContent());
-
-  if (result.empty()) {
-    return;
-  }
-
-  // If the page had AMP frames, then only use that content. Otherwise, use the
-  // mainframe.
-  if (result.GetAMPTextContent()) {
-    visit.text_to_annotate = *result.GetAMPTextContent();
-    page_content_annotations_service_->Annotate(visit);
-    if (switches::ShouldLogPageContentAnnotationsInput()) {
-      LOG(ERROR) << "Annotating AMP text content: \n"
-                 << "URL: " << visit.url << "\n"
-                 << "Text: " << *(visit.text_to_annotate);
-    }
-    return;
-  }
-  visit.text_to_annotate = *result.GetMainFrameTextContent();
-  page_content_annotations_service_->Annotate(visit);
-  if (switches::ShouldLogPageContentAnnotationsInput()) {
-    LOG(ERROR) << "Annotating main frame text content: \n"
-               << "URL: " << visit.url << "\n"
-               << "Text: " << *(visit.text_to_annotate);
   }
 }
 

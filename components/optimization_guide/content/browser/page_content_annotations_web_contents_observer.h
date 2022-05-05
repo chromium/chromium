@@ -7,8 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/content/browser/page_text_dump_result.h"
-#include "components/optimization_guide/content/browser/page_text_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class TemplateURLService;
@@ -30,8 +29,7 @@ class PageContentAnnotationsService;
 class PageContentAnnotationsWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<
-          PageContentAnnotationsWebContentsObserver>,
-      public PageTextObserver::Consumer {
+          PageContentAnnotationsWebContentsObserver> {
  public:
   ~PageContentAnnotationsWebContentsObserver() override;
 
@@ -56,14 +54,6 @@ class PageContentAnnotationsWebContentsObserver
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
 
-  // PageTextObserver::Consumer:
-  std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
-  MaybeRequestFrameTextDump(
-      content::NavigationHandle* navigation_handle) override;
-
-  // Callback invoked when a text dump has been received for the |visit|.
-  void OnTextDumpReceived(HistoryVisit visit, const PageTextDumpResult& result);
-
   // Callback invoked when the page entities have been received from
   // |optimization_guide_decider_| for |visit|.
   void OnRemotePageEntitiesReceived(const HistoryVisit& visit,
@@ -78,9 +68,6 @@ class PageContentAnnotationsWebContentsObserver
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
-
-  // The max size to request for text dump.
-  const uint64_t max_size_for_text_dump_;
 
   base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};

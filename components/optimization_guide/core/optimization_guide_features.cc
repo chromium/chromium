@@ -471,16 +471,6 @@ bool IsPageContentAnnotationEnabled() {
   return base::FeatureList::IsEnabled(kPageContentAnnotations);
 }
 
-uint64_t MaxSizeForPageContentTextDump() {
-  return static_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations, "max_size_for_text_dump_in_bytes", 1024));
-}
-
-bool ShouldAnnotateTitleInsteadOfPageContent() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kPageContentAnnotations, "annotate_title_instead_of_page_content", true);
-}
-
 bool ShouldPersistSearchMetadataForNonGoogleSearches() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageContentAnnotations,

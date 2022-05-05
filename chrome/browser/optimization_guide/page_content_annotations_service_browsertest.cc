@@ -19,7 +19,6 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
-#include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -29,18 +28,12 @@
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace optimization_guide {
 
@@ -64,35 +57,6 @@ testing::Matcher<WeightedIdentifier> CrossPlatformMatcher(
 #endif
 
 }  // namespace
-
-class FakePageTextService : public mojom::PageTextService {
- public:
-  FakePageTextService() = default;
-  ~FakePageTextService() override = default;
-
-  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    // Reset first in case the pipe is being re-used, as for a second navigation
-    // in a test.
-    receiver_.reset();
-
-    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService>(
-        std::move(handle)));
-  }
-
-  // mojom::PageTextService:
-  void RequestPageTextDump(
-      mojom::PageTextDumpRequestPtr request,
-      mojo::PendingRemote<mojom::PageTextConsumer> consumer) override {
-    mojo::Remote<mojom::PageTextConsumer> consumer_remote;
-    consumer_remote.Bind(std::move(consumer));
-
-    consumer_remote->OnTextDumpChunk(u"hello world");
-    consumer_remote->OnChunksEnd();
-  }
-
- private:
-  mojo::AssociatedReceiver<mojom::PageTextService> receiver_{this};
-};
 
 // A HistoryDBTask that retrieves content annotations.
 class GetContentAnnotationsTask : public history::HistoryDBTask {
@@ -326,27 +290,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    InstallFakePageTextAgent();
-
     if (load_model_on_startup_) {
       LoadAndWaitForModel();
     }
-  }
-
-  // TODO(crbug/1256940): Fix the root cause and remove this gross workaround.
-  void InstallFakePageTextAgent() {
-    fake_renderer_service_ = std::make_unique<FakePageTextService>();
-
-    blink::AssociatedInterfaceProvider* remote_interfaces =
-        browser()
-            ->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetMainFrame()
-            ->GetRemoteAssociatedInterfaces();
-    remote_interfaces->OverrideBinderForTesting(
-        mojom::PageTextService::Name_,
-        base::BindRepeating(&FakePageTextService::BindPendingReceiver,
-                            base::Unretained(fake_renderer_service_.get())));
   }
 
   void LoadAndWaitForModel() {
@@ -437,7 +383,6 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<FakePageTextService> fake_renderer_service_;
   bool load_model_on_startup_ = true;
 };
 
@@ -645,7 +590,6 @@ class PageContentAnnotationsServiceNoHistoryTest
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations,
           {
-              {"annotate_title_instead_of_page_content", "false"},
               {"write_to_history_service", "false"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
@@ -726,11 +670,8 @@ class PageContentAnnotationsServiceBatchVisitTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations,
-          {
-              {"write_to_history_service", "false"},
-              {"annotate_visit_batch_size", "2"},
-              {"annotate_title_instead_of_page_content", "true"},
-          }},
+          {{"write_to_history_service", "false"},
+           {"annotate_visit_batch_size", "2"}}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
@@ -787,11 +728,8 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations,
-          {
-              {"write_to_history_service", "false"},
-              {"annotate_visit_batch_size", "2"},
-              {"annotate_title_instead_of_page_content", "true"},
-          }},
+          {{"write_to_history_service", "false"},
+           {"annotate_visit_batch_size", "2"}}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
