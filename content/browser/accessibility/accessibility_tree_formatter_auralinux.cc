@@ -218,24 +218,22 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
 void AccessibilityTreeFormatterAuraLinux::AddHypertextProperties(
     AtkObject* atk_object,
     base::DictionaryValue* dict) const {
-  if (!ATK_IS_HYPERTEXT(atk_object))
+  if (!ATK_IS_TEXT(atk_object) || !ATK_IS_HYPERTEXT(atk_object))
     return;
-
-  AtkHypertext* hypertext = ATK_HYPERTEXT(atk_object);
-  auto hypertext_values = std::make_unique<base::ListValue>();
 
   AtkText* atk_text = ATK_TEXT(atk_object);
   gchar* character_text = atk_text_get_text(atk_text, 0, -1);
-
-  if (!character_text) {
+  if (!character_text)
     return;
-  }
-  std::string text(character_text);
+
+  auto values = std::make_unique<base::ListValue>();
 
   // Each link in the atk_text is represented by the multibyte unicode character
   // U+FFFC, which in UTF-8 is 0xEF 0xBF 0xBC. We will replace each instance of
   // this character with something slightly more useful.
 
+  std::string text(character_text);
+  AtkHypertext* hypertext = ATK_HYPERTEXT(atk_object);
   int link_count = atk_hypertext_get_n_links(hypertext);
   if (link_count > 0) {
     for (int link_index = link_count - 1; link_index >= 0; link_index--) {
@@ -263,15 +261,20 @@ void AccessibilityTreeFormatterAuraLinux::AddHypertextProperties(
     }
   }
 
-  hypertext_values->Append(base::StringPrintf("hypertext='%s'", text.c_str()));
-  dict->Set("hypertext", std::move(hypertext_values));
+  values->Append(base::StringPrintf("hypertext='%s'", text.c_str()));
+  dict->Set("hypertext", std::move(values));
 
   g_free(character_text);
 }
 
 void AccessibilityTreeFormatterAuraLinux::AddTextProperties(
-    AtkText* atk_text,
+    AtkObject* atk_object,
     base::DictionaryValue* dict) const {
+  if (!ATK_IS_TEXT(atk_object))
+    return;
+
+  AtkText* atk_text = ATK_TEXT(atk_object);
+
   auto text_values = std::make_unique<base::ListValue>();
   int character_count = atk_text_get_character_count(atk_text);
   text_values->Append(
@@ -307,6 +310,13 @@ void AccessibilityTreeFormatterAuraLinux::AddTextProperties(
     atk_attribute_set_free(text_attributes);
 
     current_offset = end_offset;
+  }
+
+  gchar* character_text = atk_text_get_text(atk_text, 0, -1);
+  if (character_text) {
+    std::string text(character_text);
+    text_values->Append(base::StringPrintf("text='%s'", text.c_str()));
+    g_free(character_text);
   }
 
   dict->Set("text", std::move(text_values));
@@ -535,8 +545,7 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
   }
   atk_attribute_set_free(attributes);
 
-  if (ATK_IS_TEXT(atk_object))
-    AddTextProperties(ATK_TEXT(atk_object), dict);
+  AddTextProperties(atk_object, dict);
   AddHypertextProperties(atk_object, dict);
   AddActionProperties(atk_object, dict);
   AddValueProperties(atk_object, dict);

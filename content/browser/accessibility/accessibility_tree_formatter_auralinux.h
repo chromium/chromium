@@ -44,7 +44,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
   void AddProperties(AtkObject*, base::DictionaryValue*) const;
   void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
 
-  void AddTextProperties(AtkText* atk_text, base::DictionaryValue* dict) const;
+  void AddTextProperties(AtkObject* atk_object,
+                         base::DictionaryValue* dict) const;
   void AddHypertextProperties(AtkObject* atk_object,
                               base::DictionaryValue* dict) const;
   void AddActionProperties(AtkObject* atk_object,
