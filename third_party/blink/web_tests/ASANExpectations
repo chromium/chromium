@@ -24,52 +24,15 @@ crbug.com/145940 [ Linux ] plugins/iframe-shims.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-setting.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-style.html [ Skip ]
 
-# These have been failing since at least chrome r203901, blink r151723 (no memory errors, just text failure):
-crbug.com/231357 [ Linux ] editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
-
-crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-absolute-overflow.html [ Failure Pass ]
-crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-fixed-overflow-scrolled.html [ Failure Pass ]
-crbug.com/192172 [ Linux ] compositing/rtl/rtl-iframe-fixed-overflow.html [ Failure Pass ]
-
-crbug.com/290411 [ Linux ] virtual/text-antialias/sub-pixel/text-scaling-pixel.html [ Failure Pass ]
-crbug.com/339778 [ Linux ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
-crbug.com/353746 [ Linux ] virtual/android/fullscreen/video-specified-size.html [ Failure Pass ]
-
-crbug.com/385015 [ Linux ] editing/execCommand/window-open-insert-list-crash.html [ Failure ]
-crbug.com/385015 [ Linux ] fast/frames/iframe-onload-remove-self-no-crash.html [ Failure ]
-crbug.com/385015 [ Linux ] fast/loader/create-frame-in-DOMContentLoaded.html [ Failure ]
-crbug.com/385015 [ Linux ] fast/loader/frame-creation-removal.html [ Failure ]
-
-crbug.com/867982 external/wpt/requestidlecallback/basic.html [ Timeout Pass ]
-crbug.com/882756 external/wpt/requestidlecallback/cancel-invoked.html [ Timeout Pass ]
-
 # Stack use-after-return detection
-crbug.com/438499 [ Linux ] crypto/worker-random-values-limits.html [ Timeout ]
-crbug.com/438499 [ Linux ] fast/workers/worker-multi-startup.html [ Timeout ]
-crbug.com/438499 [ Linux ] http/tests/websocket/workers/worker-simple.html [ Timeout ]
-crbug.com/438499 [ Linux ] http/tests/workers/text-encoding.html [ Timeout ]
-crbug.com/438499 [ Linux ] http/tests/devtools/profiler/heap-snapshot-loader.js [ Timeout ]
-crbug.com/438499 [ Linux ] http/tests/devtools/profiler/heap-snapshot-containment-show-all.js [ Timeout ]
 crbug.com/438499 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/unanimated-style.html [ Timeout ]
 
 # Flakily timeout on Linux ASAN bots.
 crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/* [ Skip ]
-crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow.html [ Timeout ]
-crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow-2.html [ Timeout ]
 crbug.com/700795 [ Linux ] http/tests/devtools/animation/animation-transition-setTiming-crash.js [ Skip ]
-
-# Intentionally failed allocations, via partitionAllocGenericFlags()
-crbug.com/577889 [ Linux ] fast/js/typed-array-allocation-failure.html [ Crash ]
 
 # Memory allocation hooks are disabled on ASAN/MSAN
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
 crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
-
-# Disabled by sheriff due to test crash
-crbug.com/896068 [ Linux ] webaudio/AudioBuffer/huge-buffer.html [ Crash ]
-crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]
-
-# Sheriff 2019-07-31
-crbug.com/989365 [ Linux ] external/wpt/cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html [ Pass Timeout ]
 
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]

@@ -2,5 +2,3 @@
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 # tags: [ Release Debug ]
 
-crbug.com/982194 external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
-crbug.com/982194 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]

@@ -41,9 +41,6 @@ http/tests/inspector-protocol/target/message-to-detached-session.js [ Skip ]
 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 
 # Fix to unblock wpt-importer
-crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
-
-# Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
@@ -75,7 +72,6 @@ crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-stats/rtp-stats-creation.html [ Crash Failure ]
 crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
-crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Failure Timeout ]
 crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Failure Timeout ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/oklch-008.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-composite-1c.html [ Crash Failure ]

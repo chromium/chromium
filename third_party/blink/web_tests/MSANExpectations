@@ -20,46 +20,22 @@ crbug.com/422982 [ Linux ] virtual/threaded/* [ Skip ]
 
 crbug.com/700795 [ Linux ] http/tests/devtools/animation/animation-transition-setTiming-crash.js [ Skip ]
 
-crbug.com/454267 [ Linux ] virtual/gpu/fast/canvas/canvas-arc-360-winding.html [ Crash ]
-crbug.com/454267 [ Linux ] virtual/gpu/fast/canvas/canvas-ellipse-360-winding.html [ Crash ]
-crbug.com/522315 [ Linux ] virtual/gpu/fast/canvas/quadraticCurveTo.xml [ Crash ]
-
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.html [ Timeout ]
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Timeout ]
-
-crbug.com/701433 [ Linux ] crypto/subtle/worker-subtle-crypto-concurrent.html [ Timeout Pass ]
-crbug.com/701563 [ Linux ] external/wpt/svg/interfaces.html [ Timeout Pass ]
-
 
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
 
-crbug.com/751906 [ Linux ] http/tests/devtools/console/console-correct-suggestions.js [ Timeout Pass ]
-crbug.com/811820 [ Linux ] http/tests/devtools/tracing-session-id.js [ Timeout Pass ]
-
-crbug.com/736370 [ Linux ] external/wpt/editing/run/removeformat.html [ Timeout ]
 crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Timeout ]
 crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Timeout ]
-
-crbug.com/810963 [ Linux ] external/wpt/dom/interfaces.html [ Timeout ]
-
-# Intentionally failed allocations, via partitionAllocGenericFlags()
-crbug.com/577889 [ Linux ] fast/js/typed-array-allocation-failure.html [ Crash ]
 
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 
-crbug.com/769729 [ Linux ] paint/invalidation/video-paint-invalidation.html [ Crash ]
-
 # These tests are just a tad bit too slow on MSAN bots and time out. Setting
 # them as "Slow" doesn't seem to help the problem (see discussion on bug), so
 # marking them as "Timeout" while crbug.com/729136 is worked out.
-crbug.com/729136 [ Linux ] external/wpt/mimesniff/mime-types/parsing.any.html [ Timeout ]
-crbug.com/729136 [ Linux ] external/wpt/mimesniff/mime-types/parsing.any.worker.html [ Timeout ]
 crbug.com/729136 [ Linux ] fast/css/css-selector-deeply-nested.html [ Timeout ]
-crbug.com/729136 [ Linux ] http/tests/devtools/forced-layout-in-microtask.js [ Timeout ]
-crbug.com/729136 [ Linux ] http/tests/devtools/tracing/timeline-xhr-response-type-blob-event.js [ Timeout ]
-crbug.com/729136 [ Linux ] http/tests/devtools/elements/styles-4/styles-should-not-force-sync-style-recalc.js [ Timeout ]
 crbug.com/729136 [ Linux ] webaudio/mixing.html [ Timeout ]
 
 # Tests timing out on WebKit Linux Trusty MSAN
@@ -78,50 +54,18 @@ crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 # The following test is flaky and timing out on chromium.webkit/WebKit Linux Trusty MSAN.
 crbug.com/851497 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Pass Timeout ]
 
-crbug.com/862750 [ Linux ] inspector-protocol/memory/sampling-native-profile-blink-gc.js [ Pass Crash ]
-
 crbug.com/813547 [ Linux ] webaudio/BiquadFilter/tail-time-lowpass.html [ Pass Failure Timeout ]
 
 crbug.com/856601 [ Linux ] fast/css/visited-link-hang.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] http/tests/devtools/elements/styles-4/styles-inline-element-style-changes-should-not-force-style-recalc.js [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/event-timing/retrievability.html [ Pass Timeout ]
 
 # Flaky-timeout on MSAN; incorrectly attributed to crbug.com/856601
-crbug.com/856601 [ Linux ] external/wpt/dom/nodes/Element-classlist.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] fast/js/toString-stack-overflow.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/import-maps/fallback.sub.tentative.html [ Pass Timeout ]
-
-# Disabled by sheriff due to test crash
-crbug.com/896068 [ Linux ] webaudio/AudioBuffer/huge-buffer.html [ Crash ]
-crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]
-
-# Sheriff 2018-11-22
-crbug.com/856601 [ Linux ] http/tests/devtools/elements/elements-save-to-temp-var.js [ Pass Timeout ]
-
-# Sheriff 2018-12-13
-crbug.com/914900 [ Linux ] http/tests/devtools/network/preview-searchable.js [ Pass Timeout ]
 
 # Sheriff 2019-02-13
 crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout ]
 
-# Sheriff 2019-06-27
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.serviceworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.sharedworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.worker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.serviceworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.sharedworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Pass Timeout ]
-
-# Sheriff 2019-06-28
-crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Timeout ]
-crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Timeout ]
-
 # Time out on MSAN
 crbug.com/856601 [ Linux ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Pass Timeout ]
-crbug.com/993953 [ Linux ] http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass Timeout ]
 
 # Sheriff 2019-11-11
 
@@ -131,41 +75,18 @@ crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.tentative
 
 # Sheriff 2020-01-10
 crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Timeout ]
-crbug.com/1041052 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Timeout ]
 
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
 
-# Sheriff 2020-10-05
-crbug.com/1134580 [ Linux ] virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
-
-# Sheriff 2020-11-25
-crbug.com/1152088 [ Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
-
 # Flaky timeouts on MSan.
 crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
 
-# Sheriff 2021-02-11
-crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-indices.js [ Pass Timeout ]
-crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Pass Timeout ]
-
 # Sheriff 2021-02-18
-crbug.com/1179829 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
 
-# Sheriff 2021-03-05
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-control.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-selection.js [ Pass Timeout ]
-
 # Sheriff 2021-03-22
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
-
-# Sheriff 2021-04-22
-crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]
 
 # Sheriff 2021-05-31
 crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Pass Timeout ]
@@ -173,8 +94,6 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 
 # Sheriff 2021-06-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
-crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Pass Timeout ]
-crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Pass Timeout ]
 
 # Flaking on WebKit Linux MSAN
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]

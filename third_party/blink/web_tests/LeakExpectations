@@ -15,134 +15,28 @@
 
 crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
 
-# Requests with keepalive specified will be kept alive even when the frame is
-# detached, which means leaks reported by the leak detector are by design.
-# Ignore them.
-crbug.com/755625 external/wpt/beacon/beacon-error.window.html [ Failure ]
-crbug.com/651742 external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html [ Failure ]
-
-crbug.com/1003224 external/wpt/clipboard-apis/async-write-image-read-image.html [ Failure ]
-
-# These tests crash with the leak detector enabled. Previously, crashes inside
-# leak detection were incorrectly hidden with the test passing.
-# See https://chromium-review.googlesource.com/c/chromium/src/+/2252943
-crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import-data-url.any.worker.html [ Crash ]
-crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Crash ]
-crbug.com/867532 http/tests/workers/worker-usecounter.html [ Crash ]
-crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-border-image.html [ Crash ]
-crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-background-image.html [ Crash ]
-crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-content-image.html [ Crash ]
-
-# Random timeout
-crbug.com/1151861 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.html [ Timeout Crash ]
-
 # -----------------------------------------------------------------
 # Flakily leaks
 # -----------------------------------------------------------------
-crbug.com/780386 external/wpt/html/dom/reflection-grouping.html [ Failure Pass ]
-
-crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
-
-crbug.com/809609 [ Linux ] editing/pasteboard/drop-file-svg.html [ Pass Failure ]
-crbug.com/809609 [ Linux ] editing/inserting/insert_div_with_style.html [ Pass Failure ]
 
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
-
-# -----------------------------------------------------------------
-# Sheriff 2018-04-23
-# -----------------------------------------------------------------
-crbug.com/836278 [ Linux ] external/wpt/html/canvas/offscreen/manual/convert-to-blob/offscreencanvas.convert.to.blob.html [ Pass Failure ]
 
 # Sheriff 2018-08-17
 crbug.com/847114 [ Linux ] http/tests/devtools/tracing/decode-resize.js [ Pass Failure ]
 
-# Sheriff 2018-08-29
-crbug.com/878724 [ Linux ] editing/selection/modify_extend/extend_by_character.html [ Pass Failure ]
-crbug.com/878724 [ Linux ] editing/selection/modify_move/move_right_word_09_ltr_multi_line.html [ Pass Failure ]
-
 crbug.com/733494 [ Linux ] media/autoplay/document-user-activation.html [ Pass Failure ]
 
-# Sheriff 2019-08-21
-crbug.com/996235 [ Linux ] media/controls/doubletap-to-jump-backwards-at-start.html [ Pass Failure ]
-
-# Only times out on the leak bots.
-crbug.com/998399 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]
-
-crbug.com/769885 [ Linux ] virtual/android/fullscreen/full-screen-frameset.html [ Failure ]
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
-
-# Sheriff 2019-09-04
-crbug.com/1000768 [ Linux ] external/wpt/web-locks/idlharness.tentative.https.any.html [ Pass Failure ]
-crbug.com/1000768 [ Linux ] external/wpt/geolocation-API/idlharness.window.html [ Pass Failure ]
-crbug.com/1000768 [ Linux ] external/wpt/web-share/idlharness.https.window.html [ Pass Failure ]
-crbug.com/1000768 [ Linux ] external/wpt/storage/idlharness.https.any.html [ Pass Failure ]
-
-# Sheriff 2020-04-06
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/unsafe-url/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/no-referrer-when-downgrade/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/no-referrer/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/no-referrer/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/same-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/same-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
-
-# Sheriff 2020-04-23
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/same-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unsafe-url/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer-when-downgrade/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-module.http.html [ Pass Timeout ]
-
-# Sheriff 2020-05-06
-crbug.com/1078769 [ Linux ] external/wpt/wasm/jsapi/idlharness.any.html [ Pass Failure ]
-
-# Sheriff 2020-06-24
-# Also crbug.com/867532
-crbug.com/1098782 [ Linux ] virtual/plz-dedicated-worker/external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Pass Timeout Crash ]
-
-# Sheriff 2020-07-14
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unsafe-url/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unset/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/no-referrer-when-downgrade/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/strict-origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/strict-origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/origin/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/same-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin-when-cross-origin/worker-classic.http.html [ Pass Timeout ]
-
-# Sheriff 2020-07-15
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/origin-when-cross-origin/worker-module.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/no-referrer-when-downgrade/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http-rp/unsafe-url/worker-classic.http.html [ Pass Timeout ]
-crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unset/worker-classic.http.html [ Pass Timeout ]
 
 # This test triggers existing leaky behavior, but this test also catches
 # a prior crash.
 crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
-
-# Sheriff 2020-10-08
-crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
 
 # Sheriff 2021-02-25
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
-
-# Sheriff 2021-05-03
-crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
 
 # Started failing after field trial testing configs were enabled.
 crbug.com/1219915 [ Linux ] editing/selection/context-menu-text-selection.html [ Failure ]

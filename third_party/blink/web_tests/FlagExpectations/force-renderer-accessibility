@@ -4,37 +4,6 @@
 # Expectations for --force-renderer-accessibility
 # crbug.com/1138028 tracks the removal of these failure expectations
 
-# Crashes
-crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
-virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
-
-# Slow
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Timeout ]
-crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Timeout ]
-
-# Intentional failures for focusless spatial navigation.
-# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
-# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
-#   and run without any accessibility, in which case the tests pass.
-#   See https://crrev.com/c/1620345.
-# * On bots with --force-rendferer-accessibiity, the tests will fail because of the check in
-#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
-#   As this is intentional it is good to test as well via --force-renderer-accessibility.
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Failure ]
-crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Failure ]
-
 # Unintentional failure
 external/wpt/accessibility/crashtests/serialize-with-no-document.html [ Skip ]
 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Skip ]
