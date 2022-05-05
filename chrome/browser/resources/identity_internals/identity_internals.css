@@ -11,17 +11,3 @@
 #token-list {
   width: 100%;
 }
-
-tr:nth-child(odd) {
-  background: rgb(239, 243, 255);
-}
-
-td.label {
-  font-weight: bold;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
-td.token-actions {
-  text-align: center;
-}

@@ -35,7 +35,8 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {!NodeList} Elements displaying token information.
    */
   getTokens: function() {
-    return document.querySelectorAll('#token-list > div');
+    return document.querySelector('#token-list')
+        .querySelectorAll('token-list-item');
   },
 
   /**
@@ -46,7 +47,7 @@ BaseIdentityInternalsWebUITest.prototype = {
   getExpirationTime: function(tokenEntry) {
     // Full-date format has 'at' between date and time in en-US, but
     // ECMAScript's Date.parse cannot grok it.
-    return Date.parse(tokenEntry.querySelector('.expiration-time')
+    return Date.parse(tokenEntry.shadowRoot.querySelector('.expiration-time')
         .innerText.replace(' at ', ' '));
   },
 
@@ -56,7 +57,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string} Extension Id of the token.
    */
   getExtensionId: function(tokenEntry) {
-    return tokenEntry.querySelector('.extension-id').innerText;
+    return tokenEntry.shadowRoot.querySelector('.extension-id').innerText;
   },
 
   /**
@@ -65,7 +66,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string} Account Id of the token.
    */
   getAccountId: function(tokenEntry) {
-    return tokenEntry.querySelector('.account-id').innerText;
+    return tokenEntry.shadowRoot.querySelector('.account-id').innerText;
   },
 
   /**
@@ -74,7 +75,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string} Extension Name of the token.
    */
   getExtensionName: function(tokenEntry) {
-    return tokenEntry.querySelector('.extension-name').innerText;
+    return tokenEntry.shadowRoot.querySelector('.extension-name').innerText;
   },
 
   /**
@@ -83,7 +84,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {HTMLButtonElement} Revoke button belonging related to the token.
    */
   getRevokeButton: function(tokenEntry) {
-    return tokenEntry.querySelector('.revoke-button');
+    return tokenEntry.shadowRoot.querySelector('.revoke-button');
   },
 
   /**
@@ -92,7 +93,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string} Token ID of the token.
    */
   getAccessToken: function(tokenEntry) {
-    return tokenEntry.querySelector('.access-token').innerText;
+    return tokenEntry.shadowRoot.querySelector('.access-token').innerText;
   },
 
   /**
@@ -101,7 +102,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string} Token status of the token.
    */
   getTokenStatus: function(tokenEntry) {
-    return tokenEntry.querySelector('.token-status').innerText;
+    return tokenEntry.shadowRoot.querySelector('.status').innerText;
   },
 
   /**
@@ -110,7 +111,7 @@ BaseIdentityInternalsWebUITest.prototype = {
    * @return {string[]} Token scopes of the token.
    */
   getScopes: function(tokenEntry) {
-    return tokenEntry.querySelector('.scope-list')
+    return tokenEntry.shadowRoot.querySelector('.scope-list')
         .innerHTML.split('<br>');
   },
 };
@@ -164,27 +165,31 @@ TEST_F('IdentityInternalsSingleTokenWebUITest', 'getAllTokens', function() {
 // correctly. They are implemented on the child class, because the parent does
 // not have any tokens to display.
 TEST_F('IdentityInternalsSingleTokenWebUITest', 'verifyGetters', function() {
-  const tokenListEntries = document.querySelectorAll('#token-list > div');
+  const tokenListEntries = document.querySelector('#token-list')
+      .querySelectorAll('token-list-item');
   const actualTokens = this.getTokens();
   assertEquals(tokenListEntries.length, actualTokens.length);
   assertEquals(tokenListEntries[0], actualTokens[0]);
   assertEquals(this.getExtensionName(tokenListEntries[0]),
-      tokenListEntries[0].querySelector('.extension-name').innerText);
+      tokenListEntries[0].shadowRoot.querySelector('.extension-name')
+      .innerText);
   assertEquals(this.getExtensionId(tokenListEntries[0]),
-      tokenListEntries[0].querySelector('.extension-id').innerText);
+      tokenListEntries[0].shadowRoot.querySelector('.extension-id').innerText);
   assertEquals(this.getAccountId(tokenListEntries[0]),
-      tokenListEntries[0].querySelector('.account-id').innerText);
+      tokenListEntries[0].shadowRoot.querySelector('.account-id').innerText);
   assertEquals(this.getAccessToken(tokenListEntries[0]),
-      tokenListEntries[0].querySelector('.access-token').innerText);
+      tokenListEntries[0].shadowRoot.querySelector('.access-token').innerText);
   assertEquals(this.getTokenStatus(tokenListEntries[0]),
-      tokenListEntries[0].querySelector('.token-status').innerText);
+      tokenListEntries[0].shadowRoot.querySelector('.status').innerText);
   // Full-date format has 'at' between date and time in en-US, but
   // ECMAScript's Date.parse cannot grok it.
   assertEquals(this.getExpirationTime(tokenListEntries[0]),
-      Date.parse(tokenListEntries[0].querySelector('.expiration-time')
+      Date.parse(
+          tokenListEntries[0].shadowRoot.querySelector('.expiration-time')
           .innerText.replace(' at ', ' ')));
   const scopes =
-      tokenListEntries[0].querySelector('.scope-list').innerHTML.split('<br>');
+      tokenListEntries[0].shadowRoot.querySelector('.scope-list')
+          .innerHTML.split('<br>');
   const actualScopes = this.getScopes(tokenListEntries[0]);
   assertEquals(scopes.length, actualScopes.length);
   for (let i = 0; i < scopes.length; i++) {

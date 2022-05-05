@@ -238,7 +238,8 @@
       <if expr="not is_android">
         <include name="IDR_IDENTITY_INTERNALS_HTML" file="resources\identity_internals\identity_internals.html" type="BINDATA" />
         <include name="IDR_IDENTITY_INTERNALS_CSS" file="resources\identity_internals\identity_internals.css" type="BINDATA" />
-        <include name="IDR_IDENTITY_INTERNALS_JS" file="resources\identity_internals\identity_internals.js" type="BINDATA" />
+        <include name="IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_JS" file="resources\identity_internals\identity_internals.js" type="BINDATA" />
+        <include name="IDR_IDENTITY_INTERNALS_TOKEN_LIST_ITEM_JS" file="${root_gen_dir}\chrome\browser\resources\identity_internals\token_list_item.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="_google_chrome">
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings_internal\pref_hash_seed.bin" type="BINDATA" />

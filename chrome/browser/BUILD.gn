@@ -7623,8 +7623,10 @@ grit("resources") {
         [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js" ]
   }
   if (!is_android) {
-    deps +=
-        [ "//chrome/browser/share/core/resources:make_share_targets_protobuf" ]
+    deps += [
+      "//chrome/browser/resources/identity_internals:web_components",
+      "//chrome/browser/share/core/resources:make_share_targets_protobuf",
+    ]
   }
   if (is_chromeos_ash) {
     deps += [

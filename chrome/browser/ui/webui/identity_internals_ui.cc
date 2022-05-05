@@ -319,9 +319,14 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
   html_source->AddResourcePath("identity_internals.css",
       IDR_IDENTITY_INTERNALS_CSS);
   html_source->AddResourcePath("identity_internals.js",
-      IDR_IDENTITY_INTERNALS_JS);
+                               IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_JS);
+  html_source->AddResourcePath("token_list_item.js",
+                               IDR_IDENTITY_INTERNALS_TOKEN_LIST_ITEM_JS);
   html_source->SetDefaultResource(IDR_IDENTITY_INTERNALS_HTML);
 
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
 
   web_ui->AddMessageHandler(
