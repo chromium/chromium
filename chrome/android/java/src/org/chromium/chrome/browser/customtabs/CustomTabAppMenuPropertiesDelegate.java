@@ -55,6 +55,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognito;
+    private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
@@ -69,7 +70,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
-            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
+            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
+            boolean isStartIconMenu) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, null, null, bookmarkBridgeSupplier);
         mVerifier = verifier;
@@ -80,6 +82,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mShowStar = showStar;
         mShowDownload = showDownload;
         mIsIncognito = isIncognito;
+        mIsStartIconMenu = isStartIconMenu;
     }
 
     @Override
@@ -261,5 +264,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             return mTitleToItemIdMap.get(title).intValue();
         }
         return AppMenuPropertiesDelegate.INVALID_ITEM_ID;
+    }
+
+    @Override
+    public boolean isMenuIconAtStart() {
+        return mIsStartIconMenu;
     }
 }

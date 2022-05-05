@@ -982,6 +982,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 getUmaEnumForMenuItem(menuItemId), AppMenuHighlightItem.NUM_ENTRIES);
     }
 
+    @Override
+    public boolean isMenuIconAtStart() {
+        return false;
+    }
+
     private int getUmaEnumForMenuItem(@Nullable @IdRes Integer menuItemId) {
         if (menuItemId == null) return AppMenuHighlightItem.UNKNOWN;
 

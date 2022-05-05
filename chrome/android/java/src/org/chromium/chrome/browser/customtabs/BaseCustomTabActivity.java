@@ -366,6 +366,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
+        // Menu icon is at the other side of the toolbar relative to the close button, so it will be
+        // at the start when the close button is at the end.
+        boolean isMenuIconAtStart = mIntentDataProvider.getCloseButtonPosition()
+                == BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
         return new CustomTabAppMenuPropertiesDelegate(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
                 getWindow().getDecorView(), mBookmarkBridgeSupplier, mVerifier,
@@ -373,7 +377,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.isOpenedByChrome(),
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
-                mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito());
+                mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito(),
+                isMenuIconAtStart);
     }
 
     @Override

@@ -219,7 +219,7 @@ class AppMenuHandlerImpl
         }
         mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
                 footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
-                customViewBinders);
+                customViewBinders, mDelegate.isMenuIconAtStart());
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");

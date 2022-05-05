@@ -170,4 +170,9 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     protected int getAppMenuLayoutId() {
         return R.menu.test_menu;
     }
+
+    @Override
+    public boolean isMenuIconAtStart() {
+        return false;
+    }
 }

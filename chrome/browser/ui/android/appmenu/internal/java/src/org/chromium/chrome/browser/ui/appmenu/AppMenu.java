@@ -173,12 +173,14 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      * @param groupDividerResourceId     The resource id of divider menu items. This will be used to
      *         determine the number of dividers that appear in the menu.
      * @param customViewBinders     See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
+     * @param isMenuIconAtStart     Whether the menu is being shown from a menu icon positioned at
+     *                              the start.
      */
     void show(Context context, final View anchorView, boolean isByPermanentButton,
             int screenRotation, Rect visibleDisplayFrame, int screenHeight,
             @IdRes int footerResourceId, @IdRes int headerResourceId,
             @IdRes int groupDividerResourceId, Integer highlightedItemId,
-            @Nullable List<CustomViewBinder> customViewBinders) {
+            @Nullable List<CustomViewBinder> customViewBinders, boolean isMenuIconAtStart) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -219,7 +221,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
-        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.EndIconMenuAnim);
+        if (!isByPermanentButton) {
+            mPopup.setAnimationStyle(
+                    isMenuIconAtStart ? R.style.StartIconMenuAnim : R.style.EndIconMenuAnim);
+        }
 
         // Turn off window animations for low end devices.
         if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);

@@ -148,4 +148,7 @@ public interface AppMenuPropertiesDelegate {
      * Called to record that user clicked on highlighted menu item {@code menuItemId}.
      */
     void recordHighlightedMenuItemClicked(@Nullable @IdRes Integer menuItemId);
+
+    /** Returns whether the menu icon is positioned at the start. */
+    boolean isMenuIconAtStart();
 }
