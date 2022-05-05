@@ -46,7 +46,7 @@ class BuilderList(object):
                 port version specifier like "Mac10.15" and and a valid build
                 type specifier like "Release".
             "is_try_builder": Whether the builder is a trybot.
-            "master": The master name of the builder. It is deprecated, but still required
+            "main": The main name of the builder. It is deprecated, but still required
                 by test-results.appspot.com API."
             "has_webdriver_tests": Whether webdriver_tests_suite runs on this builder.
 
@@ -127,8 +127,8 @@ class BuilderList(object):
     def bucket_for_builder(self, builder_name):
         return self._builders[builder_name].get('bucket', '')
 
-    def master_for_builder(self, builder_name):
-        return self._builders[builder_name].get('master', '')
+    def main_for_builder(self, builder_name):
+        return self._builders[builder_name].get('main', '')
 
     def has_webdriver_tests_for_builder(self, builder_name):
         return self._builders[builder_name].get('has_webdriver_tests')

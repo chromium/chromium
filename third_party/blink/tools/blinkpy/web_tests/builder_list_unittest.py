@@ -86,7 +86,7 @@ class BuilderListTest(unittest.TestCase):
                 'specifiers': ['c', 'Release'],
                 'is_try_builder': True,
                 'is_cq_builder': True,
-                'master': "luci",
+                'main': "luci",
                 'has_webdriver_tests': True
             },
             'Flag Specific A': {
@@ -167,13 +167,13 @@ class BuilderListTest(unittest.TestCase):
         builders = self.sample_builder_list()
         self.assertEqual('bucket.a', builders.bucket_for_builder('CQ Try A'))
 
-    def test_master_for_builder_default_master(self):
+    def test_main_for_builder_default_main(self):
         builders = self.sample_builder_list()
-        self.assertEqual('', builders.master_for_builder('Try A'))
+        self.assertEqual('', builders.main_for_builder('Try A'))
 
-    def test_master_for_builder_configured_master(self):
+    def test_main_for_builder_configured_main(self):
         builders = self.sample_builder_list()
-        self.assertEqual('luci', builders.master_for_builder('CQ Try C'))
+        self.assertEqual('luci', builders.main_for_builder('CQ Try C'))
 
     def test_has_webdriver_tests_for_builder_default_value(self):
         builders = self.sample_builder_list()

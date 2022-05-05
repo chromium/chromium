@@ -387,7 +387,7 @@ class WPTExpectationsUpdater(object):
 
         webdriver_test_results = []
         if has_webdriver_tests:
-            mst = self.host.builders.master_for_builder(build.builder_name)
+            mst = self.host.builders.main_for_builder(build.builder_name)
             webdriver_test_results.append(
                 self.host.results_fetcher.fetch_webdriver_test_results(
                     build, mst))

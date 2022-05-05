@@ -40,12 +40,12 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
     def fake_builder_list(self):
         return BuilderList({
             'Dummy builder name': {
-                'master': 'dummy.master',
+                'main': 'dummy.main',
                 'port_name': 'dummy-port',
                 'specifiers': ['dummy', 'release'],
             },
             'Dummy tryserver builder name': {
-                'master': 'tryserver.dummy.master',
+                'main': 'tryserver.dummy.main',
                 'port_name': 'dummy-port',
                 'specifiers': ['dummy', 'release'],
                 "is_try_builder": True
@@ -62,20 +62,20 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
         self.assertEqual(
             factory._results_url_for_builder('Dummy builder name'),
             'https://test-results.appspot.com/testfile?testtype=blink_web_tests'
-            '&name=results-small.json&master=dummy.master&builder=Dummy%20builder%20name')
+            '&name=results-small.json&master=dummy.main&builder=Dummy%20builder%20name')
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy tryserver builder name'),
             'https://test-results.appspot.com/testfile?'
             'testtype=blink_web_tests'
-            '&name=results-small.json&master=tryserver.dummy.master'
+            '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy tryserver builder name', True),
             'https://test-results.appspot.com/testfile?'
             'testtype=blink_web_tests%20%28with%20patch%29'
-            '&name=results-small.json&master=tryserver.dummy.master'
+            '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
     def test_results_url_for_builder_with_custom_step_name(self):
@@ -85,20 +85,20 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
         self.assertEqual(
             factory._results_url_for_builder('Dummy builder name'),
             'https://test-results.appspot.com/testfile?testtype=weblayer_shell_wpt'
-            '&name=results-small.json&master=dummy.master&builder=Dummy%20builder%20name')
+            '&name=results-small.json&master=dummy.main&builder=Dummy%20builder%20name')
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy tryserver builder name'),
             'https://test-results.appspot.com/testfile?'
             'testtype=weblayer_shell_wpt'
-            '&name=results-small.json&master=tryserver.dummy.master'
+            '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
         self.assertEqual(
             factory._results_url_for_builder('Dummy tryserver builder name', True),
             'https://test-results.appspot.com/testfile?'
             'testtype=weblayer_shell_wpt%20%28with%20patch%29'
-            '&name=results-small.json&master=tryserver.dummy.master'
+            '&name=results-small.json&master=tryserver.dummy.main'
             '&builder=Dummy%20tryserver%20builder%20name')
 
     def test_expectations_for_builder(self):

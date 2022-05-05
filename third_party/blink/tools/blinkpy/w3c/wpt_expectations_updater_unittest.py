@@ -50,7 +50,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Trusty': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
-                'master': 'tryserver.blink',
+                'main': 'tryserver.blink',
                 'has_webdriver_tests': True,
                 'is_try_builder': True,
             },
@@ -1575,7 +1575,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Trusty': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
-                'master': 'tryserver.blink',
+                'main': 'tryserver.blink',
                 'has_webdriver_tests': True,
                 'is_try_builder': True,
             },
@@ -1658,7 +1658,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Trusty': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
-                'master': 'tryserver.blink',
+                'main': 'tryserver.blink',
                 'has_webdriver_tests': True,
                 'is_try_builder': True,
             },
