@@ -86,8 +86,7 @@ VideoDecoder* DecoderTemplateTest<VideoDecoder>::CreateDecoder(
     ScriptState* script_state,
     const VideoDecoderInit* init,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<VideoDecoder>(script_state, init,
-                                            exception_state);
+  return VideoDecoder::Create(script_state, init, exception_state);
 }
 
 using DecoderTemplateImplementations =
