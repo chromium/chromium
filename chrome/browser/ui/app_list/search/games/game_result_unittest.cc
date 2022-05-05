@@ -50,46 +50,8 @@ TEST_F(GameResultTest, Basic) {
                     apps_result, 0.6, u"SomeGame");
 
   EXPECT_EQ(result.title(), u"Title");
-
-  EXPECT_EQ(StringFromTextVector(result.details_text_vector()),
-            base::StrCat({u"SourceName - ",
-                          l10n_util::GetStringUTF16(
-                              IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX),
-                          u" A, B, C"}));
-
-  EXPECT_EQ(result.accessible_name(),
-            base::StrCat({u"Title, SourceName, ",
-                          l10n_util::GetStringUTF16(
-                              IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX),
-                          u" A, B, C"}));
-}
-
-TEST_F(GameResultTest, NoPlatforms) {
-  auto* app_discovery_service =
-      apps::AppDiscoveryServiceFactory::GetForProfile(profile_.get());
-
-  apps::Result apps_result1(
-      apps::AppSource::kGames, "12345", u"Title",
-      std::make_unique<apps::GameExtras>(
-          absl::make_optional(std::vector<std::u16string>({})), u"SourceName",
-          u"TestGamePublisher", base::FilePath("/icons/test.png"),
-          GURL("https://game.com/game")));
-
-  GameResult result1(profile_.get(), &list_controller_, app_discovery_service,
-                     apps_result1, 0.6, u"SomeGame");
-
-  EXPECT_EQ(StringFromTextVector(result1.details_text_vector()), u"SourceName");
-
-  apps::Result apps_result2(
-      apps::AppSource::kGames, "12345", u"Title",
-      std::make_unique<apps::GameExtras>(
-          absl::nullopt, u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
-
-  GameResult result2(profile_.get(), &list_controller_, app_discovery_service,
-                     apps_result1, 0.6, u"SomeGame");
-
-  EXPECT_EQ(StringFromTextVector(result2.details_text_vector()), u"SourceName");
+  EXPECT_EQ(StringFromTextVector(result.details_text_vector()), u"SourceName");
+  EXPECT_EQ(result.accessible_name(), u"Title, SourceName");
 }
 
 }  // namespace app_list

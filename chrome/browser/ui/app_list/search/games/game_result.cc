@@ -14,7 +14,6 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
@@ -31,10 +30,6 @@
 namespace app_list {
 namespace {
 
-using OverflowBehavior = ash::SearchResultTextItem::OverflowBehavior;
-
-constexpr char16_t kPlatformDelimiter[] = u", ";
-constexpr char16_t kDetailsDelimiter[] = u" - ";
 constexpr char16_t kA11yDelimiter[] = u", ";
 
 bool IsDarkModeEnabled() {
@@ -104,45 +99,16 @@ void GameResult::Open(int event_flags) {
 
 void GameResult::UpdateText(const apps::Result& game,
                             const std::u16string& query) {
-  const apps::GameExtras* extras = game.GetSourceExtras()->AsGameExtras();
-
   SetTitle(game.GetAppTitle());
 
-  std::vector<ash::SearchResultTextItem> details;
-  std::vector<std::u16string> accessible_name;
+  std::u16string source = game.GetSourceExtras()->AsGameExtras()->GetSource();
+  ash::SearchResultTextItem details_text =
+      CreateStringTextItem(source).SetOverflowBehavior(
+          ash::SearchResultTextItem::OverflowBehavior::kNoElide);
+  SetDetailsTextVector({details_text});
 
-  accessible_name.push_back(title());
-  accessible_name.push_back(kA11yDelimiter);
-
-  std::u16string source = extras->GetSource();
-  details.push_back(CreateStringTextItem(source).SetOverflowBehavior(
-      OverflowBehavior::kNoElide));
-  accessible_name.push_back(source);
-
-  const auto& platforms = extras->GetPlatforms();
-  if (platforms && !platforms->empty()) {
-    std::u16string platforms_string =
-        base::JoinString(platforms.value(), kPlatformDelimiter);
-
-    details.push_back(CreateStringTextItem(kDetailsDelimiter)
-                          .SetOverflowBehavior(OverflowBehavior::kHide));
-    details.push_back(
-        CreateStringTextItem(IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX)
-            .SetOverflowBehavior(OverflowBehavior::kHide));
-    details.push_back(CreateStringTextItem(u" ").SetOverflowBehavior(
-        OverflowBehavior::kHide));
-    details.push_back(CreateStringTextItem(platforms_string)
-                          .SetOverflowBehavior(OverflowBehavior::kHide));
-
-    accessible_name.push_back(kA11yDelimiter);
-    accessible_name.push_back(
-        l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX));
-    accessible_name.push_back(u" ");
-    accessible_name.push_back(platforms_string);
-  }
-
-  SetDetailsTextVector(details);
-  SetAccessibleName(base::StrCat(accessible_name));
+  SetAccessibleName(
+      base::JoinString({game.GetAppTitle(), source}, kA11yDelimiter));
 }
 
 void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
