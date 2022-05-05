@@ -66,8 +66,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   // Retrieves all buckets for host from QuotaDatabase and requests bucket usage
   // from each registered client. Returns cached bucket usage if one exists for
   // a bucket.
+  // TODO(crbug/1202325): Remove once all usages move to
+  // GetStorageKeyUsageWithBreakdown.
   void GetHostUsageWithBreakdown(const std::string& host,
                                  UsageWithBreakdownCallback callback);
+
+  // Retrieves all buckets for a `storage_key` from QuotaDatabase and requests
+  // bucket usage from each registered client. Returns cached bucket usage if
+  // one exists for a bucket.
+  void GetStorageKeyUsageWithBreakdown(const blink::StorageKey& storage_key,
+                                       UsageWithBreakdownCallback callback);
 
   // Requests bucket usage from each registered client. Returns cached bucket
   // usage if one exists for a bucket.
@@ -116,6 +124,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void DidGetBucketsForType(QuotaErrorOr<std::set<BucketLocator>> result);
   void DidGetBucketsForHost(const std::string& host,
                             QuotaErrorOr<std::set<BucketLocator>> result);
+  void DidGetBucketsForStorageKey(const blink::StorageKey& storage_key,
+                                  QuotaErrorOr<std::set<BucketLocator>> result);
   void DidGetBucketForUsage(QuotaClientType client_type,
                             int64_t delta,
                             QuotaErrorOr<BucketInfo> result);
@@ -133,6 +143,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void FinallySendGlobalUsage(std::unique_ptr<AccumulateInfo> info);
   void FinallySendHostUsageWithBreakdown(std::unique_ptr<AccumulateInfo> info,
                                          const std::string& host);
+  void FinallySendStorageKeyUsageWithBreakdown(
+      std::unique_ptr<AccumulateInfo> info,
+      const blink::StorageKey& storage_key);
   void FinallySendBucketUsageWithBreakdown(std::unique_ptr<AccumulateInfo> info,
                                            const BucketLocator& bucket);
 
@@ -150,6 +163,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   std::vector<UsageCallback> global_usage_callbacks_;
   std::map<std::string, std::vector<UsageWithBreakdownCallback>>
       host_usage_callbacks_;
+  std::map<blink::StorageKey, std::vector<UsageWithBreakdownCallback>>
+      storage_key_usage_callbacks_;
   std::map<BucketLocator, std::vector<UsageWithBreakdownCallback>>
       bucket_usage_callbacks_;
 

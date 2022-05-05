@@ -144,6 +144,15 @@ class UsageTrackerTest : public testing::Test {
   }
 
   std::pair<int64_t, blink::mojom::UsageBreakdownPtr>
+  GetStorageKeyUsageWithBreakdown(const blink::StorageKey& storage_key) {
+    base::test::TestFuture<int64_t, blink::mojom::UsageBreakdownPtr> future;
+    usage_tracker_->GetStorageKeyUsageWithBreakdown(storage_key,
+                                                    future.GetCallback());
+    return std::make_pair(future.Get<0>(),
+                          std::move(std::get<1>(future.Take())));
+  }
+
+  std::pair<int64_t, blink::mojom::UsageBreakdownPtr>
   GetBucketUsageWithBreakdown(const BucketLocator& bucket) {
     base::test::TestFuture<int64_t, blink::mojom::UsageBreakdownPtr> future;
     usage_tracker_->GetBucketUsageWithBreakdown(bucket, future.GetCallback());
@@ -224,6 +233,8 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   int64_t unlimited_usage = 0;
   blink::mojom::UsageBreakdownPtr host_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
+  blink::mojom::UsageBreakdownPtr storage_key_usage_breakdown_expected =
+      blink::mojom::UsageBreakdown::New();
   blink::mojom::UsageBreakdownPtr bucket_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
   GetGlobalUsage(&usage, &unlimited_usage);
@@ -245,6 +256,13 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
       GetHostUsageWithBreakdown(host);
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown_expected->fileSystem = 100;
+  std::pair<int64_t, blink::mojom::UsageBreakdownPtr>
+      storage_key_usage_breakdown =
+          GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(100, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown_expected->fileSystem = 100;
   std::pair<int64_t, blink::mojom::UsageBreakdownPtr> bucket_usage_breakdown =
       GetBucketUsageWithBreakdown(bucket);
@@ -258,6 +276,10 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   host_usage_breakdown = GetHostUsageWithBreakdown(host);
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown = GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(100, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown = GetBucketUsageWithBreakdown(bucket);
   EXPECT_EQ(100, bucket_usage_breakdown.first);
   EXPECT_EQ(bucket_usage_breakdown_expected, bucket_usage_breakdown.second);
@@ -269,6 +291,10 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   GetHostUsageWithBreakdown(host);
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(100, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   GetBucketUsageWithBreakdown(bucket);
   EXPECT_EQ(100, bucket_usage_breakdown.first);
   EXPECT_EQ(bucket_usage_breakdown_expected, bucket_usage_breakdown.second);
@@ -278,6 +304,8 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   int64_t usage = 0;
   int64_t unlimited_usage = 0;
   blink::mojom::UsageBreakdownPtr host_usage_breakdown_expected =
+      blink::mojom::UsageBreakdown::New();
+  blink::mojom::UsageBreakdownPtr storage_key_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
   blink::mojom::UsageBreakdownPtr bucket_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
@@ -297,6 +325,13 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
       GetHostUsageWithBreakdown(host);
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown_expected->fileSystem = 100;
+  std::pair<int64_t, blink::mojom::UsageBreakdownPtr>
+      storage_key_usage_breakdown =
+          GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(100, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown_expected->fileSystem = 100;
   std::pair<int64_t, blink::mojom::UsageBreakdownPtr> bucket_usage_breakdown =
       GetBucketUsageWithBreakdown(bucket);
@@ -310,6 +345,10 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   host_usage_breakdown = GetHostUsageWithBreakdown(host);
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown = GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(100, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown = GetBucketUsageWithBreakdown(bucket);
   EXPECT_EQ(100, bucket_usage_breakdown.first);
   EXPECT_EQ(bucket_usage_breakdown_expected, bucket_usage_breakdown.second);
@@ -326,6 +365,11 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   host_usage_breakdown_expected->fileSystem = 400;
   EXPECT_EQ(400, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown = GetStorageKeyUsageWithBreakdown(storage_key);
+  storage_key_usage_breakdown_expected->fileSystem = 400;
+  EXPECT_EQ(400, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown = GetBucketUsageWithBreakdown(bucket);
   bucket_usage_breakdown_expected->fileSystem = 400;
   EXPECT_EQ(400, bucket_usage_breakdown.first);
@@ -338,6 +382,10 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   host_usage_breakdown = GetHostUsageWithBreakdown(host);
   EXPECT_EQ(400, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown = GetStorageKeyUsageWithBreakdown(storage_key);
+  EXPECT_EQ(400, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown = GetBucketUsageWithBreakdown(bucket);
   EXPECT_EQ(400, host_usage_breakdown.first);
   EXPECT_EQ(bucket_usage_breakdown_expected, bucket_usage_breakdown.second);
@@ -352,6 +400,11 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   host_usage_breakdown_expected->fileSystem = 500;
   EXPECT_EQ(500, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
+  storage_key_usage_breakdown = GetStorageKeyUsageWithBreakdown(storage_key);
+  storage_key_usage_breakdown_expected->fileSystem = 500;
+  EXPECT_EQ(500, storage_key_usage_breakdown.first);
+  EXPECT_EQ(storage_key_usage_breakdown_expected,
+            storage_key_usage_breakdown.second);
   bucket_usage_breakdown = GetBucketUsageWithBreakdown(bucket);
   bucket_usage_breakdown_expected->fileSystem = 500;
   EXPECT_EQ(500, bucket_usage_breakdown.first);
