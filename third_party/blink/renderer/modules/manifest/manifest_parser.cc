@@ -42,6 +42,7 @@ namespace {
 static constexpr char kUrlHandlerWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
 static wtf_size_t kMaxUrlHandlersSize = 10;
+static wtf_size_t kMaxShortcutsSize = 10;
 static wtf_size_t kMaxOriginLength = 2000;
 
 // The max number of file extensions an app can handle via the File Handling
@@ -741,6 +742,14 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
   }
 
   for (wtf_size_t i = 0; i < shortcuts_list->size(); ++i) {
+    if (i == kMaxUrlHandlersSize) {
+      AddErrorInfo("property 'shortcuts' contains more than " +
+                   String::Number(kMaxShortcutsSize) +
+                   " valid elements, only the first " +
+                   String::Number(kMaxShortcutsSize) + " are parsed.");
+      break;
+    }
+
     JSONObject* shortcut_object = JSONObject::Cast(shortcuts_list->at(i));
     if (!shortcut_object)
       continue;

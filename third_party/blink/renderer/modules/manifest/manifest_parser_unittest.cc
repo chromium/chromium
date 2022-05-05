@@ -1554,6 +1554,73 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Validate only the first 10 shortcuts are parsed. The following manifest
+  // specifies 11 shortcuts, so the last one should not be in the result.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "shortcuts": [
+            {
+              "name": "1",
+              "url": "1"
+            },
+            {
+              "name": "2",
+              "url": "2"
+            },
+            {
+              "name": "3",
+              "url": "3"
+            },
+            {
+              "name": "4",
+              "url": "4"
+            },
+            {
+              "name": "5",
+              "url": "5"
+            },
+            {
+              "name": "6",
+              "url": "6"
+            },
+            {
+              "name": "7",
+              "url": "7"
+            },
+            {
+              "name": "8",
+              "url": "8"
+            },
+            {
+              "name": "9",
+              "url": "9"
+            },
+            {
+              "name": "10",
+              "url": "10"
+            },
+            {
+              "name": "11",
+              "url": "11"
+            }
+          ]
+        })");
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'shortcuts' contains more than 10 valid elements, "
+        "only the first 10 are parsed.",
+        errors()[0]);
+
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    auto& shortcuts = manifest->shortcuts;
+    EXPECT_EQ(shortcuts.size(), 10u);
+    EXPECT_EQ(shortcuts[9]->name, "10");
+    EXPECT_EQ(shortcuts[9]->url.GetString(), "http://foo.com/10");
+  }
 }
 
 TEST_F(ManifestParserTest, ShortcutNameParseRules) {
