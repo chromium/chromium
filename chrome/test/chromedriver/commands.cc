@@ -100,11 +100,11 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
   (*session_remaining_count)--;
 
   if (value) {
-    std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
-    session->GetDict().Set("id", session_id);
-    session->GetDict().Set("capabilities",
-                           base::Value::FromUniquePtrValue(std::move(value)));
-    session_list->Append(std::move(session));
+    base::Value::Dict session;
+    session.Set("id", session_id);
+    session.Set("capabilities",
+                base::Value::FromUniquePtrValue(std::move(value)));
+    session_list->GetList().Append(std::move(session));
   }
 
   if (!*session_remaining_count) {

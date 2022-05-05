@@ -2324,10 +2324,11 @@ Status ExecuteGetCookies(Session* session,
   Status status = GetVisibleCookies(session, web_view, &cookies);
   if (status.IsError())
     return status;
-  std::unique_ptr<base::ListValue> cookie_list(new base::ListValue());
+  auto cookie_list = std::make_unique<base::Value>(base::Value::Type::LIST);
   for (std::list<Cookie>::const_iterator it = cookies.begin();
        it != cookies.end(); ++it) {
-    cookie_list->Append(CreateDictionaryFrom(*it));
+    cookie_list->GetList().Append(
+        base::Value::FromUniquePtrValue(CreateDictionaryFrom(*it)));
   }
   *value = std::move(cookie_list);
   return Status(kOk);

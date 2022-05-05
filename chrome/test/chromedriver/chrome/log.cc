@@ -38,39 +38,34 @@ void TruncateString(std::string* data) {
   }
 }
 
-std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
+base::Value SmartDeepCopy(const base::Value* value) {
   const size_t kMaxChildren = 20;
-  const base::DictionaryValue* dict = NULL;
-  if (value->GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> dict_copy(
-        new base::DictionaryValue());
-    for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-         it.Advance()) {
-      if (dict_copy->DictSize() >= kMaxChildren - 1) {
-        dict_copy->SetKey("~~~", base::Value("..."));
+  if (value->is_dict()) {
+    base::Value::Dict dict_copy;
+    for (auto [key, value] : value->GetDict()) {
+      if (dict_copy.size() >= kMaxChildren - 1) {
+        dict_copy.Set("~~~", "...");
         break;
       }
-      const base::Value* child = dict->FindKey(it.key());
-      dict_copy->SetKey(it.key(),
-                        base::Value::FromUniquePtrValue(SmartDeepCopy(child)));
+      dict_copy.Set(key, SmartDeepCopy(&value));
     }
-    return std::move(dict_copy);
+    return base::Value(std::move(dict_copy));
   } else if (value->is_list()) {
-    std::unique_ptr<base::ListValue> list_copy(new base::ListValue());
-    for (const base::Value& child : value->GetListDeprecated()) {
-      if (list_copy->GetListDeprecated().size() >= kMaxChildren - 1) {
-        list_copy->Append("...");
+    base::Value::List list_copy;
+    for (const base::Value& child : value->GetList()) {
+      if (list_copy.size() >= kMaxChildren - 1) {
+        list_copy.Append("...");
         break;
       }
-      list_copy->Append(SmartDeepCopy(&child));
+      list_copy.Append(SmartDeepCopy(&child));
     }
-    return std::move(list_copy);
+    return base::Value(std::move(list_copy));
   } else if (value->is_string()) {
     std::string data = value->GetString();
     TruncateString(&data);
-    return std::make_unique<base::Value>(data);
+    return base::Value(std::move(data));
   }
-  return base::Value::ToUniquePtrValue(value->Clone());
+  return value->Clone();
 }
 
 }  // namespace
@@ -95,8 +90,11 @@ std::string PrettyPrintValue(const base::Value& value) {
 }
 
 std::string FormatValueForDisplay(const base::Value& value) {
-  return PrettyPrintValue(Log::truncate_logged_params ? *SmartDeepCopy(&value)
-                                                      : value);
+  if (Log::truncate_logged_params) {
+    return PrettyPrintValue(SmartDeepCopy(&value));
+  } else {
+    return PrettyPrintValue(value);
+  }
 }
 
 std::string FormatJsonForDisplay(const std::string& json) {
