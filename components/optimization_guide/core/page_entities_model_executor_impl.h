@@ -109,13 +109,6 @@ class PageEntitiesModelExecutorImpl : public OptimizationTargetModelObserver,
   PageEntitiesModelExecutorImpl& operator=(
       const PageEntitiesModelExecutorImpl&) = delete;
 
-  // TODO(crbug.com/1278828): Remove once src-internal is updated.
-  void HumanReadableExecuteModelWithInput(
-      const std::string& text,
-      PageEntitiesMetadataModelExecutedCallback callback) {
-    ExecuteModelWithInput(text, std::move(callback));
-  }
-
   // PageEntitiesModelExecutor:
   void GetMetadataForEntityId(
       const std::string& entity_id,
