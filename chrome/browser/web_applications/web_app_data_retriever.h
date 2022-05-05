@@ -59,8 +59,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
   WebAppDataRetriever& operator=(const WebAppDataRetriever&) = delete;
   ~WebAppDataRetriever() override;
 
-  // Runs |callback| with the result of retrieving the WebAppInstallInfo from
-  // |web_contents|.
+  // Runs `callback` with a `WebAppInstallInfo` generated from the
+  // `web_contents`. This tries to populated the following fields based on both
+  // the `web_contents` and it's `WebPageMetadata`: title, description,
+  // start_url, icons, and mobile_capable.
   virtual void GetWebAppInstallInfo(content::WebContents* web_contents,
                                     GetWebAppInstallInfoCallback callback);
 

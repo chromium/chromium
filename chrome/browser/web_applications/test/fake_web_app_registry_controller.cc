@@ -40,7 +40,7 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
       /*protocol_handler_manager=*/nullptr,
       /*url_handler_manager=*/nullptr);
 
-  command_manager_ = std::make_unique<WebAppCommandManager>();
+  command_manager_ = std::make_unique<WebAppCommandManager>(profile);
 
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
       mutable_registrar_.get(), mock_processor_.CreateForwardingProcessor());

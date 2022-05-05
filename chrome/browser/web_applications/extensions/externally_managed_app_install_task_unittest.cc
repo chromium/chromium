@@ -320,7 +320,7 @@ class ExternallyManagedAppInstallTaskTest
     auto ui_manager = std::make_unique<FakeWebAppUiManager>();
     ui_manager_ = ui_manager.get();
 
-    auto command_manager = std::make_unique<WebAppCommandManager>();
+    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
 
     auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
     sync_bridge->SetSubsystems(&provider->GetDatabaseFactory(),

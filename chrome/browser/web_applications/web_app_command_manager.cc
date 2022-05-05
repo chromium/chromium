@@ -15,6 +15,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_task.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -51,7 +53,8 @@ WebAppCommandManager::CommandState::CommandState(
 
 WebAppCommandManager::CommandState::~CommandState() = default;
 
-WebAppCommandManager::WebAppCommandManager() = default;
+WebAppCommandManager::WebAppCommandManager(Profile* profile)
+    : profile_(profile) {}
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -100,12 +103,17 @@ void WebAppCommandManager::StartCommand(WebAppCommand* command) {
   DCHECK(command_state_it != commands_.end());
   DCHECK(!command->IsStarted());
 #endif
+  if (command->lock().IncludesSharedWebContents())
+    command->shared_web_contents_ = EnsureWebContentsCreated();
   command->Start(this);
 }
 
 void WebAppCommandManager::Shutdown() {
-  DCHECK(!is_in_shutdown_);
+  // Ignore duplicate shutdowns for unittests.
+  if (is_in_shutdown_)
+    return;
   is_in_shutdown_ = true;
+  shared_web_contents_.reset();
   AddValueToLog(base::Value("Shutdown has begun"));
 
   // Create a copy of commands to call `OnShutdown` because commands can call
@@ -193,6 +201,13 @@ void WebAppCommandManager::AddValueToLog(base::Value value) {
   command_debug_log_.push_front(std::move(value));
   if (command_debug_log_.size() > kMaxLogLength)
     command_debug_log_.resize(kMaxLogLength);
+}
+
+content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {
+  DCHECK(profile_);
+  if (!shared_web_contents_)
+    shared_web_contents_ = WebAppInstallTask::CreateWebContents(profile_);
+  return shared_web_contents_.get();
 }
 
 }  // namespace web_app

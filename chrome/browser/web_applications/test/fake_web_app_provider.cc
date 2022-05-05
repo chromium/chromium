@@ -226,7 +226,7 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   SetSystemWebAppManager(
       std::make_unique<web_app::TestSystemWebAppManager>(profile_));
 
-  SetCommandManager(std::make_unique<WebAppCommandManager>());
+  SetCommandManager(std::make_unique<WebAppCommandManager>(profile_));
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));

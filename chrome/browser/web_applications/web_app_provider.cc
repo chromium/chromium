@@ -290,7 +290,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), std::move(url_handler_manager));
   }
 
-  command_manager_ = std::make_unique<WebAppCommandManager>();
+  command_manager_ = std::make_unique<WebAppCommandManager>(profile);
 
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);

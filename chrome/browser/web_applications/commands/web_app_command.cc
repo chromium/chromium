@@ -78,6 +78,28 @@ WebAppCommandLock WebAppCommandLock::CreateForAppLock(
 }
 
 // static
+WebAppCommandLock WebAppCommandLock::CreateForAppAndWebContentsLock(
+    base::flat_set<AppId> app_ids) {
+  LockRequestSet lock_requests;
+  lock_requests.emplace(
+      static_cast<int>(LockLevel::kStatic),
+      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kFullSystem)),
+      content::LeveledLockManager::LockType::kShared);
+
+  lock_requests.emplace(static_cast<int>(LockLevel::kStatic),
+                        StringToLockRange(base::NumberToString(
+                            KeysOnStaticLevel::kBackgroundWebContents)),
+                        content::LeveledLockManager::LockType::kExclusive);
+  for (const auto& app_id : app_ids) {
+    lock_requests.emplace(static_cast<int>(LockLevel::kApp),
+                          StringToLockRange(app_id),
+                          content::LeveledLockManager::LockType::kExclusive);
+  }
+  return WebAppCommandLock(app_ids, LockType::kAppAndWebContents,
+                           std::move(lock_requests));
+}
+
+// static
 WebAppCommandLock WebAppCommandLock::CreateForNoOpLock() {
   LockRequestSet lock_requests;
   lock_requests.emplace(
@@ -93,11 +115,24 @@ bool WebAppCommandLock::IsAppLocked(const AppId& app_id) const {
       return true;
     case LockType::kBackgroundWebContents:
       return false;
+    case LockType::kAppAndWebContents:
+      return app_ids_.contains(app_id);
     case LockType::kApp:
       return app_ids_.contains(app_id);
     case LockType::kNoOp:
       return false;
-      NOTREACHED();
+  }
+}
+
+bool WebAppCommandLock::IncludesSharedWebContents() const {
+  switch (lock_type_) {
+    case LockType::kBackgroundWebContents:
+    case LockType::kAppAndWebContents:
+      return true;
+    case LockType::kFullSystem:
+    case LockType::kApp:
+    case LockType::kNoOp:
+      return false;
   }
 }
 
