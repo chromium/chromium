@@ -152,8 +152,6 @@ CONTENT_EXPORT extern const base::Feature kNavigationRequestPreconnect;
 CONTENT_EXPORT extern const base::Feature kNavigationThreadingOptimizations;
 CONTENT_EXPORT extern const base::Feature kNetworkQualityEstimatorWebHoldback;
 CONTENT_EXPORT extern const base::Feature kNetworkServiceInProcess;
-CONTENT_EXPORT extern const base::Feature
-    kNetworkServiceUsesDisplayThreadPriority;
 CONTENT_EXPORT extern const base::Feature kNeverSlowMode;
 CONTENT_EXPORT extern const base::Feature kNotificationContentImage;
 CONTENT_EXPORT extern const base::Feature kNotificationTriggers;
