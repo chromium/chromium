@@ -8477,7 +8477,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled"
+                    "name": "Enabled,max_queue_time:75ms,_V2"
                 }
             ]
         }
