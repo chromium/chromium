@@ -99,7 +99,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
         self.options.browser_apk)
     self.browser_activity_name = (self.options.browser_activity_name or
                                   self.default_browser_activity_name)
-    self.log_mon = None
     self.layout_test_results_subdir = None
     self.test_specific_browser_args = []
     if self.options.webview_provider_apk:
@@ -156,13 +155,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     # Run below commands to ensure that the device can download a seed
     self._device.adb.Emu(['power', 'ac', 'on'])
     self._device.RunShellCommand(['svc', 'wifi', 'enable'])
-    self.log_mon = logcat_monitor.LogcatMonitor(
-          self._device.adb,
-          output_file=os.path.join(
-              os.path.dirname(self.options.isolated_script_test_output),
-              '%s_finch_smoke_tests_logcat.txt' % self.product_name()),
-          filter_specs=LOGCAT_FILTERS)
-    self.log_mon.Start()
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
         finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
@@ -174,7 +166,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     if self._skia_gold_tmp_dir:
       shutil.rmtree(self._skia_gold_tmp_dir)
       self._skia_gold_tmp_dir = None
-    self.log_mon.Stop()
 
   @property
   def rest_args(self):
