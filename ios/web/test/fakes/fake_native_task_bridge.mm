@@ -36,9 +36,11 @@
 
 - (void)startDownload:(const base::FilePath&)path
      progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     responseCallback:(NativeDownloadTaskResponseCallback)responseCallback
      completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback {
   [super startDownload:path
       progressCallback:std::move(progressCallback)
+      responseCallback:std::move(responseCallback)
       completeCallback:std::move(completeCallback)];
 
   // Simulates completing a download progress

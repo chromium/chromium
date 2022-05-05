@@ -46,6 +46,9 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
                           int64_t total_bytes,
                           double fraction_complete);
 
+  // Invoked when the NSURLResponse of WKDownload is received.
+  void OnResponseReceived(int http_error_code, NSString* mime_type);
+
   DownloadNativeTaskBridge* download_bridge_ API_AVAILABLE(ios(15)) = nil;
 
   base::WeakPtrFactory<DownloadNativeTaskImpl> weak_factory_{this};

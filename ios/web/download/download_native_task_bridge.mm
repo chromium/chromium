@@ -6,8 +6,10 @@
 
 #import "base/callback.h"
 #import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/download/download_result.h"
+#import "ios/web/web_view/error_translation_util.h"
 #import "net/base/net_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +28,7 @@
   void (^_startDownloadBlock)(NSURL*);
   id<DownloadNativeTaskBridgeDelegate> _delegate;
   NativeDownloadTaskProgressCallback _progressCallback;
+  NativeDownloadTaskResponseCallback _responseCallback;
   NativeDownloadTaskCompleteCallback _completeCallback;
   BOOL _observingDownloadProgress;
 }
@@ -83,10 +86,12 @@
 
 - (void)startDownload:(const base::FilePath&)path
      progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     responseCallback:(NativeDownloadTaskResponseCallback)responseCallback
      completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback {
   DCHECK(!path.empty());
 
   _progressCallback = std::move(progressCallback);
+  _responseCallback = std::move(responseCallback);
   _completeCallback = std::move(completeCallback);
   _urlForDownload =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
@@ -103,6 +108,7 @@
     return;
   }
 
+  [self responseReceived:_response];
   [self startObservingDownloadProgress];
   _startDownloadBlock(_urlForDownload);
   _startDownloadBlock = nil;
@@ -139,6 +145,7 @@
     API_AVAILABLE(ios(15)) {
   _response = response;
   _suggestedFilename = suggestedFilename;
+  [self responseReceived:_response];
 
   if (_urlForDownload) {
     // Resuming a download.
@@ -158,7 +165,13 @@
   if (!_completeCallback.is_null()) {
     _progressCallback.Reset();
 
-    web::DownloadResult download_result(net::ERR_FAILED, resumeData != nil);
+    int error_code = net::OK;
+    NSURL* url = _response.URL;
+    if (!web::GetNetErrorFromIOSErrorCode(error.code, &error_code, url)) {
+      error_code = net::ERR_FAILED;
+    }
+
+    web::DownloadResult download_result(error_code, resumeData != nil);
     std::move(_completeCallback).Run(download_result);
   }
 }
@@ -205,6 +218,20 @@
                        forKeyPath:@"fractionCompleted"
                           context:nil];
   }
+}
+
+- (void)responseReceived:(NSURLResponse*)response {
+  if (_responseCallback.is_null()) {
+    return;
+  }
+
+  int http_error = -1;
+  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+    http_error =
+        base::mac::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
+  }
+
+  std::move(_responseCallback).Run(http_error, response.MIMEType);
 }
 
 @end

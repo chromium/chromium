@@ -20,6 +20,10 @@ using NativeDownloadTaskProgressCallback =
                                  int64_t total_bytes,
                                  double fraction_completed)>;
 
+// Callback invoked once the NSURLResponse is received for the WKDownload*.
+using NativeDownloadTaskResponseCallback =
+    base::OnceCallback<void(int http_error_code, NSString* mime_type)>;
+
 // Callback invoked once the WKDownload completes, possibly in error.
 using NativeDownloadTaskCompleteCallback =
     base::OnceCallback<void(web::DownloadResult result)>;
@@ -55,10 +59,11 @@ using NativeDownloadTaskCompleteCallback =
 // Cancels download
 - (void)cancel;
 
-// Starts download to `path` with given `progressCallback` and
-// `completeCallback`.
+// Starts download to `path` with given `progressCallback`, `responseCallback`
+// and `completeCallback`.
 - (void)startDownload:(const base::FilePath&)path
      progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
+     responseCallback:(NativeDownloadTaskResponseCallback)responseCallback
      completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback;
 
 @property(nonatomic, readonly) WKDownload* download API_AVAILABLE(ios(15));

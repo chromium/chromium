@@ -6,6 +6,7 @@
 
 #import "base/bind.h"
 #import "base/callback.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_native_task_bridge.h"
@@ -54,12 +55,17 @@ void DownloadNativeTaskImpl::StartInternal(const base::FilePath& path) {
         base::BindRepeating(&DownloadNativeTaskImpl::OnDownloadProgress,
                             weak_factory_.GetWeakPtr());
 
+    NativeDownloadTaskResponseCallback response_callback =
+        base::BindOnce(&DownloadNativeTaskImpl::OnResponseReceived,
+                       weak_factory_.GetWeakPtr());
+
     NativeDownloadTaskCompleteCallback complete_callback =
         base::BindOnce(&DownloadNativeTaskImpl::OnDownloadFinished,
                        weak_factory_.GetWeakPtr());
 
     [download_bridge_ startDownload:path
                    progressCallback:std::move(progress_callback)
+                   responseCallback:std::move(response_callback)
                    completeCallback:std::move(complete_callback)];
   }
 }
@@ -78,6 +84,7 @@ std::string DownloadNativeTaskImpl::GetSuggestedName() const {
   if (@available(iOS 15, *)) {
     return base::SysNSStringToUTF8(download_bridge_.suggestedFilename);
   }
+  NOTREACHED();
   return std::string();
 }
 
@@ -88,6 +95,15 @@ void DownloadNativeTaskImpl::OnDownloadProgress(int64_t bytes_received,
   total_bytes_ = total_bytes;
   received_bytes_ = bytes_received;
   percent_complete_ = static_cast<int>(fraction_complete * 100);
+}
+
+void DownloadNativeTaskImpl::OnResponseReceived(int http_error_code,
+                                                NSString* mime_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  http_code_ = http_error_code;
+  if (mime_type.length) {
+    mime_type_ = base::SysNSStringToUTF8(mime_type);
+  }
 }
 
 }  // namespace web
