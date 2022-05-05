@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OFFICIAL_BUILD)
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -20,6 +21,7 @@ void RegisterAshChromeWebUIConfigs() {
 #if !defined(OFFICIAL_BUILD)
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::DemoModeAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

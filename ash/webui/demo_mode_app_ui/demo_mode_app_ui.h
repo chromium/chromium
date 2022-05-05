@@ -6,12 +6,24 @@
 #define ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
 
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+
+class DemoModeAppUIConfig : public content::WebUIConfig {
+ public:
+  DemoModeAppUIConfig();
+  ~DemoModeAppUIConfig() override;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui) override;
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The WebUI for chrome://demo-mode-app
 class DemoModeAppUI : public ui::MojoWebUIController,

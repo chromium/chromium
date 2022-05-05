@@ -4,16 +4,34 @@
 
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+DemoModeAppUIConfig::DemoModeAppUIConfig()
+    : content::WebUIConfig(content::kChromeUIScheme, kChromeUIDemoModeAppHost) {
+}
+
+DemoModeAppUIConfig::~DemoModeAppUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+DemoModeAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+  return std::make_unique<DemoModeAppUI>(web_ui);
+}
+
+bool DemoModeAppUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::features::IsDemoModeSWAEnabled();
+}
 
 DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
