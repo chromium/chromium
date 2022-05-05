@@ -611,7 +611,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/"
+        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
+        "variant_id": "iPad Air (3rd generation) 14.5"
       },
       {
         "args": [
@@ -662,7 +663,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/"
+        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
+        "variant_id": "iPhone X 14.5"
       }
     ]
   }
