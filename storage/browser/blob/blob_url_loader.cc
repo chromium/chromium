@@ -11,7 +11,6 @@
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -206,9 +205,6 @@ void BlobURLLoader::DidReadSideData(absl::optional<mojo_base::BigBuffer> data) {
 
 void BlobURLLoader::OnComplete(net::Error error_code,
                                uint64_t total_written_bytes) {
-  base::UmaHistogramSparse("Storage.Blob.BlobUrlLoader.FailureType",
-                           error_code);
-
   network::URLLoaderCompletionStatus status(error_code);
   status.encoded_body_length = total_written_bytes;
   status.decoded_body_length = total_written_bytes;

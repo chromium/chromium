@@ -224,17 +224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.BlobUrlLoader.FailureType" enum="NetErrorCodes"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <owner>enne@chromium.org</owner>
-  <summary>
-    Recorded when an error occurs in the BlobUrlLoader, which is used to load
-    blobs from urls in the Renderer.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.Broken" enum="BooleanBroken" expires_after="M95">
   <owner>mek@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
