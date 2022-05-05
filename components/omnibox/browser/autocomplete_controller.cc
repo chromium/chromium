@@ -807,10 +807,12 @@ void AutocompleteController::UpdateResult(
                                template_url_service_);
   }
 
-  // Log metrics for how many matches are asynchronously changed.
-  if (!in_start_) {
-    AutocompleteResult::LogAsynchronousUpdateMetrics(last_result_for_logging,
-                                                     result_);
+  // Log metrics for how many matches are asynchronously changed. If results are
+  // empty then the omnibox is likely closed, and clearing old results won't
+  // be user visible.
+  if (!result_.empty()) {
+    AutocompleteResult::LogUpdateMetrics(last_result_for_logging, result_,
+                                         in_start_);
   }
 
   // Below are all annotations after the match list is ready.

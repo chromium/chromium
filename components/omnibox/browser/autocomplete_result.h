@@ -246,11 +246,14 @@ class AutocompleteResult {
 
   void MergeHiddenGroupIds(const std::vector<int>& hidden_group_ids);
 
-  // Logs metrics for when |new_result| replaces |old_result| asynchronously.
-  // |old_result| a list of the comparators for the old matches.
-  static void LogAsynchronousUpdateMetrics(
+  // Logs metrics for when `new_result` replaces `old_result`. `old_result` is a
+  // list of the comparators for the old matches. `in_start` specifies whether
+  // this is during the synchronous initial autocomplete pass of an input or the
+  // subsequent asynchronous passes.
+  static void LogUpdateMetrics(
       const std::vector<MatchDedupComparator>& old_result,
-      const AutocompleteResult& new_result);
+      const AutocompleteResult& new_result,
+      bool in_start);
 
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.

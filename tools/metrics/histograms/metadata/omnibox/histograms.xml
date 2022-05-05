@@ -251,6 +251,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.CrossInputMatchStability.MatchChange" units="position"
+    expires_after="2022-10-04">
+  <owner>manukh@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    This tracks how unstable our matches are due to synchronous updates.
+    Synchronous updates usually, though not necessarily, follow asynchronous
+    updates; this measures match instability between the last update for the
+    previous input, whether it be asynchronous or synchronous, and the
+    synchronous, i.e. first, update of the current input.
+
+    Whenever a dropdown position gets synchronously set to a new match that's
+    different from the old match, this histogram logs the index.
+
+    We primarily care about the default match, which is logged at index 0. All
+    indices matter though, so we track the other indices too. When the number of
+    matches changes asynchronously, matches that are removed are considered a
+    &quot;change&quot; and logged here. Matches that are appended are less
+    disruptive to the user, and are not logged.
+
+    This is because this metric is primarily interested in how many times the
+    user could be looking at a match with the intention of selecting it, and
+    then it surprisingly goes away.
+
+    Note that merely adding a new provider will increase these counts. That's
+    intentional. Swapping matches out annoys users, and to avoid this, we should
+    do some things like: caching, update coalescing, update deferral until next
+    keystroke, provider timeouts, etc.
+
+    This metric is designed to be normalized by the True count of
+    Omnibox.Start.WantAsyncMatches, which will yield the number of match changes
+    synchronously per keystroke or other user gesture.
+
+    There's the related Omnibox.MatchStability.AsyncMatchChange2 histogram for
+    tracking match instability for asynchronous updates.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition"
+    enum="BooleanChanged" expires_after="2022-10-04">
+  <owner>manukh@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    This tracks how unstable our matches are due to synchronous updates.
+    Synchronous updates usually, though not necessarily, follow asynchronous
+    updates; this measures match instability between the last update for the
+    previous input, whether it be asynchronous or synchronous, and the
+    synchronous, i.e. first, update of the current input.
+
+    For each synchronous autocomplete update, this histogram logs whether any
+    match in any position has changed. Note: if the only change is new matches
+    appended to the end of the list, that does not count as a change, since it's
+    not very disruptive to the user.
+
+    This metric is designed to be normalized by the True count of
+    Omnibox.Start.WantAsyncMatches, which will yield the number of times any
+    match changes asynchronously per keystroke or other user gesture.
+
+    This histogram can be considered a boolean analogue to
+    Omnibox.CrossInputMatchStability.MatchChange.
+
+    There's the related Omnibox.MatchStability.AsyncMatchChangedInAnyPosition
+    histogram for tracking match instability for asynchronous updates.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
     expires_after="2022-10-23">
   <owner>jdonnelly@chromium.org</owner>
@@ -628,9 +696,9 @@ chromium-metrics-reviews@google.com.
     Whenever a dropdown position gets asynchronously set to a new match that's
     different from the old match, this histogram logs the index.
 
-    We primarily care the default match, which is logged at index 0. All indices
-    matter though, so we track the other indices too. When the number of matches
-    changes asynchronously, matches that are removed are considered a
+    We primarily care about the default match, which is logged at index 0. All
+    indices matter though, so we track the other indices too. When the number of
+    matches changes asynchronously, matches that are removed are considered a
     &quot;change&quot; and logged here. Matches that are appended are less
     disruptive to the user, and are not logged.
 
@@ -640,12 +708,15 @@ chromium-metrics-reviews@google.com.
 
     Note that merely adding a new asynchronous provider will increase these
     counts. That's intentional. Swapping matches out annoys users, and to avoid
-    this, we should do some things like: caching, update coaslescing, update
+    this, we should do some things like: caching, update coalescing, update
     deferral until next keystroke, provider timeouts, etc.
 
     This metric is designed to be normalized by the True count of
     Omnibox.Start.WantAsyncMatches, which will yield the number of match changes
     asynchronously per keystroke or other user gesture.
+
+    There's the related Omnibox.CrossInputMatchStability.MatchChange histogram
+    for tracking match instability for synchronous updates.
   </summary>
 </histogram>
 
@@ -667,6 +738,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram can be considered a boolean analogue to
     Omnibox.MatchStability.AsyncMatchChange2.
+
+    There's the related
+    Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition histogram for
+    tracking match instability for synchronous updates.
   </summary>
 </histogram>
 

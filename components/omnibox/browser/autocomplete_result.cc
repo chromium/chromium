@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -937,36 +936,39 @@ void AutocompleteResult::MergeHiddenGroupIds(
     const std::vector<int>& hidden_group_ids) {
   hidden_group_ids_.insert(hidden_group_ids.begin(), hidden_group_ids.end());
 }
-
 // static
-void AutocompleteResult::LogAsynchronousUpdateMetrics(
+void AutocompleteResult::LogUpdateMetrics(
     const std::vector<MatchDedupComparator>& old_result,
-    const AutocompleteResult& new_result) {
-  constexpr char kAsyncMatchChangeHistogramName[] =
-      "Omnibox.MatchStability.AsyncMatchChange2";
-
+    const AutocompleteResult& new_result,
+    bool in_start) {
   bool any_match_changed = false;
 
-  size_t min_size = std::min(old_result.size(), new_result.size());
-  for (size_t i = 0; i < min_size; ++i) {
-    if (old_result[i] != GetMatchComparisonFields(new_result.match_at(i))) {
-      base::UmaHistogramExactLinear(kAsyncMatchChangeHistogramName, i,
-                                    kMaxAutocompletePositionValue);
+  for (size_t i = 0; i < old_result.size(); ++i) {
+    // Log a change for changed or removed matches. Don't log for
+    // matches appended to the bottom since that's less disruptive.
+    if (i >= new_result.size() ||
+        old_result[i] != GetMatchComparisonFields(new_result.match_at(i))) {
+      if (in_start) {
+        UMA_HISTOGRAM_EXACT_LINEAR(
+            "Omnibox.CrossInputMatchStability.MatchChange", i,
+            kMaxAutocompletePositionValue);
+      } else {
+        UMA_HISTOGRAM_EXACT_LINEAR("Omnibox.MatchStability.AsyncMatchChange2",
+                                   i, kMaxAutocompletePositionValue);
+      }
       any_match_changed = true;
     }
   }
 
-  // Also log a change for when the match count decreases. But don't make a log
-  // for appending new matches on the bottom, since that's less disruptive.
-  for (size_t i = new_result.size(); i < old_result.size(); ++i) {
-    base::UmaHistogramExactLinear(kAsyncMatchChangeHistogramName, i,
-                                  kMaxAutocompletePositionValue);
-    any_match_changed = true;
+  if (in_start) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition",
+        any_match_changed);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition",
+        any_match_changed);
   }
-
-  base::UmaHistogramBoolean(
-      "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition",
-      any_match_changed);
 }
 
 // static
