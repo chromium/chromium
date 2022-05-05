@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
 
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
 
   // Schedule two installs and both succeed.
   base::RunLoop loop;
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
                 EXPECT_TRUE(provider->registrar().IsLocallyInstalled(app_id));
               })));
 
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
   auto* provider = WebAppProvider::GetForTest(profile());
 
   base::RunLoop loop;
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
   auto* provider = WebAppProvider::GetForTest(profile());
 
   base::RunLoop loop;
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   base::RunLoop loop;
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
@@ -166,6 +166,33 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   web_contents->Close();
 
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       InstallWithFallback) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "no_manifest_test_page.html");
+  EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+  auto* provider = WebAppProvider::GetForTest(profile());
+
+  base::RunLoop loop;
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<FetchManifestAndInstallCommand>(
+          &provider->install_finalizer(), &provider->registrar(),
+          webapps::WebappInstallSource::MENU_BROWSER_TAB,
+          web_contents->GetWeakPtr(),
+          /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+          base::BindLambdaForTesting(
+              [&](const AppId& app_id, webapps::InstallResultCode code) {
+                EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+                EXPECT_TRUE(provider->registrar().IsLocallyInstalled(app_id));
+                loop.Quit();
+              }),
+          /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
   loop.Run();
 }
 

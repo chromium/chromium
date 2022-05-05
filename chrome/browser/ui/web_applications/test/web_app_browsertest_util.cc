@@ -137,7 +137,7 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
-      WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
@@ -166,7 +166,7 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
-      WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      WebAppInstallFlow::kInstallSite,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(

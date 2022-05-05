@@ -41,7 +41,8 @@ class WebAppInstallCommand : public WebAppCommand {
                        OnceInstallCallback callback,
                        std::unique_ptr<WebAppInstallInfo> web_app_info,
                        blink::mojom::ManifestPtr opt_manifest,
-                       const GURL& manifest_url);
+                       const GURL& manifest_url,
+                       WebAppInstallFlow flow);
   ~WebAppInstallCommand() override;
 
   void Start() override;
@@ -64,6 +65,7 @@ class WebAppInstallCommand : public WebAppCommand {
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
   GURL manifest_url_;
+  WebAppInstallFlow flow_;
 
   AppId app_id_;
 

@@ -634,9 +634,12 @@ void WebAppInstallTask::InstallWebAppOnManifestValidated(
     OnceInstallCallback install_callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url) {
+    const GURL& manifest_url,
+    WebAppInstallFlow flow) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
+
+  flow_ = flow;
 
   Observe(contents);
   dialog_callback_ = std::move(dialog_callback);

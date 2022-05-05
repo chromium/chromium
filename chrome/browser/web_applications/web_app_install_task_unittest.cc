@@ -270,7 +270,7 @@ class WebAppInstallTaskTest : public WebAppTest {
       InitializeInstallTaskAndRetriever(
           webapps::WebappInstallSource::MENU_BROWSER_TAB);
     install_task_->InstallWebAppFromManifestWithFallback(
-        web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+        web_contents(), WebAppInstallFlow::kInstallSite,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        webapps::InstallResultCode code) {
@@ -462,7 +462,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -518,7 +518,7 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& force_installed_app_id,
                                      webapps::InstallResultCode code) {
@@ -544,7 +544,7 @@ TEST_F(WebAppInstallTaskTest, GetWebAppInstallInfoFailed) {
   InitializeInstallTaskAndRetriever(
       webapps::WebappInstallSource::MENU_BROWSER_TAB);
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -570,7 +570,7 @@ TEST_F(WebAppInstallTaskTest, WebContentsDestroyed) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -600,7 +600,7 @@ TEST_F(WebAppInstallTaskTest, InstallTaskDestroyed) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -653,7 +653,7 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -946,7 +946,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -981,7 +981,7 @@ TEST_F(WebAppInstallTaskTest, UserInstallDeclined) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestDeclineDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -1060,8 +1060,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
 
   base::RunLoop run_loop;
 
-  install_task_->SetFlowForTesting(
-      WebAppInstallManager::WebAppInstallFlow::kInstallSite);
+  install_task_->SetFlowForTesting(WebAppInstallFlow::kInstallSite);
   install_task_->InstallWebAppFromInfo(
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
       base::BindLambdaForTesting(
@@ -1095,8 +1094,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
 
   base::RunLoop run_loop;
 
-  install_task_->SetFlowForTesting(
-      WebAppInstallManager::WebAppInstallFlow::kInstallSite);
+  install_task_->SetFlowForTesting(WebAppInstallFlow::kInstallSite);
   install_task_->InstallWebAppFromInfo(
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
@@ -1133,7 +1131,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
 
   base::RunLoop run_loop;
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kCreateShortcut,
+      web_contents(), WebAppInstallFlow::kCreateShortcut,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                      webapps::InstallResultCode code) {
@@ -1187,7 +1185,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
 
   base::RunLoop run_loop;
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -1449,7 +1447,7 @@ TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
@@ -1504,7 +1502,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   bool callback_called = false;
 
   install_task_->InstallWebAppFromManifestWithFallback(
-      web_contents(), WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+      web_contents(), WebAppInstallFlow::kInstallSite,
       base::BindOnce(test::TestAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, webapps::InstallResultCode code) {

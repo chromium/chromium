@@ -29,16 +29,14 @@ class WebContents;
 
 namespace web_app {
 
-// The command manager is used to enqueue commands or callbacks to write & read
-// from the WebAppProvider system.
-// Commands are queued based on a `WebAppCommandQueueId`, and each queue is
-// independent. To use, simply call `EnqueueCommand` to enqueue the given
-// command or a CallbackCommand with given callback on it's respective queue.
-// The queue of a command is determined by `WebAppCommand::queue_id()`.
+// The command manager is used to schedule commands or callbacks to write & read
+// from the WebAppProvider system. To use, simply call `ScheduleCommand` to
+// schedule the given command or a CallbackCommand with given callback.
 //
-// Commands will be executed (`Start()` will be called) in-order, and the next
-// command will not execute until `SignalCompletionAndSelfDestruct()` was called
-// by the last command.
+// Commands will be executed (`Start()` will be called) in-order based on
+// command's `WebAppCommandLock`, the `WebAppCommandLock` specifies which apps
+// or particular entities it wants to lock on. The next command will not execute
+// until `SignalCompletionAndSelfDestruct()` was called by the last command.
 class WebAppCommandManager {
  public:
   explicit WebAppCommandManager(Profile* profile);
@@ -46,7 +44,7 @@ class WebAppCommandManager {
 
   // Enqueues the given command in the queue corresponding to the command's
   // `queue_id()`. `Start()` will always be called asynchronously.
-  void EnqueueCommand(std::unique_ptr<WebAppCommand> command);
+  void ScheduleCommand(std::unique_ptr<WebAppCommand> command);
 
   // Called on system shutdown. This call is also forwarded to any commands that
   // have been `Start()`ed.

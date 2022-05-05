@@ -24,6 +24,8 @@ enum class InstallResultCode;
 
 namespace web_app {
 
+enum class WebAppInstallFlow;
+
 // TODO(loyso): Rework these functions (API). Move all of them into
 // WebAppDialogManager.
 
@@ -39,9 +41,8 @@ using WebAppInstalledCallback =
                             webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.
-void CreateWebAppFromCurrentWebContents(
-    Browser* browser,
-    WebAppInstallManager::WebAppInstallFlow flow);
+void CreateWebAppFromCurrentWebContents(Browser* browser,
+                                        WebAppInstallFlow flow);
 
 // Starts install of a WebApp for a given |web_contents|, initiated from
 // a promotional banner or omnibox install icon.

@@ -33,8 +33,6 @@
 
 namespace web_app {
 
-using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
-
 namespace {
 
 void OnWebAppInstallShowInstallDialog(
@@ -105,9 +103,8 @@ bool CanPopOutWebApp(Profile* profile) {
          !profile->IsOffTheRecord();
 }
 
-void CreateWebAppFromCurrentWebContents(
-    Browser* browser,
-    WebAppInstallManager::WebAppInstallFlow flow) {
+void CreateWebAppFromCurrentWebContents(Browser* browser,
+                                        WebAppInstallFlow flow) {
   DCHECK(CanCreateWebApp(browser));
 
   content::WebContents* web_contents =
@@ -120,10 +117,9 @@ void CreateWebAppFromCurrentWebContents(
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
-          web_contents,
-          flow == WebAppInstallManager::WebAppInstallFlow::kCreateShortcut
-              ? webapps::InstallTrigger::CREATE_SHORTCUT
-              : webapps::InstallTrigger::MENU);
+          web_contents, flow == WebAppInstallFlow::kCreateShortcut
+                            ? webapps::InstallTrigger::CREATE_SHORTCUT
+                            : webapps::InstallTrigger::MENU);
 
   WebAppInstalledCallback callback = base::DoNothing();
 
@@ -143,14 +139,14 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   if (!provider)
     return false;
 
-  provider->command_manager().EnqueueCommand(
+  provider->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           &provider->install_finalizer(), &provider->registrar(),
           install_source, web_contents->GetWeakPtr(),
           bypass_service_worker_check,
           base::BindOnce(OnWebAppInstallShowInstallDialog,
-                         WebAppInstallManager::WebAppInstallFlow::kInstallSite,
-                         install_source, iph_state),
+                         WebAppInstallFlow::kInstallSite, install_source,
+                         iph_state),
           base::BindOnce(OnWebAppInstalled, std::move(installed_callback))));
   return true;
 }

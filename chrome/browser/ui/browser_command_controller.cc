@@ -47,7 +47,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
@@ -701,14 +701,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CREATE_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));
       web_app::CreateWebAppFromCurrentWebContents(
-          browser_,
-          web_app::WebAppInstallManager::WebAppInstallFlow::kCreateShortcut);
+          browser_, web_app::WebAppInstallFlow::kCreateShortcut);
       break;
     case IDC_INSTALL_PWA:
       base::RecordAction(base::UserMetricsAction("InstallWebAppFromMenu"));
       web_app::CreateWebAppFromCurrentWebContents(
-          browser_,
-          web_app::WebAppInstallManager::WebAppInstallFlow::kInstallSite);
+          browser_, web_app::WebAppInstallFlow::kInstallSite);
       break;
     case IDC_DEV_TOOLS:
       ToggleDevToolsWindow(browser_, DevToolsToggleAction::Show(),

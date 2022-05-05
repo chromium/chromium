@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     test::WaitUntilReady(provider);
     provider->install_manager().InstallWebAppFromManifestWithFallback(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        WebAppInstallManager::WebAppInstallFlow::kInstallSite,
+        WebAppInstallFlow::kInstallSite,
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         /*dialog_callback=*/
         base::BindLambdaForTesting(

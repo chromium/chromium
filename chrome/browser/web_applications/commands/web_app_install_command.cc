@@ -25,7 +25,8 @@ WebAppInstallCommand::WebAppInstallCommand(
     OnceInstallCallback callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url)
+    const GURL& manifest_url,
+    WebAppInstallFlow flow)
     : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
       install_task_(profile,
                     install_finalizer,
@@ -38,19 +39,22 @@ WebAppInstallCommand::WebAppInstallCommand(
       web_app_info_(std::move(web_app_info)),
       opt_manifest_(std::move(opt_manifest)),
       manifest_url_(manifest_url),
+      flow_(flow),
       app_id_(app_id) {}
 
 WebAppInstallCommand::~WebAppInstallCommand() = default;
 
 void WebAppInstallCommand::Start() {
-  if (!web_contents_ || web_contents_->IsBeingDestroyed())
-    return Abort(webapps::InstallResultCode::kWebContentsDestroyed);
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
+    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
+    return;
+  }
 
   install_task_.InstallWebAppOnManifestValidated(
       web_contents_.get(), std::move(dialog_callback_),
       base::BindOnce(&WebAppInstallCommand::OnInstallCompleted,
                      weak_factory_.GetWeakPtr()),
-      std::move(web_app_info_), std::move(opt_manifest_), manifest_url_);
+      std::move(web_app_info_), std::move(opt_manifest_), manifest_url_, flow_);
 }
 
 void WebAppInstallCommand::Abort(webapps::InstallResultCode code) {
@@ -64,20 +68,21 @@ void WebAppInstallCommand::Abort(webapps::InstallResultCode code) {
 void WebAppInstallCommand::OnInstallCompleted(const AppId& app_id,
                                               webapps::InstallResultCode code) {
   std::move(install_callback_).Run(app_id, code);
-  return SignalCompletionAndSelfDestruct(webapps::IsSuccess(code)
-                                             ? CommandResult::kSuccess
-                                             : CommandResult::kFailure,
-                                         base::DoNothing());
+  SignalCompletionAndSelfDestruct(webapps::IsSuccess(code)
+                                      ? CommandResult::kSuccess
+                                      : CommandResult::kFailure,
+                                  base::DoNothing());
 }
 
 void WebAppInstallCommand::OnBeforeForcedUninstallFromSync() {
   // TODO(crbug.com/1320086): remove after uninstall from sync is async.
-  return Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
+  Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
+  return;
 }
 
 void WebAppInstallCommand::OnShutdown() {
-  return Abort(
-      webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+  Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+  return;
 }
 
 base::Value WebAppInstallCommand::ToDebugValue() const {

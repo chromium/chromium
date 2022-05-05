@@ -119,6 +119,18 @@ struct WebAppInstallParams {
   GURL install_url;
 };
 
+// The different UI flows that exist for creating a web app.
+enum class WebAppInstallFlow {
+  // TODO(crbug.com/1216457): This should be removed by adding all known flows
+  // to this enum.
+  kUnknown,
+  // The 'Create Shortcut' flow for adding the current page as a shortcut app.
+  kCreateShortcut,
+  // The 'Install Site' flow for installing the current site with an app
+  // experience determined by the site.
+  kInstallSite,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_PARAMS_H_

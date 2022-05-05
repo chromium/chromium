@@ -57,8 +57,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   using RetrieveWebAppInstallInfoWithIconsCallback =
       base::OnceCallback<void(WebAppInstallInfoOrErrorCode)>;
 
-  using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
-
   WebAppInstallTask(Profile* profile,
                     WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
@@ -153,7 +151,8 @@ class WebAppInstallTask : content::WebContentsObserver {
       OnceInstallCallback install_callback,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       blink::mojom::ManifestPtr opt_manifest,
-      const GURL& manifest_url);
+      const GURL& manifest_url,
+      WebAppInstallFlow flow);
 
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.

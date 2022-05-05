@@ -61,7 +61,7 @@ WebAppCommandManager::~WebAppCommandManager() {
   DCHECK(is_in_shutdown_);
 }
 
-void WebAppCommandManager::EnqueueCommand(
+void WebAppCommandManager::ScheduleCommand(
     std::unique_ptr<WebAppCommand> command) {
   if (is_in_shutdown_) {
     AddValueToLog(CreateLogValue(*command, CommandResult::kShutdown));
@@ -142,7 +142,7 @@ void WebAppCommandManager::NotifyBeforeSyncUninstalls(
 
   // To prevent map modification-during-iteration, make a copy of relevant
   // commands. The main complications that can occur are a command calling
-  // `CompleteAndDestruct` or `EnqueueCommand` inside of the
+  // `CompleteAndDestruct` or `ScheduleCommand` inside of the
   // `OnBeforeForcedUninstallFromSync` call. Because all commands are
   // `Start()`ed asynchronously, we will never have to notify any commands that
   // are newly scheduled. So at most one command needs to be notified per queue,
