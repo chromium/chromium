@@ -17,6 +17,7 @@
 #include "chrome/grit/sync_file_system_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -29,6 +30,9 @@ content::WebUIDataSource* CreateSyncFileSystemInternalsHTMLSource() {
       base::make_span(kSyncFileSystemInternalsResources,
                       kSyncFileSystemInternalsResourcesSize));
   source->SetDefaultResource(IDR_SYNC_FILE_SYSTEM_INTERNALS_MAIN_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   return source;
 }
 

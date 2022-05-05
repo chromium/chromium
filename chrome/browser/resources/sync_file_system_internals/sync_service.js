@@ -6,10 +6,9 @@
  * WebUI to monitor the Sync File System Service.
  */
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
 import {createElementFromText} from './utils.js';
 
@@ -25,7 +24,8 @@ function refreshServiceStatus() {
  * @param {string} statusString Service status enum as a string.
  */
 function onGetServiceStatus(statusString) {
-  $('service-status').textContent = statusString;
+  const serviceStatus = document.querySelector('#service-status');
+  serviceStatus.textContent = statusString;
 }
 
 /**
@@ -40,7 +40,8 @@ function refreshNotificationSource() {
  * @param {string} sourceString Notification source as a string.
  */
 function onGetNotificationSource(sourceString) {
-  $('notification-source').textContent = sourceString;
+  const notificationSource = document.querySelector('#notification-source');
+  notificationSource.textContent = sourceString;
 }
 
 // Keeps track of the last log event seen so it's not reprinted.
@@ -58,7 +59,8 @@ function refreshLog() {
  */
 function clearLogs() {
   chrome.send('clearLogs');
-  $('log-entries').innerHTML = trustedTypes.emptyHTML;
+  const logEntries = document.querySelector('#log-entries');
+  logEntries.innerHTML = trustedTypes.emptyHTML;
 }
 
 /**
@@ -70,7 +72,7 @@ function clearLogs() {
  * }>} logEntries List of dictionaries containing 'id', 'time', 'logEvent'.
  */
 function onGetLog(logEntries) {
-  const itemContainer = $('log-entries');
+  const itemContainer = document.querySelector('#log-entries');
   for (let i = 0; i < logEntries.length; i++) {
     const logEntry = logEntries[i];
     const tr = document.createElement('tr');
@@ -89,8 +91,10 @@ function onGetLog(logEntries) {
  * Get initial sync service values and set listeners to get updated values.
  */
 function main() {
-  decorate('tabbox', TabBox);
-  $('clear-log-button').addEventListener('click', clearLogs);
+  const tabBox = document.querySelector('cr-tab-box');
+  tabBox.hidden = false;
+  const clearButton = document.querySelector('#clear-log-button');
+  clearButton.addEventListener('click', clearLogs);
   refreshServiceStatus();
   refreshNotificationSource();
 

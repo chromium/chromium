@@ -7,7 +7,7 @@
  */
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+
 import {createElementFromText} from './utils.js';
 
 /**
@@ -56,7 +56,7 @@ function createDatabaseDumpTable(div, header, body, databaseDump) {
  * @param {Array} databaseDump List of lists for the database dump.
  */
 function onGetDatabaseDump(databaseDump) {
-  const placeholder = $('dump-database-placeholder');
+  const placeholder = document.querySelector('#dump-database-placeholder');
   placeholder.innerHTML = trustedTypes.emptyHTML;
   for (let i = 0; i < databaseDump.length; ++i) {
     const div = /** @type {!HTMLElement} */ (document.createElement('div'));
@@ -75,7 +75,8 @@ function onGetDatabaseDump(databaseDump) {
 
 function main() {
   refreshDatabaseDump();
-  $('refresh-database-dump').addEventListener('click', refreshDatabaseDump);
+  const refresh = document.querySelector('#refresh-database-dump');
+  refresh.addEventListener('click', refreshDatabaseDump);
 }
 
 document.addEventListener('DOMContentLoaded', main);

@@ -8,7 +8,6 @@ found in the LICENSE file.
 <meta charset="utf-8">
 <title>Sync File System Internals</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-<link rel="stylesheet" href="chrome://resources/css/tabs.css">
 <link rel="stylesheet" href="main.css">
 <script type="module" src="sync_service.js"></script>
 <script type="module" src="task_log.js"></script>
@@ -18,84 +17,80 @@ found in the LICENSE file.
 
 <body>
 
-<tabbox>
-  <tabs>
-    <tab>Sync Service</tab>
-    <tab>Task Log</tab>
-    <tab>Extension Statuses</tab>
-    <tab>File Metadata</tab>
-    <tab>Database Dump</tab>
-  </tabs>
-  <tabpanels>
-    <tabpanel>
-      <table>
-        <tbody>
-          <tr>
-            <td>Service Status</td>
-            <td id="service-status">N/A</td>
-          </tr>
-          <tr>
-            <td>Notification Source</td>
-            <td id="notification-source">N/A</td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
+<cr-tab-box hidden>
+  <div slot="tab">Sync Service</div>
+  <div slot="tab">Task Log</div>
+  <div slot="tab">Extension Statuses</div>
+  <div slot="tab">File Metadata</div>
+  <div slot="tab">Database Dump</div>
+  <div slot="panel">
+    <table>
+      <tbody>
+        <tr>
+          <td>Service Status</td>
+          <td id="service-status">N/A</td>
+        </tr>
+        <tr>
+          <td>Notification Source</td>
+          <td id="notification-source">N/A</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
 
-      <button id="clear-log-button">Clear old logs</button>
-      <h3>Debug Log</h3>
-      <table>
-        <thead>
-          <tr>
-            <td class="log-time">Time</td>
-            <td class="log-event">Log Event</td>
-          </tr>
-        </thead>
-        <tbody id="log-entries"></tbody>
-      </table>
-    </tabpanel>
-    <tabpanel>
-      <h3>Task Log</h3>
-      <table>
-        <thead>
-          <tr>
-            <td>Duration</td>
-            <td>Task</td>
-            <td>Result</td>
-            <td>Details</td>
-          </tr>
-        </thead>
-        <tbody id="task-log-entries"></tbody>
-      </table>
-    </tabpanel>
-    <tabpanel>
-      <button id="refresh-extensions-statuses">Refresh</button>
-      <table>
-        <thead>
-          <tr>
-            <td>Extension Name</td>
-            <td>ID</td>
-            <td>Sync Status</td>
-          </tr>
-        </thead>
-        <tbody id="extension-entries"></tbody>
-      </table>
-    </tabpanel>
-    <tabpanel>
-      <select id="extensions-select"></select>
-      <button id="refresh-metadata-button">Refresh</button>
+    <button id="clear-log-button">Clear old logs</button>
+    <h3>Debug Log</h3>
+    <table>
+      <thead>
+        <tr>
+          <td class="log-time">Time</td>
+          <td class="log-event">Log Event</td>
+        </tr>
+      </thead>
+      <tbody id="log-entries"></tbody>
+    </table>
+  </div>
+  <div slot="panel">
+    <h3>Task Log</h3>
+    <table>
+      <thead>
+        <tr>
+          <td>Duration</td>
+          <td>Task</td>
+          <td>Result</td>
+          <td>Details</td>
+        </tr>
+      </thead>
+      <tbody id="task-log-entries"></tbody>
+    </table>
+  </div>
+  <div slot="panel">
+    <button id="refresh-extensions-statuses">Refresh</button>
+    <table>
+      <thead>
+        <tr>
+          <td>Extension Name</td>
+          <td>ID</td>
+          <td>Sync Status</td>
+        </tr>
+      </thead>
+      <tbody id="extension-entries"></tbody>
+    </table>
+  </div>
+  <div slot="panel">
+    <select id="extensions-select"></select>
+    <button id="refresh-metadata-button">Refresh</button>
 
-      <table style="table-layout:fixed">
-        <thead id="file-metadata-header"></thead>
-        <tbody id="file-metadata-entries"></tbody>
-      </table>
-    </tabpanel>
-    <tabpanel>
-      <button id="refresh-database-dump">Refresh</button>
-      <div id="dump-database-placeholder"></div>
-    </tabpanel>
-  </tabpanels>
-</tabbox>
+    <table style="table-layout:fixed">
+      <thead id="file-metadata-header"></thead>
+      <tbody id="file-metadata-entries"></tbody>
+    </table>
+  </div>
+  <div slot="panel">
+    <button id="refresh-database-dump">Refresh</button>
+    <div id="dump-database-placeholder"></div>
+  </div>
+</cr-tab-box>
 
 </body>
 </html>

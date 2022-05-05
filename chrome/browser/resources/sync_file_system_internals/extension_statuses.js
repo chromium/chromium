@@ -7,7 +7,7 @@
  */
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+
 import {createElementFromText} from './utils.js';
 
 /**
@@ -27,7 +27,7 @@ function refreshExtensionStatuses() {
  * }>} extensionStatuses
  */
 function onGetExtensionStatuses(extensionStatuses) {
-  const itemContainer = $('extension-entries');
+  const itemContainer = document.querySelector('#extension-entries');
   itemContainer.textContent = '';
 
   for (let i = 0; i < extensionStatuses.length; i++) {
@@ -42,8 +42,8 @@ function onGetExtensionStatuses(extensionStatuses) {
 
 function main() {
   refreshExtensionStatuses();
-  $('refresh-extensions-statuses')
-      .addEventListener('click', refreshExtensionStatuses);
+  const refresh = document.querySelector('#refresh-extensions-statuses');
+  refresh.addEventListener('click', refreshExtensionStatuses);
 }
 
 document.addEventListener('DOMContentLoaded', main);

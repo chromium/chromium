@@ -68,7 +68,6 @@ js_library("dump_database") {
   deps = [
     ":utils",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -76,7 +75,6 @@ js_library("extension_statuses") {
   deps = [
     ":utils",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -85,7 +83,6 @@ js_library("file_metadata") {
     ":utils",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -93,9 +90,6 @@ js_library("sync_service") {
   deps = [
     ":utils",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
   ]
 }
 
@@ -103,7 +97,6 @@ js_library("task_log") {
   deps = [
     ":utils",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 

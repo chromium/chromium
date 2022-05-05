@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+
 import {createElementFromText} from './utils.js';
 
 const nextTaskLogSeq = 1;
@@ -44,7 +44,8 @@ function onTaskLogRecorded(taskLog) {
       'td', taskLog.result_description, {'class': 'task-log-result'}));
   tr.appendChild(details);
 
-  $('task-log-entries').appendChild(tr);
+  const entries = document.querySelector('#task-log-entries');
+  entries.appendChild(tr);
 }
 
 /**

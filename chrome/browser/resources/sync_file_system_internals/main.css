@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-tabbox {
+cr-tab-box {
   min-height: 650px;
 }
 
@@ -13,9 +13,9 @@ h3 {
 th,
 td {
   font-size: 14px;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-  text-align: left;
+  padding-inline-end: 0.5em;
+  padding-inline-start: 0.5em;
+  text-align: start;
   vertical-align: top;
 }
 

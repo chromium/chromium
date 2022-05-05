@@ -24,13 +24,6 @@ module.exports = {
     'no-restricted-properties': [
       'error',
       {
-        'object': 'document',
-        'property': 'getElementById',
-        'message': 'Use $(\'id\') or getSVGElement(\'id\') ' +
-            'from chrome://resources/js/util.js instead of ' +
-            'document.getElementById(\'id\')',
-      },
-      {
         'property': '__lookupGetter__',
         'message': 'Use Object.getOwnPropertyDescriptor',
       },
