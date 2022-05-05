@@ -33,8 +33,6 @@ default_args = {
   # also needs to be defined to src/ios/BUILD.gn (respectively removed from both
   # location when it is removed).
 
-  v8_extra_library_files = []
-  v8_experimental_extra_library_files = []
   v8_enable_gdbjit = false
   v8_imminent_deprecation_warnings = false
 
