@@ -62,13 +62,16 @@ public class AppMenuUtil {
      * it will animate the alpha from 0 to 1 and translate the views from 10dp to 0dp on the x axis.
      *
      * @param buttons The list of icons in the menu item that should be animated.
+     * @param isMenuIconAtStart Whether the menu was triggered from a menu icon positioned at start.
      * @return        The {@link Animator}.
      */
-    public static Animator buildIconItemEnterAnimator(final ImageView[] buttons) {
+    public static Animator buildIconItemEnterAnimator(
+            final ImageView[] buttons, boolean isMenuIconAtStart) {
         if (buttons.length < 1) return new AnimatorSet();
         float dpToPx = buttons[0].getContext().getResources().getDisplayMetrics().density;
         final boolean rtl = LocalizationUtils.isLayoutRtl();
-        final float offsetXPx = ENTER_STANDARD_ITEM_OFFSET_X_DP * dpToPx * (rtl ? -1.f : 1.f);
+        float offsetSign = (rtl == /* XNOR */ isMenuIconAtStart) ? 1.f : -1.f;
+        final float offsetXPx = ENTER_STANDARD_ITEM_OFFSET_X_DP * dpToPx * offsetSign;
         final int maxViewsToAnimate = buttons.length;
 
         AnimatorSet animation = new AnimatorSet();

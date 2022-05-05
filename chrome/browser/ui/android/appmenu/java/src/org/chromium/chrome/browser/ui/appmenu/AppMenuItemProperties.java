@@ -62,6 +62,13 @@ public class AppMenuItemProperties {
             new WritableObjectPropertyKey<>(true /* skipEquality */, "CLICK_HANDLER");
 
     /**
+     * Whether the menu is shown from a menu icon positioned at start. This is used to determine the
+     * horizontal animation direction of the item.
+     */
+    public static final WritableBooleanPropertyKey MENU_ICON_AT_START =
+            new WritableBooleanPropertyKey();
+
+    /**
      * The sub menu for the menu item, this is used for the menu item which has sub menu items. ex.
      * icon row.
      * The {link ModelList} here do not need a view type since this diverges from other, non
@@ -74,5 +81,5 @@ public class AppMenuItemProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {MENU_ITEM_ID, TITLE,
             TITLE_CONDENSED, ENABLED, HIGHLIGHTED, CHECKABLE, CHECKED, ICON, ICON_COLOR_RES,
-            POSITION, SUPPORT_ENTER_ANIMATION, CLICK_HANDLER, SUBMENU};
+            POSITION, SUPPORT_ENTER_ANIMATION, CLICK_HANDLER, MENU_ICON_AT_START, SUBMENU};
 }
