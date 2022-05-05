@@ -42,7 +42,8 @@ struct SharingHubAction;
 // Responsible for showing and hiding an owned bubble.
 class SharingHubBubbleController
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<SharingHubBubbleController> {
+      public content::WebContentsUserData<SharingHubBubbleController>,
+      public base::SupportsWeakPtr<SharingHubBubbleController> {
  public:
   SharingHubBubbleController(const SharingHubBubbleController&) = delete;
   SharingHubBubbleController& operator=(const SharingHubBubbleController&) =
@@ -115,10 +116,6 @@ class SharingHubBubbleController
   raw_ptr<SharingHubModel> sharing_hub_model_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::WeakPtrFactory<SharingHubBubbleController> weak_ptr_factory_{this};
-#endif
 };
 
 }  // namespace sharing_hub

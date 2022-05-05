@@ -75,9 +75,11 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // size.
   void MaybeSizeToContents();
 
-  // A raw pointer is safe since our controller will outlive us (the bubble is
-  // lazily created with the controller).
-  raw_ptr<SharingHubBubbleController> controller_;
+  // A raw pointer is *not* safe here; the controller can be torn down before
+  // the bubble during the window close path, since the bubble will be closed
+  // asynchronously during browser window teardown but the controller will be
+  // destroyed synchronously.
+  base::WeakPtr<SharingHubBubbleController> controller_;
 
   // ScrollView containing the list of share/save actions.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
