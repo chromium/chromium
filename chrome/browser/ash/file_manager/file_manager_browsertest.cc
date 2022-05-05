@@ -1661,27 +1661,24 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Search, /* search.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("searchDownloadsWithResults"),
-        TestCase("searchDownloadsWithResults").FilesSwa(),
-        TestCase("searchDownloadsWithNoResults"),
-        TestCase("searchDownloadsWithNoResults").FilesSwa(),
-        // TODO(https://crbug.com/1313907): These tests are flaky on ash-chrome
-        // w/ SwANGLE.
-        // TestCase("searchDownloadsClearSearchKeyDown"),
-        // TestCase("searchDownloadsClearSearchKeyDown").FilesSwa(),
-        TestCase("searchDownloadsClearSearch"),
-        TestCase("searchDownloadsClearSearch").FilesSwa(),
-        TestCase("searchHidingViaTab"),
-        TestCase("searchHidingViaTab").FilesSwa(),
-        TestCase("searchHidingTextEntryField"),
-        TestCase("searchHidingTextEntryField").FilesSwa(),
-        TestCase("searchButtonToggles"),
-        TestCase("searchButtonToggles").FilesSwa(),
-        TestCase("searchQueryLaunchParam")
-        // TODO(b/189173190): Enable
-        // TestCase("searchQueryLaunchParam").FilesSwa()
-        ));
+    ::testing::Values(TestCase("searchDownloadsWithResults"),
+                      TestCase("searchDownloadsWithResults").FilesSwa(),
+                      TestCase("searchDownloadsWithNoResults"),
+                      TestCase("searchDownloadsWithNoResults").FilesSwa(),
+                      TestCase("searchDownloadsClearSearchKeyDown"),
+                      TestCase("searchDownloadsClearSearchKeyDown").FilesSwa(),
+                      TestCase("searchDownloadsClearSearch"),
+                      TestCase("searchDownloadsClearSearch").FilesSwa(),
+                      TestCase("searchHidingViaTab"),
+                      TestCase("searchHidingViaTab").FilesSwa(),
+                      TestCase("searchHidingTextEntryField"),
+                      TestCase("searchHidingTextEntryField").FilesSwa(),
+                      TestCase("searchButtonToggles"),
+                      TestCase("searchButtonToggles").FilesSwa(),
+                      TestCase("searchQueryLaunchParam")
+                      // TODO(b/189173190): Enable
+                      // TestCase("searchQueryLaunchParam").FilesSwa()
+                      ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
