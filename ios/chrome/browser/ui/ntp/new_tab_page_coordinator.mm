@@ -273,6 +273,7 @@ namespace {
       self, self.discoverFeedService);
 
   self.feedMetricsRecorder = self.discoverFeedService->GetFeedMetricsRecorder();
+  self.feedMetricsRecorder.selectedFeedType = self.selectedFeed;
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerController =
@@ -1157,6 +1158,13 @@ namespace {
         forControlEvents:UIControlEventTouchUpInside];
   }
   return _feedHeaderViewController;
+}
+
+#pragma mark - Setters
+
+- (void)setSelectedFeed:(FeedType)selectedFeed {
+  _selectedFeed = selectedFeed;
+  self.feedMetricsRecorder.selectedFeedType = selectedFeed;
 }
 
 #pragma mark - DiscoverFeedWrapperViewControllerDelegate

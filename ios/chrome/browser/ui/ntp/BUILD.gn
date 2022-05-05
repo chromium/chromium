@@ -226,6 +226,7 @@ source_set("metrics") {
   deps = [
     "//base",
     "//components/feed/core/v2/public:common",
+    "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
   ]
 }

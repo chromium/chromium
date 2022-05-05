@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include "ios/chrome/browser/discover_feed/feed_constants.h"
+
 // DO NOT CHANGE. Values are from enums.xml representing what could be broken in
 // the NTP view hierarchy. These values are persisted to logs. Entries should
 // not be renumbered and numeric values should never be reused.
@@ -172,6 +174,9 @@ enum class BrokenNTPHierarchyRelationship {
 
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
+
+// The currently selected feed type in the NTP.
+@property(nonatomic, assign) FeedType selectedFeedType;
 
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;

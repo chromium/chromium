@@ -143,6 +143,10 @@ const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";
 // Histogram name for the feed engagement types.
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
+const char kFollowingFeedEngagementTypeHistogram[] =
+    "ContentSuggestions.Feed.WebFeed.EngagementType";
+const char kAllFeedsEngagementTypeHistogram[] =
+    "ContentSuggestions.Feed.AllFeeds.EngagementType";
 
 // Histogram name for a feed card shown at index.
 const char kDiscoverFeedCardShownAtIndex[] =
@@ -219,13 +223,16 @@ const int kMaxCardsInFeed = 50;
 
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngagedSimple.
-@property(nonatomic, assign) BOOL engagedSimpleReported;
+@property(nonatomic, assign) BOOL engagedSimpleReportedDiscover;
+@property(nonatomic, assign) BOOL engagedSimpleReportedFollowing;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngaged.
-@property(nonatomic, assign) BOOL engagedReported;
+@property(nonatomic, assign) BOOL engagedReportedDiscover;
+@property(nonatomic, assign) BOOL engagedReportedFollowing;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedScrolled.
-@property(nonatomic, assign) BOOL scrolledReported;
+@property(nonatomic, assign) BOOL scrolledReportedDiscover;
+@property(nonatomic, assign) BOOL scrolledReportedFollowing;
 // The time when the first metric is being recorded for this session.
 @property(nonatomic, assign) base::Time sessionStartTime;
 
@@ -238,9 +245,26 @@ const int kMaxCardsInFeed = 50;
 - (void)recordFeedScrolled:(int)scrollDistance {
   [self recordEngagement:scrollDistance interacted:NO];
 
-  if (!self.scrolledReported) {
-    [self recordEngagementTypeHistogram:FeedEngagementType::kFeedScrolled];
-    self.scrolledReported = YES;
+  // If neither feed has been scrolled into, log "AllFeeds" scrolled.
+  if (!self.scrolledReportedDiscover && !self.scrolledReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
+                              FeedEngagementType::kFeedScrolled);
+  }
+
+  // Log scrolled into Discover feed.
+  if (self.selectedFeedType == FeedTypeDiscover &&
+      !self.scrolledReportedDiscover) {
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedScrolled);
+    self.scrolledReportedDiscover = YES;
+  }
+
+  // Log scrolled into Following feed.
+  if (self.selectedFeedType == FeedTypeFollowing &&
+      !self.scrolledReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedScrolled);
+    self.scrolledReportedFollowing = YES;
   }
 }
 
@@ -556,42 +580,111 @@ const int kMaxCardsInFeed = 50;
   // Report the user as engaged-simple if they have scrolled any amount or
   // interacted with the card, and we have not already reported it for this
   // chrome run.
-  if (!self.engagedSimpleReported && (scrollDistance > 0 || interacted)) {
-    [self recordEngagementTypeHistogram:FeedEngagementType::kFeedEngagedSimple];
-    self.engagedSimpleReported = YES;
+  if (scrollDistance > 0 || interacted) {
+    [self recordEngagedSimple];
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
   // interacted with the card, and we have not already reported it this chrome
   // run.
-  if (!self.engagedReported &&
-      (scrollDistance > kMinScrollThreshold || interacted)) {
-    [self recordEngagementTypeHistogram:FeedEngagementType::kFeedEngaged];
-    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
-    self.engagedReported = YES;
+  if (scrollDistance > kMinScrollThreshold || interacted) {
+    [self recordEngaged];
   }
 }
 
 // Records any direct interaction with the Feed, this doesn't include scrolling.
 - (void)recordInteraction {
   [self recordEngagement:0 interacted:YES];
-  [self recordEngagementTypeHistogram:FeedEngagementType::kFeedInteracted];
+
+  // Log interaction for all feeds
+  UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
+                            FeedEngagementType::kFeedInteracted);
+
+  // Log interaction for Discover feed.
+  if (self.selectedFeedType == FeedTypeDiscover) {
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedInteracted);
+  }
+
+  // Log interaction for Following feed.
+  if (self.selectedFeedType == FeedTypeFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedInteracted);
+  }
 }
 
-// Records Engagement histograms of |engagementType|.
-- (void)recordEngagementTypeHistogram:(FeedEngagementType)engagementType {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                            engagementType);
+// Records simple engagement for the current |selectedFeedType|.
+- (void)recordEngagedSimple {
+  // If neither feed has been engaged with, log "AllFeeds" simple engagement.
+  if (!self.engagedSimpleReportedDiscover &&
+      !self.engagedSimpleReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngagedSimple);
+  }
+
+  // Log simple engagment for Discover feed.
+  if (self.selectedFeedType == FeedTypeDiscover &&
+      !self.engagedSimpleReportedDiscover) {
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngagedSimple);
+    self.engagedSimpleReportedDiscover = YES;
+  }
+
+  // Log simple engagement for Following feed.
+  if (self.selectedFeedType == FeedTypeFollowing &&
+      !self.engagedSimpleReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngagedSimple);
+    self.engagedSimpleReportedFollowing = YES;
+  }
+}
+
+// Records engagement for the current |selectedFeedType|.
+- (void)recordEngaged {
+  // If neither feed has been engaged with, log "AllFeeds" engagement.
+  if (!self.engagedReportedDiscover && !self.engagedReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngaged);
+  }
+
+  // Log engagment for Discover feed.
+  if (self.selectedFeedType == FeedTypeDiscover &&
+      !self.engagedReportedDiscover) {
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngaged);
+    self.engagedReportedDiscover = YES;
+  }
+
+  // Log engagement for Following feed.
+  if (self.selectedFeedType == FeedTypeFollowing &&
+      !self.engagedReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
+                              FeedEngagementType::kFeedEngaged);
+    self.engagedReportedFollowing = YES;
+  }
+
+  // TODO(crbug.com/1322640): Separate user action for Following feed
+  base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
 
 // Resets the session tracking values, this occurs if there's been
 // kMinutesBetweenSessions minutes between sessions.
 - (void)finalizeSession {
-  if (!self.engagedSimpleReported)
+  // If simple engagement hasn't been logged, then there's no session to
+  // finalize.
+  if (!self.engagedSimpleReportedDiscover &&
+      !self.engagedSimpleReportedFollowing) {
     return;
-  self.engagedReported = NO;
-  self.engagedSimpleReported = NO;
-  self.scrolledReported = NO;
+  }
+
+  self.engagedReportedDiscover = NO;
+  self.engagedReportedFollowing = NO;
+
+  self.engagedSimpleReportedDiscover = NO;
+  self.engagedSimpleReportedFollowing = NO;
+
+  self.scrolledReportedDiscover = NO;
+  self.scrolledReportedFollowing = NO;
 }
 
 // Records the |durationInSeconds| it took to Discover feed to perform any
