@@ -206,7 +206,7 @@ function setSelectedTab(id: string) {
   const tabbox = document.querySelector('cr-tab-box');
   assert(tabbox);
   const index =
-      Array.from(tabbox.querySelectorAll<HTMLElement>('div[slot=\'tabs\']'))
+      Array.from(tabbox.querySelectorAll<HTMLElement>('div[slot=\'tab\']'))
           .findIndex(tab => tab.id === id);
   tabbox.setAttribute('selected-index', `${index}`);
 }
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
   tabBox.addEventListener('selected-index-change', function(e) {
     const tabbox = document.querySelector('cr-tab-box');
     assert(tabbox);
-    const tabs = tabbox.querySelectorAll<HTMLElement>('div[slot=\'tabs\']');
+    const tabs = tabbox.querySelectorAll<HTMLElement>('div[slot=\'tab\']');
     const selectedTab = tabs[(e as CustomEvent<number>).detail];
     window.location.hash = 'tab-' + selectedTab.id;
   }, true);

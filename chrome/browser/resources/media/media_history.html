@@ -20,15 +20,15 @@
       padding-top: 10px;
     }
 
-    div[slot='tabs'] {
+    div[slot='tab'] {
       -webkit-user-select: none;
     }
 
-    body div[slot='panels'] {
+    body div[slot='panel'] {
       box-shadow: none;
     }
 
-    div[slot='panels'] {
+    div[slot='panel'] {
       padding: 10px;
     }
 
@@ -82,11 +82,11 @@
 </head>
 <body>
   <cr-tab-box id="tabbox">
-    <div slot="tabs" id="stats">Stats</div>
-    <div slot="tabs" id="origins">Origins</div>
-    <div slot="tabs" id="playbacks">Playbacks</div>
-    <div slot="tabs" id="sessions">Sessions</div>
-    <div slot="panels">
+    <div slot="tab" id="stats">Stats</div>
+    <div slot="tab" id="origins">Origins</div>
+    <div slot="tab" id="playbacks">Playbacks</div>
+    <div slot="tab" id="sessions">Sessions</div>
+    <div slot="panel">
       <h1>Media History</h1>
       <button class="copy-all-to-clipboard">Copy all to clipboard</button>
       <table>
@@ -100,7 +100,7 @@
         </tbody>
       </table>
     </div>
-    <div slot="panels">
+    <div slot="panel">
       <h1>Origins</h1>
       <button class="copy-all-to-clipboard">Copy all to clipboard</button>
       <table id="origins-table">
@@ -121,7 +121,7 @@
         </tbody>
       </table>
     </div>
-    <div slot="panels">
+    <div slot="panel">
       <h1>Playbacks</h1>
       <p>
         The playbacks table stores playbacks that happened on a page. These
@@ -145,7 +145,7 @@
         </tbody>
       </table>
     </div>
-    <div slot="panels">
+    <div slot="panel">
       <h1>Sessions</h1>
       <p>
         The sessions table stores media sessions that had media playback that

@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>Predictors</title>
-  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 
   <style>
@@ -14,12 +13,12 @@
 
 <body>
   <cr-tab-box id="predictor-page">
-    <div slot="tabs">Autocomplete Action Predictor</div>
-    <div slot="tabs">Resource Prefetch Predictor</div>
-    <div slot="panels">
+    <div slot="tab">Autocomplete Action Predictor</div>
+    <div slot="tab">Resource Prefetch Predictor</div>
+    <div slot="panel">
       <include src="autocomplete_action_predictor.html">
     </div>
-    <div slot="panels">
+    <div slot="panel">
       <include src="resource_prefetch_predictor.html">
     </div>
   </cr-tab-box>

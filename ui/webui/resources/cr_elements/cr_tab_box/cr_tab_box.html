@@ -65,19 +65,19 @@
     padding: 0 20px;
   }
 
-  #tabpanels ::slotted([slot=panels]) {
+  #tabpanels ::slotted([slot=panel]) {
     display: none;
     flex: 1;
   }
 
-  #tabpanels ::slotted([slot=panels][selected]) {
+  #tabpanels ::slotted([slot=panel][selected]) {
     display: block;
   }
 </style>
 
 <div id="tablist">
-  <slot name="tabs"></slot>
+  <slot name="tab"></slot>
 </div>
 <div id="tabpanels">
-  <slot name="panels"></slot>
+  <slot name="panel"></slot>
 </div>
