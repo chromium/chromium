@@ -17,9 +17,6 @@
 // Button for opening top-level feed menu.
 @property(nonatomic, readonly, strong) UIButton* menuButton;
 
-// The base title string of the feed header, excluding modifiers.
-@property(nonatomic, copy) NSString* titleText;
-
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
@@ -60,6 +57,9 @@
 // Updates the header view and re-applies constraints in response to the default
 // search engine changing.
 - (void)updateForDefaultSearchEngineChanged;
+
+// Updates the header for when the user turns the feed off from the header menu.
+- (void)updateForFeedVisibilityChanged;
 
 @end
 

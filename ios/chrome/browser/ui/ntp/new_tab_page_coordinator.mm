@@ -91,7 +91,6 @@ namespace {
 }  // namespace
 
 @interface NewTabPageCoordinator () <AppStateObserver,
-                                     BooleanObserver,
                                      ContentSuggestionsHeaderCommands,
                                      DiscoverFeedDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
@@ -268,7 +267,6 @@ namespace {
   self.feedExpandedPref = [[PrefBackedBoolean alloc]
       initWithPrefService:_prefService
                  prefName:feed::prefs::kArticlesListVisible];
-  [self.feedExpandedPref setObserver:self];
 
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
@@ -392,7 +390,6 @@ namespace {
     [omniboxCommandHandler cancelOmniboxEdit];
   }
 
-  [self.feedExpandedPref setObserver:nil];
   self.feedExpandedPref = nil;
 
   _prefChangeRegistrar.reset();
@@ -631,6 +628,10 @@ namespace {
   self.feedHeaderViewController.followingFeedSortType = sortType;
 }
 
+- (BOOL)shouldFeedBeVisible {
+  return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
+}
+
 #pragma mark - FeedMenuCommands
 
 - (void)openFeedMenu {
@@ -653,7 +654,6 @@ namespace {
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setFeedVisibleFromHeader:NO];
-                    [weakSelf updateNTPForFeed];
                   }
                    style:UIAlertActionStyleDestructive];
   } else {
@@ -662,7 +662,6 @@ namespace {
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setFeedVisibleFromHeader:YES];
-                    [weakSelf updateNTPForFeed];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -769,12 +768,6 @@ namespace {
     transitionedToActivationLevel:(SceneActivationLevel)level {
   self.sceneInForeground = level >= SceneActivationLevelForegroundInactive;
   [self updateVisible];
-}
-
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self updateNTPForFeed];
 }
 
 #pragma mark - DiscoverFeedDelegate
@@ -987,10 +980,8 @@ namespace {
   self.ntpViewController.feedHeaderViewController =
       self.feedHeaderViewController;
 
-  [self updateFeedHeaderLabelText:self.feedHeaderViewController];
-
   // Requests feeds here if the correct flags and prefs are enabled.
-  if ([self shouldFeedBeFetched]) {
+  if ([self shouldFeedBeVisible]) {
     FeedModelConfiguration* discoverFeedConfiguration =
         [FeedModelConfiguration discoverFeedModelConfiguration];
     self.discoverFeedService->CreateFeedModel(discoverFeedConfiguration);
@@ -1035,14 +1026,9 @@ namespace {
          self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
 }
 
-// Determines whether the feed should be fetched based on the user prefs.
-- (BOOL)shouldFeedBeFetched {
-  return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
-}
-
 // Returns |YES| if the feed is currently visible on the NTP.
 - (BOOL)isFeedVisible {
-  return [self shouldFeedBeFetched] && self.discoverFeedViewController;
+  return [self shouldFeedBeVisible] && self.discoverFeedViewController;
 }
 
 // Creates, configures and returns a Discover feed view controller.
@@ -1080,12 +1066,7 @@ namespace {
 
 // Handles how the NTP reacts when the default search engine is changed.
 - (void)defaultSearchEngineDidChange {
-  [self updateFeedHeaderLabelText:self.feedHeaderViewController];
-  if (IsWebChannelsEnabled()) {
-    [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
-    [self.feedHeaderViewController.view setNeedsLayout];
-    [self.feedHeaderViewController.view layoutIfNeeded];
-  }
+  [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
   [self.ntpViewController updateNTPLayout];
   [self updateFeedLayout];
   [self.ntpViewController setContentOffsetToTop];
@@ -1093,9 +1074,12 @@ namespace {
 
 // Toggles feed visibility between hidden or expanded using the feed header
 // menu. A hidden feed will continue to show the header, with a modified label.
+// TODO(crbug.com/1304382): Modify this comment when Web Channels is launched.
 - (void)setFeedVisibleFromHeader:(BOOL)visible {
   [self.feedExpandedPref setValue:visible];
   [self.feedMetricsRecorder recordDiscoverFeedVisibilityChanged:visible];
+  [self updateNTPForFeed];
+  [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 
 // Configures and returns the NTP mediator.
@@ -1139,26 +1123,6 @@ namespace {
         self.baseViewController;
   }
   return contentSuggestionsCoordinator;
-}
-
-// Sets a header's text based on feed visibility and default search engine
-// prefs.
-- (void)updateFeedHeaderLabelText:(FeedHeaderViewController*)feedHeader {
-  if (!self.templateURLService) {
-    return;
-  }
-  NSString* feedHeaderTitleText =
-      [self isGoogleDefaultSearchEngine]
-          ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-          : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
-  feedHeaderTitleText =
-      [self shouldFeedBeFetched]
-          ? feedHeaderTitleText
-          : [NSString
-                stringWithFormat:@"%@ – %@", feedHeaderTitleText,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
-  [feedHeader setTitleText:feedHeaderTitleText];
 }
 
 - (void)handleFeedManageTapped {

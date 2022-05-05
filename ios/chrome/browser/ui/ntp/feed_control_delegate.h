@@ -20,6 +20,9 @@
 // Handles the sorting being selected for the Following feed.
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType;
 
+// Determines whether the feed should be shown based on the user prefs.
+- (BOOL)shouldFeedBeVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_
