@@ -310,28 +310,6 @@ const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
      std::size(kFREDefaultPromoTestingShortDelay), nullptr},
 };
 
-const FeatureEntry::FeatureVariation kEnableFREUIModuleIOSVariations[] = {
-    {"TOP | OLD",
-     (FeatureEntry::FeatureParam[]){
-         {kFREUIIdentitySwitcherPositionParam, "top"},
-         {kFREUIStringsSetParam, "old"}},
-     2, nullptr},
-    {"BOTTOM | OLD",
-     (FeatureEntry::FeatureParam[]){
-         {kFREUIIdentitySwitcherPositionParam, "bottom"},
-         {kFREUIStringsSetParam, "old"}},
-     2, nullptr},
-    {"TOP | NEW",
-     (FeatureEntry::FeatureParam[]){
-         {kFREUIIdentitySwitcherPositionParam, "top"},
-         {kFREUIStringsSetParam, "new"}},
-     2, nullptr},
-    {"BOTTOM | NEW",
-     (FeatureEntry::FeatureParam[]){
-         {kFREUIIdentitySwitcherPositionParam, "bottom"},
-         {kFREUIStringsSetParam, "new"}},
-     2, nullptr}};
-
 const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {
     {kNewMobileIdentityConsistencyFREParam,
      kNewMobileIdentityConsistencyFREParamUMADialog}};
@@ -509,9 +487,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-fre-ui-module-ios-with-options",
      flag_descriptions::kEnableFREUIModuleIOSName,
      flag_descriptions::kEnableFREUIModuleIOSDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREUIModuleIOS,
-                                    kEnableFREUIModuleIOSVariations,
-                                    "EnableFREUIModuleIOS")},
+     FEATURE_VALUE_TYPE(kEnableFREUIModuleIOS)},
     {"new-mobile-identity-consistency-fre",
      flag_descriptions::kNewMobileIdentityConsistencyFREName,
      flag_descriptions::kNewMobileIdentityConsistencyFREDescription,

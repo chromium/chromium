@@ -224,11 +224,9 @@ const char kEnableFaviconForPasswordsDescription[] =
     "and Never Saved sections and also for the AutoFill Passwords for the "
     "Credential Provider.";
 
-const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module with options";
+const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
-    "Use the new FRE UI module for first run. There are 4 UI options: Identity "
-    "switcher at the TOP or BOTTOM and using OLD or NEW strings set for the "
-    "sign-in sync screen.";
+    "Use the new FRE UI module for first run.";
 
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =

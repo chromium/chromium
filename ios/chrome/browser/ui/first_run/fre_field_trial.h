@@ -48,23 +48,6 @@ extern const char kFREDefaultPromoTestingOnlyParam[];
 // default promo" is enabled.
 extern const char kFREDefaultPromoTestingShortDelayParam[];
 
-// Indicates which option of the identity position to use for the FRE UI (TOP or
-// BOTTOM).
-extern const char kFREUIIdentitySwitcherPositionParam[];
-
-// Indicates which option of the sign-in & sync strings set to use for the FRE
-// UI (OLD or NEW).
-extern const char kFREUIStringsSetParam[];
-
-// FRE Second UI Trial name.
-extern const char kFREThirdUITrialName[];
-
-// Group names for the second trial of the FRE UI.
-extern const char kIdentitySwitcherInTopAndOldStringsSetGroup[];
-extern const char kIdentitySwitcherInTopAndNewStringsSetGroup[];
-extern const char kIdentitySwitcherInBottomAndOldStringsSetGroup[];
-extern const char kIdentitySwitcherInBottomAndNewStringsSetGroup[];
-
 // Indicates which variant of the new MICE FRE to use.
 extern const char kNewMobileIdentityConsistencyFREParam[];
 extern const char kNewMobileIdentityConsistencyFREParamUMADialog[];
@@ -95,10 +78,12 @@ bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 // Returns true if the default browser screen in FRE is enabled.
 bool IsFREDefaultBrowserScreenEnabled();
 
+// TODO(crbug.com/1322292): Remove.
 // Returns the UI option for the sign-in & sync screen identity position.
 SigninSyncScreenUIIdentitySwitcherPosition
 GetSigninSyncScreenUIIdentitySwitcherPosition();
 
+// TODO(crbug.com/1322292): Remove.
 // Returns the UI option for the sign-in & sync screen strings set.
 SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet();
 
@@ -109,9 +94,8 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE();
 // Registers the local state pref used to manage grouping for this field trial.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-// Creates a field trial to control the LocationPermissions feature. The trial
-// is client controlled because one arm of the experiment involves changing the
-// user experience during First Run.
+// Creates a field trial to control features that need to be used on first run,
+// including the LocationPermissions feature and FRE experiments.
 //
 // The trial group chosen on first run is persisted to local state prefs.
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,

@@ -2100,8 +2100,8 @@
   },
   {
     "name": "enable-fre-ui-module-ios-with-options",
-    "owners": [ "gambard", "veronguyen", "vincb" ],
-    "expiry_milestone": 102
+    "owners": [ "gambard", "veronguyen", "vincb", "ginnyhuang" ],
+    "expiry_milestone": 104
   },
   {
     "name": "enable-fullscreen-api",
