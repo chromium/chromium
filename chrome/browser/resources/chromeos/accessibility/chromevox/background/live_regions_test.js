@@ -359,3 +359,32 @@ SYNC_TEST_F('ChromeVoxLiveRegionsTest', 'ShouldIgnoreLiveRegion', function() {
   mockParentNode.state[chrome.automation.StateType.INVISIBLE] = true;
   assertTrue(liveRegions.shouldIgnoreLiveRegion_(mockNode));
 });
+
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveIgnoredToUnignored', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const root = await this.runWithLoadedTree(`
+    <button></button>
+    <div aria-live="polite" style="display:none">hello</div>
+    <div aria-live="polite" hidden>there</div>
+    <script>
+      const [button, div1, div2] = document.body.children;
+      let clickCount = 0;
+      button.addEventListener('click', () => {
+        clickCount++;
+        switch (clickCount) {
+          case 1:
+            div1.style.display = 'block';
+            break;
+          case 2:
+            div2.hidden = false;
+        }
+      });
+    </script>
+  `);
+  const button = root.find({role: chrome.automation.RoleType.BUTTON});
+  mockFeedback.call(button.doDefault.bind(button))
+      .expectSpeech('hello')
+      .call(button.doDefault.bind(button))
+      .expectSpeech('there')
+      .replay();
+});

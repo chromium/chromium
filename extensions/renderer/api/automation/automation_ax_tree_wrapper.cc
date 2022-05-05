@@ -526,6 +526,15 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
   text_changed_node_ids_.clear();
 }
 
+void AutomationAXTreeWrapper::OnIgnoredChanged(ui::AXTree* tree,
+                                               ui::AXNode* node,
+                                               bool is_ignored_new_value) {
+  owner_->SendTreeChangeEvent(
+      is_ignored_new_value ? api::automation::TREE_CHANGE_TYPE_NODEREMOVED
+                           : api::automation::TREE_CHANGE_TYPE_NODECREATED,
+      tree, node);
+}
+
 bool AutomationAXTreeWrapper::IsTreeIgnored() {
   // Check the hosting nodes within the parenting trees for ignored host nodes.
   AutomationAXTreeWrapper* tree = this;

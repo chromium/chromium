@@ -132,6 +132,9 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   void OnAtomicUpdateFinished(ui::AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
+  void OnIgnoredChanged(ui::AXTree* tree,
+                        ui::AXNode* node,
+                        bool is_ignored_new_value) override;
 
   ui::AXTreeID tree_id_;
   ui::AXTree tree_;
