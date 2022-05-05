@@ -376,8 +376,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         ((FrameLayout.LayoutParams) mCloseButton.getLayoutParams()).gravity =
                 Gravity.CENTER_VERTICAL | Gravity.END;
 
-        ((FrameLayout.LayoutParams) mCustomActionButtons.getLayoutParams())
-                .setMarginEnd(buttonWidth);
+        FrameLayout.LayoutParams actionButtonsLayoutParams =
+                (FrameLayout.LayoutParams) mCustomActionButtons.getLayoutParams();
+        actionButtonsLayoutParams.setMarginEnd(buttonWidth);
+        mCustomActionButtons.setLayoutParams(actionButtonsLayoutParams);
     }
 
     private void updateToolbarLayoutMargin() {
