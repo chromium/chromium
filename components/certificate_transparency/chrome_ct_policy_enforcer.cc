@@ -159,12 +159,25 @@ void ChromeCTPolicyEnforcer::UpdateCTLogList(
   disqualified_logs_ = std::move(disqualified_logs);
   operated_by_google_logs_ = std::move(operated_by_google_logs);
   log_operator_history_ = std::move(log_operator_history);
+
+  if (valid_google_log_for_testing_.has_value()) {
+    valid_google_log_for_testing_ = absl::nullopt;
+  }
+  if (disqualified_log_for_testing_.has_value()) {
+    disqualified_log_for_testing_ = absl::nullopt;
+  }
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     base::StringPiece log_id,
     base::Time* disqualification_date) const {
   CHECK_EQ(log_id.size(), crypto::kSHA256Length);
+
+  if (disqualified_log_for_testing_.has_value() &&
+      log_id == disqualified_log_for_testing_.value().first) {
+    *disqualification_date = disqualified_log_for_testing_.value().second;
+    return *disqualification_date < base::Time::Now();
+  }
 
   auto p = std::lower_bound(
       std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,
@@ -181,6 +194,10 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
 
 bool ChromeCTPolicyEnforcer::IsLogOperatedByGoogle(
     base::StringPiece log_id) const {
+  if (valid_google_log_for_testing_.has_value() &&
+      log_id == valid_google_log_for_testing_.value()) {
+    return true;
+  }
   return std::binary_search(std::begin(operated_by_google_logs_),
                             std::end(operated_by_google_logs_), log_id);
 }
@@ -418,6 +435,10 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
 std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
     std::string log_id,
     base::Time timestamp) const {
+  if (valid_google_log_for_testing_.has_value() &&
+      log_id == valid_google_log_for_testing_.value()) {
+    return "Google";
+  }
   DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
   OperatorHistoryEntry log_history = log_operator_history_.at(log_id);
   for (auto operator_entry : log_history.previous_operators_) {
