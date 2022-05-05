@@ -1722,8 +1722,20 @@ This file contains the strings for ash.
         Stop screen recording
       </message>
 
-      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TITLE" desc="The accessible name and title for the projector annotation button in the system tray.">
-        Screencast tools
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TOOLTIP" desc="The tooltip for the projector marker button in the system tray, indicating whether the marker is enabled or not.">
+        Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph>
+      </message>
+
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE" desc="The accessible title for the projector marker button in the system tray, telling the user how to use the marker."> 
+        Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph> Use the trackpad, touchscreen, or stylus to draw onscreen.
+      </message>
+
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE" desc="Text indicating that the marker is on.">
+        Marker is on.
+      </message>
+
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE" desc="Text indicating that the marker is off.">
+        Marker is off.
       </message>
 
       <!-- Overview Mode -->

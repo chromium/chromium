@@ -96,7 +96,7 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {
-  image_view_->SetTooltipText(GetAccessibleNameForTray());
+  image_view_->SetTooltipText(GetTooltip());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
@@ -134,8 +134,13 @@ void ProjectorAnnotationTray::ClickedOutsideBubble() {
 }
 
 std::u16string ProjectorAnnotationTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TITLE);
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
+      GetCurrentTool() == kToolNone
+          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
+          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+      enabled_state);
 }
 
 void ProjectorAnnotationTray::HandleLocaleChange() {}
@@ -199,13 +204,13 @@ void ProjectorAnnotationTray::ShowBubble() {
     marker_view_container->SetLayoutManager(std::move(box_layout));
 
     for (SkColor color : kPenColors) {
-      auto* colorButton = marker_view_container->AddChildView(
+      auto* color_button = marker_view_container->AddChildView(
           std::make_unique<ProjectorColorButton>(
               base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
                                   base::Unretained(this), color),
               color, kColorButtonColorViewSize, kColorButtonViewRadius,
               l10n_util::GetStringUTF16(GetAccessibleNameForColor(color))));
-      colorButton->SetToggled(current_pen_color_ == color);
+      color_button->SetToggled(current_pen_color_ == color);
     }
     setup_layered_view(marker_view_container);
   }
@@ -264,6 +269,7 @@ void ProjectorAnnotationTray::UpdateIcon() {
       GetIconForTool(tool, current_pen_color_),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  image_view_->SetTooltipText(GetTooltip());
   SetIsActive(tool != kToolNone);
 }
 
@@ -298,6 +304,15 @@ void ProjectorAnnotationTray::ResetTray() {
   current_pen_color_ = kProjectorMagentaPenColor;
   // Disable the tray icon. It is enabled once the ink canvas is initialized.
   SetEnabled(false);
+}
+
+std::u16string ProjectorAnnotationTray::GetTooltip() {
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
+      GetCurrentTool() == kToolNone
+          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
+          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TOOLTIP, enabled_state);
 }
 
 }  // namespace ash

@@ -24,6 +24,12 @@ class ASH_EXPORT ProjectorColorButton : public ProjectorButton {
   ProjectorColorButton(const ProjectorColorButton&) = delete;
   ProjectorColorButton& operator=(const ProjectorColorButton&) = delete;
   ~ProjectorColorButton() override = default;
+
+  void PaintButtonContents(gfx::Canvas* canvas) override;
+
+ private:
+  SkColor color_;
+  int size_;
 };
 
 }  // namespace ash
