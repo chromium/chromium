@@ -125,6 +125,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ksv_volume_down.icon",
     "ksv_volume_up.icon",
     "launch.icon",
+    "launcher_hide_continue_section.icon",
     "lock_screen_alert.icon",
     "lock_screen_arrow.icon",
     "lock_screen_arrow_back.icon",
