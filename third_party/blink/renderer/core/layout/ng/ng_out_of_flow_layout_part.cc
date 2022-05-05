@@ -1670,25 +1670,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
       To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-
-  // If the last existing fragmentainer does not have a break token, and we will
-  // need to add a new subsequent fragmentainer to hold an OOF, create a break
-  // token for the old fragmentainer now.
-  if (is_new_fragment && !fragment->BreakToken()) {
-    const NGBlockBreakToken* previous_break_token =
-        PreviousFragmentainerBreakToken(*container_builder_, index);
-    NGLayoutAlgorithmParams params(node, fragment_geometry, space,
-                                   previous_break_token,
-                                   /* early_break */ nullptr);
-    NGSimplifiedOOFLayoutAlgorithm algorithm(params, *fragment,
-                                             /* is_new_fragment */ false,
-                                             /* should_break_for_oof */ true);
-    ReplaceFragmentainer(index, fragmentainer.offset,
-                         /* create_new_fragment */ false, &algorithm);
-    fragment = To<NGPhysicalBoxFragment>(
-        container_builder_->Children()[index].fragment.Get());
-  }
-
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
 
@@ -1867,18 +1848,10 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
 
     if (multicol_children_ && index < multicol_children_->size()) {
       // We are in a nested fragmentation context. Replace the column entry
-      // (that already existed) and break token directly in the existing
-      // multicol fragment. If there any new columns, they will be appended as
-      // part of regenerating the multicol fragment.
+      // (that already existed) directly in the existing multicol fragment. If
+      // there any new columns, they will be appended as part of regenerating
+      // the multicol fragment.
       MulticolChildInfo& column_info = (*multicol_children_)[index];
-      if (auto& parent_break_token = column_info.parent_break_token) {
-        DCHECK_GT(parent_break_token->ChildBreakTokens().size(), 0u);
-        parent_break_token->GetMutableForOutOfFlow().ReplaceChildBreakToken(
-            new_fragment->BreakToken(),
-            base::checked_cast<wtf_size_t>(
-                parent_break_token->ChildBreakTokens().size()) -
-                1);
-      }
       column_info.mutable_link->fragment = new_fragment;
     }
   }
